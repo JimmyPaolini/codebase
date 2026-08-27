@@ -3,21 +3,21 @@ import { describe, expect, it } from "vitest";
 import { withDefaultCommand } from "./main.utilities";
 
 describe(withDefaultCommand, () => {
-  it("inserts codometer ahead of a bare flag", () => {
+  it("inserts measure ahead of a bare flag", () => {
     expect(withDefaultCommand(["--directory", "."])).toStrictEqual([
-      "codometer",
+      "measure",
       "--directory",
       ".",
     ]);
   });
 
-  it("inserts codometer when no arguments were given", () => {
-    expect(withDefaultCommand([])).toStrictEqual(["codometer"]);
+  it("inserts measure when no arguments were given", () => {
+    expect(withDefaultCommand([])).toStrictEqual(["measure"]);
   });
 
-  it("leaves an explicit codometer invocation alone", () => {
-    expect(withDefaultCommand(["codometer", "--write"])).toStrictEqual([
-      "codometer",
+  it("leaves an explicit measure invocation alone", () => {
+    expect(withDefaultCommand(["measure", "--write"])).toStrictEqual([
+      "measure",
       "--write",
     ]);
   });

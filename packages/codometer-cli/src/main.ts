@@ -9,11 +9,11 @@ import { withDefaultCommand } from "./main.utilities";
 /**
  * Bootstraps the codometer CLI command application.
  *
- * Standard output belongs to the report: `codometer --json` writes a document
- * meant to be piped into something that parses it, and `codometer --markdown`
- * one meant to be redirected into a file. Every diagnostic therefore goes to
- * standard error, chosen here — before anything logs — because the pino
- * instance is built on first use.
+ * Standard output belongs to the result: `codometer --format json` writes a
+ * document meant to be piped into something that parses it, and `--format
+ * markdown` one meant to be redirected into a file. Every diagnostic therefore
+ * goes to standard error, chosen here — before anything logs — because the
+ * pino instance is built on first use.
  */
 async function main(): Promise<void> {
   LoggerService.logToStandardError();

@@ -49,7 +49,7 @@ describe("main end-to-end suite", () => {
           "--import",
           "@swc-node/register/esm-register",
           COMMAND_PATH,
-          "codometer",
+          "measure",
           "--directory",
           workingDirectory,
           "--config",
@@ -57,8 +57,9 @@ describe("main end-to-end suite", () => {
           // The report goes to the console, and the badge block goes into a
           // file — so there is a written file to announce and nothing but the
           // report on standard output.
-          "--json",
-          "--readme",
+          "--format",
+          "json",
+          "--output-markdown",
           path.join(workingDirectory, "README.md"),
           "--write",
         ],
@@ -77,9 +78,9 @@ describe("main end-to-end suite", () => {
       removeFixtureTree(workingDirectory);
     });
 
-    // `codometer --json > report.json` has to produce a file something can
-    // parse. A diagnostic sharing that stream is not a note beside the data,
-    // it is a corruption of it.
+    // `codometer --format json > report.json` has to produce a file something
+    // can parse. A diagnostic sharing that stream is not a note beside the
+    // data, it is a corruption of it.
     it("puts nothing but the report on standard output", () => {
       expect.hasAssertions();
 

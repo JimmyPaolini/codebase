@@ -1,12 +1,12 @@
-# 📤 The three sinks
+# 📤 The output sinks
 
-Where a run's output lands. Three sinks, each with its own flag, and each
-independently replaceable.
+Where a run's output lands. What a run prints and what it writes are asked for
+separately, and each sink is independently replaceable.
 
 ## Run it
 
 ```bash
-codometer --directory examples/corpus --json | jq '.targets[0].files'   # 28
+codometer --directory examples/corpus --format json | jq '.targets[0].files'   # 28
 ```
 
 ## What is here
@@ -22,9 +22,13 @@ output/
 
 | Sink | Flag | What lands there |
 | ---- | ---- | ---------------- |
-| Report | `--json [path]` | the structured report |
-| Document | `-m, --markdown [path]` | the rendered badges as a whole file |
-| Splice | `--readme <path>` | the badge block, between two markers |
+| Console | `-f, --format <format>` | the report as `json`, or the badges as `markdown` |
+| Report | `--output-json <path>` | the structured report |
+| Markdown | `--output-markdown <path>` | the badge block, in a markdown file |
+
+A path always names a file, never the console. `--format` defaults to
+`markdown` on a run that touches no file, which is what a bare `codometer`
+does.
 
 ## Standard output carries the result
 
@@ -33,41 +37,43 @@ lines and all. The test proves it by taking the bytes the run wrote to standard
 output — and only those — and feeding them to a second process that parses them.
 One warning sharing the stream would break it.
 
-**The document sink writes the badges as a whole file**, markers and all absent,
-which is what a page that is nothing but statistics wants:
+**The markdown sink writes the badge block into a file**, which serves a page
+that is nothing but statistics as readily as a README with prose around it:
 
 ```bash
-codometer --directory examples/corpus -m document.md --write
+codometer --directory examples/corpus --output-markdown document.md --write
 ```
 
 ## A path needs a reason to exist
 
-**`--json <path>` is refused unless the run writes or compares it**, because a
-run doing neither would render the report to the console and leave that file
-unwritten — noticed not here but downstream, by whatever reads the report,
-finding nothing:
+**An `--output-*` path is refused unless the run writes or compares it**,
+because a run doing neither would leave that file exactly as it found it —
+noticed not here but downstream, by whatever reads the report, finding nothing:
 
 ```text
---json report.json needs --write or --check reports: a run that neither writes
-the report nor compares it would render it to the console and leave that file
-unwritten. Add --write to write it, --check reports to fail on a stale one, or
-drop the path to ask for the console.
+--output-json report.json needs --write or --check reports: a run that neither
+writes that file nor compares it would leave it exactly as it found it. Add
+--write to write it, --check reports to fail on a stale one, or ask for
+--format json to read it on the console instead.
 ```
 
-A pathless `--json` is untouched: the console is what it asked for.
+Asking for the console is `--format json`, which names no file and so is never
+refused.
 
-**A named destination stands for all of them.** `--json only-this.json --write`
-against [`codometer.config.ts`](codometer.config.ts) writes the report and
-**not** the configured markdown document. Adding to the configured set instead
-would put a second document on the stream the first was piped out of.
+**A named destination stands for all of them.** `--output-json only-this.json
+--write` against [`codometer.config.ts`](codometer.config.ts) writes the report
+and **not** the configured markdown file. Adding to the configured set instead
+would write a file the command line never asked for.
 
-## Splicing
+## One markdown sink, not two
 
-The block sits between `CODE_STATISTICS_START` and `CODE_STATISTICS_END` unless
-a configuration renames them. It is **appended when the markers are absent** and
-the **file is created when it does not exist**, so a destination needs nothing
-in it beforehand; a second run rewrites the block in place rather than appending
-another.
+`--output-markdown` splices the block between `CODE_STATISTICS_START` and
+`CODE_STATISTICS_END` unless a configuration renames them. It is **appended
+with its markers when they are absent** and the **file is created when it does
+not exist**, so a destination needs nothing in it beforehand; a second run
+rewrites the block in place rather than appending another. A README somebody
+else wrote the rest of and a file holding nothing but badges are the same case,
+so neither needs a flag of its own.
 
 [`renamed-markers.config.ts`](renamed-markers.config.ts) renames them, and the
 reason is not cosmetic: a document that _explains_ the default markers holds the
@@ -126,10 +132,11 @@ Still 28, one markdown file, one JSON file — exactly what a run before either
 file existed reported. The exclusion is applied identically whatever the flags
 say, so a `--write` run and a `--check reports` run always measure the same tree.
 
-**Read the report from disk rather than adding `--json` to the second run.** A
-destination named on the command line stands for all of them, so `--json`
-replaces the configured pair with the console — and a run that was never going
-to write those two files has no reason to exclude them. It reports 30.
+**Reading the report back does not change what is measured.** `--format json`
+names no destination, so the configured pair stays excluded and the second run
+reports the same 28. Naming a destination outright — `--output-json
+only-this.json --write` — does replace the configured pair, and a run that was
+never going to write those two files has no reason to exclude them.
 
 ## Next
 

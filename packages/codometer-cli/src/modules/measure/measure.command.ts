@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { ConfigurationService } from "@codometer/configuration";
+import { ConfigurationService, InputService } from "@codometer/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -8,38 +8,37 @@ import { LoggerService } from "@codebase/logger";
 
 import { DeliveryService } from "../delivery/delivery.service";
 import { ReportService } from "../report/report.service";
+import { FORMAT_NAMES } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
-import { CodometerService } from "./codometer.service";
+import { MeasureService } from "./measure.service";
 
 import type { ReportFindingsArguments } from "../run-plan/run-plan.types";
-import type {
-  CodometerCommandOptions,
-  MeasurementResult,
-} from "./codometer.types";
+import type { MeasureCommandOptions, MeasurementResult } from "./measure.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 /**
  * CLI entry point for the repository measurement workflow.
  */
 @Command({
-  description: "Run the codometer command",
-  name: "codometer",
+  description: "Measure a directory and produce every resolved output",
+  name: "measure",
 })
 @Injectable()
-export class CodometerCommand extends CommandRunner {
+export class MeasureCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
     private readonly configurationService: ConfigurationService,
-    private readonly codometerService: CodometerService,
+    private readonly measureService: MeasureService,
     private readonly deliveryService: DeliveryService,
     private readonly reportService: ReportService,
     private readonly runPlanService: RunPlanService,
+    private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
     super();
-    this.logger.setContext(CodometerCommand.name);
+    this.logger.setContext(MeasureCommand.name);
   }
 
   // 🔐 Private Fields
@@ -76,7 +75,7 @@ export class CodometerCommand extends CommandRunner {
    * by.
    */
   private async readConfiguration(
-    options: CodometerCommandOptions,
+    options: MeasureCommandOptions,
     workingDirectory: string,
   ): Promise<ResolvedCodometerConfiguration | undefined> {
     try {
@@ -180,7 +179,7 @@ export class CodometerCommand extends CommandRunner {
       process.exitCode = 1;
     }
 
-    this.logger.info("✅ Finished the codometer run", undefined, {
+    this.logger.info("✅ Finished the measurement run", undefined, {
       breachCount: args.measurement.limits.filter((limit) => limit.breached)
         .length,
       targetCount: args.measurement.targets.length,
@@ -203,12 +202,12 @@ export class CodometerCommand extends CommandRunner {
   /**
    * Resolve the directory the run measures, and announce that it started.
    */
-  private resolveWorkingDirectory(options: CodometerCommandOptions): string {
+  private resolveWorkingDirectory(options: MeasureCommandOptions): string {
     const workingDirectory = path.resolve(
       this.parseDirectory(options.directory),
     );
 
-    this.logger.debug("🚀 Started the codometer run", undefined, {
+    this.logger.debug("🚀 Started the measurement run", undefined, {
       directory: workingDirectory,
     });
 
@@ -252,46 +251,52 @@ export class CodometerCommand extends CommandRunner {
     description: "Directory to analyze",
     flags: "-d, --directory [directory]",
   })
-  public parseDirectory(value: string | undefined): string {
-    return value ?? process.cwd();
+  public parseDirectory(value: unknown): string {
+    return this.inputService.parseDirectoryOption(value);
   }
 
   /**
-   * Parse the optional report path from command-line input.
-   */
-  @Option({
-    description: "Path to write the report to; the console when omitted",
-    flags: "--json [json]",
-  })
-  public parseJson(value: string | undefined): string | undefined {
-    return value;
-  }
-
-  /**
-   * Parse the optional badge document path from command-line input.
-   */
-  @Option({
-    description:
-      "Path to write the rendered badges to as a whole document; the console when omitted",
-    flags: "-m, --markdown [markdown]",
-  })
-  public parseMarkdown(value: string | undefined): string | undefined {
-    return value;
-  }
-
-  /**
-   * Parse the required splice destination from command-line input.
+   * Parse what the run prints from command-line input.
    *
-   * The path is mandatory and never defaulted. Splicing rewrites a file
+   * Says nothing about which files are written — that is each `--output-*`
+   * flag's job. Separating them is what lets one run write a report and print
+   * a badge document without either flag having to mean both.
+   */
+  @Option({
+    description: `What to print to standard output, one of ${FORMAT_NAMES.join(" and ")}`,
+    flags: "-f, --format <format>",
+  })
+  public parseFormat(value: string): string {
+    return value;
+  }
+
+  /**
+   * Parse the report's destination from command-line input.
+   *
+   * A path and nothing else. Asking for the report on the console is
+   * `--format json`, so this flag never has to be read two ways.
+   */
+  @Option({
+    description: "File to write the report to",
+    flags: "--output-json <outputJson>",
+  })
+  public parseOutputJson(value: string): string {
+    return value;
+  }
+
+  /**
+   * Parse the badge block's destination from command-line input.
+   *
+   * The path is mandatory and never defaulted. Writing here rewrites a file
    * somebody else wrote the rest of, so a run that guessed the filename would
    * edit a document nobody pointed it at.
    */
   @Option({
     description:
-      "Markdown file to splice the badge block into, between its markers",
-    flags: "--readme <readme>",
+      "Markdown file the badge block goes into, spliced between its markers when they are there and appended with them when they are not",
+    flags: "--output-markdown <outputMarkdown>",
   })
-  public parseReadme(value: string): string {
+  public parseOutputMarkdown(value: string): string {
     return value;
   }
 
@@ -314,17 +319,17 @@ export class CodometerCommand extends CommandRunner {
    * Measure the repository and produce every resolved output.
    *
    * Flags are independent: `--write` writes, `--check reports` fails on a stale
-   * report, `--check limits` fails on a breached limit, and none of them turns
-   * another on. Every output is produced before any finding is weighed, so a
-   * run that writes and gates leaves the report behind even when the gate
-   * trips.
+   * report, `--check limits` fails on a breached limit, `--format` prints, and
+   * none of them turns another on. Every output is produced before any finding
+   * is weighed, so a run that writes and gates leaves the report behind even
+   * when the gate trips.
    */
   async run(
     _passedParameters: string[],
-    options: CodometerCommandOptions,
+    options: MeasureCommandOptions,
   ): Promise<void> {
     const workingDirectory = this.resolveWorkingDirectory(options);
-    const { errors, mode } = this.runPlanService.selectMode(options);
+    const { errors, format, mode } = this.runPlanService.selectMode(options);
 
     if (errors.length > 0) {
       this.logger.error(`📊 Rejected the command line`, undefined, {
@@ -355,7 +360,7 @@ export class CodometerCommand extends CommandRunner {
 
     this.announceOutputPaths(outputPaths);
 
-    const measurement: MeasurementResult = this.codometerService.measure({
+    const measurement: MeasurementResult = this.measureService.measure({
       configuration,
       outputPaths,
       workingDirectory,
@@ -363,6 +368,7 @@ export class CodometerCommand extends CommandRunner {
     const report = this.reportService.build(measurement);
     const stalePaths = this.deliveryService.deliver({
       destinations,
+      format,
       measurement,
       mode,
       report,

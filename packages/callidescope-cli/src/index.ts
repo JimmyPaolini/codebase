@@ -4,7 +4,7 @@ export { AddressLookupModule } from "./modules/address-lookup/address-lookup.mod
 export { AddressLookupService } from "./modules/address-lookup/address-lookup.service";
 export type {
   AddressCommandOptions,
-  LookupAddressOutcome,
+  LocatedWorkspace,
 } from "./modules/address-lookup/address-lookup.types";
 export { AddressReportModule } from "./modules/address-report/address-report.module";
 export { AddressReportService } from "./modules/address-report/address-report.service";

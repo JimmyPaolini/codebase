@@ -5,7 +5,6 @@ import type {
   CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
-import type { CallableAddressResolution } from "@callidescope/graph";
 
 /** Options `depth` and `breadth` accept, scoping a lookup to one workspace. */
 export interface AddressCommandOptions {
@@ -17,15 +16,22 @@ export interface AddressCommandOptions {
   readonly interactive?: boolean | undefined;
 }
 
-/** Arguments for resolving `depth` or `breadth`'s address argument. */
-export interface LookupAddressArguments {
-  readonly address: string;
-  readonly options: AddressCommandOptions;
-}
-
-/** What resolving one address against a workspace produced. */
-export interface LookupAddressOutcome {
+/**
+ * A traced workspace, before any address has been matched against it.
+ *
+ * Held apart from the match so one trace can serve both the list a prompt
+ * completes against and the lookup that follows it. Tracing twice to offer a
+ * choice and then act on it would double the slowest thing either command
+ * does.
+ */
+export interface LocatedWorkspace {
   readonly configuration: ResolvedCallidescopeConfiguration;
   readonly located: LocateOutcome;
-  readonly resolution: CallableAddressResolution;
+  readonly workspaceRoot: string;
+}
+
+/** Arguments for matching an address against an already-traced workspace. */
+export interface ResolveAddressArguments {
+  readonly address: string;
+  readonly workspace: LocatedWorkspace;
 }

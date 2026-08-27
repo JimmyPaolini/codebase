@@ -3,7 +3,7 @@ import { AddressDepthService, BreadthService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 
 import type { LookupArguments, LookupResult } from "./address.types";
-import type { LookupAddressOutcome } from "@callidescope/cli";
+import type { LocatedWorkspace } from "@callidescope/cli";
 import type { CallableId } from "@callidescope/configuration";
 
 /**
@@ -42,29 +42,30 @@ export class AddressService {
    */
   private async locate(
     args: LookupArguments,
-  ): Promise<string | { id: CallableId; outcome: LookupAddressOutcome }> {
-    const outcome = await this.addressLookupService.lookup({
+  ): Promise<string | { id: CallableId; workspace: LocatedWorkspace }> {
+    const workspace = await this.addressLookupService.locate({
+      ...(args.configurationPath === undefined
+        ? {}
+        : { config: args.configurationPath }),
+      directories: [...args.directories],
+      ...(args.format === undefined ? {} : { format: args.format }),
+      // Nothing can be prompted for inside a task runner.
+      interactive: false,
+    });
+    const resolution = this.addressLookupService.resolve({
       address: args.address,
-      options: {
-        ...(args.configurationPath === undefined
-          ? {}
-          : { config: args.configurationPath }),
-        directories: [...args.directories],
-        ...(args.format === undefined ? {} : { format: args.format }),
-        // Nothing can be prompted for inside a task runner.
-        interactive: false,
-      },
+      workspace,
     });
     const problem = this.addressLookupService.describeProblem({
       address: args.address,
-      resolution: outcome.resolution,
+      resolution,
     });
 
-    if (problem !== undefined || outcome.resolution.kind !== "resolved") {
+    if (problem !== undefined || resolution.kind !== "resolved") {
       return problem ?? `"${args.address}" resolved to nothing.`;
     }
 
-    return { id: outcome.resolution.id, outcome };
+    return { id: resolution.id, workspace };
   }
 
   // 🌎 Public Methods
@@ -77,8 +78,8 @@ export class AddressService {
       return { ok: false, report: located };
     }
 
-    const { id, outcome } = located;
-    const callable = outcome.located.callablesById.get(id);
+    const { id, workspace } = located;
+    const callable = workspace.located.callablesById.get(id);
 
     if (callable === undefined) {
       return {
@@ -92,12 +93,12 @@ export class AddressService {
       report: this.addressReportService.renderBreadth({
         address: args.address,
         directCalls: this.breadthService.describeDirectCalls({
-          callablesById: outcome.located.callablesById,
-          graph: outcome.located.graph,
+          callablesById: workspace.located.callablesById,
+          graph: workspace.located.graph,
           id,
         }),
         displayName: callable.node.displayName,
-        format: outcome.configuration.output.format,
+        format: workspace.configuration.output.format,
         id,
         location: callable.node.location,
       }),
@@ -112,10 +113,10 @@ export class AddressService {
       return { ok: false, report: located };
     }
 
-    const { id, outcome } = located;
+    const { id, workspace } = located;
     const stackArguments = {
-      callablesById: outcome.located.callablesById,
-      graph: outcome.located.graph,
+      callablesById: workspace.located.callablesById,
+      graph: workspace.located.graph,
       startId: id,
     };
 
@@ -124,7 +125,7 @@ export class AddressService {
       report: this.addressReportService.renderDepth({
         address: args.address,
         downward: this.addressDepthService.buildDownwardStacks(stackArguments),
-        format: outcome.configuration.output.format,
+        format: workspace.configuration.output.format,
         upward: this.addressDepthService.buildUpwardStacks(stackArguments),
       }),
     };

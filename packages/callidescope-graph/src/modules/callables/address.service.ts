@@ -11,6 +11,7 @@ import type {
   ResolveAddressArguments,
 } from "./address.types";
 import type { DiscoveredCallable } from "./callables.types";
+import type { CallableNode } from "@callidescope/configuration";
 
 /**
  * Resolves a human-typed callable address to the callable it names.
@@ -109,6 +110,11 @@ export class AddressService {
     };
   }
 
+  /** Writes one callable as the address that names it, with no disambiguator. */
+  private toAddress(node: CallableNode): string {
+    return `${node.location.filePath}#${node.displayName}`;
+  }
+
   /** Turns matched callables into the candidates an ambiguous result names. */
   private toCandidates(
     matches: readonly DiscoveredCallable[],
@@ -133,6 +139,37 @@ export class AddressService {
   }
 
   // 🌎 Public Methods
+
+  /**
+   * Every callable a run discovered, written as an address that resolves to it.
+   *
+   * Rendered here rather than by whoever offers the list, so the shape written
+   * out and the shape parsed back in are one class's business and cannot
+   * drift. A pair that occurs more than once in a file carries its `:<line>`
+   * already, so nothing this returns can come back ambiguous — which is what
+   * makes the list safe to pick from blind.
+   */
+  public listAddresses(
+    callablesById: ReadonlyMap<string, DiscoveredCallable>,
+  ): string[] {
+    const counts = new Map<string, number>();
+
+    for (const callable of callablesById.values()) {
+      const key = this.toAddress(callable.node);
+
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+
+    const addresses = [...callablesById.values()].map((callable) => {
+      const address = this.toAddress(callable.node);
+
+      return counts.get(address) === 1
+        ? address
+        : `${address}:${String(callable.node.location.line)}`;
+    });
+
+    return addresses.toSorted((left, right) => left.localeCompare(right));
+  }
 
   /** Resolves a callable address against every callable a run discovered. */
   public resolve(args: ResolveAddressArguments): CallableAddressResolution {

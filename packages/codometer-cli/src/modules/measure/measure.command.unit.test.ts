@@ -1,4 +1,4 @@
-import { ConfigurationService } from "@codometer/configuration";
+import { ConfigurationService, InputService } from "@codometer/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -18,13 +18,18 @@ import { DeliveryService } from "../delivery/delivery.service";
 import { ReportService } from "../report/report.service";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
-import { CodometerCommand } from "./codometer.command";
-import { CodometerService } from "./codometer.service";
+import { MeasureCommand } from "./measure.command";
+import { MeasureService } from "./measure.service";
 
 import type { EvaluatedLimit } from "../limits/limits.types";
-import type { CodometerCommandOptions } from "./codometer.types";
-import type { DocumentationMeasurement } from "./documentation-measurement.types";
-import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
+import type {
+  DocumentationMeasurement,
+  MeasureCommandOptions,
+} from "./measure.types";
+import type {
+  ResolvedCodometerConfiguration,
+  ResolvedCodometerMarkdownOutputConfiguration,
+} from "@codometer/configuration";
 import type { JsonService, MarkdownService } from "@codometer/output";
 import type { MockInstance } from "vitest";
 
@@ -89,35 +94,36 @@ const markdownDestination = {
 
 const jsonDestination = { indentation: 2, path: "output/codometer.json" };
 
-describe(CodometerCommand, () => {
-  let command: CodometerCommand;
+describe(MeasureCommand, () => {
+  let command: MeasureCommand;
   let configurationService: ConfigurationService;
-  let codometerService: CodometerService;
+  let measureService: MeasureService;
   let loggerService: LoggerService;
   let jsonService: JsonService;
   let markdownService: MarkdownService;
   let stdoutWriteSpy: MockInstance<typeof process.stdout.write>;
 
   /** Builds a command whose measurement and output are mocked. */
-  function buildCommand(): CodometerCommand {
-    return new CodometerCommand(
+  function buildCommand(): MeasureCommand {
+    return new MeasureCommand(
       configurationService,
-      codometerService,
+      measureService,
       new DeliveryService(jsonService, markdownService),
       new ReportService(),
       new RunPlanService(),
+      new InputService(),
       loggerService,
     );
   }
 
   /** Runs the command over a repository at `/repo`. */
-  async function run(options: CodometerCommandOptions = {}): Promise<void> {
+  async function run(options: MeasureCommandOptions = {}): Promise<void> {
     await buildCommand().run([], { directory: "/repo", ...options });
   }
 
   /** Reports the limits the measurement found breached. */
   function measured(limits: EvaluatedLimit[]): void {
-    vi.mocked(codometerService.measure).mockReturnValue({
+    vi.mocked(measureService.measure).mockReturnValue({
       documentation: [],
       failures: [],
       indexes: new Map(),
@@ -129,7 +135,7 @@ describe(CodometerCommand, () => {
 
   /** Reports the documentation measurements the run found. */
   function documented(documentation: DocumentationMeasurement[]): void {
-    vi.mocked(codometerService.measure).mockReturnValue({
+    vi.mocked(measureService.measure).mockReturnValue({
       documentation,
       failures: [],
       indexes: new Map(),
@@ -142,12 +148,13 @@ describe(CodometerCommand, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        CodometerCommand,
+        MeasureCommand,
+        InputService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
         },
-        { provide: CodometerService, useValue: createMock<CodometerService>() },
+        { provide: MeasureService, useValue: createMock<MeasureService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: DeliveryService, useValue: createMock<DeliveryService>() },
         { provide: ReportService, useValue: new ReportService() },
@@ -155,13 +162,13 @@ describe(CodometerCommand, () => {
       ],
     }).compile();
 
-    command = await module.resolve(CodometerCommand);
+    command = await module.resolve(MeasureCommand);
   });
 
   beforeEach(() => {
     process.exitCode = 0;
     configurationService = createMock<ConfigurationService>();
-    codometerService = createMock<CodometerService>();
+    measureService = createMock<MeasureService>();
     loggerService = createMock<LoggerService>();
     jsonService = createMock<JsonService>();
     markdownService = createMock<MarkdownService>();
@@ -176,7 +183,6 @@ describe(CodometerCommand, () => {
     vi.mocked(markdownService.renderDocument).mockReturnValue("document");
     vi.mocked(markdownService.renderDocumentationSection).mockReturnValue("");
     vi.mocked(markdownService.sync).mockReturnValue(true);
-    vi.mocked(markdownService.syncDocument).mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -191,12 +197,13 @@ describe(CodometerCommand, () => {
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
       providers: [
-        CodometerCommand,
+        MeasureCommand,
+        InputService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
         },
-        { provide: CodometerService, useValue: createMock<CodometerService>() },
+        { provide: MeasureService, useValue: createMock<MeasureService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: DeliveryService, useValue: createMock<DeliveryService>() },
         { provide: ReportService, useValue: new ReportService() },
@@ -206,7 +213,7 @@ describe(CodometerCommand, () => {
 
     const logger = await module.resolve(LoggerService);
 
-    expect(logger.setContext).toHaveBeenCalledWith("CodometerCommand");
+    expect(logger.setContext).toHaveBeenCalledWith("MeasureCommand");
   });
 
   describe("the flag table", () => {
@@ -283,7 +290,7 @@ describe(CodometerCommand, () => {
     // target measured has to reach the renderer — and a target the run
     // measured no size for has to not, rather than arriving as a zero.
     it("hands the renderer the size of every target it measured", async () => {
-      vi.mocked(codometerService.measure).mockReturnValue({
+      vi.mocked(measureService.measure).mockReturnValue({
         documentation: [],
         failures: [],
         indexes: new Map(),
@@ -325,7 +332,7 @@ describe(CodometerCommand, () => {
     // that declares none would otherwise publish `0.00 kB gzip` into a README
     // a release commits — a figure that is wrong rather than merely absent.
     it("hands the renderer nothing for a target whose globs matched no file", async () => {
-      vi.mocked(codometerService.measure).mockReturnValue({
+      vi.mocked(measureService.measure).mockReturnValue({
         documentation: [],
         failures: [],
         indexes: new Map(),
@@ -410,7 +417,7 @@ describe(CodometerCommand, () => {
           ],
         },
       );
-      expect(codometerService.measure).not.toHaveBeenCalled();
+      expect(measureService.measure).not.toHaveBeenCalled();
       expect(process.exitCode).toBe(1);
     });
 
@@ -456,7 +463,7 @@ describe(CodometerCommand, () => {
         undefined,
         { reason: 'Cannot read the limit on "size" from "8 K"' },
       );
-      expect(codometerService.measure).not.toHaveBeenCalled();
+      expect(measureService.measure).not.toHaveBeenCalled();
       expect(process.exitCode).toBe(1);
     });
 
@@ -474,7 +481,7 @@ describe(CodometerCommand, () => {
         undefined,
         { reason: "not an Error" },
       );
-      expect(codometerService.measure).not.toHaveBeenCalled();
+      expect(measureService.measure).not.toHaveBeenCalled();
       expect(process.exitCode).toBe(1);
     });
 
@@ -493,67 +500,69 @@ describe(CodometerCommand, () => {
   });
 
   describe("the output sinks", () => {
-    it("renders the badges to the console when nothing is configured", async () => {
+    it("prints the badges when the run touches no file", async () => {
       await run();
 
-      expect(markdownService.renderDocument).toHaveBeenCalledWith({
-        description: undefined,
+      expect(markdownService.renderBlock).toHaveBeenCalledWith({
+        destination: {
+          description: undefined,
+          endMarker: "<!-- CODE_STATISTICS_END -->",
+          path: undefined,
+          render: undefined,
+          startMarker: "<!-- CODE_STATISTICS_START -->",
+          write: undefined,
+        },
         scope: "project",
         statistics,
         targets: [],
       });
-      expect(stdoutWriteSpy).toHaveBeenCalledWith("document\n");
-      expect(markdownService.syncDocument).not.toHaveBeenCalled();
+      expect(stdoutWriteSpy).toHaveBeenCalledWith("block\n");
+      expect(markdownService.sync).not.toHaveBeenCalled();
     });
 
-    it("writes the badge document where --markdown named", async () => {
-      await run({ markdown: "docs/metrics.md", write: true });
+    it("writes the badge block where --output-markdown named", async () => {
+      await run({ outputMarkdown: "docs/metrics.md", write: true });
 
-      expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
+      expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
-        content: "document",
-        path: "/repo/docs/metrics.md",
+        destination: { ...markdownDestination, path: "/repo/docs/metrics.md" },
+        scope: "project",
+        statistics,
+        targets: [],
       });
     });
 
-    it("sends the badge document to the console for a pathless --markdown", async () => {
-      await run({ markdown: true, write: true });
+    it("prints nothing alongside a written file", async () => {
+      await run({ outputMarkdown: "docs/metrics.md", write: true });
 
-      expect(markdownService.syncDocument).not.toHaveBeenCalled();
-      expect(stdoutWriteSpy).toHaveBeenCalledWith("document\n");
+      expect(stdoutWriteSpy).not.toHaveBeenCalled();
     });
 
-    it("appends nothing to the badge document when nothing breached documentation", async () => {
-      await run({ markdown: "docs/metrics.md", write: true });
-
-      expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
-        check: false,
-        content: "document",
-        path: "/repo/docs/metrics.md",
-      });
-    });
-
-    it("appends the breached documentation section to the badge document", async () => {
+    it("appends the breached documentation section to the badge block", async () => {
       const breach = buildDocumentationBreach("fail");
       documented([breach]);
       vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
         "### 📝 Documentation",
       );
 
-      await run({ markdown: "docs/metrics.md", write: true });
+      await run({ outputMarkdown: "docs/metrics.md", write: true });
 
       expect(markdownService.renderDocumentationSection).toHaveBeenCalledWith({
         breaches: [breach],
       });
-      expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
+      expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
-        content: ["document", "### 📝 Documentation"].join("\n\n"),
-        path: "/repo/docs/metrics.md",
+        destination: expect.objectContaining({
+          path: "/repo/docs/metrics.md",
+        }) as ResolvedCodometerMarkdownOutputConfiguration,
+        scope: "project",
+        statistics,
+        targets: [],
       });
     });
 
-    it("writes the report where --json named", async () => {
-      await run({ json: "reports/statistics.json", write: true });
+    it("writes the report where --output-json named", async () => {
+      await run({ outputJson: "reports/statistics.json", write: true });
 
       expect(jsonService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
@@ -563,27 +572,11 @@ describe(CodometerCommand, () => {
       });
     });
 
-    it("sends the report to the console for a pathless --json", async () => {
-      await run({ json: true, write: true });
+    it("prints the report for --format json without writing one", async () => {
+      await run({ format: "json" });
 
       expect(jsonService.sync).not.toHaveBeenCalled();
       expect(stdoutWriteSpy).toHaveBeenCalledWith("{}\n");
-    });
-
-    it("splices into the file --readme named, and nowhere else", async () => {
-      await run({ readme: "docs/statistics.md", write: true });
-
-      expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
-        check: false,
-        destination: {
-          ...markdownDestination,
-          path: "/repo/docs/statistics.md",
-        },
-        scope: "project",
-        statistics,
-        targets: [],
-      });
-      expect(markdownService.syncDocument).not.toHaveBeenCalled();
     });
 
     it("produces only the sink the command line named", async () => {
@@ -594,11 +587,15 @@ describe(CodometerCommand, () => {
         }),
       );
 
-      await run({ json: true });
+      await run({ outputJson: "statistics.json", write: true });
 
-      expect(stdoutWriteSpy).toHaveBeenCalledExactlyOnceWith("{}\n");
+      expect(jsonService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        indentation: 2,
+        path: "/repo/statistics.json",
+        report: { documentation: [], failures: [], targets: [] },
+      });
       expect(markdownService.sync).not.toHaveBeenCalled();
-      expect(markdownService.renderBlock).not.toHaveBeenCalled();
     });
 
     it("writes the configured destinations relative to the analyzed directory", async () => {
@@ -629,7 +626,7 @@ describe(CodometerCommand, () => {
     it("names a stale report the run was checking", async () => {
       vi.mocked(jsonService.sync).mockReturnValue(false);
 
-      await run({ check: "reports", json: "reports/statistics.json" });
+      await run({ check: "reports", outputJson: "reports/statistics.json" });
 
       expect(loggerService.error).toHaveBeenCalledWith(
         "📊 Found stale reports",
@@ -639,10 +636,10 @@ describe(CodometerCommand, () => {
       expect(process.exitCode).toBe(1);
     });
 
-    it("names a stale badge document the run was checking", async () => {
-      vi.mocked(markdownService.syncDocument).mockReturnValue(false);
+    it("names a stale badge block the run was checking", async () => {
+      vi.mocked(markdownService.sync).mockReturnValue(false);
 
-      await run({ check: "reports", markdown: "docs/metrics.md" });
+      await run({ check: "reports", outputMarkdown: "docs/metrics.md" });
 
       expect(loggerService.error).toHaveBeenCalledWith(
         "📊 Found stale reports",
@@ -683,7 +680,7 @@ describe(CodometerCommand, () => {
 
       await run({ write: true });
 
-      expect(codometerService.measure).toHaveBeenCalledExactlyOnceWith({
+      expect(measureService.measure).toHaveBeenCalledExactlyOnceWith({
         configuration: expect.anything() as ResolvedCodometerConfiguration,
         outputPaths: ["output/codometer.json", "README.md"],
         workingDirectory: "/repo",
@@ -798,7 +795,7 @@ describe(CodometerCommand, () => {
     });
 
     it("reports what it could not measure and fails a gating run", async () => {
-      vi.mocked(codometerService.measure).mockReturnValue({
+      vi.mocked(measureService.measure).mockReturnValue({
         documentation: [],
         failures: [{ kind: "target", reason: "dist/ is gone", subject: "web" }],
         indexes: new Map(),
@@ -822,7 +819,7 @@ describe(CodometerCommand, () => {
     });
 
     it("reports what it could not measure without failing a bare run", async () => {
-      vi.mocked(codometerService.measure).mockReturnValue({
+      vi.mocked(measureService.measure).mockReturnValue({
         documentation: [],
         failures: [{ kind: "target", reason: "dist/ is gone", subject: "web" }],
         indexes: new Map(),
@@ -847,7 +844,7 @@ describe(CodometerCommand, () => {
       await run();
 
       expect(loggerService.debug).toHaveBeenCalledWith(
-        "🚀 Started the codometer run",
+        "🚀 Started the measurement run",
         undefined,
         { directory: "/repo" },
       );
@@ -867,14 +864,14 @@ describe(CodometerCommand, () => {
       await run();
 
       expect(loggerService.info).toHaveBeenCalledWith(
-        "✅ Finished the codometer run",
+        "✅ Finished the measurement run",
         undefined,
         { breachCount: 0, targetCount: 0 },
       );
     });
 
     it("counts every target measured and every limit breached at completion", async () => {
-      vi.mocked(codometerService.measure).mockReturnValue({
+      vi.mocked(measureService.measure).mockReturnValue({
         documentation: [],
         failures: [],
         indexes: new Map(),
@@ -894,7 +891,7 @@ describe(CodometerCommand, () => {
       await run();
 
       expect(loggerService.info).toHaveBeenCalledWith(
-        "✅ Finished the codometer run",
+        "✅ Finished the measurement run",
         undefined,
         { breachCount: 2, targetCount: 1 },
       );
@@ -904,6 +901,12 @@ describe(CodometerCommand, () => {
   describe("the flags themselves", () => {
     it("defaults directory to process cwd", () => {
       expect(buildCommand().parseDirectory(undefined)).toBe(process.cwd());
+    });
+
+    it("defaults directory to process cwd for a valueless --directory", () => {
+      // A valueless optional flag reaches commander as `true` and skips the
+      // parser, so the boolean arrives here by way of `run`.
+      expect(buildCommand().parseDirectory(true)).toBe(process.cwd());
     });
 
     it("passes an explicit configuration path through to the loader", async () => {
@@ -923,11 +926,11 @@ describe(CodometerCommand, () => {
         "codometer.config.ts",
       );
       expect(localCommand.parseConfig(undefined)).toBeUndefined();
-      expect(localCommand.parseJson("statistics.json")).toBe("statistics.json");
-      expect(localCommand.parseJson(undefined)).toBeUndefined();
-      expect(localCommand.parseMarkdown("README.md")).toBe("README.md");
-      expect(localCommand.parseMarkdown(undefined)).toBeUndefined();
-      expect(localCommand.parseReadme("README.md")).toBe("README.md");
+      expect(localCommand.parseFormat("json")).toBe("json");
+      expect(localCommand.parseOutputJson("statistics.json")).toBe(
+        "statistics.json",
+      );
+      expect(localCommand.parseOutputMarkdown("README.md")).toBe("README.md");
       expect(localCommand.parseWrite(undefined)).toBe(true);
       expect(localCommand.parseWrite(false)).toBe(false);
     });
@@ -937,15 +940,15 @@ describe(CodometerCommand, () => {
         "parseCheck",
         "parseConfig",
         "parseDirectory",
-        "parseJson",
-        "parseMarkdown",
-        "parseReadme",
+        "parseFormat",
+        "parseOutputJson",
+        "parseOutputMarkdown",
         "parseWrite",
       ].map(
         (parser) =>
           Reflect.getMetadata(
             "CommandBuilder:Option:Meta",
-            Reflect.get(CodometerCommand.prototype, parser) as object,
+            Reflect.get(MeasureCommand.prototype, parser) as object,
           ) as undefined | { flags: string },
       );
 
@@ -953,9 +956,9 @@ describe(CodometerCommand, () => {
         "--check [check]",
         "--config [config]",
         "-d, --directory [directory]",
-        "--json [json]",
-        "-m, --markdown [markdown]",
-        "--readme <readme>",
+        "-f, --format <format>",
+        "--output-json <outputJson>",
+        "--output-markdown <outputMarkdown>",
         "--write",
       ]);
     });

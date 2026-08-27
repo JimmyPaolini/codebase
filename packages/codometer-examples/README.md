@@ -97,7 +97,7 @@ A bare run measures every language it recognizes. The corpus carries one
 idiomatic sample per analyzer so each group has something in it:
 
 ```bash
-codometer --directory examples/corpus --json | jq '.targets[0].metrics[] | select(.value > 0)'
+codometer --directory examples/corpus --format json | jq '.targets[0].metrics[] | select(.value > 0)'
 ```
 
 Two things in the output surprise people:
@@ -141,7 +141,7 @@ Two commands do that, and they are deliberately different jobs:
 
 ```bash
 # On the branch: measure, write the report, fail if a limit breached.
-codometer --directory . --json codometer-report.json --write --check limits
+codometer --directory . --output-json codometer-report.json --write --check limits
 
 # Afterwards: diff every report against the base branch's and render the result.
 codometer changes --directory . --baseline <base-reports> --markdown summary.md

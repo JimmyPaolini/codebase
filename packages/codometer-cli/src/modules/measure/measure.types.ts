@@ -1,14 +1,13 @@
 // 🏷️ Types
 
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
-import type { ReportFailure } from "../report/report.types";
-import type { DocumentationMeasurement } from "./documentation-measurement.types";
 import type {
   CodeStatisticsResult,
   ResolvedCodometerConfiguration,
   ResolvedCodometerTarget,
 } from "@codometer/configuration";
 import type { DiscoveryResult } from "@codometer/discovery";
+import type { TypescriptDocumentationMeasurement } from "@codometer/languages";
 import type { SizeResult } from "@codometer/size";
 
 /**
@@ -20,26 +19,9 @@ export interface AnalyzeLanguageArguments {
   workingDirectory: string;
 }
 
-/**
- * Options accepted by the codometer command.
- *
- * `--write` and `--check` are independent: neither implies the other, and no
- * combination of them is inferred. A flag carrying an optional value arrives
- * as `true` when it was passed without one, which is how "to the console" is
- * told apart from "not asked for".
- */
-export interface CodometerCommandOptions {
-  /** The comma-separated set of things to fail on, as it was written. */
-  check?: string | true | undefined;
-  config?: string | undefined;
-  directory?: string | undefined;
-  /** Where the report goes; `true` for the console. */
-  json?: string | true | undefined;
-  /** Where the rendered badges go as a whole document; `true` for the console. */
-  markdown?: string | true | undefined;
-  /** The file to splice the badge block into. Never defaulted. */
-  readme?: string | undefined;
-  write?: boolean | undefined;
+/** One measured JSDoc comment, with the target it was found in. */
+export interface DocumentationMeasurement extends TypescriptDocumentationMeasurement {
+  target: string;
 }
 
 /**
@@ -56,6 +38,32 @@ export interface MeasureArguments {
    */
   outputPaths: readonly string[];
   workingDirectory: string;
+}
+
+/**
+ * Options accepted by the measure command.
+ *
+ * `--write` and `--check` are independent: neither implies the other, and no
+ * combination of them is inferred.
+ *
+ * Standard output and files are asked for separately: `--format` says what to
+ * print, and each `--output-*` says which file to write. A path therefore
+ * always means a file and never the console, which is what the optional-value
+ * `--json`/`--markdown` flags used to overload — a flag whose meaning changed
+ * depending on whether it carried a value.
+ */
+export interface MeasureCommandOptions {
+  /** The comma-separated set of things to fail on, as it was written. */
+  check?: string | true | undefined;
+  config?: string | undefined;
+  directory?: string | undefined;
+  /** What to print to standard output, as it was written. */
+  format?: string | undefined;
+  /** The file the report is written to. Never defaulted. */
+  outputJson?: string | undefined;
+  /** The markdown file the badge block goes into. Never defaulted. */
+  outputMarkdown?: string | undefined;
+  write?: boolean | undefined;
 }
 
 /**
@@ -98,6 +106,32 @@ export interface MeasureTargetArguments {
   target: ResolvedCodometerTarget;
   workingDirectory: string;
 }
+
+/**
+ * Something the run could not do, and what it was trying to do it to.
+ *
+ * Declared beside the measurement that produces it rather than beside the
+ * report that renders it, so the dependency between the two runs one way. The
+ * name says where it surfaces: `CodometerReport.failures` is what a consumer
+ * reads it from.
+ */
+export interface ReportFailure {
+  /** Which part of the run it failed in. */
+  kind: ReportFailureKind;
+  reason: string;
+  /** A target's name for a target failure, a limit's written path for a limit. */
+  subject: string;
+}
+
+/**
+ * Which part of a run a failure belongs to.
+ *
+ * `target` is a set of files that could not be measured; `limit` is a declared
+ * limit that could not be held against anything. Neither is a breach, and a
+ * consumer that treats them as one reports a passing gate for a metric nobody
+ * ever measured.
+ */
+export type ReportFailureKind = "limit" | "target";
 
 /**
  * What every analysis declared for one target reported over its files.

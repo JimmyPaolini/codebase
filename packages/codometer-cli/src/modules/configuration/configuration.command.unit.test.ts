@@ -1,3 +1,4 @@
+import { InputService } from "@codometer/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -27,6 +28,7 @@ describe(ConfigurationCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         ConfigurationCommand,
+        InputService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
@@ -65,6 +67,7 @@ describe(ConfigurationCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         ConfigurationCommand,
+        InputService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),

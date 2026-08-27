@@ -70,13 +70,6 @@ export interface SyncAnchoredBlockArguments {
   path: string | undefined;
 }
 
-/** Arguments accepted when syncing a whole document with the badges. */
-export interface SyncDocumentArguments {
-  check: boolean;
-  content: string;
-  path: string;
-}
-
 /** Arguments accepted when syncing a markdown destination with the statistics. */
 export interface SyncMarkdownArguments {
   check: boolean;

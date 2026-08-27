@@ -48,9 +48,9 @@ codometer --directory . --config configuration/codometer.config.ts
 | `--check <set>` | Fail on a comma-separated set drawn from `reports` and `limits` |
 | `--config [path]` | Configuration file to read; searched for when omitted |
 | `-d, --directory [path]` | Directory to measure; defaults to the current one |
-| `--json [path]` | The report goes here; the console when the path is omitted |
-| `-m, --markdown [path]` | The rendered badges go here as a whole document; the console when the path is omitted |
-| `--readme <path>` | Markdown file the badge block is spliced into, between its markers |
+| `-f, --format <format>` | What to print to standard output, one of `json` and `markdown` |
+| `--output-json <path>` | File the report is written to |
+| `--output-markdown <path>` | Markdown file the badge block goes into |
 | `--write` | Write every resolved destination |
 
 **`--write` and `--check` are independent.** Neither implies the other and no
@@ -335,38 +335,49 @@ narrows a symbol counter rather than being what it counts — is in
 
 ## Output
 
-Three sinks, none of which implies another:
+What a run prints and what it writes are asked for separately, and neither
+implies the other:
 
 | Sink | Flag | What lands there |
 | ---- | ---- | ---------------- |
-| Report | `--json [path]` | The structured report below |
-| Document | `-m, --markdown [path]` | The rendered badges as a whole file |
-| Splice | `--readme <path>` | The badge block, between two markers in a file somebody else wrote |
+| Console | `-f, --format <format>` | The report as `json`, or the rendered badges as `markdown` |
+| Report | `--output-json <path>` | The structured report below |
+| Markdown | `--output-markdown <path>` | The badge block, in a markdown file |
 
-A sink whose path is omitted goes to the console, and so does any sink on a run
-that neither writes nor compares — except the report, whose path is refused
-outright on such a run rather than quietly diverted. With nothing named anywhere
-— no flag, no configured destination — the badges go to the console, which is
-what a bare `codometer` does.
+**One markdown sink, not two.** `--output-markdown` splices the badge block
+between its markers when the file already carries them, appends it with them
+when it does not, and creates the file when it is not there. A README somebody
+else wrote the rest of and a file holding nothing but badges are the same case,
+so neither needs a flag of its own.
 
-**`--json <path>` is refused unless the run writes or compares it.** The path
-names a file, and a run doing neither would render the report to the console and
-leave that file unwritten — which is not noticed here at all, but downstream, by
-whatever reads the report finding nothing and reporting a project that changed
-nothing. The command line is refused before anything is measured, naming the
-flag to add. A pathless `--json` is untouched: the console is what it asked for.
+**A path always means a file.** Asking for the report on the console is
+`--format json`, never a path left off. The optional-value flags this replaced
+meant one thing with a value and another without, which is how a run meaning to
+write a file ended up printing one instead.
 
-**A named destination stands for all of them.** `--json` on its own asks for
-the report and nothing else, whatever the configuration file also describes.
-Adding to the configured set instead would put a second document on the stream
-the first one was piped out of.
+**`--format` defaults to the badges on a run that touches no file**, which is
+what makes a bare `codometer` worth running. A run that writes or compares
+prints nothing unless asked, since its output is the file.
+
+**An `--output-*` path is refused unless the run writes or compares it.** The
+path names a file, and a run doing neither would leave it exactly as it found
+it — which is not noticed here at all, but downstream, by whatever reads the
+report finding nothing and reporting a project that changed nothing. The
+command line is refused before anything is measured, naming the flag to add.
+
+**A named destination stands for all of them.** `--output-json` on its own asks
+for the report and nothing else, whatever the configuration file also describes.
+Adding to the configured set instead would write a file the command line never
+asked for.
 
 **Standard output carries the result; every diagnostic goes to standard error.**
-`codometer --json > report.json` has to produce a file something can parse, so a
-log line never shares that stream — including the exclusion notice below, which
-is still on the console and still in front of a human, just not inside the data.
+`codometer --format json > report.json` has to produce a file something can
+parse, so a log line never shares that stream — including the exclusion notice
+below, which is still on the console and still in front of a human, just not
+inside the data. Only `--format` ever writes to that stream: a file sink that
+could also print is how one run put two documents on it.
 
-**The splice sink's path is never defaulted.** Splicing rewrites a file
+**The markdown sink's path is never defaulted.** Writing there rewrites a file
 somebody else wrote the rest of, so a run that guessed the filename would edit
 a document nobody pointed it at.
 

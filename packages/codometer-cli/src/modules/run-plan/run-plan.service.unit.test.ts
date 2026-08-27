@@ -7,7 +7,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { RunPlanService } from "./run-plan.service";
 
-import type { CodometerCommandOptions } from "../codometer/codometer.types";
+import type { MeasureCommandOptions } from "../measure/measure.types";
 import type { RunDestinations } from "./run-plan.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
@@ -42,7 +42,7 @@ describe(RunPlanService, () => {
 
   /** Resolves the destinations for one command line at `/repo`. */
   function resolve(
-    options: CodometerCommandOptions = {},
+    options: MeasureCommandOptions = {},
     configuration = buildConfiguration(),
   ): RunDestinations {
     return service.resolveDestinations({
@@ -151,84 +151,114 @@ describe(RunPlanService, () => {
     // the first thing to notice was a pull request section rendering as though
     // the project had changed nothing.
     it.each([
-      [{ json: "codometer-report.json" }],
-      [{ check: "limits", json: "codometer-report.json" }],
+      [
+        { outputJson: "codometer-report.json" },
+        "--output-json codometer-report.json",
+      ],
+      [
+        { check: "limits", outputJson: "codometer-report.json" },
+        "--output-json codometer-report.json",
+      ],
+      [{ outputMarkdown: "README.md" }, "--output-markdown README.md"],
     ])(
-      "refuses %j, which names a report file nothing would write",
-      (options) => {
+      "refuses %j, which names a file nothing would write",
+      (options: MeasureCommandOptions, refusal: string) => {
         expect(service.selectMode(options).errors).toStrictEqual([
           expect.stringContaining(
-            "--json codometer-report.json needs --write or --check reports",
+            `${refusal} needs --write or --check reports`,
           ) as string,
         ]);
       },
     );
 
+    // Both are named in one run rather than one at a time, so a command line
+    // with two unwritten paths is two mistakes to fix rather than two runs.
+    it("names every unwritten output path in one run", () => {
+      expect(
+        service.selectMode({
+          outputJson: "report.json",
+          outputMarkdown: "README.md",
+        }).errors,
+      ).toHaveLength(2);
+    });
+
     // A path the run does write, and a path it compares, are both accounted
     // for. Neither is the mistake above.
     it.each([
-      [{ json: "codometer-report.json", write: true }],
-      [{ check: "reports", json: "codometer-report.json" }],
+      [{ outputJson: "codometer-report.json", write: true }],
+      [{ check: "reports", outputJson: "codometer-report.json" }],
+      [{ outputMarkdown: "README.md", write: true }],
     ])("accepts %j, which does produce that file", (options) => {
       expect(service.selectMode(options).errors).toStrictEqual([]);
     });
+  });
 
-    // The console is what a pathless --json asked for, not a file that failed
-    // to appear.
-    it("says nothing about a pathless --json on a run that writes nothing", () => {
-      expect(service.selectMode({ json: true }).errors).toStrictEqual([]);
+  describe("what it prints", () => {
+    // The bare run: nothing is written, so the badges are what there is to
+    // show. This is what makes `codometer` on its own worth running.
+    it("prints the badges when the run touches no file", () => {
+      expect(service.selectMode({}).format).toBe("markdown");
+    });
+
+    // A run whose output is a file has already answered the question. A
+    // document on standard output as well is what a pipeline reading that
+    // stream would choke on.
+    it.each([[{ write: true }], [{ check: "reports" }]])(
+      "prints nothing for %j, whose output is a file",
+      (options) => {
+        expect(service.selectMode(options).format).toBeUndefined();
+      },
+    );
+
+    it.each(["json", "markdown"])("prints %s when asked for it", (format) => {
+      expect(service.selectMode({ format }).format).toBe(format);
+    });
+
+    it("prints what --format asked for even on a run that writes", () => {
+      expect(service.selectMode({ format: "json", write: true }).format).toBe(
+        "json",
+      );
+    });
+
+    it("refuses a --format it does not know, naming the ones it does", () => {
+      const { errors, format } = service.selectMode({ format: "yaml" });
+
+      expect(errors).toStrictEqual([
+        expect.stringContaining('--format does not accept "yaml"') as string,
+      ]);
+      expect(format).toBeUndefined();
     });
   });
 
   describe("where the output goes", () => {
-    it("renders the badges to the console when nothing names a destination", () => {
+    it("writes no file when nothing names a destination", () => {
       expect(resolve()).toStrictEqual({
         json: undefined,
-        markdown: { description: undefined, path: undefined },
-        readme: undefined,
+        markdown: undefined,
       });
     });
 
-    it("keeps the configured description on the console default", () => {
-      const destinations = resolve(
-        {},
-        buildConfiguration({
-          markdown: {
-            ...markdownConfiguration,
-            path: undefined,
-            write: undefined,
-          },
-        }),
-      );
-
-      expect(destinations.markdown).toStrictEqual({
-        description: "Repository statistics.",
-        path: undefined,
-      });
-    });
-
-    it("reads a configured markdown destination as a splice destination", () => {
+    it("reads a configured markdown destination as the markdown destination", () => {
       expect(
         resolve({}, buildConfiguration({ markdown: markdownConfiguration })),
       ).toStrictEqual({
         json: undefined,
-        markdown: undefined,
-        readme: { ...markdownConfiguration, path: "/repo/README.md" },
+        markdown: { ...markdownConfiguration, path: "/repo/README.md" },
       });
     });
 
-    it("lets --readme override the configured splice path", () => {
+    it("lets --output-markdown override the configured path", () => {
       const destinations = resolve(
-        { readme: "docs/statistics.md" },
+        { outputMarkdown: "docs/statistics.md" },
         buildConfiguration({ markdown: markdownConfiguration }),
       );
 
-      expect(destinations.readme?.path).toBe("/repo/docs/statistics.md");
+      expect(destinations.markdown?.path).toBe("/repo/docs/statistics.md");
       // The markers and the description travel with it.
-      expect(destinations.readme?.startMarker).toBe("<!-- START -->");
+      expect(destinations.markdown?.startMarker).toBe("<!-- START -->");
     });
 
-    it("keeps a configured write function as a splice destination of its own", () => {
+    it("keeps a configured write function as a destination of its own", () => {
       const write = (): boolean => true;
       const destinations = resolve(
         {},
@@ -237,12 +267,14 @@ describe(RunPlanService, () => {
         }),
       );
 
-      expect(destinations.readme?.path).toBeUndefined();
-      expect(destinations.readme?.write).toBe(write);
+      expect(destinations.markdown?.path).toBeUndefined();
+      expect(destinations.markdown?.write).toBe(write);
     });
 
-    it("applies the default markers to a --readme path", () => {
-      expect(resolve({ readme: "docs/statistics.md" }).readme).toStrictEqual({
+    it("applies the default markers to an --output-markdown path", () => {
+      expect(
+        resolve({ outputMarkdown: "docs/statistics.md" }).markdown,
+      ).toStrictEqual({
         description: undefined,
         endMarker: "<!-- CODE_STATISTICS_END -->",
         path: "/repo/docs/statistics.md",
@@ -252,14 +284,9 @@ describe(RunPlanService, () => {
       });
     });
 
-    it.each([
-      [{ json: "reports/statistics.json" }, "/repo/reports/statistics.json"],
-      // The flag with no path asks for the console, and outranks the
-      // configured path rather than falling back to it.
-      [{ json: true as const }, undefined],
-    ])("resolves %o to %s", (options, expected) => {
+    it("resolves a report path against the measured directory", () => {
       const destinations = resolve(
-        options,
+        { outputJson: "reports/statistics.json" },
         buildConfiguration({
           json: { indentation: 4, path: "configured.json" },
         }),
@@ -267,20 +294,22 @@ describe(RunPlanService, () => {
 
       expect(destinations.json).toStrictEqual({
         indentation: 4,
-        path: expected,
+        path: "/repo/reports/statistics.json",
       });
     });
 
     it("gives the report the default indentation when nothing configured one", () => {
-      expect(resolve({ json: "statistics.json" }).json?.indentation).toBe(2);
+      expect(resolve({ outputJson: "statistics.json" }).json?.indentation).toBe(
+        2,
+      );
     });
 
-    // `codometer --json > report.json` has to produce one document. A
-    // configured splice destination rendering onto the same stream would put a
-    // second one there.
+    // A command line that names one destination names them all. Adding to the
+    // configured set instead would write a file the command line never asked
+    // for.
     it("lets a named destination stand for all of them", () => {
       const destinations = resolve(
-        { json: true },
+        { outputJson: "statistics.json" },
         buildConfiguration({
           json: { indentation: 4, path: "configured.json" },
           markdown: markdownConfiguration,
@@ -289,27 +318,26 @@ describe(RunPlanService, () => {
 
       expect(destinations.json).toStrictEqual({
         indentation: 4,
-        path: undefined,
+        path: "/repo/statistics.json",
       });
       expect(destinations.markdown).toBeUndefined();
-      expect(destinations.readme).toBeUndefined();
     });
 
-    it("drops a configured report when only --readme names a destination", () => {
+    it("drops a configured report when only --output-markdown names a destination", () => {
       const destinations = resolve(
-        { readme: "docs/statistics.md" },
+        { outputMarkdown: "docs/statistics.md" },
         buildConfiguration({
           json: { indentation: 2, path: "configured.json" },
         }),
       );
 
       expect(destinations.json).toBeUndefined();
-      expect(destinations.readme?.path).toBe("/repo/docs/statistics.md");
+      expect(destinations.markdown?.path).toBe("/repo/docs/statistics.md");
     });
 
-    it("never fires a configured write function for a run that named --json", () => {
+    it("never fires a configured write function for a run that named --output-json", () => {
       const destinations = resolve(
-        { json: "statistics.json" },
+        { outputJson: "statistics.json" },
         buildConfiguration({
           markdown: {
             ...markdownConfiguration,
@@ -319,14 +347,7 @@ describe(RunPlanService, () => {
         }),
       );
 
-      expect(destinations.readme).toBeUndefined();
-    });
-
-    it("never turns --markdown into a splice destination", () => {
-      const destinations = resolve({ markdown: "docs/metrics.md" });
-
-      expect(destinations.markdown?.path).toBe("/repo/docs/metrics.md");
-      expect(destinations.readme).toBeUndefined();
+      expect(destinations.markdown).toBeUndefined();
     });
   });
 
@@ -334,23 +355,18 @@ describe(RunPlanService, () => {
     it("lists every file the run writes, relative to the directory", () => {
       const destinations = resolve(
         {
-          json: "reports/statistics.json",
-          markdown: "docs/metrics.md",
-          readme: "README.md",
+          outputJson: "reports/statistics.json",
+          outputMarkdown: "README.md",
         },
         buildConfiguration({ markdown: markdownConfiguration }),
       );
 
       expect(
         service.listOutputPaths({ destinations, workingDirectory: "/repo" }),
-      ).toStrictEqual([
-        "reports/statistics.json",
-        "docs/metrics.md",
-        "README.md",
-      ]);
+      ).toStrictEqual(["reports/statistics.json", "README.md"]);
     });
 
-    it("lists nothing when every destination is the console", () => {
+    it("lists nothing when the run names no file at all", () => {
       expect(
         service.listOutputPaths({
           destinations: resolve(),

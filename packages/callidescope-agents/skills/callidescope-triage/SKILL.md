@@ -163,9 +163,11 @@ Nothing was traced. The message lists the reasons; these are the ones to expect:
   it was meant to catch. Run them separately, on the sides of the pull request
   they belong to.
 - **`depth` or `breadth` with no address.** Those commands take
-  `<file>#<qualified-name>`. At a real terminal outside CI they prompt for it
-  instead; in a script or a CI job prompting is off, so a missing argument is a
-  rejection rather than a hang.
+  `<file>#<qualified-name>`. At a real terminal outside CI they trace first and
+  then complete the address against every callable they found, so the name can
+  be picked rather than recalled; a name declared twice in one file arrives
+  with its `:<line>` already attached. In a script or a CI job prompting is
+  off, so a missing argument is a rejection rather than a hang.
 
 ## A rejected configuration
 

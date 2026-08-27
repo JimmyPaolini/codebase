@@ -102,21 +102,23 @@ bound to a metric nothing measured — and is unrelated to a breach or staleness
 
 ## Where output goes
 
-Three independent sinks — `--json [path]`, `-m/--markdown [path]`, `--readme
-<path>` — none of which implies another. Omit a path and that sink prints to
-the console; name nothing at all anywhere and the rendered badges go to the
-console, which is what a bare `codometer` does.
+What a run prints and what it writes are asked for separately. `--format json`
+prints the report and `--format markdown` prints the rendered badges; a path
+always names a file, never the console. On a run that touches no file
+`--format` defaults to `markdown`, which is what a bare `codometer` does.
 
-`--json <path>` is refused on a run that neither writes nor checks reports: the
-path names a file nothing would populate, so the command line is rejected
-before anything is measured, naming the flag to add. A pathless `--json` is
-untouched, since the console is exactly what it asked for.
+Two file sinks — `--output-json <path>` and `--output-markdown <path>` —
+neither of which implies the other or implies printing. Both are refused on a
+run that neither writes nor checks reports: the path names a file nothing
+would populate, so the command line is rejected before anything is measured,
+naming the flag to add.
 
-`--readme <path>` is never defaulted — it splices a block into a file somebody
-else wrote the rest of, so guessing the filename would mean editing a document
-nobody pointed the run at. The block sits between two markers, named
+`--output-markdown <path>` is never defaulted — it writes into a file somebody
+else may have written the rest of, so guessing the filename would mean editing
+a document nobody pointed the run at. The block sits between two markers, named
 `CODE_STATISTICS_START` / `CODE_STATISTICS_END` unless the configuration
-renames them, and is appended when the markers are absent.
+renames them; it is spliced between them when they are there, appended with
+them when they are not, and the file is created when it does not exist.
 
 Every file codometer would write is excluded from what it measures, on every
 run regardless of flags — a written report left in the count would be stale

@@ -45,6 +45,32 @@ export class InputService {
   }
 
   /**
+   * Narrows a suggestion list to what has been typed so far.
+   *
+   * A method of its own rather than a closure inside the prompt, because this
+   * is the whole of the completion rule and it is worth stating — and testing
+   * — without a terminal anywhere near it.
+   *
+   * Matches on a substring rather than a prefix: a callable is addressed
+   * `<file>#<name>`, and the name is far more often what someone remembers
+   * than the path in front of it.
+   */
+  public completeSuggestions(args: {
+    input: string;
+    suggestions: readonly string[];
+  }): string[] {
+    const written = args.input.trim();
+    const matches = args.suggestions.filter((suggestion) =>
+      suggestion.toLowerCase().includes(written.toLowerCase()),
+    );
+
+    // The typed text stands in only when the list has nothing to offer.
+    // Alongside real matches it would put a half-typed query at the top of
+    // every list, ahead of the completions that were the point of asking.
+    return matches.length === 0 && written.length > 0 ? [written] : matches;
+  }
+
+  /**
    * Splits `--directories`, a comma-separated list of project directories.
    *
    * Kept relative rather than resolved here: each entry is later resolved
@@ -81,6 +107,46 @@ export class InputService {
     const trimmed = value?.trim();
 
     return trimmed === undefined || trimmed.length === 0 ? undefined : trimmed;
+  }
+
+  /**
+   * Prompts for one value, completing it against a list as it is typed.
+   *
+   * The list is filtered on every keystroke rather than shown whole, so a
+   * workspace with thousands of callables is as usable as one with ten.
+   *
+   * `prompts` submits whatever its suggestion list had selected and never the
+   * raw text, so a value absent from the list could not otherwise be typed at
+   * all. The input is therefore offered back as its own choice whenever it
+   * matches nothing — the list is a shortcut, not a fence, and a caller whose
+   * list is merely incomplete must still be able to say what it meant.
+   */
+  public async promptForAutocomplete(args: {
+    message: string;
+    suggestions: readonly string[];
+  }): Promise<string> {
+    const response = await this.promptRunner({
+      choices: [],
+      message: args.message,
+      name: "value",
+      // `await Promise.resolve` rather than a bare return: the completion rule
+      // is synchronous, and `prompts` awaits whatever this hands back.
+      suggest: async (input: string) =>
+        await Promise.resolve(
+          this.completeSuggestions({
+            input,
+            suggestions: args.suggestions,
+          }).map((value) => ({ title: value, value })),
+        ),
+      type: "autocomplete",
+    });
+    const value: unknown = response.value;
+
+    if (typeof value !== "string" || value.trim().length === 0) {
+      throw new Error("A value is required.");
+    }
+
+    return value.trim();
   }
 
   /** Prompts for one value out of a fixed set of choices. */

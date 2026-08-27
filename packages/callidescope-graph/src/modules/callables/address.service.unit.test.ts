@@ -36,6 +36,63 @@ describe(AddressService, () => {
     expect(service).toBeDefined();
   });
 
+  // 📇 Listing every address
+
+  it("writes every traced callable as an address, in sorted order", () => {
+    const first = buildDiscoveredCallable({
+      displayName: "ZedService.run",
+      id: "z.ts#0",
+      location: buildSourceLocation({ filePath: "src/z.service.ts" }),
+    });
+    const second = buildDiscoveredCallable({
+      displayName: "AlphaService.run",
+      id: "a.ts#0",
+      location: buildSourceLocation({ filePath: "src/a.service.ts" }),
+    });
+
+    expect(service.listAddresses(toMap([first, second]))).toStrictEqual([
+      "src/a.service.ts#AlphaService.run",
+      "src/z.service.ts#ZedService.run",
+    ]);
+  });
+
+  // Nothing this returns may come back ambiguous, or the list would not be
+  // safe to pick from without reading the file first.
+  it("disambiguates a name declared twice in one file by its line", () => {
+    const first = buildDiscoveredCallable({
+      displayName: "FooService.bar",
+      id: "foo.ts#0",
+      location: buildSourceLocation({ filePath: "src/foo.ts", line: 12 }),
+    });
+    const second = buildDiscoveredCallable({
+      displayName: "FooService.bar",
+      id: "foo.ts#1",
+      location: buildSourceLocation({ filePath: "src/foo.ts", line: 40 }),
+    });
+
+    const addresses = service.listAddresses(toMap([first, second]));
+
+    expect(addresses).toStrictEqual([
+      "src/foo.ts#FooService.bar:12",
+      "src/foo.ts#FooService.bar:40",
+    ]);
+
+    // And each one resolves back to exactly the callable it names.
+    for (const address of addresses) {
+      expect(
+        service.resolve({
+          address,
+          callablesById: toMap([first, second]),
+          workspaceRoot: WORKSPACE_ROOT,
+        }).kind,
+      ).toBe("resolved");
+    }
+  });
+
+  it("lists nothing for a workspace with no callables", () => {
+    expect(service.listAddresses(toMap([]))).toStrictEqual([]);
+  });
+
   it("resolves an address matching exactly one callable", () => {
     const callable = buildDiscoveredCallable({
       displayName: "FooService.bar",

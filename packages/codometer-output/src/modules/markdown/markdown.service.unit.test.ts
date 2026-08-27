@@ -1019,55 +1019,25 @@ describe(MarkdownService, () => {
     expect(block).not.toContain("![Lines of Code]");
   });
 
-  it("writes a whole document, creating missing parent directories", () => {
+  it("appends the block into a file whose parent directory does not exist", () => {
     const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
     temporaryDirectories.push(temporaryDirectory);
     const documentPath = path.join(temporaryDirectory, "docs/metrics.md");
 
     expect(
-      service.syncDocument({
+      service.sync({
         check: false,
-        content: "# Metrics",
-        path: documentPath,
+        destination: buildDestination(documentPath),
+        scope: "repository",
+        statistics: sampleStatistics,
+        targets: [],
       }),
     ).toBe(true);
-    expect(readFileSync(documentPath, "utf8")).toBe("# Metrics\n");
+    expect(readFileSync(documentPath, "utf8")).toContain("![Lines of Code]");
     expect(loggerService.info).toHaveBeenCalledWith(
       "📝 Wrote the markdown badges",
       undefined,
       { path: documentPath },
     );
-  });
-
-  it.each([
-    ["# Metrics\n", true],
-    ["# Stale\n", false],
-  ])("checks a document holding %j as current=%s", (existing, isCurrent) => {
-    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
-    temporaryDirectories.push(temporaryDirectory);
-    const documentPath = path.join(temporaryDirectory, "metrics.md");
-
-    writeFileSync(documentPath, existing, "utf8");
-
-    expect(
-      service.syncDocument({
-        check: true,
-        content: "# Metrics",
-        path: documentPath,
-      }),
-    ).toBe(isCurrent);
-  });
-
-  it("reports a document that does not exist as stale", () => {
-    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
-    temporaryDirectories.push(temporaryDirectory);
-
-    expect(
-      service.syncDocument({
-        check: true,
-        content: "# Metrics",
-        path: path.join(temporaryDirectory, "absent.md"),
-      }),
-    ).toBe(false);
   });
 });

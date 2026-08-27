@@ -1,7 +1,15 @@
 import { JsonService, MarkdownService } from "@codometer/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import {
   buildCodeStatistics,
@@ -10,13 +18,16 @@ import {
 
 import { DeliveryService } from "./delivery.service";
 
-import type { MeasurementResult } from "../codometer/codometer.types";
-import type { DocumentationMeasurement } from "../codometer/documentation-measurement.types";
+import type {
+  DocumentationMeasurement,
+  MeasurementResult,
+} from "../measure/measure.types";
 import type { RunMode } from "../run-plan/run-plan.types";
 import type {
   RenderMarkdownOutput,
   ResolvedCodometerMarkdownOutputConfiguration,
 } from "@codometer/configuration";
+import type { MockInstance } from "vitest";
 
 const statistics = buildCodeStatistics();
 const report = buildCodometerReport();
@@ -94,6 +105,7 @@ describe(DeliveryService, () => {
   let service: DeliveryService;
   let jsonService: JsonService;
   let markdownService: MarkdownService;
+  let standardOutput: MockInstance<typeof process.stdout.write>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -111,13 +123,17 @@ describe(DeliveryService, () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    standardOutput = vi.spyOn(process.stdout, "write").mockReturnValue(true);
     vi.mocked(jsonService.render).mockReturnValue("{}\n");
     vi.mocked(jsonService.sync).mockReturnValue(true);
     vi.mocked(markdownService.renderBlock).mockReturnValue("block");
     vi.mocked(markdownService.renderDocument).mockReturnValue("document");
     vi.mocked(markdownService.renderDocumentationSection).mockReturnValue("");
     vi.mocked(markdownService.sync).mockReturnValue(true);
-    vi.mocked(markdownService.syncDocument).mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    standardOutput.mockRestore();
   });
 
   it("is defined", () => {
@@ -126,7 +142,8 @@ describe(DeliveryService, () => {
 
   it("produces nothing for a run declaring no destinations", () => {
     const stalePaths = service.deliver({
-      destinations: { json: undefined, markdown: undefined, readme: undefined },
+      destinations: { json: undefined, markdown: undefined },
+      format: undefined,
       measurement: buildMeasurement(),
       mode: buildMode(),
       report,
@@ -143,8 +160,8 @@ describe(DeliveryService, () => {
       destinations: {
         json: { indentation: 2, path: "output/codometer.json" },
         markdown: undefined,
-        readme: undefined,
       },
+      format: undefined,
       measurement: buildMeasurement(),
       mode: buildMode({ writes: true }),
       report,
@@ -166,8 +183,8 @@ describe(DeliveryService, () => {
       destinations: {
         json: { indentation: 2, path: "output/codometer.json" },
         markdown: undefined,
-        readme: undefined,
       },
+      format: undefined,
       measurement: buildMeasurement(),
       mode: buildMode({ checksReports: true }),
       report,
@@ -177,27 +194,29 @@ describe(DeliveryService, () => {
     expect(stalePaths).toStrictEqual(["output/codometer.json"]);
   });
 
-  it("appends nothing to the markdown document when nothing breached documentation", () => {
+  it("writes the badge block with no documentation section when nothing breached", () => {
     service.deliver({
       destinations: {
         json: undefined,
-        markdown: { description: undefined, path: "docs/metrics.md" },
-        readme: undefined,
+        markdown: { ...markdownDestination, path: "docs/metrics.md" },
       },
+      format: undefined,
       measurement: buildMeasurement(),
       mode: buildMode({ writes: true }),
       report,
       scope: "project",
     });
 
-    expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
+    expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
       check: false,
-      content: "document",
-      path: "docs/metrics.md",
+      destination: { ...markdownDestination, path: "docs/metrics.md" },
+      scope: "project",
+      statistics,
+      targets: [],
     });
   });
 
-  it("appends the breached documentation section to the markdown document", () => {
+  it("appends the breached documentation section to the badge block", () => {
     const breach = buildDocumentationBreach();
     vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
       documentationSection,
@@ -206,9 +225,9 @@ describe(DeliveryService, () => {
     service.deliver({
       destinations: {
         json: undefined,
-        markdown: { description: undefined, path: "docs/metrics.md" },
-        readme: undefined,
+        markdown: { ...markdownDestination, path: "docs/metrics.md" },
       },
+      format: undefined,
       measurement: buildMeasurement({ documentation: [breach] }),
       mode: buildMode({ writes: true }),
       report,
@@ -218,20 +237,24 @@ describe(DeliveryService, () => {
     expect(markdownService.renderDocumentationSection).toHaveBeenCalledWith({
       breaches: [breach],
     });
-    expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
+    expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
       check: false,
-      content: ["document", documentationSection].join("\n\n"),
-      path: "docs/metrics.md",
+      destination: expect.objectContaining({
+        path: "docs/metrics.md",
+      }) as ResolvedCodometerMarkdownOutputConfiguration,
+      scope: "project",
+      statistics,
+      targets: [],
     });
   });
 
-  it("splices the badge block into the README when the run writes", () => {
+  it("splices the badge block into its file when the run writes", () => {
     service.deliver({
       destinations: {
         json: undefined,
-        markdown: undefined,
-        readme: markdownDestination,
+        markdown: markdownDestination,
       },
+      format: undefined,
       measurement: buildMeasurement(),
       mode: buildMode({ writes: true }),
       report,
@@ -247,7 +270,7 @@ describe(DeliveryService, () => {
     });
   });
 
-  it("splices the breached documentation section into the README write", () => {
+  it("splices the breached documentation section into that write", () => {
     const breach = buildDocumentationBreach();
     vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
       documentationSection,
@@ -263,9 +286,9 @@ describe(DeliveryService, () => {
     service.deliver({
       destinations: {
         json: undefined,
-        markdown: undefined,
-        readme: markdownDestination,
+        markdown: markdownDestination,
       },
+      format: undefined,
       measurement: buildMeasurement({ documentation: [breach] }),
       mode: buildMode({ writes: true }),
       report,
@@ -293,9 +316,9 @@ describe(DeliveryService, () => {
     service.deliver({
       destinations: {
         json: undefined,
-        markdown: undefined,
-        readme: { ...markdownDestination, render: () => "custom badges" },
+        markdown: { ...markdownDestination, render: () => "custom badges" },
       },
+      format: undefined,
       measurement: buildMeasurement({ documentation: [breach] }),
       mode: buildMode({ writes: true }),
       report,
@@ -313,9 +336,9 @@ describe(DeliveryService, () => {
     service.deliver({
       destinations: {
         json: undefined,
-        markdown: { description: undefined, path: "docs/metrics.md" },
-        readme: undefined,
+        markdown: { ...markdownDestination, path: "docs/metrics.md" },
       },
+      format: undefined,
       measurement: buildMeasurement({
         targets: [
           {
@@ -339,13 +362,86 @@ describe(DeliveryService, () => {
       scope: "project",
     });
 
-    expect(markdownService.renderDocument).toHaveBeenCalledExactlyOnceWith({
-      description: undefined,
+    expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
+      check: false,
+      destination: { ...markdownDestination, path: "docs/metrics.md" },
       scope: "project",
       statistics,
       targets: [
         { bytes: 5324, compression: "gzip", name: "Compiled JavaScript" },
       ],
+    });
+  });
+
+  // 🖨️ The console
+
+  it("prints the report when --format json asked for it", () => {
+    service.deliver({
+      destinations: { json: undefined, markdown: undefined },
+      format: "json",
+      measurement: buildMeasurement(),
+      mode: buildMode(),
+      report,
+      scope: "project",
+    });
+
+    expect(jsonService.render).toHaveBeenCalledExactlyOnceWith({
+      indentation: 2,
+      report,
+    });
+    expect(standardOutput).toHaveBeenCalledWith("{}\n");
+  });
+
+  it("prints the badges when --format markdown asked for them", () => {
+    service.deliver({
+      destinations: { json: undefined, markdown: undefined },
+      format: "markdown",
+      measurement: buildMeasurement(),
+      mode: buildMode(),
+      report,
+      scope: "project",
+    });
+
+    expect(standardOutput).toHaveBeenCalledWith("block\n");
+  });
+
+  // The one writer of standard output. A file sink printing as well is how one
+  // run put two documents on the stream a pipeline was parsing.
+  it("prints nothing when no format was asked for, even writing a file", () => {
+    service.deliver({
+      destinations: {
+        json: { indentation: 2, path: "output/codometer.json" },
+        markdown: undefined,
+      },
+      format: undefined,
+      measurement: buildMeasurement(),
+      mode: buildMode({ writes: true }),
+      report,
+      scope: "project",
+    });
+
+    expect(standardOutput).not.toHaveBeenCalled();
+  });
+
+  it("prints and writes in the same run when both were asked for", () => {
+    service.deliver({
+      destinations: {
+        json: { indentation: 2, path: "output/codometer.json" },
+        markdown: undefined,
+      },
+      format: "markdown",
+      measurement: buildMeasurement(),
+      mode: buildMode({ writes: true }),
+      report,
+      scope: "project",
+    });
+
+    expect(standardOutput).toHaveBeenCalledWith("block\n");
+    expect(jsonService.sync).toHaveBeenCalledExactlyOnceWith({
+      check: false,
+      indentation: 2,
+      path: "output/codometer.json",
+      report,
     });
   });
 });

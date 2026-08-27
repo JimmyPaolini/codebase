@@ -72,6 +72,118 @@ describe(InputService, () => {
     ).toStrictEqual(["packages/a", "packages/b"]);
   });
 
+  // 🧭 Autocomplete
+
+  it("completes a value against the suggestions it was given", async () => {
+    promptRunner.mockResolvedValue({ value: "src/a.service.ts#A.b" });
+
+    await expect(
+      service.promptForAutocomplete({
+        message: "Which callable?",
+        suggestions: ["src/a.service.ts#A.b"],
+      }),
+    ).resolves.toBe("src/a.service.ts#A.b");
+  });
+
+  it("narrows the suggestions to what was typed, case-insensitively", () => {
+    expect(
+      service.completeSuggestions({
+        input: "A.B",
+        suggestions: ["src/a.service.ts#A.b", "src/z.service.ts#Z.y"],
+      }),
+    ).toStrictEqual(["src/a.service.ts#A.b"]);
+  });
+
+  // The name is far more often what someone remembers than the path.
+  it("matches a suggestion on any part of it, not only its start", () => {
+    expect(
+      service.completeSuggestions({
+        input: "Z.y",
+        suggestions: ["src/a.service.ts#A.b", "src/z.service.ts#Z.y"],
+      }),
+    ).toStrictEqual(["src/z.service.ts#Z.y"]);
+  });
+
+  // `prompts` submits the selected suggestion and never the raw text, so a
+  // value absent from the list could not be typed at all without this.
+  it("offers what was typed as its own choice when nothing matches", () => {
+    expect(
+      service.completeSuggestions({
+        input: "src/new.service.ts#New.made",
+        suggestions: ["src/a.service.ts#A.b"],
+      }),
+    ).toStrictEqual(["src/new.service.ts#New.made"]);
+  });
+
+  // Alongside real matches it would sit at the top of every list, ahead of
+  // the completions that were the point of asking.
+  it("never offers the typed text alongside real matches", () => {
+    expect(
+      service.completeSuggestions({
+        input: "A.b",
+        suggestions: ["src/a.service.ts#A.b"],
+      }),
+    ).toStrictEqual(["src/a.service.ts#A.b"]);
+  });
+
+  it("offers every suggestion before anything has been typed", () => {
+    expect(
+      service.completeSuggestions({
+        input: "",
+        suggestions: ["src/a.service.ts#A.b"],
+      }),
+    ).toStrictEqual(["src/a.service.ts#A.b"]);
+  });
+
+  it("offers nothing for an empty list nobody has typed into", () => {
+    expect(
+      service.completeSuggestions({ input: "", suggestions: [] }),
+    ).toStrictEqual([]);
+  });
+
+  // The adapter between the completion rule and what `prompts` renders: each
+  // surviving suggestion has to arrive as its own titled choice, or the list
+  // shows blank rows.
+  it("hands the prompt each completion as a titled choice", async () => {
+    promptRunner.mockResolvedValue({ value: "src/a.service.ts#A.b" });
+
+    await service.promptForAutocomplete({
+      message: "Which callable?",
+      suggestions: ["src/a.service.ts#A.b", "src/z.service.ts#Z.y"],
+    });
+
+    const request = promptRunner.mock.calls[0]?.[0];
+
+    if (
+      request === undefined ||
+      Array.isArray(request) ||
+      !("suggest" in request) ||
+      request.suggest === undefined
+    ) {
+      throw new Error("The prompt was asked for without a completer.");
+    }
+
+    const offered = (await request.suggest("A.b", [])) as {
+      title: string;
+      value: string;
+    }[];
+
+    expect(offered).toStrictEqual([
+      { title: "src/a.service.ts#A.b", value: "src/a.service.ts#A.b" },
+    ]);
+  });
+
+  it("refuses an autocomplete answered with nothing", async () => {
+    promptRunner.mockResolvedValue({ value: "  " });
+
+    await expect(
+      service.promptForAutocomplete({
+        message: "Which callable?",
+        suggestions: [],
+      }),
+    ).rejects.toThrow("A value is required.");
+  });
+
   // 🖨️ Format
 
   it.each([

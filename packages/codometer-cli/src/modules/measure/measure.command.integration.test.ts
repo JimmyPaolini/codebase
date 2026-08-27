@@ -10,13 +10,13 @@ import {
 } from "../../../testing/fixture-tree";
 import { MainModule } from "../../main.module";
 
-import { CodometerCommand } from "./codometer.command";
+import { MeasureCommand } from "./measure.command";
 
 import type { CodometerReport } from "../report/report.types";
 
 const REPORT_FILE_NAME = "codometer-report.json";
 
-describe("codometer command over a fixture directory", () => {
+describe("measure command over a fixture directory", () => {
   let metrics: Map<string, number>;
   let firstReport: string;
   let secondReport: string;
@@ -43,7 +43,7 @@ describe("codometer command over a fixture directory", () => {
     const module = await Test.createTestingModule({
       imports: [MainModule],
     }).compile();
-    const command = module.get(CodometerCommand, { strict: false });
+    const command = module.get(MeasureCommand, { strict: false });
     const readmePath = path.join(workingDirectory, "README.md");
     const reportPath = path.join(workingDirectory, REPORT_FILE_NAME);
 

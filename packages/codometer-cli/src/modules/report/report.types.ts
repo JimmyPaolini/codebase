@@ -1,7 +1,10 @@
 // 🏷️ Types
 
-import type { DocumentationMeasurement } from "../codometer/documentation-measurement.types";
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
+import type {
+  DocumentationMeasurement,
+  ReportFailure,
+} from "../measure/measure.types";
 import type { CodometerSeverity } from "@codometer/configuration";
 
 /** Arguments accepted when building the report from one measurement. */
@@ -40,25 +43,6 @@ export interface CodometerReport {
  * no unit to get wrong.
  */
 export type MetricUnit = "bytes" | null;
-
-/** Something the run could not do, and what it was trying to do it to. */
-export interface ReportFailure {
-  /** Which part of the run it failed in. */
-  kind: ReportFailureKind;
-  reason: string;
-  /** A target's name for a target failure, a limit's written path for a limit. */
-  subject: string;
-}
-
-/**
- * Which part of a run a failure belongs to.
- *
- * `target` is a set of files that could not be measured; `limit` is a declared
- * limit that could not be held against anything. Neither is a breach, and a
- * consumer that treats them as one reports a passing gate for a metric nobody
- * ever measured.
- */
-export type ReportFailureKind = "limit" | "target";
 
 /**
  * The limit declared on one metric, and whether the metric cleared it.

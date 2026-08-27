@@ -1,4 +1,4 @@
-import { ConfigurationModule } from "@codometer/configuration";
+import { ConfigurationModule, InputModule } from "@codometer/configuration";
 import { CustomizationModule } from "@codometer/customization";
 import { DiscoveryModule as CodometerDiscoveryModule } from "@codometer/discovery";
 import { LanguagesModule } from "@codometer/languages";
@@ -11,8 +11,8 @@ import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
 import { ChangesModule } from "./modules/changes/changes.module";
-import { CodometerModule } from "./modules/codometer/codometer.module";
 import { ConfigurationModule as CodometerCliConfigurationModule } from "./modules/configuration/configuration.module";
+import { MeasureModule } from "./modules/measure/measure.module";
 
 /**
  * Root NestJS application module.
@@ -29,10 +29,11 @@ import { ConfigurationModule as CodometerCliConfigurationModule } from "./module
     LoggerModule,
     ChangesModule,
     CodometerCliConfigurationModule,
-    CodometerModule,
+    MeasureModule,
     CodometerDiscoveryModule,
     ConfigurationModule,
     CustomizationModule,
+    InputModule,
     LanguagesModule,
     JsonModule,
     MarkdownModule,

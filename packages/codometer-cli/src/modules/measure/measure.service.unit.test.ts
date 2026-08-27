@@ -10,7 +10,7 @@ import { throwUnknown } from "../../../testing/mocks";
 import { LimitsService } from "../limits/limits.service";
 import { MetricIndexService } from "../limits/metric-index.service";
 
-import { CodometerService } from "./codometer.service";
+import { MeasureService } from "./measure.service";
 
 import type {
   ResolvedCodometerConfiguration,
@@ -86,8 +86,8 @@ function buildLanguageResults(): LanguageResults {
   });
 }
 
-describe(CodometerService, () => {
-  let service: CodometerService;
+describe(MeasureService, () => {
+  let service: MeasureService;
   let customizationService: CustomizationService;
   let discoveryService: DiscoveryService;
   let languagesService: LanguagesService;
@@ -97,8 +97,8 @@ describe(CodometerService, () => {
   let targetsService: TargetsService;
 
   /** Builds an aggregator whose collaborators are all mocked. */
-  function buildService(): CodometerService {
-    return new CodometerService(
+  function buildService(): MeasureService {
+    return new MeasureService(
       discoveryService,
       languagesService,
       customizationService,
@@ -112,7 +112,7 @@ describe(CodometerService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        CodometerService,
+        MeasureService,
         {
           provide: CustomizationService,
           useValue: createMock<CustomizationService>(),
@@ -132,7 +132,7 @@ describe(CodometerService, () => {
       ],
     }).compile();
 
-    service = await module.resolve(CodometerService);
+    service = await module.resolve(MeasureService);
   });
 
   beforeEach(() => {

@@ -118,7 +118,7 @@ export const runCodometer = (args: readonly string[]): CodometerRun => {
 /**
  * Feeds a run's standard output to a second process, and reports what came out.
  *
- * The guides promise `codometer --json | …` produces a stream something can
+ * The guides promise `codometer --format json | …` produces a stream something can
  * parse. What makes that promise true is the **split**: the report goes to
  * standard output and every diagnostic goes to standard error, so a consumer
  * reading the one gets data and nothing else. This runs the command line, takes
@@ -211,7 +211,7 @@ export const runPipeline = (
  * error, so a log line leaking into the data stream fails this outright.
  */
 export const measure = (args: readonly string[]): CodometerReport => {
-  const run = runCodometer([...args, "--json"]);
+  const run = runCodometer([...args, "--format", "json"]);
 
   return JSON.parse(run.standardOutput) as CodometerReport;
 };
