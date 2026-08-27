@@ -37,24 +37,28 @@ export interface MeasureArguments {
 }
 
 /**
- * Options accepted by the codometer command.
+ * Options accepted by the measure command.
  *
  * `--write` and `--check` are independent: neither implies the other, and no
- * combination of them is inferred. A flag carrying an optional value arrives
- * as `true` when it was passed without one, which is how "to the console" is
- * told apart from "not asked for".
+ * combination of them is inferred.
+ *
+ * Standard output and files are asked for separately: `--format` says what to
+ * print, and each `--output-*` says which file to write. A path therefore
+ * always means a file and never the console, which is what the optional-value
+ * `--json`/`--markdown` flags used to overload — a flag whose meaning changed
+ * depending on whether it carried a value.
  */
 export interface MeasureCommandOptions {
   /** The comma-separated set of things to fail on, as it was written. */
   check?: string | true | undefined;
   config?: string | undefined;
   directory?: string | undefined;
-  /** Where the report goes; `true` for the console. */
-  json?: string | true | undefined;
-  /** Where the rendered badges go as a whole document; `true` for the console. */
-  markdown?: string | true | undefined;
-  /** The file to splice the badge block into. Never defaulted. */
-  readme?: string | undefined;
+  /** What to print to standard output, as it was written. */
+  format?: string | undefined;
+  /** The file the report is written to. Never defaulted. */
+  outputJson?: string | undefined;
+  /** The markdown file the badge block goes into. Never defaulted. */
+  outputMarkdown?: string | undefined;
   write?: boolean | undefined;
 }
 

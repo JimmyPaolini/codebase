@@ -62,7 +62,7 @@ A bare run measures every language it recognizes. The corpus carries one
 idiomatic sample per analyzer so each group has something in it:
 
 ```bash
-codometer --directory examples/corpus --json | jq '.targets[0].metrics[] | select(.value > 0)'
+codometer --directory examples/corpus --format json | jq '.targets[0].metrics[] | select(.value > 0)'
 ```
 
 Two things in the output surprise people:
@@ -107,7 +107,7 @@ in TypeScript. Three configurations show what that means:
 | [`unreachable-interpreter.config.ts`](examples/python/unreachable-interpreter.config.ts) | an interpreter that is not installed | 0 |
 
 ```bash
-codometer --directory examples/corpus --config examples/python/uv.config.ts --json \
+codometer --directory examples/corpus --config examples/python/uv.config.ts --format json \
   | jq '.targets[0].metrics[] | select(.path | startswith("python."))'
 ```
 
@@ -394,56 +394,54 @@ reports separately.
 "limits" and "reports", as in "--check limits,reports".
 ```
 
-## 9. The three sinks
+## 9. The output sinks
 
 [`examples/output/`](examples/output)
 
 | Sink | Flag | What lands there |
 | ---- | ---- | ---------------- |
-| Report | `--json [path]` | the structured report |
-| Document | `-m, --markdown [path]` | the rendered badges as a whole file |
-| Splice | `--readme <path>` | the badge block, between two markers |
+| Console | `-f, --format <format>` | the report as `json`, or the badges as `markdown` |
+| Report | `--output-json <path>` | the structured report |
+| Markdown | `--output-markdown <path>` | the badge block, in a markdown file |
 
 Each of the three has a runnable example below, and each is asserted by a test.
+What a run prints and what it writes are separate questions: a path always
+names a file, and the console is always `--format`.
 
 **Standard output carries the result; every diagnostic goes to standard error.**
 So the report survives a pipe, log lines and all:
 
 ```bash
-codometer --directory examples/corpus --json | jq '.targets[0].files'   # 28
+codometer --directory examples/corpus --format json | jq '.targets[0].files'   # 28
 ```
 
 The test proves that by taking the bytes the run wrote to standard output — and
 only those — and feeding them to a second process that parses them. One warning
 sharing the stream would break it.
 
-**The document sink writes the badges as a whole file**, markers and all absent,
-which is what a page that is nothing but statistics wants:
+**The markdown sink writes the badge block into a file**, which serves a page
+that is nothing but statistics as readily as a README with prose around it:
 
 ```bash
-codometer --directory examples/corpus -m document.md --write
+codometer --directory examples/corpus --output-markdown document.md --write
 ```
 
-**`--json <path>` is refused unless the run writes or compares it**, because a
-run doing neither would render the report to the console and leave that file
-unwritten — noticed not here but downstream, by whatever reads the report,
-finding nothing:
+**An `--output-*` path is refused unless the run writes or compares it**,
+because a run doing neither would leave that file exactly as it found it —
+noticed not here but downstream, by whatever reads the report, finding nothing:
 
 ```text
---json report.json needs --write or --check reports: a run that neither writes
-the report nor compares it would render it to the console and leave that file
-unwritten. Add --write to write it, --check reports to fail on a stale one, or
-drop the path to ask for the console.
+--output-json report.json needs --write or --check reports: a run that neither
+writes that file nor compares it would leave it exactly as it found it. Add
+--write to write it, --check reports to fail on a stale one, or ask for
+--format json to read it on the console instead.
 ```
 
-A pathless `--json` is untouched: the console is what it asked for.
-
-**A named destination stands for all of them.** `--json only-this.json --write`
-against
+**A named destination stands for all of them.** `--output-json only-this.json
+--write` against
 [`examples/output/codometer.config.ts`](examples/output/codometer.config.ts)
-writes the report and **not** the configured markdown document. Adding to the
-configured set instead would put a second document on the stream the first was
-piped out of.
+writes the report and **not** the configured markdown file. Adding to the
+configured set instead would write a file the command line never asked for.
 
 ### Splicing
 
@@ -540,10 +538,12 @@ Still 28, one markdown file, one JSON file — exactly what a run before either
 file existed reported. The exclusion is applied identically whatever the flags
 say, so a `--write` run and a `--check reports` run always measure the same tree.
 
-**Read the report from disk rather than adding `--json` to the second run.** A
-destination named on the command line stands for all of them, so `--json`
-replaces the configured pair with the console — and a run that was never going
-to write those two files has no reason to exclude them. It reports 30.
+**Reading the report back does not change what is measured.** `--format json`
+asks for the console and names no destination, so the configured pair stays
+excluded and the second run reports the same 28. Naming a destination outright
+— `--output-json only-this.json --write` — does replace the configured pair,
+and a run that was never going to write those two files has no reason to
+exclude them.
 
 ## 12. `--check reports` and false staleness
 
@@ -589,14 +589,14 @@ Two commands do that, and they are deliberately different jobs:
 
 ```bash
 # On the branch: measure, write the report, fail if a limit breached.
-codometer --directory . --json codometer-report.json --write --check limits
+codometer --directory . --output-json codometer-report.json --write --check limits
 
 # Afterwards: diff every report against the base branch's and render the result.
 codometer changes --directory . --baseline <base-reports> --markdown summary.md
 ```
 
 The first is the gate. `--write` is not optional on it: a run naming a report
-path without writing is [refused outright](#9-the-three-sinks), and the report
+path without writing is [refused outright](#9-the-output-sinks), and the report
 has to exist even when the gate trips, because the pull request that failed is
 the one that needs the numbers. That is the last row of
 the `--write` / `--check` matrix above, and it is exactly what this

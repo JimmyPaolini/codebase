@@ -11,7 +11,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * files asserts exactly that agreement.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/python/default-interpreter.config.ts --json \
+ * codometer --directory examples/corpus --config examples/python/default-interpreter.config.ts --format json \
  *   | jq '.targets[0].metrics[] | select(.path | startswith("python."))'
  * ```
  *

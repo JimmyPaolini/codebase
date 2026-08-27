@@ -1,5 +1,8 @@
+import { DEFAULT_JSON_INDENTATION } from "@codometer/configuration";
 import { JsonService, MarkdownService } from "@codometer/output";
 import { Injectable } from "@nestjs/common";
+
+import { DEFAULT_MARKDOWN_DESTINATION } from "./delivery.constants";
 
 import type { DocumentationMeasurement } from "../measure/documentation-measurement.types";
 import type { MeasurementResult } from "../measure/measure.types";
@@ -12,13 +15,17 @@ import type {
 import type { TargetSize } from "@codometer/output";
 
 /**
- * Produces every resolved output — JSON, a markdown document, a README
- * splice — and says which of them are stale.
+ * Produces every resolved output — the report, the badge block, and whatever
+ * the run prints — and says which of the written ones are stale.
  *
  * Split out of `MeasureCommand` so delivering a report is a concern of its
  * own, separate from measuring and from gating on what was measured. Every
  * destination is produced before anything is reported, so a run that writes
  * and gates writes all of its reports even when the gate then trips.
+ *
+ * Standard output has exactly one writer here, `deliverConsole`. A file sink
+ * never prints: two sinks that could each decide to print is how one run put
+ * two documents on the stream a pipeline was parsing.
  */
 @Injectable()
 export class DeliveryService {
@@ -38,9 +45,8 @@ export class DeliveryService {
   /**
    * Append the breached documentation section to some rendered badges.
    *
-   * Shared by `deliverMarkdown` and `deliverReadme`. It needs no destination
-   * of its own — it always appends to whatever markdown output is already
-   * configured.
+   * Shared by the console and the markdown file, so a breach reads the same
+   * whether it was printed or written. It needs no destination of its own.
    */
   private appendDocumentationSection(
     badges: string,
@@ -88,20 +94,46 @@ export class DeliveryService {
     };
   }
 
-  /** Produce the report, to its file or to the console. */
+  /** Print whatever the run asked for, and nothing when it asked for nothing. */
+  private deliverConsole(args: DeliverArguments): void {
+    if (args.format === undefined) {
+      return;
+    }
+
+    if (args.format === "json") {
+      process.stdout.write(
+        this.jsonService.render({
+          indentation:
+            args.destinations.json?.indentation ?? DEFAULT_JSON_INDENTATION,
+          report: args.report,
+        }),
+      );
+      return;
+    }
+
+    const badges = this.markdownService.renderBlock({
+      destination: args.destinations.markdown ?? DEFAULT_MARKDOWN_DESTINATION,
+      scope: args.scope,
+      statistics: args.measurement.statistics,
+      targets: this.readTargetSizes(args.measurement),
+    });
+
+    process.stdout.write(
+      `${this.appendDocumentationSection(badges, args.measurement.documentation)}\n`,
+    );
+  }
+
+  /** Write the report to its file, if this run writes or compares one. */
   private deliverJson(args: DeliverArguments, stalePaths: string[]): void {
     const destination = args.destinations.json;
 
-    if (destination === undefined) {
+    if (destination === undefined || !this.touchesFiles(args.mode)) {
       return;
     }
 
     const { indentation, path: destinationPath } = destination;
 
-    if (destinationPath === undefined || !this.touchesFiles(args.mode)) {
-      process.stdout.write(
-        this.jsonService.render({ indentation, report: args.report }),
-      );
+    if (destinationPath === undefined) {
       return;
     }
 
@@ -117,68 +149,25 @@ export class DeliveryService {
     }
   }
 
-  /** Produce the whole-document badges, to their file or to the console. */
+  /**
+   * Put the badge block into its markdown file, if this run writes or
+   * compares one.
+   *
+   * The one markdown sink. `MarkdownService.sync` splices the block between
+   * its markers when the file carries them, appends it with them when it does
+   * not, and creates the file when it is not there — so a README somebody
+   * else wrote and a file holding nothing but badges are the same case, and
+   * neither needs a flag of its own.
+   */
   private deliverMarkdown(args: DeliverArguments, stalePaths: string[]): void {
     const destination = args.destinations.markdown;
 
-    if (destination === undefined) {
-      return;
-    }
-
-    const badges = this.markdownService.renderDocument({
-      description: destination.description,
-      scope: args.scope,
-      statistics: args.measurement.statistics,
-      targets: this.readTargetSizes(args.measurement),
-    });
-    const content = this.appendDocumentationSection(
-      badges,
-      args.measurement.documentation,
-    );
-    const destinationPath = destination.path;
-
-    if (destinationPath === undefined || !this.touchesFiles(args.mode)) {
-      process.stdout.write(`${content}\n`);
-      return;
-    }
-
-    const isCurrent = this.markdownService.syncDocument({
-      check: args.mode.checksReports,
-      content,
-      path: destinationPath,
-    });
-
-    if (!isCurrent && args.mode.checksReports) {
-      stalePaths.push(destinationPath);
-    }
-  }
-
-  /** Splice the badge block into its file, or show it on the console. */
-  private deliverReadme(args: DeliverArguments, stalePaths: string[]): void {
-    const destination = args.destinations.readme;
-
-    if (destination === undefined) {
+    if (destination === undefined || !this.touchesFiles(args.mode)) {
       return;
     }
 
     const { statistics } = args.measurement;
     const targets = this.readTargetSizes(args.measurement);
-
-    if (!this.touchesFiles(args.mode)) {
-      const badges = this.markdownService.renderBlock({
-        destination,
-        scope: args.scope,
-        statistics,
-        targets,
-      });
-      const content = this.appendDocumentationSection(
-        badges,
-        args.measurement.documentation,
-      );
-
-      process.stdout.write(`${content}\n`);
-      return;
-    }
 
     const isCurrent = this.markdownService.sync({
       check: args.mode.checksReports,
@@ -228,9 +217,8 @@ export class DeliveryService {
   /**
    * Whether the run does anything with a file at all.
    *
-   * A run that neither writes nor compares has nothing to do with a file, so
-   * every destination it resolved is shown on the console instead — which is
-   * also the only thing that can be done with a destination carrying no path.
+   * A run that neither writes nor compares leaves every file alone. What it
+   * shows instead is `--format`'s business, not a destination's.
    */
   private touchesFiles(mode: RunMode): boolean {
     return mode.writes || mode.checksReports;
@@ -242,9 +230,9 @@ export class DeliveryService {
   deliver(args: DeliverArguments): string[] {
     const stalePaths: string[] = [];
 
+    this.deliverConsole(args);
     this.deliverJson(args, stalePaths);
     this.deliverMarkdown(args, stalePaths);
-    this.deliverReadme(args, stalePaths);
 
     return stalePaths;
   }

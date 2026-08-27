@@ -393,24 +393,29 @@ describe("every example configuration this package ships", () => {
     });
   });
 
-  describe("the three sinks", () => {
+  describe("the output sinks", () => {
     it("carries the report on standard output and diagnostics on standard error", () => {
-      const run = runCodometer(["--directory", corpusDirectory, "--json"]);
+      const run = runCodometer([
+        "--directory",
+        corpusDirectory,
+        "--format",
+        "json",
+      ]);
 
       // The assertion is that this parses at all: a log line sharing the stream
-      // would break every `codometer --json > report.json` pipeline downstream.
+      // would break every `codometer --format json > report.json` pipeline.
       expect(() => JSON.parse(run.standardOutput) as unknown).not.toThrow();
-      expect(run.standardError).toContain("Finished the codometer run");
+      expect(run.standardError).toContain("Finished the measurement run");
     });
 
-    it("writes the badges as a whole document with -m", () => {
+    it("writes the badge block where --output-markdown named", () => {
       withCorpusCopy((directory) => {
         const run = runCodometer([
           "--directory",
           directory,
           "--config",
           exampleConfiguration("output", "codometer.config.ts"),
-          "--markdown",
+          "--output-markdown",
           "document.md",
           "--write",
         ]);
@@ -421,8 +426,9 @@ describe("every example configuration this package ships", () => {
 
         expect(run.exitCode).toBe(0);
         expect(written).toContain("img.shields.io");
-        // A whole document rather than a spliced block: no markers around it.
-        expect(written).not.toContain("<!-- CODE_STATISTICS_START -->");
+        // The markers come with it, into a file that did not exist: one sink
+        // serves a bare statistics page and a README with prose alike.
+        expect(written).toContain("<!-- CODE_STATISTICS_START -->");
         // And a named destination stands for all of them, so the configured
         // report and splice are not written.
         expect(
@@ -432,11 +438,11 @@ describe("every example configuration this package ships", () => {
     });
 
     it("carries a report through a shell pipeline that parses it", () => {
-      // The `codometer --json | …` pipeline the guide shows, run for real
+      // The `codometer --format json | …` pipeline the guide shows, for real
       // through a shell. Anything on standard output but the report — one log
       // line, one warning — breaks this outright.
       const piped = runPipeline(
-        ["--directory", corpusDirectory, "--json"],
+        ["--directory", corpusDirectory, "--format", "json"],
         "report.targets[0].files",
       );
 
@@ -446,14 +452,14 @@ describe("every example configuration this package ships", () => {
       expect(piped.standardOutput.trim()).toBe("28");
       // And the other half of the same promise: the diagnostics were not
       // missing, they were on the other stream the whole time.
-      expect(piped.standardError).toContain("Finished the codometer run");
+      expect(piped.standardError).toContain("Finished the measurement run");
     });
 
-    it("refuses --json <path> on a run that neither writes nor compares", () => {
+    it("refuses an --output-json path on a run that neither writes nor compares", () => {
       const run = runCodometer([
         "--directory",
         corpusDirectory,
-        "--json",
+        "--output-json",
         "report.json",
       ]);
 
@@ -468,7 +474,7 @@ describe("every example configuration this package ships", () => {
           directory,
           "--config",
           exampleConfiguration("output", "codometer.config.ts"),
-          "--json",
+          "--output-json",
           "only-this.json",
           "--write",
         ]);
@@ -619,7 +625,7 @@ describe("every example configuration this package ships", () => {
       });
     });
 
-    it("excludes the destinations this run has, not the ones it might have had", () => {
+    it("measures the same tree whether or not the report was asked for", () => {
       withCorpusCopy((directory) => {
         const configuration = exampleConfiguration(
           "output",
@@ -634,10 +640,11 @@ describe("every example configuration this package ships", () => {
           "--write",
         ]);
 
-        // A destination named on the command line stands for all of them, so
-        // `--json` replaces the configured pair with the console. This run was
-        // never going to write those two files, so it measures them like any
-        // other — 28 plus the report and the document now sitting there.
+        // Asking for the report on the console is `--format json`, which names
+        // no destination and so cannot drop the configured pair. The two files
+        // stay excluded and the count is the one the write run reported. The
+        // optional-value `--json` this replaced did count as a destination, so
+        // reading the report used to change which tree was measured.
         const after = measure([
           "--directory",
           directory,
@@ -645,7 +652,7 @@ describe("every example configuration this package ships", () => {
           configuration,
         ]);
 
-        expect(readTarget(after, "codebase").files).toBe(30);
+        expect(readTarget(after, "codebase").files).toBe(28);
       });
     });
 

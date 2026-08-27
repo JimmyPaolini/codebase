@@ -35,7 +35,6 @@ import type {
   RenderDocumentArguments,
   RenderDocumentationSectionArguments,
   SyncAnchoredBlockArguments,
-  SyncDocumentArguments,
   SyncMarkdownArguments,
   WrapInAnchorsArguments,
 } from "./markdown.types";
@@ -237,8 +236,16 @@ export class MarkdownService {
     return `${args.destination.startMarker}\n\n${args.content}\n${args.destination.endMarker}`;
   }
 
-  /** Write markdown to a file, and record that it happened. */
+  /**
+   * Write markdown to a file, and record that it happened.
+   *
+   * Creates the directory on the way. The block is appended to a file that
+   * does not exist yet as readily as it is spliced into one that does, so a
+   * destination naming a directory nothing has created is an ordinary command
+   * line rather than a mistake.
+   */
   private writeMarkdownFile(resolvedPath: string, content: string): void {
+    mkdirSync(path.dirname(resolvedPath), { recursive: true });
     writeFileSync(resolvedPath, content, "utf8");
     this.logger.info("📝 Wrote the markdown badges", undefined, {
       path: resolvedPath,
@@ -356,25 +363,5 @@ export class MarkdownService {
       path: destination.path,
       statistics: args.statistics,
     });
-  }
-
-  /**
-   * Sync a whole markdown document with the rendered badges.
-   *
-   * The file is the content and nothing else, so it is replaced outright
-   * rather than spliced into.
-   */
-  syncDocument(args: SyncDocumentArguments): boolean {
-    const resolvedPath = path.resolve(args.path);
-    const document = `${args.content}\n`;
-
-    if (args.check) {
-      return this.readExisting(resolvedPath) === document;
-    }
-
-    mkdirSync(path.dirname(resolvedPath), { recursive: true });
-    this.writeMarkdownFile(resolvedPath, document);
-
-    return true;
   }
 }

@@ -28,11 +28,12 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * markdown file, and one JSON file — exactly what a run before either existed
  * reported. Each prints the notice naming what it left out.
  *
- * Read the report from **disk** rather than adding `--json` to the second run.
- * A destination named on the command line stands for all of them, so
- * `--json` replaces the configured pair with the console — and a run that was
- * never going to write those two files has no reason to exclude them, so it
- * measures 30.
+ * Reading the report back does **not** change what is measured. `--format
+ * json` asks for the console and names no destination, so the configured pair
+ * stays excluded and the second run reports the same 28. Naming a destination
+ * outright — `--output-json only-this.json --write` — does replace the
+ * configured pair, and a run that was never going to write those two files has
+ * no reason to exclude them.
  */
 const codometerConfiguration: CodometerConfiguration = {
   output: {

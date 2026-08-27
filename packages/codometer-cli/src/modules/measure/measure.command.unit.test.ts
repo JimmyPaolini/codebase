@@ -24,7 +24,10 @@ import { MeasureService } from "./measure.service";
 import type { EvaluatedLimit } from "../limits/limits.types";
 import type { DocumentationMeasurement } from "./documentation-measurement.types";
 import type { MeasureCommandOptions } from "./measure.types";
-import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
+import type {
+  ResolvedCodometerConfiguration,
+  ResolvedCodometerMarkdownOutputConfiguration,
+} from "@codometer/configuration";
 import type { JsonService, MarkdownService } from "@codometer/output";
 import type { MockInstance } from "vitest";
 
@@ -178,7 +181,6 @@ describe(MeasureCommand, () => {
     vi.mocked(markdownService.renderDocument).mockReturnValue("document");
     vi.mocked(markdownService.renderDocumentationSection).mockReturnValue("");
     vi.mocked(markdownService.sync).mockReturnValue(true);
-    vi.mocked(markdownService.syncDocument).mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -496,67 +498,69 @@ describe(MeasureCommand, () => {
   });
 
   describe("the output sinks", () => {
-    it("renders the badges to the console when nothing is configured", async () => {
+    it("prints the badges when the run touches no file", async () => {
       await run();
 
-      expect(markdownService.renderDocument).toHaveBeenCalledWith({
-        description: undefined,
+      expect(markdownService.renderBlock).toHaveBeenCalledWith({
+        destination: {
+          description: undefined,
+          endMarker: "<!-- CODE_STATISTICS_END -->",
+          path: undefined,
+          render: undefined,
+          startMarker: "<!-- CODE_STATISTICS_START -->",
+          write: undefined,
+        },
         scope: "project",
         statistics,
         targets: [],
       });
-      expect(stdoutWriteSpy).toHaveBeenCalledWith("document\n");
-      expect(markdownService.syncDocument).not.toHaveBeenCalled();
+      expect(stdoutWriteSpy).toHaveBeenCalledWith("block\n");
+      expect(markdownService.sync).not.toHaveBeenCalled();
     });
 
-    it("writes the badge document where --markdown named", async () => {
-      await run({ markdown: "docs/metrics.md", write: true });
+    it("writes the badge block where --output-markdown named", async () => {
+      await run({ outputMarkdown: "docs/metrics.md", write: true });
 
-      expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
+      expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
-        content: "document",
-        path: "/repo/docs/metrics.md",
+        destination: { ...markdownDestination, path: "/repo/docs/metrics.md" },
+        scope: "project",
+        statistics,
+        targets: [],
       });
     });
 
-    it("sends the badge document to the console for a pathless --markdown", async () => {
-      await run({ markdown: true, write: true });
+    it("prints nothing alongside a written file", async () => {
+      await run({ outputMarkdown: "docs/metrics.md", write: true });
 
-      expect(markdownService.syncDocument).not.toHaveBeenCalled();
-      expect(stdoutWriteSpy).toHaveBeenCalledWith("document\n");
+      expect(stdoutWriteSpy).not.toHaveBeenCalled();
     });
 
-    it("appends nothing to the badge document when nothing breached documentation", async () => {
-      await run({ markdown: "docs/metrics.md", write: true });
-
-      expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
-        check: false,
-        content: "document",
-        path: "/repo/docs/metrics.md",
-      });
-    });
-
-    it("appends the breached documentation section to the badge document", async () => {
+    it("appends the breached documentation section to the badge block", async () => {
       const breach = buildDocumentationBreach("fail");
       documented([breach]);
       vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
         "### 📝 Documentation",
       );
 
-      await run({ markdown: "docs/metrics.md", write: true });
+      await run({ outputMarkdown: "docs/metrics.md", write: true });
 
       expect(markdownService.renderDocumentationSection).toHaveBeenCalledWith({
         breaches: [breach],
       });
-      expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
+      expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
-        content: ["document", "### 📝 Documentation"].join("\n\n"),
-        path: "/repo/docs/metrics.md",
+        destination: expect.objectContaining({
+          path: "/repo/docs/metrics.md",
+        }) as ResolvedCodometerMarkdownOutputConfiguration,
+        scope: "project",
+        statistics,
+        targets: [],
       });
     });
 
-    it("writes the report where --json named", async () => {
-      await run({ json: "reports/statistics.json", write: true });
+    it("writes the report where --output-json named", async () => {
+      await run({ outputJson: "reports/statistics.json", write: true });
 
       expect(jsonService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
@@ -566,27 +570,11 @@ describe(MeasureCommand, () => {
       });
     });
 
-    it("sends the report to the console for a pathless --json", async () => {
-      await run({ json: true, write: true });
+    it("prints the report for --format json without writing one", async () => {
+      await run({ format: "json" });
 
       expect(jsonService.sync).not.toHaveBeenCalled();
       expect(stdoutWriteSpy).toHaveBeenCalledWith("{}\n");
-    });
-
-    it("splices into the file --readme named, and nowhere else", async () => {
-      await run({ readme: "docs/statistics.md", write: true });
-
-      expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
-        check: false,
-        destination: {
-          ...markdownDestination,
-          path: "/repo/docs/statistics.md",
-        },
-        scope: "project",
-        statistics,
-        targets: [],
-      });
-      expect(markdownService.syncDocument).not.toHaveBeenCalled();
     });
 
     it("produces only the sink the command line named", async () => {
@@ -597,11 +585,15 @@ describe(MeasureCommand, () => {
         }),
       );
 
-      await run({ json: true });
+      await run({ outputJson: "statistics.json", write: true });
 
-      expect(stdoutWriteSpy).toHaveBeenCalledExactlyOnceWith("{}\n");
+      expect(jsonService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        indentation: 2,
+        path: "/repo/statistics.json",
+        report: { documentation: [], failures: [], targets: [] },
+      });
       expect(markdownService.sync).not.toHaveBeenCalled();
-      expect(markdownService.renderBlock).not.toHaveBeenCalled();
     });
 
     it("writes the configured destinations relative to the analyzed directory", async () => {
@@ -632,7 +624,7 @@ describe(MeasureCommand, () => {
     it("names a stale report the run was checking", async () => {
       vi.mocked(jsonService.sync).mockReturnValue(false);
 
-      await run({ check: "reports", json: "reports/statistics.json" });
+      await run({ check: "reports", outputJson: "reports/statistics.json" });
 
       expect(loggerService.error).toHaveBeenCalledWith(
         "📊 Found stale reports",
@@ -642,10 +634,10 @@ describe(MeasureCommand, () => {
       expect(process.exitCode).toBe(1);
     });
 
-    it("names a stale badge document the run was checking", async () => {
-      vi.mocked(markdownService.syncDocument).mockReturnValue(false);
+    it("names a stale badge block the run was checking", async () => {
+      vi.mocked(markdownService.sync).mockReturnValue(false);
 
-      await run({ check: "reports", markdown: "docs/metrics.md" });
+      await run({ check: "reports", outputMarkdown: "docs/metrics.md" });
 
       expect(loggerService.error).toHaveBeenCalledWith(
         "📊 Found stale reports",
@@ -932,11 +924,11 @@ describe(MeasureCommand, () => {
         "codometer.config.ts",
       );
       expect(localCommand.parseConfig(undefined)).toBeUndefined();
-      expect(localCommand.parseJson("statistics.json")).toBe("statistics.json");
-      expect(localCommand.parseJson(undefined)).toBeUndefined();
-      expect(localCommand.parseMarkdown("README.md")).toBe("README.md");
-      expect(localCommand.parseMarkdown(undefined)).toBeUndefined();
-      expect(localCommand.parseReadme("README.md")).toBe("README.md");
+      expect(localCommand.parseFormat("json")).toBe("json");
+      expect(localCommand.parseOutputJson("statistics.json")).toBe(
+        "statistics.json",
+      );
+      expect(localCommand.parseOutputMarkdown("README.md")).toBe("README.md");
       expect(localCommand.parseWrite(undefined)).toBe(true);
       expect(localCommand.parseWrite(false)).toBe(false);
     });
@@ -946,9 +938,9 @@ describe(MeasureCommand, () => {
         "parseCheck",
         "parseConfig",
         "parseDirectory",
-        "parseJson",
-        "parseMarkdown",
-        "parseReadme",
+        "parseFormat",
+        "parseOutputJson",
+        "parseOutputMarkdown",
         "parseWrite",
       ].map(
         (parser) =>
@@ -962,9 +954,9 @@ describe(MeasureCommand, () => {
         "--check [check]",
         "--config [config]",
         "-d, --directory [directory]",
-        "--json [json]",
-        "-m, --markdown [markdown]",
-        "--readme <readme>",
+        "-f, --format <format>",
+        "--output-json <outputJson>",
+        "--output-markdown <outputMarkdown>",
         "--write",
       ]);
     });

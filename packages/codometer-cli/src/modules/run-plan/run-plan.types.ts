@@ -4,6 +4,7 @@ import type {
   MeasureCommandOptions,
   MeasurementResult,
 } from "../measure/measure.types";
+import type { FORMAT_NAMES } from "./run-plan.constants";
 import type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerMarkdownOutputConfiguration,
@@ -26,11 +27,13 @@ export interface ListOutputPathsArguments {
   workingDirectory: string;
 }
 
-/** Where the rendered badges go as a document of their own. */
-export interface MarkdownDocumentDestination {
-  description: string | undefined;
-  path: string | undefined;
-}
+/**
+ * What a run prints to standard output, when it prints anything.
+ *
+ * Derived from the list `--format` is validated against, so a format added
+ * there is one this accepts rather than two lists to keep in step.
+ */
+export type MeasureFormat = (typeof FORMAT_NAMES)[number];
 
 /**
  * What the command line asked the run to do, and what it could not make sense of.
@@ -40,6 +43,8 @@ export interface MarkdownDocumentDestination {
  */
 export interface ModeSelection {
   errors: string[];
+  /** What goes to standard output, or nothing when the run prints nothing. */
+  format: MeasureFormat | undefined;
   mode: RunMode;
 }
 
@@ -60,16 +65,17 @@ export interface ResolveDestinationsArguments {
 }
 
 /**
- * Every destination one run produces.
+ * Every file one run writes.
  *
- * All three are independent sinks. `markdown` is a whole document of rendered
- * badges, `readme` splices that block between two markers in a file somebody
- * named, and `json` is the report.
+ * Two independent sinks: `json` is the report, and `markdown` is the badge
+ * block spliced between two markers in a file somebody else wrote the rest
+ * of. Neither says anything about standard output — that is `format`'s job
+ * alone, so no destination can print a second document over the one a
+ * pipeline was reading.
  */
 export interface RunDestinations {
   json: JsonDestination | undefined;
-  markdown: MarkdownDocumentDestination | undefined;
-  readme: ResolvedCodometerMarkdownOutputConfiguration | undefined;
+  markdown: ResolvedCodometerMarkdownOutputConfiguration | undefined;
 }
 
 /**

@@ -27,9 +27,9 @@ const COMPILED_TARGET_NAME = "Compiled JavaScript";
  */
 const codometerConfiguration = {
   // Where each project leaves the report the pull request's ⏲️ Codometer
-  // section reads. Declared here rather than passed as `--json` by the Nx
+  // section reads. Declared here rather than passed as `--output-json` by the Nx
   // target, because it is the same path for every project and a destination is
-  // configuration. Its sibling `--readme` stays on the command line, and
+  // configuration. Its sibling `--output-markdown` stays on the command line, and
   // deliberately: only the `write` configuration passes it, which is what keeps
   // a branch's `check` run from rewriting every project README.
   output: { json: { path: "codometer-report.json" } },

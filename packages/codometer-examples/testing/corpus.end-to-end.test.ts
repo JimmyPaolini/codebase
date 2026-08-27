@@ -230,7 +230,8 @@ describe("the sample corpus and the counts its guides quote", () => {
         corpusDirectory,
         "--config",
         exampleConfiguration("python", "unreachable-interpreter.config.ts"),
-        "--json",
+        "--format",
+        "json",
       ]);
       const report = JSON.parse(run.standardOutput) as ReturnType<
         typeof measure

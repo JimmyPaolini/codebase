@@ -14,13 +14,16 @@ import {
   CHECK_NAMES,
   CHECK_REPORTS,
   CHECK_SEPARATOR,
+  FORMAT_JSON,
+  FORMAT_MARKDOWN,
+  FORMAT_NAMES,
 } from "./run-plan.constants";
 
 import type { MeasureCommandOptions } from "../measure/measure.types";
 import type {
   JsonDestination,
   ListOutputPathsArguments,
-  MarkdownDocumentDestination,
+  MeasureFormat,
   ModeSelection,
   ResolveDestinationsArguments,
   RunDestinations,
@@ -64,9 +67,7 @@ export class RunPlanService {
    */
   private namesDestination(options: MeasureCommandOptions): boolean {
     return (
-      options.json !== undefined ||
-      options.markdown !== undefined ||
-      options.readme !== undefined
+      options.outputJson !== undefined || options.outputMarkdown !== undefined
     );
   }
 
@@ -109,21 +110,36 @@ export class RunPlanService {
   }
 
   /**
-   * Reads an optional-value path flag.
+   * Reads `--format` into what the run prints, if anything.
    *
-   * `true` is the flag passed without a path, which asks for the console. It
-   * outranks a configured path: naming the flag is how a run says it wants
-   * this output somewhere other than where the configuration file put it.
+   * Left off, a run that writes or compares a file prints nothing — its output
+   * is the file, and a document on standard output as well is what a pipeline
+   * reading that stream would choke on. A run that touches no file prints the
+   * badges instead, which is what makes a bare `codometer` useful with no
+   * arguments at all.
+   *
+   * An unknown format is refused rather than defaulted. Every other flag here
+   * names something the run does, and silently printing markdown to a command
+   * line that asked for something else would answer a question nobody asked.
    */
-  private readPathFlag(
-    flag: string | true | undefined,
-    configured: string | undefined,
-  ): string | undefined {
-    if (flag === undefined) {
-      return configured;
+  private readFormat(
+    value: string | undefined,
+    mode: RunMode,
+    errors: string[],
+  ): MeasureFormat | undefined {
+    if (value === undefined) {
+      return this.touchesFiles(mode) ? undefined : FORMAT_MARKDOWN;
     }
 
-    return flag === true ? undefined : flag;
+    const matched = FORMAT_NAMES.find((name) => name === value);
+
+    if (matched === undefined) {
+      errors.push(
+        `--format does not accept "${value}". It takes one of ${FORMAT_NAMES.map((name) => `"${name}"`).join(" and ")}, as in "--format ${FORMAT_MARKDOWN}".`,
+      );
+    }
+
+    return matched;
   }
 
   /**
@@ -139,22 +155,29 @@ export class RunPlanService {
    * A pathless `--json` is untouched. The console is what it asked for, not a
    * file that failed to appear.
    */
-  private requireWrittenReport(
+  private requireWrittenOutput(
     options: MeasureCommandOptions,
     mode: RunMode,
     errors: string[],
   ): void {
-    if (typeof options.json !== "string") {
-      return;
-    }
-
     if (mode.writes || mode.checksReports) {
       return;
     }
 
-    errors.push(
-      `--json ${options.json} needs --write or --check ${CHECK_REPORTS}: a run that neither writes the report nor compares it would render it to the console and leave that file unwritten. Add --write to write it, --check ${CHECK_REPORTS} to fail on a stale one, or drop the path to ask for the console.`,
-    );
+    const named = [
+      { flag: "--output-json", format: FORMAT_JSON, path: options.outputJson },
+      {
+        flag: "--output-markdown",
+        format: FORMAT_MARKDOWN,
+        path: options.outputMarkdown,
+      },
+    ].filter((option) => option.path !== undefined);
+
+    for (const option of named) {
+      errors.push(
+        `${option.flag} ${option.path} needs --write or --check ${CHECK_REPORTS}: a run that neither writes that file nor compares it would leave it exactly as it found it. Add --write to write it, --check ${CHECK_REPORTS} to fail on a stale one, or ask for --format ${option.format} to read it on the console instead.`,
+      );
+    }
   }
 
   /** Where the report goes, if anywhere. */
@@ -162,13 +185,13 @@ export class RunPlanService {
     args: ResolveDestinationsArguments,
     named: boolean,
   ): JsonDestination | undefined {
-    if (named && args.options.json === undefined) {
+    if (named && args.options.outputJson === undefined) {
       return undefined;
     }
 
     const configured = args.configuration.output.json;
 
-    if (args.options.json === undefined && configured === undefined) {
+    if (args.options.outputJson === undefined && configured === undefined) {
       return undefined;
     }
 
@@ -176,33 +199,53 @@ export class RunPlanService {
       indentation: configured?.indentation ?? DEFAULT_JSON_INDENTATION,
       path: this.resolvePath(
         args.workingDirectory,
-        this.readPathFlag(args.options.json, configured?.path),
+        args.options.outputJson ?? configured?.path,
       ),
     };
   }
 
   /**
-   * Where the rendered badges go as a document of their own, if anywhere.
+   * Which markdown file the badge block goes into, if any.
    *
-   * Only ever asked for on the command line. A configured markdown
-   * destination carries markers and is spliced into rather than overwritten,
-   * which is a different sink.
+   * One sink rather than two. The block is spliced between its markers when
+   * the file already carries them, and appended with them when it does not,
+   * so the same flag serves a README somebody else wrote the rest of and a
+   * file that holds nothing but badges — which is why there is no longer a
+   * separate whole-document destination to pick between.
+   *
+   * The path is never defaulted. Splicing rewrites a file somebody else wrote,
+   * so a run that guessed the filename would edit a document nobody pointed
+   * it at.
+   *
+   * A configured `write` function is a destination in its own right: it picks
+   * the file itself, so a configuration that supplies one without a path still
+   * has a destination.
    */
   private resolveMarkdown(
     args: ResolveDestinationsArguments,
-  ): MarkdownDocumentDestination | undefined {
-    if (args.options.markdown === undefined) {
+    named: boolean,
+  ): ResolvedCodometerMarkdownOutputConfiguration | undefined {
+    if (named && args.options.outputMarkdown === undefined) {
       return undefined;
     }
 
-    const flag = args.options.markdown;
+    const configured = args.configuration.output.markdown ?? {
+      description: undefined,
+      endMarker: DEFAULT_MARKDOWN_END_MARKER,
+      path: undefined,
+      render: undefined,
+      startMarker: DEFAULT_MARKDOWN_START_MARKER,
+      write: undefined,
+    };
+    const destinationPath = args.options.outputMarkdown ?? configured.path;
+
+    if (destinationPath === undefined && configured.write === undefined) {
+      return undefined;
+    }
 
     return {
-      description: args.configuration.output.markdown?.description,
-      path:
-        flag === true
-          ? undefined
-          : this.resolvePath(args.workingDirectory, flag),
+      ...configured,
+      path: this.resolvePath(args.workingDirectory, destinationPath),
     };
   }
 
@@ -217,42 +260,14 @@ export class RunPlanService {
   }
 
   /**
-   * Which file the badge block is spliced into, if any.
+   * Whether the run does anything with a file at all.
    *
-   * The path is never defaulted. Splicing rewrites a file somebody else wrote
-   * the rest of, so a run that guessed the filename would edit a document
-   * nobody pointed it at.
-   *
-   * A configured `write` function is a destination in its own right: it picks
-   * the file itself, so a configuration that supplies one without a path still
-   * has a splice destination.
+   * A run that neither writes nor compares has nothing to do with a file, so
+   * every destination it resolved is left alone and the badges go to the
+   * console instead.
    */
-  private resolveReadme(
-    args: ResolveDestinationsArguments,
-    named: boolean,
-  ): ResolvedCodometerMarkdownOutputConfiguration | undefined {
-    if (named && args.options.readme === undefined) {
-      return undefined;
-    }
-
-    const configured = args.configuration.output.markdown ?? {
-      description: undefined,
-      endMarker: DEFAULT_MARKDOWN_END_MARKER,
-      path: undefined,
-      render: undefined,
-      startMarker: DEFAULT_MARKDOWN_START_MARKER,
-      write: undefined,
-    };
-    const destinationPath = args.options.readme ?? configured.path;
-
-    if (destinationPath === undefined && configured.write === undefined) {
-      return undefined;
-    }
-
-    return {
-      ...configured,
-      path: this.resolvePath(args.workingDirectory, destinationPath),
-    };
+  private touchesFiles(mode: RunMode): boolean {
+    return mode.writes || mode.checksReports;
   }
 
   /** Keeps the names `--check` knows and complains about the rest. */
@@ -285,7 +300,6 @@ export class RunPlanService {
     const paths = [
       args.destinations.json?.path,
       args.destinations.markdown?.path,
-      args.destinations.readme?.path,
     ];
 
     return paths
@@ -299,30 +313,20 @@ export class RunPlanService {
   }
 
   /**
-   * Resolves where each of the three outputs goes.
+   * Resolves which files the run writes.
    *
-   * With nothing named anywhere the badges go to the console, which is what
-   * makes a bare run useful without also making it write a file nobody asked
-   * for.
+   * Only files. A run that resolves none still prints its badges, but that is
+   * `--format`'s doing rather than a destination standing in for the console,
+   * which is what let a configured path quietly put a second document on the
+   * stream a pipeline was reading.
    */
   resolveDestinations(args: ResolveDestinationsArguments): RunDestinations {
     const named = this.namesDestination(args.options);
-    const json = this.resolveJson(args, named);
-    const markdown = this.resolveMarkdown(args);
-    const readme = this.resolveReadme(args, named);
 
-    if (json === undefined && markdown === undefined && readme === undefined) {
-      return {
-        json: undefined,
-        markdown: {
-          description: args.configuration.output.markdown?.description,
-          path: undefined,
-        },
-        readme: undefined,
-      };
-    }
-
-    return { json, markdown, readme };
+    return {
+      json: this.resolveJson(args, named),
+      markdown: this.resolveMarkdown(args, named),
+    };
   }
 
   /**
@@ -332,8 +336,11 @@ export class RunPlanService {
    * stale immediately after being written, so a run asking for both has
    * misunderstood one of them and would pass whatever it was meant to catch.
    *
-   * A `--json` path with neither flag is refused for the mirror-image reason:
-   * it names a file the run was never going to write.
+   * An `--output-*` path with neither flag is refused for the mirror-image
+   * reason: it names a file the run was never going to write. The failure
+   * this catches is an nx target that quietly lost its `--write` — it exited
+   * clean, wrote nothing, and the first thing to notice was a pull request
+   * section rendering as though the project had changed nothing.
    */
   selectMode(options: MeasureCommandOptions): ModeSelection {
     const errors: string[] = [];
@@ -343,6 +350,7 @@ export class RunPlanService {
       checksReports: names.has(CHECK_REPORTS),
       writes: options.write === true,
     };
+    const format = this.readFormat(options.format, mode, errors);
 
     if (mode.writes && mode.checksReports) {
       errors.push(
@@ -350,9 +358,9 @@ export class RunPlanService {
       );
     }
 
-    this.requireWrittenReport(options, mode, errors);
+    this.requireWrittenOutput(options, mode, errors);
 
-    return { errors, mode };
+    return { errors, format, mode };
   }
 
   /**
