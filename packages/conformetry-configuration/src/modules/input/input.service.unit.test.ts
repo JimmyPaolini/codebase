@@ -1,6 +1,14 @@
 import { Test } from "@nestjs/testing";
 import prompts from "prompts";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { InputOptionsService } from "./input-options.service";
 import { InputPromptingService } from "./input-prompting.service";
@@ -34,8 +42,17 @@ describe(InputService, () => {
     service = await module.resolve(InputService);
   });
 
+  const originalIsTty = process.stdin.isTTY;
+
   beforeEach(() => {
     promptRunner.mockReset();
+    // Not a terminal by default, which is what a script, a hook, or a CI job
+    // gets — and what the removed `--no-interactive` used to stand for.
+    process.stdin.isTTY = false;
+  });
+
+  afterEach(() => {
+    process.stdin.isTTY = originalIsTty;
   });
 
   it("is defined", () => {
@@ -102,7 +119,6 @@ describe(InputService, () => {
   describe("resolveGeneratorInputs", () => {
     it("reads a schema-backed flag from raw arguments", async () => {
       const inputs = await service.resolveGeneratorInputs({
-        promptWhenMissing: false,
         rawArguments: ["generate", "--name", "my-widget"],
         schema: REQUIRED_NAME_SCHEMA,
       });
@@ -112,7 +128,6 @@ describe(InputService, () => {
 
     it("reads the inline --flag=value form", async () => {
       const inputs = await service.resolveGeneratorInputs({
-        promptWhenMissing: false,
         rawArguments: ["--name=my-widget"],
         schema: REQUIRED_NAME_SCHEMA,
       });
@@ -120,19 +135,21 @@ describe(InputService, () => {
       expect(inputs).toStrictEqual({ name: "my-widget" });
     });
 
-    it("throws instead of prompting when a required value is missing", async () => {
+    it("refuses a missing required value with no terminal to ask at", async () => {
       await expect(
         service.resolveGeneratorInputs({
-          promptWhenMissing: false,
           rawArguments: [],
           schema: REQUIRED_NAME_SCHEMA,
         }),
-      ).rejects.toThrow("name is required");
+      ).rejects.toThrow(
+        "name is required, and stdin is not a terminal so it cannot be asked for. Pass --name.",
+      );
     });
 
-    it("skips a missing optional value without prompting", async () => {
+    // An optional input nobody can be asked about is left out rather than
+    // refused: the run never needed the value.
+    it("skips a missing optional value with no terminal to ask at", async () => {
       const inputs = await service.resolveGeneratorInputs({
-        promptWhenMissing: false,
         rawArguments: [],
         schema: { properties: { note: { type: "string" } } },
       });
@@ -140,11 +157,11 @@ describe(InputService, () => {
       expect(inputs).toStrictEqual({});
     });
 
-    it("prompts for a missing required value when interactive", async () => {
+    it("prompts for a missing required value at a terminal", async () => {
+      process.stdin.isTTY = true;
       promptRunner.mockResolvedValue({ value: "my-widget" });
 
       const inputs = await service.resolveGeneratorInputs({
-        promptWhenMissing: true,
         rawArguments: [],
         schema: REQUIRED_NAME_SCHEMA,
       });
@@ -153,10 +170,10 @@ describe(InputService, () => {
     });
 
     it("drops a prompted value the caller left blank", async () => {
+      process.stdin.isTTY = true;
       promptRunner.mockResolvedValue({ value: "   " });
 
       const inputs = await service.resolveGeneratorInputs({
-        promptWhenMissing: true,
         rawArguments: [],
         schema: { properties: { note: { type: "string" } } },
       });
@@ -165,11 +182,11 @@ describe(InputService, () => {
     });
 
     it("rejects a prompted value the schema refuses", async () => {
+      process.stdin.isTTY = true;
       promptRunner.mockResolvedValue({ value: "nope" });
 
       await expect(
         service.resolveGeneratorInputs({
-          promptWhenMissing: true,
           rawArguments: [],
           schema: {
             properties: { type: { enum: ["packages", "applications"] } },
@@ -182,7 +199,6 @@ describe(InputService, () => {
     it("rejects a value outside the schema enum", async () => {
       await expect(
         service.resolveGeneratorInputs({
-          promptWhenMissing: false,
           rawArguments: ["--type", "nope"],
           schema: {
             properties: { type: { enum: ["packages", "applications"] } },
@@ -196,7 +212,6 @@ describe(InputService, () => {
   describe("resolveInputsFromValues", () => {
     it("passes through values the caller already had", async () => {
       const inputs = await service.resolveInputsFromValues({
-        promptWhenMissing: false,
         providedInputs: { config: "configuration/conformetry.config.ts" },
         schema: { properties: { config: { type: "string" } } },
       });
@@ -208,12 +223,45 @@ describe(InputService, () => {
 
     it("omits values the caller left undefined", async () => {
       const inputs = await service.resolveInputsFromValues({
-        promptWhenMissing: false,
         providedInputs: { projects: undefined },
         schema: { properties: { projects: { type: "string" } } },
       });
 
       expect(inputs).toStrictEqual({});
+    });
+  });
+
+  describe("prompt gating", () => {
+    // The precondition that makes the flag's removal safe: `prompts` draws its
+    // menu on a non-terminal stdin, never resolves, and lets the process exit
+    // 0 — which is exactly how this CLI used to hang.
+    it("never reaches the prompt runner with no terminal to ask at", async () => {
+      await expect(
+        service.resolveGeneratorInputs({
+          rawArguments: [],
+          schema: REQUIRED_NAME_SCHEMA,
+        }),
+      ).rejects.toThrow("stdin is not a terminal");
+      expect(promptRunner).not.toHaveBeenCalled();
+    });
+
+    // Nothing consults an environment variable any more: CI has no terminal,
+    // so the terminal test already covers it.
+    it("prompts in CI when a terminal is attached", async () => {
+      process.stdin.isTTY = true;
+      process.env["CI"] = "true";
+      promptRunner.mockResolvedValue({ value: "my-widget" });
+
+      try {
+        await expect(
+          service.resolveGeneratorInputs({
+            rawArguments: [],
+            schema: REQUIRED_NAME_SCHEMA,
+          }),
+        ).resolves.toStrictEqual({ name: "my-widget" });
+      } finally {
+        delete process.env["CI"];
+      }
     });
   });
 });

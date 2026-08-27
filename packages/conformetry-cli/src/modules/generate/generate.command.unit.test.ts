@@ -1,8 +1,20 @@
-import { ConfigurationService, InputService } from "@conformetry/configuration";
+import {
+  ConfigurationService,
+  InputError,
+  InputService,
+} from "@conformetry/configuration";
 import { GenerationService } from "@conformetry/generation";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
@@ -57,6 +69,7 @@ describe(GenerateCommand, () => {
   // The shared setup clears every mock before each test, so the return values
   // are re-applied here rather than alongside the module.
   beforeEach(() => {
+    process.exitCode = undefined;
     vi.mocked(
       configurationService.loadConformetryConfiguration,
     ).mockResolvedValue(CONFIGURATION);
@@ -67,6 +80,10 @@ describe(GenerateCommand, () => {
       generatedFilePaths: ["/w/generated/widget/my-widget.ts"],
       outputDirectoryPath: "/w/generated/widget",
     });
+  });
+
+  afterEach(() => {
+    process.exitCode = undefined;
   });
 
   it("is defined", () => {
@@ -166,46 +183,48 @@ describe(GenerateCommand, () => {
       );
     });
 
-    it("prompts when attached to a terminal outside CI", async () => {
-      const originalIsTty = process.stdin.isTTY;
-      const originalCi = process.env["CI"];
-
-      process.stdin.isTTY = true;
-      delete process.env["CI"];
-
+    // The command decides nothing about prompting any more — no flag, no TTY
+    // read, no CI check. It hands over the arguments and the schema, and the
+    // input service refuses on its own where nobody can be asked.
+    it("asks for the generator's inputs without deciding whether to prompt", async () => {
       await command.run([], { generator: "widget" });
 
-      expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith(
-        expect.objectContaining({ promptWhenMissing: true }),
-      );
-
-      process.stdin.isTTY = originalIsTty;
-      if (originalCi !== undefined) process.env["CI"] = originalCi;
+      // An exact object rather than `objectContaining`: the point is that
+      // nothing else — no `promptWhenMissing` — is passed alongside these two.
+      expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith({
+        rawArguments: expect.any(Array) as string[],
+        schema: { properties: { name: { type: "string" } } },
+      });
     });
 
-    it("never prompts in CI even with a terminal attached", async () => {
-      const originalIsTty = process.stdin.isTTY;
-      const originalCi = process.env["CI"];
-
-      process.stdin.isTTY = true;
-      process.env["CI"] = "true";
-
-      await command.run([], { generator: "widget" });
-
-      expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith(
-        expect.objectContaining({ promptWhenMissing: false }),
+    it("reports a required input nobody could be asked for as a refused command line", async () => {
+      vi.mocked(inputService.resolveGeneratorInputs).mockRejectedValue(
+        new InputError(
+          "name is required, and stdin is not a terminal so it cannot be asked for. Pass --name.",
+        ),
       );
 
-      process.stdin.isTTY = originalIsTty;
-      if (originalCi === undefined) delete process.env["CI"];
-      else process.env["CI"] = originalCi;
+      // Reported rather than thrown: nothing was generated, and the reader's
+      // next move is to pass the flag it named.
+      await expect(
+        command.run([], { generator: "widget" }),
+      ).resolves.toBeUndefined();
+      expect(process.exitCode).toBe(1);
+      expect(commandLogger.error).toHaveBeenCalledWith(
+        "🚫 Rejected the command line",
+        undefined,
+        { reason: expect.stringContaining("--name") as string },
+      );
+      expect(generationService.runGenerator).not.toHaveBeenCalled();
     });
 
-    it("never prompts when interaction is declined", async () => {
-      await command.run([], { generator: "widget", interactive: false });
+    it("lets a failure that is not a refused command line propagate", async () => {
+      vi.mocked(generationService.runGenerator).mockRejectedValue(
+        new Error("Rendering failed."),
+      );
 
-      expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith(
-        expect.objectContaining({ promptWhenMissing: false }),
+      await expect(command.run([], { generator: "widget" })).rejects.toThrow(
+        "Rendering failed.",
       );
     });
   });
@@ -215,7 +234,6 @@ describe(GenerateCommand, () => {
       expect(command.parseConfig("path")).toBeDefined();
       expect(command.parseDirectory("dir")).toBeDefined();
       expect(command.parseGenerator("widget")).toBeDefined();
-      expect(command.parseInteractive()).toBe(false);
     });
   });
 });

@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { InputOptionsService } from "./input-options.service";
 import { InputPromptingService } from "./input-prompting.service";
 import { InputSchemaService } from "./input-schema.service";
+import { missingInputError } from "./input.constants";
 
 import type {
   ResolveGeneratorInputsArguments,
@@ -11,12 +12,12 @@ import type {
 } from "./input.types";
 
 /**
- * Resolves generator inputs from the command line, prompting only when asked.
+ * Resolves generator inputs from the command line, asking for what is missing.
  *
- * `promptWhenMissing` is a required boolean throughout this module. It used to
- * be optional with a "prompt unless explicitly false" default, which meant a
- * caller passing `undefined` — as happens when `process.stdin.isTTY` is
- * undefined rather than false — silently prompted and hung the process.
+ * Nobody passes a "may I prompt" boolean any more. It used to be threaded
+ * through every method here from a `--no-interactive` flag, which put the one
+ * decision that can hang the process in the hands of each caller in turn;
+ * `InputPromptingService` owns it now and refuses at the prompt itself.
  */
 @Injectable()
 export class InputService {
@@ -50,7 +51,6 @@ export class InputService {
 
   /** Walks a schema, taking each value from the resolver or a prompt. */
   private async resolveInputs(args: {
-    promptWhenMissing: boolean;
     schema: ResolveGeneratorInputsArguments["schema"];
     valueResolver: (inputName: string) => string | undefined;
   }): Promise<Record<string, string>> {
@@ -73,10 +73,7 @@ export class InputService {
         continue;
       }
 
-      const promptedValue = await this.resolveMissingValue({
-        input,
-        promptWhenMissing: args.promptWhenMissing,
-      });
+      const promptedValue = await this.resolveMissingValue(input);
 
       if (promptedValue !== undefined && promptedValue.trim() !== "") {
         resolvedInputs[inputName] = promptedValue;
@@ -89,28 +86,24 @@ export class InputService {
   /**
    * Obtains one missing value by prompting.
    *
-   * When prompting is disabled, a required input is a hard error and an
-   * optional one is simply skipped — never a silent prompt.
+   * With nobody at a terminal the two kinds of input part ways: an optional
+   * one is left out, and a required one is refused. Prompting anyway is what
+   * used to hang the process, and refusing an optional input would fail runs
+   * that never needed the value at all.
    */
-  private async resolveMissingValue(args: {
-    input: SchemaInput;
-    promptWhenMissing: boolean;
-  }): Promise<string | undefined> {
-    if (!args.promptWhenMissing) {
-      if (args.input.isRequired) {
-        throw new Error(
-          `${args.input.inputName} is required. Pass --${args.input.inputName} or run interactively.`,
-        );
+  private async resolveMissingValue(
+    input: SchemaInput,
+  ): Promise<string | undefined> {
+    if (!this.inputPromptingService.isAtTerminal()) {
+      if (input.isRequired) {
+        throw missingInputError(input.inputName);
       }
 
       return undefined;
     }
 
-    const value = await this.inputPromptingService.promptForInput(args.input);
-    const validation = this.inputSchemaService.validateValue({
-      input: args.input,
-      value,
-    });
+    const value = await this.inputPromptingService.promptForInput(input);
+    const validation = this.inputSchemaService.validateValue({ input, value });
 
     if (validation !== true) {
       throw new Error(validation);
@@ -193,7 +186,6 @@ export class InputService {
     });
 
     return this.resolveInputs({
-      promptWhenMissing: args.promptWhenMissing,
       schema: args.schema,
       valueResolver: (inputName) => collectedInputs[inputName],
     });
@@ -204,7 +196,6 @@ export class InputService {
     args: ResolveInputsFromValuesArguments,
   ): Promise<Record<string, string>> {
     return this.resolveInputs({
-      promptWhenMissing: args.promptWhenMissing,
       schema: args.schema,
       valueResolver: (inputName) => args.providedInputs[inputName],
     });

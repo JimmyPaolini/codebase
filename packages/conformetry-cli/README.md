@@ -67,7 +67,6 @@ Renders one generator's template folder into a target directory.
 | `--generator <name>` | Which generator from the registry to run. Required |
 | `--config [path]` | Configuration file to read. Defaults to `configuration/conformetry.config.ts` |
 | `--directory [path]` | Where to write the rendered files |
-| `--no-interactive` | Never prompt; fail instead when a required input is missing |
 
 A generator's own inputs are passed as flags alongside these:
 
@@ -81,8 +80,29 @@ rather than declared ahead of time. This is also why the generator is selected
 with `--generator` and not `--name`: almost every generator takes a `name`, and
 reserving that flag would leave no way to supply it.
 
-Missing required inputs are prompted for when stdin is a TTY and `CI` is not
-`true`. Otherwise the command fails rather than hanging.
+**Missing inputs are prompted for whenever stdin is a terminal**, and there is
+no flag to turn that off — an attached terminal is the whole condition, so a
+script, a hook, or a CI job is never prompted.
+
+With no terminal the two kinds of input part ways:
+
+| Input | With no terminal |
+| ----- | ---------------- |
+| Required | **Refused**, naming the flag to pass, exit non-zero |
+| Optional | Left out, and the run proceeds |
+
+The refusal is the load-bearing half. `prompts` does not fail on a
+non-terminal stdin — it draws its menu, never resolves, and lets the process
+**exit 0 having generated nothing**, which is how this command used to hang in
+CI. It now asserts a terminal before prompting at all and reports a rejected
+command line instead.
+
+One caveat about that table, so it does not mislead: a generator definition
+declares its `inputs` but not **which** of them are required, and this command
+builds the resolver's schema from `inputs` alone. Every input therefore reaches
+the resolver as optional, so in practice a missing one is skipped rather than
+refused. The refusal above is the rule the resolver enforces, waiting on a way
+for a generator to say which inputs it cannot do without.
 
 ### `conformetry templates`
 

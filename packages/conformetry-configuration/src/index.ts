@@ -12,6 +12,7 @@ export type {
 export { InputOptionsService } from "./modules/input/input-options.service";
 export { InputPromptingService } from "./modules/input/input-prompting.service";
 export { InputSchemaService } from "./modules/input/input-schema.service";
+export { InputError, missingInputError } from "./modules/input/input.constants";
 export { InputModule } from "./modules/input/input.module";
 export { InputService } from "./modules/input/input.service";
 export type {
