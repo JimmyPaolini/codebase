@@ -1,8 +1,5 @@
 // ♟️ Constants
 
-/** Separator between a template's aliases when rendered. */
-export const ALIAS_SEPARATOR = ", ";
-
 /** Indent for a top-level entry. */
 export const ENTRY_INDENT = "  ";
 

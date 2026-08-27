@@ -36,18 +36,16 @@ const GEARS_PATH = path.join(
 /** The shortened form of `GEARS_PATH`, spelled with the platform separator. */
 const GEARS_RELATIVE_PATH = path.join("packages/widgets/src/modules/gears");
 
-/** One template with an alias, a description, and one instance. */
+/** One template with a description and one instance. */
 const COMMAND_MODULE: InventoriedTemplate = {
-  aliases: ["ncm"],
   description: "Generate a NestJS command module",
   instances: [{ ...COMPLETE, name: GEARS_RELATIVE_PATH }],
   name: "nestjs-command-module",
   templatePath: "configuration/templates/nestjs-command-module",
 };
 
-/** One template declaring neither an alias nor a description. */
+/** One template declaring no description. */
 const BARE_MODULE: InventoriedTemplate = {
-  aliases: [],
   description: "",
   instances: [],
   name: "react-component",
@@ -70,7 +68,7 @@ describe(InventoryService, () => {
   });
 
   describe("describeTemplates", () => {
-    it("names a template with its aliases and folder", () => {
+    it("names a template with its description and folder", () => {
       const lines = service
         .describeTemplates({
           showInstances: false,
@@ -78,20 +76,26 @@ describe(InventoryService, () => {
         })
         .join("\n");
 
-      expect(lines).toContain("nestjs-command-module (ncm)");
+      expect(lines).toContain("nestjs-command-module");
       expect(lines).toContain("Generate a NestJS command module");
       expect(lines).toContain(
         "Template: configuration/templates/nestjs-command-module",
       );
     });
 
-    it("names a template declaring neither aliases nor a description", () => {
-      const lines = service
-        .describeTemplates({ showInstances: false, templates: [BARE_MODULE] })
-        .join("\n");
+    it("names a template declaring no description", () => {
+      // Asserted as the whole line set rather than by absent substring: the
+      // point is that no description line is emitted at all, which a
+      // `not.toContain` would also satisfy for the wrong reason.
+      const lines = service.describeTemplates({
+        showInstances: false,
+        templates: [BARE_MODULE],
+      });
 
-      expect(lines).toContain("react-component");
-      expect(lines).not.toContain("(");
+      expect(lines).toStrictEqual([
+        "  react-component",
+        "    Template: configuration/templates/react-component",
+      ]);
     });
 
     // A bare listing is a registry; naming every instance of every template

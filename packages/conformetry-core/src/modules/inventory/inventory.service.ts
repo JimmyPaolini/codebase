@@ -3,7 +3,6 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 
 import {
-  ALIAS_SEPARATOR,
   DETAIL_INDENT,
   ENTRY_INDENT,
   INSTANCES_HEADING,
@@ -97,11 +96,7 @@ export class InventoryService {
     templates: InventoriedTemplate[];
   }): string[] {
     return args.templates.flatMap((template) => {
-      const aliases =
-        template.aliases.length === 0
-          ? ""
-          : ` (${template.aliases.join(ALIAS_SEPARATOR)})`;
-      const lines = [`${ENTRY_INDENT}${template.name}${aliases}`];
+      const lines = [`${ENTRY_INDENT}${template.name}`];
 
       if (template.description !== "") {
         lines.push(`${DETAIL_INDENT}${template.description}`);

@@ -21,14 +21,13 @@ async function createConfigurationPath(): Promise<string> {
     configurationPath,
     JSON.stringify([
       // Declared out of order so the emitted manifest proves it sorts, and
-      // with neither aliases nor a description, which are both optional.
+      // without a description, which is optional.
       {
         inputs: { name: { type: "string" } },
         name: "react-component",
         templatePath: "templates/react-component",
       },
       {
-        aliases: ["nsm"],
         description: "Generate a NestJS service module",
         inputs: { name: { type: "string" } },
         name: "nestjs-service-module",

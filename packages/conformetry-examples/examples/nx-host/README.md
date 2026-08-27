@@ -130,11 +130,10 @@ pnpm exec nx affected --target=conformetry-validate --base=main
 
 ```bash
 pnpm exec nx g conformetry:nestjs-service-module --name=billing --project=lexico
-pnpm exec nx g conformetry:nsm --name=billing --project=lexico
 ```
 
-Aliases resolve only through the plugin. Nx prompts for missing inputs from the
-generator's own schema and writes through its virtual `Tree`, so `--dry-run`
+A generator is addressed by its full name. Nx prompts for missing inputs from
+the generator's own schema and writes through its virtual `Tree`, so `--dry-run`
 works and the workspace formatter runs over the result — which the standalone
 `generate` does not do.
 

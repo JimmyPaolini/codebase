@@ -86,9 +86,9 @@ Missing required inputs are prompted for when stdin is a TTY and `CI` is not
 
 ### `conformetry templates`
 
-Names every template the loaded configuration declares, with its aliases,
-description and folder. Nothing else answers that question: a generator name
-guessed at is rejected, and aliases only resolve through the Nx plugin.
+Names every template the loaded configuration declares, with its description
+and folder. Nothing else answers that question: a generator is addressed by its
+full name, and one guessed at is rejected.
 
 | Flag | Purpose |
 | ---- | ------- |
@@ -264,7 +264,6 @@ import { type ConformetryConfiguration } from "@conformetry/configuration";
 
 const conformetryConfiguration: ConformetryConfiguration = [
   {
-    aliases: ["nsm"],
     description: "Generate a NestJS service module",
     inputs: {
       name: { description: "Module name in kebab-case", type: "string" },
