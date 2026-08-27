@@ -1,14 +1,13 @@
 // 🏷️ Types
 
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
-import type { ReportFailure } from "../report/report.types";
-import type { DocumentationMeasurement } from "./documentation-measurement.types";
 import type {
   CodeStatisticsResult,
   ResolvedCodometerConfiguration,
   ResolvedCodometerTarget,
 } from "@codometer/configuration";
 import type { DiscoveryResult } from "@codometer/discovery";
+import type { TypescriptDocumentationMeasurement } from "@codometer/languages";
 import type { SizeResult } from "@codometer/size";
 
 /**
@@ -18,6 +17,11 @@ export interface AnalyzeLanguageArguments {
   configuration: ResolvedCodometerConfiguration;
   discoveredFiles: DiscoveryResult;
   workingDirectory: string;
+}
+
+/** One measured JSDoc comment, with the target it was found in. */
+export interface DocumentationMeasurement extends TypescriptDocumentationMeasurement {
+  target: string;
 }
 
 /**
@@ -102,6 +106,32 @@ export interface MeasureTargetArguments {
   target: ResolvedCodometerTarget;
   workingDirectory: string;
 }
+
+/**
+ * Something the run could not do, and what it was trying to do it to.
+ *
+ * Declared beside the measurement that produces it rather than beside the
+ * report that renders it, so the dependency between the two runs one way. The
+ * name says where it surfaces: `CodometerReport.failures` is what a consumer
+ * reads it from.
+ */
+export interface ReportFailure {
+  /** Which part of the run it failed in. */
+  kind: ReportFailureKind;
+  reason: string;
+  /** A target's name for a target failure, a limit's written path for a limit. */
+  subject: string;
+}
+
+/**
+ * Which part of a run a failure belongs to.
+ *
+ * `target` is a set of files that could not be measured; `limit` is a declared
+ * limit that could not be held against anything. Neither is a breach, and a
+ * consumer that treats them as one reports a passing gate for a metric nobody
+ * ever measured.
+ */
+export type ReportFailureKind = "limit" | "target";
 
 /**
  * What every analysis declared for one target reported over its files.

@@ -6,12 +6,12 @@ export { MeasureService } from "./modules/measure/measure.service";
 export type {
   MeasureArguments,
   MeasureCommandOptions,
+  ReportFailure,
 } from "./modules/measure/measure.types";
 export { ReportModule } from "./modules/report/report.module";
 export { ReportService } from "./modules/report/report.service";
 export type {
   CodometerReport,
-  ReportFailure,
   ReportLimit,
   ReportMetric,
   ReportTarget,

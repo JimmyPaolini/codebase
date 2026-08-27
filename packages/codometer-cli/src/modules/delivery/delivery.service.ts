@@ -4,8 +4,10 @@ import { Injectable } from "@nestjs/common";
 
 import { DEFAULT_MARKDOWN_DESTINATION } from "./delivery.constants";
 
-import type { DocumentationMeasurement } from "../measure/documentation-measurement.types";
-import type { MeasurementResult } from "../measure/measure.types";
+import type {
+  DocumentationMeasurement,
+  MeasurementResult,
+} from "../measure/measure.types";
 import type { RunMode } from "../run-plan/run-plan.types";
 import type { DeliverArguments } from "./delivery.types";
 import type {

@@ -22,8 +22,10 @@ import { MeasureCommand } from "./measure.command";
 import { MeasureService } from "./measure.service";
 
 import type { EvaluatedLimit } from "../limits/limits.types";
-import type { DocumentationMeasurement } from "./documentation-measurement.types";
-import type { MeasureCommandOptions } from "./measure.types";
+import type {
+  DocumentationMeasurement,
+  MeasureCommandOptions,
+} from "./measure.types";
 import type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerMarkdownOutputConfiguration,

@@ -18,8 +18,10 @@ import {
 
 import { DeliveryService } from "./delivery.service";
 
-import type { DocumentationMeasurement } from "../measure/documentation-measurement.types";
-import type { MeasurementResult } from "../measure/measure.types";
+import type {
+  DocumentationMeasurement,
+  MeasurementResult,
+} from "../measure/measure.types";
 import type { RunMode } from "../run-plan/run-plan.types";
 import type {
   RenderMarkdownOutput,

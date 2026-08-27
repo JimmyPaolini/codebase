@@ -9,13 +9,13 @@ import { LimitsService } from "../limits/limits.service";
 import { MetricIndexService } from "../limits/metric-index.service";
 
 import type { LimitFailure } from "../limits/limits.types";
-import type { ReportFailure } from "../report/report.types";
-import type { DocumentationMeasurement } from "./documentation-measurement.types";
 import type {
   AnalyzeLanguageArguments,
+  DocumentationMeasurement,
   MeasureArguments,
   MeasurementResult,
   MeasureTargetArguments,
+  ReportFailure,
   TargetMeasurement,
 } from "./measure.types";
 import type {
