@@ -85,13 +85,13 @@ _Avoid_: Pattern, motif, key pattern
 
 **Type**:
 The base repeating shape a meander draws — `boxes`, `chain`, `snake`, `swirl`,
-`whirl`, or `bars`. Each type defines its own motif and its own set of
+`whirl`, or `mosaic`. Each type defines its own motif and its own set of
 compatible modifiers.
 _Avoid_: Style, family, kind
 
 **Modifier**:
 A named transform applied to a type's motif across its repeat units — rotation
-(`spin`), mirroring (`flip`), border-closing (`edge`), or the `bars`-specific
+(`spin`), mirroring (`flip`), border-closing (`edge`), or the `mosaic`-specific
 `alternated`, `split`, and `dot` transforms. Only certain modifiers are
 compatible with each type.
 _Avoid_: Variant, option, flag
