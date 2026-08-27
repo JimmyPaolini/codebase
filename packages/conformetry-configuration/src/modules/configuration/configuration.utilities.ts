@@ -7,12 +7,12 @@ import type { z } from "zod";
 /**
  * Fails when two generators would answer to the same thing.
  *
- * A host resolves `<name-or-alias>` by taking the *first* generator whose name
- * or alias matches, so a collision does not error where it is used — it
- * silently shadows, and the losing generator becomes unreachable while still
- * appearing in the configuration. Two generators sharing a template collide
- * differently: validation then finds instances that fit both equally and
- * reports them as matching nothing.
+ * A host resolves a generator by taking the *first* whose name matches, so a
+ * collision does not error where it is used — it silently shadows, and the
+ * losing generator becomes unreachable while still appearing in the
+ * configuration. Two generators sharing a template collide differently:
+ * validation then finds instances that fit both equally and reports them as
+ * matching nothing.
  *
  * Reported through Zod rather than thrown, so every collision in a
  * configuration surfaces in one pass and each one carries the index of the
@@ -25,25 +25,17 @@ import type { z } from "zod";
  */
 export function assertNoCollisions(
   definitions: {
-    readonly aliases?: string[] | undefined;
     readonly name: string;
     readonly templatePath: string;
   }[],
   context: z.RefinementCtx,
 ): void {
   const issues = [
-    // Names and aliases share one namespace because a host searches both at
-    // once: an alias equal to another generator's name is as ambiguous as two
-    // equal names.
     ...findDuplicates({
       definitions,
       describe: (key, owners) =>
-        `"${key}" is the name or alias of more than one generator: ${owners.join(", ")}. A host resolves the first match, leaving the others unreachable.`,
-      // A generator listing its own name as an alias is redundant rather than
-      // ambiguous, so it counts once.
-      keysOf: (definition) => [
-        ...new Set([definition.name, ...(definition.aliases ?? [])]),
-      ],
+        `"${key}" is the name of more than one generator: ${owners.join(", ")}. A host resolves the first match, leaving the others unreachable.`,
+      keysOf: (definition) => [definition.name],
     }),
     ...findDuplicates({
       definitions,
@@ -51,7 +43,7 @@ export function assertNoCollisions(
         `${key} is the template of more than one generator: ${owners.join(", ")}. Validation cannot tell which one a matching instance belongs to.`,
       keysOf: (definition) => [definition.templatePath],
     }),
-    ...findUnusableHandles(definitions),
+    ...findUnusableNames(definitions),
   ];
 
   for (const issue of issues) {
@@ -92,19 +84,17 @@ function findDuplicates<Definition extends { name: string }>(args: {
     }));
 }
 
-/** Reports names and aliases that could not be addressed or emitted. */
-function findUnusableHandles(
+/** Reports names that could not be addressed or emitted. */
+function findUnusableNames(
   definitions: {
-    readonly aliases?: string[] | undefined;
     readonly name: string;
   }[],
 ): { message: string; path: (number | string)[] }[] {
-  return definitions.flatMap((definition, index) => {
-    return [definition.name, ...(definition.aliases ?? [])]
-      .filter((handle) => handle === "" || handle !== path.basename(handle))
-      .map((handle) => ({
-        message: `Generator ${definition.name} uses "${handle}" as a name or alias. A generator is addressed by that text and emitted to a file named after it, so it cannot contain a path separator.`,
-        path: [index],
-      }));
-  });
+  return definitions
+    .map((definition, index) => ({ index, name: definition.name }))
+    .filter(({ name }) => name === "" || name !== path.basename(name))
+    .map(({ index, name }) => ({
+      message: `Generator "${name}" is addressed by its name and emitted to a file named after it, so that name cannot contain a path separator.`,
+      path: [index],
+    }));
 }

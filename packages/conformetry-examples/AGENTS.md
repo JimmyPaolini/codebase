@@ -53,7 +53,7 @@ against the outcome its own guide promises.
 | `No instances were found.` | [nx-host](examples/nx-host/README.md) | Tag-scoped groups are invisible to the command-line host, which locates by glob alone |
 | `MissingSubstitutionError: No value was supplied for …` | [failure-modes](examples/failure-modes/README.md) | A template interpolates a placeholder nothing supplies. Declare it as a generator input **and** in the matching instance group's `substitutions`, or ask the question with a `{{#section}}` instead |
 | `All checked files conform.` but the code is obviously wrong | [failure-modes](examples/failure-modes/README.md) | A `TODO` template comment is satisfied by any comment, on purpose |
-| `Unknown generator "…"` | [two-directions](examples/two-directions/README.md) | `conformetry templates` is the only thing that answers which generators exist; aliases resolve only through the Nx plugin |
+| `Unknown generator "…"` | [two-directions](examples/two-directions/README.md) | `conformetry templates` is the only thing that answers which generators exist; a generator is addressed by its full name |
 
 ## I need to know whether X is a finding
 

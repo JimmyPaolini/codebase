@@ -24,7 +24,6 @@ const GEARS_PATH = path.join(
 );
 
 const COMMAND_MODULE: InventoriedTemplate = {
-  aliases: ["ncm"],
   description: "Generate a NestJS command module",
   instances: [
     {
@@ -39,7 +38,6 @@ const COMMAND_MODULE: InventoriedTemplate = {
 };
 
 const SERVICE_MODULE: InventoriedTemplate = {
-  aliases: [],
   description: "",
   instances: [
     {
@@ -150,16 +148,16 @@ describe(TemplatesCommand, () => {
   });
 
   describe("run", () => {
-    it("names every declared template with its aliases and folder", async () => {
+    it("names every declared template with its description and folder", async () => {
       await command.run([], {});
       const lines = written();
 
-      expect(lines).toContain("nestjs-command-module (ncm)");
+      expect(lines).toContain("nestjs-command-module");
       expect(lines).toContain("Generate a NestJS command module");
       expect(lines).toContain("configuration/templates/nestjs-command-module");
     });
 
-    it("names a template that declares neither aliases nor a description", async () => {
+    it("names a template that declares no description", async () => {
       await command.run([], {});
 
       expect(written()).toContain("nestjs-service-module");

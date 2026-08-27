@@ -15,7 +15,6 @@ import { ConformetryGeneratorsCommand } from "./conformetry-generators.command";
 
 const fileContents = new Map<string, string>();
 type ConformetryTestConfiguration = {
-  aliases?: string[];
   description?: string;
   name: string;
 }[];
@@ -115,16 +114,16 @@ describe(ConformetryGeneratorsCommand, () => {
       agentsContent: [
         "# Header",
         "<!-- conformetry-generators-table start -->",
-        "| Template | Alias | Description |",
-        "| -------- | ----- | ----------- |",
-        "| `alpha` | `a` | first |",
-        "| `beta` | `b` | second |",
+        "| Template | Description |",
+        "| -------- | ----------- |",
+        "| `alpha` | first |",
+        "| `beta` | second |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
       expectedLogMessage: "📇 Verified the conformetry generators table",
       generators: [
-        { aliases: ["a"], description: "first", name: "alpha" },
-        { aliases: ["b"], description: "second", name: "beta" },
+        { description: "first", name: "alpha" },
+        { description: "second", name: "beta" },
       ],
       modeArguments: ["check"],
       readmeContent: [
@@ -143,9 +142,9 @@ describe(ConformetryGeneratorsCommand, () => {
       agentsContent: [
         "# Header",
         "<!-- conformetry-generators-table start -->",
-        "| Template | Alias | Description |",
-        "| -------- | ----- | ----------- |",
-        "| `alpha` |  | first |",
+        "| Template | Description |",
+        "| -------- | ----------- |",
+        "| `alpha` | first |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
       expectedLogMessage: "📇 Verified the conformetry generators table",
@@ -186,9 +185,7 @@ describe(ConformetryGeneratorsCommand, () => {
   );
 
   it("writes generated table to every target file in write mode", async () => {
-    currentConformetryConfiguration = [
-      { aliases: ["a"], description: "first", name: "alpha" },
-    ];
+    currentConformetryConfiguration = [{ description: "first", name: "alpha" }];
     const staleContent = [
       "# Header",
       "<!-- conformetry-generators-table start -->",
@@ -203,7 +200,7 @@ describe(ConformetryGeneratorsCommand, () => {
     expect(writeFileSync).toHaveBeenCalledTimes(2);
     expect(writeFileSync).toHaveBeenCalledWith(
       agentsFile,
-      expect.stringContaining("| `alpha` | `a` | first |"),
+      expect.stringContaining("| `alpha` | first |"),
       "utf8",
     );
     expect(writeFileSync).toHaveBeenCalledWith(
@@ -273,16 +270,16 @@ describe(ConformetryGeneratorsCommand, () => {
         "reports drift when generated table differs from AGENTS content",
       setup: (): void => {
         currentConformetryConfiguration = [
-          { aliases: ["a"], description: "first", name: "alpha" },
+          { description: "first", name: "alpha" },
         ];
         fileContents.set(
           agentsFile,
           [
             "# Header",
             "<!-- conformetry-generators-table start -->",
-            "| Template | Alias | Description |",
-            "| -------- | ----- | ----------- |",
-            "| `stale` | `x` | mismatch |",
+            "| Template | Description |",
+            "| -------- | ----------- |",
+            "| `stale` | mismatch |",
             "<!-- conformetry-generators-table end -->",
           ].join("\n"),
         );

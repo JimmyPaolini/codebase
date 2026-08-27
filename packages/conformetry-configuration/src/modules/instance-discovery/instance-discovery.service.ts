@@ -211,7 +211,6 @@ export class InstanceDiscoveryService {
         });
 
         return {
-          aliases: generator.aliases ?? [],
           description: generator.description ?? "",
           instances,
           name: generator.name,

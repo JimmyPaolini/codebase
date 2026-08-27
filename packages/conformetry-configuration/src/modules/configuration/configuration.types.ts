@@ -13,7 +13,6 @@ export type ConformetryConfiguration = ConformetryGeneratorDefinition[];
 
 /** One generator, with the template it renders and the instances it governs. */
 export interface ConformetryGeneratorDefinition {
-  aliases?: string[];
   description?: string;
   /**
    * The values this generator substitutes, as JSON Schema fragments. Named for

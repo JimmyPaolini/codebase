@@ -30,7 +30,6 @@ export interface InventoriedPairing {
 
 /** One declared template, paired with the instances it explains. */
 export interface InventoriedTemplate {
-  readonly aliases: string[];
   readonly description: string;
   /** Instances this template explains, empty when nothing matched it. */
   readonly instances: InventoriedPairing[];

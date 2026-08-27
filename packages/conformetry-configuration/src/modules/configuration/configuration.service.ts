@@ -49,9 +49,6 @@ export class ConfigurationService {
     definition: ParsedGeneratorEntry,
   ): ConformetryGeneratorDefinition {
     return {
-      ...(definition.aliases === undefined
-        ? {}
-        : { aliases: definition.aliases }),
       ...(definition.description === undefined
         ? {}
         : { description: definition.description }),

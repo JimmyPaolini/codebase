@@ -91,9 +91,6 @@ export class GeneratorService {
 
     for (const definition of args.definitions) {
       generators[definition.name] = {
-        ...(definition.aliases === undefined
-          ? {}
-          : { aliases: definition.aliases }),
         ...(definition.description === undefined
           ? {}
           : { description: definition.description }),

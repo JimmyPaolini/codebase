@@ -23,13 +23,12 @@ two fields are required:
 | `templatePath` | yes | Template folder, relative to the workspace root |
 | `inputs` | no | Values the template renders with, as JSON Schema fragments |
 | `instances` | no | Where this generator's output already lives |
-| `aliases` | no | Short alternative names |
 | `description` | no | Shown when generators are listed |
 | `threshold` | no | Lowest conformance score this generator's instances may have, 0 to 1 |
 
-Unknown keys are **stripped silently** rather than rejected, so a misspelled
-field is not an error — it simply does nothing. Check your entry took effect by
-listing the generators:
+Unknown keys are **rejected**, so a misspelled field — or `aliases`, which was
+removed outright — fails the load rather than quietly doing nothing. Check your
+entry took effect by listing the generators:
 
 ```bash
 conformetry templates
@@ -40,12 +39,12 @@ template that nothing validates afterwards.
 
 ### Three collisions the configuration refuses to load with
 
-1. **Names and aliases share one namespace.** An alias may not collide with
-   another generator's name, or with another alias.
+1. **Two generators may not share a `name`.** A host resolves the first match,
+   leaving the other unreachable.
 2. **Two generators may not name the same `templatePath`.** Validation could not
    tell which generator a matching instance belongs to.
-3. **A name or alias may not be empty or contain a path separator.** Each becomes
-   a filename in the emitted Nx plugin.
+3. **A name may not be empty or contain a path separator.** It becomes a
+   filename in the emitted Nx plugin.
 
 ### Instance groups: where output already lives
 

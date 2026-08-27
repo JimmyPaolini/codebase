@@ -36,7 +36,6 @@ export interface FormatterAdapter {
  * Generator metadata and runtime configuration.
  */
 export interface GeneratorDefinition {
-  aliases?: string[];
   description?: string;
   hooks?: GeneratorHooks;
   name: string;

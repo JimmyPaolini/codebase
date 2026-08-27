@@ -275,7 +275,7 @@ describe(ConfigurationService, () => {
     });
   });
 
-  describe("collisions", () => {
+  describe("refusals", () => {
     /** Writes a config and returns the promise of loading it. */
     async function load(
       definitions: unknown[],
@@ -297,23 +297,7 @@ describe(ConfigurationService, () => {
           { name: "widget", templatePath: "t/1" },
           { name: "widget", templatePath: "t/2" },
         ],
-        "name or alias of more than one generator",
-      ],
-      [
-        "an alias shared by two generators",
-        [
-          { aliases: ["w"], name: "widget", templatePath: "t/1" },
-          { aliases: ["w"], name: "gadget", templatePath: "t/2" },
-        ],
-        "name or alias of more than one generator",
-      ],
-      [
-        "an alias equal to another generator's name",
-        [
-          { name: "widget", templatePath: "t/1" },
-          { aliases: ["widget"], name: "gadget", templatePath: "t/2" },
-        ],
-        "name or alias of more than one generator",
+        "name of more than one generator",
       ],
       [
         "a template shared by two generators",
@@ -334,10 +318,13 @@ describe(ConfigurationService, () => {
       await expect(load(definitions)).rejects.toThrow(message);
     });
 
-    it("allows a generator to alias its own name", async () => {
+    it("refuses a generator declaring a field the schema does not know", async () => {
+      // Generator aliases were removed outright. The schema is strict so a
+      // workspace still declaring one is told, rather than having the key
+      // stripped and believing it still resolves.
       await expect(
-        load([{ aliases: ["widget"], name: "widget", templatePath: "t/1" }]),
-      ).resolves.toHaveLength(1);
+        load([{ aliases: ["w"], name: "widget", templatePath: "t/1" }]),
+      ).rejects.toThrow("aliases");
     });
   });
 });

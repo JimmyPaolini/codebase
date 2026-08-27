@@ -70,7 +70,6 @@ exist is a property of your configuration, not of this package.
 
 ```bash
 nx g conformetry:nestjs-service-module --name=billing --project=lexico
-nx g conformetry:nsm --name=billing --project=lexico   # by alias
 ```
 
 Nx prompts for missing inputs from the generator's own schema and writes
