@@ -1,6 +1,6 @@
 {
   "bin": {
-    "callidescope": "./src/main.mjs"
+    "callidescope": "./src/main.js"
   },
   "dependencies": {
     "@callidescope/configuration": "workspace:*",

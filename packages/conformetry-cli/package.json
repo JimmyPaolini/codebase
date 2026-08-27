@@ -1,6 +1,6 @@
 {
   "bin": {
-    "conformetry": "./src/main.mjs"
+    "conformetry": "./src/main.js"
   },
   "dependencies": {
     "@codebase/logger": "workspace:*",
