@@ -5,12 +5,12 @@ import { Injectable } from "@nestjs/common";
  *
  * Shared by `codometer`, `changes`, and `configuration` so the rules for the
  * flags they hold in common — a directory that falls back to the working
- * directory, a path that may be written blank, a boolean flag whose presence
- * is its whole value — are stated once rather than restated per command. The
- * rules are subtle enough to be worth stating once: commander hands a
- * valueless flag through as `true` without ever calling its parser, so a
- * command that narrows text and one that does not disagree about what
- * `--flag "$UNSET"` meant.
+ * directory, and a path that may be written blank — are stated once rather
+ * than restated per command. They are subtle enough to be worth stating
+ * once: commander hands a valueless flag through as `true` without ever
+ * calling its parser, so a command that narrows text and one that does not
+ * disagree about what `--flag "$UNSET"` meant. Only the rules more than one
+ * command shares live here; a flag whose parser is its own business keeps it.
  *
  * Nothing here prompts. Every codometer flag is either optional or defaulted,
  * and no command takes a positional argument, so a run never reaches a value
@@ -45,23 +45,12 @@ export class InputService {
   /**
    * Reads a directory option, falling back to the working directory.
    *
-   * Read once here rather than at each use, so that every one of a run's
-   * outputs is resolved against the same directory even if something changes
-   * the process's own mid-run.
+   * The fallback is the process's working directory as it stands when the
+   * option is read, which is what every command means by "here" — no command
+   * changes it mid-run, and one that did would want the new one.
    */
   public parseDirectoryOption(value: unknown): string {
     return this.parseDefaultedOption(value, process.cwd());
-  }
-
-  /**
-   * Reads a boolean flag, whose presence is its whole value.
-   *
-   * The parser runs only when the flag is on the command line, and such a
-   * flag carries no value, so `undefined` here means "present" rather than
-   * "unset".
-   */
-  public parseFlagOption(value: boolean | undefined): boolean {
-    return value ?? true;
   }
 
   /**
@@ -71,32 +60,12 @@ export class InputService {
    * value at all, which it reports as `true` without calling the option's
    * parser. So anything but a non-empty string counts as absent — passing
    * that boolean through renders a link to the word `true`.
+   *
+   * Deliberately does not trim, unlike `callidescope`'s same-named method: a
+   * codometer option is a path, and a path whose surrounding spaces were
+   * silently dropped is a different path from the one that was asked for.
    */
   public parseOptionalOption(value: unknown): string | undefined {
     return typeof value === "string" && value !== "" ? value : undefined;
-  }
-
-  /**
-   * Reads an option whose value the command line must supply.
-   *
-   * Taken as written, since commander refuses the flag outright when its
-   * required value is missing. Stated here so a required flag reads as a
-   * decision rather than as a parser somebody forgot to write.
-   */
-  public parseRequiredOption(value: string): string {
-    return value;
-  }
-
-  /**
-   * Reads an option whose value is taken exactly as written.
-   *
-   * Deliberately not narrowed. An optional-value path flag distinguishes
-   * three things downstream — omitted, present with no path, and present with
-   * a path — and only the first two ever reach a parser, so narrowing a blank
-   * path to `undefined` here would quietly turn a run that named a file into
-   * one that named none.
-   */
-  public parseVerbatimOption(value: string | undefined): string | undefined {
-    return value;
   }
 }

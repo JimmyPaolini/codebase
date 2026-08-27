@@ -909,6 +909,12 @@ describe(CodometerCommand, () => {
       expect(buildCommand().parseDirectory(undefined)).toBe(process.cwd());
     });
 
+    it("defaults directory to process cwd for a valueless --directory", () => {
+      // A valueless optional flag reaches commander as `true` and skips the
+      // parser, so the boolean arrives here by way of `run`.
+      expect(buildCommand().parseDirectory(true)).toBe(process.cwd());
+    });
+
     it("passes an explicit configuration path through to the loader", async () => {
       await run({ config: "configuration/codometer.config.ts" });
 

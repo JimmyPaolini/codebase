@@ -76,8 +76,8 @@ export class ConfigurationCommand extends CommandRunner {
     description: "List only the configured limits",
     flags: "--limits",
   })
-  public parseLimits(value: boolean | undefined): boolean {
-    return this.inputService.parseFlagOption(value);
+  public parseLimits(): boolean {
+    return true;
   }
 
   /**

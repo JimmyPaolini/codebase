@@ -232,7 +232,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "--check [check]",
   })
   public parseCheck(value: string): string {
-    return this.inputService.parseRequiredOption(value);
+    return value;
   }
 
   /**
@@ -243,7 +243,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "--config [config]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return this.inputService.parseVerbatimOption(value);
+    return value;
   }
 
   /**
@@ -265,7 +265,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "--json [json]",
   })
   public parseJson(value: string | undefined): string | undefined {
-    return this.inputService.parseVerbatimOption(value);
+    return value;
   }
 
   /**
@@ -277,7 +277,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "-m, --markdown [markdown]",
   })
   public parseMarkdown(value: string | undefined): string | undefined {
-    return this.inputService.parseVerbatimOption(value);
+    return value;
   }
 
   /**
@@ -293,7 +293,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "--readme <readme>",
   })
   public parseReadme(value: string): string {
-    return this.inputService.parseRequiredOption(value);
+    return value;
   }
 
   /**
@@ -308,7 +308,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "--write",
   })
   public parseWrite(value: boolean | undefined): boolean {
-    return this.inputService.parseFlagOption(value);
+    return value ?? true;
   }
 
   /**

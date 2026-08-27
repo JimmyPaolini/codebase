@@ -115,7 +115,7 @@ describe(ConfigurationCommand, () => {
   });
 
   it("reads the limits flag as set whenever it is present", () => {
-    expect(command.parseLimits(undefined)).toBe(true);
+    expect(command.parseLimits()).toBe(true);
   });
 
   it("counts the configurations it could not read when it logs", async () => {

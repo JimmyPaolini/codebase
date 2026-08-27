@@ -46,6 +46,10 @@ describe(InputService, () => {
     expect(service.parseDefaultedOption("json", "table")).toBe("json");
   });
 
+  it("falls back to the given default for a valueless flag's boolean", () => {
+    expect(service.parseDefaultedOption(true, "table")).toBe("table");
+  });
+
   // 📁 Directory option
 
   it("reads a written directory as itself", () => {
@@ -62,33 +66,7 @@ describe(InputService, () => {
     expect(service.parseDirectoryOption(true)).toBe(process.cwd());
   });
 
-  // 🎌 Flag option
-
-  it("reads a present flag as turned on", () => {
-    expect(service.parseFlagOption(undefined)).toBe(true);
-  });
-
-  it("keeps a flag's own value when it carries one", () => {
-    expect(service.parseFlagOption(false)).toBe(false);
-  });
-
-  // ✍️ Verbatim option
-
-  it("passes a verbatim option's value through untouched", () => {
-    expect(service.parseVerbatimOption("  spaced  ")).toBe("  spaced  ");
-  });
-
-  it("passes an empty verbatim option through rather than dropping it", () => {
-    expect(service.parseVerbatimOption("")).toBe("");
-  });
-
-  it("passes an absent verbatim option through as absent", () => {
-    expect(service.parseVerbatimOption(undefined)).toBeUndefined();
-  });
-
-  // ❗ Required option
-
-  it("passes a required option's value through untouched", () => {
-    expect(service.parseRequiredOption("README.md")).toBe("README.md");
+  it("falls back to the working directory for an empty directory", () => {
+    expect(service.parseDirectoryOption("")).toBe(process.cwd());
   });
 });
