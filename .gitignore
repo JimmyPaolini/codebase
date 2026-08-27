@@ -72,10 +72,12 @@ dist
 last-lint-staged-output.log
 applications/caelundas/output
 
-# The `start` command's mosaic half enumerates every tile the family admits —
-# thousands of SVGs and their contact sheets. `output/` itself stays
-# committed, since the named-type half beside them is a reviewable hundred.
-applications/meanderaw/output/permutations
+# The `start` command's mosaic tiles are committed alongside the rest of
+# `output/`, but their contact sheets are not: each one embeds every SVG of
+# its row count inline, so committing them would duplicate the whole sweep a
+# second time for no extra information. `nx run meanderaw:build` rebuilds
+# them whenever they are wanted.
+applications/meanderaw/output/permutations/*.html
 vite.config.*.timestamp*
 data/**
 .fallow
