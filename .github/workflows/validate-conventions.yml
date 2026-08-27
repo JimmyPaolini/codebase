@@ -194,16 +194,26 @@ jobs:
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/synchronization/src/main.ts pull-request-labels write
 
+      # Read the metadata live by passing the number, rather than from the
+      # webhook payload's own `assignees`, `labels`, and `title`. The payload is
+      # a snapshot taken when the event fired, and on `opened` that is before
+      # the assignee exists: `gh pr create --assignee` attaches it in a
+      # follow-up request, so an `opened` run saw `assignees: []` and failed a
+      # pull request that was correctly assigned a second later. A re-run could
+      # never clear it either, because a re-run replays the same frozen payload.
+      #
+      # The step above already reconciles labels through the API with this same
+      # token, so this job was never hermetic and reading live costs it nothing.
+      # It also drops the full JSON label array from the environment, which is
+      # the same argv-and-environment size ceiling the body step avoids.
       - name: 🧾 Validate Pull Request Metadata
         env:
-          PULL_REQUEST_ASSIGNEES: >-
-            ${{ toJSON(github.event.pull_request.assignees) }}
-          PULL_REQUEST_LABELS: ${{ toJSON(github.event.pull_request.labels) }}
+          GH_TOKEN: ${{ github.token }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
-          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
-            tools/validation/src/main.ts pull-request-metadata
+            tools/validation/src/main.ts pull-request-metadata \
+            "${PULL_REQUEST_NUMBER}"
 
       - name: 📈 Validate Pull Request Release Significance
         env:

@@ -308,6 +308,16 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
+    // conformetry-examples: runnable examples of the toolchain. Example code
+    // exists to be read and run, not imported, so every file here is an entry
+    // point in its own right — without saying so, knip reports the whole
+    // package as unused. The fixture trees are excluded because a template
+    // file is not valid TypeScript until it has been rendered.
+    "packages/conformetry-examples": {
+      entry: ["examples/*/conformetry.config.ts", "examples/*/*.ts"],
+      ignore: ["examples/*/instances/**", "examples/*/templates/**"],
+      project: "examples/**/*.ts",
+    },
     "packages/conformetry-generation": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],

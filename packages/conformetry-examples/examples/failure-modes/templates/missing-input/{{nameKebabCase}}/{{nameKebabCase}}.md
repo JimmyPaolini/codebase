@@ -1,0 +1,5 @@
+# {{namePascalCase}}
+
+## Ownership
+
+Owner: {{owner}}

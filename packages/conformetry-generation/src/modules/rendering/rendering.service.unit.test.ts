@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { MissingSubstitutionError } from "./rendering.errors";
 import { RenderingService } from "./rendering.service";
 
 describe(RenderingService, () => {
@@ -57,13 +58,61 @@ describe(RenderingService, () => {
       expect(rendered).toBe("a widget b");
     });
 
-    it("renders an unknown placeholder as empty, per mustache semantics", () => {
+    it("refuses a placeholder nobody supplied", () => {
+      expect(() =>
+        service.renderContent({
+          substitutions: {},
+          templateContent: "value: {{missing}}",
+        }),
+      ).toThrow(MissingSubstitutionError);
+    });
+
+    it("names every placeholder nobody supplied, and where it was asked", () => {
+      expect(() =>
+        service.renderContent({
+          subject: "templates/widget/widget.md",
+          substitutions: {},
+          templateContent: "{{owner}} and {{team}}",
+        }),
+      ).toThrow(/\{\{owner\}\}, \{\{team\}\}.*templates\/widget\/widget\.md/u);
+    });
+
+    it("accepts a supplied placeholder whose value is the empty string", () => {
+      // Supplying "" is an answer. Only an absent key is a hole.
       const rendered = service.renderContent({
-        substitutions: {},
-        templateContent: "value: {{missing}}",
+        substitutions: { owner: "" },
+        templateContent: "owner: {{owner}}",
       });
 
-      expect(rendered).toBe("value: ");
+      expect(rendered).toBe("owner: ");
+    });
+
+    it("treats an absent section name as a conditional, not a hole", () => {
+      // `{{#field}}` and `{{^field}}` ask a question; absence is the answer.
+      const rendered = service.renderContent({
+        substitutions: {},
+        templateContent: "{{#extra}}yes{{/extra}}{{^extra}}no{{/extra}}",
+      });
+
+      expect(rendered).toBe("no");
+    });
+
+    it("still refuses an interpolation nested inside a section", () => {
+      expect(() =>
+        service.renderContent({
+          substitutions: { extra: "on" },
+          templateContent: "{{#extra}}{{missing}}{{/extra}}",
+        }),
+      ).toThrow(MissingSubstitutionError);
+    });
+
+    it("ignores a comment, which names no field", () => {
+      const rendered = service.renderContent({
+        substitutions: {},
+        templateContent: "a{{! not a placeholder }}b",
+      });
+
+      expect(rendered).toBe("ab");
     });
 
     it("does not HTML-escape substituted values", () => {
@@ -131,13 +180,13 @@ describe(RenderingService, () => {
       expect(rendered).toBe("src/my-widget/my-widget.module.ts");
     });
 
-    it("renders an unknown placeholder as empty, as content does", () => {
-      const rendered = service.renderPath({
-        substitutions: {},
-        templatePath: "{{missing}}.ts",
-      });
-
-      expect(rendered).toBe(".ts");
+    it("refuses a placeholder nobody supplied, as content does", () => {
+      expect(() =>
+        service.renderPath({
+          substitutions: {},
+          templatePath: "{{missing}}.ts",
+        }),
+      ).toThrow(MissingSubstitutionError);
     });
 
     it("leaves a Python dunder alone", () => {
