@@ -6,12 +6,11 @@
     "@nestjs/core": "catalog:",
     "@photostructure/tz-lookup": "catalog:",
     "lodash": "catalog:",
-    "moment": "catalog:",
     "moment-timezone": "catalog:",
     "nest-commander": "catalog:",
     "reflect-metadata": "catalog:",
     "sweph": "catalog:",
-    "tsx": "catalog:",
+    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -22,6 +21,8 @@
     "@types/lodash": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "moment": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

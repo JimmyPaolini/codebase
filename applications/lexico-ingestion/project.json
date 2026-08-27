@@ -13,7 +13,20 @@
   ],
   "targets": {
     "build": {
-      "command": "echo 'lexico-ingestion is a development tool and does not require building'"
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "applications/lexico-ingestion",
+            "output": "."
+          }
+        ],
+        "main": "applications/lexico-ingestion/src/main.ts",
+        "outputPath": "dist/applications/lexico-ingestion",
+        "tsConfig": "applications/lexico-ingestion/tsconfig.build.json"
+      },
+      "outputs": ["{options.outputPath}"]
     },
     "codometer": {},
     "dependency-cruiser": {},
