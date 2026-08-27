@@ -340,36 +340,36 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-228619-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-12.29_MB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-229518-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-12.33_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-605-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-1931-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-1927-3178c6?style=flat-square)
 
 ### TypeScript
 
 ![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1874-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-696-0ea5e9?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-701-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-33-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-994-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-4920-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-993-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-4935-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-15-166534?style=flat-square)
 
 ### JavaScript
 
-![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-18-f7df1e?style=flat-square)
+![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-14-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-449-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-122-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-625-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-9525-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-3406-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-10861-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-2070-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-12577-dc2626?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-626-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-9556-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-3424-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-10887-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-2093-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-12605-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-7745-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2418-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-9869-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-20764-475569?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2426-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-9966-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-20942-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-29-ca8a04?style=flat-square)
 
 ### Python
@@ -389,17 +389,17 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-227-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-16544-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-3042-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1104-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-9163-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-6566-16a34a?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-230-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-16646-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-3060-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1116-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-9219-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-6622-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-599-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-957-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-960-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-2885-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-12268-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-2915-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-12357-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
@@ -517,23 +517,23 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-262-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-67029-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-67094-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-250-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-1739-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-2153-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-2156-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-96-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-10291-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-10302-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-1181-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-5437-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-577-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-5667-0ea5e9?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-578-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-5670-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-1775-059669?style=flat-square)
-![Images](https://img.shields.io/badge/Images-7746-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-1954-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-25018-ef4444?style=flat-square)
+![Images](https://img.shields.io/badge/Images-7749-10b981?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-1955-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-25033-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-31-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
