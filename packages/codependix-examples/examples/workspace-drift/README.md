@@ -1,4 +1,4 @@
-# 15. An export moves with the workspace, not with the project
+# An export moves with the workspace, not with the project
 
 Why this repository runs `codependix --write` on the default branch and gates no pull request on `codependix --check`.
 

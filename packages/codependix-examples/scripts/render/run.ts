@@ -1,6 +1,6 @@
 import { collectDocuments } from "./catalog";
 import { deliverDocuments } from "./document";
-import { OUTPUT_DIRECTORY } from "./paths";
+import { EXAMPLES_DIRECTORY } from "./paths";
 
 import type { ExampleRunMode } from "./types";
 
@@ -20,7 +20,7 @@ export const USAGE_MESSAGE =
  */
 export async function run(
   args: string[],
-  outputDirectory: string = OUTPUT_DIRECTORY,
+  outputDirectory: string = EXAMPLES_DIRECTORY,
 ): Promise<{ exitCode: number; lines: string[] }> {
   const mode = selectMode(args);
 

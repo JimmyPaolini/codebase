@@ -34,11 +34,11 @@ export interface ExampleJsonExport {
    */
   readonly content: string;
   /**
-   * File name, relative to `output/json/`.
+   * File name, committed inside the example's own directory.
    *
    * Named `codependix-*graph.json` so the committed exports inherit the
-   * `jsonc/sort-array-values` carve-out `configuration/eslint.config.ts`
-   * declares for every graph codependix writes — see example 14.
+   * carve-outs `configuration/eslint.config.ts` and `configuration/.oxfmtignore`
+   * declare for every graph codependix writes — see the `json-exports` example.
    */
   readonly fileName: string;
 }

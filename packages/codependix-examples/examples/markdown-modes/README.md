@@ -1,4 +1,4 @@
-# 10. Both Markdown modes
+# Both Markdown modes
 
 An anchored splice into a named block inside a file somebody else is authoring, and a standalone file whose entire contents are the export.
 
@@ -42,7 +42,7 @@ graph LR
 
 ## The four shapes a Markdown destination can take
 
-The last one names nowhere for the export to go, and is refused by the schema — see example 13.
+The last one names nowhere for the export to go, and is refused by the schema — see [refusals](../refusals).
 
 ```ts
 markdown: { anchor: "codependix-nx" }                       // → README.md

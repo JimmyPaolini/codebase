@@ -1,4 +1,4 @@
-# 5. Rooting a container, including one that bootstraps nothing
+# Rooting a container, including one that bootstraps nothing
 
 How a container is rooted when a project bootstraps one, when it bootstraps nothing, and when it refuses to load at all.
 
@@ -34,6 +34,6 @@ flowchart LR
 
 ```text
 explored rooted-application — 3 module(s)
-explored empty-container — 0 module(s)
+explored library-package — 3 module(s)
 failed   failing-container: Error: This project's container cannot be loaded.
 ```

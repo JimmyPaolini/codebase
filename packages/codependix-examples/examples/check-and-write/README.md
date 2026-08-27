@@ -1,4 +1,4 @@
-# 12. `--check` versus `--write`
+# `--check` versus `--write`
 
 What `--check` reports, what `--write` acts on, and the two command lines codependix refuses outright.
 
@@ -41,6 +41,6 @@ Only one of --check or --write may be given
 
 ## One project failing names itself and stops nothing
 
-Example 5 shows the same guarantee acting on three real containers, one of which refuses to load.
+[container-rooting](../container-rooting) shows the same guarantee acting on three real containers, one of which refuses to load.
 
 `CodependixService.run` attempts every project regardless of whether an earlier one failed, collecting each failure as a `ProjectRunFailure` rather than aborting the loop. `CodependixCommand.reportOutcome` then reports the failures and the stale exports together, and fails the run if either list is non-empty. That is the whole of the guarantee: `--write` either fully succeeds, or names exactly which projects failed while still completing every other one.

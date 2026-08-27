@@ -33,7 +33,7 @@ type ProgramOutcome =
 // ♟️ Constants
 
 /** Path segment every TypeScript example sits under, inside `examples/`. */
-const TYPESCRIPT_SEGMENT = "typescript";
+const TYPESCRIPT_SEGMENT = "typescript-resolution";
 
 /** Project exercising every resolution case and every deliberate non-case. */
 const RESOLUTION_PROJECT = "resolution";
@@ -122,7 +122,7 @@ export function buildTypescriptDocuments(): ExampleDocument[] {
 
   return [
     {
-      id: "06-typescript-resolution",
+      id: "typescript-resolution",
       jsonExports: [],
       sections: [
         {
@@ -155,7 +155,7 @@ export function buildTypescriptDocuments(): ExampleDocument[] {
       ],
       summary:
         "TypeScript imports resolve through the compiler, not through a heuristic — and only an import declaration with a string-literal specifier counts.",
-      title: "6. Imports resolve through the compiler",
+      title: "Imports resolve through the compiler",
     },
   ];
 }
@@ -203,7 +203,7 @@ export function describeProjectAt(absoluteRoot: string): TypescriptProject {
 export function redactPath(message: string): string {
   return message.replaceAll(
     resolveExample(TYPESCRIPT_SEGMENT),
-    "<examples>/typescript",
+    "<examples>/typescript-resolution",
   );
 }
 

@@ -17,20 +17,16 @@ export const PROJECT_ROOT_DIRECTORY = path.resolve(
   "../../..",
 );
 
-/** Directory holding every subject the examples graph. */
-export const EXAMPLES_DIRECTORY = path.join(PROJECT_ROOT_DIRECTORY, "examples");
-
 /**
- * Directory, relative to this package's root, every rendered example lands in.
+ * Directory every example lives in, subject and rendered guide together.
  *
- * Committed rather than gitignored: the whole point of the package is that a
- * reader sees the diagram, the JSON shape, and the refusal without running
- * anything first.
+ * Each subdirectory is one example: its `README.md` is rendered from the
+ * subject files beside it, so a reader opening the directory sees the code and
+ * what codependix makes of it in the same place. Committed rather than
+ * gitignored — the whole point of the package is that a reader sees the
+ * diagram, the JSON shape, and the refusal without running anything first.
  */
-export const OUTPUT_DIRECTORY = path.join(PROJECT_ROOT_DIRECTORY, "output");
-
-/** Subdirectory of `output/` the committed JSON exports land in. */
-export const JSON_DIRECTORY = "json";
+export const EXAMPLES_DIRECTORY = path.join(PROJECT_ROOT_DIRECTORY, "examples");
 
 /** Resolves one example subject's absolute root. */
 export const resolveExample = (...segments: string[]): string =>

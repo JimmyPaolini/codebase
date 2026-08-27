@@ -16,7 +16,10 @@ import type {
 // ♟️ Constants
 
 /** Path segment every configuration example sits under, inside `examples/`. */
-const CONFIGURATION_SEGMENT = "configuration";
+const CONFIGURATION_SEGMENT = "configuration-resolution";
+
+/** Path segment the refusal examples sit under, inside `examples/`. */
+const REFUSALS_SEGMENT = "refusals";
 
 /** Workspace carrying both a TypeScript and a JSON configuration file. */
 const PRECEDENCE = "precedence";
@@ -78,7 +81,7 @@ export async function buildConfigurationDocuments(): Promise<
 > {
   return [
     {
-      id: "08-configuration-resolution",
+      id: "configuration-resolution",
       jsonExports: [],
       sections: [
         ...buildResolutionSections(),
@@ -86,10 +89,10 @@ export async function buildConfigurationDocuments(): Promise<
       ],
       summary:
         "Every configuration field, resolved by the real loader — including the two a reader is most likely to assume wrongly.",
-      title: "8. Configuration resolution, field by field",
+      title: "Configuration resolution, field by field",
     },
     {
-      id: "13-refusals",
+      id: "refusals",
       jsonExports: [],
       sections: [
         ...buildParseRefusalSections(),
@@ -97,7 +100,7 @@ export async function buildConfigurationDocuments(): Promise<
       ],
       summary:
         "Every way codependix refuses a configuration or a command line, each with the reproduction that produces it — because a refusal is where a reader gets stuck.",
-      title: "13. Every refusal, with its reproduction",
+      title: "Every refusal, with its reproduction",
     },
   ];
 }
@@ -151,7 +154,7 @@ export async function describeLoadRefusal(
 ): Promise<string> {
   try {
     await configurationService.loadConfiguration({
-      configurationPath: resolveExample(CONFIGURATION_SEGMENT, relativePath),
+      configurationPath: resolveExample(REFUSALS_SEGMENT, relativePath),
     });
   } catch (error) {
     return redactPath(describeError(error));
@@ -192,8 +195,8 @@ export async function loadConfiguration(
  */
 export function redactPath(message: string): string {
   return message.replaceAll(
-    resolveExample(CONFIGURATION_SEGMENT),
-    "<examples>/configuration",
+    resolveExample(REFUSALS_SEGMENT),
+    "<examples>/refusals",
   );
 }
 
@@ -244,13 +247,9 @@ async function buildDiscoverySections(): Promise<ExampleSection[]> {
 async function buildPathRefusalSections(): Promise<ExampleSection[]> {
   return [
     {
-      body: fence(
-        await describeLoadRefusal(
-          path.join(ABSENT, MISSING_CONFIGURATION_FILE),
-        ),
-      ),
+      body: fence(await describeLoadRefusal(MISSING_CONFIGURATION_FILE)),
       heading: "An explicitly named configuration file that does not exist",
-      note: "A path named on the command line must exist: a typo in a task runner's arguments should fail rather than quietly resolving every graph to `none`. A path that was _not_ named is searched for, and its absence is legal — see example 8.",
+      note: "A path named on the command line must exist: a typo in a task runner's arguments should fail rather than quietly resolving every graph to `none`. A path that was _not_ named is searched for, and its absence is legal — see [configuration-resolution](../configuration-resolution).",
     },
     {
       body: fence(

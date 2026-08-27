@@ -1,4 +1,4 @@
-# 13. Every refusal, with its reproduction
+# Every refusal, with its reproduction
 
 Every way codependix refuses a configuration or a command line, each with the reproduction that produces it — because a refusal is where a reader gets stuck.
 
@@ -45,10 +45,10 @@ A markdown destination needs an anchor, a path, or both — otherwise nothing na
 
 ## An explicitly named configuration file that does not exist
 
-A path named on the command line must exist: a typo in a task runner's arguments should fail rather than quietly resolving every graph to `none`. A path that was _not_ named is searched for, and its absence is legal — see example 8.
+A path named on the command line must exist: a typo in a task runner's arguments should fail rather than quietly resolving every graph to `none`. A path that was _not_ named is searched for, and its absence is legal — see [configuration-resolution](../configuration-resolution).
 
 ```text
-ConfigurationFileNotFoundError: Configuration file not found: <examples>/configuration/absent/codependix.config.missing.ts
+ConfigurationFileNotFoundError: Configuration file not found: <examples>/refusals/codependix.config.missing.ts
 ```
 
 ## A configuration file the loader cannot read
@@ -56,5 +56,5 @@ ConfigurationFileNotFoundError: Configuration file not found: <examples>/configu
 `SUPPORTED_CONFIGURATION_EXTENSIONS` covers `.cjs`, `.cts`, `.js`, `.json`, `.mjs`, `.mts`, and `.ts`. Anything else raises `UnknownConfigurationFileTypeError`.
 
 ```text
-UnknownConfigurationFileTypeError: Unsupported configuration file type: <examples>/configuration/unsupported-type/codependix.config.yaml
+UnknownConfigurationFileTypeError: Unsupported configuration file type: <examples>/refusals/unsupported-type/codependix.config.yaml
 ```

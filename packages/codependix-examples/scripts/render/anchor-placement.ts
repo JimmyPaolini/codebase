@@ -211,12 +211,12 @@ export function redactRoot(message: string, absoluteRoot: string): string {
 /** Builds the auto-created-section example. */
 function buildAutoCreationDocument(): ExampleDocument {
   return {
-    id: "11-auto-created-sections",
+    id: "auto-created-sections",
     jsonExports: [],
     sections: [...buildAutoCreationSections(), ...buildMissingReadmeSections()],
     summary:
       "A missing anchor used to be an error. It is now auto-created on `--write` — at the end of the file, or at the end of an existing section, and nowhere else.",
-    title: "11. Auto-creating the `## 🕸️ Codependix` section",
+    title: "Auto-creating the `## 🕸️ Codependix` section",
   };
 }
 
@@ -252,7 +252,7 @@ function buildModesDocument(): ExampleDocument {
   deliver({ content: SAMPLE_DIAGRAM, mode: "write", project });
 
   return {
-    id: "10-markdown-modes",
+    id: "markdown-modes",
     jsonExports: [],
     sections: [
       {
@@ -276,12 +276,12 @@ function buildModesDocument(): ExampleDocument {
           "ts",
         ),
         heading: "The four shapes a Markdown destination can take",
-        note: "The last one names nowhere for the export to go, and is refused by the schema — see example 13.",
+        note: "The last one names nowhere for the export to go, and is refused by the schema — see [refusals](../refusals).",
       },
     ],
     summary:
       "An anchored splice into a named block inside a file somebody else is authoring, and a standalone file whose entire contents are the export.",
-    title: "10. Both Markdown modes",
+    title: "Both Markdown modes",
   };
 }
 

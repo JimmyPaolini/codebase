@@ -6,11 +6,15 @@ import { codependixConfigurationSchema } from "@codependix/configuration";
 import { describe, expect, it } from "vitest";
 
 import * as anchorPlacement from "../scripts/render/anchor-placement";
-import { collectDocuments } from "../scripts/render/catalog";
+import {
+  collectDocuments,
+  EXAMPLE_ORDER,
+  orderDocuments,
+} from "../scripts/render/catalog";
 import * as configuration from "../scripts/render/configuration";
 import { deliverDocuments, renderDocument } from "../scripts/render/document";
 import * as exportDelivery from "../scripts/render/export-delivery";
-import { OUTPUT_DIRECTORY } from "../scripts/render/paths";
+import { EXAMPLES_DIRECTORY } from "../scripts/render/paths";
 import { run, selectMode, USAGE_MESSAGE } from "../scripts/render/run";
 
 describe("codependix examples", () => {
@@ -64,7 +68,7 @@ describe("codependix examples", () => {
         configuration.describeLoadRefusal(
           "absent/codependix.config.missing.ts",
         ),
-      ).resolves.toContain("<examples>/configuration");
+      ).resolves.toContain("<examples>/refusals");
     });
 
     it("refuses every configuration the schema rejects", () => {
@@ -238,22 +242,23 @@ describe("codependix examples", () => {
       const documents = await collectDocuments();
 
       expect(documents.map((document) => document.id)).toStrictEqual([
-        "01-graph-levels",
-        "02-neighborhood-scope",
-        "03-ambient-modules",
-        "04-preview-mode",
-        "05-container-rooting",
-        "06-typescript-resolution",
-        "07-python-scanner",
-        "08-configuration-resolution",
-        "09-export-targets",
-        "10-markdown-modes",
-        "11-auto-created-sections",
-        "12-check-and-write",
-        "13-refusals",
-        "14-json-exports",
-        "15-workspace-drift",
+        ...EXAMPLE_ORDER,
       ]);
+    });
+
+    it("refuses a document the reading order does not name", () => {
+      expect.hasAssertions();
+      expect(() =>
+        orderDocuments([
+          {
+            id: "unlisted",
+            jsonExports: [],
+            sections: [],
+            summary: "",
+            title: "",
+          },
+        ]),
+      ).toThrow("EXAMPLE_ORDER");
     });
 
     it("gives every section a heading, a note, and a body", async () => {
@@ -289,7 +294,7 @@ describe("codependix examples", () => {
       const outcome = deliverDocuments({
         documents: await collectDocuments(),
         mode: "check",
-        outputDirectory: OUTPUT_DIRECTORY,
+        outputDirectory: EXAMPLES_DIRECTORY,
       });
 
       expect(outcome.stalePaths).toStrictEqual([]);
@@ -354,8 +359,11 @@ describe("codependix examples", () => {
           .stalePaths,
       ).toStrictEqual([]);
       expect(
-        readFileSync(path.join(outputDirectory, "01-graph-levels.md"), "utf8"),
-      ).toContain("# 1. The four graph levels, side by side");
+        readFileSync(
+          path.join(outputDirectory, "graph-levels", "README.md"),
+          "utf8",
+        ),
+      ).toContain("# The four graph levels, side by side");
     });
   });
 });

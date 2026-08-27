@@ -1,4 +1,4 @@
-# 8. Configuration resolution, field by field
+# Configuration resolution, field by field
 
 Every configuration field, resolved by the real loader — including the two a reader is most likely to assume wrongly.
 

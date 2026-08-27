@@ -17,7 +17,10 @@ import type { ExampleDocument, ExampleJsonExport } from "./types";
 // ♟️ Constants
 
 /** Path segment the shared example workspace sits under, inside `examples/`. */
-const ATLAS_SEGMENT = "atlas";
+const ATLAS_SEGMENT = "graph-levels";
+
+/** The example workspace directory inside it. */
+const ATLAS_WORKSPACE = "atlas";
 
 /** The project every one of the four graph levels is built from. */
 const ATLAS_SERVICE_ROOT = "packages/atlas-service";
@@ -40,8 +43,8 @@ const JSON_FILE_NAMES = {
 export async function buildGraphLevelDocuments(): Promise<ExampleDocument[]> {
   return [
     {
-      id: "01-graph-levels",
-      jsonExports: await buildJsonExports(),
+      id: "graph-levels",
+      jsonExports: [],
       sections: [
         {
           body: renderNeighborhood(ATLAS_CHAIN, SUBJECT_PROJECT_NAME),
@@ -71,13 +74,13 @@ export async function buildGraphLevelDocuments(): Promise<ExampleDocument[]> {
       ],
       summary:
         "One example project, `atlas-service`, graphed at all four levels codependix builds — so a reader sees what each level does and does not say about the same code.",
-      title: "1. The four graph levels, side by side",
+      title: "The four graph levels, side by side",
     },
   ];
 }
 
 /** Builds the JSON export of each of the five graphs, as a run would write it. */
-async function buildJsonExports(): Promise<ExampleJsonExport[]> {
+export async function buildJsonExports(): Promise<ExampleJsonExport[]> {
   return [
     {
       content: renderJson(buildNeighborhood(ATLAS_CHAIN, SUBJECT_PROJECT_NAME)),
@@ -111,12 +114,12 @@ function renderJson(value: unknown): string {
 
 /** Resolves the shared example project's Python package root. */
 function resolvePythonRoot(): string {
-  return resolveExample(ATLAS_SEGMENT, ATLAS_PYTHON_ROOT);
+  return resolveExample(ATLAS_SEGMENT, ATLAS_WORKSPACE, ATLAS_PYTHON_ROOT);
 }
 
 // 📄 Documents
 
 /** Resolves the shared example project's root on disk. */
 function resolveServiceRoot(): string {
-  return resolveExample(ATLAS_SEGMENT, ATLAS_SERVICE_ROOT);
+  return resolveExample(ATLAS_SEGMENT, ATLAS_WORKSPACE, ATLAS_SERVICE_ROOT);
 }

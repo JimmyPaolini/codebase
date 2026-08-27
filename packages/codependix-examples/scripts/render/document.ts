@@ -1,8 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { JSON_DIRECTORY } from "./paths";
-
 import type {
   ExampleDocument,
   ExampleFile,
@@ -71,13 +69,22 @@ export function renderDocument(document: ExampleDocument): string {
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
-/** Lists every file one document is committed as, Markdown first. */
+/**
+ * Lists every file one document is committed as, Markdown first.
+ *
+ * Everything an example produces lands in that example's own directory, beside
+ * the subject it was built from — the `README.md` a reader opens, and any JSON
+ * export the example commits.
+ */
 export function resolveFiles(document: ExampleDocument): ExampleFile[] {
   return [
-    { content: renderDocument(document), relativePath: `${document.id}.md` },
+    {
+      content: renderDocument(document),
+      relativePath: path.join(document.id, "README.md"),
+    },
     ...document.jsonExports.map((jsonExport) => ({
       content: jsonExport.content,
-      relativePath: path.join(JSON_DIRECTORY, jsonExport.fileName),
+      relativePath: path.join(document.id, jsonExport.fileName),
     })),
   ];
 }

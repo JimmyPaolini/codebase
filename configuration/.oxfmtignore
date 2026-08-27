@@ -50,9 +50,12 @@ tmp
 **/data/wikipedia
 **/data/wiktionary
 yarn.lock
-# 🕸️ Codependix example subjects and rendered output. The subjects are
-# deliberately shaped input — a broken tsconfig, statements that exist to draw no
-# edge — and `output/` is generated, so reformatting either would fight
-# `codependix-examples:examples:check`.
-**/packages/codependix-examples/examples/**
-**/packages/codependix-examples/output/**
+
+# 🕸️ Every dependency graph codependix writes as JSON. It renders them with
+# `JSON.stringify(…, 2)`, which puts one array element per line; oxfmt collapses
+# a short array onto one. Reformatting one therefore makes the very next
+# `codependix --check` fail against what `codependix --write` just wrote — the
+# same conflict this file already resolves for `.conformetry/**`, and the same
+# reason `configuration/eslint.config.ts` turns `jsonc/sort-array-values` off
+# for exactly these files.
+**/codependix-*graph.json

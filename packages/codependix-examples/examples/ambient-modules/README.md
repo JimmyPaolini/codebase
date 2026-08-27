@@ -1,4 +1,4 @@
-# 3. The ambient-module heuristic
+# The ambient-module heuristic
 
 `SpelunkerModule.explore` reports the container's view rather than the decorators', so a `@Global()` module arrives as an import of every other module. Drawn literally it would bury the structure worth reading, so its edges are left out and it is drawn as a rounded node.
 

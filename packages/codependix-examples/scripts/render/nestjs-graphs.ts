@@ -31,29 +31,29 @@ type Exploration =
 
 // ♟️ Constants
 
-/** Path segment every NestJS example sits under, inside `examples/`. */
-const NESTJS_SEGMENT = "nestjs";
-
 /** Container holding four modules, one of them `@Global()`. */
-const GLOBAL_CONTAINER = "global-container";
+const GLOBAL_CONTAINER = ["ambient-modules", "global-container"];
 
 /** Container holding three modules — below the ambient minimum. */
-const SMALL_CONTAINER = "small-container";
+const SMALL_CONTAINER = ["ambient-modules", "small-container"];
 
 /** Container with a plain module every other module imports. */
-const BOUNDARY_CONTAINER = "boundary-container";
+const BOUNDARY_CONTAINER = ["ambient-modules", "boundary-container"];
 
 /** A source directory that defines no modules at all. */
-const EMPTY_CONTAINER = "empty-container";
+const EMPTY_CONTAINER = ["ambient-modules", "empty-container"];
 
 /** Container whose options factory refuses to run if it is ever called. */
-const PREVIEW_CONTAINER = "preview-container";
+const PREVIEW_CONTAINER = ["preview-mode", "container"];
 
 /** Project that bootstraps a real `src/main.module.ts`. */
-const ROOTED_APPLICATION = "rooted-application";
+const ROOTED_APPLICATION = ["container-rooting", "rooted-application"];
+
+/** Package that bootstraps nothing, rooted in a synthetic module. */
+const LIBRARY_PACKAGE = ["container-rooting", "library-package"];
 
 /** Container whose module file throws the moment it is loaded. */
-const FAILING_CONTAINER = "failing-container";
+const FAILING_CONTAINER = ["container-rooting", "failing-container"];
 
 // 🕸️ Graphs
 
@@ -64,15 +64,15 @@ const FAILING_CONTAINER = "failing-container";
  * repeatedly. Nothing under `examples/` changes while the process runs, so the
  * second request is answered from here. Only a successful exploration is
  * cached: a container that refuses to load raises every time it is asked for,
- * which is what example 5 shows.
+ * which is what the container-rooting example shows.
  */
 const graphsByRoot = new Map<string, NestjsModuleGraph>();
 
 /** Builds one example container's module graph. */
 export async function buildContainerGraph(
-  name: string,
+  segments: string[],
 ): Promise<NestjsModuleGraph> {
-  return buildGraphAt(resolveExample(NESTJS_SEGMENT, name));
+  return buildGraphAt(resolveExample(...segments));
 }
 
 /** Builds one project's module graph, given its root on disk. */
@@ -123,12 +123,16 @@ export function describeProjectAt(absoluteRoot: string): NestjsProject {
 }
 
 /** Explores several containers, isolating each one's failure from the rest. */
-export async function exploreAll(names: string[]): Promise<Exploration[]> {
+export async function exploreAll(
+  containers: string[][],
+): Promise<Exploration[]> {
   const explorations: Exploration[] = [];
 
-  for (const name of names) {
+  for (const segments of containers) {
+    const name = path.basename(resolveExample(...segments));
+
     try {
-      const graph = await buildContainerGraph(name);
+      const graph = await buildContainerGraph(segments);
 
       explorations.push({
         moduleCount: graph.moduleNames.length,
@@ -148,8 +152,8 @@ export async function exploreAll(names: string[]): Promise<Exploration[]> {
 }
 
 /** Renders one example container's module graph as a mermaid diagram. */
-export async function renderContainer(name: string): Promise<string> {
-  return moduleGraphService.renderMermaid(await buildContainerGraph(name));
+export async function renderContainer(segments: string[]): Promise<string> {
+  return moduleGraphService.renderMermaid(await buildContainerGraph(segments));
 }
 
 /** Renders one project's module graph, given its root on disk. */
@@ -162,12 +166,12 @@ export async function renderGraphAt(absoluteRoot: string): Promise<string> {
 /** Builds the ambient-module heuristic example. */
 async function buildAmbientDocument(): Promise<ExampleDocument> {
   return {
-    id: "03-ambient-modules",
+    id: "ambient-modules",
     jsonExports: [],
     sections: await buildAmbientSections(),
     summary:
       "`SpelunkerModule.explore` reports the container's view rather than the decorators', so a `@Global()` module arrives as an import of every other module. Drawn literally it would bury the structure worth reading, so its edges are left out and it is drawn as a rounded node.",
-    title: "3. The ambient-module heuristic",
+    title: "The ambient-module heuristic",
   };
 }
 
@@ -200,7 +204,7 @@ async function buildAmbientSections(): Promise<ExampleSection[]> {
 /** Builds the preview-mode example. */
 async function buildPreviewDocument(): Promise<ExampleDocument> {
   return {
-    id: "04-preview-mode",
+    id: "preview-mode",
     jsonExports: [],
     sections: [
       {
@@ -217,7 +221,7 @@ async function buildPreviewDocument(): Promise<ExampleDocument> {
     ],
     summary:
       "Preview mode is what makes exploring an unfamiliar container safe: a module whose options factory would contact something is graphed without that factory ever running.",
-    title: "4. Preview mode, and why exploration is safe",
+    title: "Preview mode, and why exploration is safe",
   };
 }
 
@@ -225,12 +229,12 @@ async function buildPreviewDocument(): Promise<ExampleDocument> {
 async function buildRootingDocument(): Promise<ExampleDocument> {
   const explorations = await exploreAll([
     ROOTED_APPLICATION,
-    EMPTY_CONTAINER,
+    LIBRARY_PACKAGE,
     FAILING_CONTAINER,
   ]);
 
   return {
-    id: "05-container-rooting",
+    id: "container-rooting",
     jsonExports: [],
     sections: [
       {
@@ -239,7 +243,7 @@ async function buildRootingDocument(): Promise<ExampleDocument> {
         note: "`src/main.module.ts` exists, so its `MainModule` export is the root and the container is explored outward from it. `OrphanModule` is defined in the same directory and never imported, so it is absent.",
       },
       {
-        body: await renderContainer(SMALL_CONTAINER),
+        body: await renderContainer(LIBRARY_PACKAGE),
         heading: "A package that bootstraps nothing",
         note: "No `src/main.module.ts`, so every `*.module.ts` under `src/` is loaded and rooted under a synthetic module. That synthetic root, and the global `ConfigModule` it supplies so a module reading configuration in a `useFactory` can be scanned at all, are both kept out of the graph.",
       },
@@ -251,7 +255,7 @@ async function buildRootingDocument(): Promise<ExampleDocument> {
     ],
     summary:
       "How a container is rooted when a project bootstraps one, when it bootstraps nothing, and when it refuses to load at all.",
-    title: "5. Rooting a container, including one that bootstraps nothing",
+    title: "Rooting a container, including one that bootstraps nothing",
   };
 }
 

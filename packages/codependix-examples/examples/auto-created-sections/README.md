@@ -1,4 +1,4 @@
-# 11. Auto-creating the `## 🕸️ Codependix` section
+# Auto-creating the `## 🕸️ Codependix` section
 
 A missing anchor used to be an error. It is now auto-created on `--write` — at the end of the file, or at the end of an existing section, and nowhere else.
 

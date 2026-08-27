@@ -205,7 +205,7 @@ export function renderWorkspaceGraph(workspace: ExampleWorkspace): string {
 /** Builds the drift example, comparing one Neighborhood before and after. */
 function buildDriftDocument(): ExampleDocument {
   return {
-    id: "15-workspace-drift",
+    id: "workspace-drift",
     jsonExports: [],
     sections: [
       {
@@ -226,7 +226,7 @@ function buildDriftDocument(): ExampleDocument {
     ],
     summary:
       "Why this repository runs `codependix --write` on the default branch and gates no pull request on `codependix --check`.",
-    title: "15. An export moves with the workspace, not with the project",
+    title: "An export moves with the workspace, not with the project",
   };
 }
 
@@ -273,12 +273,12 @@ function buildRuleSections(): ExampleSection[] {
 /** Builds the Neighborhood scope and renderer-rule example. */
 function buildScopeDocument(): ExampleDocument {
   return {
-    id: "02-neighborhood-scope",
+    id: "neighborhood-scope",
     jsonExports: [],
     sections: [...buildScopeSections(), ...buildRuleSections()],
     summary:
       "A Neighborhood is one hop in each direction, and that is the point. Beside it, the Workspace Graph of the same workspace, and one example per rule the renderer applies.",
-    title: "2. One hop, and every rule the renderer applies",
+    title: "One hop, and every rule the renderer applies",
   };
 }
 

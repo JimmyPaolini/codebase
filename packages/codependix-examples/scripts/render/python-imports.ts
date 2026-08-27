@@ -28,7 +28,7 @@ interface ScannerCase {
 const PYTHON_PROJECT_TAG = "language:python";
 
 /** Path segment every Python example sits under, inside `examples/`. */
-const PYTHON_SEGMENT = "python";
+const PYTHON_SEGMENT = "python-scanner";
 
 /** Project exercising every case the hand-rolled statement scanner handles. */
 const SCANNER_PROJECT = "scanner";
@@ -96,7 +96,7 @@ export function buildPythonDocuments(): ExampleDocument[] {
 
   return [
     {
-      id: "07-python-scanner",
+      id: "python-scanner",
       jsonExports: [],
       sections: [
         {
@@ -127,7 +127,7 @@ export function buildPythonDocuments(): ExampleDocument[] {
       ],
       summary:
         "Python imports are scanned, not compiled — so every case the scanner handles, and every case it deliberately refuses, has a source file.",
-      title: "7. The whole surface of the Python statement scanner",
+      title: "The whole surface of the Python statement scanner",
     },
   ];
 }

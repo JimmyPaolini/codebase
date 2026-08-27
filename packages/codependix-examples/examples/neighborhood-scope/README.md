@@ -1,4 +1,4 @@
-# 2. One hop, and every rule the renderer applies
+# One hop, and every rule the renderer applies
 
 A Neighborhood is one hop in each direction, and that is the point. Beside it, the Workspace Graph of the same workspace, and one example per rule the renderer applies.
 

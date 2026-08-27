@@ -159,10 +159,10 @@
     "**/build/**",
     "**/conformetry-templates/**",
     // 🕸️ Codependix example subjects: input to be graphed, unreachable from any
-    // entry point by construction. One of them is a `tsconfig.json` the compiler
-    // is meant to refuse, and another is a module that throws the moment it is
+    // entry point by construction. One carries a `tsconfig.json` the compiler is
+    // meant to refuse, and another a module that throws the moment it is
     // imported, so neither belongs in a module graph of this repository's code.
-    "**/packages/codependix-examples/examples/**",
+    "**/packages/codependix-examples/examples/*/*/**",
     "**/coverage/**",
     "**/data/library/**",
     "**/data/wikipedia/**",

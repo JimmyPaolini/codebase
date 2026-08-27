@@ -6,6 +6,7 @@ import { MARKDOWN_SECTION_INTRO_LINE, USAGE_MESSAGE } from "@codependix/cli";
 
 import { anchorsService, deliveryService } from "./builders";
 import { fence, fenceJson, table } from "./document";
+import { buildJsonExports } from "./graph-levels";
 import { buildExampleAnchor } from "./paths";
 
 import type { ExampleDocument, ExampleSection } from "./types";
@@ -55,8 +56,12 @@ const EXPORT_TARGETS = ["none", "json", "markdown", "both"] as const;
 // 💾 Delivery
 
 /** Builds every delivery example document. */
-export function buildDeliveryDocuments(): ExampleDocument[] {
-  return [buildTargetsDocument(), buildModesDocument(), buildJsonDocument()];
+export async function buildDeliveryDocuments(): Promise<ExampleDocument[]> {
+  return [
+    buildTargetsDocument(),
+    buildModesDocument(),
+    await buildJsonDocument(),
+  ];
 }
 
 /** Builds one section per export target. */
@@ -158,10 +163,10 @@ export function seedReadme(): string {
 }
 
 /** Builds the JSON-export example. */
-function buildJsonDocument(): ExampleDocument {
+async function buildJsonDocument(): Promise<ExampleDocument> {
   return {
-    id: "14-json-exports",
-    jsonExports: [],
+    id: "json-exports",
+    jsonExports: await buildJsonExports(),
     sections: [
       {
         body: table(
@@ -169,23 +174,23 @@ function buildJsonDocument(): ExampleDocument {
           [
             [
               "Nx Neighborhood",
-              "`output/json/codependix-neighborhood-graph.json`",
+              "[`codependix-neighborhood-graph.json`](codependix-neighborhood-graph.json)",
             ],
             [
               "Nx Workspace Graph",
-              "`output/json/codependix-workspace-graph.json`",
+              "[`codependix-workspace-graph.json`](codependix-workspace-graph.json)",
             ],
             [
               "NestJS module graph",
-              "`output/json/codependix-module-graph.json`",
+              "[`codependix-module-graph.json`](codependix-module-graph.json)",
             ],
             [
               "TypeScript file imports",
-              "`output/json/codependix-imports-graph.json`",
+              "[`codependix-imports-graph.json`](codependix-imports-graph.json)",
             ],
             [
               "Python file imports",
-              "`output/json/codependix-python-imports-graph.json`",
+              "[`codependix-python-imports-graph.json`](codependix-python-imports-graph.json)",
             ],
           ],
         ),
@@ -193,21 +198,21 @@ function buildJsonDocument(): ExampleDocument {
         note: "Each one is rendered by `DeliveryService.renderJson`, so it is byte-identical to what a real `codependix --write` would produce — two-space indentation and a trailing newline.",
       },
       {
-        body: "`configuration/eslint.config.ts` turns `jsonc/sort-array-values` **off** for `**/codependix-*graph.json`. These arrays come out of the Nx project graph, a NestJS container, or a `ts.Program`, in whichever order each source discovers its projects, modules, or files — not alphabetical order. Enforcing a sort would rewrite what codependix just wrote, and every `codependix --write` would immediately fail its own `--check`. It is the same reformatting-versus-drift conflict `configuration/.oxfmtignore` already solves for `.conformetry/**`.",
-        heading: "Why the sort rule is off for these files",
-        note: "The committed exports here are named to match that glob, so the carve-out covers them too rather than being described from a distance.",
+        body: "Two workspace-level rules are switched off for `**/codependix-*graph.json`, for the same reason. `configuration/eslint.config.ts` turns `jsonc/sort-array-values` **off**: these arrays come out of the Nx project graph, a NestJS container, or a `ts.Program`, in whichever order each source discovers its projects, modules, or files — not alphabetical order. And `configuration/.oxfmtignore` and `.prettierignore` exclude the files outright: codependix renders them with `JSON.stringify(…, 2)`, which puts one array element per line, while oxfmt collapses a short array onto one. Either rule left on would rewrite what codependix had just written, and the very next `--check` would fail against the tool itself. It is the same reformatting-versus-drift conflict `.oxfmtignore` already resolves for `.conformetry/**`.",
+        heading: "Why two workspace rules are switched off for these files",
+        note: "The five files beside this guide are named to match that glob, so both carve-outs cover them too rather than being described from a distance — which is how the second one was found in the first place.",
       },
     ],
     summary:
-      "The JSON shape of every graph type, committed so a reader sees it without running anything — and why one ESLint rule is switched off for exactly these files.",
-    title: "14. The JSON exports",
+      "The JSON shape of every graph type, committed beside this guide so a reader sees it without running anything — and why two workspace-wide rules are switched off for exactly these files.",
+    title: "The JSON exports",
   };
 }
 
 /** Builds the `--check` versus `--write` example. */
 function buildModesDocument(): ExampleDocument {
   return {
-    id: "12-check-and-write",
+    id: "check-and-write",
     jsonExports: [],
     sections: [
       {
@@ -228,12 +233,12 @@ function buildModesDocument(): ExampleDocument {
       {
         body: "`CodependixService.run` attempts every project regardless of whether an earlier one failed, collecting each failure as a `ProjectRunFailure` rather than aborting the loop. `CodependixCommand.reportOutcome` then reports the failures and the stale exports together, and fails the run if either list is non-empty. That is the whole of the guarantee: `--write` either fully succeeds, or names exactly which projects failed while still completing every other one.",
         heading: "One project failing names itself and stops nothing",
-        note: "Example 5 shows the same guarantee acting on three real containers, one of which refuses to load.",
+        note: "[container-rooting](../container-rooting) shows the same guarantee acting on three real containers, one of which refuses to load.",
       },
     ],
     summary:
       "What `--check` reports, what `--write` acts on, and the two command lines codependix refuses outright.",
-    title: "12. `--check` versus `--write`",
+    title: "`--check` versus `--write`",
   };
 }
 
@@ -242,7 +247,7 @@ function buildModesDocument(): ExampleDocument {
 /** Builds the export-target example. */
 function buildTargetsDocument(): ExampleDocument {
   return {
-    id: "09-export-targets",
+    id: "export-targets",
     jsonExports: [],
     sections: [
       ...buildTargetSections(),
@@ -254,7 +259,7 @@ function buildTargetsDocument(): ExampleDocument {
     ],
     summary:
       "The same graph delivered at each of the four export targets, and the property that explains why `both` is named rather than inferred.",
-    title: "9. All four export targets",
+    title: "All four export targets",
   };
 }
 

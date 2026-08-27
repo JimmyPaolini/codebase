@@ -1,4 +1,4 @@
-# 9. All four export targets
+# All four export targets
 
 The same graph delivered at each of the four export targets, and the property that explains why `both` is named rather than inferred.
 

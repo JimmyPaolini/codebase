@@ -1,4 +1,4 @@
-# 7. The whole surface of the Python statement scanner
+# The whole surface of the Python statement scanner
 
 Python imports are scanned, not compiled — so every case the scanner handles, and every case it deliberately refuses, has a source file.
 

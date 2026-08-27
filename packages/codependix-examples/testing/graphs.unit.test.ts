@@ -56,7 +56,10 @@ describe("codependix example graphs", () => {
     it("names a global module ambient once the container is big enough", async () => {
       expect.hasAssertions();
 
-      const graph = await nestjsGraphs.buildContainerGraph("global-container");
+      const graph = await nestjsGraphs.buildContainerGraph([
+        "ambient-modules",
+        "global-container",
+      ]);
 
       expect(graph.ambientModuleNames).toStrictEqual(["SettingsModule"]);
       expect(graph.edges).toStrictEqual([]);
@@ -65,7 +68,10 @@ describe("codependix example graphs", () => {
     it("leaves a global module's edges drawn below the minimum module count", async () => {
       expect.hasAssertions();
 
-      const graph = await nestjsGraphs.buildContainerGraph("small-container");
+      const graph = await nestjsGraphs.buildContainerGraph([
+        "ambient-modules",
+        "small-container",
+      ]);
 
       expect(graph.ambientModuleNames).toStrictEqual([]);
       expect(graph.edges.length).toBeGreaterThan(0);
@@ -74,8 +80,10 @@ describe("codependix example graphs", () => {
     it("counts inbound edges rather than reading decorators", async () => {
       expect.hasAssertions();
 
-      const graph =
-        await nestjsGraphs.buildContainerGraph("boundary-container");
+      const graph = await nestjsGraphs.buildContainerGraph([
+        "ambient-modules",
+        "boundary-container",
+      ]);
 
       expect(graph.ambientModuleNames).toStrictEqual(["SettingsModule"]);
     });
@@ -83,14 +91,17 @@ describe("codependix example graphs", () => {
     it("reports a project that defines no modules instead of drawing one", async () => {
       expect.hasAssertions();
       await expect(
-        nestjsGraphs.renderContainer("empty-container"),
+        nestjsGraphs.renderContainer(["ambient-modules", "empty-container"]),
       ).resolves.toBe("_This project defines no NestJS modules to graph._");
     });
 
     it("graphs a container whose options factory refuses to run", async () => {
       expect.hasAssertions();
 
-      const graph = await nestjsGraphs.buildContainerGraph("preview-container");
+      const graph = await nestjsGraphs.buildContainerGraph([
+        "preview-mode",
+        "container",
+      ]);
 
       expect(graph.moduleNames).toContain("CatalogModule");
       expect(graph.moduleNames).toContain("ConnectionModule");
@@ -99,8 +110,10 @@ describe("codependix example graphs", () => {
     it("explores a rooted project outward from its own MainModule", async () => {
       expect.hasAssertions();
 
-      const graph =
-        await nestjsGraphs.buildContainerGraph("rooted-application");
+      const graph = await nestjsGraphs.buildContainerGraph([
+        "container-rooting",
+        "rooted-application",
+      ]);
 
       expect(graph.moduleNames).toStrictEqual([
         "CatalogModule",
@@ -112,7 +125,10 @@ describe("codependix example graphs", () => {
     it("keeps the synthetic root and its config scaffolding out of the graph", async () => {
       expect.hasAssertions();
 
-      const graph = await nestjsGraphs.buildContainerGraph("global-container");
+      const graph = await nestjsGraphs.buildContainerGraph([
+        "ambient-modules",
+        "global-container",
+      ]);
 
       expect(graph.moduleNames).not.toContain("SyntheticRootModule");
       expect(graph.moduleNames).not.toContain("ConfigModule");
@@ -122,9 +138,9 @@ describe("codependix example graphs", () => {
       expect.hasAssertions();
 
       const explorations = await nestjsGraphs.exploreAll([
-        "rooted-application",
-        "failing-container",
-        "empty-container",
+        ["container-rooting", "rooted-application"],
+        ["container-rooting", "failing-container"],
+        ["container-rooting", "library-package"],
       ]);
 
       expect(
@@ -194,7 +210,7 @@ describe("codependix example graphs", () => {
         typescriptImports.describeOutcome(
           typescriptImports.buildOutcome("broken"),
         ),
-      ).toContain("<examples>/typescript");
+      ).toContain("<examples>/typescript-resolution");
     });
 
     it("reports a project whose program builds", () => {
@@ -271,21 +287,28 @@ describe("codependix example graphs", () => {
     it("discovers nothing at all when the language:python tag is absent", () => {
       expect.hasAssertions();
       expect(() =>
-        pythonImports.describeProjectAt(resolveExample("python", "scanner"), {
-          dependencies: {},
-          nodes: {
-            scanner: {
-              data: { root: "scanner" },
-              name: "scanner",
-              type: "lib",
+        pythonImports.describeProjectAt(
+          resolveExample("python-scanner", "scanner"),
+          {
+            dependencies: {},
+            nodes: {
+              scanner: {
+                data: { root: "scanner" },
+                name: "scanner",
+                type: "lib",
+              },
             },
           },
-        }),
+        ),
       ).toThrow("language:python");
     });
 
     describe("excluded directories", () => {
-      const cacheDirectory = resolveExample("python", "scanner", "__pycache__");
+      const cacheDirectory = resolveExample(
+        "python-scanner",
+        "scanner",
+        "__pycache__",
+      );
 
       beforeAll(() => {
         mkdirSync(cacheDirectory, { recursive: true });

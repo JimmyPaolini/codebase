@@ -1,4 +1,4 @@
-# 6. Imports resolve through the compiler
+# Imports resolve through the compiler
 
 TypeScript imports resolve through the compiler, not through a heuristic — and only an import declaration with a string-literal specifier counts.
 
@@ -49,5 +49,5 @@ Every one of these is a choice rather than a gap, and every one is a claim a res
 `TypescriptProjectConfigurationError` carries the compiler's own diagnostics. Parsing failures are fatal rather than skipped, because a project silently dropped makes `--check` unable to tell a genuinely empty graph from one it never built.
 
 ```text
-TypescriptProjectConfigurationError: Could not read <examples>/typescript/broken/tsconfig.json: Argument for '--target' option must be: 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'es2022', 'es2023', 'es2024', 'es2025', 'esnext'.
+TypescriptProjectConfigurationError: Could not read <examples>/typescript-resolution/broken/tsconfig.json: Argument for '--target' option must be: 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'es2022', 'es2023', 'es2024', 'es2025', 'esnext'.
 ```

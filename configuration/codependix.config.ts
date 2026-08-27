@@ -24,8 +24,8 @@ import { type CodependixConfiguration } from "@codependix/configuration";
  *
  * Every field below, and every refusal a configuration can be rejected with, is
  * resolved by the real loader and rendered as a worked example in
- * `packages/codependix-examples` — see its `README.md`, and `output/08` and
- * `output/13` in particular. This file is the only production configuration
+ * `packages/codependix-examples` — see its `README.md`, and the
+ * `configuration-resolution` and `refusals` examples in particular. This file is the only production configuration
  * codependix has; those are where the shape is explained.
  *
  * `target: "markdown"` here costs nothing for a project a given graph type

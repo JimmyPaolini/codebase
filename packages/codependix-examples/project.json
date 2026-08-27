@@ -1,5 +1,6 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "implicitDependencies": ["codependix-cli"],
   "name": "codependix-examples",
   "projectType": "library",
   "sourceRoot": "packages/codependix-examples",
@@ -17,13 +18,13 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Render every codependix example and compare it against the committed output under `output/`, or rewrite it. `check` is what keeps the guides honest: a resolver or scanner change that silently reverses one of the documented behaviors fails here rather than leaving a guide quoting a diagram the tool no longer renders. Unlike `codebase:codependix`, both configurations are safe on a branch — every example is built from subjects this package owns, so nothing here moves when the workspace around it does.",
+      "description": "Render every codependix example and compare it against what is committed under `examples/`, or rewrite it. `check` is what keeps the guides honest: a resolver or scanner change that silently reverses one of the documented behaviors fails here rather than leaving a guide quoting a diagram the tool no longer renders. Unlike `codebase:codependix`, both configurations are safe on a branch \u2014 every example is built from subjects this package owns, so nothing here moves when the workspace around it does.",
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/examples/**", "default"],
       "options": {
         "cwd": "{projectRoot}"
       },
-      "outputs": ["{projectRoot}/output"]
+      "outputs": []
     },
     "knip": {},
     "lint-codebase": {},

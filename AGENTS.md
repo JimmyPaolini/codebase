@@ -85,7 +85,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[callidescope-output](packages/callidescope-output)**: Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **[codependix-cli](packages/codependix-cli)**: Command-line host that exports dependency graphs as JSON and Markdown anchor blocks
 - **[codependix-configuration](packages/codependix-configuration)**: Reads `codependix.config.ts` and resolves per-project export destinations
-- **[codependix-examples](packages/codependix-examples)**: Fifteen worked examples of everything codependix builds, rendered by the real tool from subjects in the package
+- **[codependix-examples](packages/codependix-examples)**: Fifteen subjects built to be graphed, each carrying the guide codependix renders from it
 - **[codependix-imports](packages/codependix-imports)**: Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
 - **[codependix-nestjs](packages/codependix-nestjs)**: Explores a NestJS project's container and builds its module graph
 - **[codependix-nx](packages/codependix-nx)**: Builds a project's one-hop Nx dependency neighborhood from the Nx project graph

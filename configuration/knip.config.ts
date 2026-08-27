@@ -227,8 +227,9 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
 
-    // codependix packages: the examples package, whose `examples/` directory is
-    // input to be graphed rather than code anything imports.
+    // codependix packages: the examples package, whose `examples/` directory
+    // holds subjects to be graphed and the guides rendered from them, neither of
+    // which anything imports.
     "packages/codependix-examples": {
       entry: ["scripts/render-examples.ts"],
       ignoreDependencies: [

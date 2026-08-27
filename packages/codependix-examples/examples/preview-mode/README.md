@@ -1,4 +1,4 @@
-# 4. Preview mode, and why exploration is safe
+# Preview mode, and why exploration is safe
 
 Preview mode is what makes exploring an unfamiliar container safe: a module whose options factory would contact something is graphed without that factory ever running.
 
