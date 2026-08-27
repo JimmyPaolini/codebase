@@ -1,4 +1,4 @@
-import { ConfigurationModule } from "@codometer/configuration";
+import { ConfigurationModule, InputModule } from "@codometer/configuration";
 import { CustomizationModule } from "@codometer/customization";
 import { DiscoveryModule, TargetsModule } from "@codometer/discovery";
 import { LanguagesModule } from "@codometer/languages";
@@ -26,6 +26,7 @@ import { CodometerService } from "./codometer.service";
     CustomizationModule,
     DeliveryModule,
     DiscoveryModule,
+    InputModule,
     LanguagesModule,
     LimitsModule,
     LoggerModule,

@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { ConfigurationService } from "@codometer/configuration";
+import { ConfigurationService, InputService } from "@codometer/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -36,6 +36,7 @@ export class CodometerCommand extends CommandRunner {
     private readonly deliveryService: DeliveryService,
     private readonly reportService: ReportService,
     private readonly runPlanService: RunPlanService,
+    private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -231,7 +232,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "--check [check]",
   })
   public parseCheck(value: string): string {
-    return value;
+    return this.inputService.parseRequiredOption(value);
   }
 
   /**
@@ -242,7 +243,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "--config [config]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return value;
+    return this.inputService.parseVerbatimOption(value);
   }
 
   /**
@@ -252,8 +253,8 @@ export class CodometerCommand extends CommandRunner {
     description: "Directory to analyze",
     flags: "-d, --directory [directory]",
   })
-  public parseDirectory(value: string | undefined): string {
-    return value ?? process.cwd();
+  public parseDirectory(value: unknown): string {
+    return this.inputService.parseDirectoryOption(value);
   }
 
   /**
@@ -264,7 +265,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "--json [json]",
   })
   public parseJson(value: string | undefined): string | undefined {
-    return value;
+    return this.inputService.parseVerbatimOption(value);
   }
 
   /**
@@ -276,7 +277,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "-m, --markdown [markdown]",
   })
   public parseMarkdown(value: string | undefined): string | undefined {
-    return value;
+    return this.inputService.parseVerbatimOption(value);
   }
 
   /**
@@ -292,7 +293,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "--readme <readme>",
   })
   public parseReadme(value: string): string {
-    return value;
+    return this.inputService.parseRequiredOption(value);
   }
 
   /**
@@ -307,7 +308,7 @@ export class CodometerCommand extends CommandRunner {
     flags: "--write",
   })
   public parseWrite(value: boolean | undefined): boolean {
-    return value ?? true;
+    return this.inputService.parseFlagOption(value);
   }
 
   /**

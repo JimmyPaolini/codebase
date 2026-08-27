@@ -1,4 +1,5 @@
 import { ChangesService } from "@codometer/changes";
+import { InputService } from "@codometer/configuration";
 import {
   CODOMETER_MARKERS,
   DocumentsService,
@@ -32,6 +33,7 @@ export class ChangesCommand extends CommandRunner {
     private readonly changesService: ChangesService,
     private readonly documentsService: DocumentsService,
     private readonly renderService: RenderService,
+    private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -44,18 +46,6 @@ export class ChangesCommand extends CommandRunner {
 
   // 🔏 Private Methods
 
-  /**
-   * Narrows an option that carries text, or nothing at all.
-   *
-   * A flag written `--baseline-url "$EMPTY"` can reach commander with no value
-   * at all, which it reports as `true` without calling the option's parser. So
-   * anything but a non-empty string counts as absent — passing that boolean
-   * through renders a link to the word `true`.
-   */
-  private readOptionalText(value: unknown): string | undefined {
-    return typeof value === "string" && value !== "" ? value : undefined;
-  }
-
   // 🌎 Public Methods
 
   /** Parse the baseline directory holding a snapshot of the reports. */
@@ -64,7 +54,7 @@ export class ChangesCommand extends CommandRunner {
     flags: "--baseline [baseline]",
   })
   public parseBaseline(value: unknown): string | undefined {
-    return this.readOptionalText(value);
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Parse the run URL the baseline came from, linked from the summary. */
@@ -73,7 +63,7 @@ export class ChangesCommand extends CommandRunner {
     flags: "--baseline-url [baselineUrl]",
   })
   public parseBaselineUrl(value: unknown): string | undefined {
-    return this.readOptionalText(value);
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Parse the directory to look for codometer reports in. */
@@ -82,7 +72,7 @@ export class ChangesCommand extends CommandRunner {
     flags: "-d, --directory [directory]",
   })
   public parseDirectory(value: unknown): string {
-    return this.readOptionalText(value) ?? process.cwd();
+    return this.inputService.parseDirectoryOption(value);
   }
 
   /** Parse the markdown document the report is spliced into. */
@@ -91,7 +81,7 @@ export class ChangesCommand extends CommandRunner {
     flags: "--markdown [markdown]",
   })
   public parseMarkdown(value: unknown): string | undefined {
-    return this.readOptionalText(value);
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Parse the file the report is written to on its own. */
@@ -100,7 +90,7 @@ export class ChangesCommand extends CommandRunner {
     flags: "--output [output]",
   })
   public parseOutput(value: unknown): string | undefined {
-    return this.readOptionalText(value);
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Diffs every project's report against the baseline, and emits the result. */
@@ -108,9 +98,10 @@ export class ChangesCommand extends CommandRunner {
     _passedParameters: string[],
     options: ChangesCommandOptions,
   ): Promise<void> {
-    const baseline = this.readOptionalText(options.baseline);
-    const workingDirectory =
-      this.readOptionalText(options.directory) ?? process.cwd();
+    const baseline = this.inputService.parseOptionalOption(options.baseline);
+    const workingDirectory = this.inputService.parseDirectoryOption(
+      options.directory,
+    );
 
     const collection = this.changesService.collect({
       baselineDirectory: baseline,
@@ -123,7 +114,7 @@ export class ChangesCommand extends CommandRunner {
     });
 
     const body = this.renderService.renderSection({
-      baselineUrl: this.readOptionalText(options.baselineUrl),
+      baselineUrl: this.inputService.parseOptionalOption(options.baselineUrl),
       failures: collection.failures,
       rows: collection.rows,
     });
@@ -131,8 +122,8 @@ export class ChangesCommand extends CommandRunner {
     await this.documentsService.emit({
       body,
       destination: {
-        markdown: this.readOptionalText(options.markdown),
-        output: this.readOptionalText(options.output),
+        markdown: this.inputService.parseOptionalOption(options.markdown),
+        output: this.inputService.parseOptionalOption(options.output),
       },
       label: "codometer changes",
       markers: CODOMETER_MARKERS,

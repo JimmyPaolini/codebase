@@ -1,4 +1,4 @@
-import { ConfigurationService } from "@codometer/configuration";
+import { ConfigurationService, InputService } from "@codometer/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -106,6 +106,7 @@ describe(CodometerCommand, () => {
       new DeliveryService(jsonService, markdownService),
       new ReportService(),
       new RunPlanService(),
+      new InputService(),
       loggerService,
     );
   }
@@ -143,6 +144,7 @@ describe(CodometerCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         CodometerCommand,
+        InputService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
@@ -192,6 +194,7 @@ describe(CodometerCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         CodometerCommand,
+        InputService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),

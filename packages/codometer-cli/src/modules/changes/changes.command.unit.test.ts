@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { ChangesService } from "@codometer/changes";
+import { InputService } from "@codometer/configuration";
 import { DocumentsService, RenderService } from "@codometer/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -56,6 +57,7 @@ describe(ChangesCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         ChangesCommand,
+        InputService,
         DocumentsService,
         RenderService,
         { provide: ChangesService, useValue: { collect } },
@@ -85,6 +87,7 @@ describe(ChangesCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         ChangesCommand,
+        InputService,
         DocumentsService,
         RenderService,
         { provide: ChangesService, useValue: { collect } },

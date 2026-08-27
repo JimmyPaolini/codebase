@@ -84,3 +84,5 @@ export type {
   TypescriptStatistics,
   YamlStatistics,
 } from "./modules/configuration/statistics.types";
+export { InputModule } from "./modules/input/input.module";
+export { InputService } from "./modules/input/input.service";
