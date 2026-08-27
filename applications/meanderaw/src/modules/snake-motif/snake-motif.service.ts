@@ -1,0 +1,130 @@
+import { Inject, Injectable } from "@nestjs/common";
+
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
+
+import { SnakeSequenceService } from "./snake-sequence.service";
+
+import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
+import type {
+  Modifier,
+  MotifService,
+  MotifUnit,
+  RepeatPatternOptions,
+  UnitBorderOptions,
+} from "../meander-generation/meander-generation.types";
+
+/**
+ * Draws the `snake` motif: the shared zigzag sequence traced as one
+ * continuous path, with each unit drawing its own top/bottom border
+ * segment rather than sharing one border path across the whole pattern
+ * (unlike `boxes`).
+ */
+@Injectable()
+export class SnakeMotifService implements MotifService {
+  // 🏗 Dependency Injection
+
+  constructor(
+    @Inject(GridGeometryService)
+    private readonly gridGeometryService: GridGeometryService,
+    @Inject(MotifTransformsService)
+    private readonly motifTransformsService: MotifTransformsService,
+    @Inject(SnakeSequenceService)
+    private readonly snakeSequenceService: SnakeSequenceService,
+  ) {}
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
+
+  /**
+   * Draws one unit's own top/bottom border segment, spanning just that
+   * unit's width.
+   *
+   * The last unit's segment stops at
+   * {@link SnakeSequenceService.unitTraceRightLevel} instead, flush with
+   * where its own zigzag ends. That only moves anything under the `edge`
+   * family, whose widened pitch reaches one grid level past the zigzag: for
+   * an interior unit that level is the channel to the next unit and the
+   * border has to cross it, while for the last unit there is no next unit
+   * and a full-width segment would trail a bare stub off the end of the
+   * pattern. Every other modifier's pitch already agrees with its trace, so
+   * the two branches produce the same segment.
+   */
+  borderSegment(geometry: GridGeometry, unit: UnitBorderOptions): string {
+    const { isLastUnit, modifier, rows, xOffset } = unit;
+    const rightWidth = isLastUnit
+      ? this.snakeSequenceService.unitTraceRightLevel(rows, modifier) *
+        geometry.unit
+      : this.unitWidth(geometry, rows, modifier);
+    const leftX = this.gridGeometryService.formatCoordinate(
+      geometry.offset + xOffset,
+    );
+    const rightX = this.gridGeometryService.formatCoordinate(
+      geometry.offset + xOffset + rightWidth,
+    );
+    const topY = this.gridGeometryService.formatCoordinate(geometry.offset);
+    const bottomY = this.gridGeometryService.formatCoordinate(
+      geometry.offset + geometry.height,
+    );
+
+    return `M${leftX} ${topY}H${rightX}M${rightX} ${bottomY}H${leftX}`;
+  }
+
+  /** Draws one repeat unit's zigzag plus its own border, as an SVG path attribute value. */
+  path(geometry: GridGeometry, unit: MotifUnit): string {
+    const { isLastUnit, modifier, rows, unitIndex } = unit;
+    const points = this.snakeSequenceService.unitPoints(
+      rows,
+      unitIndex,
+      modifier,
+    );
+    const xOffset = unitIndex * this.unitWidth(geometry, rows, modifier);
+    const toXCoordinate = (level: number): string =>
+      this.gridGeometryService.formatCoordinate(
+        geometry.offset + xOffset + level * geometry.unit,
+      );
+    const toYCoordinate = (level: number): string =>
+      this.gridGeometryService.formatCoordinate(
+        geometry.offset + level * geometry.unit,
+      );
+
+    return (
+      this.motifTransformsService.pointsToPathData(
+        points,
+        toXCoordinate,
+        toYCoordinate,
+      ) +
+      this.borderSegment(geometry, {
+        isLastUnit,
+        rows,
+        xOffset,
+        ...(modifier ? { modifier } : {}),
+      })
+    );
+  }
+
+  /** The x-coordinate of the last unit's rightmost point, before the stroke-width margin. */
+  rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
+    const { modifier, repeatCount, rows } = pattern;
+
+    return (
+      geometry.offset + repeatCount * this.unitWidth(geometry, rows, modifier)
+    );
+  }
+
+  /**
+   * How far each successive unit is translated horizontally: the zigzag
+   * spans every grid level up to `rows - 1`, widened to `rows` levels by
+   * the `edge` family so consecutive units' borders meet flush.
+   */
+  unitWidth(geometry: GridGeometry, rows: number, modifier?: Modifier): number {
+    return (
+      this.snakeSequenceService.unitWidthLevels(rows, modifier) * geometry.unit
+    );
+  }
+}

@@ -4,15 +4,15 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { GridGeometryService } from "../meander-generation/grid-geometry.service";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { MosaicSymmetryService } from "../meander-generation/mosaic-symmetry.service";
-import { MosaicTileGenerationService } from "../meander-generation/mosaic-tile-generation.service";
-import { MosaicTileMotifService } from "../meander-generation/mosaic-tile-motif.service";
-import { MosaicTilesService } from "../meander-generation/mosaic-tiles.service";
-import { OutputFilenameService } from "../meander-generation/output-filename.service";
-import { SvgRenderingService } from "../meander-generation/svg-rendering.service";
+import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
+import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
+import { OutputFilenameService } from "../svg-rendering/output-filename.service";
+import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { StartContactSheetService } from "./start-contact-sheet.service";
 import { StartPermutationsService } from "./start-permutations.service";

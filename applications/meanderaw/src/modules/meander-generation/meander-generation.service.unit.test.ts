@@ -5,10 +5,17 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { COORDINATE_ROUNDING_TOLERANCE } from "../../../testing/path-data";
+import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { ChainMotifService } from "../chain-motif/chain-motif.service";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
+import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
+import { SnakeMotifService } from "../snake-motif/snake-motif.service";
+import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
+import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
+import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
+import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
-import { BoxesMotifService } from "./boxes-motif.service";
-import { ChainMotifService } from "./chain-motif.service";
-import { GridGeometryService } from "./grid-geometry.service";
 import { InvalidPeriodError } from "./invalid-period.errors";
 import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
@@ -21,13 +28,6 @@ import {
   STRUCTURAL_MINIMUM_ROWS,
 } from "./meander-generation.constants";
 import { MeanderGenerationService } from "./meander-generation.service";
-import { MosaicMotifService } from "./mosaic-motif.service";
-import { MotifTransformsService } from "./motif-transforms.service";
-import { SnakeMotifService } from "./snake-motif.service";
-import { SnakeSequenceService } from "./snake-sequence.service";
-import { SvgRenderingService } from "./svg-rendering.service";
-import { SwirlMotifService } from "./swirl-motif.service";
-import { WhirlMotifService } from "./whirl-motif.service";
 
 import type { MeanderType, Modifier } from "./meander-generation.types";
 

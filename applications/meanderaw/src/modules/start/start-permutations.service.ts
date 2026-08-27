@@ -6,10 +6,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import {
   MOSAIC_TILE_MAXIMUM_COLUMNS,
   MOSAIC_TILE_MINIMUM_ROWS,
-} from "../meander-generation/meander-generation.constants";
-import { MosaicSymmetryService } from "../meander-generation/mosaic-symmetry.service";
-import { MosaicTileGenerationService } from "../meander-generation/mosaic-tile-generation.service";
-import { MosaicTilesService } from "../meander-generation/mosaic-tiles.service";
+} from "../mosaic-motif/mosaic-motif.constants";
+import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
+import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 
 import { StartContactSheetService } from "./start-contact-sheet.service";
 import {

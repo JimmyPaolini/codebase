@@ -1,12 +1,12 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { GridGeometryService } from "../meander-generation/grid-geometry.service";
-import { MosaicSymmetryService } from "../meander-generation/mosaic-symmetry.service";
-import { MosaicTileGenerationService } from "../meander-generation/mosaic-tile-generation.service";
-import { MosaicTileMotifService } from "../meander-generation/mosaic-tile-motif.service";
-import { MosaicTilesService } from "../meander-generation/mosaic-tiles.service";
-import { SvgRenderingService } from "../meander-generation/svg-rendering.service";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
+import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
+import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { StartContactSheetService } from "./start-contact-sheet.service";
 import { StartPermutationsService } from "./start-permutations.service";

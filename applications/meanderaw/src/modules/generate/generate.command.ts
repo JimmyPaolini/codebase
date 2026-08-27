@@ -14,7 +14,7 @@ import {
   SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { OutputFilenameService } from "../meander-generation/output-filename.service";
+import { OutputFilenameService } from "../svg-rendering/output-filename.service";
 
 import type {
   DotShape,
