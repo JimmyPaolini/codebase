@@ -61,13 +61,6 @@ export class LoggerService extends ConsoleLogger {
 
   // 🔏 Private Methods
 
-  /** The pino instance every logger's child is taken from. */
-  private static get root(): pino.Logger {
-    LoggerService.rootLogger ??= LoggerService.createRootLogger();
-
-    return LoggerService.rootLogger;
-  }
-
   /** Build the pino instance for production or local development output. */
   private static createRootLogger(): pino.Logger {
     const level = process.env["LOG_LEVEL"] ?? "info";
@@ -96,6 +89,31 @@ export class LoggerService extends ConsoleLogger {
         target: "pino-pretty",
       },
     });
+  }
+
+  /**
+   * Sends every subsequent line to standard error instead of standard output.
+   *
+   * For a command-line application whose standard output *is* its result. A log
+   * line sharing that stream is not a diagnostic beside the data, it is a
+   * corruption of it. Call it before anything logs — the first statement of the
+   * application's bootstrap.
+   *
+   * A call after the first line warns and changes nothing: the destination is
+   * fixed when the pino instance is built, and tearing down a transport
+   * somebody is writing through would be worse than refusing. The warning is
+   * the point — silently leaving the lines on standard output is how a caller
+   * would ship a corrupted pipe without ever being told.
+   */
+  static logToStandardError(): void {
+    if (LoggerService.rootLogger !== undefined) {
+      process.emitWarning(
+        "LoggerService.logToStandardError() was called after the first log line, so log lines still go to standard output and anything piping that stream will read them as data. Call it as the first statement of the application's bootstrap.",
+      );
+      return;
+    }
+
+    LoggerService.writesToStandardError = true;
   }
 
   /**
@@ -185,29 +203,11 @@ export class LoggerService extends ConsoleLogger {
 
   // 🌎 Public Methods
 
-  /**
-   * Sends every subsequent line to standard error instead of standard output.
-   *
-   * For a command-line application whose standard output *is* its result. A log
-   * line sharing that stream is not a diagnostic beside the data, it is a
-   * corruption of it. Call it before anything logs — the first statement of the
-   * application's bootstrap.
-   *
-   * A call after the first line warns and changes nothing: the destination is
-   * fixed when the pino instance is built, and tearing down a transport
-   * somebody is writing through would be worse than refusing. The warning is
-   * the point — silently leaving the lines on standard output is how a caller
-   * would ship a corrupted pipe without ever being told.
-   */
-  static logToStandardError(): void {
-    if (LoggerService.rootLogger !== undefined) {
-      process.emitWarning(
-        "LoggerService.logToStandardError() was called after the first log line, so log lines still go to standard output and anything piping that stream will read them as data. Call it as the first statement of the application's bootstrap.",
-      );
-      return;
-    }
+  /** The pino instance every logger's child is taken from. */
+  private static get root(): pino.Logger {
+    LoggerService.rootLogger ??= LoggerService.createRootLogger();
 
-    LoggerService.writesToStandardError = true;
+    return LoggerService.rootLogger;
   }
 
   /** Normalizes unknown errors into a stable message and timestamped log line. */

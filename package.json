@@ -81,6 +81,7 @@
     "tsx": "catalog:",
     "type-coverage": "catalog:",
     "typescript": "catalog:",
+    "typescript-7": "catalog:",
     "typescript-eslint": "catalog:",
     "validate-branch-name": "catalog:",
     "vite": "catalog:",
@@ -116,5 +117,5 @@
     ]
   },
   "type": "module",
-  "version": "1.42.0"
+  "version": "1.43.0"
 }

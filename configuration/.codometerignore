@@ -26,6 +26,7 @@ packages/lexico-components/src/lib/
 # ignore both for the same reason.
 applications/lexico-ingestion/data/
 applications/affirmations/output/
+applications/meanderaw/output/
 applications/lexico-ingestion/src/modules/library/library.constants.ts
 applications/lexico-ingestion/src/modules/literature/literature.constants.ts
 **/library.json
@@ -33,6 +34,7 @@ applications/lexico-ingestion/src/modules/literature/literature.constants.ts
 # 📓 Scratch notes and generator templates
 notepads/
 templates/
+configuration/conformetry-templates/
 
 # 🧪 A sample corpus written to be counted, not to be part of the count.
 # Twenty-seven files across twelve languages exist so `codometer-examples` can

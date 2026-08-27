@@ -55,6 +55,7 @@ describe(ConfigurationLoaderService, () => {
 
     expect(loaded).toStrictEqual({
       configuration: { defaultTarget: "codebase" },
+      path: configurationPath,
     });
   });
 
@@ -71,6 +72,7 @@ describe(ConfigurationLoaderService, () => {
 
     expect(loaded).toStrictEqual({
       configuration: { defaultTarget: "codebase" },
+      path: configurationPath,
     });
   });
 
@@ -165,6 +167,7 @@ describe(ConfigurationLoaderService, () => {
 
     expect(loaded).toStrictEqual({
       configuration: { defaultTarget: "codebase" },
+      path: configurationPath,
     });
   });
 });

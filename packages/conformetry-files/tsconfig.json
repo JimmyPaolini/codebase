@@ -22,6 +22,7 @@
   "exclude": ["dist", "node_modules", "output"],
   "extends": "../../configuration/tsconfig.json",
   "include": [
+    "codometer.config.ts",
     "eslint.config.ts",
     "scripts/**/*.ts",
     "src/**/*.ts",

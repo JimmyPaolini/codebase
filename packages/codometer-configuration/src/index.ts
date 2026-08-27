@@ -45,6 +45,7 @@ export type {
   CodometerSymbolModifier,
   CodometerTarget,
   LoadConfigurationArguments,
+  LoadedConfiguration,
   ResolvedCodometerConfiguration,
   ResolvedCodometerCustomStatistic,
   ResolvedCodometerDocumentationConfiguration,

@@ -5,7 +5,7 @@
 | Measure | Value |
 | --- | --- |
 | Callables | 69 |
-| Files | 32 |
+| Files | 33 |
 | Calls traced | 53 |
 | Call stacks | 23 |
 | Deepest stack | 8 |

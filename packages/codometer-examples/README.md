@@ -253,8 +253,8 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3243-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-157.32_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3272-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-185.10_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-27-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-57-3178c6?style=flat-square)
 
@@ -269,7 +269,7 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-2-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-1-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-0-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-88-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-89-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-7-166534?style=flat-square)
 
 ### JavaScript
@@ -278,15 +278,15 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ![Test Files](https://img.shields.io/badge/Test_Files-9-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-9-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-8-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-160-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-162-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-21-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-178-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-180-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-3-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-166-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-167-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-74-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-34-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-221-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1063-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-223-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1065-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -306,18 +306,18 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-116-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-25-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-13-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-71-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-53-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-4-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-6-0ea5e9?style=flat-square)
-![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-1-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-27-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-102-dc2626?style=flat-square)
-![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-5-ea580c?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-5-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-1201-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-181-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-170-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-846-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-361-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-159-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-9-0ea5e9?style=flat-square)
+![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-153-64748b?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-182-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-1033-dc2626?style=flat-square)
+![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-8-ea580c?style=flat-square)
 
 ### YAML
 
@@ -426,7 +426,7 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-12-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-848-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-847-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-12-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-62-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-1-a78bfa?style=flat-square)

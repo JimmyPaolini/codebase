@@ -138,7 +138,7 @@ describe("callidescope examples (integration)", () => {
         cyclicComponentCount: 1,
         edgeCount: 53,
         entryPointCount: 23,
-        fileCount: 32,
+        fileCount: 33,
         maximumDepth: 8,
         projectCount: 1,
         unresolvedCallCount: 2,

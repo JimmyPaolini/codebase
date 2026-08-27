@@ -135,6 +135,10 @@
     "tslib",
     // Invoked by the type-coverage target rather than imported.
     "type-coverage",
+    // Side-by-side TypeScript 7, aliased in the catalog. The typecheck target
+    // invokes its `tsc` binary directly; nothing imports it, and
+    // typescript-eslint and @swc-node/register still require TypeScript 6.
+    "typescript-7",
   ],
   "ignoreExports": [
     {

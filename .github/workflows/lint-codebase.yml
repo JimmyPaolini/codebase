@@ -40,6 +40,22 @@ jobs:
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
 
+      # ESLint's own incremental cache, keyed per run and restored from the most
+      # recent one. This is deliberately not an Nx output: Nx restores outputs
+      # only on a cache hit, and a hit means ESLint never runs, so an
+      # Nx-managed copy would be present exactly when it is useless and absent
+      # exactly when it would help. `--cache-strategy content` (set on the
+      # target) is what makes it survive a fresh checkout, where every file
+      # has a new mtime and the default metadata strategy would treat the
+      # whole workspace as changed.
+      - name: ♻️ Sync ESLint Cache
+        uses: actions/cache@v6
+        with:
+          path: .eslintcache
+          key: eslint-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            eslint-cache-${{ runner.os }}-
+
       # `callidescope` and each derivation synchronization are named alongside
       # `lint-codebase` rather than hanging off its `dependsOn`, because
       # callidescope also publishes a report on the default branch and Nx
@@ -67,12 +83,12 @@ jobs:
             --configuration=check --parallel=4
 
       - name: 📊 Upload Type Coverage
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: type-coverage-reports
           path: |
-            applications/**/type-coverage-report.txt
-            packages/**/type-coverage-report.txt
-            tools/**/type-coverage-report.txt
+            applications/*/type-coverage-report.txt
+            packages/*/type-coverage-report.txt
+            tools/*/type-coverage-report.txt
           retention-days: 30

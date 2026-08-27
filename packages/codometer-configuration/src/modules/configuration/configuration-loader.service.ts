@@ -256,6 +256,6 @@ export class ConfigurationLoaderService {
       },
     );
 
-    return { configuration };
+    return { configuration, path: resolvedPath };
   }
 }

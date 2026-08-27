@@ -53,9 +53,9 @@ describe(OutputFilenameService, () => {
           modifier: { name: "alternated", period: 2 },
           repeatCount: 6,
           rows: 5,
-          type: "bars",
+          type: "mosaic",
         }),
-      ).toBe("bars-5-rows-6-repeats-alternated-period-2.svg");
+      ).toBe("mosaic-5-rows-6-repeats-alternated-period-2.svg");
     });
 
     it("appends dot's name and shape", () => {
@@ -64,9 +64,9 @@ describe(OutputFilenameService, () => {
           modifier: { name: "dot", shape: "bounce" },
           repeatCount: 6,
           rows: 6,
-          type: "bars",
+          type: "mosaic",
         }),
-      ).toBe("bars-6-rows-6-repeats-dot-bounce.svg");
+      ).toBe("mosaic-6-rows-6-repeats-dot-bounce.svg");
     });
   });
 });

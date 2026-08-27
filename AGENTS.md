@@ -337,6 +337,45 @@ pnpm exec nx run <project>:lint-codebase --configuration=check
 
 See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the full validation workflow and per-tool fix guidance.
 
+### Task Cache Inputs
+
+`nx.json`'s `shared-globals` reaches almost every lint target, directly or
+through `default`, so whatever it names is an input to nearly every task in the
+workspace. It holds `configuration/tsconfig.json` and nothing else, and that is
+load-bearing rather than incidental.
+
+**Never add a high-churn file to `shared-globals`.** It once named
+`pnpm-lock.yaml`, `nx.json`, and `.github/workflows/*.yml`. Those change on
+100, 53, and 86 of every 100 commits to `main` respectively, and because a pull
+request is built from the merge commit, every branch inherited that churn — so
+every task in the workspace re-hashed on essentially every run and 🧑‍💻 Lint
+Codebase never recorded a single cache hit. It ran 475–520 tasks cold every
+time and took 5–9 minutes against a 12-minute limit. Nothing failed; the work
+was simply repeated.
+
+Nothing checks for this. A run whose cache never hits is still a green run, so
+the only signal is the duration, and re-adding one glob here silently undoes
+the whole arrangement.
+
+State the real dependency instead:
+
+- **Tool versions** belong in a per-target `{"externalDependencies": [...]}`
+  entry, which hashes the resolved versions of exactly those packages. This is
+  what `typecheck` has always done with `typescript`; every lint target now
+  names its own tools the same way. A tool added to a target's command must be
+  added there too, or an upgrade of it will replay a stale cached result.
+- **Python tools** need no entry: their targets already declare
+  `{workspaceRoot}/pyproject.toml` and `{workspaceRoot}/uv.lock`.
+- **Whole-lockfile sensitivity**, where a target genuinely depends on every
+  dependency rather than a named few, is the `dependency-versions` namedInput.
+  `build` uses it, because a bundle really does change when any dependency
+  does. No lint target should need it.
+
+`.eslintcache/` is excluded from `default` and from the `eslint` inputs for the
+same reason a project's `codometer-report.json` is subtracted from its own: a
+task's own artifact must never be one of its inputs, or it rewrites the hash it
+was just cached under and can never hit its own cache.
+
 ### Quality Tools
 
 | Tool            | Description                                           | Config                                   | Docs                                                             |
@@ -655,7 +694,7 @@ Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vit
 - **Test coverage: 96%** for branches, functions, lines, and statements (`configuration/vitest.config.ts`, v8 provider). New code needs tests in the same change to keep a project above the line.
 - **Type coverage** is per project, declared as `typeCoverage.atLeast` in each project's `package.json` — most packages sit at 100 with `strict: true`, and the workspace root requires 95. Run `type-coverage` alongside `typecheck` for any touched project that defines the target; passing `typecheck` alone proves nothing about this gate.
 - **Duplication**: not a gate, and no longer measured by anything scheduled. `jscpd` and `fallow-duplicates` both remain as targets to run by hand — `nx run codebase:jscpd` and `nx run codebase:fallow-duplicates` — and both are advisory: the `jscpd` target ends in `|| true`, and nothing in CI invokes either one. The 6% threshold in `configuration/jscpd.config.json` and `configuration/fallow.config.jsonc` is what those manual runs report against, not a bar a pull request has to clear. It sat at 5.9% when the last scheduled caller was removed. Extract a shared helper rather than copying a block because it is the better code, not because a check will stop you.
-- **Bundle size** is per project, enforced by the `codometer` target, which builds first and measures the compiled output. Every package's gzipped limit is declared in the `PROJECT_LIMITS` table in `configuration/codometer.config.ts`, keyed by the project's path; `lexico` and `lexico-components` declare theirs in a `codometer.config.cjs` of their own because they measure several bundles each. Breaching one fails 👷 Make Projects, and the `## ⏲️ Codometer` section names the project. That section is rendered by `nx run codometer-cli:start -- changes` from the `codometer-report.json` each project's run leaves behind, diffed by `codometer-changes` and rendered by `codometer-output`.
+- **Bundle size** is per project, enforced by the `codometer` target, which builds first and measures the compiled output. Every project carries a `codometer.config.ts` that imports the shared configuration object from `configuration/codometer.config.ts` and spreads it, exactly the way its `eslint.config.ts` spreads the base config beside it. A project gating its compiled size declares that limit and its own build glob in its own file, spreading `compiledJavaScriptTarget` for everything the glob does not say; a project that emits nothing declares no target at all and is gated by nothing. `nx run codometer-cli:start -- configuration --limits` lists every limit the workspace declares and the file each is written in, which is how to read them as a set now that no one table holds them. `lexico` and `lexico-components` additionally override `targets`, because one measures four partitions of its build and the other a library bundle. Breaching one fails 👷 Make Projects, and the `## ⏲️ Codometer` section names the project. That section is rendered by `nx run codometer-cli:start -- changes` from the `codometer-report.json` each project's run leaves behind, diffed by `codometer-changes` and rendered by `codometer-output`.
 - Lowering a threshold to make a change pass is not an option — fix the code.
 
 See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for patterns.

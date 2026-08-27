@@ -1,8 +1,8 @@
 // 🛠️ Utilities
 
 /**
- * Inserts the default `codometer` subcommand when the command line names
- * neither it nor `changes`.
+ * Inserts the default `codometer` subcommand when the command line names no
+ * registered command.
  *
  * `codometer`'s published usage predates `changes`: `codometer --directory .`
  * is documented and scripted as the bare invocation. Commander only infers a
@@ -11,7 +11,12 @@
  * A bare `-h`/`--help` is left alone so it still lists every command.
  */
 export function withDefaultCommand(argv: readonly string[]): string[] {
-  const commandNames = new Set(["changes", "codometer", "help"]);
+  const commandNames = new Set([
+    "changes",
+    "codometer",
+    "configuration",
+    "help",
+  ]);
   const helpFlags = new Set(["--help", "-h"]);
   const [firstArgument] = argv;
 
