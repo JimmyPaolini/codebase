@@ -1,6 +1,14 @@
-# Entry points
+# 🚀 Entry points
 
 **One fixture per root kind.**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+Then read `entryPointCount` in [`output/report.json`](../../output/report.json)'s summary, and the `🚀` lines in [`output/report.md`](../../output/report.md) for the roots deep enough to be reported.
 
 Depth is only meaningful relative to a root, and most code in a repository like
 this one is called by a framework rather than by the repository. So roots are
@@ -31,3 +39,7 @@ adding, both of which are worth knowing.
 Most stack heads in _this_ package are orphan roots, because fixtures have no
 framework to call them. `dependency-cruiser` reports `no-orphans` against this
 file on every run, which is two tools independently noticing the same thing.
+
+## Next
+
+[deep stack](../deep-stack/README.md).

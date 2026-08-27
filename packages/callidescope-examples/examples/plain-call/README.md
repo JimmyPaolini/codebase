@@ -1,6 +1,14 @@
-# Plain call
+# 📞 Plain call
 
 **`normalize(label)` → `normalizeLabel`**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+This fixture produces no finding. What it proves is the resolution above — the declaration behind an import alias — asserted in [the test suite](../../testing/examples.integration.test.ts).
 
 The simplest row of the resolution table, and the one that still needs
 explaining: the call site names `normalize`, but the frame callidescope records
@@ -12,3 +20,7 @@ local name a file gave it.
 🚀 PlainCallService.render(label: string): string
   └─> normalizeLabel(label: string): string
 ```
+
+## Next
+
+[injected dependency](../injected-dependency/README.md).

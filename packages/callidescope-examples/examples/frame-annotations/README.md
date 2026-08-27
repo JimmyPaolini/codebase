@@ -1,7 +1,15 @@
-# Frame annotations
+# 🏷️ Frame annotations
 
 **One frame per shape a comment-trivia reader gets wrong, or a renderer has to
 shorten**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+Then read the two `FrameAnnotationsService` stacks in [`output/report.md`](../../output/report.md), and the same comments in full in [`output/report.json`](../../output/report.json).
 
 Every frame is annotated from the **type checker**, not from the comment trivia
 attached to the node the graph points at. That distinction is what makes these
@@ -40,3 +48,7 @@ Annotations are read only for the frames a report actually prints — rendering 
 type is the one genuinely costly thing the checker does, and reports touch a few
 hundred frames out of thousands. So a shape has to sit inside a **reported**
 stack to be demonstrated at all.
+
+## Next
+
+Nothing left — back to the [package guide](../../README.md#acting-on-a-finding), for what to do about a finding.

@@ -184,6 +184,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 <!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
+  file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_modules_documents_documents_constants_ts["src/modules/documents/documents.constants.ts"]
@@ -258,10 +259,10 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3641-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-124.23_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3656-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-124.61_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-34-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-35-3178c6?style=flat-square)
 
 ### Measured Targets
 
@@ -269,7 +270,7 @@ graph LR
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-34-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-35-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-16-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-2-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
@@ -288,7 +289,7 @@ graph LR
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-215-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-12-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-203-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-101-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-102-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-59-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-129-64748b?style=flat-square)
 ![Comment Lines](https://img.shields.io/badge/Comment_Lines-258-475569?style=flat-square)
@@ -312,16 +313,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-124-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-125-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-29-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
 ![JSON Properties](https://img.shields.io/badge/JSON_Properties-79-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-65-16a34a?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-66-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-6-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-30-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-113-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-31-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-114-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML

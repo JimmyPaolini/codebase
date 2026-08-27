@@ -1,6 +1,14 @@
-# Callback argument
+# 🎣 Callback argument
 
 **`entries.map(entry => …)` → the arrow, as its own frame**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+No finding. What it proves is that the arrow is a frame and `map` is a leaf, asserted in [the test suite](../../testing/examples.integration.test.ts).
 
 Two decisions show up in one line of code:
 
@@ -16,3 +24,7 @@ Two decisions show up in one line of code:
   └─> CallbackArgumentService.map(…)(entry: string): string
     └─> CallbackArgumentService.shout(entry: string): string
 ```
+
+## Next
+
+[computed member](../computed-member/README.md).

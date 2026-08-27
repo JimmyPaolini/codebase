@@ -1,6 +1,17 @@
-# The ambient-module heuristic
+# 🌍 The ambient-module heuristic
 
 `SpelunkerModule.explore` reports the container's view rather than the decorators', so a `@Global()` module arrives as an import of every other module. Drawn literally it would bury the structure worth reading, so its edges are left out and it is drawn as a rounded node.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## A container with a global module
 
@@ -49,3 +60,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 `MODULE_GRAPH_UNCONNECTED` is rendered in place of a diagram.
 
 _This project defines no NestJS modules to graph._
+
+## Next
+
+[preview-mode](../preview-mode/README.md).

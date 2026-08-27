@@ -6,15 +6,12 @@ import { codependixConfigurationSchema } from "@codependix/configuration";
 import { describe, expect, it } from "vitest";
 
 import * as anchorPlacement from "./render/anchor-placement";
-import {
-  collectDocuments,
-  EXAMPLE_ORDER,
-  orderDocuments,
-} from "./render/catalog";
+import { collectDocuments, orderDocuments } from "./render/catalog";
 import * as configuration from "./render/configuration";
 import { deliverDocuments, renderDocument } from "./render/document";
 import * as exportDelivery from "./render/export-delivery";
 import { EXAMPLES_DIRECTORY } from "./render/paths";
+import { EXAMPLE_ORDER } from "./render/reading-order";
 import { run, selectMode, USAGE_MESSAGE } from "./render/run";
 
 describe("codependix examples", () => {
@@ -235,6 +232,26 @@ describe("codependix examples", () => {
     });
   });
 
+  describe("the examples are all documented", () => {
+    // `orderDocuments` already refuses a document missing from the reading
+    // order, but nothing checked the other direction: an example the package
+    // guide never links to is reachable only by listing the directory. Every
+    // sibling `*-examples` package checks the same thing.
+    it.each(EXAMPLE_ORDER)(
+      "%s is linked from the package guide",
+      (exampleName) => {
+        expect.hasAssertions();
+
+        const guide = readFileSync(
+          path.join(EXAMPLES_DIRECTORY, "..", "README.md"),
+          "utf8",
+        );
+
+        expect(guide).toContain(`(examples/${exampleName})`);
+      },
+    );
+  });
+
   describe("the committed examples", () => {
     it("collects all fifteen examples, in reading order", async () => {
       expect.hasAssertions();
@@ -277,6 +294,10 @@ describe("codependix examples", () => {
 
     it("renders one top-level heading and a single trailing newline", () => {
       expect.hasAssertions();
+
+      // An id outside `EXAMPLE_ORDER` carries no emoji and has nothing to link
+      // on to, which is the shape that proves both are rendered rather than
+      // authored into a document.
       expect(
         renderDocument({
           id: "00-probe",
@@ -285,7 +306,35 @@ describe("codependix examples", () => {
           summary: "A summary.",
           title: "A title",
         }),
-      ).toBe("# A title\n\nA summary.\n\n## Section\n\nA note.\n\n_body_\n");
+      ).toBe(
+        [
+          "# A title",
+          "",
+          "A summary.",
+          "",
+          "## Run it",
+          "",
+          "```bash",
+          "nx run codependix-examples:examples",
+          "```",
+          "",
+          "Everything below is rendered from the subject in this directory by the real",
+          "graph builders, so a claim that stops being true fails a check rather than",
+          "misleading anybody. The command above fails if what is committed here has",
+          "drifted; `:write` regenerates it.",
+          "",
+          "## Section",
+          "",
+          "A note.",
+          "",
+          "_body_",
+          "",
+          "## Next",
+          "",
+          "Nothing left — back to the [package guide](../../README.md).",
+          "",
+        ].join("\n"),
+      );
     });
 
     it("reports the committed output as current", async () => {
@@ -363,7 +412,7 @@ describe("codependix examples", () => {
           path.join(outputDirectory, "graph-levels", "README.md"),
           "utf8",
         ),
-      ).toContain("# The four graph levels, side by side");
+      ).toContain("# 🗺️ The four graph levels, side by side");
     });
   });
 });
