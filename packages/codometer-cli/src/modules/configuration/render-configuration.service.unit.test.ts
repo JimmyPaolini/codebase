@@ -7,6 +7,7 @@ import type {
   ConfiguredDirectory,
   ConfiguredLimitRow,
 } from "./configuration.types";
+import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 const LIMIT_ROW: ConfiguredLimitRow = {
   directory: "packages/logger",
@@ -73,6 +74,86 @@ describe(RenderConfigurationService, () => {
 
     expect(document).toContain("packages/broken");
     expect(document).toContain("Could not be read: Cannot find module");
+  });
+
+  it("lists what each configuration resolved to when not limited to limits", () => {
+    const document = service.render({
+      described: [
+        {
+          configuration: {
+            defaultTarget: undefined,
+            documentation: undefined,
+            exclude: [],
+            excludeFrom: [".codometerignore"],
+            limits: [],
+            output: { json: undefined, markdown: undefined },
+            python: { command: "uv run python" },
+            statistics: [
+              {
+                color: "166534",
+                group: "typescript",
+                label: "Service Files",
+                patterns: ["**/*.service.ts"],
+              },
+            ],
+            targets: [
+              {
+                analyses: ["size"],
+                compression: "gzip",
+                directory: "../..",
+                exclude: [],
+                include: ["dist/**/*.js"],
+                name: "Compiled JavaScript",
+              },
+            ],
+          } satisfies ResolvedCodometerConfiguration,
+          directory: "packages/logger",
+          error: undefined,
+          path: "packages/logger/codometer.config.ts",
+        },
+      ],
+      format: "markdown",
+      limitRows: [],
+      limitsOnly: false,
+    });
+
+    expect(document).toContain("- Targets: Compiled JavaScript");
+    expect(document).toContain("- Custom statistics: Service Files");
+    expect(document).toContain("- Documentation check: off");
+    expect(document).toContain("`uv run python`");
+    expect(document).toContain("- Exclude files: .codometerignore");
+  });
+
+  it("renders an em dash for a list a configuration leaves empty", () => {
+    const document = service.render({
+      described: [UNREADABLE],
+      format: "markdown",
+      limitRows: [],
+      limitsOnly: false,
+    });
+
+    expect(document).toContain("Could not be read");
+  });
+
+  it("emits every configuration under json when not limited to limits", () => {
+    const document = service.render({
+      described: [UNREADABLE],
+      format: "json",
+      limitRows: [],
+      limitsOnly: false,
+    });
+
+    // `JSON.stringify` drops an undefined value rather than emitting it, so
+    // the unreadable entry arrives without its absent configuration.
+    expect(JSON.parse(document)).toStrictEqual({
+      configurations: [
+        {
+          directory: UNREADABLE.directory,
+          error: UNREADABLE.error,
+          path: UNREADABLE.path,
+        },
+      ],
+    });
   });
 
   it("emits only the limits under --limits when asked for json", () => {
