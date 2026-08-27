@@ -277,7 +277,7 @@ const config: KnipConfig = {
     // holds subjects to be graphed and the guides rendered from them, neither of
     // which anything imports.
     "packages/codependix-examples": {
-      entry: ["scripts/render-examples.ts"],
+      entry: ["testing/render-examples.ts", "testing/**/*.test.ts"],
       ignoreDependencies: [
         // Imported by the example NestJS containers under `examples/`, which are
         // input to be graphed rather than code knip's project scope covers.
@@ -285,7 +285,7 @@ const config: KnipConfig = {
         "@nestjs/common",
         "reflect-metadata",
       ],
-      project: "scripts/**/*.ts",
+      project: "testing/**/*.ts",
     },
 
     // conformetry packages: NestJS service/command application scaffolds

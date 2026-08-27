@@ -63,15 +63,22 @@ Never hand-edit an `examples/*/README.md` or an `examples/*/*.json`.
 ```text
 examples/<example>/README.md      # Rendered from the subject beside it
 examples/<example>/<subject>/     # The code being graphed — nested, and scoped out of the linters
-scripts/render-examples.ts        # Entry point: --check or --write
-scripts/render/                   # One module per example, plain exported functions
-testing/                          # The tests that keep every documented claim true
+testing/render-examples.ts        # Entry point: --check or --write
+testing/render/                   # One module per example, plain exported functions
+testing/*.unit.test.ts            # The tests that keep every documented claim true
 ```
 
 There is no `src/`. This package ships examples, not an application — no CLI, no
-NestJS container of its own, no public API. `scripts/render/builders.ts`
-constructs the codependix services the examples render through, and everything
-else in `scripts/render/` is a plain function.
+NestJS container of its own, no public API. The renderer sits in `testing/`
+beside the tests that assert what it produced, which is where
+`codometer-examples` keeps the harness that drives its own tool.
+`testing/render/builders.ts` constructs the codependix services the examples
+render through, and everything else in `testing/render/` is a plain function.
+
+`callidescope-examples` does have a `src/`, and it holds **subject** code rather
+than machinery: two fixtures that must sit at `src/main.ts` and `src/index.ts`
+because callidescope's entry-point rules key on those literal paths. Nothing
+here needs that, so nothing here has one.
 
 **The nesting depth is load-bearing.** One level under `examples/` is the
 rendered guide and its JSON exports, which every linter still checks; two levels
@@ -84,10 +91,10 @@ directory would drag it into the lint run.
 1. **Create `examples/<name>/`** and put the subject in a subdirectory of it,
    if the example needs one on disk. Nothing nested there is linted, so shape it
    however the behavior requires.
-2. **Render it** from the matching module in `scripts/render/`. Each exports a
+2. **Render it** from the matching module in `testing/render/`. Each exports a
    `build*Documents()` returning `ExampleDocument`s whose `id` is the directory
    name.
-3. **Add the `id` to `EXAMPLE_ORDER`** in `scripts/render/catalog.ts` — the one
+3. **Add the `id` to `EXAMPLE_ORDER`** in `testing/render/catalog.ts` — the one
    place the reading order is written down. A document missing from it fails the
    run rather than being silently dropped.
 4. **Assert the behavior** in `testing/`, not just the rendering — the point of
@@ -118,7 +125,7 @@ directory would drag it into the lint run.
 ## Key Files
 
 - [README.md](README.md): the human guide, and the reasoning behind the layout
-- [scripts/render/catalog.ts](scripts/render/catalog.ts): every example, in reading order
-- [scripts/render/builders.ts](scripts/render/builders.ts): the codependix services the examples render through
-- [scripts/render/document.ts](scripts/render/document.ts): Markdown rendering and the check/write delivery
+- [testing/render/catalog.ts](testing/render/catalog.ts): every example, in reading order
+- [testing/render/builders.ts](testing/render/builders.ts): the codependix services the examples render through
+- [testing/render/document.ts](testing/render/document.ts): Markdown rendering and the check/write delivery
 - [project.json](project.json): the `examples` target, and why both its configurations are safe on a branch

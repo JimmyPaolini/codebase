@@ -127,7 +127,9 @@ own tool over their own subjects through an Nx target. Codependix cannot:
 resolves the Nx workspace from the **process working directory** and takes no
 directory argument — `--directory` supplies only the root that export paths are
 resolved against. So the graph builders are called directly, with a project
-graph they are handed, and `scripts/render-examples.ts` is what calls them.
+graph they are handed, and `testing/render-examples.ts` is what calls them —
+beside the tests that assert what it produced, the same place
+`codometer-examples` keeps the harness that drives its own tool.
 
 That is also what keeps the subjects out of everything else. They carry no
 `project.json`, so none of them joins this workspace's Nx project graph, the
@@ -138,10 +140,11 @@ never run over input that exists precisely to look malformed.
 ## Layout
 
 ```text
-examples/<example>/          # One example: its rendered README.md, and the subject it graphs
-examples/<example>/<subject> # The code being graphed — nested, and scoped out of the linters
-scripts/render-examples.ts   # Regenerates every README.md above
-testing/                     # Asserts every claim those guides make
+examples/<example>/           # One example: its rendered README.md, and the subject it graphs
+examples/<example>/<subject>  # The code being graphed — nested, and scoped out of the linters
+testing/render-examples.ts    # Regenerates every README.md above
+testing/render/               # One module per example, plain exported functions
+testing/*.unit.test.ts        # Asserts every claim those guides make
 ```
 
 The nesting is the rule the tooling reads: one level under `examples/` is the

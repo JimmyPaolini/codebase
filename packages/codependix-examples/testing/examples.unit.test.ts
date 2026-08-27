@@ -5,17 +5,17 @@ import path from "node:path";
 import { codependixConfigurationSchema } from "@codependix/configuration";
 import { describe, expect, it } from "vitest";
 
-import * as anchorPlacement from "../scripts/render/anchor-placement";
+import * as anchorPlacement from "./render/anchor-placement";
 import {
   collectDocuments,
   EXAMPLE_ORDER,
   orderDocuments,
-} from "../scripts/render/catalog";
-import * as configuration from "../scripts/render/configuration";
-import { deliverDocuments, renderDocument } from "../scripts/render/document";
-import * as exportDelivery from "../scripts/render/export-delivery";
-import { EXAMPLES_DIRECTORY } from "../scripts/render/paths";
-import { run, selectMode, USAGE_MESSAGE } from "../scripts/render/run";
+} from "./render/catalog";
+import * as configuration from "./render/configuration";
+import { deliverDocuments, renderDocument } from "./render/document";
+import * as exportDelivery from "./render/export-delivery";
+import { EXAMPLES_DIRECTORY } from "./render/paths";
+import { run, selectMode, USAGE_MESSAGE } from "./render/run";
 
 describe("codependix examples", () => {
   describe("configuration resolution", () => {

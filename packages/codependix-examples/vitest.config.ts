@@ -11,10 +11,11 @@ export default mergeConfig(
           // The bootstrap, like every other project's `src/main.ts`: it reads
           // `process.argv` and sets `process.exitCode`, and the run it delegates
           // to is covered directly.
-          "scripts/render-examples.ts",
-          "testing/**",
+          "testing/render-examples.ts",
         ],
-        include: ["scripts/**/*.ts"],
+        // Only the renderer is source. The tests beside it and the example
+        // subjects under `examples/` are not, which is why neither is measured.
+        include: ["testing/render/**/*.ts"],
       },
       // 🐢 These suites build real `ts.Program`s and boot real NestJS
       // containers, so they are not the sub-second work Vitest's 5s default

@@ -11,10 +11,10 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register scripts/render-examples.ts --check"
+          "command": "node --import @swc-node/register/esm-register testing/render-examples.ts --check"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register scripts/render-examples.ts --write"
+          "command": "node --import @swc-node/register/esm-register testing/render-examples.ts --write"
         }
       },
       "defaultConfiguration": "check",

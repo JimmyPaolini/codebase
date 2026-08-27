@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import * as nestjsGraphs from "../scripts/render/nestjs-graphs";
+import * as nestjsGraphs from "./render/nestjs-graphs";
 import {
   ATLAS_CHAIN,
   buildNeighborhood,
@@ -11,10 +11,10 @@ import {
   renderNeighborhood,
   renderWorkspaceGraph,
   SUBJECT_PROJECT_NAME,
-} from "../scripts/render/nx-graphs";
-import { resolveExample } from "../scripts/render/paths";
-import * as pythonImports from "../scripts/render/python-imports";
-import * as typescriptImports from "../scripts/render/typescript-imports";
+} from "./render/nx-graphs";
+import { resolveExample } from "./render/paths";
+import * as pythonImports from "./render/python-imports";
+import * as typescriptImports from "./render/typescript-imports";
 
 describe("codependix example graphs", () => {
   describe("nx graphs", () => {
