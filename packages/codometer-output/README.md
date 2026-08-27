@@ -8,7 +8,7 @@ nx run codometer-output:vitest
 
 ## 🔭 Callidescope
 
-Call stacks traced through `codometer-output`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codometer-output`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |

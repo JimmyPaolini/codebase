@@ -95,6 +95,8 @@ const config: KnipConfig = {
         "applications/JimmyPaolini/**",
         "pnpm-workspace.yaml", // Catalog dependencies are shared across workspace; knip would flag all as unused in root
         "configuration/conformetry-templates/**", // Generator templates are placeholder files, not executable workspace code
+        "packages/codometer-examples/examples/compiled/**", // Stand-in build output, committed so a target example has something to measure
+        "packages/codometer-examples/examples/corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
         // Skill scripts are invoked by the skill framework, not imported in code
         "**/.agents/skills/**",
         "**/.claude/skills/**",
@@ -125,6 +127,27 @@ const config: KnipConfig = {
         "vitest", // Used by tests and Vitest config; Knip may miss it when test sources are excluded
       ],
       project: "src/**/*.{ts,tsx}",
+    },
+
+    // codometer-examples: A sample corpus and one configuration per behavior.
+    // Nothing here is imported by anything — the configurations are read by the
+    // codometer command line and the corpus exists to be counted — so knip is
+    // told where the entry points really are rather than left to conclude the
+    // whole package is dead.
+    "packages/codometer-examples": {
+      entry: [
+        "codometer.config.ts",
+        "examples/**/*.config.ts",
+        "testing/**/*.ts",
+      ],
+      ignore: [
+        "examples/compiled/**", // Stand-in build output for the target examples
+        "examples/corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
+      ],
+      ignoreDependencies: [
+        "@swc-node/register", // Named as a string on the command line testing/codometer.ts spawns, never imported
+      ],
+      project: ["codometer.config.ts", "examples/**/*.ts", "testing/**/*.ts"],
     },
 
     // lexico-components: Shared React component library (shadcn/ui)
@@ -204,6 +227,29 @@ const config: KnipConfig = {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
+    },
+    // Every fixture exists to be traced, not imported. An orphan-root fixture
+    // is *defined* by having no caller, and a resolution-table fixture is
+    // reached only by the type checker — which is exactly the shape knip
+    // reports as an unused file or an unused export. Declaring the whole of
+    // `examples/` as entry points says that directly, and keeps knip doing the
+    // one job that still applies here: telling this package when a dependency
+    // it declares has stopped being used. Ignoring `examples/` instead would
+    // leave every dependency looking unused, and `knip --fix` would delete
+    // them.
+    "packages/callidescope-examples": {
+      entry: [
+        "callidescope.config.ts",
+        "examples/**/*.ts",
+        "src/**/*.ts",
+        "testing/**/*.test.ts",
+      ],
+      // The integration test spawns the callidescope command line through this
+      // loader rather than importing it, so nothing in the module graph names
+      // it. Undeclared, `knip --fix` deletes it and the test stops running.
+      ignoreDependencies: ["@swc-node/register"],
+      project:
+        "{callidescope.config.ts,examples/**/*.ts,src/**/*.ts,testing/**/*.ts}",
     },
     "packages/callidescope-graph": {
       entry: ["src/index.ts"],

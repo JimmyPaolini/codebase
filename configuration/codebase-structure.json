@@ -177,7 +177,7 @@
               "ruleId": "any-file"
             }
           ],
-          "name": "skills"
+          "name": "examples"
         },
         {
           "children": [
@@ -188,7 +188,7 @@
               "ruleId": "any-file"
             }
           ],
-          "name": "examples"
+          "name": "skills"
         },
         {
           "children": [

@@ -84,7 +84,7 @@ graph LR
 
 ## 🔭 Callidescope
 
-Call stacks traced through `codependix-nestjs`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codependix-nestjs`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |

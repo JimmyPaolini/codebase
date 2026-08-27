@@ -35,8 +35,19 @@
     // never by importing them, so nothing in the module graph reaches one.
     // knip names the root file in its own entry list for the same reason.
     "{applications,packages,tools}/*/codometer.config.cjs",
+    "{applications,packages,tools}/*/codometer.config.ts",
     "codometer.config.ts",
+    // Read by the codometer command line, one per documented behavior, and
+    // reached by nothing in the module graph for the same reason.
+    "packages/codometer-examples/examples/**/*.config.ts",
     "configuration/**",
+    // Every fixture in the callidescope examples package exists to be traced,
+    // not imported — an orphan-root fixture is *defined* by having no caller.
+    // Declared as entry points rather than excluded, exactly as
+    // `configuration/knip.config.ts` declares the same files, so what they
+    // import stays in the module graph instead of reading as unreachable too.
+    "packages/callidescope-examples/examples/**/*.ts",
+    "packages/callidescope-examples/src/**/*.ts",
     "packages/lexico-entities/src/modules/database/migrations/**/*.ts",
     "release.config.cjs",
     "validate-branch-name.config.cjs",
@@ -84,6 +95,10 @@
     // Named as a string in conformetry-validation's language registry and
     // imported on demand, so no static import proves it is used.
     "@conformetry/text",
+    // Depended on by codometer-examples so its tests spawn the command line
+    // they document; they resolve its entry point through the manifest and run
+    // it as a process rather than importing it.
+    "@codometer/cli",
     // Declared by every service package for the conformance-scaffolded
     // `testing/mocks.ts`, which only the packages whose tests mock a
     // dependency go on to import.
@@ -171,6 +186,8 @@
     "**/helm/**/templates/**",
     "**/library.json",
     "**/node_modules/**",
+    "**/packages/codometer-examples/examples/compiled/**",
+    "**/packages/codometer-examples/examples/corpus/**",
     "**/pnpm-lock.yaml",
     "**/src/lib/database.types.ts",
     "**/src/routeTree.gen.ts",

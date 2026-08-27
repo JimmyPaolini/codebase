@@ -73,6 +73,13 @@ projectStructure.cache.json
 **/.agents/skills/ask-matt/**
 **/.agents/skills/code-review/**
 **/.agents/skills/codebase-design/**
+**/.agents/skills/codependix-configure/**
+**/.agents/skills/codependix-export/**
+**/.agents/skills/codependix-navigate/**
+**/.agents/skills/codependix-triage/**
+**/.agents/skills/codometer-configure/**
+**/.agents/skills/codometer-measure/**
+**/.agents/skills/codometer-triage/**
 **/.agents/skills/conformetry-configure/**
 **/.agents/skills/conformetry-generate/**
 **/.agents/skills/conformetry-validate/**
@@ -114,6 +121,11 @@ projectStructure.cache.json
 **/.agents/skills/wizard/**
 **/.agents/skills/writing-for-agents/**
 # installed-skills-end
+
+# Callidescope writes this report and then checks the file back against what a
+# fresh run would produce, byte for byte. Reformatting it reports it stale the
+# moment a format run touches it.
+**/packages/callidescope-examples/output/**
 
 # 🕸️ Every dependency graph codependix writes as JSON. It renders them with
 # `JSON.stringify(…, 2)`, which puts one array element per line; oxfmt collapses
