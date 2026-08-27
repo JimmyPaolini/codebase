@@ -1006,7 +1006,8 @@ export default [
   },
 
   // 🧱 Constant File Shape
-  // Constant files should expose only imports plus top-level const declarations.
+  // Constant files should expose only imports plus top-level const declarations,
+  // and the error classes thrown from beside them.
   {
     files: ["**/*.constants.ts"],
     ignores: [
@@ -1025,6 +1026,12 @@ export default [
       "**/src/modules/validator/validator.constants.ts",
     ],
     rules: {
+      // The selector below is the guard that makes this safe: the only class a
+      // constants file may declare is one extending `Error`, so lifting the
+      // count permits several error classes and nothing else. A module whose
+      // errors are one class per cause — meanderaw's five — can then keep them
+      // distinct in the one constants file beside the code that throws them.
+      "max-classes-per-file": "off",
       "no-restricted-syntax": [
         "error",
         {
