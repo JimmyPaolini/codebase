@@ -19,7 +19,7 @@ cd packages/codometer-examples
 codometer --directory examples/corpus --config examples/<name>/<file>.config.ts --check limits
 ```
 
-## Codometer said this — open this
+## Codometer said X — open this example
 
 | It said | It means | Open |
 | ------- | -------- | ---- |

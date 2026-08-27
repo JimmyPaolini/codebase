@@ -32,7 +32,7 @@ Four of the per-example targets exit non-zero by design, which is why running
 them as a plain batch could never be the gate — the aggregate checks each
 against the outcome its own guide promises.
 
-## A report said X. Which example explains X?
+## Conformetry said X — open this example
 
 | Report said | Read | Because |
 | ----------- | ---- | ------- |

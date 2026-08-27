@@ -78,7 +78,7 @@ export function renderDocument(document: ExampleDocument): string {
     "",
     "## Run it",
     "",
-    fence(`nx run codependix-examples:examples`, "bash"),
+    fence("nx run codependix-examples:examples", "bash"),
     "",
     RUN_IT_NOTE,
   ];

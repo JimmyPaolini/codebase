@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   corpusDirectory,
   examplesDirectory,
+  packageDirectory,
   runCodometer,
 } from "./codometer.js";
 
@@ -95,7 +96,7 @@ function readConfigurations(exampleName: string): string[] {
   return found.toSorted();
 }
 
-/** Every example directory, in the order the guide's index table reads. */
+/** Every example directory, alphabetically — the order is the listing's own. */
 function readExampleNames(): string[] {
   return fs
     .readdirSync(examplesDirectory, { withFileTypes: true })
@@ -107,6 +108,11 @@ function readExampleNames(): string[] {
 }
 
 // 🏃 Running
+
+/** The package guide, read once so the index table can be checked against it. */
+function readPackageGuide(): string {
+  return fs.readFileSync(path.join(packageDirectory, "README.md"), "utf8");
+}
 
 /** One configuration, run against the corpus and gated on the promised code. */
 function runConfiguration(relativePath: string): boolean {
@@ -143,14 +149,29 @@ function runConfiguration(relativePath: string): boolean {
   return false;
 }
 
-/** One example: its guide must exist, and every configuration must hold. */
-function runExample(exampleName: string): boolean {
+/**
+ * One example: its guide must exist and be linked, and every configuration must
+ * hold.
+ *
+ * The index-table check is the half a guide's own content can never catch. An
+ * example whose `README.md` exists but which nothing links to is reachable only
+ * by listing the directory, which is exactly the state this package was in
+ * before it had per-example guides at all.
+ */
+function runExample(exampleName: string, packageGuide: string): boolean {
   console.info(`📁 ${exampleName}`);
 
   let held = true;
 
   if (!fs.existsSync(path.join(examplesDirectory, exampleName, "README.md"))) {
     console.error(`   ❌ ${exampleName} has no README.md`);
+    held = false;
+  }
+
+  if (!packageGuide.includes(`(examples/${exampleName}/README.md)`)) {
+    console.error(
+      `   ❌ ${exampleName} is not linked from the README's index table`,
+    );
     held = false;
   }
 
@@ -169,7 +190,10 @@ console.info(
   `⏲️ Running ${exampleNames.length} codometer examples over the sample corpus.\n`,
 );
 
-const outcomes = exampleNames.map((exampleName) => runExample(exampleName));
+const packageGuide = readPackageGuide();
+const outcomes = exampleNames.map((exampleName) =>
+  runExample(exampleName, packageGuide),
+);
 
 const documented = new Set(
   exampleNames.flatMap((exampleName) => readConfigurations(exampleName)),

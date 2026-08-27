@@ -1,5 +1,11 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -81,6 +87,48 @@ describe("callidescope examples (integration)", () => {
 
   beforeAll(() => {
     result = traceFixtures();
+  });
+
+  describe("the examples are all documented", () => {
+    // The half no assertion about a finding can catch: an example whose guide
+    // is missing, or which nothing links to, is reachable only by listing the
+    // directory. Every sibling `*-examples` package checks the same two things.
+    const exampleNames = readdirSync(
+      path.join(WORKSPACE_ROOT, EXAMPLES_DIRECTORY, "examples"),
+      { withFileTypes: true },
+    )
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .toSorted();
+
+    it.each(exampleNames)("%s carries its own README.md", (exampleName) => {
+      expect.hasAssertions();
+      expect(
+        existsSync(
+          path.join(
+            WORKSPACE_ROOT,
+            EXAMPLES_DIRECTORY,
+            "examples",
+            exampleName,
+            "README.md",
+          ),
+        ),
+      ).toBe(true);
+    });
+
+    it.each(exampleNames)(
+      "%s is linked from the package guide's reading order",
+      (exampleName) => {
+        expect.hasAssertions();
+
+        const guide = readFileSync(
+          path.join(WORKSPACE_ROOT, EXAMPLES_DIRECTORY, "README.md"),
+          "utf8",
+        );
+
+        expect(guide).toContain(`(examples/${exampleName}/README.md)`);
+      },
+    );
   });
 
   describe("what the run measured", () => {

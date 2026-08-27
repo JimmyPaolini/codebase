@@ -106,7 +106,7 @@ directory would drag it into the lint run.
    quietly reversing.
 5. **Regenerate and commit**, then add a row to the README's table.
 
-## Do not fix a deliberately broken subject
+## Do not fix a deliberately broken example
 
 Several subjects are malformed on purpose, and each one is the reproduction of a
 refusal or a failure a reader will hit:

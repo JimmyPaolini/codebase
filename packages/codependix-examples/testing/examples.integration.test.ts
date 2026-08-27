@@ -232,6 +232,26 @@ describe("codependix examples", () => {
     });
   });
 
+  describe("the examples are all documented", () => {
+    // `orderDocuments` already refuses a document missing from the reading
+    // order, but nothing checked the other direction: an example the package
+    // guide never links to is reachable only by listing the directory. Every
+    // sibling `*-examples` package checks the same thing.
+    it.each(EXAMPLE_ORDER)(
+      "%s is linked from the package guide",
+      (exampleName) => {
+        expect.hasAssertions();
+
+        const guide = readFileSync(
+          path.join(EXAMPLES_DIRECTORY, "..", "README.md"),
+          "utf8",
+        );
+
+        expect(guide).toContain(`(examples/${exampleName})`);
+      },
+    );
+  });
+
   describe("the committed examples", () => {
     it("collects all fifteen examples, in reading order", async () => {
       expect.hasAssertions();

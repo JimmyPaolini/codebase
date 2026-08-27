@@ -21,7 +21,7 @@ There is no per-example command. An example directory carries no
 `tsconfig.json`, so the package traces as one unit — every example's `## Run it`
 names the command above and then says where in `output/` to look.
 
-## Callidescope reported X → open this example
+## Callidescope said X — open this example
 
 | What the run said | Open | What it means |
 | ----------------- | ---- | ------------- |
