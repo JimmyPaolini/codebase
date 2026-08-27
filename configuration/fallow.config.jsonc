@@ -99,7 +99,10 @@
     // because `configuration/conformetry.config.ts` imports its types.
     "@callidescope/nx",
     // Depended on so that pnpm links its `conformetry` bin into
-    // node_modules/.bin, which it does only for a root dependency.
+    // node_modules/.bin, which it does only for a root dependency. The bin now
+    // points at emitted JavaScript, so the link appears once the package has
+    // been built — before that pnpm warns and creates nothing, which is
+    // expected on a fresh clone rather than a broken install.
     "@conformetry/cli",
     // Named as a string in conformetry-validation's language registry and
     // imported on demand, so no static import proves it is used.
@@ -115,8 +118,9 @@
     // Nx loads its plugins from nx.json by name rather than importing them.
     "@nx/vitest",
     // Registered on Nx command lines as a string
-    // (`node --import @swc-node/register/esm-register`) and by `src/main.mjs`,
-    // neither of which is an import fallow can see.
+    // (`node --import @swc-node/register/esm-register`) and by
+    // conformetry-nx's `src/bootstrap.mjs`, which passes it to `register()`.
+    // Neither is an import fallow can see.
     "@swc-node/register",
     // SWC runtime helpers, required by @swc-node/register for compiled TS.
     "@swc/helpers",
