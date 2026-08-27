@@ -133,13 +133,14 @@ graph LR
 ```mermaid
 flowchart LR
   AnchorsModule
-  CodependixModule
   ConfigModule([ConfigModule])
   ConfigurationModule
   DeliveryModule
   DiscoveryModule
+  InputModule
   LoggerModule([LoggerModule])
   MainModule
+  MapModule
   ModuleGraphModule
   NeighborhoodModule
   NestjsProjectModule
@@ -147,17 +148,18 @@ flowchart LR
   PythonModule
   TypescriptModule
   WorkspaceGraphModule
-  CodependixModule --> ConfigurationModule
-  CodependixModule --> DeliveryModule
-  CodependixModule --> ModuleGraphModule
-  CodependixModule --> NeighborhoodModule
-  CodependixModule --> NestjsProjectModule
-  CodependixModule --> PythonImportsModule
-  CodependixModule --> TypescriptModule
-  CodependixModule --> WorkspaceGraphModule
   DeliveryModule --> AnchorsModule
-  MainModule --> CodependixModule
   MainModule --> DiscoveryModule
+  MainModule --> MapModule
+  MapModule --> ConfigurationModule
+  MapModule --> DeliveryModule
+  MapModule --> InputModule
+  MapModule --> ModuleGraphModule
+  MapModule --> NeighborhoodModule
+  MapModule --> NestjsProjectModule
+  MapModule --> PythonImportsModule
+  MapModule --> TypescriptModule
+  MapModule --> WorkspaceGraphModule
   PythonImportsModule --> ConfigurationModule
   PythonImportsModule --> DeliveryModule
   PythonImportsModule --> PythonModule
@@ -187,20 +189,20 @@ graph LR
   file_src_modules_anchors_anchors_service_ts["src/modules/anchors/anchors.service.ts"]
   file_src_modules_anchors_anchors_service_unit_test_ts["src/modules/anchors/anchors.service.unit.test.ts"]
   file_src_modules_anchors_anchors_types_ts["src/modules/anchors/anchors.types.ts"]
-  file_src_modules_codependix_codependix_command_ts["src/modules/codependix/codependix.command.ts"]
-  file_src_modules_codependix_codependix_command_unit_test_ts["src/modules/codependix/codependix.command.unit.test.ts"]
-  file_src_modules_codependix_codependix_constants_ts["src/modules/codependix/codependix.constants.ts"]
-  file_src_modules_codependix_codependix_module_ts["src/modules/codependix/codependix.module.ts"]
-  file_src_modules_codependix_codependix_module_unit_test_ts["src/modules/codependix/codependix.module.unit.test.ts"]
-  file_src_modules_codependix_codependix_service_ts["src/modules/codependix/codependix.service.ts"]
-  file_src_modules_codependix_codependix_service_unit_test_ts["src/modules/codependix/codependix.service.unit.test.ts"]
-  file_src_modules_codependix_codependix_types_ts["src/modules/codependix/codependix.types.ts"]
   file_src_modules_delivery_delivery_constants_ts["src/modules/delivery/delivery.constants.ts"]
   file_src_modules_delivery_delivery_module_ts["src/modules/delivery/delivery.module.ts"]
   file_src_modules_delivery_delivery_module_unit_test_ts["src/modules/delivery/delivery.module.unit.test.ts"]
   file_src_modules_delivery_delivery_service_ts["src/modules/delivery/delivery.service.ts"]
   file_src_modules_delivery_delivery_service_unit_test_ts["src/modules/delivery/delivery.service.unit.test.ts"]
   file_src_modules_delivery_delivery_types_ts["src/modules/delivery/delivery.types.ts"]
+  file_src_modules_map_map_command_ts["src/modules/map/map.command.ts"]
+  file_src_modules_map_map_command_unit_test_ts["src/modules/map/map.command.unit.test.ts"]
+  file_src_modules_map_map_constants_ts["src/modules/map/map.constants.ts"]
+  file_src_modules_map_map_module_ts["src/modules/map/map.module.ts"]
+  file_src_modules_map_map_module_unit_test_ts["src/modules/map/map.module.unit.test.ts"]
+  file_src_modules_map_map_service_ts["src/modules/map/map.service.ts"]
+  file_src_modules_map_map_service_unit_test_ts["src/modules/map/map.service.unit.test.ts"]
+  file_src_modules_map_map_types_ts["src/modules/map/map.types.ts"]
   file_src_modules_python_imports_python_imports_constants_ts["src/modules/python-imports/python-imports.constants.ts"]
   file_src_modules_python_imports_python_imports_module_ts["src/modules/python-imports/python-imports.module.ts"]
   file_src_modules_python_imports_python_imports_module_unit_test_ts["src/modules/python-imports/python-imports.module.unit.test.ts"]
@@ -215,7 +217,7 @@ graph LR
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_constants_ts
-  file_src_main_module_ts --> file_src_modules_codependix_codependix_module_ts
+  file_src_main_module_ts --> file_src_modules_map_map_module_ts
   file_src_main_ts --> file_src_main_module_ts
   file_src_modules_anchors_anchors_module_ts --> file_src_modules_anchors_anchors_service_ts
   file_src_modules_anchors_anchors_module_unit_test_ts --> file_src_modules_anchors_anchors_module_ts
@@ -225,33 +227,6 @@ graph LR
   file_src_modules_anchors_anchors_service_ts --> file_src_modules_anchors_anchors_types_ts
   file_src_modules_anchors_anchors_service_unit_test_ts --> file_src_modules_anchors_anchors_errors_ts
   file_src_modules_anchors_anchors_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
-  file_src_modules_codependix_codependix_command_ts --> file_src_modules_codependix_codependix_constants_ts
-  file_src_modules_codependix_codependix_command_ts --> file_src_modules_codependix_codependix_service_ts
-  file_src_modules_codependix_codependix_command_ts --> file_src_modules_codependix_codependix_types_ts
-  file_src_modules_codependix_codependix_command_ts --> file_src_modules_delivery_delivery_types_ts
-  file_src_modules_codependix_codependix_command_unit_test_ts --> file_src_modules_codependix_codependix_command_ts
-  file_src_modules_codependix_codependix_command_unit_test_ts --> file_src_modules_codependix_codependix_service_ts
-  file_src_modules_codependix_codependix_command_unit_test_ts --> file_src_modules_codependix_codependix_types_ts
-  file_src_modules_codependix_codependix_command_unit_test_ts --> file_src_modules_delivery_delivery_types_ts
-  file_src_modules_codependix_codependix_module_ts --> file_src_modules_codependix_codependix_command_ts
-  file_src_modules_codependix_codependix_module_ts --> file_src_modules_codependix_codependix_service_ts
-  file_src_modules_codependix_codependix_module_ts --> file_src_modules_delivery_delivery_module_ts
-  file_src_modules_codependix_codependix_module_ts --> file_src_modules_python_imports_python_imports_module_ts
-  file_src_modules_codependix_codependix_module_unit_test_ts --> file_src_modules_codependix_codependix_command_ts
-  file_src_modules_codependix_codependix_module_unit_test_ts --> file_src_modules_codependix_codependix_module_ts
-  file_src_modules_codependix_codependix_module_unit_test_ts --> file_src_modules_codependix_codependix_service_ts
-  file_src_modules_codependix_codependix_service_ts --> file_src_modules_codependix_codependix_constants_ts
-  file_src_modules_codependix_codependix_service_ts --> file_src_modules_codependix_codependix_types_ts
-  file_src_modules_codependix_codependix_service_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_codependix_codependix_service_ts --> file_src_modules_delivery_delivery_types_ts
-  file_src_modules_codependix_codependix_service_ts --> file_src_modules_python_imports_python_imports_service_ts
-  file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
-  file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_codependix_codependix_service_ts
-  file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_codependix_codependix_types_ts
-  file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_delivery_delivery_types_ts
-  file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
-  file_src_modules_codependix_codependix_types_ts --> file_src_modules_delivery_delivery_types_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_anchors_anchors_module_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_delivery_delivery_module_unit_test_ts --> file_src_modules_delivery_delivery_module_ts
@@ -263,17 +238,43 @@ graph LR
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_anchors_anchors_errors_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_map_map_command_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_map_map_command_ts --> file_src_modules_map_map_service_ts
+  file_src_modules_map_map_command_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_command_unit_test_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_map_map_command_unit_test_ts --> file_src_modules_map_map_command_ts
+  file_src_modules_map_map_command_unit_test_ts --> file_src_modules_map_map_service_ts
+  file_src_modules_map_map_command_unit_test_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_module_ts --> file_src_modules_delivery_delivery_module_ts
+  file_src_modules_map_map_module_ts --> file_src_modules_map_map_command_ts
+  file_src_modules_map_map_module_ts --> file_src_modules_map_map_service_ts
+  file_src_modules_map_map_module_ts --> file_src_modules_python_imports_python_imports_module_ts
+  file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_command_ts
+  file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_module_ts
+  file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_service_ts
+  file_src_modules_map_map_service_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_map_map_service_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_map_map_service_ts --> file_src_modules_map_map_constants_ts
+  file_src_modules_map_map_service_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_service_ts --> file_src_modules_python_imports_python_imports_service_ts
+  file_src_modules_map_map_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
+  file_src_modules_map_map_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_map_map_service_unit_test_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_map_map_service_unit_test_ts --> file_src_modules_map_map_service_ts
+  file_src_modules_map_map_service_unit_test_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_service_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
+  file_src_modules_map_map_types_ts --> file_src_modules_delivery_delivery_types_ts
   file_src_modules_python_imports_python_imports_module_ts --> file_src_modules_delivery_delivery_module_ts
   file_src_modules_python_imports_python_imports_module_ts --> file_src_modules_python_imports_python_imports_service_ts
   file_src_modules_python_imports_python_imports_module_unit_test_ts --> file_src_modules_python_imports_python_imports_module_ts
   file_src_modules_python_imports_python_imports_module_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
-  file_src_modules_python_imports_python_imports_service_ts --> file_src_modules_codependix_codependix_constants_ts
-  file_src_modules_python_imports_python_imports_service_ts --> file_src_modules_codependix_codependix_types_ts
   file_src_modules_python_imports_python_imports_service_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_python_imports_python_imports_service_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_python_imports_python_imports_service_ts --> file_src_modules_map_map_constants_ts
+  file_src_modules_python_imports_python_imports_service_ts --> file_src_modules_map_map_types_ts
   file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
-  file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_codependix_codependix_types_ts
   file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_map_map_types_ts
   file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
@@ -389,14 +390,14 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4417-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-152.25_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4536-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-156.01_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-41-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.89_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.77_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -405,7 +406,7 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-15-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-92-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-91-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -414,15 +415,15 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 ![Test Files](https://img.shields.io/badge/Test_Files-12-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-19-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-11-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-165-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-175-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-51-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-156-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-60-059669?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-162-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-64-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-235-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-170-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-47-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-145-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-404-475569?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-171-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-46-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-151-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-417-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

@@ -462,6 +462,7 @@ graph LR
   file_src_modules_start_start_types_ts["src/modules/start/start.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
+  file_testing_path_data_ts["testing/path-data.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
@@ -488,6 +489,7 @@ graph LR
   file_src_modules_meander_generation_boxes_motif_service_unit_test_ts --> file_src_modules_meander_generation_boxes_motif_service_ts
   file_src_modules_meander_generation_boxes_motif_service_unit_test_ts --> file_src_modules_meander_generation_grid_geometry_service_ts
   file_src_modules_meander_generation_boxes_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_transforms_service_ts
+  file_src_modules_meander_generation_boxes_motif_service_unit_test_ts --> file_testing_path_data_ts
   file_src_modules_meander_generation_chain_motif_service_ts --> file_src_modules_meander_generation_grid_geometry_service_ts
   file_src_modules_meander_generation_chain_motif_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_chain_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
@@ -498,6 +500,7 @@ graph LR
   file_src_modules_meander_generation_chain_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_transforms_service_ts
   file_src_modules_meander_generation_chain_motif_service_unit_test_ts --> file_src_modules_meander_generation_snake_motif_service_ts
   file_src_modules_meander_generation_chain_motif_service_unit_test_ts --> file_src_modules_meander_generation_snake_sequence_service_ts
+  file_src_modules_meander_generation_chain_motif_service_unit_test_ts --> file_testing_path_data_ts
   file_src_modules_meander_generation_grid_geometry_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_grid_geometry_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_generation_grid_geometry_service_unit_test_ts --> file_src_modules_meander_generation_grid_geometry_service_ts
@@ -542,7 +545,9 @@ graph LR
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_invalid_repeat_count_cycle_errors_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_invalid_repeat_count_errors_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_invalid_rows_errors_ts
+  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
+  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_mosaic_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_motif_transforms_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_snake_motif_service_ts
@@ -550,6 +555,7 @@ graph LR
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_svg_rendering_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_swirl_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_whirl_motif_service_ts
+  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_testing_path_data_ts
   file_src_modules_meander_generation_mosaic_motif_service_ts --> file_src_modules_meander_generation_grid_geometry_service_ts
   file_src_modules_meander_generation_mosaic_motif_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_mosaic_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
@@ -558,6 +564,7 @@ graph LR
   file_src_modules_meander_generation_mosaic_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_generation_mosaic_motif_service_unit_test_ts --> file_src_modules_meander_generation_mosaic_motif_service_ts
   file_src_modules_meander_generation_mosaic_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_transforms_service_ts
+  file_src_modules_meander_generation_mosaic_motif_service_unit_test_ts --> file_testing_path_data_ts
   file_src_modules_meander_generation_mosaic_symmetry_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_mosaic_symmetry_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_generation_mosaic_symmetry_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
@@ -583,6 +590,7 @@ graph LR
   file_src_modules_meander_generation_mosaic_tile_motif_service_unit_test_ts --> file_src_modules_meander_generation_grid_geometry_service_ts
   file_src_modules_meander_generation_mosaic_tile_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_generation_mosaic_tile_motif_service_unit_test_ts --> file_src_modules_meander_generation_mosaic_tile_motif_service_ts
+  file_src_modules_meander_generation_mosaic_tile_motif_service_unit_test_ts --> file_testing_path_data_ts
   file_src_modules_meander_generation_mosaic_tiles_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_generation_mosaic_tiles_service_ts --> file_src_modules_meander_generation_mosaic_symmetry_service_ts
   file_src_modules_meander_generation_mosaic_tiles_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
@@ -600,6 +608,7 @@ graph LR
   file_src_modules_meander_generation_snake_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_transforms_service_ts
   file_src_modules_meander_generation_snake_motif_service_unit_test_ts --> file_src_modules_meander_generation_snake_motif_service_ts
   file_src_modules_meander_generation_snake_motif_service_unit_test_ts --> file_src_modules_meander_generation_snake_sequence_service_ts
+  file_src_modules_meander_generation_snake_motif_service_unit_test_ts --> file_testing_path_data_ts
   file_src_modules_meander_generation_snake_sequence_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_snake_sequence_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_generation_snake_sequence_service_ts --> file_src_modules_meander_generation_motif_transforms_service_ts
@@ -617,6 +626,7 @@ graph LR
   file_src_modules_meander_generation_swirl_motif_service_unit_test_ts --> file_src_modules_meander_generation_snake_motif_service_ts
   file_src_modules_meander_generation_swirl_motif_service_unit_test_ts --> file_src_modules_meander_generation_snake_sequence_service_ts
   file_src_modules_meander_generation_swirl_motif_service_unit_test_ts --> file_src_modules_meander_generation_swirl_motif_service_ts
+  file_src_modules_meander_generation_swirl_motif_service_unit_test_ts --> file_testing_path_data_ts
   file_src_modules_meander_generation_whirl_motif_service_ts --> file_src_modules_meander_generation_grid_geometry_service_ts
   file_src_modules_meander_generation_whirl_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_generation_whirl_motif_service_ts --> file_src_modules_meander_generation_motif_transforms_service_ts
@@ -626,6 +636,7 @@ graph LR
   file_src_modules_meander_generation_whirl_motif_service_unit_test_ts --> file_src_modules_meander_generation_snake_motif_service_ts
   file_src_modules_meander_generation_whirl_motif_service_unit_test_ts --> file_src_modules_meander_generation_snake_sequence_service_ts
   file_src_modules_meander_generation_whirl_motif_service_unit_test_ts --> file_src_modules_meander_generation_whirl_motif_service_ts
+  file_src_modules_meander_generation_whirl_motif_service_unit_test_ts --> file_testing_path_data_ts
   file_src_modules_start_start_contact_sheet_service_ts --> file_src_modules_start_start_types_ts
   file_src_modules_start_start_contact_sheet_service_unit_test_ts --> file_src_modules_start_start_contact_sheet_service_ts
   file_src_modules_start_start_contact_sheet_service_unit_test_ts --> file_src_modules_start_start_types_ts
@@ -678,19 +689,19 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-7872-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-12.91_MB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8799-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-12.94_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-67-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-68-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-67-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-20-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-68-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-22-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-72-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-163-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-176-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -699,15 +710,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-24-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-12-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-29-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-456-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-179-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-572-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-512-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-186-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-635-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-63-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-535-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-307-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-80-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-331-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-836-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-613-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-317-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-84-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-359-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-948-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
