@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
 
-import { BarsMotifService } from "./bars-motif.service";
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
 import { MeanderGenerationService } from "./meander-generation.service";
-import { MosaicGenerationService } from "./mosaic-generation.service";
 import { MosaicMotifService } from "./mosaic-motif.service";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "./mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
 import { MotifTransformsService } from "./motif-transforms.service";
 import { OutputFilenameService } from "./output-filename.service";
@@ -25,20 +25,20 @@ import { WhirlMotifService } from "./whirl-motif.service";
   controllers: [],
   exports: [
     MeanderGenerationService,
-    MosaicGenerationService,
+    MosaicTileGenerationService,
     MosaicSymmetryService,
     MosaicTilesService,
     OutputFilenameService,
   ],
   imports: [],
   providers: [
-    BarsMotifService,
+    MosaicMotifService,
     BoxesMotifService,
     ChainMotifService,
     GridGeometryService,
     MeanderGenerationService,
-    MosaicGenerationService,
-    MosaicMotifService,
+    MosaicTileGenerationService,
+    MosaicTileMotifService,
     MosaicSymmetryService,
     MosaicTilesService,
     MotifTransformsService,

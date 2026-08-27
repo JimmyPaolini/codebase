@@ -190,7 +190,7 @@ describe(MotifTransformsService, () => {
 
     it("takes a three-level final step at odd rows so the ladder still ends on the bar's top level", () => {
       // Regression coverage for issue #339. The ladder used to be trimmed to
-      // the largest ODD level at odd rows, because `BarsMotifService.dotPath`
+      // the largest ODD level at odd rows, because `MosaicMotifService.dotPath`
       // only made a dot visible where a parity rule happened to skip both
       // adjacent runs. `dotPath` now draws the bar around the dot instead, so
       // the ladder is free to run end to end — but it must still clear levels
@@ -203,7 +203,7 @@ describe(MotifTransformsService, () => {
     });
 
     // From `DOT_MINIMUM_ROWS` up. At 3 rows the bar is one grid level long,
-    // the ladder is the single rung `[1]`, and `BarsMotifService.path` never
+    // the ladder is the single rung `[1]`, and `MosaicMotifService.path` never
     // routes to `dotPath` at all.
     it.each([4, 5, 6, 7, 8, 9, 10, 11, 12])(
       "spans the bar end to end at %i rows while clearing the two levels that would collapse a span",

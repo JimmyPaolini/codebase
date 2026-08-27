@@ -1,6 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { BarsMotifService } from "./bars-motif.service";
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
@@ -18,6 +17,7 @@ import {
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
 } from "./meander-generation.constants";
+import { MosaicMotifService } from "./mosaic-motif.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SvgRenderingService } from "./svg-rendering.service";
 import { SwirlMotifService } from "./swirl-motif.service";
@@ -44,8 +44,8 @@ export class MeanderGenerationService {
   constructor(
     @Inject(GridGeometryService)
     private readonly gridGeometryService: GridGeometryService,
-    @Inject(BarsMotifService)
-    private readonly barsMotifService: BarsMotifService,
+    @Inject(MosaicMotifService)
+    private readonly mosaicMotifService: MosaicMotifService,
     @Inject(BoxesMotifService)
     private readonly boxesMotifService: BoxesMotifService,
     @Inject(ChainMotifService)
@@ -99,9 +99,9 @@ export class MeanderGenerationService {
   /** Looks up the motif service that draws `type`'s repeat units. */
   private motifService(type: MeanderType): MotifService {
     const motifServicesByType: Record<MeanderType, MotifService> = {
-      bars: this.barsMotifService,
       boxes: this.boxesMotifService,
       chain: this.chainMotifService,
+      mosaic: this.mosaicMotifService,
       snake: this.snakeMotifService,
       swirl: this.swirlMotifService,
       whirl: this.whirlMotifService,
@@ -138,7 +138,7 @@ export class MeanderGenerationService {
    *
    * `alternated` has no equivalent cycle to validate against
    * `repeatCount`: `period` controls a single repeat tile's own column
-   * span (see {@link BarsMotifService.alternatedPath}), and every tile is
+   * span (see {@link MosaicMotifService.alternatedPath}), and every tile is
    * self-contained regardless of how many times it repeats. A truncated
    * final run inside a tile is expected, accepted behavior — see
    * {@link MotifTransformsService.alternate}'s own tests — not a defect

@@ -4,7 +4,6 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { BarsMotifService } from "./bars-motif.service";
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
@@ -13,6 +12,7 @@ import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.error
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
 import { InvalidRowsError } from "./invalid-rows.errors";
 import { MeanderGenerationService } from "./meander-generation.service";
+import { MosaicMotifService } from "./mosaic-motif.service";
 import { MotifTransformsService } from "./motif-transforms.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";
@@ -28,7 +28,7 @@ describe(MeanderGenerationService, () => {
       providers: [
         MeanderGenerationService,
         GridGeometryService,
-        BarsMotifService,
+        MosaicMotifService,
         BoxesMotifService,
         ChainMotifService,
         MotifTransformsService,
@@ -48,16 +48,16 @@ describe(MeanderGenerationService, () => {
   });
 
   describe("generate", () => {
-    it("matches the committed golden fixture for 5 rows bars with 12 repeats", async () => {
+    it("matches the committed golden fixture for 5 rows mosaic with 12 repeats", async () => {
       const svg = service.generate({
         repeatCount: 12,
         rows: 5,
-        type: "bars",
+        type: "mosaic",
       });
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/assets/bars-5-rows-12-repeats.svg",
+          "../../../testing/assets/mosaic-5-rows-12-repeats.svg",
         ),
         "utf8",
       );
@@ -65,23 +65,23 @@ describe(MeanderGenerationService, () => {
       expect(svg).toBe(golden);
     });
 
-    it("throws below the structural minimum rows for bars", () => {
+    it("throws below the structural minimum rows for mosaic", () => {
       expect(() =>
-        service.generate({ repeatCount: 1, rows: 2, type: "bars" }),
+        service.generate({ repeatCount: 1, rows: 2, type: "mosaic" }),
       ).toThrow(InvalidRowsError);
     });
 
-    it("matches the committed golden fixture for 5 rows bars with 6 repeats and alternated at period 1", async () => {
+    it("matches the committed golden fixture for 5 rows mosaic with 6 repeats and alternated at period 1", async () => {
       const svg = service.generate({
         modifier: { name: "alternated", period: 1 },
         repeatCount: 6,
         rows: 5,
-        type: "bars",
+        type: "mosaic",
       });
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/assets/bars-5-rows-6-repeats-alternated-period-1.svg",
+          "../../../testing/assets/mosaic-5-rows-6-repeats-alternated-period-1.svg",
         ),
         "utf8",
       );
@@ -89,17 +89,17 @@ describe(MeanderGenerationService, () => {
       expect(svg).toBe(golden);
     });
 
-    it("matches the committed golden fixture for 5 rows bars with 6 repeats and alternated at period 2", async () => {
+    it("matches the committed golden fixture for 5 rows mosaic with 6 repeats and alternated at period 2", async () => {
       const svg = service.generate({
         modifier: { name: "alternated", period: 2 },
         repeatCount: 6,
         rows: 5,
-        type: "bars",
+        type: "mosaic",
       });
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/assets/bars-5-rows-6-repeats-alternated-period-2.svg",
+          "../../../testing/assets/mosaic-5-rows-6-repeats-alternated-period-2.svg",
         ),
         "utf8",
       );
@@ -113,7 +113,7 @@ describe(MeanderGenerationService, () => {
           modifier: { name: "alternated", period: 0 },
           repeatCount: 6,
           rows: 5,
-          type: "bars",
+          type: "mosaic",
         }),
       ).toThrow(InvalidPeriodError);
     });
@@ -124,22 +124,22 @@ describe(MeanderGenerationService, () => {
           modifier: { name: "alternated", period: 4 },
           repeatCount: 6,
           rows: 5,
-          type: "bars",
+          type: "mosaic",
         }),
       ).not.toThrow();
     });
 
-    it("matches the committed golden fixture for 5 rows bars with 12 repeats and split", async () => {
+    it("matches the committed golden fixture for 5 rows mosaic with 12 repeats and split", async () => {
       const svg = service.generate({
         modifier: { name: "split" },
         repeatCount: 12,
         rows: 5,
-        type: "bars",
+        type: "mosaic",
       });
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/assets/bars-5-rows-12-repeats-split.svg",
+          "../../../testing/assets/mosaic-5-rows-12-repeats-split.svg",
         ),
         "utf8",
       );
@@ -147,17 +147,17 @@ describe(MeanderGenerationService, () => {
       expect(svg).toBe(golden);
     });
 
-    it("matches the committed golden fixture for 6 rows bars with 6 repeats and dot bounce", async () => {
+    it("matches the committed golden fixture for 6 rows mosaic with 6 repeats and dot bounce", async () => {
       const svg = service.generate({
         modifier: { name: "dot", shape: "bounce" },
         repeatCount: 6,
         rows: 6,
-        type: "bars",
+        type: "mosaic",
       });
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/assets/bars-6-rows-6-repeats-dot-bounce.svg",
+          "../../../testing/assets/mosaic-6-rows-6-repeats-dot-bounce.svg",
         ),
         "utf8",
       );
@@ -165,17 +165,17 @@ describe(MeanderGenerationService, () => {
       expect(svg).toBe(golden);
     });
 
-    it("matches the committed golden fixture for 6 rows bars with 6 repeats and dot up", async () => {
+    it("matches the committed golden fixture for 6 rows mosaic with 6 repeats and dot up", async () => {
       const svg = service.generate({
         modifier: { name: "dot", shape: "up" },
         repeatCount: 6,
         rows: 6,
-        type: "bars",
+        type: "mosaic",
       });
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/assets/bars-6-rows-6-repeats-dot-up.svg",
+          "../../../testing/assets/mosaic-6-rows-6-repeats-dot-up.svg",
         ),
         "utf8",
       );

@@ -7,9 +7,9 @@ import { LoggerService } from "@codebase/logger";
 import { GridGeometryService } from "../meander-generation/grid-geometry.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { MosaicGenerationService } from "../meander-generation/mosaic-generation.service";
-import { MosaicMotifService } from "../meander-generation/mosaic-motif.service";
 import { MosaicSymmetryService } from "../meander-generation/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../meander-generation/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../meander-generation/mosaic-tile-motif.service";
 import { MosaicTilesService } from "../meander-generation/mosaic-tiles.service";
 import { OutputFilenameService } from "../meander-generation/output-filename.service";
 import { SvgRenderingService } from "../meander-generation/svg-rendering.service";
@@ -52,8 +52,8 @@ describe(StartCommand, () => {
         },
         OutputFilenameService,
         GridGeometryService,
-        MosaicGenerationService,
-        MosaicMotifService,
+        MosaicTileGenerationService,
+        MosaicTileMotifService,
         MosaicSymmetryService,
         MosaicTilesService,
         StartContactSheetService,
@@ -92,8 +92,8 @@ describe(StartCommand, () => {
         },
         OutputFilenameService,
         GridGeometryService,
-        MosaicGenerationService,
-        MosaicMotifService,
+        MosaicTileGenerationService,
+        MosaicTileMotifService,
         MosaicSymmetryService,
         MosaicTilesService,
         StartContactSheetService,
@@ -121,10 +121,10 @@ describe(StartCommand, () => {
 
       expect(mockMkdir).toHaveBeenCalledWith("output", { recursive: true });
 
-      // 🎯 rows sweep is 3..8 (bars, boxes) or 4..8 (chain, snake, swirl,
+      // 🎯 rows sweep is 3..8 (mosaic, boxes) or 4..8 (chain, snake, swirl,
       // whirl), crossed with "no modifier" plus every compatible modifier
       // (alternated and dot each expand to 2 representative values):
-      // bars: 6 rows * (1 + 2 + 2 + 1) modifiers = 36
+      // mosaic: 6 rows * (1 + 2 + 2 + 1) modifiers = 36
       // boxes: 6 rows * (1 + 1 + 1) modifiers = 18
       // chain: 5 rows * (1 + 1 + 1 + 1) modifiers = 20
       // snake: 5 rows * (1 + 1 + 1 + 1) modifiers = 20
@@ -171,7 +171,7 @@ describe(StartCommand, () => {
 
       expect(
         vi.mocked(meanderGenerationService.generate).mock.calls,
-      ).toContainEqual([{ repeatCount: 6, rows: 3, type: "bars" }]);
+      ).toContainEqual([{ repeatCount: 6, rows: 3, type: "mosaic" }]);
       expect(
         vi.mocked(meanderGenerationService.generate).mock.calls,
       ).toContainEqual([
@@ -184,7 +184,7 @@ describe(StartCommand, () => {
           modifier: { name: "alternated", period: 1 },
           repeatCount: 6,
           rows: 3,
-          type: "bars",
+          type: "mosaic",
         },
       ]);
       expect(
@@ -194,7 +194,7 @@ describe(StartCommand, () => {
           modifier: { name: "dot", shape: "up" },
           repeatCount: 6,
           rows: 3,
-          type: "bars",
+          type: "mosaic",
         },
       ]);
       expect(
@@ -217,7 +217,7 @@ describe(StartCommand, () => {
         .mock.calls.map(([filePath]) => filePath);
 
       expect(writtenFilePaths).toContainEqual(
-        "custom-batch-output/bars-3-rows-6-repeats.svg",
+        "custom-batch-output/mosaic-3-rows-6-repeats.svg",
       );
       expect(writtenFilePaths).toContainEqual(
         "custom-batch-output/boxes-3-rows-8-repeats-spin.svg",

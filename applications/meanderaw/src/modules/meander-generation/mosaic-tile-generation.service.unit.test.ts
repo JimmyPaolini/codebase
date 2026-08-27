@@ -4,9 +4,9 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { GridGeometryService } from "./grid-geometry.service";
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
 import { InvalidRowsError } from "./invalid-rows.errors";
-import { MosaicGenerationService } from "./mosaic-generation.service";
-import { MosaicMotifService } from "./mosaic-motif.service";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "./mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
 import { SvgRenderingService } from "./svg-rendering.service";
 
@@ -82,8 +82,8 @@ const longestBlank = (svg: string, strokeWidth: number): number => {
   return longest;
 };
 
-describe(MosaicGenerationService, () => {
-  let service: MosaicGenerationService;
+describe(MosaicTileGenerationService, () => {
+  let service: MosaicTileGenerationService;
   let mosaicTilesService: MosaicTilesService;
   let gridGeometryService: GridGeometryService;
 
@@ -101,15 +101,15 @@ describe(MosaicGenerationService, () => {
     const module = await Test.createTestingModule({
       providers: [
         GridGeometryService,
-        MosaicGenerationService,
-        MosaicMotifService,
+        MosaicTileGenerationService,
+        MosaicTileMotifService,
         MosaicSymmetryService,
         MosaicTilesService,
         SvgRenderingService,
       ],
     }).compile();
 
-    service = await module.resolve(MosaicGenerationService);
+    service = await module.resolve(MosaicTileGenerationService);
     mosaicTilesService = await module.resolve(MosaicTilesService);
     gridGeometryService = await module.resolve(GridGeometryService);
   });

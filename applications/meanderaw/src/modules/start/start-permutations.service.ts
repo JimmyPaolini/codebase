@@ -4,11 +4,11 @@ import path from "node:path";
 import { Inject, Injectable } from "@nestjs/common";
 
 import {
-  MOSAIC_MAXIMUM_COLUMNS,
-  MOSAIC_MINIMUM_ROWS,
+  MOSAIC_TILE_MAXIMUM_COLUMNS,
+  MOSAIC_TILE_MINIMUM_ROWS,
 } from "../meander-generation/meander-generation.constants";
-import { MosaicGenerationService } from "../meander-generation/mosaic-generation.service";
 import { MosaicSymmetryService } from "../meander-generation/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../meander-generation/mosaic-tile-generation.service";
 import { MosaicTilesService } from "../meander-generation/mosaic-tiles.service";
 
 import { StartContactSheetService } from "./start-contact-sheet.service";
@@ -29,7 +29,7 @@ import type { PermutedMosaic } from "./start.types";
  * exhaustively. Every arrangement of dots and one-unit dashes that leaves
  * no cell of a tile blank is generated, one per symmetry class, so nothing
  * in it repeats a re-phasing or a mirror of anything else. It stays bounded
- * by capping the tile's column span at {@link MOSAIC_MAXIMUM_COLUMNS},
+ * by capping the tile's column span at {@link MOSAIC_TILE_MAXIMUM_COLUMNS},
  * since the count grows exponentially in that span and only mildly in
  * `rows`.
  */
@@ -38,8 +38,8 @@ export class StartPermutationsService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(MosaicGenerationService)
-    private readonly mosaicGenerationService: MosaicGenerationService,
+    @Inject(MosaicTileGenerationService)
+    private readonly mosaicGenerationService: MosaicTileGenerationService,
     @Inject(MosaicSymmetryService)
     private readonly mosaicSymmetryService: MosaicSymmetryService,
     @Inject(MosaicTilesService)
@@ -58,7 +58,11 @@ export class StartPermutationsService {
   private sweepRow(rows: number): PermutedMosaic[] {
     const mosaics: PermutedMosaic[] = [];
 
-    for (let columns = 1; columns <= MOSAIC_MAXIMUM_COLUMNS; columns += 1) {
+    for (
+      let columns = 1;
+      columns <= MOSAIC_TILE_MAXIMUM_COLUMNS;
+      columns += 1
+    ) {
       for (const tile of this.mosaicTilesService.enumerate(rows, columns)) {
         const identifier = this.mosaicSymmetryService.canonicalIdentifier(tile);
 
@@ -83,8 +87,8 @@ export class StartPermutationsService {
   /** Every row count the mosaic sweep covers. */
   rowsSweep(): number[] {
     return Array.from(
-      { length: ROWS_SWEEP_MAXIMUM - MOSAIC_MINIMUM_ROWS + 1 },
-      (_value, index) => MOSAIC_MINIMUM_ROWS + index,
+      { length: ROWS_SWEEP_MAXIMUM - MOSAIC_TILE_MINIMUM_ROWS + 1 },
+      (_value, index) => MOSAIC_TILE_MINIMUM_ROWS + index,
     );
   }
 

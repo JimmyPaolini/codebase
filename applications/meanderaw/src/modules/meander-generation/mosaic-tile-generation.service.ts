@@ -6,9 +6,9 @@ import { InvalidRowsError } from "./invalid-rows.errors";
 import {
   MAXIMUM_VALUE,
   MINIMUM_REPEAT_COUNT,
-  MOSAIC_MINIMUM_ROWS,
+  MOSAIC_TILE_MINIMUM_ROWS,
 } from "./meander-generation.constants";
-import { MosaicMotifService } from "./mosaic-motif.service";
+import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
 import { SvgRenderingService } from "./svg-rendering.service";
 
 import type { MosaicTile } from "./meander-generation.types";
@@ -21,14 +21,14 @@ import type { MosaicTile } from "./meander-generation.types";
  * pair, and there are thousands of tiles rather than a fixed handful.
  */
 @Injectable()
-export class MosaicGenerationService {
+export class MosaicTileGenerationService {
   // 🏗 Dependency Injection
 
   constructor(
     @Inject(GridGeometryService)
     private readonly gridGeometryService: GridGeometryService,
-    @Inject(MosaicMotifService)
-    private readonly mosaicMotifService: MosaicMotifService,
+    @Inject(MosaicTileMotifService)
+    private readonly mosaicMotifService: MosaicTileMotifService,
     @Inject(SvgRenderingService)
     private readonly svgRenderingService: SvgRenderingService,
   ) {}
@@ -45,10 +45,14 @@ export class MosaicGenerationService {
   generate(tile: MosaicTile, repeatCount: number): string {
     if (
       !Number.isInteger(tile.rows) ||
-      tile.rows < MOSAIC_MINIMUM_ROWS ||
+      tile.rows < MOSAIC_TILE_MINIMUM_ROWS ||
       tile.rows > MAXIMUM_VALUE
     ) {
-      throw new InvalidRowsError(tile.rows, MOSAIC_MINIMUM_ROWS, MAXIMUM_VALUE);
+      throw new InvalidRowsError(
+        tile.rows,
+        MOSAIC_TILE_MINIMUM_ROWS,
+        MAXIMUM_VALUE,
+      );
     }
 
     if (

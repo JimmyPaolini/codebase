@@ -10,7 +10,7 @@ import type { DotShape } from "../meander-generation/meander-generation.types";
  * without sweeping the whole range. Period 1 leads the sweep because it's the
  * only period verified byte-exact against real reference files; period 3's
  * interior zigzag geometry, like every period above 1, is a hand-idealized
- * approximation (see `BarsMotifService.alternatedPath`'s JSDoc).
+ * approximation (see `MosaicMotifService.alternatedPath`'s JSDoc).
  */
 export const ALTERNATED_SWEEP_PERIODS: readonly number[] = [1, 3];
 

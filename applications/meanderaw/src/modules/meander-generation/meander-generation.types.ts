@@ -1,7 +1,7 @@
 // 🏷️ Types
 
 /**
- * One column-and-level-range run of a `bars` zigzag, produced by
+ * One column-and-level-range run of a `mosaic` zigzag, produced by
  * {@link MotifTransformsService.alternate}: `column` is `0` for a repeat
  * unit's own column and `1` for its neighbor.
  */
@@ -18,7 +18,7 @@ export interface BoxesSpiralBounds {
 }
 
 /**
- * Which shape `bars`'s `dot` modifier's per-phase level sequence follows:
+ * Which shape `mosaic`'s `dot` modifier's per-phase level sequence follows:
  * `"bounce"` mirrors back up before repeating (a triangle wave), `"up"`
  * steps straight down through every level once per period, then resets (a
  * staircase). See {@link MotifTransformsService.dotLevels}.
@@ -43,9 +43,9 @@ export interface GridGeometry {
 
 /** A meander's base repeating motif shape. */
 export type MeanderType =
-  | "bars"
   | "boxes"
   | "chain"
+  | "mosaic"
   | "snake"
   | "swirl"
   | "whirl";

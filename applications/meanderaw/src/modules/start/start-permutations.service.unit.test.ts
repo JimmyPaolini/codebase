@@ -2,9 +2,9 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GridGeometryService } from "../meander-generation/grid-geometry.service";
-import { MosaicGenerationService } from "../meander-generation/mosaic-generation.service";
-import { MosaicMotifService } from "../meander-generation/mosaic-motif.service";
 import { MosaicSymmetryService } from "../meander-generation/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../meander-generation/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../meander-generation/mosaic-tile-motif.service";
 import { MosaicTilesService } from "../meander-generation/mosaic-tiles.service";
 import { SvgRenderingService } from "../meander-generation/svg-rendering.service";
 
@@ -34,8 +34,8 @@ describe(StartPermutationsService, () => {
     const module = await Test.createTestingModule({
       providers: [
         GridGeometryService,
-        MosaicGenerationService,
-        MosaicMotifService,
+        MosaicTileGenerationService,
+        MosaicTileMotifService,
         MosaicSymmetryService,
         MosaicTilesService,
         StartContactSheetService,

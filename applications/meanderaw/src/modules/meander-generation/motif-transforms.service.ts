@@ -33,13 +33,13 @@ export class MotifTransformsService {
    * consecutive runs of `runLength` grid levels each, alternating which of
    * two columns (`0`/`1`) draws each run. Doesn't fit the
    * point-sequence-in/point-sequence-out shape `rotate`/`mirror` share (the
-   * same exception {@link closeEdge} documents): `bars`'s vertical bar is
+   * same exception {@link closeEdge} documents): `mosaic`'s vertical bar is
    * drawn as several disconnected segments rather than one continuous
    * polyline, so there is no single point sequence to transform — only a
    * pair of columns and a level range to split between them.
    *
-   * A generic capability, independent of `bars`'s own `alternated`
-   * modifier: `BarsMotifService.alternatedPath` always calls this with
+   * A generic capability, independent of `mosaic`'s own `alternated`
+   * modifier: `MosaicMotifService.alternatedPath` always calls this with
    * `runLength = 1` (the run switches column every single grid level) and
    * uses the modifier's `period` parameter separately, to control how many
    * real columns the repeat tile spans rather than how long a vertical run
@@ -106,7 +106,7 @@ export class MotifTransformsService {
    * `rotate`/`mirror` keep, for the same reason: it describes disconnected
    * segments, not one polyline.
    *
-   * That end rule is what keeps `bars` space-filling. A `bars` column's
+   * That end rule is what keeps `mosaic` space-filling. A `mosaic` column's
    * drawn range stops one grid level short of each cap tick, so a skipped
    * run at either end would butt against that cap gap and leave two grid
    * levels of white — three times the stroke width, since
@@ -142,13 +142,13 @@ export class MotifTransformsService {
   }
 
   /**
-   * Computes one full period's dot levels for `bars`'s `dot` modifier: the
+   * Computes one full period's dot levels for `mosaic`'s `dot` modifier: the
    * grid level each phase in the repeat tile marks with a dot. The ladder
    * starts flush against the bar's bottom end, `rows - 1`, steps two levels
    * up at a time, and always finishes on the bar's top end, level `1` — at
    * an odd row count that makes the final step three levels rather than two,
    * which is what keeps the ladder clear of levels `2` and `rows - 2`.
-   * {@link BarsMotifService.dotPath} gives up the level either side of the
+   * {@link MosaicMotifService.dotPath} gives up the level either side of the
    * dot, so a dot on one of those two would leave the last grid level with
    * nothing but a bare square mark on it — indistinguishable from the dot
    * itself. `"up"` walks the ladder once per period and resets; `"bounce"`
@@ -157,7 +157,7 @@ export class MotifTransformsService {
    * At `6` rows that is `5, 3, 1` for `"up"` and `5, 3, 1, 3` for
    * `"bounce"`; at `7` rows, `6, 4, 1` and `6, 4, 1, 4`. The period — and so
    * the repeat tile's column count, and the canvas width
-   * {@link BarsMotifService.rightEdge} derives from it — is
+   * {@link MosaicMotifService.rightEdge} derives from it — is
    * `floor((rows - 2) / 2) + 1` at every row count, odd and even alike.
    */
   dotLevels(rows: number, shape: DotShape): number[] {
