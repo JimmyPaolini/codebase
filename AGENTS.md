@@ -70,6 +70,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[codometer-changes](packages/codometer-changes)**: Diffs codometer reports against a baseline snapshot
 - **[codometer-customization](packages/codometer-customization)**: Evaluates codometer's configured custom counters
 - **[codometer-discovery](packages/codometer-discovery)**: Glob matching and gitignore-aware file walking, plus resolving configured measurement targets to file sets
+- **[codometer-examples](packages/codometer-examples)**: A sample corpus with known contents and one runnable example per thing codometer does — every language analyzer, both kinds of custom statistic, targets, limits and every refusal, the three output sinks, and the `--write`/`--check` matrix
 - **[codometer-languages](packages/codometer-languages)**: Every input language analyzer codometer measures, behind one `analyze()` call
 - **[codometer-output](packages/codometer-output)**: Every codometer output format — JSON reports, README badges, and the pull request change report
 - **[codometer-size](packages/codometer-size)**: Compresses a target's matched files and measures their size

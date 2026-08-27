@@ -481,10 +481,19 @@ the flag table promises.
 | ------- | ---- |
 | [`@codometer/cli`](README.md) | Measures the repository and writes the reports. Knows nothing about any particular repository |
 | [`@codometer/configuration`](../codometer-configuration/README.md) | Reads `codometer.config.ts` and resolves exclusions, output destinations, custom statistics, and the Python interpreter |
+| [`@codometer/examples`](../codometer-examples/README.md) | A sample corpus with known contents and one runnable example per behavior above, each asserted by a test |
 
 Which paths to skip, where the output goes, and how Python is reached are all
 configuration. That split is what lets the CLI be a general tool rather than
 one repository's script.
+
+Everything above has a runnable example in
+[`@codometer/examples`](../codometer-examples/README.md), measured against a
+sample corpus whose counts are stated and checked — including a reproduction of
+each refusal, which is where a reader is most likely to be stuck. An agent that
+has already been handed a refusal and needs the fix should start from that
+package's [AGENTS.md](../codometer-examples/AGENTS.md), which maps each message
+codometer prints to the example that reproduces it.
 
 ## Start
 
