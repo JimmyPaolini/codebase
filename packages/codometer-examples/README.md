@@ -254,13 +254,13 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3272-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-185.10_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-158.22_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-27-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-57-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Corpus Size](https://img.shields.io/badge/Corpus_Size-8.36_kB_gzip-6b7280?style=flat-square)
+![Corpus Size](https://img.shields.io/badge/Corpus_Size-8.32_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -306,18 +306,18 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-5-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-1201-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-181-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-170-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-846-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-361-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-159-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-9-0ea5e9?style=flat-square)
-![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-153-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-182-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-1033-dc2626?style=flat-square)
-![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-8-ea580c?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-110-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-25-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-13-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-71-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-53-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-4-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-6-0ea5e9?style=flat-square)
+![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-1-64748b?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-27-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-102-dc2626?style=flat-square)
+![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-5-ea580c?style=flat-square)
 
 ### YAML
 
@@ -503,11 +503,13 @@ graph LR
   file_examples_targets_reordered_config_ts["examples/targets/reordered.config.ts"]
   file_examples_write_check_codometer_config_ts["examples/write-check/codometer.config.ts"]
   file_testing_codometer_ts["testing/codometer.ts"]
-  file_testing_corpus_end_to_end_test_ts["testing/corpus.end-to-end.test.ts"]
-  file_testing_examples_end_to_end_test_ts["testing/examples.end-to-end.test.ts"]
+  file_testing_corpus_integration_test_ts["testing/corpus.integration.test.ts"]
+  file_testing_examples_integration_test_ts["testing/examples.integration.test.ts"]
+  file_testing_run_examples_ts["testing/run-examples.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
-  file_testing_corpus_end_to_end_test_ts --> file_testing_codometer_ts
-  file_testing_examples_end_to_end_test_ts --> file_testing_codometer_ts
+  file_testing_corpus_integration_test_ts --> file_testing_codometer_ts
+  file_testing_examples_integration_test_ts --> file_testing_codometer_ts
+  file_testing_run_examples_ts --> file_testing_codometer_ts
 ```
 <!-- codependix:end name="codependix-imports" -->

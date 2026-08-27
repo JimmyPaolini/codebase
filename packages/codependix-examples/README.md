@@ -208,9 +208,10 @@ graph LR
 <!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
+  file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
-  file_testing_examples_unit_test_ts["testing/examples.unit.test.ts"]
-  file_testing_graphs_unit_test_ts["testing/graphs.unit.test.ts"]
+  file_testing_examples_integration_test_ts["testing/examples.integration.test.ts"]
+  file_testing_graphs_integration_test_ts["testing/graphs.integration.test.ts"]
   file_testing_render_examples_ts["testing/render-examples.ts"]
   file_testing_render_anchor_placement_ts["testing/render/anchor-placement.ts"]
   file_testing_render_builders_ts["testing/render/builders.ts"]
@@ -223,23 +224,25 @@ graph LR
   file_testing_render_nx_graphs_ts["testing/render/nx-graphs.ts"]
   file_testing_render_paths_ts["testing/render/paths.ts"]
   file_testing_render_python_imports_ts["testing/render/python-imports.ts"]
+  file_testing_render_reading_order_ts["testing/render/reading-order.ts"]
   file_testing_render_run_ts["testing/render/run.ts"]
   file_testing_render_types_ts["testing/render/types.ts"]
   file_testing_render_typescript_imports_ts["testing/render/typescript-imports.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
-  file_testing_examples_unit_test_ts --> file_testing_render_anchor_placement_ts
-  file_testing_examples_unit_test_ts --> file_testing_render_catalog_ts
-  file_testing_examples_unit_test_ts --> file_testing_render_configuration_ts
-  file_testing_examples_unit_test_ts --> file_testing_render_document_ts
-  file_testing_examples_unit_test_ts --> file_testing_render_export_delivery_ts
-  file_testing_examples_unit_test_ts --> file_testing_render_paths_ts
-  file_testing_examples_unit_test_ts --> file_testing_render_run_ts
-  file_testing_graphs_unit_test_ts --> file_testing_render_nestjs_graphs_ts
-  file_testing_graphs_unit_test_ts --> file_testing_render_nx_graphs_ts
-  file_testing_graphs_unit_test_ts --> file_testing_render_paths_ts
-  file_testing_graphs_unit_test_ts --> file_testing_render_python_imports_ts
-  file_testing_graphs_unit_test_ts --> file_testing_render_typescript_imports_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_anchor_placement_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_catalog_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_configuration_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_document_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_export_delivery_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_paths_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_reading_order_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_run_ts
+  file_testing_graphs_integration_test_ts --> file_testing_render_nestjs_graphs_ts
+  file_testing_graphs_integration_test_ts --> file_testing_render_nx_graphs_ts
+  file_testing_graphs_integration_test_ts --> file_testing_render_paths_ts
+  file_testing_graphs_integration_test_ts --> file_testing_render_python_imports_ts
+  file_testing_graphs_integration_test_ts --> file_testing_render_typescript_imports_ts
   file_testing_render_examples_ts --> file_testing_render_run_ts
   file_testing_render_anchor_placement_ts --> file_testing_render_builders_ts
   file_testing_render_anchor_placement_ts --> file_testing_render_document_ts
@@ -253,12 +256,14 @@ graph LR
   file_testing_render_catalog_ts --> file_testing_render_nestjs_graphs_ts
   file_testing_render_catalog_ts --> file_testing_render_nx_graphs_ts
   file_testing_render_catalog_ts --> file_testing_render_python_imports_ts
+  file_testing_render_catalog_ts --> file_testing_render_reading_order_ts
   file_testing_render_catalog_ts --> file_testing_render_types_ts
   file_testing_render_catalog_ts --> file_testing_render_typescript_imports_ts
   file_testing_render_configuration_ts --> file_testing_render_builders_ts
   file_testing_render_configuration_ts --> file_testing_render_document_ts
   file_testing_render_configuration_ts --> file_testing_render_paths_ts
   file_testing_render_configuration_ts --> file_testing_render_types_ts
+  file_testing_render_document_ts --> file_testing_render_reading_order_ts
   file_testing_render_document_ts --> file_testing_render_types_ts
   file_testing_render_export_delivery_ts --> file_testing_render_builders_ts
   file_testing_render_export_delivery_ts --> file_testing_render_document_ts
@@ -301,9 +306,9 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3891-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-189.68_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-59-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-80-3178c6?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-189.61_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-58-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-79-3178c6?style=flat-square)
 
 ### TypeScript
 
@@ -334,7 +339,7 @@ graph LR
 
 ### Python
 
-![Python Files](https://img.shields.io/badge/Python_Files-16-3776ab?style=flat-square)
+![Python Files](https://img.shields.io/badge/Python_Files-15-3776ab?style=flat-square)
 ![Python Lines](https://img.shields.io/badge/Python_Lines-53-4b8bbe?style=flat-square)
 ![Python Classes](https://img.shields.io/badge/Python_Classes-1-7c3aed?style=flat-square)
 ![Python Functions](https://img.shields.io/badge/Python_Functions-4-16a34a?style=flat-square)

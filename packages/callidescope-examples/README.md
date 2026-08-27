@@ -713,6 +713,7 @@ _This project defines no NestJS modules to graph._
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_examples_base_class_base_class_ts["examples/base-class/base-class.ts"]
   file_examples_base_class_base_task_ts["examples/base-class/base-task.ts"]
@@ -743,7 +744,7 @@ graph LR
   file_examples_structural_interface_structural_provider_ts["examples/structural-interface/structural-provider.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_main_ts["src/main.ts"]
-  file_testing_findings_integration_test_ts["testing/examples.integration.test.ts"]
+  file_testing_examples_integration_test_ts["testing/examples.integration.test.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_examples_base_class_base_class_ts --> file_examples_base_class_base_task_ts
@@ -765,7 +766,7 @@ graph LR
   file_src_index_ts --> file_examples_plain_call_normalize_label_ts
   file_src_main_ts --> file_examples_injected_dependency_inventory_ts
   file_src_main_ts --> file_examples_injected_dependency_orders_ts
-  file_testing_findings_integration_test_ts --> file_callidescope_config_ts
+  file_testing_examples_integration_test_ts --> file_callidescope_config_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 
@@ -776,7 +777,7 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1305-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-240.65_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-240.59_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-22-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-35-3178c6?style=flat-square)
 

@@ -159,6 +159,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 <!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
+  file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_constants_ts["src/constants.ts"]
   file_src_index_ts["src/index.ts"]
@@ -375,10 +376,10 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4402-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-151.88_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4417-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-152.25_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-40-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-41-3178c6?style=flat-square)
 
 ### Measured Targets
 
@@ -386,7 +387,7 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-39-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-40-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-13-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
@@ -405,7 +406,7 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-156-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-60-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-235-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-169-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-170-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-47-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-145-64748b?style=flat-square)
 ![Comment Lines](https://img.shields.io/badge/Comment_Lines-404-475569?style=flat-square)
@@ -429,16 +430,16 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-154-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-155-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-34-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
 ![JSON Properties](https://img.shields.io/badge/JSON_Properties-103-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-83-16a34a?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-84-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-8-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-31-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-138-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-32-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-139-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
