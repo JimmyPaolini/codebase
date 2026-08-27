@@ -877,6 +877,7 @@ graph LR
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_report_address_report_service_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
+  file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_breadth_breadth_command_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_testing_mocks_ts
@@ -907,6 +908,7 @@ graph LR
   file_src_modules_depth_depth_command_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_depth_depth_command_ts --> file_src_modules_address_report_address_report_service_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
+  file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_callidescope_callidescope_types_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_depth_depth_command_ts
@@ -930,14 +932,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5759-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-182.14_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5871-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-186.68_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-48-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-21.52_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-22.03_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -955,15 +957,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-10-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-14-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-230-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-76-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-219-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-231-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-78-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-222-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-87-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-208-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-223-0284c7?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-212-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-224-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-51-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-235-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-399-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-251-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-423-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
