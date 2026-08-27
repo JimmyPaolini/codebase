@@ -102,21 +102,42 @@ describe(AddressLookupService, () => {
     callidescopeService.locate.mockReturnValue(located);
     addressService.resolve.mockReturnValue({ id: "a#0", kind: "resolved" });
 
-    const outcome = await service.lookup({
-      address: "a.ts#Foo.bar",
-      options: {},
-    });
+    const workspace = await service.locate({});
 
-    expect(outcome).toStrictEqual({
+    expect(workspace).toStrictEqual({
       configuration,
       located,
-      resolution: { id: "a#0", kind: "resolved" },
+      workspaceRoot: "/workspace",
     });
+    expect(
+      service.resolve({ address: "a.ts#Foo.bar", workspace }),
+    ).toStrictEqual({ id: "a#0", kind: "resolved" });
     expect(addressService.resolve).toHaveBeenCalledWith({
       address: "a.ts#Foo.bar",
       callablesById: located.callablesById,
       workspaceRoot: "/workspace",
     });
+  });
+
+  // One trace serves both the list a prompt completes against and the lookup
+  // that follows it, so offering a choice never costs a second trace.
+  it("lists every traced callable as an address, from one trace", async () => {
+    const located = buildLocated();
+
+    runPlanService.prepareLookup.mockResolvedValue({
+      configuration: buildConfiguration(),
+      workspaceRoot: "/workspace",
+    });
+    callidescopeService.locate.mockReturnValue(located);
+    addressService.listAddresses.mockReturnValue(["a.ts#Foo.bar"]);
+
+    const workspace = await service.locate({});
+
+    expect(service.listAddresses(workspace)).toStrictEqual(["a.ts#Foo.bar"]);
+    expect(addressService.listAddresses).toHaveBeenCalledExactlyOnceWith(
+      located.callablesById,
+    );
+    expect(callidescopeService.locate).toHaveBeenCalledTimes(1);
   });
 
   it("scopes the trace to the directories a flag named", async () => {
@@ -127,10 +148,7 @@ describe(AddressLookupService, () => {
     callidescopeService.locate.mockReturnValue(buildLocated());
     addressService.resolve.mockReturnValue({ kind: "not-found" });
 
-    await service.lookup({
-      address: "a.ts#Foo.bar",
-      options: { directories: ["alpha"] },
-    });
+    await service.locate({ directories: ["alpha"] });
 
     expect(
       callidescopeService.locate.mock.calls[0]?.[0].directories,

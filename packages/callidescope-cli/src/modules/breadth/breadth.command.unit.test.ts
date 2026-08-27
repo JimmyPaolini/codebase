@@ -20,6 +20,7 @@ import { AddressReportService } from "../address-report/address-report.service";
 
 import { BreadthCommand } from "./breadth.command";
 
+import type { LocatedWorkspace } from "../address-lookup/address-lookup.types";
 import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
 
 /** A resolved configuration with the defaults these tests assume. */
@@ -186,15 +187,16 @@ describe(BreadthCommand, () => {
     await command.run([], {});
 
     expect(process.exitCode).toBe(1);
-    expect(addressLookupService.lookup).not.toHaveBeenCalled();
+    expect(addressLookupService.resolve).not.toHaveBeenCalled();
   });
 
   it("rejects a run whose address could not be resolved", async () => {
-    addressLookupService.lookup.mockResolvedValue({
+    addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       located: buildLocated(),
-      resolution: { kind: "not-found" },
+      workspaceRoot: "/workspace",
     });
+    addressLookupService.resolve.mockReturnValue({ kind: "not-found" });
     addressLookupService.describeProblem.mockReturnValue(
       "No callable matches it.",
     );
@@ -206,10 +208,14 @@ describe(BreadthCommand, () => {
   });
 
   it("fails when the resolved id was not among the traced callables", async () => {
-    addressLookupService.lookup.mockResolvedValue({
+    addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       located: buildLocated(),
-      resolution: { id: "missing#0", kind: "resolved" },
+      workspaceRoot: "/workspace",
+    });
+    addressLookupService.resolve.mockReturnValue({
+      id: "missing#0",
+      kind: "resolved",
     });
     addressLookupService.describeProblem.mockReturnValue(undefined);
 
@@ -228,10 +234,14 @@ describe(BreadthCommand, () => {
 
     located.callablesById.set("a.ts#0", callable);
 
-    addressLookupService.lookup.mockResolvedValue({
+    addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       located,
-      resolution: { id: "a.ts#0", kind: "resolved" },
+      workspaceRoot: "/workspace",
+    });
+    addressLookupService.resolve.mockReturnValue({
+      id: "a.ts#0",
+      kind: "resolved",
     });
     addressLookupService.describeProblem.mockReturnValue(undefined);
     breadthService.describeDirectCalls.mockReturnValue({
@@ -263,12 +273,19 @@ describe(BreadthCommand, () => {
 
   it("prompts for the address when it is missing and the session can be prompted", async () => {
     vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
-    vi.spyOn(inputService, "promptForText").mockResolvedValue("a.ts#Foo.bar");
-    addressLookupService.lookup.mockResolvedValue({
+    vi.spyOn(inputService, "promptForAutocomplete").mockResolvedValue(
+      "a.ts#Foo.bar",
+    );
+    addressLookupService.listAddresses.mockReturnValue([
+      "a.ts#Foo.bar",
+      "b.ts#Bar.baz",
+    ]);
+    addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       located: buildLocated(),
-      resolution: { kind: "not-found" },
+      workspaceRoot: "/workspace",
     });
+    addressLookupService.resolve.mockReturnValue({ kind: "not-found" });
     addressLookupService.describeProblem.mockReturnValue(
       "No callable matches it.",
     );
@@ -277,23 +294,29 @@ describe(BreadthCommand, () => {
     // prompt, not the separate format prompt `resolveOptions` would also try.
     await command.run([], { format: "markdown" });
 
-    expect(inputService.promptForText).toHaveBeenCalledWith({
+    // The list it completes against is what the one trace found, so the
+    // caller picks a callable that provably exists.
+    expect(inputService.promptForAutocomplete).toHaveBeenCalledWith({
       message: "Which callable? (file#qualified-name)",
+      suggestions: ["a.ts#Foo.bar", "b.ts#Bar.baz"],
     });
-    expect(addressLookupService.lookup).toHaveBeenCalledWith({
+    expect(addressLookupService.resolve).toHaveBeenCalledWith({
       address: "a.ts#Foo.bar",
-      options: { format: "markdown" },
+      workspace: expect.objectContaining({
+        workspaceRoot: "/workspace",
+      }) as LocatedWorkspace,
     });
   });
 
   it("does not prompt for the address when one was already given", async () => {
     vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
     vi.spyOn(inputService, "promptForText");
-    addressLookupService.lookup.mockResolvedValue({
+    addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       located: buildLocated(),
-      resolution: { kind: "not-found" },
+      workspaceRoot: "/workspace",
     });
+    addressLookupService.resolve.mockReturnValue({ kind: "not-found" });
     addressLookupService.describeProblem.mockReturnValue(
       "No callable matches it.",
     );
@@ -306,11 +329,12 @@ describe(BreadthCommand, () => {
   it("prompts for a format when it was left off and the session can be prompted", async () => {
     vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
     vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
-    addressLookupService.lookup.mockResolvedValue({
+    addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       located: buildLocated(),
-      resolution: { kind: "not-found" },
+      workspaceRoot: "/workspace",
     });
+    addressLookupService.resolve.mockReturnValue({ kind: "not-found" });
     addressLookupService.describeProblem.mockReturnValue(
       "No callable matches it.",
     );
@@ -321,20 +345,22 @@ describe(BreadthCommand, () => {
       choices: ["markdown", "mermaid", "json"],
       message: "Which output format?",
     });
-    expect(addressLookupService.lookup).toHaveBeenCalledWith({
-      address: "a.ts#Foo.bar",
-      options: { format: "json" },
+    // The prompted format reaches the trace, which reads the configuration
+    // it scopes the run with.
+    expect(addressLookupService.locate).toHaveBeenCalledWith({
+      format: "json",
     });
   });
 
   it("does not prompt for a format that was already given", async () => {
     vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
     vi.spyOn(inputService, "promptForSelect");
-    addressLookupService.lookup.mockResolvedValue({
+    addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       located: buildLocated(),
-      resolution: { kind: "not-found" },
+      workspaceRoot: "/workspace",
     });
+    addressLookupService.resolve.mockReturnValue({ kind: "not-found" });
     addressLookupService.describeProblem.mockReturnValue(
       "No callable matches it.",
     );

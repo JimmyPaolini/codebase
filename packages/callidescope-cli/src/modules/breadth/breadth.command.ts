@@ -11,7 +11,10 @@ import { LoggerService } from "@codebase/logger";
 import { AddressLookupService } from "../address-lookup/address-lookup.service";
 import { AddressReportService } from "../address-report/address-report.service";
 
-import type { AddressCommandOptions } from "../address-lookup/address-lookup.types";
+import type {
+  AddressCommandOptions,
+  LocatedWorkspace,
+} from "../address-lookup/address-lookup.types";
 import type {
   CallableId,
   CallidescopeOutputFormat,
@@ -60,22 +63,25 @@ export class BreadthCommand extends CommandRunner {
   }
 
   /**
-   * Reads the address argument, prompting for it when it is missing and the
-   * session can be prompted, or failing the run otherwise.
+   * Reads the address argument, completing it against what the trace found
+   * when it is missing and the session can be prompted, or failing the run
+   * otherwise.
    */
-  private async resolveAddress(
-    passedParameters: readonly string[],
-    canPrompt: boolean,
-  ): Promise<string | undefined> {
-    const address = passedParameters[0];
+  private async resolveAddress(args: {
+    canPrompt: boolean;
+    passedParameters: readonly string[];
+    workspace: LocatedWorkspace;
+  }): Promise<string | undefined> {
+    const address = args.passedParameters[0];
 
     if (address !== undefined) {
       return address;
     }
 
-    if (canPrompt) {
-      return this.inputService.promptForText({
+    if (args.canPrompt) {
+      return this.inputService.promptForAutocomplete({
         message: "Which callable? (file#qualified-name)",
+        suggestions: this.addressLookupService.listAddresses(args.workspace),
       });
     }
 
@@ -93,31 +99,31 @@ export class BreadthCommand extends CommandRunner {
    * Resolves the address to a callable and its direct calls, or fails the
    * run and returns nothing.
    */
-  private async resolveDirectCalls(args: {
+  private resolveDirectCalls(args: {
     address: string;
-    options: AddressCommandOptions;
-  }): Promise<
+    workspace: LocatedWorkspace;
+  }):
     | undefined
     | {
         callable: DiscoveredCallable;
         directCalls: CallableDirectCalls;
         format: CallidescopeOutputFormat;
         id: CallableId;
-      }
-  > {
-    const outcome = await this.addressLookupService.lookup(args);
+      } {
+    const resolution = this.addressLookupService.resolve(args);
     const problem = this.addressLookupService.describeProblem({
       address: args.address,
-      resolution: outcome.resolution,
+      resolution,
     });
 
-    if (problem !== undefined || outcome.resolution.kind !== "resolved") {
+    if (problem !== undefined || resolution.kind !== "resolved") {
       this.rejectAddress(problem);
       return undefined;
     }
 
-    const { id } = outcome.resolution;
-    const callable = outcome.located.callablesById.get(id);
+    const { id } = resolution;
+    const { located } = args.workspace;
+    const callable = located.callablesById.get(id);
 
     if (callable === undefined) {
       this.rejectAddress(
@@ -129,11 +135,11 @@ export class BreadthCommand extends CommandRunner {
     return {
       callable,
       directCalls: this.breadthService.describeDirectCalls({
-        callablesById: outcome.located.callablesById,
-        graph: outcome.located.graph,
+        callablesById: located.callablesById,
+        graph: located.graph,
         id,
       }),
-      format: outcome.configuration.output.format,
+      format: args.workspace.configuration.output.format,
       id,
     };
   }
@@ -199,17 +205,22 @@ export class BreadthCommand extends CommandRunner {
     options: AddressCommandOptions,
   ): Promise<void> {
     const canPrompt = this.inputService.canPrompt(options.interactive);
-    const address = await this.resolveAddress(passedParameters, canPrompt);
+    const resolvedOptions = await this.resolveOptions(options, canPrompt);
+    // Traced before the address is read, not after: the trace is what the
+    // prompt completes against, and it is the same trace the lookup needs, so
+    // asking first would either offer nothing or cost a second one.
+    const workspace = await this.addressLookupService.locate(resolvedOptions);
+    const address = await this.resolveAddress({
+      canPrompt,
+      passedParameters,
+      workspace,
+    });
 
     if (address === undefined) {
       return;
     }
 
-    const resolvedOptions = await this.resolveOptions(options, canPrompt);
-    const resolved = await this.resolveDirectCalls({
-      address,
-      options: resolvedOptions,
-    });
+    const resolved = this.resolveDirectCalls({ address, workspace });
 
     if (resolved === undefined) {
       return;

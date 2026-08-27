@@ -5,8 +5,9 @@ import { CallidescopeService } from "../callidescope/callidescope.service";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
 import type {
-  LookupAddressArguments,
-  LookupAddressOutcome,
+  AddressCommandOptions,
+  LocatedWorkspace,
+  ResolveAddressArguments,
 } from "./address-lookup.types";
 import type { CallableAddressResolution } from "@callidescope/graph";
 
@@ -70,23 +71,37 @@ export class AddressLookupService {
     return `"${args.address}" matches more than one declaration: ${candidates}. Add ":<line>" to the address to pick one.`;
   }
 
-  /** Loads the configuration, traces the workspace, and matches the address. */
-  public async lookup(
-    args: LookupAddressArguments,
-  ): Promise<LookupAddressOutcome> {
+  /**
+   * Every callable the trace found, written as an address that resolves to it.
+   *
+   * What a prompt completes against, so a caller picks from what is actually
+   * there rather than recalling a qualified name it has no way to look up.
+   */
+  public listAddresses(workspace: LocatedWorkspace): string[] {
+    return this.addressService.listAddresses(workspace.located.callablesById);
+  }
+
+  /** Loads the configuration and traces the workspace, matching nothing yet. */
+  public async locate(
+    options: AddressCommandOptions,
+  ): Promise<LocatedWorkspace> {
     const { configuration, workspaceRoot } =
-      await this.runPlanService.prepareLookup(args.options);
+      await this.runPlanService.prepareLookup(options);
     const located = this.callidescopeService.locate({
       configuration,
-      directories: args.options.directories ?? configuration.directories,
-      workspaceRoot,
-    });
-    const resolution = this.addressService.resolve({
-      address: args.address,
-      callablesById: located.callablesById,
+      directories: options.directories ?? configuration.directories,
       workspaceRoot,
     });
 
-    return { configuration, located, resolution };
+    return { configuration, located, workspaceRoot };
+  }
+
+  /** Matches an address against a workspace already traced. */
+  public resolve(args: ResolveAddressArguments): CallableAddressResolution {
+    return this.addressService.resolve({
+      address: args.address,
+      callablesById: args.workspace.located.callablesById,
+      workspaceRoot: args.workspace.workspaceRoot,
+    });
   }
 }

@@ -6,7 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { AddressService } from "./address.service";
 
-import type { LookupAddressOutcome } from "@callidescope/cli";
+import type { LocatedWorkspace } from "@callidescope/cli";
 import type { CallableId } from "@callidescope/configuration";
 import type { DiscoveredCallable } from "@callidescope/graph";
 
@@ -41,16 +41,19 @@ describe(AddressService, () => {
 
   /** Stubs a lookup that resolved, holding one traced callable. */
   function stubResolved(): void {
-    addressLookupService.lookup.mockResolvedValue(
-      createMock<LookupAddressOutcome>({
+    addressLookupService.locate.mockResolvedValue(
+      createMock<LocatedWorkspace>({
         located: {
           callablesById: new Map<CallableId, DiscoveredCallable>([
             ["id", createMock<DiscoveredCallable>()],
           ]),
         },
-        resolution: { id: "id", kind: "resolved" },
       }),
     );
+    addressLookupService.resolve.mockReturnValue({
+      id: "id",
+      kind: "resolved",
+    });
     addressLookupService.describeProblem.mockReturnValue(undefined);
     addressReportService.renderDepth.mockReturnValue("# Depth");
     addressReportService.renderBreadth.mockReturnValue("# Breadth");
@@ -74,9 +77,9 @@ describe(AddressService, () => {
     });
 
     // A task runner has nobody to prompt, so the lookup must never try.
-    expect(addressLookupService.lookup).toHaveBeenCalledWith({
-      address: ADDRESS,
-      options: { directories: ["packages/alpha"], interactive: false },
+    expect(addressLookupService.locate).toHaveBeenCalledWith({
+      directories: ["packages/alpha"],
+      interactive: false,
     });
   });
 
@@ -90,14 +93,11 @@ describe(AddressService, () => {
       format: "json",
     });
 
-    expect(addressLookupService.lookup).toHaveBeenCalledWith({
-      address: ADDRESS,
-      options: {
-        config: "elsewhere.ts",
-        directories: ["packages/alpha"],
-        format: "json",
-        interactive: false,
-      },
+    expect(addressLookupService.locate).toHaveBeenCalledWith({
+      config: "elsewhere.ts",
+      directories: ["packages/alpha"],
+      format: "json",
+      interactive: false,
     });
   });
 
@@ -132,9 +132,10 @@ describe(AddressService, () => {
     it("reports an address that resolved to nothing without a stated problem", async () => {
       expect.hasAssertions();
 
-      addressLookupService.lookup.mockResolvedValue(
-        createMock<LookupAddressOutcome>({ resolution: { kind: "not-found" } }),
+      addressLookupService.locate.mockResolvedValue(
+        createMock<LocatedWorkspace>({}),
       );
+      addressLookupService.resolve.mockReturnValue({ kind: "not-found" });
       addressLookupService.describeProblem.mockReturnValue(undefined);
 
       await expect(
@@ -159,12 +160,15 @@ describe(AddressService, () => {
     it("refuses an address that resolved to a callable nothing traced", async () => {
       expect.hasAssertions();
 
-      addressLookupService.lookup.mockResolvedValue(
-        createMock<LookupAddressOutcome>({
+      addressLookupService.locate.mockResolvedValue(
+        createMock<LocatedWorkspace>({
           located: { callablesById: new Map() },
-          resolution: { id: "id", kind: "resolved" },
         }),
       );
+      addressLookupService.resolve.mockReturnValue({
+        id: "id",
+        kind: "resolved",
+      });
 
       await expect(
         service.runBreadth({
