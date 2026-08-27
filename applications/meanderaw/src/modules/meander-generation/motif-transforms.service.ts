@@ -5,6 +5,7 @@ import type {
   DotShape,
   MirrorAxis,
   MotifLevelPoint,
+  MotifLevelSpan,
 } from "./meander-generation.types";
 
 /**
@@ -32,23 +33,18 @@ export class MotifTransformsService {
    * consecutive runs of `runLength` grid levels each, alternating which of
    * two columns (`0`/`1`) draws each run. Doesn't fit the
    * point-sequence-in/point-sequence-out shape `rotate`/`mirror` share (the
-   * same exception {@link closeEdge} documents): `bars`'s vertical bar is
+   * same exception {@link closeEdge} documents): `mosaic`'s vertical bar is
    * drawn as several disconnected segments rather than one continuous
    * polyline, so there is no single point sequence to transform — only a
    * pair of columns and a level range to split between them.
    *
-   * A generic capability, independent of `bars`'s own `alternated`
-   * modifier: `BarsMotifService.alternatedPath` always calls this with
-   * `runLength = 1` (verified exact against the `5`, `7`, and `8` rows
-   * "bars alternated" reference files — the run switches column every
-   * single grid level) and uses the modifier's `period` parameter
-   * separately, to control how many real columns the repeat tile spans
-   * rather than how long a vertical run is. See
-   * {@link BarsMotifService.alternatedPath} for that derivation, including
-   * why the reference set's "bars alternated 2"/"alternated 3" files'
-   * interior zigzag pattern (as opposed to their column span, which IS a
-   * clean, confirmed `2 * period` progression) is hand-mangled and
-   * unrecoverable as one rule.
+   * A generic capability, independent of `mosaic`'s own `alternated`
+   * modifier: `MosaicMotifService.alternatedPath` always calls this with
+   * `runLength = 1` (the run switches column every single grid level) and
+   * uses the modifier's `period` parameter separately, to control how many
+   * real columns the repeat tile spans rather than how long a vertical run
+   * is. This is the raw split only — pass the result through
+   * {@link columnSpans} to get the spans one column actually draws.
    */
   alternate(
     levelStart: number,
@@ -101,37 +97,79 @@ export class MotifTransformsService {
   }
 
   /**
-   * Computes one full period's dot levels for `bars`'s `dot` modifier: the
-   * grid level each phase in the repeat tile marks with a dot instead of a
-   * fully-drawn run. `"up"` steps straight down through every level once per
-   * period, then resets to the top — a monotonic staircase, confirmed
-   * against `6 rows bars dot up.svg` (period 3: levels `5, 3, 1`) and
-   * `8 rows bars dot up.svg` (period 4: levels `7, 5, 3, 1`). `"bounce"`
-   * mirrors back up through the interior levels before repeating, so the
-   * two extreme levels are each visited once per period and every interior
-   * level twice — confirmed against
-   * `6 rows bars dot bounce.svg` (period 4: levels `5, 3, 1, 3`) and
-   * `8 rows bars dot bounce.svg` (period 6: levels `7, 5, 3, 1, 3, 5`).
+   * Selects the level spans one column of an {@link alternate} split
+   * actually draws, merging the consecutive ones. Alongside its own runs, a
+   * column always draws the split's first and last run, whichever column
+   * they were assigned to, so a skipped run can never sit against either end
+   * of the level range. Shares {@link alternate}'s and {@link closeEdge}'s
+   * exception to the point-sequence-in/point-sequence-out shape
+   * `rotate`/`mirror` keep, for the same reason: it describes disconnected
+   * segments, not one polyline.
    *
-   * Every level in the sequence must be odd, regardless of `rows`'s parity:
-   * {@link BarsMotifService.dotPath} only renders a dot as a visible break
-   * when BOTH grid-unit runs immediately adjacent to it get skipped, and
-   * that only happens at an odd level (see `dotPath`'s own doc comment for
-   * why). At even `rows`, `rows - 1` is already odd, so the sequence starts
-   * there; at odd `rows`, `rows - 1` is even, so the sequence starts one
-   * level lower, at `rows - 2` — the top-most level a dot can actually sit
-   * at without being silently swallowed by an adjacent drawn run. This
-   * one-level trim at odd `rows` is unverified against a real reference
-   * file (none exists below 6 rows for `dot`), but follows directly from
-   * `dotPath`'s draw-or-skip rule, which IS verified.
+   * That end rule is what keeps `mosaic` space-filling. A `mosaic` column's
+   * drawn range stops one grid level short of each cap tick, so a skipped
+   * run at either end would butt against that cap gap and leave two grid
+   * levels of white — three times the stroke width, since
+   * `stroke-linecap="square"` gives back a quarter unit at each end.
+   * Anywhere else a skipped run is bounded by drawn runs on both sides and
+   * leaves exactly one grid level, which renders as exactly one stroke
+   * width: the same white channel that separates two neighboring bars.
+   */
+  columnSpans(runs: readonly AlternateRun[], column: 0 | 1): MotifLevelSpan[] {
+    const spans: MotifLevelSpan[] = [];
+
+    for (const [index, run] of runs.entries()) {
+      const isEndRun = index === 0 || index === runs.length - 1;
+
+      if (run.column !== column && !isEndRun) {
+        continue;
+      }
+
+      const previousSpan = spans.at(-1);
+
+      if (previousSpan?.toLevel === run.fromLevel) {
+        spans[spans.length - 1] = {
+          fromLevel: previousSpan.fromLevel,
+          toLevel: run.toLevel,
+        };
+        continue;
+      }
+
+      spans.push({ fromLevel: run.fromLevel, toLevel: run.toLevel });
+    }
+
+    return spans;
+  }
+
+  /**
+   * Computes one full period's dot levels for `mosaic`'s `dot` modifier: the
+   * grid level each phase in the repeat tile marks with a dot. The ladder
+   * starts flush against the bar's bottom end, `rows - 1`, steps two levels
+   * up at a time, and always finishes on the bar's top end, level `1` — at
+   * an odd row count that makes the final step three levels rather than two,
+   * which is what keeps the ladder clear of levels `2` and `rows - 2`.
+   * {@link MosaicMotifService.dotPath} gives up the level either side of the
+   * dot, so a dot on one of those two would leave the last grid level with
+   * nothing but a bare square mark on it — indistinguishable from the dot
+   * itself. `"up"` walks the ladder once per period and resets; `"bounce"`
+   * mirrors back down through the interior levels before repeating.
+   *
+   * At `6` rows that is `5, 3, 1` for `"up"` and `5, 3, 1, 3` for
+   * `"bounce"`; at `7` rows, `6, 4, 1` and `6, 4, 1, 4`. The period — and so
+   * the repeat tile's column count, and the canvas width
+   * {@link MosaicMotifService.rightEdge} derives from it — is
+   * `floor((rows - 2) / 2) + 1` at every row count, odd and even alike.
    */
   dotLevels(rows: number, shape: DotShape): number[] {
-    const maximumLevel = rows % 2 === 0 ? rows - 1 : rows - 2;
+    const maximumLevel = rows - 1;
     const levelCount = Math.floor((maximumLevel - 1) / 2) + 1;
-    const levels = Array.from(
-      { length: levelCount },
-      (_value, index) => maximumLevel - 2 * index,
-    );
+    const levels = [
+      ...Array.from(
+        { length: levelCount - 1 },
+        (_value, index) => maximumLevel - 2 * index,
+      ),
+      1,
+    ];
 
     if (shape === "up") {
       return levels;

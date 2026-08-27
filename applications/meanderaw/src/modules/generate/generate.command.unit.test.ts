@@ -232,18 +232,18 @@ describe(GenerateCommand, () => {
         period: 2,
         repeatCount: 6,
         rows: 5,
-        type: "bars",
+        type: "mosaic",
       });
 
       expect(meanderGenerationService.generate).toHaveBeenCalledWith({
         modifier: { name: "alternated", period: 2 },
         repeatCount: 6,
         rows: 5,
-        type: "bars",
+        type: "mosaic",
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
         expect.stringContaining(
-          "bars-5-rows-6-repeats-alternated-period-2.svg",
+          "mosaic-5-rows-6-repeats-alternated-period-2.svg",
         ),
         "<svg>fixture</svg>\n",
       );
@@ -256,7 +256,7 @@ describe(GenerateCommand, () => {
           outputDirectory: "output",
           repeatCount: 6,
           rows: 5,
-          type: "bars",
+          type: "mosaic",
         }),
       ).rejects.toThrow(/requires --period/);
     });
@@ -272,17 +272,17 @@ describe(GenerateCommand, () => {
         repeatCount: 6,
         rows: 6,
         shape: "bounce",
-        type: "bars",
+        type: "mosaic",
       });
 
       expect(meanderGenerationService.generate).toHaveBeenCalledWith({
         modifier: { name: "dot", shape: "bounce" },
         repeatCount: 6,
         rows: 6,
-        type: "bars",
+        type: "mosaic",
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
-        expect.stringContaining("bars-6-rows-6-repeats-dot-bounce.svg"),
+        expect.stringContaining("mosaic-6-rows-6-repeats-dot-bounce.svg"),
         "<svg>fixture</svg>\n",
       );
     });
@@ -294,7 +294,7 @@ describe(GenerateCommand, () => {
           outputDirectory: "output",
           repeatCount: 6,
           rows: 6,
-          type: "bars",
+          type: "mosaic",
         }),
       ).rejects.toThrow(/requires --shape/);
     });
