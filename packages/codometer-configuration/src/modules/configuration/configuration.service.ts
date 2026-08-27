@@ -15,11 +15,11 @@ import {
   DEFAULT_PYTHON_COMMAND,
   DEFAULT_TARGET_COMPRESSION,
   DEFAULT_TARGET_DIRECTORY,
+  InvalidLimitValueError,
   LIMIT_UNIT_MULTIPLIERS,
   LIMIT_VALUE_PATTERN,
   NEGATION_PREFIX,
 } from "./configuration.constants";
-import { InvalidLimitValueError } from "./limit-value.errors";
 
 import type {
   CodometerConfiguration,

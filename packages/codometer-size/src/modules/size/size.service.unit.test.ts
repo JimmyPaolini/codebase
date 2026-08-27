@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { UnreadableTargetFileError } from "./size.errors";
+import { UnreadableTargetFileError } from "./size.constants";
 import { SizeService } from "./size.service";
 
 import type { CodometerCompression } from "@codometer/configuration";

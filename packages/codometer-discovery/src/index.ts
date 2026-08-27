@@ -8,7 +8,7 @@ export type {
   WalkDirectoryArguments,
   WalkSubdirectoryArguments,
 } from "./modules/discovery/discovery.types";
-export { TargetOutsideRepositoryError } from "./modules/targets/targets.errors";
+export { TargetOutsideRepositoryError } from "./modules/targets/targets.constants";
 export { TargetsModule } from "./modules/targets/targets.module";
 export { TargetsService } from "./modules/targets/targets.service";
 export type {
