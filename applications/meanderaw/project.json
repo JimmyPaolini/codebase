@@ -13,18 +13,35 @@
   ],
   "targets": {
     "build": {
-      "cache": false,
-      "description": "Build Meanderaw by regenerating every meander SVG the start sweep produces (every named type and compatible modifier at structural-minimum-through-8 rows, plus the exhaustive mosaic enumeration) into output/",
-      "executor": "nx:run-commands",
+      "executor": "@nx/js:tsc",
       "options": {
-        "command": "node --import @swc-node/register/esm-register src/main.ts start",
-        "cwd": "{projectRoot}"
-      }
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "applications/meanderaw",
+            "output": "."
+          }
+        ],
+        "main": "applications/meanderaw/src/main.ts",
+        "outputPath": "dist/applications/meanderaw",
+        "tsConfig": "applications/meanderaw/tsconfig.build.json"
+      },
+      "outputs": ["{options.outputPath}"]
     },
     "codometer": {},
     "dependency-cruiser": {},
+    "generate": {
+      "cache": false,
+      "description": "Generate one meander SVG into output/. `build` compiles this project rather than drawing anything, so writing SVGs is this target's job and the full sweep stays on `start`.",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register src/main.ts generate {args}",
+        "cwd": "{projectRoot}"
+      }
+    },
     "knip": {},
     "lint-codebase": {},
+    "make-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},

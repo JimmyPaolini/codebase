@@ -6,6 +6,7 @@
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
     "reflect-metadata": "catalog:",
+    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -18,6 +19,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
+  "name": "meanderaw",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

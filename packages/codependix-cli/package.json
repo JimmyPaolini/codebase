@@ -1,6 +1,6 @@
 {
   "bin": {
-    "codependix": "./src/main.mjs"
+    "codependix": "./src/main.js"
   },
   "dependencies": {
     "@codebase/logger": "workspace:*",

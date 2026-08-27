@@ -21,6 +21,7 @@
     "remark": "catalog:",
     "remark-frontmatter": "catalog:",
     "remark-gfm": "catalog:",
+    "tslib": "catalog:",
     "typeorm": "catalog:",
     "vitest": "catalog:",
     "yaml": "catalog:",

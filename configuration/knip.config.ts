@@ -227,7 +227,7 @@ const config: KnipConfig = {
     // callidescope packages: the call-stack linting CLI and the configuration
     // it reads.
     "packages/callidescope-cli": {
-      entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],
+      entry: ["src/main.ts", "src/repl.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
@@ -279,7 +279,7 @@ const config: KnipConfig = {
     },
     // codometer packages: the measurement CLI and the configuration it reads
     "packages/codometer-cli": {
-      entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],
+      entry: ["src/main.ts", "src/repl.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },

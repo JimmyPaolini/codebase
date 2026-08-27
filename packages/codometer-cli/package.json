@@ -1,6 +1,6 @@
 {
   "bin": {
-    "codometer": "./src/main.mjs"
+    "codometer": "./src/main.js"
   },
   "dependencies": {
     "@codebase/logger": "workspace:*",
