@@ -313,6 +313,15 @@ Anything left with no caller is promoted to an **orphan root**. That is the
 safety net: without it, a missing rule silently removes a whole subtree from
 every measurement instead of showing up.
 
+## Examples
+
+Every rule, finding, and output on this page has a worked example in
+[`@callidescope/examples`](../callidescope-examples/README.md) — a small
+codebase written to be traced, with its rendered reports committed. Its
+[`AGENTS.md`](../callidescope-examples/AGENTS.md) is a "callidescope reported X
+→ open this example" table, so a failing `callidescope:check` has somewhere to
+go.
+
 ## Non-goals
 
 **Control flow graphs.** Intra-procedural branching is already capped by this
@@ -332,6 +341,7 @@ every resolver ends the same way. `jscpd` already covers real duplication.
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
 | [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
 | [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
+| [`@callidescope/examples`](../callidescope-examples/README.md) | A traced fixture codebase carrying one worked example of everything above |
 
 ## Start
 

@@ -14,3 +14,11 @@ configuration/conformetry-templates/
 
 # Planning and prose.
 notepads/
+
+# The callidescope examples package. Its fixtures exist to breach the limits —
+# deliberately deep stacks, a module that spreads, a callable filed in the wrong
+# place — so tracing them here would fail the workspace depth gate for doing
+# exactly what they were written to do. They are traced by their own
+# configuration instead, gated on report freshness rather than depth:
+# `nx run callidescope-examples:callidescope`.
+packages/callidescope-examples/
