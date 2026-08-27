@@ -10,8 +10,8 @@ import {
 
 import { DeliveryService } from "./delivery.service";
 
-import type { MeasurementResult } from "../codometer/codometer.types";
-import type { DocumentationMeasurement } from "../codometer/documentation-measurement.types";
+import type { DocumentationMeasurement } from "../measure/documentation-measurement.types";
+import type { MeasurementResult } from "../measure/measure.types";
 import type { RunMode } from "../run-plan/run-plan.types";
 import type {
   RenderMarkdownOutput,

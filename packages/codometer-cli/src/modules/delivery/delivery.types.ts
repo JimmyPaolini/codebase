@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { MeasurementResult } from "../codometer/codometer.types";
+import type { MeasurementResult } from "../measure/measure.types";
 import type { CodometerReport } from "../report/report.types";
 import type { RunDestinations, RunMode } from "../run-plan/run-plan.types";
 import type { MeasurementScope } from "@codometer/output";

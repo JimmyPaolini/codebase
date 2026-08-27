@@ -1,12 +1,12 @@
 // 📤 Exports
 export { MainModule } from "./main.module";
-export { CodometerCommand } from "./modules/codometer/codometer.command";
-export { CodometerModule } from "./modules/codometer/codometer.module";
-export { CodometerService } from "./modules/codometer/codometer.service";
+export { MeasureCommand } from "./modules/measure/measure.command";
+export { MeasureModule } from "./modules/measure/measure.module";
+export { MeasureService } from "./modules/measure/measure.service";
 export type {
-  CodometerCommandOptions,
   MeasureArguments,
-} from "./modules/codometer/codometer.types";
+  MeasureCommandOptions,
+} from "./modules/measure/measure.types";
 export { ReportModule } from "./modules/report/report.module";
 export { ReportService } from "./modules/report/report.service";
 export type {

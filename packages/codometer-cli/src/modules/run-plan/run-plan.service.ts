@@ -16,7 +16,7 @@ import {
   CHECK_SEPARATOR,
 } from "./run-plan.constants";
 
-import type { CodometerCommandOptions } from "../codometer/codometer.types";
+import type { MeasureCommandOptions } from "../measure/measure.types";
 import type {
   JsonDestination,
   ListOutputPathsArguments,
@@ -62,7 +62,7 @@ export class RunPlanService {
    * describes. Adding to the configured set instead would put a second
    * document on the stream the first one was piped out of.
    */
-  private namesDestination(options: CodometerCommandOptions): boolean {
+  private namesDestination(options: MeasureCommandOptions): boolean {
     return (
       options.json !== undefined ||
       options.markdown !== undefined ||
@@ -140,7 +140,7 @@ export class RunPlanService {
    * file that failed to appear.
    */
   private requireWrittenReport(
-    options: CodometerCommandOptions,
+    options: MeasureCommandOptions,
     mode: RunMode,
     errors: string[],
   ): void {
@@ -335,7 +335,7 @@ export class RunPlanService {
    * A `--json` path with neither flag is refused for the mirror-image reason:
    * it names a file the run was never going to write.
    */
-  selectMode(options: CodometerCommandOptions): ModeSelection {
+  selectMode(options: MeasureCommandOptions): ModeSelection {
     const errors: string[] = [];
     const names = this.readCheckNames(options.check, errors);
     const mode: RunMode = {

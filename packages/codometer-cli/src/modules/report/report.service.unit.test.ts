@@ -3,8 +3,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { ReportService } from "./report.service";
 
-import type { DocumentationMeasurement } from "../codometer/documentation-measurement.types";
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
+import type { DocumentationMeasurement } from "../measure/documentation-measurement.types";
 import type { CodometerReport } from "./report.types";
 
 /** Builds one target's index, since only its metrics and file count vary. */

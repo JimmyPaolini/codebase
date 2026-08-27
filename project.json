@@ -134,10 +134,10 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config codometer.config.ts --check reports"
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts measure --directory . --config codometer.config.ts --check reports"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config codometer.config.ts --write"
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts measure --directory . --config codometer.config.ts --write"
         }
       },
       "defaultConfiguration": "check",

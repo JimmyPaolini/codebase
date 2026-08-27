@@ -49,7 +49,7 @@ describe("main end-to-end suite", () => {
           "--import",
           "@swc-node/register/esm-register",
           COMMAND_PATH,
-          "codometer",
+          "measure",
           "--directory",
           workingDirectory,
           "--config",

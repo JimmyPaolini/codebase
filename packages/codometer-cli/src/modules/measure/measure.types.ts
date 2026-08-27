@@ -21,28 +21,6 @@ export interface AnalyzeLanguageArguments {
 }
 
 /**
- * Options accepted by the codometer command.
- *
- * `--write` and `--check` are independent: neither implies the other, and no
- * combination of them is inferred. A flag carrying an optional value arrives
- * as `true` when it was passed without one, which is how "to the console" is
- * told apart from "not asked for".
- */
-export interface CodometerCommandOptions {
-  /** The comma-separated set of things to fail on, as it was written. */
-  check?: string | true | undefined;
-  config?: string | undefined;
-  directory?: string | undefined;
-  /** Where the report goes; `true` for the console. */
-  json?: string | true | undefined;
-  /** Where the rendered badges go as a whole document; `true` for the console. */
-  markdown?: string | true | undefined;
-  /** The file to splice the badge block into. Never defaulted. */
-  readme?: string | undefined;
-  write?: boolean | undefined;
-}
-
-/**
  * Arguments accepted by the measurement pipeline.
  */
 export interface MeasureArguments {
@@ -56,6 +34,28 @@ export interface MeasureArguments {
    */
   outputPaths: readonly string[];
   workingDirectory: string;
+}
+
+/**
+ * Options accepted by the codometer command.
+ *
+ * `--write` and `--check` are independent: neither implies the other, and no
+ * combination of them is inferred. A flag carrying an optional value arrives
+ * as `true` when it was passed without one, which is how "to the console" is
+ * told apart from "not asked for".
+ */
+export interface MeasureCommandOptions {
+  /** The comma-separated set of things to fail on, as it was written. */
+  check?: string | true | undefined;
+  config?: string | undefined;
+  directory?: string | undefined;
+  /** Where the report goes; `true` for the console. */
+  json?: string | true | undefined;
+  /** Where the rendered badges go as a whole document; `true` for the console. */
+  markdown?: string | true | undefined;
+  /** The file to splice the badge block into. Never defaulted. */
+  readme?: string | undefined;
+  write?: boolean | undefined;
 }
 
 /**

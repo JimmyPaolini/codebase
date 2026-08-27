@@ -1,8 +1,8 @@
 import { JsonService, MarkdownService } from "@codometer/output";
 import { Injectable } from "@nestjs/common";
 
-import type { MeasurementResult } from "../codometer/codometer.types";
-import type { DocumentationMeasurement } from "../codometer/documentation-measurement.types";
+import type { DocumentationMeasurement } from "../measure/documentation-measurement.types";
+import type { MeasurementResult } from "../measure/measure.types";
 import type { RunMode } from "../run-plan/run-plan.types";
 import type { DeliverArguments } from "./delivery.types";
 import type {
@@ -15,7 +15,7 @@ import type { TargetSize } from "@codometer/output";
  * Produces every resolved output — JSON, a markdown document, a README
  * splice — and says which of them are stale.
  *
- * Split out of `CodometerCommand` so delivering a report is a concern of its
+ * Split out of `MeasureCommand` so delivering a report is a concern of its
  * own, separate from measuring and from gating on what was measured. Every
  * destination is produced before anything is reported, so a run that writes
  * and gates writes all of its reports even when the gate then trips.

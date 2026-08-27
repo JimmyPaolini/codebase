@@ -12,15 +12,15 @@ import { LimitsModule } from "../limits/limits.module";
 import { ReportModule } from "../report/report.module";
 import { RunPlanModule } from "../run-plan/run-plan.module";
 
-import { CodometerCommand } from "./codometer.command";
-import { CodometerService } from "./codometer.service";
+import { MeasureCommand } from "./measure.command";
+import { MeasureService } from "./measure.service";
 
 /**
- * NestJS module that wires the codometer command and measurement services.
+ * NestJS module that wires the measure command and its measurement services.
  */
 @Module({
   controllers: [],
-  exports: [CodometerCommand, CodometerService],
+  exports: [MeasureCommand, MeasureService],
   imports: [
     ConfigurationModule,
     CustomizationModule,
@@ -35,6 +35,6 @@ import { CodometerService } from "./codometer.service";
     SizeModule,
     TargetsModule,
   ],
-  providers: [CodometerCommand, CodometerService],
+  providers: [MeasureCommand, MeasureService],
 })
-export class CodometerModule {}
+export class MeasureModule {}

@@ -1,7 +1,7 @@
 // 🏷️ Types
 
-import type { DocumentationMeasurement } from "../codometer/documentation-measurement.types";
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
+import type { DocumentationMeasurement } from "../measure/documentation-measurement.types";
 import type { CodometerSeverity } from "@codometer/configuration";
 
 /** Arguments accepted when building the report from one measurement. */

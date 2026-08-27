@@ -1,9 +1,9 @@
 // 🏷️ Types
 
 import type {
-  CodometerCommandOptions,
+  MeasureCommandOptions,
   MeasurementResult,
-} from "../codometer/codometer.types";
+} from "../measure/measure.types";
 import type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerMarkdownOutputConfiguration,
@@ -55,7 +55,7 @@ export interface ReportFindingsArguments {
 /** Arguments accepted when resolving where each output goes. */
 export interface ResolveDestinationsArguments {
   configuration: ResolvedCodometerConfiguration;
-  options: CodometerCommandOptions;
+  options: MeasureCommandOptions;
   workingDirectory: string;
 }
 

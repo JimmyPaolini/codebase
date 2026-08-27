@@ -18,12 +18,12 @@ import { DeliveryService } from "../delivery/delivery.service";
 import { ReportService } from "../report/report.service";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
-import { CodometerCommand } from "./codometer.command";
-import { CodometerService } from "./codometer.service";
+import { MeasureCommand } from "./measure.command";
+import { MeasureService } from "./measure.service";
 
 import type { EvaluatedLimit } from "../limits/limits.types";
-import type { CodometerCommandOptions } from "./codometer.types";
 import type { DocumentationMeasurement } from "./documentation-measurement.types";
+import type { MeasureCommandOptions } from "./measure.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 import type { JsonService, MarkdownService } from "@codometer/output";
 import type { MockInstance } from "vitest";
@@ -89,20 +89,20 @@ const markdownDestination = {
 
 const jsonDestination = { indentation: 2, path: "output/codometer.json" };
 
-describe(CodometerCommand, () => {
-  let command: CodometerCommand;
+describe(MeasureCommand, () => {
+  let command: MeasureCommand;
   let configurationService: ConfigurationService;
-  let codometerService: CodometerService;
+  let measureService: MeasureService;
   let loggerService: LoggerService;
   let jsonService: JsonService;
   let markdownService: MarkdownService;
   let stdoutWriteSpy: MockInstance<typeof process.stdout.write>;
 
   /** Builds a command whose measurement and output are mocked. */
-  function buildCommand(): CodometerCommand {
-    return new CodometerCommand(
+  function buildCommand(): MeasureCommand {
+    return new MeasureCommand(
       configurationService,
-      codometerService,
+      measureService,
       new DeliveryService(jsonService, markdownService),
       new ReportService(),
       new RunPlanService(),
@@ -112,13 +112,13 @@ describe(CodometerCommand, () => {
   }
 
   /** Runs the command over a repository at `/repo`. */
-  async function run(options: CodometerCommandOptions = {}): Promise<void> {
+  async function run(options: MeasureCommandOptions = {}): Promise<void> {
     await buildCommand().run([], { directory: "/repo", ...options });
   }
 
   /** Reports the limits the measurement found breached. */
   function measured(limits: EvaluatedLimit[]): void {
-    vi.mocked(codometerService.measure).mockReturnValue({
+    vi.mocked(measureService.measure).mockReturnValue({
       documentation: [],
       failures: [],
       indexes: new Map(),
@@ -130,7 +130,7 @@ describe(CodometerCommand, () => {
 
   /** Reports the documentation measurements the run found. */
   function documented(documentation: DocumentationMeasurement[]): void {
-    vi.mocked(codometerService.measure).mockReturnValue({
+    vi.mocked(measureService.measure).mockReturnValue({
       documentation,
       failures: [],
       indexes: new Map(),
@@ -143,13 +143,13 @@ describe(CodometerCommand, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        CodometerCommand,
+        MeasureCommand,
         InputService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
         },
-        { provide: CodometerService, useValue: createMock<CodometerService>() },
+        { provide: MeasureService, useValue: createMock<MeasureService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: DeliveryService, useValue: createMock<DeliveryService>() },
         { provide: ReportService, useValue: new ReportService() },
@@ -157,13 +157,13 @@ describe(CodometerCommand, () => {
       ],
     }).compile();
 
-    command = await module.resolve(CodometerCommand);
+    command = await module.resolve(MeasureCommand);
   });
 
   beforeEach(() => {
     process.exitCode = 0;
     configurationService = createMock<ConfigurationService>();
-    codometerService = createMock<CodometerService>();
+    measureService = createMock<MeasureService>();
     loggerService = createMock<LoggerService>();
     jsonService = createMock<JsonService>();
     markdownService = createMock<MarkdownService>();
@@ -193,13 +193,13 @@ describe(CodometerCommand, () => {
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
       providers: [
-        CodometerCommand,
+        MeasureCommand,
         InputService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
         },
-        { provide: CodometerService, useValue: createMock<CodometerService>() },
+        { provide: MeasureService, useValue: createMock<MeasureService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: DeliveryService, useValue: createMock<DeliveryService>() },
         { provide: ReportService, useValue: new ReportService() },
@@ -209,7 +209,7 @@ describe(CodometerCommand, () => {
 
     const logger = await module.resolve(LoggerService);
 
-    expect(logger.setContext).toHaveBeenCalledWith("CodometerCommand");
+    expect(logger.setContext).toHaveBeenCalledWith("MeasureCommand");
   });
 
   describe("the flag table", () => {
@@ -286,7 +286,7 @@ describe(CodometerCommand, () => {
     // target measured has to reach the renderer — and a target the run
     // measured no size for has to not, rather than arriving as a zero.
     it("hands the renderer the size of every target it measured", async () => {
-      vi.mocked(codometerService.measure).mockReturnValue({
+      vi.mocked(measureService.measure).mockReturnValue({
         documentation: [],
         failures: [],
         indexes: new Map(),
@@ -328,7 +328,7 @@ describe(CodometerCommand, () => {
     // that declares none would otherwise publish `0.00 kB gzip` into a README
     // a release commits — a figure that is wrong rather than merely absent.
     it("hands the renderer nothing for a target whose globs matched no file", async () => {
-      vi.mocked(codometerService.measure).mockReturnValue({
+      vi.mocked(measureService.measure).mockReturnValue({
         documentation: [],
         failures: [],
         indexes: new Map(),
@@ -413,7 +413,7 @@ describe(CodometerCommand, () => {
           ],
         },
       );
-      expect(codometerService.measure).not.toHaveBeenCalled();
+      expect(measureService.measure).not.toHaveBeenCalled();
       expect(process.exitCode).toBe(1);
     });
 
@@ -459,7 +459,7 @@ describe(CodometerCommand, () => {
         undefined,
         { reason: 'Cannot read the limit on "size" from "8 K"' },
       );
-      expect(codometerService.measure).not.toHaveBeenCalled();
+      expect(measureService.measure).not.toHaveBeenCalled();
       expect(process.exitCode).toBe(1);
     });
 
@@ -477,7 +477,7 @@ describe(CodometerCommand, () => {
         undefined,
         { reason: "not an Error" },
       );
-      expect(codometerService.measure).not.toHaveBeenCalled();
+      expect(measureService.measure).not.toHaveBeenCalled();
       expect(process.exitCode).toBe(1);
     });
 
@@ -686,7 +686,7 @@ describe(CodometerCommand, () => {
 
       await run({ write: true });
 
-      expect(codometerService.measure).toHaveBeenCalledExactlyOnceWith({
+      expect(measureService.measure).toHaveBeenCalledExactlyOnceWith({
         configuration: expect.anything() as ResolvedCodometerConfiguration,
         outputPaths: ["output/codometer.json", "README.md"],
         workingDirectory: "/repo",
@@ -801,7 +801,7 @@ describe(CodometerCommand, () => {
     });
 
     it("reports what it could not measure and fails a gating run", async () => {
-      vi.mocked(codometerService.measure).mockReturnValue({
+      vi.mocked(measureService.measure).mockReturnValue({
         documentation: [],
         failures: [{ kind: "target", reason: "dist/ is gone", subject: "web" }],
         indexes: new Map(),
@@ -825,7 +825,7 @@ describe(CodometerCommand, () => {
     });
 
     it("reports what it could not measure without failing a bare run", async () => {
-      vi.mocked(codometerService.measure).mockReturnValue({
+      vi.mocked(measureService.measure).mockReturnValue({
         documentation: [],
         failures: [{ kind: "target", reason: "dist/ is gone", subject: "web" }],
         indexes: new Map(),
@@ -850,7 +850,7 @@ describe(CodometerCommand, () => {
       await run();
 
       expect(loggerService.debug).toHaveBeenCalledWith(
-        "🚀 Started the codometer run",
+        "🚀 Started the measurement run",
         undefined,
         { directory: "/repo" },
       );
@@ -870,14 +870,14 @@ describe(CodometerCommand, () => {
       await run();
 
       expect(loggerService.info).toHaveBeenCalledWith(
-        "✅ Finished the codometer run",
+        "✅ Finished the measurement run",
         undefined,
         { breachCount: 0, targetCount: 0 },
       );
     });
 
     it("counts every target measured and every limit breached at completion", async () => {
-      vi.mocked(codometerService.measure).mockReturnValue({
+      vi.mocked(measureService.measure).mockReturnValue({
         documentation: [],
         failures: [],
         indexes: new Map(),
@@ -897,7 +897,7 @@ describe(CodometerCommand, () => {
       await run();
 
       expect(loggerService.info).toHaveBeenCalledWith(
-        "✅ Finished the codometer run",
+        "✅ Finished the measurement run",
         undefined,
         { breachCount: 2, targetCount: 1 },
       );
@@ -954,7 +954,7 @@ describe(CodometerCommand, () => {
         (parser) =>
           Reflect.getMetadata(
             "CommandBuilder:Option:Meta",
-            Reflect.get(CodometerCommand.prototype, parser) as object,
+            Reflect.get(MeasureCommand.prototype, parser) as object,
           ) as undefined | { flags: string },
       );
 

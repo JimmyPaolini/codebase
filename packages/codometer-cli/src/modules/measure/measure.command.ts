@@ -10,29 +10,26 @@ import { DeliveryService } from "../delivery/delivery.service";
 import { ReportService } from "../report/report.service";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
-import { CodometerService } from "./codometer.service";
+import { MeasureService } from "./measure.service";
 
 import type { ReportFindingsArguments } from "../run-plan/run-plan.types";
-import type {
-  CodometerCommandOptions,
-  MeasurementResult,
-} from "./codometer.types";
+import type { MeasureCommandOptions, MeasurementResult } from "./measure.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 /**
  * CLI entry point for the repository measurement workflow.
  */
 @Command({
-  description: "Run the codometer command",
-  name: "codometer",
+  description: "Measure a directory and produce every resolved output",
+  name: "measure",
 })
 @Injectable()
-export class CodometerCommand extends CommandRunner {
+export class MeasureCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
     private readonly configurationService: ConfigurationService,
-    private readonly codometerService: CodometerService,
+    private readonly measureService: MeasureService,
     private readonly deliveryService: DeliveryService,
     private readonly reportService: ReportService,
     private readonly runPlanService: RunPlanService,
@@ -40,7 +37,7 @@ export class CodometerCommand extends CommandRunner {
     private readonly logger: LoggerService,
   ) {
     super();
-    this.logger.setContext(CodometerCommand.name);
+    this.logger.setContext(MeasureCommand.name);
   }
 
   // 🔐 Private Fields
@@ -77,7 +74,7 @@ export class CodometerCommand extends CommandRunner {
    * by.
    */
   private async readConfiguration(
-    options: CodometerCommandOptions,
+    options: MeasureCommandOptions,
     workingDirectory: string,
   ): Promise<ResolvedCodometerConfiguration | undefined> {
     try {
@@ -181,7 +178,7 @@ export class CodometerCommand extends CommandRunner {
       process.exitCode = 1;
     }
 
-    this.logger.info("✅ Finished the codometer run", undefined, {
+    this.logger.info("✅ Finished the measurement run", undefined, {
       breachCount: args.measurement.limits.filter((limit) => limit.breached)
         .length,
       targetCount: args.measurement.targets.length,
@@ -204,12 +201,12 @@ export class CodometerCommand extends CommandRunner {
   /**
    * Resolve the directory the run measures, and announce that it started.
    */
-  private resolveWorkingDirectory(options: CodometerCommandOptions): string {
+  private resolveWorkingDirectory(options: MeasureCommandOptions): string {
     const workingDirectory = path.resolve(
       this.parseDirectory(options.directory),
     );
 
-    this.logger.debug("🚀 Started the codometer run", undefined, {
+    this.logger.debug("🚀 Started the measurement run", undefined, {
       directory: workingDirectory,
     });
 
@@ -322,7 +319,7 @@ export class CodometerCommand extends CommandRunner {
    */
   async run(
     _passedParameters: string[],
-    options: CodometerCommandOptions,
+    options: MeasureCommandOptions,
   ): Promise<void> {
     const workingDirectory = this.resolveWorkingDirectory(options);
     const { errors, mode } = this.runPlanService.selectMode(options);
@@ -356,7 +353,7 @@ export class CodometerCommand extends CommandRunner {
 
     this.announceOutputPaths(outputPaths);
 
-    const measurement: MeasurementResult = this.codometerService.measure({
+    const measurement: MeasurementResult = this.measureService.measure({
       configuration,
       outputPaths,
       workingDirectory,

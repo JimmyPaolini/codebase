@@ -10,14 +10,14 @@ import { MetricIndexService } from "../limits/metric-index.service";
 
 import type { LimitFailure } from "../limits/limits.types";
 import type { ReportFailure } from "../report/report.types";
+import type { DocumentationMeasurement } from "./documentation-measurement.types";
 import type {
   AnalyzeLanguageArguments,
   MeasureArguments,
   MeasurementResult,
   MeasureTargetArguments,
   TargetMeasurement,
-} from "./codometer.types";
-import type { DocumentationMeasurement } from "./documentation-measurement.types";
+} from "./measure.types";
 import type {
   CodeStatisticsResult,
   CodometerAnalysis,
@@ -34,7 +34,7 @@ import type {
  * Aggregates every analyzer's report into a single set of statistics.
  */
 @Injectable()
-export class CodometerService {
+export class MeasureService {
   // 🏗 Dependency Injection
 
   constructor(

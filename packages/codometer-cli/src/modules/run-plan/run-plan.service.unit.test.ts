@@ -7,7 +7,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { RunPlanService } from "./run-plan.service";
 
-import type { CodometerCommandOptions } from "../codometer/codometer.types";
+import type { MeasureCommandOptions } from "../measure/measure.types";
 import type { RunDestinations } from "./run-plan.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
@@ -42,7 +42,7 @@ describe(RunPlanService, () => {
 
   /** Resolves the destinations for one command line at `/repo`. */
   function resolve(
-    options: CodometerCommandOptions = {},
+    options: MeasureCommandOptions = {},
     configuration = buildConfiguration(),
   ): RunDestinations {
     return service.resolveDestinations({
