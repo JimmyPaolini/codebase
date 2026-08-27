@@ -337,19 +337,19 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-225231-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-12.06_MB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-225610-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-12.07_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-588-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-1906-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-1907-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1849-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1850-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-695-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-33-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-981-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-4877-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-4870-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-15-166534?style=flat-square)
 
 ### JavaScript
@@ -358,15 +358,15 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ![Test Files](https://img.shields.io/badge/Test_Files-446-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-122-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-611-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-9362-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-9363-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-3378-15803d?style=flat-square)
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-10691-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-2049-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-12438-dc2626?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-2050-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-12433-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-7669-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2390-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-9684-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-20314-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-9698-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-20309-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-29-ca8a04?style=flat-square)
 
 ### Python
@@ -531,7 +531,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ![Links](https://img.shields.io/badge/Links-1616-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-7612-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-1892-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-24424-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-24423-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-31-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

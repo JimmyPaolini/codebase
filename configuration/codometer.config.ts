@@ -26,6 +26,13 @@ const COMPILED_TARGET_NAME = "Compiled JavaScript";
  * how much is services, and how much is the tests for them.
  */
 const codometerConfiguration = {
+  // Where each project leaves the report the pull request's ⏲️ Codometer
+  // section reads. Declared here rather than passed as `--json` by the Nx
+  // target, because it is the same path for every project and a destination is
+  // configuration. Its sibling `--readme` stays on the command line, and
+  // deliberately: only the `write` configuration passes it, which is what keeps
+  // a branch's `check` run from rewriting every project README.
+  output: { json: { path: "codometer-report.json" } },
   // Python lives in a uv workspace, so the interpreter is reached through uv
   // rather than being on PATH.
   python: { command: "uv run python" },
@@ -99,6 +106,10 @@ export const workspaceConfiguration = {
   // already absent — discovery reads those files itself — so the ignore file
   // only has to name what is committed but generated.
   excludeFrom: ["configuration/.codometerignore"],
+  // Replaces the shared destination rather than adding to it: the repository
+  // writes badges and no report, because the pull request's change report is
+  // assembled from the per-project reports and has nothing to diff a
+  // repository-wide one against.
   output: {
     markdown: {
       description:
