@@ -77,7 +77,16 @@ export class GenerateCommand extends CommandRunner {
       );
     }
 
-    const schema: JsonSchemaDefinition = { properties: definition.inputs };
+    // Every input is required, which is what `conformetry-nx` has always told
+    // Nx about the same generators: a conformetry generator substitutes each
+    // of its placeholders, and mustache renders a missing one as empty rather
+    // than failing, so an optional input would silently produce a hole. This
+    // command used to pass `properties` alone, leaving every input optional
+    // and every missing one skipped — the hole nobody was warned about.
+    const schema: JsonSchemaDefinition = {
+      properties: definition.inputs,
+      required: Object.keys(definition.inputs),
+    };
     const inputs = await this.inputService.resolveGeneratorInputs({
       rawArguments: [...passedParameters, ...process.argv.slice(2)],
       schema,

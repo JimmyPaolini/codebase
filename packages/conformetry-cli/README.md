@@ -84,25 +84,19 @@ reserving that flag would leave no way to supply it.
 no flag to turn that off — an attached terminal is the whole condition, so a
 script, a hook, or a CI job is never prompted.
 
-With no terminal the two kinds of input part ways:
+**Every input a generator declares is required.** A generator substitutes each
+of its placeholders, and mustache renders a missing one as an empty string
+rather than failing, so an optional input would quietly produce a hole in the
+generated file. `nx g conformetry:<template>` has always taken that line; this
+command now does too, so the same generator asks for the same values whichever
+way it is run.
 
-| Input | With no terminal |
-| ----- | ---------------- |
-| Required | **Refused**, naming the flag to pass, exit non-zero |
-| Optional | Left out, and the run proceeds |
-
-The refusal is the load-bearing half. `prompts` does not fail on a
-non-terminal stdin — it draws its menu, never resolves, and lets the process
-**exit 0 having generated nothing**, which is how this command used to hang in
-CI. It now asserts a terminal before prompting at all and reports a rejected
-command line instead.
-
-One caveat about that table, so it does not mislead: a generator definition
-declares its `inputs` but not **which** of them are required, and this command
-builds the resolver's schema from `inputs` alone. Every input therefore reaches
-the resolver as optional, so in practice a missing one is skipped rather than
-refused. The refusal above is the rule the resolver enforces, waiting on a way
-for a generator to say which inputs it cannot do without.
+With no terminal, a missing input is therefore **refused** — naming the flag to
+pass — and the run exits non-zero. That refusal is the load-bearing half.
+`prompts` does not fail on a non-terminal stdin: it draws its menu, never
+resolves, and lets the process **exit 0 having generated nothing**, which is how
+this command used to hang in CI. It now asserts a terminal before prompting at
+all and reports a rejected command line instead.
 
 ### `conformetry templates`
 
