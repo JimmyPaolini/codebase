@@ -43,7 +43,6 @@ graph LR
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
   file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
-  file_src_modules_configuration_configuration_errors_ts["src/modules/configuration/configuration.errors.ts"]
   file_src_modules_configuration_configuration_module_ts["src/modules/configuration/configuration.module.ts"]
   file_src_modules_configuration_configuration_module_unit_test_ts["src/modules/configuration/configuration.module.unit.test.ts"]
   file_src_modules_configuration_configuration_service_ts["src/modules/configuration/configuration.service.ts"]
@@ -64,10 +63,8 @@ graph LR
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_module_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_errors_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_errors_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_input_input_module_ts --> file_src_modules_input_input_service_ts
   file_src_modules_input_input_module_unit_test_ts --> file_src_modules_input_input_module_ts
@@ -137,23 +134,23 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1800-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-67.55_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1804-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-67.57_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-20-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-19-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-8.82_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-8.74_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-20-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-19-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-12-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-4-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-55-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-54-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -167,9 +164,9 @@ None.
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-66-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-34-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-105-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-54-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-52-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-39-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-90-64748b?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-88-64748b?style=flat-square)
 ![Comment Lines](https://img.shields.io/badge/Comment_Lines-254-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
@@ -287,11 +284,10 @@ None.
 ![Constants Files](https://img.shields.io/badge/Constants_Files-2-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-2-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-1-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-5-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-5-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 
 ### Jupyter
 
