@@ -1,0 +1,20 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "AtlasServiceModule",
+      "target": "CatalogModule"
+    },
+    {
+      "source": "AtlasServiceModule",
+      "target": "InventoryModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": [
+    "AtlasServiceModule",
+    "CatalogModule",
+    "InventoryModule"
+  ],
+  "projectName": "atlas-service"
+}

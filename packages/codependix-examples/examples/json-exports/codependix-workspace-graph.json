@@ -1,0 +1,19 @@
+{
+  "edges": [
+    {
+      "implicit": false,
+      "source": "atlas-application",
+      "target": "atlas-service"
+    },
+    {
+      "implicit": false,
+      "source": "atlas-service",
+      "target": "atlas-core"
+    }
+  ],
+  "projectNames": [
+    "atlas-application",
+    "atlas-core",
+    "atlas-service"
+  ]
+}

@@ -273,6 +273,21 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
 
+    // codependix packages: the examples package, whose `examples/` directory
+    // holds subjects to be graphed and the guides rendered from them, neither of
+    // which anything imports.
+    "packages/codependix-examples": {
+      entry: ["testing/render-examples.ts", "testing/**/*.test.ts"],
+      ignoreDependencies: [
+        // Imported by the example NestJS containers under `examples/`, which are
+        // input to be graphed rather than code knip's project scope covers.
+        // Booting one needs both present in this package's own node_modules.
+        "@nestjs/common",
+        "reflect-metadata",
+      ],
+      project: "testing/**/*.ts",
+    },
+
     // conformetry packages: NestJS service/command application scaffolds
     "packages/conformetry-cli": {
       entry: ["src/main.ts", "src/repl.ts"],

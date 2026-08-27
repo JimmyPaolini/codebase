@@ -132,3 +132,12 @@ projectStructure.cache.json
 # fresh run would produce, byte for byte. Reformatting it reports it stale the
 # moment a format run touches it.
 **/packages/callidescope-examples/output/**
+
+# 🕸️ Every dependency graph codependix writes as JSON. It renders them with
+# `JSON.stringify(…, 2)`, which puts one array element per line; oxfmt collapses
+# a short array onto one. Reformatting one therefore makes the very next
+# `codependix --check` fail against what `codependix --write` just wrote — the
+# same conflict this file already resolves for `.conformetry/**`, and the same
+# reason `configuration/eslint.config.ts` turns `jsonc/sort-array-values` off
+# for exactly these files.
+**/codependix-*graph.json
