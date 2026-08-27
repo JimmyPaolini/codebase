@@ -306,9 +306,9 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3897-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-190.18_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-58-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-79-3178c6?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-190.24_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-59-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-80-3178c6?style=flat-square)
 
 ### TypeScript
 
@@ -339,7 +339,7 @@ graph LR
 
 ### Python
 
-![Python Files](https://img.shields.io/badge/Python_Files-15-3776ab?style=flat-square)
+![Python Files](https://img.shields.io/badge/Python_Files-16-3776ab?style=flat-square)
 ![Python Lines](https://img.shields.io/badge/Python_Lines-53-4b8bbe?style=flat-square)
 ![Python Classes](https://img.shields.io/badge/Python_Classes-1-7c3aed?style=flat-square)
 ![Python Functions](https://img.shields.io/badge/Python_Functions-4-16a34a?style=flat-square)
@@ -451,11 +451,10 @@ graph LR
 ![Constants Files](https://img.shields.io/badge/Constants_Files-0-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-0-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-0-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-2-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-0-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-2-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 
 ### Jupyter
 

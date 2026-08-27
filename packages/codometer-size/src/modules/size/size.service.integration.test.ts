@@ -12,8 +12,7 @@ import {
   TARGET_FIXTURE_FILES,
 } from "../../../testing/target-tree";
 
-import { GZIP_LEVEL } from "./size.constants";
-import { UnreadableTargetFileError } from "./size.errors";
+import { GZIP_LEVEL, UnreadableTargetFileError } from "./size.constants";
 import { SizeService } from "./size.service";
 
 import type { CodometerCompression } from "@codometer/configuration";

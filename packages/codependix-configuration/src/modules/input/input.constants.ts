@@ -15,8 +15,10 @@ export const CODEPENDIX_RUN_MODES = ["check", "write"] as const;
  * whoever catches it — nothing was attempted, and the fix is to retype the
  * flags. Only the wording varies, which is what the factories below do.
  *
- * Sits beside the constants rather than in an `input.errors.ts`, the way
- * `UnknownConfigurationFileTypeError` sits in `configuration.constants.ts`.
+ * Sits beside the constants because that is where every error class in this
+ * repository lives — the project structure rule has no `errors` suffix, and
+ * the Constant File Shape rule whitelists `class X extends Error` for exactly
+ * this.
  */
 export class InputError extends Error {
   constructor(message: string) {

@@ -7,6 +7,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
 import {
+  ConfigurationFileNotFoundError,
   DEFAULT_ALLOW_SPREAD_FOR,
   DEFAULT_CALLER_MAJORITY_RATIO,
   DEFAULT_DIRECT_SPREAD_THRESHOLD,
@@ -25,7 +26,6 @@ import {
   DEFAULT_SPREAD_THRESHOLD,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
-import { ConfigurationFileNotFoundError } from "./configuration.errors";
 import { ConfigurationService } from "./configuration.service";
 
 /** Writes a JSON configuration holding whatever the caller passes. */

@@ -6,8 +6,11 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import { BROTLI_OPTIONS, GZIP_LEVEL } from "./size.constants";
-import { UnreadableTargetFileError } from "./size.errors";
+import {
+  BROTLI_OPTIONS,
+  GZIP_LEVEL,
+  UnreadableTargetFileError,
+} from "./size.constants";
 
 import type { AnalyzeSizeArguments, SizeResult } from "./size.types";
 import type { CodometerCompression } from "@codometer/configuration";

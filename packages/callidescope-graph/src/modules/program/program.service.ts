@@ -6,7 +6,7 @@ import ts from "typescript";
 import { LoggerService } from "@codebase/logger";
 
 import { CompilerHostService } from "./compiler-host.service";
-import { ProgramConfigurationError } from "./program.errors";
+import { ProgramConfigurationError } from "./program.constants";
 
 import type { WorkspaceProject } from "../workspace/workspace.types";
 import type {

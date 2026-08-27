@@ -9,6 +9,7 @@ export {
   CODOMETER_SYMBOL_MODIFIERS,
   codometerConfigurationSchema,
   CONFIGURATION_FILE_NAMES,
+  ConfigurationFileNotFoundError,
   DEFAULT_CUSTOM_STATISTIC_COLORS,
   DEFAULT_CUSTOM_STATISTIC_GROUP,
   DEFAULT_DOCUMENTATION_LIMIT,
@@ -22,10 +23,10 @@ export {
   DEFAULT_TARGET_COMPRESSION,
   DEFAULT_TARGET_DIRECTORY,
   DEFAULT_TARGET_NAME,
+  InvalidLimitValueError,
   REPOSITORY_ROOT_MARKERS,
   UnknownConfigurationFileTypeError,
 } from "./modules/configuration/configuration.constants";
-export { ConfigurationFileNotFoundError } from "./modules/configuration/configuration.errors";
 export { ConfigurationModule } from "./modules/configuration/configuration.module";
 export { ConfigurationService } from "./modules/configuration/configuration.service";
 export type {
@@ -53,7 +54,6 @@ export type {
   ResolvedCodometerPythonConfiguration,
   ResolvedCodometerTarget,
 } from "./modules/configuration/configuration.types";
-export { InvalidLimitValueError } from "./modules/configuration/limit-value.errors";
 export type {
   CodometerJsonOutputConfiguration,
   CodometerMarkdownOutputConfiguration,

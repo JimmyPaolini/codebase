@@ -100,7 +100,7 @@ export type {
 } from "./modules/graph/graph.types";
 export { PathsService } from "./modules/graph/paths.service";
 export { CompilerHostService } from "./modules/program/compiler-host.service";
-export { ProgramConfigurationError } from "./modules/program/program.errors";
+export { ProgramConfigurationError } from "./modules/program/program.constants";
 export { ProgramModule } from "./modules/program/program.module";
 export { ProgramService } from "./modules/program/program.service";
 export type {

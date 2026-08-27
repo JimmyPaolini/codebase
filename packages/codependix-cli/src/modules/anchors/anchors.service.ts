@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
 import {
+  AnchorNotFoundError,
   buildEndMarker,
   buildStartMarker,
   CODEPENDIX_SECTION_HEADING,
 } from "./anchors.constants";
-import { AnchorNotFoundError } from "./anchors.errors";
 
 import type {
   AnchorCheckResult,

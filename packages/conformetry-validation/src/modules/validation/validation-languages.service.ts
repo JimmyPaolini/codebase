@@ -3,9 +3,9 @@ import { LazyModuleLoader } from "@nestjs/core";
 
 import {
   LANGUAGE_PACKAGES,
+  MissingLanguagePackageError,
   TEXT_LANGUAGE_PACKAGE,
 } from "./validation.constants";
-import { MissingLanguagePackageError } from "./validation.errors";
 
 import type { LanguageModuleLoader, LanguagePackage } from "./validation.types";
 import type { ConformetryLanguageValidator } from "@conformetry/core";

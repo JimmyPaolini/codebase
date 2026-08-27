@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { TargetOutsideRepositoryError } from "./targets.errors";
+import { TargetOutsideRepositoryError } from "./targets.constants";
 import { TargetsService } from "./targets.service";
 
 import type { ResolvedCodometerTarget } from "@codometer/configuration";

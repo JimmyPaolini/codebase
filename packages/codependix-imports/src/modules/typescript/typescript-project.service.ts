@@ -4,8 +4,10 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import ts from "typescript";
 
-import { TypescriptProjectConfigurationError } from "./typescript-project.errors";
-import { TYPESCRIPT_PROJECT_CONFIG_FILE } from "./typescript.constants";
+import {
+  TYPESCRIPT_PROJECT_CONFIG_FILE,
+  TypescriptProjectConfigurationError,
+} from "./typescript.constants";
 
 import type {
   TypescriptProject,

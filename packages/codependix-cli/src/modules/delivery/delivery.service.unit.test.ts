@@ -5,7 +5,7 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { AnchorNotFoundError } from "../anchors/anchors.errors";
+import { AnchorNotFoundError } from "../anchors/anchors.constants";
 import { AnchorsService } from "../anchors/anchors.service";
 
 import { DeliveryService } from "./delivery.service";

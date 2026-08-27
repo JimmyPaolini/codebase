@@ -14,7 +14,7 @@ import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { MissingMarkdownPathError } from "./markdown.errors";
+import { MissingMarkdownPathError } from "./markdown.constants";
 import { MarkdownService } from "./markdown.service";
 
 import type {

@@ -9,11 +9,11 @@ import { parse as parseJsonc } from "jsonc-parser";
 
 import {
   CONFIGURATION_FILE_NAMES,
+  ConfigurationFileNotFoundError,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
-import { ConfigurationFileNotFoundError } from "./configuration.errors";
 
 import type { LoadedConfigurationModule } from "./configuration-loader.types";
 import type {

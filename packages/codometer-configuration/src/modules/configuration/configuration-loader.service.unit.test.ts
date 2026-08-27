@@ -6,8 +6,10 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { ConfigurationLoaderService } from "./configuration-loader.service";
-import { UnknownConfigurationFileTypeError } from "./configuration.constants";
-import { ConfigurationFileNotFoundError } from "./configuration.errors";
+import {
+  ConfigurationFileNotFoundError,
+  UnknownConfigurationFileTypeError,
+} from "./configuration.constants";
 
 /** Writes a configuration file of the given name into a fresh temp directory. */
 async function writeConfigurationFile(

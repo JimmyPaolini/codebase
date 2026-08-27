@@ -43,7 +43,6 @@ const codometerConfiguration = {
     { label: "Constants Files", patterns: ["**/*.constants.ts"] },
     { label: "Types Files", patterns: ["**/*.types.ts"] },
     { label: "Utilities Files", patterns: ["**/*.utilities.ts"] },
-    { label: "Errors Files", patterns: ["**/*.errors.ts"] },
     { label: "TypeORM Entities", patterns: ["**/*.entity.ts"] },
     { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
     { label: "Integration Tests", patterns: ["**/*.integration.test.ts"] },

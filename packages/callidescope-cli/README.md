@@ -933,13 +933,13 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5871-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-186.68_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-186.74_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-48-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-22.03_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-22.13_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -1082,11 +1082,10 @@ graph LR
 ![Constants Files](https://img.shields.io/badge/Constants_Files-6-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-6-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-8-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-8-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 
 ### Jupyter
 

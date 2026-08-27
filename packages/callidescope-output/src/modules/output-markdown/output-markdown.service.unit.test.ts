@@ -9,7 +9,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { buildCallGraphResult } from "../../../testing/mocks";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
-import { MissingMarkdownPathError } from "./output-markdown.errors";
+import { MissingMarkdownPathError } from "./output-markdown.constants";
 import { OutputMarkdownService } from "./output-markdown.service";
 
 import type {

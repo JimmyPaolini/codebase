@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { MissingSubstitutionError } from "./rendering.errors";
+import { MissingSubstitutionError } from "./rendering.constants";
 import { RenderingService } from "./rendering.service";
 
 describe(RenderingService, () => {

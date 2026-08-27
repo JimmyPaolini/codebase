@@ -915,9 +915,7 @@ graph LR
   file_src_modules_delivery_delivery_service_ts["src/modules/delivery/delivery.service.ts"]
   file_src_modules_delivery_delivery_service_unit_test_ts["src/modules/delivery/delivery.service.unit.test.ts"]
   file_src_modules_delivery_delivery_types_ts["src/modules/delivery/delivery.types.ts"]
-  file_src_modules_limits_empty_target_errors_ts["src/modules/limits/empty-target.errors.ts"]
   file_src_modules_limits_limits_constants_ts["src/modules/limits/limits.constants.ts"]
-  file_src_modules_limits_limits_errors_ts["src/modules/limits/limits.errors.ts"]
   file_src_modules_limits_limits_module_ts["src/modules/limits/limits.module.ts"]
   file_src_modules_limits_limits_service_integration_test_ts["src/modules/limits/limits.service.integration.test.ts"]
   file_src_modules_limits_limits_service_ts["src/modules/limits/limits.service.ts"]
@@ -999,9 +997,7 @@ graph LR
   file_src_modules_limits_limits_service_integration_test_ts --> file_src_modules_limits_metric_index_service_ts
   file_src_modules_limits_limits_service_integration_test_ts --> file_testing_fixture_tree_ts
   file_src_modules_limits_limits_service_integration_test_ts --> file_testing_mocks_ts
-  file_src_modules_limits_limits_service_ts --> file_src_modules_limits_empty_target_errors_ts
   file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_constants_ts
-  file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_errors_ts
   file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
   file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
@@ -1077,17 +1073,17 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8494-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-275.04_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-275.02_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-10-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-64-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-62-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-35.01_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-34.89_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-63-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-61-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-37-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
@@ -1106,10 +1102,10 @@ graph LR
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-385-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-85-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-290-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-306-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-304-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-93-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-441-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-951-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-440-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-950-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -1226,11 +1222,10 @@ graph LR
 ![Constants Files](https://img.shields.io/badge/Constants_Files-7-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-7-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-1-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-2-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-13-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-2-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-13-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-2-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 
 ### Jupyter
 

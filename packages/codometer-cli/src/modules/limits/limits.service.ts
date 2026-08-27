@@ -1,8 +1,10 @@
 import { Injectable } from "@nestjs/common";
 
-import { EmptyTargetError } from "./empty-target.errors";
-import { METRIC_PATH_SEPARATOR } from "./limits.constants";
-import { UnboundMetricError } from "./limits.errors";
+import {
+  EmptyTargetError,
+  METRIC_PATH_SEPARATOR,
+  UnboundMetricError,
+} from "./limits.constants";
 
 import type {
   BindMetricArguments,

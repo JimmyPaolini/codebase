@@ -346,7 +346,6 @@ graph LR
   file_src_modules_program_compiler_host_service_ts["src/modules/program/compiler-host.service.ts"]
   file_src_modules_program_compiler_host_service_unit_test_ts["src/modules/program/compiler-host.service.unit.test.ts"]
   file_src_modules_program_program_constants_ts["src/modules/program/program.constants.ts"]
-  file_src_modules_program_program_errors_ts["src/modules/program/program.errors.ts"]
   file_src_modules_program_program_module_ts["src/modules/program/program.module.ts"]
   file_src_modules_program_program_service_ts["src/modules/program/program.service.ts"]
   file_src_modules_program_program_service_unit_test_ts["src/modules/program/program.service.unit.test.ts"]
@@ -560,11 +559,11 @@ graph LR
   file_src_modules_program_program_module_ts --> file_src_modules_program_program_service_ts
   file_src_modules_program_program_module_ts --> file_src_modules_workspace_workspace_module_ts
   file_src_modules_program_program_service_ts --> file_src_modules_program_compiler_host_service_ts
-  file_src_modules_program_program_service_ts --> file_src_modules_program_program_errors_ts
+  file_src_modules_program_program_service_ts --> file_src_modules_program_program_constants_ts
   file_src_modules_program_program_service_ts --> file_src_modules_program_program_types_ts
   file_src_modules_program_program_service_ts --> file_src_modules_workspace_workspace_types_ts
   file_src_modules_program_program_service_unit_test_ts --> file_src_modules_program_compiler_host_service_ts
-  file_src_modules_program_program_service_unit_test_ts --> file_src_modules_program_program_errors_ts
+  file_src_modules_program_program_service_unit_test_ts --> file_src_modules_program_program_constants_ts
   file_src_modules_program_program_service_unit_test_ts --> file_src_modules_program_program_service_ts
   file_src_modules_program_program_service_unit_test_ts --> file_src_modules_workspace_workspace_types_ts
   file_src_modules_program_program_service_unit_test_ts --> file_testing_modules_ts
@@ -616,17 +615,17 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10753-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-332.46_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-332.54_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-13-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-90-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-89-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-48.41_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-48.60_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-90-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-89-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-48-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
@@ -765,11 +764,10 @@ graph LR
 ![Constants Files](https://img.shields.io/badge/Constants_Files-13-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-14-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-1-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-22-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-22-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 
 ### Jupyter
 

@@ -98,7 +98,7 @@ _This project has no internal file imports._
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-191-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-51.12_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-51.19_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-5-3178c6?style=flat-square)
 
@@ -243,11 +243,10 @@ _This project has no internal file imports._
 ![Constants Files](https://img.shields.io/badge/Constants_Files-0-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-0-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-1-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-1-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 
 ### Jupyter
 
