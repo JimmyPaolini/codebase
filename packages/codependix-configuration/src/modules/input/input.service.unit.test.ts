@@ -6,7 +6,7 @@ import {
   conflictingRunModeError,
   missingInputError,
   promptCancelledError,
-} from "./input.errors";
+} from "./input.constants";
 import { InputService } from "./input.service";
 
 import type { CodependixRunModeOptions } from "./input.types";

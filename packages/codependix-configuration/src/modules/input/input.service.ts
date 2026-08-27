@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import prompts from "prompts";
 
-import { CODEPENDIX_RUN_MODES } from "./input.constants";
 import {
+  CODEPENDIX_RUN_MODES,
   conflictingRunModeError,
   missingInputError,
   promptCancelledError,
-} from "./input.errors";
+} from "./input.constants";
 
 import type {
   CodependixRunMode,
