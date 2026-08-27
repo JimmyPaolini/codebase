@@ -207,6 +207,28 @@ export class MotifTransformsService {
    * `center`, keeping point order unchanged. `quarterTurns` is normalized
    * modulo 4, so any integer (negative included) is accepted.
    */
+  /**
+   * The rightmost grid level any of `subpaths` reaches. What a motif's
+   * border needs to know to end flush with its own trace on the pattern's
+   * last repeat unit, where no following unit fills the space between the
+   * trace and the unit pitch. Read off the traced points rather than
+   * derived from `rows`, so it stays true to whatever the motif's own point
+   * sequences actually draw — including a `flip` modifier's mirrored twin,
+   * which reaches further right than the sequence it was mirrored from.
+   */
+  rightmostLevel(subpaths: readonly (readonly MotifLevelPoint[])[]): number {
+    const xLevels = subpaths.flatMap((points) =>
+      points.map(([xLevel]) => xLevel),
+    );
+
+    return Math.max(...xLevels);
+  }
+
+  /**
+   * Rotates every point by `quarterTurns * 90°` counterclockwise around
+   * `center`, keeping point order unchanged. `quarterTurns` is normalized
+   * modulo 4, so any integer (negative included) is accepted.
+   */
   rotate(
     points: readonly MotifLevelPoint[],
     center: MotifLevelPoint,

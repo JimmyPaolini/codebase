@@ -116,21 +116,6 @@ export class SwirlMotifService implements MotifService {
       : [this.basePoints(rows)];
   }
 
-  /**
-   * The rightmost grid level the unit's own spiral trace actually reaches,
-   * which falls one level short of {@link unitWidth}'s pitch: the spiral's
-   * outermost turn stops there rather than at the pitch boundary. Read off
-   * the traced points rather than derived from `rows`, so it stays true to
-   * whatever {@link basePoints} and {@link flippedPoints} draw.
-   */
-  private traceRightLevel(rows: number, modifier?: Modifier): number {
-    const xLevels = this.subpaths(rows, modifier).flatMap((points) =>
-      points.map(([xLevel]) => xLevel),
-    );
-
-    return Math.max(...xLevels);
-  }
-
   // 🌎 Public Methods
 
   /**
@@ -143,8 +128,9 @@ export class SwirlMotifService implements MotifService {
    * stroked line with `stroke-linecap="square"` renders identically either
    * way, so the majority (and every `flip` file) is what this follows.
    *
-   * The last unit's segment stops at {@link traceRightLevel} instead, flush
-   * with where its own spiral trace ends. Every other unit keeps the full
+   * The last unit's segment stops at
+   * {@link MotifTransformsService.rightmostLevel} instead, flush with where
+   * its own spiral trace ends. Every other unit keeps the full
    * width so its border stays contiguous with the next unit's; the last
    * unit has no next unit to hand the remainder to, so spanning the full
    * width would trail a bare stub off the end of the pattern.
@@ -152,7 +138,9 @@ export class SwirlMotifService implements MotifService {
   borderSegment(geometry: GridGeometry, unit: UnitBorderOptions): string {
     const { isLastUnit, modifier, rows, xOffset } = unit;
     const rightWidth = isLastUnit
-      ? this.traceRightLevel(rows, modifier) * geometry.unit
+      ? this.motifTransformsService.rightmostLevel(
+          this.subpaths(rows, modifier),
+        ) * geometry.unit
       : this.unitWidth(geometry, rows, modifier);
     const leftX = this.gridGeometryService.formatCoordinate(
       geometry.offset + xOffset,

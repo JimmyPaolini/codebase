@@ -1,32 +1,13 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { rightmostX, splitTrace } from "../../../testing/path-data";
+
 import { GridGeometryService } from "./grid-geometry.service";
 import { MotifTransformsService } from "./motif-transforms.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";
 import { SwirlMotifService } from "./swirl-motif.service";
-
-// 🔧 Configuration
-
-/** The rightmost x-coordinate a stretch of path data draws. */
-const rightmostX = (pathData: string): number =>
-  Math.max(
-    ...[...pathData.matchAll(/[MH]([\d.]+)/g)].map((match) => Number(match[1])),
-  );
-
-/**
- * Splits one unit's path back into the spiral trace and the border segment
- * appended after it, by trimming exactly the border the service would draw
- * for those same options.
- */
-const splitTrace = (
-  fullPath: string,
-  borderSegment: string,
-): { border: string; trace: string } => ({
-  border: borderSegment,
-  trace: fullPath.slice(0, fullPath.length - borderSegment.length),
-});
 
 // 🧪 Tests
 

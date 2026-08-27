@@ -4,6 +4,8 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { COORDINATE_ROUNDING_TOLERANCE } from "../../../testing/path-data";
+
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
@@ -108,15 +110,6 @@ const patternCases: readonly PatternCase[] = (
     })),
   );
 });
-
-/**
- * How far a drawn coordinate may exceed the canvas before it counts as a
- * real overshoot. `GridGeometryService.formatCoordinate` rounds every
- * coordinate to five decimal places, so at a row count whose grid unit
- * doesn't divide the canvas evenly (7 in particular) the rounded rightmost
- * coordinate can land a few millionths of a pixel past the rounded width.
- */
-const roundingTolerance = 0.0001;
 
 /**
  * The rightmost x-coordinate any path in the document draws, and the
@@ -680,7 +673,9 @@ describe(MeanderGenerationService, () => {
         });
         const { available, drawn } = rightmostCoordinates(svg);
 
-        expect(drawn).toBeLessThanOrEqual(available + roundingTolerance);
+        expect(drawn).toBeLessThanOrEqual(
+          available + COORDINATE_ROUNDING_TOLERANCE,
+        );
       },
     );
   });

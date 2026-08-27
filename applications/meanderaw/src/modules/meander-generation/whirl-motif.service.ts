@@ -105,21 +105,6 @@ export class WhirlMotifService implements MotifService {
       : [this.basePoints(rows)];
   }
 
-  /**
-   * The rightmost grid level the unit's own spiral trace actually reaches,
-   * which falls one level short of {@link unitWidth}'s pitch: the spiral's
-   * outermost turn stops there rather than at the pitch boundary. Read off
-   * the traced points rather than derived from `rows`, so it stays true to
-   * whatever {@link basePoints} and {@link flippedPoints} draw.
-   */
-  private traceRightLevel(rows: number, modifier?: Modifier): number {
-    const xLevels = this.subpaths(rows, modifier).flatMap((points) =>
-      points.map(([xLevel]) => xLevel),
-    );
-
-    return Math.max(...xLevels);
-  }
-
   // 🌎 Public Methods
 
   /**
@@ -134,7 +119,8 @@ export class WhirlMotifService implements MotifService {
    * still be shared between the two — that refactor just hasn't been done.
    *
    * Where it does differ from `snake`: the last unit's segment stops at
-   * {@link traceRightLevel}, flush with where its own spiral trace ends.
+   * {@link MotifTransformsService.rightmostLevel}, flush with where its own
+   * spiral trace ends.
    * Every other unit keeps the full width so its border stays contiguous
    * with the next unit's; the last unit has no next unit to hand the
    * remainder to, so spanning the full width would trail a bare stub off
@@ -143,7 +129,9 @@ export class WhirlMotifService implements MotifService {
   borderSegment(geometry: GridGeometry, unit: UnitBorderOptions): string {
     const { isLastUnit, modifier, rows, xOffset } = unit;
     const rightWidth = isLastUnit
-      ? this.traceRightLevel(rows, modifier) * geometry.unit
+      ? this.motifTransformsService.rightmostLevel(
+          this.subpaths(rows, modifier),
+        ) * geometry.unit
       : this.unitWidth(geometry, rows, modifier);
     const leftX = this.gridGeometryService.formatCoordinate(
       geometry.offset + xOffset,

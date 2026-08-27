@@ -1,18 +1,12 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { rightmostX } from "../../../testing/path-data";
+
 import { GridGeometryService } from "./grid-geometry.service";
 import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
 
 import type { MosaicTile } from "./meander-generation.types";
-
-// 🔧 Configuration
-
-/** The rightmost x-coordinate a stretch of path data draws. */
-const rightmostX = (pathData: string): number =>
-  Math.max(
-    ...[...pathData.matchAll(/[MH]([\d.]+)/g)].map((match) => Number(match[1])),
-  );
 
 // 🧪 Tests
 

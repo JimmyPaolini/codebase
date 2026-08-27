@@ -1,6 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { COORDINATE_ROUNDING_TOLERANCE } from "../../../testing/path-data";
+
 import { GridGeometryService } from "./grid-geometry.service";
 import { MosaicMotifService } from "./mosaic-motif.service";
 import { MotifTransformsService } from "./motif-transforms.service";
@@ -153,15 +155,6 @@ const lastMotifUnit = (
   rows: number,
   unitIndex: number,
 ): MotifUnit => ({ ...motifUnit(variant, rows, unitIndex), isLastUnit: true });
-
-/**
- * How far a measured blank may exceed the stroke width before it counts as
- * a real gap. `GridGeometryService.formatCoordinate` rounds every
- * coordinate to five decimal places, so at a row count whose grid unit
- * doesn't divide the canvas evenly (7, 9, 11) two rounded endpoints can
- * leave a blank a few millionths of a pixel over the limit.
- */
-const roundingTolerance = 0.0001;
 
 // 🧪 Tests
 
@@ -533,7 +526,9 @@ describe(MosaicMotifService, () => {
 
         expect(
           longestBlank(pathData, geometry.strokeWidth),
-        ).toBeLessThanOrEqual(geometry.strokeWidth + roundingTolerance);
+        ).toBeLessThanOrEqual(
+          geometry.strokeWidth + COORDINATE_ROUNDING_TOLERANCE,
+        );
       },
     );
 
@@ -545,7 +540,9 @@ describe(MosaicMotifService, () => {
 
         expect(
           longestBlank(pathData, geometry.strokeWidth),
-        ).toBeLessThanOrEqual(geometry.strokeWidth + roundingTolerance);
+        ).toBeLessThanOrEqual(
+          geometry.strokeWidth + COORDINATE_ROUNDING_TOLERANCE,
+        );
       },
     );
 
