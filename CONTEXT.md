@@ -79,21 +79,38 @@ _Avoid_: Drift, out of date, dirty
 ## Meanders
 
 **Meander**:
-A single generated Greek key/fret ornament, produced by applying one modifier
-to one type at a given row count and repeat count.
+A single generated Greek key/fret ornament: one family, one tile or modifier, a row
+count, and a repeat count, rendered as one SVG document.
 _Avoid_: Pattern, motif, key pattern
 
-**Type**:
-The base repeating shape a meander draws — `boxes`, `chain`, `snake`, `swirl`,
-`whirl`, or `mosaic`. Each type defines its own motif and its own set of
-compatible modifiers.
-_Avoid_: Style, family, kind
+**Family**:
+The top-level generative model a meander is drawn from — `boxes`, `chain`, `mosaic`,
+`snake`, `swirl`, or `whirl`. Each family generates its own repeat units and accepts its
+own modifiers. The primary term; `type` survives only as the name of the command-line
+flag.
+_Avoid_: Style, kind, category
+
+**Unit space**:
+The set of repeat units a family can generate. Materialized and enumerable for `mosaic`,
+latent for every other family — which is the whole reason only `mosaic` has
+sub-families.
+_Avoid_: Tile set, permutations, search space
+
+**Tile**:
+One member of a family's unit space, named by a canonical identifier.
+_Avoid_: Cell, unit, permutation
+
+**Sub-family**:
+A named, recognizable class of meanders within one family — `dots`, `lines`, `dashes`,
+`diamond`. Some sub-families arise by applying a modifier, others by recognizing a
+structural property of a tile; both routes produce the same kind of thing.
+_Avoid_: Variant, subtype, group
 
 **Modifier**:
-A named transform applied to a type's motif across its repeat units — rotation
-(`spin`), mirroring (`flip`), border-closing (`edge`), or the `mosaic`-specific
-`alternated`, `split`, and `dot` transforms. Only certain modifiers are
-compatible with each type.
+A named transform applied to a family's units — rotation (`spin`), mirroring (`flip`),
+border-closing (`edge`), or the `mosaic`-specific `alternated`, `split`, and `dot`.
+One route by which a sub-family comes about, not a separate level of the model. Only
+certain modifiers are compatible with each family.
 _Avoid_: Variant, option, flag
 
 **Rows**:
@@ -104,7 +121,7 @@ increases.
 _Avoid_: Row count, height, N
 
 **Repeat count**:
-How many times a type's motif is tiled horizontally across a meander.
+How many times a family's unit is tiled horizontally across a meander.
 _Avoid_: Width, unit count, columns
 
 **Grid unit**:
@@ -112,6 +129,11 @@ The base spacing a meander's coordinates are built from, derived from canvas
 height divided by rows. Stroke width and offsets are themselves derived from
 the grid unit, not set independently.
 _Avoid_: Cell size, spacing, step
+
+**Channel**:
+The white space separating two neighboring strokes. Exactly one stroke width wide
+everywhere inside a band, which is what makes a meander space-filling.
+_Avoid_: Gap, whitespace, margin
 
 ## Change reporting
 

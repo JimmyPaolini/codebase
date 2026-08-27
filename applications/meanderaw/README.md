@@ -10,6 +10,63 @@ nx run meanderaw:start
 nx run meanderaw:vitest
 ```
 
+## 🏛️ Meander Charter
+
+Six families of meander are implemented, and they share a set of properties that are
+load-bearing to how a meander looks. They were extracted by measuring every committed
+SVG rather than by reading the code, and each is marked fixed or negotiable. A new
+family that breaks a fixed invariant is not a new family — it is a different kind of
+drawing.
+
+| # | Invariant | Status |
+| --- | --- | --- |
+| 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Fixed |
+| 2 | **Space-filling** — every interior white channel is exactly one stroke width | Fixed |
+| 3 | **No branching** — ink contains no T-junctions | May be relaxed |
+| 4 | **No crossing** — ink contains no X-junctions | May be relaxed |
+| 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Fixed |
+| 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
+| 7 | Invariants hold within a band, not at its termination | See [#338](https://github.com/JimmyPaolini/codebase/issues/338) |
+
+What the measurements found, across 114 named patterns and 3,179 enumerated `mosaic`
+tiles:
+
+- **Every interior white channel is exactly one stroke width**, in all 3,293 files. The
+  channel width equals the stroke width equals half a grid unit, which is why fitting
+  `N` parallel strokes into one unit is exactly `strokeWidth = unit / (2N)`.
+- **Ink is a disjoint union of simple arcs.** Zero T-junctions and zero X-junctions
+  across every family — a stronger statement than "non-self-intersecting", and the
+  sharpest single characterization of what the six families have in common.
+- **The negative space is not.** It branches in every family, and in `mosaic split` and
+  `mosaic alternated period-3` it genuinely crosses. Crossing patterns are already
+  generated here; they have only ever been white, never ink.
+
+Invariant 1 is not merely local convention. Fréart's rule for the classical meander is
+that returns and intersections "do always fall into right angles", quoted in the
+[ICAA's article on the complex Greek meander](https://www.classicist.org/articles/classical-comments-the-complex-greek-meander/).
+
+Invariant 5 is fixed because the intended use is **borders**. Two-dimensional field
+ornament is excluded for that reason, not because it is uninteresting.
+
+Wider-than-one-stroke gaps occur only where a band terminates, which is
+[#338](https://github.com/JimmyPaolini/codebase/issues/338) and is not a family
+property.
+
+## 🧬 Families, Sub-families, and Tiles
+
+A **family** is a generator of repeat units — its **unit space**. A **modifier** is a
+named constructor into that space; a **sub-family** is a named predicate over it. Both
+are views on one underlying space, which is why `mosaic` is the only family with
+sub-families today: [#365](https://github.com/JimmyPaolini/codebase/pull/365)
+materialized its unit space as 3,179 enumerable tiles, so its regions —
+`lines`, `dashes`, `dots`, `diamond` — became recognizable. The other five families
+have latent unit spaces and therefore only modifiers.
+
+The glossary for these terms lives in the repository [CONTEXT.md](../../CONTEXT.md).
+Note one deliberate divergence: the code says `MeanderType`, `SUPPORTED_TYPES`, and
+`--type` where the glossary says **family**. Renaming the flag would be a breaking CLI
+change and is not worth making for a vocabulary correction.
+
 ## 👔 Conformetry
 
 This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
@@ -900,23 +957,23 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-259-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-291-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
+![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-50-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-28-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-59-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-8-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-33-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-2-0284c7?style=flat-square)
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-11-059669?style=flat-square)
+![Links](https://img.shields.io/badge/Links-15-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-14-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-79-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-82-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
