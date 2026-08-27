@@ -1,0 +1,52 @@
+# 🔀 The `--write` / `--check` matrix
+
+`--write` and `--check` are independent, and no combination is inferred. This is
+the whole surface.
+
+## Run it
+
+```bash
+codometer --directory examples/corpus --config examples/write-check/codometer.config.ts --write --check limits
+```
+
+## What is here
+
+```text
+write-check/
+└── codometer.config.ts    one breaching limit, so every row has something to report
+```
+
+| Invocation | Writes | Fails on staleness | Fails on a breach | Exit |
+| ---------- | ------ | ------------------ | ----------------- | ---- |
+| `codometer` | no | no | no | 0 |
+| `codometer --check limits` | no | no | yes | 1 |
+| `codometer --check reports` | no | yes | no | 0 |
+| `codometer --check reports,limits` | no | yes | yes | 1 |
+| `codometer --write` | yes | no | no | 0 |
+| `codometer --write --check limits` | yes | no | yes, after writing | 1 |
+
+Every row is run against a scratch copy of the corpus by the test beside these
+files, with the exit code above and the files on disk checked afterwards. The
+last row is the one worth trying yourself: **the report is on disk even though
+the run exits 1**, because a pull request that failed the gate is exactly the
+one that needs the numbers.
+
+A bare run reports a breach and exits 0. A breach is a finding; only
+`--check limits` turns a finding into a gate.
+
+## Two command lines refused before anything is measured
+
+```text
+--write cannot be combined with --check reports: a report cannot be stale in
+the run that just wrote it. Drop one of them, or run --write and --check
+reports separately.
+```
+
+```text
+--check does not accept "everything". It takes a comma-separated set drawn from
+"limits" and "reports", as in "--check limits,reports".
+```
+
+## Next
+
+[output](../output/README.md), for where a written report actually lands.

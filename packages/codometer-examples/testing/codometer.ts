@@ -46,16 +46,15 @@ const commandLineEntry = path.resolve(
   "main.ts",
 );
 
+/** Everything this package ships to be run: one directory per example. */
+export const examplesDirectory = path.join(packageDirectory, "examples");
+
 /** The committed sample corpus, which the read-only examples measure. */
-export const corpusDirectory = path.join(
-  packageDirectory,
-  "examples",
-  "corpus",
-);
+export const corpusDirectory = path.join(examplesDirectory, "corpus");
 
 /** Path of one shipped example configuration, from its segments. */
 export const exampleConfiguration = (...segments: readonly string[]): string =>
-  path.join(packageDirectory, "examples", ...segments);
+  path.join(examplesDirectory, ...segments);
 
 // 🏷️ Report shapes
 
