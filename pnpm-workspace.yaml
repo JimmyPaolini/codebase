@@ -203,3 +203,4 @@ catalog:
   zod: ^4.4.3
   openwiki: ^0.2.3
   skills: ^1.5.20
+  typescript-7: npm:typescript@7.0.2

@@ -240,6 +240,45 @@ pnpm exec nx run <project>:lint-codebase --configuration=check
 
 See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the full validation workflow and per-tool fix guidance.
 
+### Task Cache Inputs
+
+`nx.json`'s `shared-globals` reaches almost every lint target, directly or
+through `default`, so whatever it names is an input to nearly every task in the
+workspace. It holds `configuration/tsconfig.json` and nothing else, and that is
+load-bearing rather than incidental.
+
+**Never add a high-churn file to `shared-globals`.** It once named
+`pnpm-lock.yaml`, `nx.json`, and `.github/workflows/*.yml`. Those change on
+100, 53, and 86 of every 100 commits to `main` respectively, and because a pull
+request is built from the merge commit, every branch inherited that churn — so
+every task in the workspace re-hashed on essentially every run and 🧑‍💻 Lint
+Codebase never recorded a single cache hit. It ran 475–520 tasks cold every
+time and took 5–9 minutes against a 12-minute limit. Nothing failed; the work
+was simply repeated.
+
+Nothing checks for this. A run whose cache never hits is still a green run, so
+the only signal is the duration, and re-adding one glob here silently undoes
+the whole arrangement.
+
+State the real dependency instead:
+
+- **Tool versions** belong in a per-target `{"externalDependencies": [...]}`
+  entry, which hashes the resolved versions of exactly those packages. This is
+  what `typecheck` has always done with `typescript`; every lint target now
+  names its own tools the same way. A tool added to a target's command must be
+  added there too, or an upgrade of it will replay a stale cached result.
+- **Python tools** need no entry: their targets already declare
+  `{workspaceRoot}/pyproject.toml` and `{workspaceRoot}/uv.lock`.
+- **Whole-lockfile sensitivity**, where a target genuinely depends on every
+  dependency rather than a named few, is the `dependency-versions` namedInput.
+  `build` uses it, because a bundle really does change when any dependency
+  does. No lint target should need it.
+
+`.eslintcache/` is excluded from `default` and from the `eslint` inputs for the
+same reason a project's `codometer-report.json` is subtracted from its own: a
+task's own artifact must never be one of its inputs, or it rewrites the hash it
+was just cached under and can never hit its own cache.
+
 ### Quality Tools
 
 | Tool            | Description                                           | Config                                   | Docs                                                             |

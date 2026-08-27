@@ -53,6 +53,10 @@ const config: KnipConfig = {
     "stylelint-config-tailwindcss", // stylelint preset, referenced as string in extends array
     "stylelint", // CSS linter CLI, invoked via nx:run-commands in project.json
     "tslib", // TypeScript helper library, implicit runtime dependency for compiled TS
+    // Side-by-side TypeScript 7, aliased in the catalog. The `typecheck`
+    // target invokes its `tsc` binary directly; nothing imports it, and
+    // typescript-eslint and @swc-node/register still require TypeScript 6.
+    "typescript-7",
     "squawk-cli", // SQL linter CLI, invoked via nx:run-commands in project.json
   ],
 

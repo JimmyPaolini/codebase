@@ -85,3 +85,6 @@ data/**
 # project-structure plugin cache
 projectStructure.cache.json
 
+
+# ESLint incremental cache (restored in CI by the Lint Codebase workflow)
+.eslintcache/

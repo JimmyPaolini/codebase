@@ -117,7 +117,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Export every configured Nx, NestJS, and file-import dependency graph. Two configurations and no third, mirroring `codebase:callidescope` and `codebase:codometer`: this target is absent from `lint-codebase`'s `dependsOn`, so no run of it ever forwards a configuration here, and `write` means publish on the default branch and nowhere else. `check` verifies every configured export is current without writing; a pull request gates neither, since the exports move with the workspace they describe and would otherwise fail every branch that changed a project graph rather than anything the branch itself did. The release workflow runs `write`, after `callidescope` and the module-graph synchronization have run, so a project's `## 🕸️ Codependix` anchor reflects the same commit those write. The README glob is an input because `write` splices Markdown into anchor blocks placed by hand in those files.",
+      "description": "Export every configured Nx, NestJS, and file-import dependency graph. Two configurations and no third, mirroring `codebase:callidescope` and `codebase:codometer`: this target is absent from `lint-codebase`'s `dependsOn`, so no run of it ever forwards a configuration here, and `write` means publish on the default branch and nowhere else. `check` verifies every configured export is current without writing; a pull request gates neither, since the exports move with the workspace they describe and would otherwise fail every branch that changed a project graph rather than anything the branch itself did. The release workflow runs `write`, after `callidescope` and the module-graph synchronization have run, so a project's `## \ud83d\udd78\ufe0f Codependix` anchor reflects the same commit those write. The README glob is an input because `write` splices Markdown into anchor blocks placed by hand in those files.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",
@@ -187,7 +187,7 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "eslint {args} --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' '*.md' 'docs/' 'scripts/' 'documentation/' 'infrastructure/'"
+          "command": "eslint {args} --cache --cache-strategy content --cache-location \"$NX_WORKSPACE_ROOT/.eslintcache/\" --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' '*.md' 'docs/' 'scripts/' 'documentation/' 'infrastructure/'"
         },
         "write": {
           "command": "eslint {args} --fix --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' '*.md' 'docs/' 'scripts/' 'documentation/' 'infrastructure/'"
@@ -893,7 +893,7 @@
       "description": "Type-check workspace root TypeScript files",
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc --noEmit -p tsconfig.json",
+        "command": "node \"$NX_WORKSPACE_ROOT/node_modules/typescript-7/bin/tsc\" --noEmit -p tsconfig.json",
         "cwd": "{projectRoot}"
       }
     },
