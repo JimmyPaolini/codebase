@@ -33,10 +33,6 @@ export const PYTHON_IMPORTS_GRAPH_TYPE = "pythonImports";
 /** `### <subheading>` placed above the Python file-level import graph's anchor. */
 export const PYTHON_IMPORTS_MARKDOWN_SUBHEADING = "Python File Imports";
 
-/** Usage message shown when the command line names neither or both modes. */
-export const USAGE_MESSAGE =
-  "💡 Usage: codependix --check (or codependix --write)";
-
 /**
  * The `projectName` reported for the Workspace Graph's result.
  *

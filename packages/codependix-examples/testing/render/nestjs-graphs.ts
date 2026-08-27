@@ -250,7 +250,7 @@ async function buildRootingDocument(): Promise<ExampleDocument> {
       {
         body: renderExplorations(explorations),
         heading: "One project failing stops no other",
-        note: "`failing-container` throws the moment its module file is imported. It is collected as a failure and the other two projects still complete — the guarantee `codependix --write` makes: either it fully succeeds, or it names exactly which projects failed.",
+        note: "`failing-container` throws the moment its module file is imported. It is collected as a failure and the other two projects still complete — the guarantee `codependix map --write` makes: either it fully succeeds, or it names exactly which projects failed.",
       },
     ],
     summary:

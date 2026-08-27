@@ -1470,7 +1470,7 @@ export default [
   // Emitted from the Nx project graph, a NestJS container, or a `ts.Program`,
   // in whichever order each source discovers its projects, modules, or
   // files — not alphabetical. Enforcing array order here would make every
-  // `codependix --write` immediately fail its own `--check`, the same
+  // `codependix map --write` immediately fail its own `--check`, the same
   // reformatting-vs-drift conflict `configuration/.oxfmtignore` already
   // solves for `oxfmt` and `.conformetry/**`.
   {

@@ -4,17 +4,13 @@ import { ConfigurationService } from "@codependix/configuration";
 import { PythonService } from "@codependix/imports";
 import { Injectable } from "@nestjs/common";
 
+import { DeliveryService } from "../delivery/delivery.service";
 import {
   MARKDOWN_SECTION_INTRO_LINE,
   PYTHON_IMPORTS_GRAPH_TYPE,
   PYTHON_IMPORTS_MARKDOWN_SUBHEADING,
-} from "../codependix/codependix.constants";
-import { DeliveryService } from "../delivery/delivery.service";
+} from "../map/map.constants";
 
-import type {
-  GraphRunContext,
-  PythonImportGraphExport,
-} from "../codependix/codependix.types";
 import type {
   CodependixRunMode,
   GraphRunOutcome,
@@ -22,6 +18,10 @@ import type {
   ProjectRunFailure,
   ProjectRunResult,
 } from "../delivery/delivery.types";
+import type {
+  GraphRunContext,
+  PythonImportGraphExport,
+} from "../map/map.types";
 import type { ResolvedCodependixGraphOutput } from "@codependix/configuration";
 import type { PythonProject } from "@codependix/imports";
 
@@ -29,10 +29,10 @@ import type { PythonProject } from "@codependix/imports";
  * Builds and delivers every configured Python file-level import graph
  * export.
  *
- * Split out of `CodependixService` — which owns the same pass for every
+ * Split out of `MapService` — which owns the same pass for every
  * other graph type — purely to keep that file under this repository's
  * per-file line limit; the pass itself follows
- * `CodependixService.runImportGraphs` exactly, one collaborator per language
+ * `MapService.runImportGraphs` exactly, one collaborator per language
  * instead of one compiler-backed `ts.Program` per project.
  */
 @Injectable()
@@ -73,7 +73,7 @@ export class PythonImportsService {
   /**
    * Resolves one project's export target for this graph type, including its
    * workspace-relative root, so `include`/`exclude` globs may match either —
-   * the same resolution `CodependixService.resolveProjectOutput` performs
+   * the same resolution `MapService.resolveProjectOutput` performs
    * for every other graph type.
    */
   private resolveProjectOutput(args: {

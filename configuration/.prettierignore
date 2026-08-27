@@ -140,7 +140,7 @@ projectStructure.cache.json
 # 🕸️ Every dependency graph codependix writes as JSON. It renders them with
 # `JSON.stringify(…, 2)`, which puts one array element per line; oxfmt collapses
 # a short array onto one. Reformatting one therefore makes the very next
-# `codependix --check` fail against what `codependix --write` just wrote — the
+# `codependix map --check` fail against what `codependix map --write` just wrote — the
 # same conflict this file already resolves for `.conformetry/**`, and the same
 # reason `configuration/eslint.config.ts` turns `jsonc/sort-array-values` off
 # for exactly these files.

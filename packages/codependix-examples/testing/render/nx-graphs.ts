@@ -114,7 +114,7 @@ const ATLAS_UNCONNECTED: ExampleWorkspace = {
  * The chain after an edge is added somewhere else in the workspace.
  *
  * `atlas-core` is untouched by the change and its Neighborhood still moves,
- * which is why this repository gates no pull request on `codependix --check`.
+ * which is why this repository gates no pull request on `codependix map --check`.
  */
 const ATLAS_CHAIN_AFTER_DRIFT: ExampleWorkspace = {
   dependencies: [
@@ -225,7 +225,7 @@ function buildDriftDocument(): ExampleDocument {
       },
     ],
     summary:
-      "Why this repository runs `codependix --write` on the default branch and gates no pull request on `codependix --check`.",
+      "Why this repository runs `codependix map --write` on the default branch and gates no pull request on `codependix map --check`.",
     title: "An export moves with the workspace, not with the project",
   };
 }

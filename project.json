@@ -113,10 +113,10 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/codependix-cli/src/main.ts codependix --directory . --config configuration/codependix.config.ts --check"
+          "command": "node --import @swc-node/register/esm-register packages/codependix-cli/src/main.ts map --directory . --config configuration/codependix.config.ts --check"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register packages/codependix-cli/src/main.ts codependix --directory . --config configuration/codependix.config.ts --write"
+          "command": "node --import @swc-node/register/esm-register packages/codependix-cli/src/main.ts map --directory . --config configuration/codependix.config.ts --write"
         }
       },
       "defaultConfiguration": "check",

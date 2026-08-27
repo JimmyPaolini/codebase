@@ -1,0 +1,196 @@
+import { Test } from "@nestjs/testing";
+import prompts from "prompts";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+
+import {
+  conflictingRunModeError,
+  missingInputError,
+  promptCancelledError,
+} from "./input.constants";
+import { InputService } from "./input.service";
+
+import type { CodependixRunModeOptions } from "./input.types";
+
+// Mocked at the module boundary so the service's own wiring is exercised and
+// no test ever reaches for a terminal.
+vi.mock("prompts", () => ({ default: vi.fn() }));
+
+const promptRunner = vi.mocked(prompts);
+
+describe(InputService, () => {
+  let service: InputService;
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [InputService],
+    }).compile();
+
+    service = await module.resolve(InputService);
+  });
+
+  const originalIsTty = process.stdin.isTTY;
+
+  afterEach(() => {
+    promptRunner.mockReset();
+    delete process.env["CI"];
+    process.stdin.isTTY = originalIsTty;
+  });
+
+  it("is defined", () => {
+    expect(service).toBeDefined();
+  });
+
+  // 🚩 Flag option
+
+  it("reads a valueless boolean flag as present", () => {
+    expect(service.parseFlagOption(undefined)).toBe(true);
+  });
+
+  it("passes an explicit boolean flag value through", () => {
+    expect(service.parseFlagOption(false)).toBe(false);
+  });
+
+  // 🔡 Optional option
+
+  it("passes a non-blank optional option through trimmed", () => {
+    expect(service.parseOptionalOption("  codependix.config.ts  ")).toBe(
+      "codependix.config.ts",
+    );
+  });
+
+  it("reads a blank optional option as absent", () => {
+    expect(service.parseOptionalOption("   ")).toBeUndefined();
+  });
+
+  it("reads an absent optional option as absent", () => {
+    expect(service.parseOptionalOption(undefined)).toBeUndefined();
+  });
+
+  // 📂 Path option
+
+  it("passes a given path option through trimmed", () => {
+    expect(service.parsePathOption("  packages/logger  ")).toBe(
+      "packages/logger",
+    );
+  });
+
+  it("falls back to the working directory for an absent path option", () => {
+    expect(service.parsePathOption(undefined)).toBe(process.cwd());
+  });
+
+  it("falls back to the working directory for a blank path option", () => {
+    expect(service.parsePathOption("   ")).toBe(process.cwd());
+  });
+
+  // 🗣️ Prompting
+
+  it("resolves a select prompt to the choice the user picked", async () => {
+    process.stdin.isTTY = true;
+    promptRunner.mockResolvedValue({ value: "write" });
+
+    await expect(
+      service.promptForSelect({
+        choices: ["check", "write"],
+        message: "Which mode?",
+        subject: "A run mode",
+      }),
+    ).resolves.toBe("write");
+  });
+
+  it("rejects a select prompt that resolved outside its choices", async () => {
+    process.stdin.isTTY = true;
+    promptRunner.mockResolvedValue({ value: "nonsense" });
+
+    await expect(
+      service.promptForSelect({
+        choices: ["check", "write"],
+        message: "Which mode?",
+        subject: "A run mode",
+      }),
+    ).rejects.toThrow("Prompt did not resolve to one of");
+  });
+
+  it("reports a dismissed select prompt as cancelled, not as a fault", async () => {
+    process.stdin.isTTY = true;
+    promptRunner.mockResolvedValue({});
+
+    await expect(
+      service.promptForSelect({
+        choices: ["check", "write"],
+        message: "Which mode?",
+        subject: "A run mode",
+      }),
+    ).rejects.toThrow(promptCancelledError("A run mode").message);
+  });
+
+  // `prompts` draws its menu on a non-terminal stdin, never resolves, and lets
+  // the process exit 0 — so the refusal has to come before it is ever called.
+  it("refuses to draw a prompt when stdin is not a terminal", async () => {
+    process.stdin.isTTY = false;
+
+    await expect(
+      service.promptForSelect({
+        choices: ["check", "write"],
+        message: "Which mode?",
+        subject: "A run mode",
+      }),
+    ).rejects.toThrow(missingInputError("A run mode").message);
+    expect(promptRunner).not.toHaveBeenCalled();
+  });
+
+  // 🚦 Run mode resolution
+
+  it.each([
+    ["check", { check: true }],
+    ["write", { write: true }],
+  ] as const)(
+    "passes %s through when it was already named",
+    async (_, options) => {
+      process.stdin.isTTY = false;
+
+      await expect(service.resolveOptions(options)).resolves.toStrictEqual(
+        options,
+      );
+      expect(promptRunner).not.toHaveBeenCalled();
+    },
+  );
+
+  it("refuses a command line naming both run modes", async () => {
+    await expect(
+      service.resolveOptions({ check: true, write: true }),
+    ).rejects.toThrow(conflictingRunModeError().message);
+  });
+
+  it("asks which mode was meant when neither was named", async () => {
+    process.stdin.isTTY = true;
+    promptRunner.mockResolvedValue({ value: "write" });
+
+    await expect(service.resolveOptions({})).resolves.toStrictEqual({
+      write: true,
+    });
+  });
+
+  it("carries the caller's other options through the prompt unchanged", async () => {
+    process.stdin.isTTY = true;
+    promptRunner.mockResolvedValue({ value: "check" });
+    // Typed as a caller's own options would be, rather than passed as a bare
+    // literal: the constraint's properties are all optional, so a literal
+    // sharing none of them is rejected before the call is ever made.
+    const options: CodependixRunModeOptions & { directory?: string } = {
+      directory: "packages/logger",
+    };
+
+    await expect(service.resolveOptions(options)).resolves.toStrictEqual({
+      check: true,
+      directory: "packages/logger",
+    });
+  });
+
+  it("fails rather than asking when neither mode was named off a terminal", async () => {
+    process.stdin.isTTY = false;
+
+    await expect(service.resolveOptions({})).rejects.toThrow(
+      missingInputError("A run mode (--check or --write)").message,
+    );
+  });
+});

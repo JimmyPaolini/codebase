@@ -63,7 +63,7 @@ renderer chains them with, declared once in
 | [`check-and-write`](examples/check-and-write) | What drift is reported as, and the two command lines refused outright |
 | [`refusals`](examples/refusals) | Every refusal, with the reproduction that produces it |
 | [`json-exports`](examples/json-exports) | Every graph's JSON shape, and the two workspace rules switched off for these files |
-| [`workspace-drift`](examples/workspace-drift) | Why this repository gates no pull request on `codependix --check` |
+| [`workspace-drift`](examples/workspace-drift) | Why this repository gates no pull request on `codependix map --check` |
 
 ## Configuring your first export
 

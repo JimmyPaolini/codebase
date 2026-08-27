@@ -93,9 +93,14 @@ has to do the same.
 
 ## A rejected command line
 
-`--check` and `--write` are mutually exclusive and one is required. A command
-line naming neither, or both, is rejected before anything is read — nothing is
-inferred and no default write happens. Pick one.
+`--check` and `--write` are mutually exclusive and one is required. Naming
+both is refused before anything is read. Naming neither is asked about at a
+terminal, and refused everywhere else — including any run an agent or a CI
+job makes, since neither has a terminal to answer on. Nothing is inferred and
+no default write happens. Pick one.
+
+The command is `codependix map`, not bare `codependix`: a command line with no
+subcommand is rejected by the argument parser before any of this applies.
 
 ## A `--write` that produced no files
 

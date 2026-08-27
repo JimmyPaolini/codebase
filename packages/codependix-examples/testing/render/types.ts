@@ -30,7 +30,7 @@ export interface ExampleFile {
 export interface ExampleJsonExport {
   /**
    * Content, already rendered by `DeliveryService.renderJson` so it is
-   * byte-identical to what a real `codependix --write` would produce.
+   * byte-identical to what a real `codependix map --write` would produce.
    */
   readonly content: string;
   /**

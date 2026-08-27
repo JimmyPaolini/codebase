@@ -4,12 +4,12 @@ import {
   AnchorNotFoundError,
   AnchorsModule,
   AnchorsService,
-  CodependixCommand,
-  CodependixModule,
-  CodependixService,
   DeliveryModule,
   DeliveryService,
   MainModule,
+  MapCommand,
+  MapModule,
+  MapService,
 } from "./index.js";
 
 describe("codependix-cli index", () => {
@@ -18,9 +18,9 @@ describe("codependix-cli index", () => {
     expect(AnchorsModule).toBeDefined();
     expect(AnchorsService).toBeDefined();
     expect(AnchorNotFoundError).toBeDefined();
-    expect(CodependixModule).toBeDefined();
-    expect(CodependixService).toBeDefined();
-    expect(CodependixCommand).toBeDefined();
+    expect(MapModule).toBeDefined();
+    expect(MapService).toBeDefined();
+    expect(MapCommand).toBeDefined();
     expect(DeliveryModule).toBeDefined();
     expect(DeliveryService).toBeDefined();
   });
