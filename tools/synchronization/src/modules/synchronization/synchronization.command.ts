@@ -28,11 +28,13 @@ import type {
  * that name specific targets, running "all of them, always" needs no
  * per-command declaration to select against.
  *
- * `nestjs-module-graphs` and `nx-project-graphs` are deliberately absent from
- * this aggregate: `packages/codependix-nx` and `packages/codependix-nestjs`
- * now produce the same graphs through their own anchor blocks, per issue
- * #296. Both commands are still registered as their own Nx target and can
- * still be run directly — only their place in this aggregate was retired.
+ * `nestjs-module-graphs` and `nx-project-graphs` are absent from this
+ * aggregate because they no longer exist at all: `packages/codependix-nx` and
+ * `packages/codependix-nestjs` now produce the same graphs through their own
+ * anchor blocks, per issue #296, so both commands and their Nx targets were
+ * removed outright rather than merely dropped from this list. Run
+ * `nx run codebase:codependix` for what replaced them — there is nothing left
+ * here to invoke directly.
  */
 @Command({
   description: "Run every synchronization command",
