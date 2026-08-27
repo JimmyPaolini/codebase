@@ -1,5 +1,14 @@
-import { defineProject } from "../../configuration/codometer.config.js";
+import codometerConfiguration, {
+  compiledJavaScriptTarget,
+} from "../../configuration/codometer.config.js";
 
-export default defineProject({
+export default {
+  ...codometerConfiguration,
   limits: [{ metric: "Compiled JavaScript.size", value: "6 KB" }],
-});
+  targets: [
+    {
+      ...compiledJavaScriptTarget,
+      include: ["dist/packages/codependix-configuration/**/*.js"],
+    },
+  ],
+};

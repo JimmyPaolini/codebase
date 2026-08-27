@@ -1,4 +1,4 @@
-import { defineProject } from "../../configuration/codometer.config.js";
+import codometerConfiguration from "../../configuration/codometer.config.js";
 
 // 🎯 Targets
 
@@ -23,18 +23,18 @@ const compression = "gzip";
  * 372 KB build. A single derived `**\/*.js` target would also miss the CSS
  * entirely.
  *
- * Everything else — the convention counters, the Python command — is inherited
- * rather than restated. Before this file called `defineProject` it replaced the
- * shared configuration outright, and silently reported none of them.
+ * Everything else — the convention counters, the Python command — is spread in
+ * from the shared configuration rather than restated. Before this file did so it
+ * replaced that configuration outright, and silently reported none of them.
  *
- * Every limit is a rung on the ladder `configuration/codometer.config.ts`
- * describes. The ladder is coarse this far up, so two of these sit well clear
+ * Every limit is a rung on the ladder the workspace configuration describes. The ladder is coarse this far up, so two of these sit well clear
  * of what they gate: the entry chunk measures 124 KB against 192, and the CSS
  * measures 16 KB against 24, because 128 KB and 16 KB are the rungs below and
  * both fall inside a twentieth of the measured size. Read them as the ladder
  * being wide here rather than as a budget anyone intended.
  */
-export default defineProject({
+export default {
+  ...codometerConfiguration,
   limits: [
     { metric: "Client entry JavaScript.size", value: "192 KB" },
     { metric: "Client route JavaScript.size", value: "96 KB" },
@@ -74,4 +74,4 @@ export default defineProject({
       name: "Server JavaScript",
     },
   ],
-});
+};

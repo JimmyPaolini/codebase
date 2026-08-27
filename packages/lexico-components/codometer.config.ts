@@ -1,4 +1,4 @@
-import { defineProject } from "../../configuration/codometer.config.js";
+import codometerConfiguration from "../../configuration/codometer.config.js";
 
 /**
  * What this component library is measured by.
@@ -6,9 +6,9 @@ import { defineProject } from "../../configuration/codometer.config.js";
  * It overrides `targets` because the Vite library build writes a bundle rather
  * than a compiled tree, and `limits` because two of them sit on that one
  * metric: an advisory beneath the ceiling. Everything else — the convention
- * counters, the Python command — is inherited rather than restated. Before this
- * file called `defineProject` it replaced the shared configuration outright,
- * and silently reported none of them.
+ * counters, the Python command — is spread in from the shared configuration
+ * rather than restated. Before this file did so it replaced that configuration
+ * outright, and silently reported none of them.
  *
  * ⚠️ The 256 KB limit is a ratchet against the measured size, not a design
  * target. The output is 196 KB gzipped because the Vite library build ships
@@ -26,7 +26,8 @@ import { defineProject } from "../../configuration/codometer.config.js";
  * until React and Radix are externalized, at which point it goes quiet and
  * becomes an early warning again.
  */
-export default defineProject({
+export default {
+  ...codometerConfiguration,
   limits: [
     { metric: "Library bundle.size", severity: "warn", value: "192 KB" },
     { metric: "Library bundle.size", value: "256 KB" },
@@ -40,4 +41,4 @@ export default defineProject({
       name: "Library bundle",
     },
   ],
-});
+};
