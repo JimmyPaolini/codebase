@@ -4,6 +4,7 @@ import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 
 import { MainModule } from "./main.module";
+import { AddressService } from "./modules/address/address.service";
 import { OptionsService } from "./modules/options/options.service";
 import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./modules/plugin/plugin.constants";
 import { PluginService } from "./modules/plugin/plugin.service";
@@ -11,6 +12,13 @@ import { ProjectsService } from "./modules/projects/projects.service";
 
 import type { PluginContextGlobal } from "./modules/plugin/plugin.types";
 import type { INestApplicationContext } from "@nestjs/common";
+
+/** Resolves the service backing the `depth` and `breadth` lookups. */
+export async function resolveAddressService(): Promise<AddressService> {
+  const context = await resolvePluginContext();
+
+  return context.get(AddressService);
+}
 
 /** Resolves the service that reads this plugin's registration in `nx.json`. */
 export async function resolveOptionsService(): Promise<OptionsService> {

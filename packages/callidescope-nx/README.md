@@ -29,8 +29,7 @@ Register it in `nx.json`:
     {
       "plugin": "@callidescope/nx",
       "options": {
-        "configurationPath": "configuration/callidescope.config.ts",
-        "traceTargetName": "callidescope-trace"
+        "configurationPath": "configuration/callidescope.config.ts"
       }
     }
   ]
@@ -40,27 +39,49 @@ Register it in `nx.json`:
 | Option | Meaning |
 | ------ | ------- |
 | `configurationPath` | Where the callidescope configuration lives. The conventional root filenames are searched when omitted |
-| `traceTargetName` | Name of the inferred target. `callidescope` when omitted |
+| `traceTargetName` | Name of the inferred trace target. `trace` when omitted |
+| `depthTargetName` | Name of the inferred depth target. `depth` when omitted |
+| `breadthTargetName` | Name of the inferred breadth target. `breadth` when omitted |
+
+The target names are short because they read better on the command line than
+repeating the tool's name on both sides of the colon. Rename any of them from
+the registration if a workspace already uses one.
 
 ## Usage
 
-The target is inferred onto every project holding a `tsconfig.json`, so
+Three targets are inferred onto every project holding a `tsconfig.json`, so
 selection is Nx's job rather than a flag of this package's own:
 
 ```bash
-nx run callidescope-graph:callidescope-trace     # one project
-nx run-many -t callidescope-trace                # the workspace
-nx run-many -t callidescope-trace --projects=tag:type:package
-nx affected -t callidescope-trace                # only what changed
+nx run callidescope-nx:trace                      # one project, with its dependencies
+nx run-many -t trace                              # the workspace
+nx run-many -t trace --projects=tag:type:package  # a category
+nx affected -t trace                              # only what changed
 ```
 
+```bash
+nx run callidescope-nx:depth --address="packages/callidescope-nx/src/modules/projects/projects.service.ts#ProjectsService.resolveDependencyClosure"
+nx run callidescope-nx:breadth --address="src/foo.service.ts#FooService.bar"
+```
+
+| Target | Answers |
+| ------ | ------- |
+| `trace` | Every call stack in the project, and which ones broke a limit |
+| `depth` | Every stack above and below one callable — callers up to a root, callees down to a leaf |
+| `breadth` | One callable's direct callers and callees, side by side |
+
+`depth` and `breadth` take the same `<file>#<qualified-name>` address the
+`callidescope` command does — the form every printed stack already uses. Through
+the plugin they resolve it against the project and its dependencies rather than
+the whole workspace, which is both faster and the set the address belongs to.
+
 Two projects are deliberately skipped: the **workspace-root project**, whose
-target would trace everything under one uncacheable task, and any project with
-**no `tsconfig.json`**, whose target would be a permanently empty report.
+targets would trace everything under one uncacheable task, and any project with
+**no `tsconfig.json`**, whose targets would be permanently empty.
 
 ### Why the trace follows dependencies
 
-`nx run callidescope-cli:callidescope-trace` traces `callidescope-cli` **and
+`nx run callidescope-cli:trace` traces `callidescope-cli` **and
 everything it depends on**, resolved transitively from the Nx project graph.
 
 That is the whole point of the plugin. A call stack runs downward — a command
@@ -78,13 +99,16 @@ Pass `--withDependencies=false` for the narrow reading.
 ### Executor options
 
 ```bash
-nx run logger:callidescope-trace --tags=type:package
-nx run logger:callidescope-trace --projects=callidescope-cli,callidescope-graph
+nx run logger:trace --tags=type:package
+nx run logger:depth --address="a.ts#A.b" --projects=callidescope-cli
 ```
+
+All three executors take the same scoping options.
 
 | Option | Meaning |
 | ------ | ------- |
-| `projects` | Nx project names to trace, replacing the target's own project |
+| `address` | `depth` and `breadth` only, and required: the callable to look up |
+| `projects` | Nx project names to resolve against, replacing the target's own project |
 | `tags` | Nx project tags, selecting every project carrying **any** of them |
 | `withDependencies` | Widen along the Nx dependency graph. `true` by default |
 | `format` | `markdown`, `mermaid`, or `json` |

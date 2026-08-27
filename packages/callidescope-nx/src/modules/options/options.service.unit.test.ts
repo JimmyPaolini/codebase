@@ -20,16 +20,20 @@ describe(OptionsService, () => {
   });
 
   describe("resolvePluginOptions", () => {
-    it("reads the registered target name and configuration path", () => {
+    it("reads every target name and the configuration path a registration gives", () => {
       expect.hasAssertions();
 
       expect(
         service.resolvePluginOptions({
+          breadthTargetName: "callidescope-breadth",
           configurationPath: "configuration/callidescope.config.ts",
+          depthTargetName: "callidescope-depth",
           traceTargetName: "callidescope-trace",
         }),
       ).toStrictEqual({
+        breadthTargetName: "callidescope-breadth",
         configurationPath: "configuration/callidescope.config.ts",
+        depthTargetName: "callidescope-depth",
         traceTargetName: "callidescope-trace",
       });
     });
@@ -45,8 +49,22 @@ describe(OptionsService, () => {
 
       // A typo in a target name must not stop the project graph being built.
       expect(service.resolvePluginOptions(options)).toStrictEqual({
+        breadthTargetName: "breadth",
         configurationPath: "callidescope.config.ts",
-        traceTargetName: "callidescope",
+        depthTargetName: "depth",
+        traceTargetName: "trace",
+      });
+    });
+
+    it("overrides one target name without disturbing the others", () => {
+      expect.hasAssertions();
+
+      expect(
+        service.resolvePluginOptions({ depthTargetName: "callidescope-depth" }),
+      ).toMatchObject({
+        breadthTargetName: "breadth",
+        depthTargetName: "callidescope-depth",
+        traceTargetName: "trace",
       });
     });
   });

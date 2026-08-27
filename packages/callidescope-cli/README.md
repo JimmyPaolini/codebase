@@ -223,12 +223,15 @@ An Nx workspace can hand the selecting to Nx instead, through
 trace target onto every project:
 
 ```bash
-nx run-many -t callidescope-trace --projects=tag:type:package
-nx affected -t callidescope-trace
+nx run-many -t trace --projects=tag:type:package
+nx affected -t trace
+nx run callidescope-graph:depth --address="src/foo.service.ts#FooService.bar"
 ```
 
-That gets Nx's own project selection, caching, and affected-detection for free,
-none of which a flag here could offer. It also traces each project **with its
+It infers a `trace`, a `depth`, and a `breadth` target onto every project, so
+`callidescope`, `depth`, and `breadth` all become tasks — with Nx's own project
+selection, caching, and affected-detection for free, none of which a flag here
+could offer. It also traces each project **with its
 Nx dependencies**, so a stack is not truncated the moment it crosses a package
 boundary — the graph knowledge that makes the plugin worth having.
 
@@ -356,7 +359,7 @@ every resolver ends the same way. `jscpd` already covers real duplication.
 | [`@callidescope/cli`](.) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
 | [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
-| [`@callidescope/nx`](../callidescope-nx/README.md) | Nx plugin: per-project trace targets, scoped through the Nx dependency graph |
+| [`@callidescope/nx`](../callidescope-nx/README.md) | Nx plugin: per-project `trace`/`depth`/`breadth` targets, scoped through the Nx dependency graph |
 | [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
 
 ## Start

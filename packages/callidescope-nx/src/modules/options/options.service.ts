@@ -3,7 +3,9 @@ import { Injectable } from "@nestjs/common";
 
 import {
   CALLIDESCOPE_NX_PLUGIN_NAME,
+  DEFAULT_BREADTH_TARGET_NAME,
   DEFAULT_CONFIGURATION_PATHS,
+  DEFAULT_DEPTH_TARGET_NAME,
   DEFAULT_TRACE_TARGET_NAME,
 } from "./options.constants";
 
@@ -35,6 +37,30 @@ export class OptionsService {
     return Array.isArray(value);
   }
 
+  /** Reads one `nx.json` plugin entry, if it is this plugin's registration. */
+  private readEntryConfigurationPath(entry: unknown): string | undefined {
+    if (typeof entry !== "object" || entry === null) {
+      return undefined;
+    }
+
+    const { options, plugin }: { options?: unknown; plugin?: unknown } = {
+      ...entry,
+    };
+
+    if (plugin !== CALLIDESCOPE_NX_PLUGIN_NAME) {
+      return undefined;
+    }
+
+    if (typeof options !== "object" || options === null) {
+      return undefined;
+    }
+
+    return this.readString({
+      key: "configurationPath",
+      options: { ...options },
+    });
+  }
+
   /** Reads this plugin's `configurationPath` out of an `nx.json`, if it names one. */
   private readRegisteredConfigurationPath(
     nxConfiguration: unknown,
@@ -50,21 +76,11 @@ export class OptionsService {
     }
 
     for (const entry of plugins) {
-      if (typeof entry !== "object" || entry === null) {
-        continue;
+      const configurationPath = this.readEntryConfigurationPath(entry);
+
+      if (configurationPath !== undefined) {
+        return configurationPath;
       }
-
-      const { options, plugin }: { options?: unknown; plugin?: unknown } = {
-        ...entry,
-      };
-
-      if (plugin !== CALLIDESCOPE_NX_PLUGIN_NAME) {
-        continue;
-      }
-
-      return typeof options === "object" && options !== null
-        ? this.readString({ key: "configurationPath", options: { ...options } })
-        : undefined;
     }
 
     return undefined;
@@ -140,19 +156,19 @@ export class OptionsService {
 
   /** Resolves the effective plugin options from an untrusted value. */
   public resolvePluginOptions(options: unknown): CallidescopePluginOptions {
-    if (typeof options !== "object" || options === null) {
-      return {
-        configurationPath: DEFAULT_CONFIGURATION_PATHS[0],
-        traceTargetName: DEFAULT_TRACE_TARGET_NAME,
-      };
-    }
-
-    const record: Record<string, unknown> = { ...options };
+    const record: Record<string, unknown> =
+      typeof options === "object" && options !== null ? { ...options } : {};
 
     return {
+      breadthTargetName:
+        this.readString({ key: "breadthTargetName", options: record }) ??
+        DEFAULT_BREADTH_TARGET_NAME,
       configurationPath:
         this.readString({ key: "configurationPath", options: record }) ??
         DEFAULT_CONFIGURATION_PATHS[0],
+      depthTargetName:
+        this.readString({ key: "depthTargetName", options: record }) ??
+        DEFAULT_DEPTH_TARGET_NAME,
       traceTargetName:
         this.readString({ key: "traceTargetName", options: record }) ??
         DEFAULT_TRACE_TARGET_NAME,

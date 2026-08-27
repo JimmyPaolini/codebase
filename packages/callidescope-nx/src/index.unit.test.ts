@@ -10,10 +10,10 @@ import type { CreateNodesContext } from "@nx/devkit";
 const pluginService = createMock<PluginService>();
 
 vi.mock("./plugin-context.utilities", () => ({
-  resolveOptionsService: vi.fn(),
+  resolveOptionsService: vi.fn<() => void>(),
   resolvePluginService: async (): Promise<PluginService> =>
     await Promise.resolve(pluginService),
-  resolveProjectsService: vi.fn(),
+  resolveProjectsService: vi.fn<() => void>(),
 }));
 
 /** One project's inferred trace target. */

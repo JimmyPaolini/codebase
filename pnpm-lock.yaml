@@ -1294,6 +1294,9 @@ importers:
       '@callidescope/configuration':
         specifier: workspace:*
         version: link:../callidescope-configuration
+      '@callidescope/graph':
+        specifier: workspace:*
+        version: link:../callidescope-graph
       '@callidescope/output':
         specifier: workspace:*
         version: link:../callidescope-output

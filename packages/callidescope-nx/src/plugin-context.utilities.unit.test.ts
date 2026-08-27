@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 
+import { AddressService } from "./modules/address/address.service";
 import { OptionsService } from "./modules/options/options.service";
 import { PluginService } from "./modules/plugin/plugin.service";
 import { ProjectsService } from "./modules/projects/projects.service";
 import {
+  resolveAddressService,
   resolveOptionsService,
   resolvePluginService,
   resolveProjectsService,
@@ -13,6 +15,9 @@ describe("plugin context", () => {
   it("resolves every service the plugin entry points reach for", async () => {
     expect.hasAssertions();
 
+    await expect(resolveAddressService()).resolves.toBeInstanceOf(
+      AddressService,
+    );
     await expect(resolveOptionsService()).resolves.toBeInstanceOf(
       OptionsService,
     );

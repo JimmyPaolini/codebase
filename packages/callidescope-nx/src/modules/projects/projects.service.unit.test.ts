@@ -368,6 +368,19 @@ describe(ProjectsService, () => {
     });
   });
 
+  describe("toDirectories", () => {
+    it("maps names to roots, dropping one the graph does not know", () => {
+      expect.hasAssertions();
+
+      expect(
+        service.toDirectories({
+          graph: buildGraph({ alpha: "packages/alpha" }),
+          projectNames: ["alpha", "absent"],
+        }),
+      ).toStrictEqual(["packages/alpha"]);
+    });
+  });
+
   describe("resolveDependencyClosure", () => {
     it("includes the project itself", () => {
       expect.hasAssertions();

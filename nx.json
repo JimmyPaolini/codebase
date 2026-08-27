@@ -83,8 +83,7 @@
     },
     {
       "options": {
-        "configurationPath": "configuration/callidescope.config.ts",
-        "traceTargetName": "callidescope-trace"
+        "configurationPath": "configuration/callidescope.config.ts"
       },
       "plugin": "@callidescope/nx"
     }

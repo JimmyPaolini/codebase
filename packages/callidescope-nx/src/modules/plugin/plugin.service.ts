@@ -84,6 +84,26 @@ export class PluginService {
   // 🌎 Public Methods
 
   /**
+   * States what a selection asked for that the workspace does not have.
+   *
+   * Both kinds of mistake are named at once, each beside the vocabulary it
+   * was drawn from, so a command line with two typos in it is two typos to
+   * fix rather than two runs.
+   */
+  public describeRefusedScope(scope: ResolvedTraceScope): string {
+    return [
+      scope.unknownNames.length > 0
+        ? `Unknown Nx projects: ${scope.unknownNames.join(", ")}. Known: ${scope.knownNames.join(", ")}.`
+        : undefined,
+      scope.unmatchedTags.length > 0
+        ? `Unmatched Nx tags: ${scope.unmatchedTags.join(", ")}. Known: ${scope.knownTags.join(", ")}.`
+        : undefined,
+    ]
+      .filter((reason) => reason !== undefined)
+      .join(" ");
+  }
+
+  /**
    * Infers a trace target onto every project holding a `tsconfig.json`.
    *
    * A project with no program of its own is skipped rather than given a target
@@ -118,17 +138,33 @@ export class PluginService {
         continue;
       }
 
+      // The configured limits decide whether a run passes, so a cache hit
+      // taken across an edit to them would report the old verdict. A
+      // dependency's sources join them because the trace follows the Nx graph
+      // into them.
+      const inputs = [
+        "default",
+        "^default",
+        `{workspaceRoot}/${pluginOptions.configurationPath}`,
+      ];
+
       targetsByProjectRoot.set(projectRoot, {
+        [pluginOptions.breadthTargetName]: {
+          cache: true,
+          executor: `${CALLIDESCOPE_NX_PLUGIN_NAME}:breadth`,
+          inputs,
+          options: {},
+        },
+        [pluginOptions.depthTargetName]: {
+          cache: true,
+          executor: `${CALLIDESCOPE_NX_PLUGIN_NAME}:depth`,
+          inputs,
+          options: {},
+        },
         [pluginOptions.traceTargetName]: {
           cache: true,
           executor: `${CALLIDESCOPE_NX_PLUGIN_NAME}:trace`,
-          // The configured limits decide whether a run passes, so a cache hit
-          // taken across an edit to them would report the old verdict.
-          inputs: [
-            "default",
-            "^default",
-            `{workspaceRoot}/${pluginOptions.configurationPath}`,
-          ],
+          inputs,
           options: {},
         },
       });

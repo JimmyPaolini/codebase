@@ -11,8 +11,16 @@ import type {
 } from "@nx/devkit";
 
 export { MainModule } from "./main.module";
+export { AddressModule } from "./modules/address/address.module";
+export { AddressService } from "./modules/address/address.service";
+export type {
+  LookupArguments,
+  LookupResult,
+} from "./modules/address/address.types";
 export {
   CALLIDESCOPE_NX_PLUGIN_NAME,
+  DEFAULT_BREADTH_TARGET_NAME,
+  DEFAULT_DEPTH_TARGET_NAME,
   DEFAULT_TRACE_TARGET_NAME,
 } from "./modules/options/options.constants";
 export { OptionsModule } from "./modules/options/options.module";
@@ -32,6 +40,7 @@ export type {
   ResolvedProjectSelection,
 } from "./modules/projects/projects.types";
 export {
+  resolveAddressService,
   resolveOptionsService,
   resolvePluginService,
   resolveProjectsService,

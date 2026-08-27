@@ -3,8 +3,21 @@
 /** Name this plugin is registered under in a workspace's `nx.json`. */
 export const CALLIDESCOPE_NX_PLUGIN_NAME = "@callidescope/nx";
 
-/** Name of the inferred per-project target, when the registration names none. */
-export const DEFAULT_TRACE_TARGET_NAME = "callidescope";
+/**
+ * Names of the inferred per-project targets, when the registration names none.
+ *
+ * Short and unprefixed, so a run reads `nx run callidescope-nx:trace` rather
+ * than repeating the tool's name on both sides of the colon. Every one of them
+ * is overridable from the `nx.json` registration, which is the escape hatch
+ * for a workspace where a name this general would collide.
+ */
+export const DEFAULT_TRACE_TARGET_NAME = "trace";
+
+/** Name of the inferred per-project depth-lookup target. */
+export const DEFAULT_DEPTH_TARGET_NAME = "depth";
+
+/** Name of the inferred per-project breadth-lookup target. */
+export const DEFAULT_BREADTH_TARGET_NAME = "breadth";
 
 /**
  * Where the callidescope configuration lives, when the registration names no

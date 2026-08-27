@@ -57,6 +57,7 @@ describe(traceExecutor, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     pluginService.resolveTraceScope.mockResolvedValue(buildScope());
+    pluginService.describeRefusedScope.mockReturnValue("Unknown Nx projects.");
     pluginService.runTrace.mockResolvedValue({ ok: true, report: "# Report" });
     vi.spyOn(process.stdout, "write").mockReturnValue(true);
   });
@@ -130,7 +131,7 @@ describe(traceExecutor, () => {
     // Narrowing the run instead would pass while measuring less than asked.
     await expect(
       traceExecutor({ projects: ["absent"] }, buildContext("alpha")),
-    ).rejects.toThrow("Unknown Nx projects: absent");
+    ).rejects.toThrow("Unknown Nx projects.");
     expect(pluginService.runTrace).not.toHaveBeenCalled();
   });
 
@@ -143,7 +144,7 @@ describe(traceExecutor, () => {
 
     await expect(
       traceExecutor({ tags: ["typ:package"] }, buildContext("alpha")),
-    ).rejects.toThrow("Unmatched Nx tags: typ:package");
+    ).rejects.toThrow("Unknown Nx projects.");
   });
 
   it("names an unknown project and an unmatched tag in one failure", async () => {
@@ -158,8 +159,12 @@ describe(traceExecutor, () => {
         { projects: ["absent"], tags: ["typ:package"] },
         buildContext("alpha"),
       ),
-    ).rejects.toThrow(
-      /Unknown Nx projects: absent\..*Unmatched Nx tags: typ:package\./u,
+    ).rejects.toThrow("Unknown Nx projects.");
+    expect(pluginService.describeRefusedScope).toHaveBeenCalledWith(
+      expect.objectContaining({
+        unknownNames: ["absent"],
+        unmatchedTags: ["typ:package"],
+      }),
     );
   });
 

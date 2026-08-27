@@ -2,6 +2,7 @@
   "dependencies": {
     "@callidescope/cli": "workspace:*",
     "@callidescope/configuration": "workspace:*",
+    "@callidescope/graph": "workspace:*",
     "@callidescope/output": "workspace:*",
     "@codebase/logger": "workspace:*",
     "@nestjs/common": "catalog:",

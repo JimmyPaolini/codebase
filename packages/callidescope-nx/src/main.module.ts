@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
 
+import { AddressModule } from "./modules/address/address.module";
 import { PluginModule } from "./modules/plugin/plugin.module";
 
 /**
@@ -13,8 +14,8 @@ import { PluginModule } from "./modules/plugin/plugin.module";
  */
 @Module({
   controllers: [],
-  exports: [PluginModule],
-  imports: [LoggerModule, PluginModule],
+  exports: [AddressModule, PluginModule],
+  imports: [AddressModule, LoggerModule, PluginModule],
   providers: [],
 })
 export class MainModule {}

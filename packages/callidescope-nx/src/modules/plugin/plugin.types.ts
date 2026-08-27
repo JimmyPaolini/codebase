@@ -4,6 +4,13 @@ import type { PLUGIN_CONTEXT_GLOBAL_KEY } from "./plugin.constants";
 import type { CallidescopeOutputFormat } from "@callidescope/configuration";
 import type { INestApplicationContext } from "@nestjs/common";
 
+/** The scoping options every executor in this plugin accepts. */
+export interface ExecutorScopeOptions {
+  readonly projects?: string[] | undefined;
+  readonly tags?: string[] | undefined;
+  readonly withDependencies?: boolean | undefined;
+}
+
 /** A target this plugin infers onto a project. */
 export interface InferredTarget {
   readonly cache: boolean;

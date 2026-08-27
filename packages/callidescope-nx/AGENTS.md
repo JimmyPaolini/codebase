@@ -6,9 +6,10 @@
 
 **Purpose**: <!-- Briefly describe the specific purpose of this service application -->
 
-An Nx plugin. It infers a trace target onto every project holding a
-`tsconfig.json`, backed by an executor that runs callidescope over that project
-**and its Nx dependencies**, resolved from the Nx project graph. This is the
+An Nx plugin. It infers `trace`, `depth`, and `breadth` targets onto every
+project holding a `tsconfig.json`, each backed by an executor that runs
+callidescope over that project **and its Nx dependencies**, resolved from the
+Nx project graph. This is the
 only package in the callidescope toolchain that depends on `@nx/devkit`:
 `@callidescope/cli` and `@callidescope/graph` are deliberately Nx-free and take
 plain `--directories`.
@@ -20,7 +21,9 @@ binary would only duplicate it with flags that drift.
 `ProjectsService` (`src/modules/projects`) reads the Nx graph and takes it as an
 argument everywhere but `readProjectGraph`, so every resolution rule is testable
 without a workspace. `PluginService` (`src/modules/plugin`) does inference and
-the trace. `src/index.ts` is the plugin entry Nx loads through `src/index.cjs`,
+the trace; `AddressService` (`src/modules/address`) does the `depth` and
+`breadth` lookups, and `address.utilities.ts` holds the one prologue those two
+executors share. `src/index.ts` is the plugin entry Nx loads through `src/index.cjs`,
 which registers `@swc-node` first — esbuild does not emit `design:paramtypes`,
 and without it every constructor injection here resolves to `undefined`.
 

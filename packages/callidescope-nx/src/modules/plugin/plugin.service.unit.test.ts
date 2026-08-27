@@ -12,6 +12,7 @@ import { ProjectsService } from "../projects/projects.service";
 
 import { PluginService } from "./plugin.service";
 
+import type { ResolvedTraceScope } from "./plugin.types";
 import type { TraceOutcome } from "@callidescope/cli";
 import type {
   CallGraphResult,
@@ -80,7 +81,7 @@ describe(PluginService, () => {
   });
 
   describe("inferTargets", () => {
-    it("infers the configured target onto a project holding a tsconfig", () => {
+    it("infers all three targets onto a project holding a tsconfig", () => {
       expect.hasAssertions();
 
       const inferred = service.inferTargets({
@@ -90,8 +91,46 @@ describe(PluginService, () => {
       });
 
       expect([...inferred.keys()]).toStrictEqual(["packages/alpha"]);
-      expect(inferred.get("packages/alpha")).toStrictEqual({
-        "callidescope-trace": {
+      // The registration renamed one of them; the other two keep their
+      // defaults, so a workspace only overrides what it needs to.
+      expect(Object.keys(inferred.get("packages/alpha") ?? {})).toStrictEqual([
+        "breadth",
+        "depth",
+        "callidescope-trace",
+      ]);
+    });
+
+    it("points each target at its own executor, cached on the configuration", () => {
+      expect.hasAssertions();
+
+      const targets = service.inferTargets({
+        options: {},
+        projectConfigurationFiles: ["packages/alpha/project.json"],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(targets.get("packages/alpha")).toStrictEqual({
+        breadth: {
+          cache: true,
+          executor: "@callidescope/nx:breadth",
+          inputs: [
+            "default",
+            "^default",
+            "{workspaceRoot}/callidescope.config.ts",
+          ],
+          options: {},
+        },
+        depth: {
+          cache: true,
+          executor: "@callidescope/nx:depth",
+          inputs: [
+            "default",
+            "^default",
+            "{workspaceRoot}/callidescope.config.ts",
+          ],
+          options: {},
+        },
+        trace: {
           cache: true,
           executor: "@callidescope/nx:trace",
           inputs: [
@@ -143,6 +182,57 @@ describe(PluginService, () => {
           workspaceRoot: "/workspace",
         }).size,
       ).toBe(0);
+    });
+  });
+
+  describe("describeRefusedScope", () => {
+    /** A scope with nothing refused, overridden per case. */
+    function buildScope(
+      overrides: Partial<ResolvedTraceScope> = {},
+    ): ResolvedTraceScope {
+      return {
+        directories: [],
+        knownNames: ["alpha", "beta"],
+        knownTags: ["type:package"],
+        projectNames: [],
+        unknownNames: [],
+        unmatchedTags: [],
+        ...overrides,
+      };
+    }
+
+    it("names an unknown project beside the names the workspace has", () => {
+      expect.hasAssertions();
+
+      expect(
+        service.describeRefusedScope(buildScope({ unknownNames: ["absent"] })),
+      ).toBe("Unknown Nx projects: absent. Known: alpha, beta.");
+    });
+
+    it("names an unmatched tag beside the tags the workspace carries", () => {
+      expect.hasAssertions();
+
+      expect(
+        service.describeRefusedScope(
+          buildScope({ unmatchedTags: ["typ:package"] }),
+        ),
+      ).toBe("Unmatched Nx tags: typ:package. Known: type:package.");
+    });
+
+    it("names both kinds of mistake at once", () => {
+      expect.hasAssertions();
+
+      // Two typos is two things to fix, not two runs.
+      expect(
+        service.describeRefusedScope(
+          buildScope({
+            unknownNames: ["absent"],
+            unmatchedTags: ["typ:package"],
+          }),
+        ),
+      ).toBe(
+        "Unknown Nx projects: absent. Known: alpha, beta. Unmatched Nx tags: typ:package. Known: type:package.",
+      );
     });
   });
 
