@@ -109,7 +109,7 @@ _This project has no internal file imports._
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-191-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-52.64_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-52.39_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-5-3178c6?style=flat-square)
 
@@ -285,7 +285,7 @@ _This project has no internal file imports._
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-7-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1013-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1010-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-7-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-46-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-5-a78bfa?style=flat-square)
@@ -297,11 +297,11 @@ _This project has no internal file imports._
 ![List Items](https://img.shields.io/badge/List_Items-62-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-8-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-51-0ea5e9?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-49-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-14-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-196-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-195-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

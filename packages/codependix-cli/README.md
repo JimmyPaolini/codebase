@@ -389,13 +389,13 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4536-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-156.00_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-155.94_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-40-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.65_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.57_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

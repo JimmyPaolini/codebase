@@ -219,14 +219,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1214-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-46.95_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1213-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-46.87_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-17-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-5.73_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-5.70_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

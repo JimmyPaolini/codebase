@@ -98,7 +98,7 @@ _This project has no internal file imports._
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-191-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-51.19_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-51.12_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-5-3178c6?style=flat-square)
 
