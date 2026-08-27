@@ -256,6 +256,14 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
+    "packages/callidescope-nx": {
+      // An Nx plugin is loaded by name, never imported: the CommonJS shim, the
+      // plugin entry it requires, and every executor Nx resolves from
+      // `executors.json` are all roots nothing in this workspace references.
+      entry: ["src/index.cjs", "src/index.ts", "src/executors/*/executor.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      project: "src/**/*.ts",
+    },
     "packages/callidescope-output": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],

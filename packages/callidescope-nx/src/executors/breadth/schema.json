@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "description": "Print one callable's direct callers and callees, resolved against a project and its Nx dependencies.",
+  "properties": {
+    "address": {
+      "description": "The callable to look up, as <file>#<qualified-name>.",
+      "type": "string"
+    },
+    "configurationPath": {
+      "description": "Path to the callidescope configuration file, relative to the workspace root.",
+      "type": "string"
+    },
+    "format": {
+      "description": "What to print: markdown, mermaid, or json.",
+      "enum": ["json", "markdown", "mermaid"],
+      "type": "string"
+    },
+    "projects": {
+      "description": "Nx project names to resolve the address against, replacing the project this target belongs to.",
+      "items": { "type": "string" },
+      "type": "array"
+    },
+    "tags": {
+      "description": "Nx project tags to resolve the address against, selecting every project carrying ANY of them.",
+      "items": { "type": "string" },
+      "type": "array"
+    },
+    "withDependencies": {
+      "default": true,
+      "description": "Widen the selection along the Nx dependency graph, so a call stack is not truncated at a project boundary.",
+      "type": "boolean"
+    }
+  },
+  "required": ["address"],
+  "title": "Callidescope breadth",
+  "type": "object"
+}

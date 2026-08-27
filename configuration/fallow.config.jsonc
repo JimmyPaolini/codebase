@@ -93,6 +93,11 @@
   // was suppressing is simply used. `configuration/knip.config.ts` carries the
   // same reasons, split across the workspaces knip scopes each run to.
   "ignoreDependencies": [
+    // Registered by name in nx.json's `plugins` array and loaded by Nx, so no
+    // static import proves it is used. It has to be a root dependency for Nx
+    // to resolve that name at all. `@conformetry/nx` needs no entry here only
+    // because `configuration/conformetry.config.ts` imports its types.
+    "@callidescope/nx",
     // Depended on so that pnpm links its `conformetry` bin into
     // node_modules/.bin, which it does only for a root dependency.
     "@conformetry/cli",

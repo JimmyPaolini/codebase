@@ -1,0 +1,68 @@
+// 🛠️ Utilities
+
+import "reflect-metadata";
+import { NestFactory } from "@nestjs/core";
+
+import { MainModule } from "./main.module";
+import { AddressService } from "./modules/address/address.service";
+import { OptionsService } from "./modules/options/options.service";
+import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./modules/plugin/plugin.constants";
+import { PluginService } from "./modules/plugin/plugin.service";
+import { ProjectsService } from "./modules/projects/projects.service";
+
+import type { PluginContextGlobal } from "./modules/plugin/plugin.types";
+import type { INestApplicationContext } from "@nestjs/common";
+
+/** Resolves the service backing the `depth` and `breadth` lookups. */
+export async function resolveAddressService(): Promise<AddressService> {
+  const context = await resolvePluginContext();
+
+  return context.get(AddressService);
+}
+
+/** Resolves the service that reads this plugin's registration in `nx.json`. */
+export async function resolveOptionsService(): Promise<OptionsService> {
+  const context = await resolvePluginContext();
+
+  return context.get(OptionsService);
+}
+
+/** Resolves the service backing target inference and the trace executor. */
+export async function resolvePluginService(): Promise<PluginService> {
+  const context = await resolvePluginContext();
+
+  return context.get(PluginService);
+}
+
+/** Resolves the service that reads the workspace's Nx project graph. */
+export async function resolveProjectsService(): Promise<ProjectsService> {
+  const context = await resolvePluginContext();
+
+  return context.get(ProjectsService);
+}
+
+/**
+ * Builds, or returns, this process's application context.
+ *
+ * Nx calls plugins from module-level functions with no injection of their own,
+ * so bare functions are the only possible entry points. They build nothing
+ * themselves: they bootstrap the NestJS context and hand back a service, which
+ * is where all the logic lives.
+ *
+ * The context is cached on `globalThis` rather than in a module variable
+ * because the Nx daemon is long-lived and may load this module more than once
+ * — under plugin isolation, per worker — and one NestJS context per process is
+ * the point. The pending promise is stored, not the resolved context, so
+ * concurrent callers share a single bootstrap instead of racing to build two.
+ */
+async function resolvePluginContext(): Promise<INestApplicationContext> {
+  const globalScope: PluginContextGlobal = globalThis;
+
+  globalScope[PLUGIN_CONTEXT_GLOBAL_KEY] ??=
+    NestFactory.createApplicationContext(MainModule, {
+      abortOnError: false,
+      logger: false,
+    });
+
+  return await globalScope[PLUGIN_CONTEXT_GLOBAL_KEY];
+}

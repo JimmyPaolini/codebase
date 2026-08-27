@@ -212,6 +212,34 @@ a capped run says so.
 side — what it calls, and what calls it — the two questions a refactor or a
 rename needs answered together before either one is safe.
 
+## Scoping by Nx project name
+
+`--directories` takes paths, because callidescope has no idea what workspace
+tool you use — a directory holding a `tsconfig.json` is the whole contract, and
+it holds in a monorepo, a single package, or neither.
+
+An Nx workspace can hand the selecting to Nx instead, through
+[`@callidescope/nx`](../callidescope-nx/README.md) — a plugin that infers a
+trace target onto every project:
+
+```bash
+nx run-many -t trace --projects=tag:type:package
+nx affected -t trace
+nx run callidescope-graph:depth --address="src/foo.service.ts#FooService.bar"
+```
+
+It infers a `trace`, a `depth`, and a `breadth` target onto every project, so
+`callidescope`, `depth`, and `breadth` all become tasks — with Nx's own project
+selection, caching, and affected-detection for free, none of which a flag here
+could offer. It also traces each project **with its
+Nx dependencies**, so a stack is not truncated the moment it crosses a package
+boundary — the graph knowledge that makes the plugin worth having.
+
+It is a separate package rather than a flag here on purpose: this CLI depends
+on nothing Nx-shaped, and a flag that only worked when an optional package
+happened to be installed would advertise in `--help` something that silently
+did nothing without it.
+
 ## What it reports
 
 **Deep call stacks.** The single deepest path below each entry point, when it
@@ -340,6 +368,7 @@ every resolver ends the same way. `jscpd` already covers real duplication.
 | [`@callidescope/cli`](.) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
 | [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
+| [`@callidescope/nx`](../callidescope-nx/README.md) | Nx plugin: per-project `trace`/`depth`/`breadth` targets, scoped through the Nx dependency graph |
 | [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
 | [`@callidescope/examples`](../callidescope-examples/README.md) | A traced fixture codebase carrying one worked example of everything above |
 

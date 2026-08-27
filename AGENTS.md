@@ -85,6 +85,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
 - **[callidescope-examples](packages/callidescope-examples)**: A small codebase built to be traced, carrying one worked example per callidescope rule, finding, and output — plus a `README.md` guide and an `AGENTS.md` lookup table for acting on a finding
 - **[callidescope-graph](packages/callidescope-graph)**: Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
+- **[callidescope-nx](packages/callidescope-nx)**: Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets, scoped through the Nx dependency graph — the only callidescope package that knows Nx exists
 - **[callidescope-output](packages/callidescope-output)**: Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **[codependix-cli](packages/codependix-cli)**: Command-line host that exports dependency graphs as JSON and Markdown anchor blocks — see [Codependix](#codependix) for its agent skills
 - **[codependix-configuration](packages/codependix-configuration)**: Reads `codependix.config.ts` and resolves per-project export destinations

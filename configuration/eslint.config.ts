@@ -399,6 +399,20 @@ export default [
               ],
               sourceTag: "name:callidescope-cli",
             },
+            // The Nx plugin sits on top of the whole chain and nothing in the
+            // chain may depend back on it, which is what keeps `@nx/devkit`
+            // out of every package that actually traces. It is the only
+            // callidescope package Nx is allowed to reach.
+            {
+              onlyDependOnLibsWithTags: [
+                "name:callidescope-cli",
+                "name:callidescope-configuration",
+                "name:callidescope-graph",
+                "name:callidescope-output",
+                "name:logger",
+              ],
+              sourceTag: "name:callidescope-nx",
+            },
             // Codometer package graph. The configuration reader, the change
             // diffing package, the language analyzers, and the measurement
             // support packages (discovery, size, customization) are leaves;
