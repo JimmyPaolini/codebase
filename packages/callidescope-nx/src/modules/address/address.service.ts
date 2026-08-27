@@ -49,8 +49,6 @@ export class AddressService {
         : { config: args.configurationPath }),
       directories: [...args.directories],
       ...(args.format === undefined ? {} : { format: args.format }),
-      // Nothing can be prompted for inside a task runner.
-      interactive: false,
     });
     const resolution = this.addressLookupService.resolve({
       address: args.address,

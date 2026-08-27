@@ -1,7 +1,4 @@
-import {
-  CALLIDESCOPE_OUTPUT_FORMATS,
-  InputService,
-} from "@callidescope/configuration";
+import { InputError, InputService } from "@callidescope/configuration";
 import { BreadthService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -28,7 +25,9 @@ import type {
  * CLI entry point that prints one callable's direct callers and callees.
  */
 @Command({
-  arguments: "<address>",
+  // Optional so a missing address reaches the prompt: commander refuses a
+  // required argument itself, before the command body ever runs.
+  arguments: "[address]",
   description:
     "Print the direct callers and callees of one callable, addressed as <file>#<qualified-name>",
   name: "breadth",
@@ -54,6 +53,39 @@ export class BreadthCommand extends CommandRunner {
 
   // 🔏 Private Methods
 
+  /** Resolves the address and prints its direct callers and callees. */
+  private async printBreadth(
+    passedParameters: readonly string[],
+    options: AddressCommandOptions,
+  ): Promise<void> {
+    const resolvedOptions =
+      await this.inputService.resolveFormatOption(options);
+    // Traced before the address is read, not after: the trace is what the
+    // prompt completes against, and it is the same trace the lookup needs, so
+    // asking first would either offer nothing or cost a second one.
+    const workspace = await this.addressLookupService.locate(resolvedOptions);
+    const address = await this.resolveAddress({
+      passedParameters,
+      workspace,
+    });
+    const resolved = this.resolveDirectCalls({ address, workspace });
+
+    if (resolved === undefined) {
+      return;
+    }
+
+    process.stdout.write(
+      this.addressReportService.renderBreadth({
+        address,
+        directCalls: resolved.directCalls,
+        displayName: resolved.callable.node.displayName,
+        format: resolved.format,
+        id: resolved.id,
+        location: resolved.callable.node.location,
+      }),
+    );
+  }
+
   /** Logs why an address could not be acted on, and fails the run. */
   private rejectAddress(problem: string | undefined): void {
     this.logger.error("🔭 Rejected a callable address", undefined, {
@@ -62,37 +94,38 @@ export class BreadthCommand extends CommandRunner {
     process.exitCode = 1;
   }
 
+  /** Logs a command line the input service refused, and fails the run. */
+  private rejectCommandLine(error: InputError): void {
+    this.logger.error("🔭 Rejected the command line", undefined, {
+      reason: error.message,
+    });
+    process.exitCode = 1;
+  }
+
   /**
    * Reads the address argument, completing it against what the trace found
-   * when it is missing and the session can be prompted, or failing the run
-   * otherwise.
+   * when it was left off.
+   *
+   * The prompt refuses rather than draws itself when stdin is not a terminal,
+   * so a scripted run that forgot the argument fails loudly instead of
+   * exiting 0 having rendered a menu nobody could answer.
    */
   private async resolveAddress(args: {
-    canPrompt: boolean;
     passedParameters: readonly string[];
     workspace: LocatedWorkspace;
-  }): Promise<string | undefined> {
+  }): Promise<string> {
     const address = args.passedParameters[0];
 
     if (address !== undefined) {
       return address;
     }
 
-    if (args.canPrompt) {
-      return this.inputService.promptForAutocomplete({
-        message: "Which callable? (file#qualified-name)",
-        suggestions: this.addressLookupService.listAddresses(args.workspace),
-      });
-    }
-
-    this.logger.error("🔭 Rejected the command line", undefined, {
-      reasons: [
-        'breadth needs a callable address, as in "breadth src/foo.service.ts#FooService.bar".',
-      ],
+    return this.inputService.promptForAutocomplete({
+      message: "Which callable? (file#qualified-name)",
+      subject:
+        'A callable address, as in "breadth src/foo.service.ts#FooService.bar"',
+      suggestions: this.addressLookupService.listAddresses(args.workspace),
     });
-    process.exitCode = 1;
-
-    return undefined;
   }
 
   /**
@@ -144,23 +177,6 @@ export class BreadthCommand extends CommandRunner {
     };
   }
 
-  /** Fills in `--format` by prompting, when it was left off and can be asked. */
-  private async resolveOptions(
-    options: AddressCommandOptions,
-    canPrompt: boolean,
-  ): Promise<AddressCommandOptions> {
-    if (options.format !== undefined || !canPrompt) {
-      return options;
-    }
-
-    const format = await this.inputService.promptForSelect({
-      choices: CALLIDESCOPE_OUTPUT_FORMATS,
-      message: "Which output format?",
-    });
-
-    return { ...options, format };
-  }
-
   // 🌎 Public Methods
 
   /** Parses `--config`. */
@@ -190,51 +206,25 @@ export class BreadthCommand extends CommandRunner {
     return this.inputService.parseFormat(value);
   }
 
-  /** Parses the opt-out from interactive prompting. */
-  @Option({
-    description: "Never prompt for missing values",
-    flags: "--no-interactive",
-  })
-  public parseInteractive(): boolean {
-    return false;
-  }
-
-  /** Resolves the address and prints its direct callers and callees. */
+  /**
+   * Prints one callable's direct callers and callees.
+   *
+   * Only a refused command line is caught: it is the reader's own typing to
+   * fix, so it is reported as such rather than as a crash. Anything else
+   * propagates with its stack intact.
+   */
   public async run(
     passedParameters: string[],
     options: AddressCommandOptions,
   ): Promise<void> {
-    const canPrompt = this.inputService.canPrompt(options.interactive);
-    const resolvedOptions = await this.resolveOptions(options, canPrompt);
-    // Traced before the address is read, not after: the trace is what the
-    // prompt completes against, and it is the same trace the lookup needs, so
-    // asking first would either offer nothing or cost a second one.
-    const workspace = await this.addressLookupService.locate(resolvedOptions);
-    const address = await this.resolveAddress({
-      canPrompt,
-      passedParameters,
-      workspace,
-    });
+    try {
+      await this.printBreadth(passedParameters, options);
+    } catch (error) {
+      if (!(error instanceof InputError)) {
+        throw error;
+      }
 
-    if (address === undefined) {
-      return;
+      this.rejectCommandLine(error);
     }
-
-    const resolved = this.resolveDirectCalls({ address, workspace });
-
-    if (resolved === undefined) {
-      return;
-    }
-
-    process.stdout.write(
-      this.addressReportService.renderBreadth({
-        address,
-        directCalls: resolved.directCalls,
-        displayName: resolved.callable.node.displayName,
-        format: resolved.format,
-        id: resolved.id,
-        location: resolved.callable.node.location,
-      }),
-    );
   }
 }

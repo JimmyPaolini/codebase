@@ -113,13 +113,17 @@ describe(BreadthCommand, () => {
     command = await module.resolve(BreadthCommand);
   });
 
+  const originalIsTty = process.stdin.isTTY;
+
   beforeEach(() => {
     addressLookupService = createMock<AddressLookupService>();
     addressReportService = createMock<AddressReportService>();
     breadthService = createMock<BreadthService>();
     logger = createMock<LoggerService>();
     inputService = new InputService();
-    vi.spyOn(inputService, "canPrompt").mockReturnValue(false);
+    // Not a terminal by default, so a test that does not opt into prompting
+    // exercises the refusal a scripted run gets.
+    process.stdin.isTTY = false;
 
     command = new BreadthCommand(
       addressLookupService,
@@ -135,6 +139,7 @@ describe(BreadthCommand, () => {
 
   afterEach(() => {
     process.exitCode = undefined;
+    process.stdin.isTTY = originalIsTty;
   });
 
   it("is defined", () => {
@@ -175,10 +180,6 @@ describe(BreadthCommand, () => {
     expect(command.parseConfig("callidescope.config.ts")).toBe(
       "callidescope.config.ts",
     );
-  });
-
-  it("parses the interactive opt-out flag", () => {
-    expect(command.parseInteractive()).toBe(false);
   });
 
   // 🏃 Running
@@ -271,8 +272,8 @@ describe(BreadthCommand, () => {
 
   // 🗣️ Prompting
 
-  it("prompts for the address when it is missing and the session can be prompted", async () => {
-    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+  it("prompts for the address when it is missing", async () => {
+    process.stdin.isTTY = true;
     vi.spyOn(inputService, "promptForAutocomplete").mockResolvedValue(
       "a.ts#Foo.bar",
     );
@@ -291,13 +292,15 @@ describe(BreadthCommand, () => {
     );
 
     // A format is passed explicitly so this test exercises only the address
-    // prompt, not the separate format prompt `resolveOptions` would also try.
+    // prompt, not the separate format prompt that would otherwise also run.
     await command.run([], { format: "markdown" });
 
     // The list it completes against is what the one trace found, so the
     // caller picks a callable that provably exists.
     expect(inputService.promptForAutocomplete).toHaveBeenCalledWith({
       message: "Which callable? (file#qualified-name)",
+      subject:
+        'A callable address, as in "breadth src/foo.service.ts#FooService.bar"',
       suggestions: ["a.ts#Foo.bar", "b.ts#Bar.baz"],
     });
     expect(addressLookupService.resolve).toHaveBeenCalledWith({
@@ -309,7 +312,7 @@ describe(BreadthCommand, () => {
   });
 
   it("does not prompt for the address when one was already given", async () => {
-    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    process.stdin.isTTY = true;
     vi.spyOn(inputService, "promptForText");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
@@ -326,8 +329,8 @@ describe(BreadthCommand, () => {
     expect(inputService.promptForText).not.toHaveBeenCalled();
   });
 
-  it("prompts for a format when it was left off and the session can be prompted", async () => {
-    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+  it("prompts for a format when it was left off, at a terminal", async () => {
+    process.stdin.isTTY = true;
     vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
@@ -344,6 +347,7 @@ describe(BreadthCommand, () => {
     expect(inputService.promptForSelect).toHaveBeenCalledWith({
       choices: ["markdown", "mermaid", "json"],
       message: "Which output format?",
+      subject: "An output format (--format)",
     });
     // The prompted format reaches the trace, which reads the configuration
     // it scopes the run with.
@@ -353,7 +357,7 @@ describe(BreadthCommand, () => {
   });
 
   it("does not prompt for a format that was already given", async () => {
-    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    process.stdin.isTTY = true;
     vi.spyOn(inputService, "promptForSelect");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
@@ -368,5 +372,15 @@ describe(BreadthCommand, () => {
     await command.run(["a.ts#Foo.bar"], { format: "mermaid" });
 
     expect(inputService.promptForSelect).not.toHaveBeenCalled();
+  });
+
+  // A genuine failure keeps its stack rather than being reported to the
+  // reader as a command line they mistyped.
+  it("lets a failure that is not a refused command line propagate", async () => {
+    addressLookupService.locate.mockRejectedValue(new Error("Trace failed."));
+
+    await expect(
+      command.run(["a.ts#Foo.bar"], { format: "markdown" }),
+    ).rejects.toThrow("Trace failed.");
   });
 });

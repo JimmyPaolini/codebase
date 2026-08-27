@@ -1,16 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import prompts from "prompts";
 
+import { CALLIDESCOPE_OUTPUT_FORMATS } from "../configuration/configuration.constants";
+
+import { missingInputError, promptCancelledError } from "./input.constants";
+
 import type { CallidescopeOutputFormat } from "../configuration/configuration.types";
-import type { PromptRunner } from "./input.types";
+import type { CallidescopeFormatOptions, PromptRunner } from "./input.types";
 
 /**
- * Parses CLI option values and prompts for the ones a command still needs.
+ * Parses CLI option values and asks for the ones a command still needs.
  *
  * Shared by `callidescope`, `depth`, and `breadth` so the parsing rules for
- * flags they hold in common — `--config`, `--directories`, `--format` — and
- * the rule for whether a missing value may be asked for interactively are
- * stated once rather than duplicated per command.
+ * flags they hold in common — `--config`, `--directories`, `--format` — are
+ * stated once rather than duplicated per command. Mirrors
+ * `@codependix/configuration`'s `InputService`.
  */
 @Injectable()
 export class InputService {
@@ -27,22 +31,33 @@ export class InputService {
 
   // 🔏 Private Methods
 
-  // 🌎 Public Methods
+  /**
+   * Refuses to draw a prompt nobody can answer.
+   *
+   * `prompts` does not fail on a non-terminal stdin — it renders the menu,
+   * never resolves, and lets the process exit 0, so a run that did nothing
+   * reads as one that succeeded.
+   */
+  private assertCanPrompt(subject: string): void {
+    if (!this.isAtTerminal()) {
+      throw missingInputError(subject);
+    }
+  }
 
   /**
-   * Whether a missing value may be asked for interactively.
+   * Whether anybody is there to answer a question.
    *
-   * `process.stdin.isTTY` is `undefined` rather than `false` when stdin is
-   * not a terminal, so it is coerced explicitly — treating that `undefined`
-   * as "unset, so prompt" is what hangs a command run in CI.
+   * The one place this is decided, so the value that refuses to be asked for
+   * and the value that is merely offered cannot drift apart on what counts as
+   * a terminal. `isTTY` is read as falsy rather than coerced: `@types/node`
+   * calls it a `boolean` while it is `undefined` off a terminal, so lint
+   * rejects the coercion that would say so.
    */
-  public canPrompt(interactive: boolean | undefined): boolean {
-    return (
-      interactive !== false &&
-      process.stdin.isTTY &&
-      process.env["CI"] !== "true"
-    );
+  private isAtTerminal(): boolean {
+    return process.stdin.isTTY;
   }
+
+  // 🌎 Public Methods
 
   /**
    * Narrows a suggestion list to what has been typed so far.
@@ -123,8 +138,11 @@ export class InputService {
    */
   public async promptForAutocomplete(args: {
     message: string;
+    subject: string;
     suggestions: readonly string[];
   }): Promise<string> {
+    this.assertCanPrompt(args.subject);
+
     const response = await this.promptRunner({
       choices: [],
       message: args.message,
@@ -143,7 +161,7 @@ export class InputService {
     const value: unknown = response.value;
 
     if (typeof value !== "string" || value.trim().length === 0) {
-      throw new Error("A value is required.");
+      throw promptCancelledError(args.subject);
     }
 
     return value.trim();
@@ -153,7 +171,10 @@ export class InputService {
   public async promptForSelect<Choice extends string>(args: {
     choices: readonly Choice[];
     message: string;
+    subject: string;
   }): Promise<Choice> {
+    this.assertCanPrompt(args.subject);
+
     const response = await this.promptRunner({
       choices: args.choices.map((choice) => ({ title: choice, value: choice })),
       message: args.message,
@@ -161,6 +182,11 @@ export class InputService {
       type: "select",
     });
     const value: unknown = response.value;
+
+    if (value === undefined) {
+      throw promptCancelledError(args.subject);
+    }
+
     const matched = args.choices.find((choice) => choice === value);
 
     if (matched === undefined) {
@@ -173,7 +199,12 @@ export class InputService {
   }
 
   /** Prompts for one free-text value. */
-  public async promptForText(args: { message: string }): Promise<string> {
+  public async promptForText(args: {
+    message: string;
+    subject: string;
+  }): Promise<string> {
+    this.assertCanPrompt(args.subject);
+
     const response = await this.promptRunner({
       message: args.message,
       name: "value",
@@ -182,9 +213,38 @@ export class InputService {
     const value: unknown = response.value;
 
     if (typeof value !== "string" || value.trim().length === 0) {
-      throw new Error("A value is required.");
+      throw promptCancelledError(args.subject);
     }
 
     return value.trim();
+  }
+
+  /**
+   * Returns the given options with `--format` filled in where one is wanted.
+   *
+   * Offered rather than required, which is the one place this differs from
+   * every other missing value: the configuration already declares a format,
+   * so with nobody at a terminal the configured one stands and the run
+   * proceeds. Demanding it would fail every scripted `--check depth` — the
+   * gate this repository runs on each pull request among them — over a flag
+   * those runs have never needed to pass.
+   *
+   * Generic over the caller's options type, so a command carries its own
+   * other flags through unchanged.
+   */
+  public async resolveFormatOption<Options extends CallidescopeFormatOptions>(
+    options: Options,
+  ): Promise<Options> {
+    if (options.format !== undefined || !this.isAtTerminal()) {
+      return options;
+    }
+
+    const format = await this.promptForSelect({
+      choices: CALLIDESCOPE_OUTPUT_FORMATS,
+      message: "Which output format?",
+      subject: "An output format (--format)",
+    });
+
+    return { ...options, format };
   }
 }

@@ -76,10 +76,11 @@ describe(AddressService, () => {
       directories: ["packages/alpha"],
     });
 
-    // A task runner has nobody to prompt, so the lookup must never try.
+    // A task runner has nobody to prompt. Nothing here has to ask it not to:
+    // the plugin drives the lookup service directly rather than through a
+    // command, and every value that command would prompt for is passed.
     expect(addressLookupService.locate).toHaveBeenCalledWith({
       directories: ["packages/alpha"],
-      interactive: false,
     });
   });
 
@@ -97,7 +98,6 @@ describe(AddressService, () => {
       config: "elsewhere.ts",
       directories: ["packages/alpha"],
       format: "json",
-      interactive: false,
     });
   });
 

@@ -1,8 +1,18 @@
 import { Test } from "@nestjs/testing";
 import prompts from "prompts";
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { InputService } from "./input.service";
+
+import type { CallidescopeFormatOptions } from "./input.types";
 
 // Mocked at the module boundary so the service's own wiring is exercised and
 // no test ever reaches for a terminal.
@@ -23,6 +33,12 @@ describe(InputService, () => {
 
   const originalIsTty = process.stdin.isTTY;
 
+  beforeEach(() => {
+    // A terminal by default, so a prompt test exercises the prompt rather
+    // than the refusal standing in front of it.
+    process.stdin.isTTY = true;
+  });
+
   afterEach(() => {
     promptRunner.mockReset();
     delete process.env["CI"];
@@ -35,23 +51,57 @@ describe(InputService, () => {
 
   // 🎛️ Prompt gating
 
-  it("allows prompting when the session is an interactive terminal", () => {
-    process.stdin.isTTY = true;
+  // `prompts` draws its menu on a non-terminal stdin, never resolves, and
+  // lets the process exit 0. Every prompt refuses up front rather than
+  // becoming that silent green no-op.
+  it.each([
+    [
+      "an autocomplete",
+      async () =>
+        service.promptForAutocomplete({
+          message: "Which callable?",
+          subject: "A callable address",
+          suggestions: [],
+        }),
+    ],
+    [
+      "a select",
+      async () =>
+        service.promptForSelect({
+          choices: ["json"],
+          message: "Which format?",
+          subject: "An output format",
+        }),
+    ],
+    [
+      "a text",
+      async () =>
+        service.promptForText({
+          message: "Which callable?",
+          subject: "A callable address",
+        }),
+    ],
+  ])("refuses %s prompt when stdin is not a terminal", async (_name, ask) => {
+    process.stdin.isTTY = false;
 
-    expect(service.canPrompt(undefined)).toBe(true);
+    await expect(ask()).rejects.toThrow(
+      "is required, and stdin is not a terminal so it cannot be asked for",
+    );
+    expect(promptRunner).not.toHaveBeenCalled();
   });
 
-  it("refuses to prompt when the interactive flag was explicitly turned off", () => {
-    process.stdin.isTTY = true;
-
-    expect(service.canPrompt(false)).toBe(false);
-  });
-
-  it("refuses to prompt in CI even on a terminal", () => {
+  it("prompts in CI when a terminal is attached, having no policy of its own", async () => {
     process.stdin.isTTY = true;
     process.env["CI"] = "true";
+    promptRunner.mockResolvedValue({ value: "json" });
 
-    expect(service.canPrompt(undefined)).toBe(false);
+    await expect(
+      service.promptForSelect({
+        choices: ["json", "markdown"],
+        message: "Which format?",
+        subject: "An output format",
+      }),
+    ).resolves.toBe("json");
   });
 
   // 🔤 Comma-delimited option
@@ -80,6 +130,7 @@ describe(InputService, () => {
     await expect(
       service.promptForAutocomplete({
         message: "Which callable?",
+        subject: "A callable address",
         suggestions: ["src/a.service.ts#A.b"],
       }),
     ).resolves.toBe("src/a.service.ts#A.b");
@@ -149,6 +200,7 @@ describe(InputService, () => {
 
     await service.promptForAutocomplete({
       message: "Which callable?",
+      subject: "A callable address",
       suggestions: ["src/a.service.ts#A.b", "src/z.service.ts#Z.y"],
     });
 
@@ -179,9 +231,10 @@ describe(InputService, () => {
     await expect(
       service.promptForAutocomplete({
         message: "Which callable?",
+        subject: "A callable address",
         suggestions: [],
       }),
-    ).rejects.toThrow("A value is required.");
+    ).rejects.toThrow("A callable address was not answered.");
   });
 
   // 🖨️ Format
@@ -221,6 +274,7 @@ describe(InputService, () => {
       service.promptForSelect({
         choices: ["json", "markdown", "mermaid"],
         message: "Which format?",
+        subject: "An output format",
       }),
     ).resolves.toBe("json");
   });
@@ -232,6 +286,7 @@ describe(InputService, () => {
       service.promptForSelect({
         choices: ["json", "markdown", "mermaid"],
         message: "Which format?",
+        subject: "An output format",
       }),
     ).rejects.toThrow("Prompt did not resolve to one of");
   });
@@ -240,7 +295,10 @@ describe(InputService, () => {
     promptRunner.mockResolvedValue({ value: "  src/foo.ts#Foo.bar  " });
 
     await expect(
-      service.promptForText({ message: "Which callable?" }),
+      service.promptForText({
+        message: "Which callable?",
+        subject: "A callable address",
+      }),
     ).resolves.toBe("src/foo.ts#Foo.bar");
   });
 
@@ -248,15 +306,69 @@ describe(InputService, () => {
     promptRunner.mockResolvedValue({ value: "   " });
 
     await expect(
-      service.promptForText({ message: "Which callable?" }),
-    ).rejects.toThrow("A value is required.");
+      service.promptForText({
+        message: "Which callable?",
+        subject: "A callable address",
+      }),
+    ).rejects.toThrow("A callable address was not answered.");
   });
 
   it("rejects a text prompt that was cancelled", async () => {
     promptRunner.mockResolvedValue({});
 
     await expect(
-      service.promptForText({ message: "Which callable?" }),
-    ).rejects.toThrow("A value is required.");
+      service.promptForText({
+        message: "Which callable?",
+        subject: "A callable address",
+      }),
+    ).rejects.toThrow("A callable address was not answered.");
+  });
+
+  // Escape resolves the prompt with nothing rather than rejecting, so an
+  // ordinary dismissal has to be told apart from an unrecognized answer.
+  it("rejects a select prompt that was cancelled", async () => {
+    promptRunner.mockResolvedValue({});
+
+    await expect(
+      service.promptForSelect({
+        choices: ["json", "markdown", "mermaid"],
+        message: "Which format?",
+        subject: "An output format",
+      }),
+    ).rejects.toThrow("An output format was not answered.");
+  });
+
+  // 🖨️ Format resolution
+
+  // Declared rather than passed inline so the other flag is inferred as part
+  // of the options type, the way a command's own options object is.
+  const optionsWithoutFormat: CallidescopeFormatOptions & { config: string } = {
+    config: "a.ts",
+  };
+
+  it("passes a format that was given on the command line through untouched", async () => {
+    await expect(
+      service.resolveFormatOption({ ...optionsWithoutFormat, format: "json" }),
+    ).resolves.toStrictEqual({ config: "a.ts", format: "json" });
+    expect(promptRunner).not.toHaveBeenCalled();
+  });
+
+  it("prompts for a missing format at a terminal, keeping the other options", async () => {
+    promptRunner.mockResolvedValue({ value: "mermaid" });
+
+    await expect(
+      service.resolveFormatOption(optionsWithoutFormat),
+    ).resolves.toStrictEqual({ config: "a.ts", format: "mermaid" });
+  });
+
+  // The configuration already declares a format, so this one value is offered
+  // rather than demanded: a scripted `--check depth` has never passed it.
+  it("leaves a missing format alone when stdin is not a terminal", async () => {
+    process.stdin.isTTY = false;
+
+    await expect(
+      service.resolveFormatOption(optionsWithoutFormat),
+    ).resolves.toStrictEqual({ config: "a.ts" });
+    expect(promptRunner).not.toHaveBeenCalled();
   });
 });

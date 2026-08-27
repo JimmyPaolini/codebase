@@ -2,6 +2,7 @@ import path from "node:path";
 
 import {
   ConfigurationService,
+  InputError,
   InputService,
 } from "@callidescope/configuration";
 import {
@@ -213,6 +214,8 @@ describe(CallidescopeCommand, () => {
     vi.spyOn(process.stdout, "write").mockReturnValue(true);
   });
 
+  const originalIsTty = process.stdin.isTTY;
+
   beforeEach(async () => {
     configurationService = createMock<ConfigurationService>();
     callidescopeService = createMock<CallidescopeService>();
@@ -220,7 +223,9 @@ describe(CallidescopeCommand, () => {
     logger = createMock<LoggerService>();
     outputJsonService = createMock<OutputJsonService>();
     outputMarkdownService = createMock<OutputMarkdownService>();
-    vi.spyOn(inputService, "canPrompt").mockReturnValue(false);
+    // Not a terminal by default, so a test that does not opt into prompting
+    // exercises what a scripted run gets.
+    process.stdin.isTTY = false;
 
     const module = await Test.createTestingModule({
       providers: [
@@ -253,6 +258,7 @@ describe(CallidescopeCommand, () => {
 
   afterEach(() => {
     process.exitCode = undefined;
+    process.stdin.isTTY = originalIsTty;
   });
 
   it("is defined", () => {
@@ -327,10 +333,6 @@ describe(CallidescopeCommand, () => {
     ["parseMarkdown", "REPORT.md"],
   ] as const)("passes %s through unchanged", (method, value) => {
     expect(command[method](value)).toBe(value);
-  });
-
-  it("parses the interactive opt-out flag", () => {
-    expect(command.parseInteractive()).toBe(false);
   });
 
   // 🏃 Running
@@ -947,8 +949,8 @@ describe(CallidescopeCommand, () => {
 
   // 🗣️ Prompting
 
-  it("prompts for a format when it was left off and the session can be prompted", async () => {
-    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+  it("prompts for a format when it was left off, at a terminal", async () => {
+    process.stdin.isTTY = true;
     vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
 
     await command.run([], {});
@@ -956,6 +958,7 @@ describe(CallidescopeCommand, () => {
     expect(inputService.promptForSelect).toHaveBeenCalledWith({
       choices: ["markdown", "mermaid", "json"],
       message: "Which output format?",
+      subject: "An output format (--format)",
     });
     // The prompted format reached `run` through the resolved options: json
     // routes through the JSON report rather than the markdown one.
@@ -963,11 +966,47 @@ describe(CallidescopeCommand, () => {
   });
 
   it("does not prompt for a format that was already given", async () => {
-    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    process.stdin.isTTY = true;
     vi.spyOn(inputService, "promptForSelect");
 
     await command.run([], { format: "mermaid" });
 
     expect(inputService.promptForSelect).not.toHaveBeenCalled();
+  });
+
+  // The configuration declares a format, so a scripted run keeps working
+  // rather than being refused over a flag it has never had to pass.
+  it("traces without prompting for a format when stdin is not a terminal", async () => {
+    vi.spyOn(inputService, "promptForSelect");
+
+    await command.run([], {});
+
+    expect(inputService.promptForSelect).not.toHaveBeenCalled();
+    expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  // Escape at the prompt resolves it with nothing, which the input service
+  // reports as a refused command line rather than a crash.
+  it("reports a cancelled format prompt as a refused command line", async () => {
+    process.stdin.isTTY = true;
+    vi.spyOn(inputService, "promptForSelect").mockRejectedValue(
+      new InputError("An output format (--format) was not answered."),
+    );
+
+    await command.run([], {});
+
+    expect(process.exitCode).toBe(1);
+    expect(callidescopeService.trace).not.toHaveBeenCalled();
+  });
+
+  // A genuine failure keeps its stack rather than being reported to the
+  // reader as a command line they mistyped.
+  it("lets a failure that is not a refused command line propagate", async () => {
+    callidescopeService.trace.mockImplementation(() => {
+      throw new Error("Trace failed.");
+    });
+
+    await expect(command.run([], {})).rejects.toThrow("Trace failed.");
   });
 });
