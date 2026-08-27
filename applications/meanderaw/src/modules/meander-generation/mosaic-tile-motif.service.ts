@@ -1,9 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { GridGeometryService } from "./grid-geometry.service";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 
+import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
 import type {
-  GridGeometry,
   MosaicPiece,
   MosaicTile,
   MosaicTileUnit,

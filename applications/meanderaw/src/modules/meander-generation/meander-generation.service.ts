@@ -1,8 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
-import { GridGeometryService } from "./grid-geometry.service";
 import { InvalidModifierError } from "./invalid-modifier.errors";
 import { InvalidPeriodError } from "./invalid-period.errors";
 import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
@@ -23,9 +24,9 @@ import { SvgRenderingService } from "./svg-rendering.service";
 import { SwirlMotifService } from "./swirl-motif.service";
 import { WhirlMotifService } from "./whirl-motif.service";
 
+import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
 import type {
   GenerationParameters,
-  GridGeometry,
   MeanderType,
   Modifier,
   MotifService,

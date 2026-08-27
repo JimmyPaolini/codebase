@@ -1,12 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { GridGeometryService } from "./grid-geometry.service";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+
 import { DOT_MINIMUM_ROWS } from "./meander-generation.constants";
 import { MotifTransformsService } from "./motif-transforms.service";
 
+import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
 import type {
   DotShape,
-  GridGeometry,
   MotifLevelSpan,
   MotifService,
   MotifUnit,

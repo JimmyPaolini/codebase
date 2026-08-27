@@ -1,5 +1,7 @@
 // 🏷️ Types
 
+import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
+
 /**
  * One column-and-level-range run of a `mosaic` zigzag, produced by
  * {@link MotifTransformsService.alternate}: `column` is `0` for a repeat
@@ -31,14 +33,6 @@ export interface GenerationParameters {
   readonly repeatCount: number;
   readonly rows: number;
   readonly type: MeanderType;
-}
-
-/** The derived grid unit, offset, and stroke width every motif is drawn against. */
-export interface GridGeometry {
-  readonly height: number;
-  readonly offset: number;
-  readonly strokeWidth: number;
-  readonly unit: number;
 }
 
 /** A meander's base repeating motif shape. */

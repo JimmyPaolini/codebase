@@ -2,9 +2,9 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { rightmostX } from "../../../testing/path-data";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 
 import { BoxesMotifService } from "./boxes-motif.service";
-import { GridGeometryService } from "./grid-geometry.service";
 import { MotifTransformsService } from "./motif-transforms.service";
 
 // 🧪 Tests

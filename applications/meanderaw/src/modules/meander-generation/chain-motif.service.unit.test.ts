@@ -2,9 +2,9 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { rightmostX, splitTrace } from "../../../testing/path-data";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 
 import { ChainMotifService } from "./chain-motif.service";
-import { GridGeometryService } from "./grid-geometry.service";
 import { MotifTransformsService } from "./motif-transforms.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";

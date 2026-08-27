@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { GridGeometryService } from "../meander-generation/grid-geometry.service";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicSymmetryService } from "../meander-generation/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../meander-generation/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../meander-generation/mosaic-tile-motif.service";

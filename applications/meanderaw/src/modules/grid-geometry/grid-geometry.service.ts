@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 
-import { CANVAS_HEIGHT } from "./meander-generation.constants";
+import { CANVAS_HEIGHT } from "./grid-geometry.constants";
 
-import type { GridGeometry } from "./meander-generation.types";
+import type { GridGeometry } from "./grid-geometry.types";
 
 /**
  * Derives the shared scaling rule every meander motif is drawn against: a

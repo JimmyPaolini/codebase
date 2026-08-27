@@ -5,10 +5,10 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { COORDINATE_ROUNDING_TOLERANCE } from "../../../testing/path-data";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
-import { GridGeometryService } from "./grid-geometry.service";
 import { InvalidPeriodError } from "./invalid-period.errors";
 import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";

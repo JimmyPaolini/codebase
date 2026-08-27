@@ -1,12 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { GridGeometryService } from "./grid-geometry.service";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+
 import { SPIN_CYCLE_LENGTH } from "./meander-generation.constants";
 import { MotifTransformsService } from "./motif-transforms.service";
 
+import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
 import type {
   BoxesSpiralBounds,
-  GridGeometry,
   Modifier,
   MotifLevelPoint,
   MotifService,

@@ -7,9 +7,6 @@ import type {
   MosaicMarkKind,
 } from "./meander-generation.types";
 
-/** Fixed canvas height every meander is drawn against, in grid units. */
-export const CANVAS_HEIGHT = 60;
-
 /**
  * Which modifier `name`s each type accepts. `MeanderGenerationService.generate`
  * rejects any `parameters.modifier` whose `name` isn't listed for

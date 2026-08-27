@@ -1,7 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { GridGeometryService } from "./grid-geometry.service";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
 import { InvalidRowsError } from "./invalid-rows.errors";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";

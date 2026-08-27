@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { GridGeometryService } from "../meander-generation/grid-geometry.service";
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MosaicSymmetryService } from "../meander-generation/mosaic-symmetry.service";
