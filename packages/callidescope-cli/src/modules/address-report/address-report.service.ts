@@ -3,8 +3,12 @@ import { MermaidReportService, ReportService } from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
 
 import type {
+  BreadthReport,
+  DepthReport,
   RenderBreadthArguments,
+  RenderBreadthReportsArguments,
   RenderDepthArguments,
+  RenderDepthReportsArguments,
 } from "./address-report.types";
 import type { StackFrame } from "@callidescope/configuration";
 import type { CallableReference, CallAddressStack } from "@callidescope/graph";
@@ -32,6 +36,24 @@ export class AddressReportService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /** The JSON shape of one callable's direct calls. */
+  private buildBreadthPayload(report: BreadthReport): unknown {
+    return {
+      address: report.address,
+      callable: report.displayName,
+      ...report.directCalls,
+    };
+  }
+
+  /** The JSON shape of one callable's traced paths. */
+  private buildDepthPayload(report: DepthReport): unknown {
+    return {
+      above: report.upward,
+      address: report.address,
+      below: report.downward,
+    };
+  }
 
   /** Draws every callee and caller as one diagram, the target as a stadium. */
   private renderBreadthDiagram(args: RenderBreadthArguments): string {
@@ -129,11 +151,7 @@ export class AddressReportService {
   public renderBreadth(args: RenderBreadthArguments): string {
     if (args.format === "json") {
       return `${JSON.stringify(
-        {
-          address: args.address,
-          callable: args.displayName,
-          ...args.directCalls,
-        },
+        this.buildBreadthPayload(args),
         null,
         DEFAULT_JSON_INDENTATION,
       )}\n`;
@@ -162,15 +180,33 @@ export class AddressReportService {
     ].join("\n");
   }
 
+  /**
+   * Renders several callables' direct calls as one document.
+   *
+   * JSON is **always** an array, whatever the address count, so a script can
+   * `JSON.parse` a run's output without branching on how many addresses it
+   * asked about. Markdown and mermaid concatenate the per-callable renders,
+   * each of which already carries its own heading naming the address.
+   */
+  public renderBreadthReports(args: RenderBreadthReportsArguments): string {
+    if (args.format === "json") {
+      return `${JSON.stringify(
+        args.reports.map((report) => this.buildBreadthPayload(report)),
+        null,
+        DEFAULT_JSON_INDENTATION,
+      )}\n`;
+    }
+
+    return args.reports
+      .map((report) => this.renderBreadth({ ...report, format: args.format }))
+      .join("\n\n");
+  }
+
   /** Renders the paths traced above and below one callable. */
   public renderDepth(args: RenderDepthArguments): string {
     if (args.format === "json") {
       return `${JSON.stringify(
-        {
-          above: args.upward,
-          address: args.address,
-          below: args.downward,
-        },
+        this.buildDepthPayload(args),
         null,
         DEFAULT_JSON_INDENTATION,
       )}\n`;
@@ -207,5 +243,25 @@ export class AddressReportService {
         truncated: args.downward.truncated,
       }),
     ].join("\n");
+  }
+
+  /**
+   * Renders several callables' traced paths as one document.
+   *
+   * JSON is **always** an array, for the same reason `renderBreadthReports`
+   * does it: one run, one parseable document, regardless of address count.
+   */
+  public renderDepthReports(args: RenderDepthReportsArguments): string {
+    if (args.format === "json") {
+      return `${JSON.stringify(
+        args.reports.map((report) => this.buildDepthPayload(report)),
+        null,
+        DEFAULT_JSON_INDENTATION,
+      )}\n`;
+    }
+
+    return args.reports
+      .map((report) => this.renderDepth({ ...report, format: args.format }))
+      .join("\n\n");
   }
 }

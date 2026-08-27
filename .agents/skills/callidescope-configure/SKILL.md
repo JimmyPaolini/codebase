@@ -1,6 +1,6 @@
 ---
 name: callidescope-configure
-description: Tell callidescope what to do — the command-line flags (--check, --write, --directories, --format, --config, --json, --markdown) and the callidescope.config.ts they read alongside, covering depth, breadth, and spread limits, call-stack entry points, exclusions and ignored callees, the workspace's module layout, and where a run writes its JSON, markdown, mermaid, and per-project reports. Use when wiring a depth gate into CI or a commit hook, when a whole-workspace run is too slow, when choosing between --check and --write, when a repository has no callidescope configuration yet, when a trace judges code it should not be judging, when everything is reported as an orphan root, or when deciding where a committed report should live.
+description: Tell callidescope what to do — the command-line flags (--check, --write, --addresses, --directories, --format, --config, --json, --markdown) and the callidescope.config.ts they read alongside, covering depth, breadth, and spread limits, call-stack entry points, exclusions and ignored callees, the workspace's module layout, and where a run writes its JSON, markdown, mermaid, and per-project reports. Use when wiring a depth gate into CI or a commit hook, when a whole-workspace run is too slow, when choosing between --check and --write, when a repository has no callidescope configuration yet, when a trace judges code it should not be judging, when everything is reported as an orphan root, or when deciding where a committed report should live.
 license: MIT
 ---
 
@@ -30,6 +30,7 @@ pull request leaves every committed report exactly as it found it.
 
 | Flag | Meaning |
 | ---- | ------- |
+| `-a, --addresses` | Comma-separated callable addresses, each `<file>#<qualified-name>`. `depth` and `breadth` only. Prompted for when omitted |
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |
 | `-d, --directories` | Comma-separated project directories to trace, each holding its own `tsconfig.json` |
 | `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default |
@@ -39,7 +40,8 @@ pull request leaves every committed report exactly as it found it.
 | `--write` | Write every configured destination |
 
 `--config`, `--directories`, and `--format` are the three that `depth` and
-`breadth` also take. The rest are the whole-workspace command's alone, because
+`breadth` also take, and `--addresses` is theirs alone — it names what to
+report on, which a whole-workspace trace never needs. The rest are the whole-workspace command's alone, because
 a lookup never writes or compares a destination.
 
 ### `--check` takes a set, and the set matters
@@ -137,8 +139,8 @@ terminal, pastes into an issue, and is already what the files hold.
 ### Prompting, and why it will not hang a script
 
 `callidescope`, `depth`, and `breadth` all prompt for a value left off the
-command line — `depth` and `breadth` for a missing address, all three for a
-missing `--format`. There is no flag to turn that off, because **an attached
+command line — `depth` and `breadth` for a missing `--addresses`, all three for
+a missing `--format`. There is no flag to turn that off, because **an attached
 terminal is the whole condition**: a script, a hook, or a CI job never has one
 and so is never prompted.
 
@@ -147,7 +149,7 @@ anything else could supply it:
 
 | Value | With no terminal |
 | ----- | ---------------- |
-| The address `depth` and `breadth` take | **Refused**, exit non-zero. Nothing else can supply it |
+| `--addresses`, which `depth` and `breadth` need | **Refused**, exit non-zero. Nothing else can supply it |
 | `--format` | The format in the configuration stands, and the run proceeds |
 
 The refusal is the load-bearing half. `prompts` does not fail on a

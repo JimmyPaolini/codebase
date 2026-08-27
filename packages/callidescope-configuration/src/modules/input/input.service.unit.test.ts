@@ -56,11 +56,11 @@ describe(InputService, () => {
   // becoming that silent green no-op.
   it.each([
     [
-      "an autocomplete",
+      "an autocomplete multiselect",
       async () =>
-        service.promptForAutocomplete({
-          message: "Which callable?",
-          subject: "A callable address",
+        service.promptForAutocompleteMultiselect({
+          message: "Which callables?",
+          subject: "At least one callable address",
           suggestions: [],
         }),
     ],
@@ -71,14 +71,6 @@ describe(InputService, () => {
           choices: ["json"],
           message: "Which format?",
           subject: "An output format",
-        }),
-    ],
-    [
-      "a text",
-      async () =>
-        service.promptForText({
-          message: "Which callable?",
-          subject: "A callable address",
         }),
     ],
   ])("refuses %s prompt when stdin is not a terminal", async (_name, ask) => {
@@ -122,19 +114,7 @@ describe(InputService, () => {
     ).toStrictEqual(["packages/a", "packages/b"]);
   });
 
-  // 🧭 Autocomplete
-
-  it("completes a value against the suggestions it was given", async () => {
-    promptRunner.mockResolvedValue({ value: "src/a.service.ts#A.b" });
-
-    await expect(
-      service.promptForAutocomplete({
-        message: "Which callable?",
-        subject: "A callable address",
-        suggestions: ["src/a.service.ts#A.b"],
-      }),
-    ).resolves.toBe("src/a.service.ts#A.b");
-  });
+  // 🧭 Suggestion completion
 
   it("narrows the suggestions to what was typed, case-insensitively", () => {
     expect(
@@ -192,15 +172,59 @@ describe(InputService, () => {
     ).toStrictEqual([]);
   });
 
-  // The adapter between the completion rule and what `prompts` renders: each
-  // surviving suggestion has to arrive as its own titled choice, or the list
-  // shows blank rows.
-  it("hands the prompt each completion as a titled choice", async () => {
-    promptRunner.mockResolvedValue({ value: "src/a.service.ts#A.b" });
+  // 🧭 Autocomplete multiselect
 
-    await service.promptForAutocomplete({
-      message: "Which callable?",
-      subject: "A callable address",
+  it("resolves a multiselect to every value that was ticked", async () => {
+    promptRunner.mockResolvedValue({
+      value: ["src/a.service.ts#A.b", "src/z.service.ts#Z.y"],
+    });
+
+    await expect(
+      service.promptForAutocompleteMultiselect({
+        message: "Which callables?",
+        subject: "At least one callable address",
+        suggestions: ["src/a.service.ts#A.b", "src/z.service.ts#Z.y"],
+      }),
+    ).resolves.toStrictEqual(["src/a.service.ts#A.b", "src/z.service.ts#Z.y"]);
+  });
+
+  // `prompts` returns `[]` both for a deliberate empty selection and for a
+  // prompt escaped out of, and the caller cannot act on either.
+  it.each([[[]], [undefined]])(
+    "refuses a multiselect that chose nothing (%s)",
+    async (value) => {
+      promptRunner.mockResolvedValue({ value });
+
+      await expect(
+        service.promptForAutocompleteMultiselect({
+          message: "Which callables?",
+          subject: "At least one callable address",
+          suggestions: ["src/a.service.ts#A.b"],
+        }),
+      ).rejects.toThrow("At least one callable address was not answered.");
+    },
+  );
+
+  it("rejects a multiselect that resolved to something other than text", async () => {
+    promptRunner.mockResolvedValue({ value: ["src/a.service.ts#A.b", 7] });
+
+    await expect(
+      service.promptForAutocompleteMultiselect({
+        message: "Which callables?",
+        subject: "At least one callable address",
+        suggestions: ["src/a.service.ts#A.b"],
+      }),
+    ).rejects.toThrow("Prompt resolved to something other than a list of text");
+  });
+
+  // The same completion rule as the single autocomplete, so a name narrows
+  // the list here exactly as it would there.
+  it("hands the multiselect each completion as a titled choice", async () => {
+    promptRunner.mockResolvedValue({ value: ["src/a.service.ts#A.b"] });
+
+    await service.promptForAutocompleteMultiselect({
+      message: "Which callables?",
+      subject: "At least one callable address",
       suggestions: ["src/a.service.ts#A.b", "src/z.service.ts#Z.y"],
     });
 
@@ -223,18 +247,6 @@ describe(InputService, () => {
     expect(offered).toStrictEqual([
       { title: "src/a.service.ts#A.b", value: "src/a.service.ts#A.b" },
     ]);
-  });
-
-  it("refuses an autocomplete answered with nothing", async () => {
-    promptRunner.mockResolvedValue({ value: "  " });
-
-    await expect(
-      service.promptForAutocomplete({
-        message: "Which callable?",
-        subject: "A callable address",
-        suggestions: [],
-      }),
-    ).rejects.toThrow("A callable address was not answered.");
   });
 
   // 🖨️ Format
@@ -289,39 +301,6 @@ describe(InputService, () => {
         subject: "An output format",
       }),
     ).rejects.toThrow("Prompt did not resolve to one of");
-  });
-
-  it("resolves a text prompt to the trimmed answer", async () => {
-    promptRunner.mockResolvedValue({ value: "  src/foo.ts#Foo.bar  " });
-
-    await expect(
-      service.promptForText({
-        message: "Which callable?",
-        subject: "A callable address",
-      }),
-    ).resolves.toBe("src/foo.ts#Foo.bar");
-  });
-
-  it("rejects a text prompt left blank", async () => {
-    promptRunner.mockResolvedValue({ value: "   " });
-
-    await expect(
-      service.promptForText({
-        message: "Which callable?",
-        subject: "A callable address",
-      }),
-    ).rejects.toThrow("A callable address was not answered.");
-  });
-
-  it("rejects a text prompt that was cancelled", async () => {
-    promptRunner.mockResolvedValue({});
-
-    await expect(
-      service.promptForText({
-        message: "Which callable?",
-        subject: "A callable address",
-      }),
-    ).rejects.toThrow("A callable address was not answered.");
   });
 
   // Escape resolves the prompt with nothing rather than rejecting, so an

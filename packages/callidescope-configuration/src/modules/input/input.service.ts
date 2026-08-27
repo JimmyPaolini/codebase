@@ -125,30 +125,28 @@ export class InputService {
   }
 
   /**
-   * Prompts for one value, completing it against a list as it is typed.
+   * Prompts for several values at once, completing the list as it is typed.
    *
-   * The list is filtered on every keystroke rather than shown whole, so a
-   * workspace with thousands of callables is as usable as one with ten.
+   * The multiselect sibling of `promptForAutocomplete`, and it shares that
+   * method's completion rule so a name typed here narrows the list the same
+   * way it would there.
    *
-   * `prompts` submits whatever its suggestion list had selected and never the
-   * raw text, so a value absent from the list could not otherwise be typed at
-   * all. The input is therefore offered back as its own choice whenever it
-   * matches nothing — the list is a shortcut, not a fence, and a caller whose
-   * list is merely incomplete must still be able to say what it meant.
+   * Selecting nothing is refused rather than read as an empty list: the
+   * caller asked because it needs at least one value, and `prompts` returns
+   * `[]` both for a deliberate empty selection and for a prompt escaped out
+   * of, which are the same thing to whoever has to act on it.
    */
-  public async promptForAutocomplete(args: {
+  public async promptForAutocompleteMultiselect(args: {
     message: string;
     subject: string;
     suggestions: readonly string[];
-  }): Promise<string> {
+  }): Promise<string[]> {
     this.assertCanPrompt(args.subject);
 
     const response = await this.promptRunner({
-      choices: [],
+      choices: args.suggestions.map((value) => ({ title: value, value })),
       message: args.message,
       name: "value",
-      // `await Promise.resolve` rather than a bare return: the completion rule
-      // is synchronous, and `prompts` awaits whatever this hands back.
       suggest: async (input: string) =>
         await Promise.resolve(
           this.completeSuggestions({
@@ -156,15 +154,34 @@ export class InputService {
             suggestions: args.suggestions,
           }).map((value) => ({ title: value, value })),
         ),
-      type: "autocomplete",
+      type: "autocompleteMultiselect",
     });
     const value: unknown = response.value;
 
-    if (typeof value !== "string" || value.trim().length === 0) {
+    if (!Array.isArray(value)) {
       throw promptCancelledError(args.subject);
     }
 
-    return value.trim();
+    // Restated as `unknown[]` rather than used as narrowed: `Array.isArray`
+    // narrows an `unknown` to `any[]`, which would leave every entry below
+    // unchecked and cost the package its type coverage.
+    const entries: unknown[] = value;
+
+    if (entries.length === 0) {
+      throw promptCancelledError(args.subject);
+    }
+
+    const chosen = entries.filter(
+      (entry): entry is string => typeof entry === "string",
+    );
+
+    if (chosen.length !== entries.length) {
+      throw new Error(
+        "Prompt resolved to something other than a list of text.",
+      );
+    }
+
+    return chosen;
   }
 
   /** Prompts for one value out of a fixed set of choices. */
@@ -196,27 +213,6 @@ export class InputService {
     }
 
     return matched;
-  }
-
-  /** Prompts for one free-text value. */
-  public async promptForText(args: {
-    message: string;
-    subject: string;
-  }): Promise<string> {
-    this.assertCanPrompt(args.subject);
-
-    const response = await this.promptRunner({
-      message: args.message,
-      name: "value",
-      type: "text",
-    });
-    const value: unknown = response.value;
-
-    if (typeof value !== "string" || value.trim().length === 0) {
-      throw promptCancelledError(args.subject);
-    }
-
-    return value.trim();
   }
 
   /**

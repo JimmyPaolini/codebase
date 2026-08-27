@@ -8,6 +8,14 @@ import type {
 
 /** Options `depth` and `breadth` accept, scoping a lookup to one workspace. */
 export interface AddressCommandOptions {
+  /**
+   * Callable addresses to report on, each `<file>#<qualified-name>`.
+   *
+   * Prompted for when empty. Required in the sense that a run cannot proceed
+   * without one — but asked for rather than refused, so the flag is only
+   * mandatory on a command line nobody is watching.
+   */
+  readonly addresses?: string[] | undefined;
   readonly config?: string | undefined;
   /** Project directories to trace. Every project in the workspace when omitted. */
   readonly directories?: string[] | undefined;
