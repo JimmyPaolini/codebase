@@ -3,21 +3,19 @@
 /**
  * The two run modes a `codependix map` command line resolves to.
  *
- * Named as a list rather than only as the `CodependixRunMode` union so a
- * command line naming neither flag can offer them as prompt choices, and the
- * union can be derived from the list rather than restated beside it.
+ * A list rather than only the `CodependixRunMode` union, so the prompt can
+ * offer them as choices and the union can be derived rather than restated.
  */
 export const CODEPENDIX_RUN_MODES = ["check", "write"] as const;
 
 /**
  * Thrown when a command line cannot be turned into a run.
  *
- * One class rather than one per cause, because every cause is the same event
- * to whoever catches it: nothing was attempted, and the reader's next move is
- * to retype the flags rather than to read a stack trace. Only the wording
- * differs, so the wording is all the factory constants below vary.
+ * One class rather than one per cause: every cause is the same event to
+ * whoever catches it — nothing was attempted, and the fix is to retype the
+ * flags. Only the wording varies, which is what the factories below do.
  *
- * Kept here beside the constants rather than in an `input.errors.ts`, the way
+ * Sits beside the constants rather than in an `input.errors.ts`, the way
  * `UnknownConfigurationFileTypeError` sits in `configuration.constants.ts`.
  */
 export class InputError extends Error {
@@ -34,9 +32,9 @@ export const conflictingRunModeError = (): InputError =>
 /**
  * A required value that cannot be asked for, because stdin is not a terminal.
  *
- * A prompt written to a stream nobody is reading is worse than no prompt at
- * all: `prompts` draws its menu, never resolves, and the process exits 0
- * having done nothing — the silent green no-op this refuses to become.
+ * `prompts` does not fail there — it draws its menu, never resolves, and the
+ * process exits 0 having done nothing. This refuses to become that silent
+ * green no-op.
  */
 export const missingInputError = (subject: string): InputError =>
   new InputError(
@@ -46,10 +44,9 @@ export const missingInputError = (subject: string): InputError =>
 /**
  * A prompt someone dismissed without answering.
  *
- * Kept distinct in wording from a prompt that resolved to something
- * unrecognized: walking away from a question is an ordinary thing to do, and
- * reporting it as a crashed run sends the reader debugging when all they did
- * was press escape.
+ * Worded apart from a prompt that resolved to something unrecognized:
+ * pressing escape is ordinary, and reporting it as a crash sends the reader
+ * debugging for nothing.
  */
 export const promptCancelledError = (subject: string): InputError =>
   new InputError(`${subject} was not chosen.`);

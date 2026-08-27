@@ -17,11 +17,9 @@ import type {
 /**
  * Parses CLI option values and asks for the ones a command still needs.
  *
- * Lives here rather than in `codependix-cli` so the rules for the flags its
- * commands hold in common — `--config`, `--directory`, and the two run-mode
- * flags — are stated once, alongside the configuration those flags ultimately
- * select. Mirrors `@callidescope/configuration`'s `InputService` and the
- * original in `@conformetry/configuration`.
+ * Lives here rather than in `codependix-cli` so the shared flag rules are
+ * stated once, beside the configuration those flags select. Mirrors
+ * `@callidescope/configuration`'s `InputService`.
  */
 @Injectable()
 export class InputService {
@@ -41,12 +39,10 @@ export class InputService {
   /**
    * Refuses to draw a prompt nobody can answer.
    *
-   * `prompts` does not fail on a stdin that is not a terminal — it renders
-   * the menu, never resolves, and lets the process exit 0. That is the one
-   * outcome worth ruling out, since a run that quietly did nothing reads as
-   * a run that succeeded. `@types/node` declares `isTTY` a `boolean` while
-   * Node leaves it `undefined` off a terminal, so the guard reads it as
-   * falsy rather than coercing it, which lint rejects as unnecessary.
+   * `prompts` does not fail on a non-terminal stdin — it renders the menu,
+   * never resolves, and lets the process exit 0, so a run that did nothing
+   * reads as one that succeeded. `isTTY` is read as falsy rather than
+   * coerced: `@types/node` calls it a `boolean`, so lint rejects a coercion.
    */
   private assertCanPrompt(subject: string): void {
     if (!process.stdin.isTTY) {
@@ -59,9 +55,9 @@ export class InputService {
   /**
    * Parses a valueless boolean flag, which is present or it is not.
    *
-   * Commander hands a flag carrying no value to its parser as `undefined`,
-   * so the flag appearing at all is what makes it true — reading that
-   * `undefined` as false would turn every such flag permanently off.
+   * Commander passes `undefined` for a flag carrying no value, so the flag
+   * appearing at all is what makes it true; reading that as false would turn
+   * every such flag permanently off.
    */
   public parseFlagOption(value: boolean | undefined): boolean {
     return value ?? true;
@@ -77,9 +73,8 @@ export class InputService {
   /**
    * Parses a path option that falls back to the working directory.
    *
-   * Left unresolved here: the caller resolves it against its own working
-   * directory, and resolving twice only makes a relative path ambiguous
-   * about which root it was ever relative to.
+   * Left unresolved: the caller resolves it against its own root, and
+   * resolving twice makes a relative path ambiguous about which it meant.
    */
   public parsePathOption(value: string | undefined): string {
     return this.parseOptionalOption(value) ?? process.cwd();
@@ -119,15 +114,13 @@ export class InputService {
   /**
    * Returns the given options with exactly one run mode set.
    *
-   * Naming both flags is refused outright — there is no sensible reading of
-   * "check and also write". Naming neither is asked about rather than
-   * refused, since the answer is one of two words and the alternative is
-   * making someone re-type the whole command line. Nothing is ever inferred:
-   * a session that cannot be asked fails instead of defaulting to a write
-   * nobody requested.
+   * Both flags is refused — there is no reading of "check and also write".
+   * Neither is asked about, since the answer is one of two words. Nothing is
+   * inferred: a session that cannot be asked fails rather than defaulting to
+   * a write nobody requested.
    *
-   * Generic over the caller's own options type so a command may carry
-   * whatever other flags it likes through unchanged.
+   * Generic over the caller's options type, so a command carries its own
+   * other flags through unchanged.
    */
   public async resolveOptions<Options extends CodependixRunModeOptions>(
     options: Options,

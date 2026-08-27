@@ -254,13 +254,13 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3272-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-158.22_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-158.28_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-27-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-57-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Corpus Size](https://img.shields.io/badge/Corpus_Size-8.32_kB_gzip-6b7280?style=flat-square)
+![Corpus Size](https://img.shields.io/badge/Corpus_Size-8.36_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
