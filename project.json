@@ -4,7 +4,7 @@
   "namedInputs": {
     "vendored-skills": [
       "!{projectRoot}/.agents/skills/ask-matt/**",
-      "!{projectRoot}/.agents/skills/callidescope-configuration/**",
+      "!{projectRoot}/.agents/skills/callidescope-configure/**",
       "!{projectRoot}/.agents/skills/callidescope-trace/**",
       "!{projectRoot}/.agents/skills/callidescope-triage/**",
       "!{projectRoot}/.agents/skills/code-review/**",

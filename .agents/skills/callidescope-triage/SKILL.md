@@ -199,4 +199,4 @@ not about the configuration that measured it. The fix belongs in the code. Turn
 to the configuration only when the measurement itself is wrong — a module
 identifier derived from the wrong directory, an entry-point rule missing, a
 cross-cutting logger inflating everything's numbers — and the
-`callidescope-configuration` skill covers each of those.
+`callidescope-configure` skill covers each of those.

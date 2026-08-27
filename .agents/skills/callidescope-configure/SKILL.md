@@ -1,5 +1,5 @@
 ---
-name: callidescope-configuration
+name: callidescope-configure
 description: Tell callidescope what to do — the command-line flags (--check, --write, --directories, --format, --config, --json, --markdown, --no-interactive) and the callidescope.config.ts they read alongside, covering depth, breadth, and spread limits, call-stack entry points, exclusions and ignored callees, the workspace's module layout, and where a run writes its JSON, markdown, mermaid, and per-project reports. Use when wiring a depth gate into CI or a commit hook, when a whole-workspace run is too slow, when choosing between --check and --write, when a repository has no callidescope configuration yet, when a trace judges code it should not be judging, when everything is reported as an orphan root, or when deciding where a committed report should live.
 license: MIT
 ---

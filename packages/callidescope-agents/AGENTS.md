@@ -62,7 +62,7 @@ Content rules worth knowing before editing:
 
 `conformetry-agents`, `codometer-agents`, and `codependix-agents` each split by
 the moments of using a gate: run it, configure it, act on what it said.
-`callidescope-trace`, `callidescope-configuration`, and `callidescope-triage`
+`callidescope-trace`, `callidescope-configure`, and `callidescope-triage`
 are those three, and the two boundaries that are easy to get wrong are worth
 stating.
 
@@ -75,7 +75,7 @@ to read one rather than to configure anything. An earlier draft gave them a
 fourth skill; folding them back in keeps one description covering every way of
 reading the graph instead of splitting that trigger surface in two.
 
-**Every flag lives in `callidescope-configuration`, including the three that
+**Every flag lives in `callidescope-configure`, including the three that
 `depth` and `breadth` accept.** A flag is a way of telling callidescope what to
 do whichever command carries it, and `--check`, `--write`, and `--directories`
 cannot be explained without the configuration fields they read — `--check

@@ -23,7 +23,7 @@ npx callidescope breadth src/foo.service.ts#FooService.bar  # one callable, hori
 A repository with no configuration file is traced with defaults rather than
 told to write one, so a bare run always produces something. What a run _gates_
 on and what it _writes_ are both opt-in and both live in the
-`callidescope-configuration` skill; this one is about reading the result.
+`callidescope-configure` skill; this one is about reading the result.
 
 ## `callidescope`: the whole workspace
 
@@ -215,7 +215,7 @@ than dropped.
 ## After reading
 
 To narrow, gate, or publish a run, and to change any of the thresholds above,
-reach for the `callidescope-configuration` skill. When a run fails or a report
+reach for the `callidescope-configure` skill. When a run fails or a report
 reads stale, reach for `callidescope-triage`.
 
 A refactor moves the call graph, which makes every committed report stale.

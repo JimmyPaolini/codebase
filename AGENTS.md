@@ -216,7 +216,7 @@ that toolchain for a coding agent, the same three moments as above:
 
 - [callidescope-trace](packages/callidescope-agents/skills/callidescope-trace/SKILL.md)
   — running `callidescope`, `depth`, or `breadth`, and reading what it printed
-- [callidescope-configuration](packages/callidescope-agents/skills/callidescope-configuration/SKILL.md)
+- [callidescope-configure](packages/callidescope-agents/skills/callidescope-configure/SKILL.md)
   — the flags, and the `callidescope.config.ts` they read alongside
 - [callidescope-triage](packages/callidescope-agents/skills/callidescope-triage/SKILL.md)
   — acting on a failed depth or breadth gate, a stale report, or a refused run
