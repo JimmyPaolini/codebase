@@ -4,7 +4,11 @@ const config: KnipConfig = {
   $schema: "https://unpkg.com/knip@5/schema.json",
 
   // Globally ignored file patterns (tests, build output, caches)
-  ignore: ["**/*.test.ts", "notepads/**"],
+  // Every project carries a codometer.config.ts that the codometer command line
+  // reads by walking upward from the directory it measures. Nothing imports it,
+  // the way nothing imports eslint.config.ts — but knip has a plugin that knows
+  // about eslint and none that knows about codometer, so it is named here.
+  ignore: ["**/*.test.ts", "**/codometer.config.ts", "notepads/**"],
 
   // Blank constants/types files are conformance placeholders; keep them out of unused-file checks only.
   // testing/mocks.ts files are conformance placeholders for project-level test utilities (used by future tests).

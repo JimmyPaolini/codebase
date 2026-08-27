@@ -28,6 +28,7 @@ import type {
   CodometerLimit,
   CodometerTarget,
   LoadConfigurationArguments,
+  LoadedConfiguration,
   ResolvedCodometerConfiguration,
   ResolvedCodometerCustomStatistic,
   ResolvedCodometerDocumentationConfiguration,
@@ -267,15 +268,35 @@ export class ConfigurationService {
   public async loadConfiguration(
     args: LoadConfigurationArguments = {},
   ): Promise<ResolvedCodometerConfiguration> {
+    const { configuration } = await this.loadConfigurationFile(args);
+
+    return configuration;
+  }
+
+  /**
+   * Loads a configuration and says which file answered.
+   *
+   * The same work as `loadConfiguration`, keeping the path the upward walk
+   * settled on. A caller measuring one directory has no use for it — the
+   * configuration is the whole answer — but one listing what a repository
+   * configures has to attribute each answer to the file that gave it, and
+   * nothing downstream of the walk can still tell.
+   */
+  public async loadConfigurationFile(
+    args: LoadConfigurationArguments = {},
+  ): Promise<LoadedConfiguration> {
     const loaded = await this.configurationLoaderService.load(args);
 
     if (loaded === undefined) {
-      return this.resolveConfiguration({});
+      return { configuration: this.resolveConfiguration({}), path: undefined };
     }
 
-    return this.resolveConfiguration(
-      codometerConfigurationSchema.parse(loaded.configuration),
-    );
+    return {
+      configuration: this.resolveConfiguration(
+        codometerConfigurationSchema.parse(loaded.configuration),
+      ),
+      path: loaded.path,
+    };
   }
 
   /**

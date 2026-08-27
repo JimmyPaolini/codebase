@@ -235,6 +235,38 @@ written against it. Declaring a limit asserts the files are there, so an empty
 match is a glob that stopped matching or a build that never ran — while a
 target nobody limited simply measured zero, which is unremarkable.
 
+### Reading every limit at once
+
+A repository that declares its limits one per project has no single file left
+to read them from. `codometer configuration` is that reading:
+
+```bash
+codometer configuration --limits
+```
+
+```text
+| Directory        | Metric                    | Label | Severity | Value   | Declared in                          |
+| ---              | ---                       | ---   | ---      | ---     | ---                                  |
+| packages/logger  | `Compiled JavaScript.size`| —     | fail     | 6.00 kB | `packages/logger/codometer.config.ts`|
+```
+
+It walks for every configuration file beneath the directory it is given — in
+any of the formats codometer accepts — and resolves each one **for its own
+folder**, so what it reports is what a per-project run actually sees. The walk
+honors the exclusions the root configuration declares, so a configuration
+inside a dependency or a generator template is never listed as something the
+repository configures.
+
+Drop `--limits` to list everything each configuration resolved to: its targets,
+custom statistics, documentation settings, exclusions, and Python command. Add
+`--format json` for a machine-readable listing.
+
+It reports configuration and never measurement. No build is required and no
+limit is evaluated, so it runs in milliseconds and cannot fail for a reason
+unrelated to configuration — which is what makes it usable while something
+else is broken. A file that cannot be loaded is reported as unreadable rather
+than taking the listing down with it.
+
 ## Documentation
 
 A **documentation limit** is how long one documented declaration's JSDoc

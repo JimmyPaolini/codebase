@@ -311,6 +311,17 @@ export interface LoadConfigurationArguments {
 }
 
 /**
+ * A resolved configuration and the file it was resolved from.
+ *
+ * `path` stays `undefined` when the upward walk reached the filesystem root
+ * without finding a file, which is legal and leaves every default in place.
+ */
+export interface LoadedConfiguration {
+  configuration: ResolvedCodometerConfiguration;
+  path: string | undefined;
+}
+
+/**
  * Configuration with every default applied.
  *
  * Consumers read this shape rather than the authored one, so no analyzer has

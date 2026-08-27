@@ -18,6 +18,7 @@
   ],
   "extends": "../../configuration/tsconfig.json",
   "include": [
+    "codometer.config.ts",
     "eslint.config.ts",
     "examples/**/*.ts",
     "testing/**/*.ts",

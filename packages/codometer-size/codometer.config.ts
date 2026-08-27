@@ -1,0 +1,14 @@
+import codometerConfiguration, {
+  compiledJavaScriptTarget,
+} from "../../configuration/codometer.config.js";
+
+export default {
+  ...codometerConfiguration,
+  limits: [{ metric: "Compiled JavaScript.size", value: "3 KB" }],
+  targets: [
+    {
+      ...compiledJavaScriptTarget,
+      include: ["dist/packages/codometer-size/**/*.js"],
+    },
+  ],
+};
