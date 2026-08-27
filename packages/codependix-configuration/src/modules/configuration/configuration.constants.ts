@@ -98,9 +98,15 @@ const boundarySelectorSchema = z
     },
   );
 
+/** Validates the edge attributes a rule may narrow itself to. */
+const boundaryEdgeSelectorSchema = z.object({
+  implicit: z.boolean().optional(),
+});
+
 /** Validates one declared boundary rule, of either kind. */
 const boundaryRuleSchema = z.union([
   z.object({
+    edges: boundaryEdgeSelectorSchema.optional(),
     from: boundarySelectorSchema,
     kind: z.enum(["allow", "forbid"]),
     message: z.string().min(1).optional(),

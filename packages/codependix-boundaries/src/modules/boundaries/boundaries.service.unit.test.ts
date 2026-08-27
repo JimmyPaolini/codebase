@@ -248,6 +248,62 @@ describe(BoundariesService, () => {
     ).toStrictEqual([]);
   });
 
+  it("judges only explicit edges when a rule asks for them", () => {
+    // What an `@nx/enforce-module-boundaries` depConstraint actually sees: it
+    // reads import statements, so an `implicitDependencies` entry is
+    // invisible to it.
+    const graph: BoundaryGraph = {
+      edges: [
+        { implicit: false, source: "a", target: "b" },
+        { implicit: true, source: "a", target: "c" },
+      ],
+      level: "nx",
+      nodes: [{ id: "a" }, { id: "b" }, { id: "c" }],
+      scope: "workspace",
+    };
+    const rule: CodependixBoundaryRule = {
+      edges: { implicit: false },
+      from: { id: ["a"] },
+      kind: "allow",
+      name: "a-reaches-b-only",
+      to: { id: ["b"] },
+    };
+
+    expect(service.evaluate({ graph, rules: [rule] })).toStrictEqual([]);
+    expect(
+      service
+        .evaluate({
+          graph,
+          rules: [
+            { ...rule, edges: { implicit: true }, name: "implicit-only" },
+          ],
+        })
+        .map((violation) => violation.target),
+    ).toStrictEqual(["c"]);
+    expect(
+      service
+        .evaluate({ graph, rules: [{ ...rule, edges: undefined }] })
+        .map((violation) => violation.target),
+    ).toStrictEqual(["c"]);
+  });
+
+  it("reads an edge with no implicit flag as an explicit one", () => {
+    expect(
+      service.evaluate({
+        graph: buildGraph({ edges: ["a>b"] }),
+        rules: [
+          {
+            edges: { implicit: true },
+            from: { id: ["a"] },
+            kind: "forbid",
+            name: "implicit-only",
+            to: { id: ["b"] },
+          },
+        ],
+      }),
+    ).toStrictEqual([]);
+  });
+
   it("selects on tags a node carries", () => {
     const violations = service.evaluate({
       graph: buildGraph({

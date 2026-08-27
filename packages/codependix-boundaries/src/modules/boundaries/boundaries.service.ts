@@ -9,6 +9,7 @@ import { BoundaryCyclesService } from "./boundary-cycles.service";
 import { BoundarySelectorService } from "./boundary-selector.service";
 
 import type {
+  BoundaryEdge,
   BoundaryGraph,
   BoundaryNode,
   BoundaryViolation,
@@ -112,6 +113,10 @@ export class BoundariesService {
     const violations: BoundaryViolation[] = [];
 
     for (const edge of graph.edges) {
+      if (!this.judgesEdge({ edge, rule })) {
+        continue;
+      }
+
       const source = this.resolveNode(nodes, edge.source);
 
       if (!this.selectorService.matches(source, rule.from)) {
@@ -160,6 +165,26 @@ export class BoundariesService {
   /** Indexes a graph's nodes by identifier, so an edge can look its ends up. */
   private indexNodes(graph: BoundaryGraph): Map<string, BoundaryNode> {
     return new Map(graph.nodes.map((node) => [node.id, node]));
+  }
+
+  /**
+   * Whether a rule judges this edge at all, before either end is selected.
+   *
+   * A rule naming no `edges` judges every one, which is the stricter reading
+   * and the right default for a rule about what a project may _depend on_.
+   * Naming `implicit: false` narrows it to what an
+   * `@nx/enforce-module-boundaries` `depConstraint` actually sees — that rule
+   * reads import statements, so an `implicitDependencies` entry is invisible
+   * to it. An edge at a level that draws no implicit edges is read as
+   * explicit, since a file import is not "explicitly" anything.
+   */
+  private judgesEdge(args: {
+    edge: BoundaryEdge;
+    rule: CodependixBoundaryAccessRule;
+  }): boolean {
+    const wanted = args.rule.edges?.implicit;
+
+    return wanted === undefined || (args.edge.implicit ?? false) === wanted;
   }
 
   /**

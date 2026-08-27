@@ -236,6 +236,13 @@ glob matching is enough:
 | `project` | The Nx project a node belongs to | `nx`, `imports`, `pythonImports` |
 | `tags` | The node's Nx tags; one tag matching is enough | `nx` |
 
+An access rule may also narrow **which edges** it judges, with `edges`:
+`{ implicit: false }` sees only edges backed by an import statement — exactly
+what an `@nx/enforce-module-boundaries` `depConstraint` sees — and
+`{ implicit: true }` sees only the ones an `implicitDependencies` entry
+declares. Unset judges both, which is the stricter reading. Only the Nx level
+draws an implicit edge.
+
 Four things to know before writing one:
 
 - **A selector naming a field its level does not carry matches nothing**, not

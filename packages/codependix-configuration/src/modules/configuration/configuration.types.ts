@@ -31,6 +31,12 @@ export interface CodependixBoundariesConfiguration {
  * to see the same three fields either way.
  */
 export interface CodependixBoundaryAccessRule {
+  /**
+   * Narrows which edges the rule judges, rather than which nodes it selects.
+   *
+   * Left unset, the rule judges every edge between the nodes it selects.
+   */
+  edges?: CodependixBoundaryEdgeSelector | undefined;
   /** Selects the nodes the edge leaves. */
   from: CodependixBoundarySelector;
   kind: "allow" | "forbid";
@@ -69,6 +75,31 @@ export interface CodependixBoundaryAcyclicRule {
    * it was never asked about.
    */
   nodes?: CodependixBoundarySelector | undefined;
+}
+
+/**
+ * How a rule narrows which edges it judges.
+ *
+ * Separate from `CodependixBoundarySelector`, which picks the nodes at either
+ * end: this is about the edge itself, and only the Nx level draws an edge with
+ * an attribute worth narrowing on.
+ */
+export interface CodependixBoundaryEdgeSelector {
+  /**
+   * Judge only implicit edges, or only explicit ones.
+   *
+   * `false` is what makes a rule mean exactly what an
+   * `@nx/enforce-module-boundaries` `depConstraint` means: that rule reads
+   * import statements, so an `implicitDependencies` entry is invisible to it.
+   * `true` inverts it — useful for finding the edges declared in
+   * configuration that no import backs. Unset judges both, which is the
+   * stricter reading and the right default for a rule about what a project
+   * may depend on rather than about what it may import.
+   *
+   * Every level that is not `nx` draws only explicit edges, so a rule naming
+   * `implicit: true` there selects nothing.
+   */
+  implicit?: boolean | undefined;
 }
 
 /** One declared rule, of either kind. */

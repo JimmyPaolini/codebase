@@ -17,6 +17,7 @@ export type {
   CodependixBoundariesConfiguration,
   CodependixBoundaryAccessRule,
   CodependixBoundaryAcyclicRule,
+  CodependixBoundaryEdgeSelector,
   CodependixBoundaryRule,
   CodependixBoundarySelector,
   CodependixConfiguration,

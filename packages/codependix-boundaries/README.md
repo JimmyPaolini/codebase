@@ -34,6 +34,18 @@ graph in
 reports at the import site with a line number, and `dependency-cruiser`'s
 `no-circular`, which is already this repository's file-cycle gate.
 
+The two were checked against each other rather than assumed equivalent. All 32
+of this repository's `depConstraints` translate mechanically —
+`onlyDependOnLibsWithTags` is an `allow` rule, `notDependOnLibsWithTags` is a
+`forbid` rule, and an empty `onlyDependOnLibsWithTags` is a `forbid` reaching
+everything — and with `edges: { implicit: false }` all 32 pass, exactly as
+ESLint reports them. Without that narrowing one more edge is reported:
+`conformetry-examples → conformetry-cli`, declared by an `implicitDependencies`
+entry with no import statement behind it. Its own `depConstraint` comment says
+that dependency should not exist, and ESLint has nothing to flag. Whether that
+is a finding or a false positive is the question `edges` exists to let a rule
+answer.
+
 ## The rule model
 
 Rules are declared in `codependix.config.ts`, keyed by the graph level that
@@ -50,6 +62,18 @@ verdict running one way or the other, and an `acyclic` rule scoped by `nodes`:
 | `forbid` | An edge whose source matches `from` and whose target matches `to` |
 | `allow` | An edge leaving `from` for anywhere `to` does not claim |
 | `acyclic` | A cycle among the nodes `nodes` selects, defaulting to every node |
+
+An access rule may also narrow **which edges** it judges, rather than which
+nodes it selects:
+
+| `edges` | Judges |
+| ------- | ------ |
+| unset | every edge — the stricter reading, and the right default for a rule about what a project may _depend on_ |
+| `{ implicit: false }` | only edges backed by an import statement — exactly what an `@nx/enforce-module-boundaries` `depConstraint` sees |
+| `{ implicit: true }` | only edges an `implicitDependencies` entry declares and no import backs |
+
+Only the Nx level draws an implicit edge; every other level's edges are read as
+explicit.
 
 Each rule carries a `name` and, optionally, a `message` saying why it exists.
 The message is **appended** to the generated sentence rather than replacing
