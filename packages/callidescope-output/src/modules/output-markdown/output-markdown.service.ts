@@ -5,8 +5,10 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import { FOREIGN_ANCHOR_PATTERN } from "./output-markdown.constants";
-import { MissingMarkdownPathError } from "./output-markdown.errors";
+import {
+  FOREIGN_ANCHOR_PATTERN,
+  MissingMarkdownPathError,
+} from "./output-markdown.constants";
 
 import type {
   SyncAnchoredBlockArguments,

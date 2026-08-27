@@ -31,6 +31,7 @@ export {
   CALLIDESCOPE_OUTPUT_FORMATS,
   callidescopeConfigurationSchema,
   CONFIGURATION_FILE_NAMES,
+  ConfigurationFileNotFoundError,
   DEFAULT_ALLOW_SPREAD_FOR,
   DEFAULT_CALLER_MAJORITY_RATIO,
   DEFAULT_DIRECT_SPREAD_THRESHOLD,
@@ -52,7 +53,6 @@ export {
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
 } from "./modules/configuration/configuration.constants";
-export { ConfigurationFileNotFoundError } from "./modules/configuration/configuration.errors";
 export { ConfigurationModule } from "./modules/configuration/configuration.module";
 export { ConfigurationService } from "./modules/configuration/configuration.service";
 export type {

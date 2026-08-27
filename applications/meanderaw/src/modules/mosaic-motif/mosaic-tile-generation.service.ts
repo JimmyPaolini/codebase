@@ -1,9 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { InvalidRepeatCountError } from "../meander-generation/invalid-repeat-count.errors";
-import { InvalidRowsError } from "../meander-generation/invalid-rows.errors";
 import {
+  InvalidRepeatCountError,
+  InvalidRowsError,
   MAXIMUM_VALUE,
   MINIMUM_REPEAT_COUNT,
 } from "../meander-generation/meander-generation.constants";

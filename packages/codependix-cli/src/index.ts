@@ -1,11 +1,11 @@
 export { MainModule } from "./main.module";
 // 📤 Exports
 export {
+  AnchorNotFoundError,
   buildEndMarker,
   buildStartMarker,
   CODEPENDIX_SECTION_HEADING,
 } from "./modules/anchors/anchors.constants";
-export { AnchorNotFoundError } from "./modules/anchors/anchors.errors";
 export { AnchorsModule } from "./modules/anchors/anchors.module";
 export { AnchorsService } from "./modules/anchors/anchors.service";
 export type { AnchorCheckResult } from "./modules/anchors/anchors.types";

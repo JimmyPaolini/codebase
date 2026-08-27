@@ -10,6 +10,7 @@ import { parse as parseJsonc } from "jsonc-parser";
 import {
   callidescopeConfigurationSchema,
   CONFIGURATION_FILE_NAMES,
+  ConfigurationFileNotFoundError,
   DEFAULT_ALLOW_SPREAD_FOR,
   DEFAULT_CALLER_MAJORITY_RATIO,
   DEFAULT_DIRECT_SPREAD_THRESHOLD,
@@ -31,7 +32,6 @@ import {
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
-import { ConfigurationFileNotFoundError } from "./configuration.errors";
 
 import type {
   CallidescopeConfiguration,

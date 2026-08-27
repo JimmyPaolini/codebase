@@ -86,9 +86,9 @@ Missing required inputs are prompted for when stdin is a TTY and `CI` is not
 
 ### `conformetry templates`
 
-Names every template the loaded configuration declares, with its aliases,
-description and folder. Nothing else answers that question: a generator name
-guessed at is rejected, and aliases only resolve through the Nx plugin.
+Names every template the loaded configuration declares, with its description
+and folder. Nothing else answers that question: a generator is addressed by its
+full name, and one guessed at is rejected.
 
 | Flag | Purpose |
 | ---- | ------- |
@@ -264,7 +264,6 @@ import { type ConformetryConfiguration } from "@conformetry/configuration";
 
 const conformetryConfiguration: ConformetryConfiguration = [
   {
-    aliases: ["nsm"],
     description: "Generate a NestJS service module",
     inputs: {
       name: { description: "Module name in kebab-case", type: "string" },
@@ -893,8 +892,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2480-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-90.62_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2478-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-90.57_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-35-3178c6?style=flat-square)
 
@@ -1043,11 +1042,10 @@ graph LR
 ![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-4-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-6-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-6-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 
 ### Jupyter
 

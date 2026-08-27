@@ -113,7 +113,7 @@ template already describes starts life failing conformance.
 generator whenever creating a new application, package, module, or component.
 
 ```bash
-nx g conformetry:<generator-or-alias> [options]
+nx g conformetry:<generator> [options]
 pnpm nx run-many --targets=conformetry-validate
 ```
 
@@ -154,18 +154,18 @@ This repository's generators, kept in step with the configuration by
 same thing for any workspace:
 
 <!-- conformetry-generators-table start -->
-| Template | Alias | Description |
-| -------- | ----- | ----------- |
-| `jupyter-notebook-application` | `jna` | A standalone Python application template with a Jupyter notebook entry point, pytest/pyright/ruff tooling, and a shared uv workspace venv |
-| `nestjs-command-project` | `nca` | A standalone NestJS CLI application template built on nest-commander, for a new command-line tool in applications/, packages/, or tools/ |
-| `nestjs-graphql-application` | `nga` | A standalone NestJS GraphQL API application template, for a new backend service exposing a GraphQL schema over HTTP |
-| `nestjs-service-project` | `nsp` | A standalone NestJS library package template for internal workspace code shared across projects, with no CLI entry point or HTTP server |
-| `nestjs-command-module` | `ncm` | A nest-commander command module template — command, module, constants, types, and unit test — for an existing NestJS command-line project |
-| `nestjs-dataloader-module` | `ndm` | A GraphQL dataloader module template — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project |
-| `nestjs-graphql-module` | `ngm` | A GraphQL module template — resolver, entities, args/input types, factories, constants, and unit test — for an existing NestJS project |
-| `nestjs-service-file` | `nsf` | A service and unit test file template for an existing NestJS module, without the surrounding module files |
-| `nestjs-service-module` | `nsm` | A plain service module template — module, service, constants, types, and unit test — for an existing NestJS project |
-| `react-component` | `c` | A React component and test file template for an existing React project |
+| Template | Description |
+| -------- | ----------- |
+| `jupyter-notebook-application` | A standalone Python application template with a Jupyter notebook entry point, pytest/pyright/ruff tooling, and a shared uv workspace venv |
+| `nestjs-command-project` | A standalone NestJS CLI application template built on nest-commander, for a new command-line tool in applications/, packages/, or tools/ |
+| `nestjs-graphql-application` | A standalone NestJS GraphQL API application template, for a new backend service exposing a GraphQL schema over HTTP |
+| `nestjs-service-project` | A standalone NestJS library package template for internal workspace code shared across projects, with no CLI entry point or HTTP server |
+| `nestjs-command-module` | A nest-commander command module template — command, module, constants, types, and unit test — for an existing NestJS command-line project |
+| `nestjs-dataloader-module` | A GraphQL dataloader module template — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project |
+| `nestjs-graphql-module` | A GraphQL module template — resolver, entities, args/input types, factories, constants, and unit test — for an existing NestJS project |
+| `nestjs-service-file` | A service and unit test file template for an existing NestJS module, without the surrounding module files |
+| `nestjs-service-module` | A plain service module template — module, service, constants, types, and unit test — for an existing NestJS project |
+| `react-component` | A React component and test file template for an existing React project |
 <!-- conformetry-generators-table end -->
 
 ## Callidescope
@@ -640,7 +640,7 @@ Folder and file placement is a lint error, not a style preference. It is enforce
 - **Projects live in `applications/`, `packages/`, or `tools/`.** Adding a new file or folder at the workspace root requires adding it to `configuration/codebase-structure.json` in the same change, or lint fails.
 - **Project subfolders are a fixed set**: `src/`, `testing/`, `scripts/`, `data/`, `assets/`, `coverage/`, `output/`, `public/`, `.vscode/`.
 - **`src/` subfolders are a fixed set**: `modules/`, `components/`, `lib/`, `routes/`, `hooks/`, `styles/`, `assets/`, `executors/`, `generators/`, `validators/`. A `src/plugin.ts` entrypoint is forbidden.
-- **Files inside `src/modules/<module-name>/` must be `<kebab-name>.<suffix>.<extension>`** where suffix is one of `command`, `constants`, `errors`, `module`, `service`, `types`, or `utilities`, optionally with `.unit.test`, `.integration.test`, or `.end-to-end.test` before the extension. A bare `<name>.ts` inside a module folder is invalid — pick a suffix.
+- **Files inside `src/modules/<module-name>/` must be `<kebab-name>.<suffix>.<extension>`** where suffix is one of `command`, `constants`, `module`, `service`, `types`, or `utilities`, optionally with `.unit.test`, `.integration.test`, or `.end-to-end.test` before the extension. A bare `<name>.ts` inside a module folder is invalid — pick a suffix. There is deliberately no `errors` suffix: an error class lives in the `*.constants.ts` file beside the code that throws it, which the **Constant File Shape** rule permits by whitelisting `class X extends Error`.
 - Scaffold with a conformetry generator rather than hand-building the tree; the generators already produce this layout.
 
 ### Project Tags

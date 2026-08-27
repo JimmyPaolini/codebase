@@ -35,7 +35,6 @@ import { type ConformetryConfiguration } from "@conformetry/configuration";
 
 const conformetryConfiguration: ConformetryConfiguration = [
   {
-    aliases: ["nsm"],
     description: "Generate a NestJS service module",
     inputs: {
       name: { description: "Module name in kebab-case", type: "string" },
@@ -57,7 +56,6 @@ export default conformetryConfiguration;
 | `templatePath` | ✅ | The template folder, relative to the workspace root |
 | `inputs` | | The values it substitutes, as JSON Schema fragments |
 | `instances` | | Where this generator's output already lives |
-| `aliases` | | Short handles — `nsm`, `c` — resolved in the same namespace as names |
 | `description` | | Shown when a host lists or prompts for generators |
 
 Both `inputs` and `instances` may be omitted. A generator with neither renders
@@ -68,19 +66,17 @@ a fixed template nobody validates, which is legal.
 The schema fails loudly rather than validating nothing, and reports every
 problem in one pass:
 
-- **Two generators answering to the same name or alias.** Names and aliases
-  share one namespace, because a host searches both at once. A host resolves
-  the first match, so a collision does not error where it is used — it silently
-  shadows, and the losing generator becomes unreachable while still appearing
-  in the configuration.
+- **Two generators answering to the same name.** A host resolves the first
+  match, so a collision does not error where it is used — it silently shadows,
+  and the losing generator becomes unreachable while still appearing in the
+  configuration.
 - **Two generators sharing a `templatePath`.** Validation then finds instances
   that fit both equally and reports them as matching nothing.
-- **A name or alias containing a path separator.** A generator is addressed by
-  that text and emitted to a file named after it.
-
-Unknown keys are stripped, so every field a generator needs is declared in the
-schema deliberately — an omitted one would be silently discarded rather than
-rejected.
+- **A name containing a path separator.** A generator is addressed by its name
+  and emitted to a file named after it.
+- **A key the schema does not declare.** The generator object is strict, so a
+  misspelled field — or `aliases`, which was removed outright — is rejected
+  rather than stripped and left reading as though it took effect.
 
 ## Instances
 
@@ -613,14 +609,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4771-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-161.10_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4740-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-159.91_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-39-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-22.60_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-22.39_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -645,8 +641,8 @@ graph LR
 ![Constants](https://img.shields.io/badge/Constants-253-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-153-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-51-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-221-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-565-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-219-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-563-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -763,11 +759,10 @@ graph LR
 ![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-4-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-1-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-11-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-11-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 
 ### Jupyter
 

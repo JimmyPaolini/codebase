@@ -13,7 +13,7 @@ export type {
   RenderReportArguments,
   SyncJsonArguments,
 } from "./modules/json/json.types";
-export { MissingMarkdownPathError } from "./modules/markdown/markdown.errors";
+export { MissingMarkdownPathError } from "./modules/markdown/markdown.constants";
 export { MarkdownModule } from "./modules/markdown/markdown.module";
 export { MarkdownService } from "./modules/markdown/markdown.service";
 export type {

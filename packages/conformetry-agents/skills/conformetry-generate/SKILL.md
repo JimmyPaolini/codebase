@@ -58,7 +58,6 @@ the same generator behaves differently depending on how you invoke it.
 | | Nx plugin | Command-line host |
 | --- | --- | --- |
 | Invocation | `nx g conformetry:<name>` | `conformetry generate --generator <name>` |
-| Aliases | resolved | **not resolved — exact name only** |
 | Inputs | **every declared input is required** | none is ever required |
 | Missing input | refuses, or prompts | refuses when the template interpolates it |
 | Default destination | resolved from the workspace | `generated/<generator-name>` |
@@ -77,9 +76,8 @@ both.
 says so with a section — `{{#owner}}…{{/owner}}` renders nothing when `owner` is
 absent — rather than relying on a bare `{{owner}}`.
 
-Aliases are worth the same care. `nx g conformetry:nsm` works; `conformetry
-generate --generator nsm` does not, because the command-line host looks
-generators up by exact name. It lists the real names when you get one wrong.
+A generator is addressed by its full name on both paths — there are no short
+alternative names. Both hosts list the real names when you get one wrong.
 
 ## Where the output lands
 

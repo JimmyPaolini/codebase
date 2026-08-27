@@ -6,8 +6,8 @@ import { Test } from "@nestjs/testing";
 import ts from "typescript";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { TypescriptProjectConfigurationError } from "./typescript-project.errors";
 import { TypescriptProjectService } from "./typescript-project.service";
+import { TypescriptProjectConfigurationError } from "./typescript.constants";
 
 import type { TypescriptProject } from "./typescript.types";
 

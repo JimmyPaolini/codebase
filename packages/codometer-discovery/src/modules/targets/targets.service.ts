@@ -6,8 +6,11 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import { GLOB_MAGIC_CHARACTERS, PATH_SEPARATOR } from "./targets.constants";
-import { TargetOutsideRepositoryError } from "./targets.errors";
+import {
+  GLOB_MAGIC_CHARACTERS,
+  PATH_SEPARATOR,
+  TargetOutsideRepositoryError,
+} from "./targets.constants";
 
 import type {
   MatchTargetFilesArguments,

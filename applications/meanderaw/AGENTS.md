@@ -13,6 +13,38 @@ cp .env.default .env  # Fill in required environment variables
 nx run meanderaw:start
 ```
 
+## 🏛️ Before You Change a Meander
+
+Meander geometry is governed by a charter of seven invariants, five of which are fixed.
+They were established by measuring all 3,293 committed SVGs, not by reading the code, so
+they are facts about the output rather than intentions in the source. The full charter,
+with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
+
+The three that most often catch a change:
+
+- **Space-filling.** Every interior white channel is exactly one stroke width — which
+  equals half a grid unit. `GridGeometryService` derives stroke width and offset from the
+  grid unit for this reason; setting either independently breaks the invariant silently,
+  because nothing currently fails when it does.
+- **No branching and no crossing.** Ink is a disjoint union of simple arcs: zero
+  T-junctions and zero X-junctions, across every family. These two are the charter's
+  negotiable invariants, so a family may break them — but only deliberately, and never as
+  a side effect of a geometry fix.
+- **Band, not field.** Canvas height is fixed and `rows` sets density, not size. These
+  patterns are meant for borders.
+
+Two things that look like defects and are not:
+
+- **Gaps wider than one stroke where a band terminates** are expected, and owned by
+  [#338](https://github.com/JimmyPaolini/codebase/issues/338). Do not chase them.
+- **`--type` disagreeing with the glossary's "family"** is a deliberate divergence, not a
+  stale name. Renaming the flag is a breaking CLI change.
+
+When adding a family, prefer extending an existing family's unit space over hand-writing a
+new motif service — see
+"Families, Sub-families, and Tiles" in [README.md](./README.md), and the
+candidate backlog in [#340](https://github.com/JimmyPaolini/codebase/issues/340).
+
 ## Architecture Overview
 
 ### Tech Stack

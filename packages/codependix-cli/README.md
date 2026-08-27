@@ -216,7 +216,6 @@ graph LR
   file_src_main_module_ts["src/main.module.ts"]
   file_src_main_ts["src/main.ts"]
   file_src_modules_anchors_anchors_constants_ts["src/modules/anchors/anchors.constants.ts"]
-  file_src_modules_anchors_anchors_errors_ts["src/modules/anchors/anchors.errors.ts"]
   file_src_modules_anchors_anchors_module_ts["src/modules/anchors/anchors.module.ts"]
   file_src_modules_anchors_anchors_module_unit_test_ts["src/modules/anchors/anchors.module.unit.test.ts"]
   file_src_modules_anchors_anchors_service_ts["src/modules/anchors/anchors.service.ts"]
@@ -256,19 +255,18 @@ graph LR
   file_src_modules_anchors_anchors_module_unit_test_ts --> file_src_modules_anchors_anchors_module_ts
   file_src_modules_anchors_anchors_module_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
   file_src_modules_anchors_anchors_service_ts --> file_src_modules_anchors_anchors_constants_ts
-  file_src_modules_anchors_anchors_service_ts --> file_src_modules_anchors_anchors_errors_ts
   file_src_modules_anchors_anchors_service_ts --> file_src_modules_anchors_anchors_types_ts
-  file_src_modules_anchors_anchors_service_unit_test_ts --> file_src_modules_anchors_anchors_errors_ts
+  file_src_modules_anchors_anchors_service_unit_test_ts --> file_src_modules_anchors_anchors_constants_ts
   file_src_modules_anchors_anchors_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_anchors_anchors_module_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_delivery_delivery_module_unit_test_ts --> file_src_modules_delivery_delivery_module_ts
   file_src_modules_delivery_delivery_module_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_delivery_delivery_service_ts --> file_src_modules_anchors_anchors_errors_ts
+  file_src_modules_delivery_delivery_service_ts --> file_src_modules_anchors_anchors_constants_ts
   file_src_modules_delivery_delivery_service_ts --> file_src_modules_anchors_anchors_service_ts
   file_src_modules_delivery_delivery_service_ts --> file_src_modules_delivery_delivery_constants_ts
   file_src_modules_delivery_delivery_service_ts --> file_src_modules_delivery_delivery_types_ts
-  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_anchors_anchors_errors_ts
+  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_anchors_anchors_constants_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_map_map_command_ts --> file_src_modules_delivery_delivery_types_ts
@@ -424,17 +422,17 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4536-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-156.01_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-155.94_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-41-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-40-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.77_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.57_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-40-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-39-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-13-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
@@ -453,7 +451,7 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-162-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-64-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-235-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-171-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-170-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-46-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-151-64748b?style=flat-square)
 ![Comment Lines](https://img.shields.io/badge/Comment_Lines-417-475569?style=flat-square)
@@ -573,11 +571,10 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 ![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-4-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-1-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-11-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-11-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 
 ### Jupyter
 

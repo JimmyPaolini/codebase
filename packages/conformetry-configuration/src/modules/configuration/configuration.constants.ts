@@ -42,14 +42,14 @@ const jsonSchemaDefinitionSchema: z.ZodType = z.lazy(() => {
 /**
  * Validates the generator list loaded from a config file.
  *
- * Every field a generator needs is declared here deliberately: Zod strips
- * unknown keys, so anything omitted would be silently discarded rather than
- * rejected. `tags` is carried uninterpreted for whichever host reads it.
+ * Every field a generator needs is declared here deliberately, and the
+ * generator object is strict: an undeclared key is rejected rather than
+ * stripped, so a workspace is told rather than left believing it configured
+ * something. `tags` is carried uninterpreted for whichever host reads it.
  */
 export const conformetryConfigurationSchema = z
   .array(
-    z.object({
-      aliases: z.array(z.string()).optional(),
+    z.strictObject({
       description: z.string().optional(),
       // Each input is a JSON Schema fragment, so it must be an object; its own
       // fields may hold any JSON value.

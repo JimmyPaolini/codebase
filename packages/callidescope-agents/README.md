@@ -98,7 +98,7 @@ _This project has no internal file imports._
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-191-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-50.94_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-51.12_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-5-3178c6?style=flat-square)
 
@@ -243,11 +243,10 @@ _This project has no internal file imports._
 ![Constants Files](https://img.shields.io/badge/Constants_Files-0-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-0-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-1-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-1-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 
 ### Jupyter
 
@@ -275,7 +274,7 @@ _This project has no internal file imports._
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-4-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-853-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-855-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-4-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-27-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-13-a78bfa?style=flat-square)
@@ -291,7 +290,7 @@ _This project has no internal file imports._
 ![Links](https://img.shields.io/badge/Links-4-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-10-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-311-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-312-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

@@ -74,7 +74,6 @@ async function writeEmptyFile(filePath: string): Promise<void> {
 /** Both templates, each declaring the one instance glob. */
 const CONFIGURATION: ConformetryConfiguration = [
   {
-    aliases: ["w"],
     description: "Generate a widget",
     inputs: {},
     instances: [{ patterns: [INSTANCE_PATTERN] }],
@@ -305,19 +304,17 @@ describe(InstanceDiscoveryService, () => {
       expect(templates[0]?.instances).toHaveLength(1);
     });
 
-    it("carries each template's aliases and description through", () => {
+    it("carries each template's description through", () => {
       const [widget] =
         service.resolveInventoriedTemplates(inventoryArguments());
 
-      expect(widget?.aliases).toStrictEqual(["w"]);
       expect(widget?.description).toBe("Generate a widget");
     });
 
-    it("reports empty aliases and description for a template declaring neither", () => {
+    it("reports an empty description for a template declaring none", () => {
       const [, gadget] =
         service.resolveInventoriedTemplates(inventoryArguments());
 
-      expect(gadget?.aliases).toStrictEqual([]);
       expect(gadget?.description).toBe("");
     });
 

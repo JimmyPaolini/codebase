@@ -2,8 +2,10 @@ import { Injectable } from "@nestjs/common";
 import lodash from "lodash";
 import mustache from "mustache";
 
-import { MUSTACHE_RENDER_OPTIONS } from "./rendering.constants";
-import { MissingSubstitutionError } from "./rendering.errors";
+import {
+  MissingSubstitutionError,
+  MUSTACHE_RENDER_OPTIONS,
+} from "./rendering.constants";
 
 import type { Substitutions } from "./rendering.types";
 import type { TemplateSpans } from "mustache";

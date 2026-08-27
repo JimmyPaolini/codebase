@@ -70,7 +70,6 @@ exist is a property of your configuration, not of this package.
 
 ```bash
 nx g conformetry:nestjs-service-module --name=billing --project=lexico
-nx g conformetry:nsm --name=billing --project=lexico   # by alias
 ```
 
 Nx prompts for missing inputs from the generator's own schema and writes
@@ -668,14 +667,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5770-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-200.13_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5766-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-199.98_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-15-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-61-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-32.85_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-32.83_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -818,11 +817,10 @@ graph LR
 ![Constants Files](https://img.shields.io/badge/Constants_Files-8-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-10-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-2-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-14-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-14-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 
 ### Jupyter
 

@@ -8,6 +8,7 @@ import { ZodError } from "zod";
 
 import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
+  ConfigurationFileNotFoundError,
   DEFAULT_CUSTOM_STATISTIC_COLORS,
   DEFAULT_DOCUMENTATION_UNIT,
   DEFAULT_EXCLUDE_GLOBS,
@@ -18,11 +19,10 @@ import {
   DEFAULT_PYTHON_COMMAND,
   DEFAULT_TARGET_COMPRESSION,
   DEFAULT_TARGET_DIRECTORY,
+  InvalidLimitValueError,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
-import { ConfigurationFileNotFoundError } from "./configuration.errors";
 import { ConfigurationService } from "./configuration.service";
-import { InvalidLimitValueError } from "./limit-value.errors";
 
 /** Writes a JSON configuration holding whatever the caller passes. */
 async function writeConfiguration(configuration: unknown): Promise<string> {

@@ -8,9 +8,9 @@ import { ZodError } from "zod";
 
 import {
   codependixConfigurationSchema,
+  ConfigurationFileNotFoundError,
   DEFAULT_INCLUDE_GLOBS,
 } from "./configuration.constants";
-import { ConfigurationFileNotFoundError } from "./configuration.errors";
 import { ConfigurationService } from "./configuration.service";
 
 import type { CodependixBoundaryRule } from "./configuration.types";

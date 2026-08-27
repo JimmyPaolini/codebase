@@ -7,10 +7,10 @@ import { LoggerService } from "@codebase/logger";
 
 import {
   CODOMETER_SECTION_HEADING,
+  MissingMarkdownPathError,
   REGEX_SPECIAL_CHARACTERS,
   TRAILING_NEWLINES,
 } from "./markdown.constants";
-import { MissingMarkdownPathError } from "./markdown.errors";
 import {
   buildCssGroup,
   buildCustomGroup,
