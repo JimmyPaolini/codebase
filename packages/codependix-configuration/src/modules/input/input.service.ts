@@ -1,16 +1,27 @@
 import { Injectable } from "@nestjs/common";
 import prompts from "prompts";
 
-import type { PromptRunner } from "./input.types";
+import { CODEPENDIX_RUN_MODES } from "./input.constants";
+import {
+  conflictingRunModeError,
+  missingInputError,
+  promptCancelledError,
+} from "./input.errors";
+
+import type {
+  CodependixRunMode,
+  CodependixRunModeOptions,
+  PromptRunner,
+} from "./input.types";
 
 /**
- * Parses CLI option values and prompts for the ones a command still needs.
+ * Parses CLI option values and asks for the ones a command still needs.
  *
  * Lives here rather than in `codependix-cli` so the rules for the flags its
- * commands hold in common — `--config`, `--directory`, and the two boolean
- * mode flags — are stated once, alongside the configuration those flags
- * ultimately select. Mirrors `@callidescope/configuration`'s `InputService`
- * and the original in `@conformetry/configuration`.
+ * commands hold in common — `--config`, `--directory`, and the two run-mode
+ * flags — are stated once, alongside the configuration those flags ultimately
+ * select. Mirrors `@callidescope/configuration`'s `InputService` and the
+ * original in `@conformetry/configuration`.
  */
 @Injectable()
 export class InputService {
@@ -27,24 +38,23 @@ export class InputService {
 
   // 🔏 Private Methods
 
-  // 🌎 Public Methods
-
   /**
-   * Whether a missing value may be asked for interactively.
+   * Refuses to draw a prompt nobody can answer.
    *
-   * `@types/node` declares `process.stdin.isTTY` a `boolean`, but Node leaves
-   * it `undefined` when stdin is not a terminal. It is read as falsy rather
-   * than coerced — lint rejects a coercion the declared type says is
-   * unnecessary — and that falsy reading is the whole point: treating an
-   * absent `isTTY` as "unset, so prompt" is what hangs a command run in CI.
+   * `prompts` does not fail on a stdin that is not a terminal — it renders
+   * the menu, never resolves, and lets the process exit 0. That is the one
+   * outcome worth ruling out, since a run that quietly did nothing reads as
+   * a run that succeeded. `@types/node` declares `isTTY` a `boolean` while
+   * Node leaves it `undefined` off a terminal, so the guard reads it as
+   * falsy rather than coercing it, which lint rejects as unnecessary.
    */
-  public canPrompt(interactive: boolean | undefined): boolean {
-    return (
-      interactive !== false &&
-      process.stdin.isTTY &&
-      process.env["CI"] !== "true"
-    );
+  private assertCanPrompt(subject: string): void {
+    if (!process.stdin.isTTY) {
+      throw missingInputError(subject);
+    }
   }
+
+  // 🌎 Public Methods
 
   /**
    * Parses a valueless boolean flag, which is present or it is not.
@@ -79,7 +89,10 @@ export class InputService {
   public async promptForSelect<Choice extends string>(args: {
     choices: readonly Choice[];
     message: string;
+    subject: string;
   }): Promise<Choice> {
+    this.assertCanPrompt(args.subject);
+
     const response = await this.promptRunner({
       choices: args.choices.map((choice) => ({ title: choice, value: choice })),
       message: args.message,
@@ -87,6 +100,11 @@ export class InputService {
       type: "select",
     });
     const value: unknown = response.value;
+
+    if (value === undefined) {
+      throw promptCancelledError(args.subject);
+    }
+
     const matched = args.choices.find((choice) => choice === value);
 
     if (matched === undefined) {
@@ -96,5 +114,40 @@ export class InputService {
     }
 
     return matched;
+  }
+
+  /**
+   * Returns the given options with exactly one run mode set.
+   *
+   * Naming both flags is refused outright — there is no sensible reading of
+   * "check and also write". Naming neither is asked about rather than
+   * refused, since the answer is one of two words and the alternative is
+   * making someone re-type the whole command line. Nothing is ever inferred:
+   * a session that cannot be asked fails instead of defaulting to a write
+   * nobody requested.
+   *
+   * Generic over the caller's own options type so a command may carry
+   * whatever other flags it likes through unchanged.
+   */
+  public async resolveOptions<Options extends CodependixRunModeOptions>(
+    options: Options,
+  ): Promise<Options> {
+    if (options.check === true && options.write === true) {
+      throw conflictingRunModeError();
+    }
+
+    if (options.check === true || options.write === true) {
+      return options;
+    }
+
+    const mode: CodependixRunMode = await this.promptForSelect({
+      choices: CODEPENDIX_RUN_MODES,
+      message: "Check every configured export, or write them?",
+      subject: "A run mode (--check or --write)",
+    });
+
+    return mode === "check"
+      ? { ...options, check: true }
+      : { ...options, write: true };
   }
 }

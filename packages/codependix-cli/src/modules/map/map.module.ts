@@ -7,13 +7,13 @@ import { Module } from "@nestjs/common";
 import { DeliveryModule } from "../delivery/delivery.module";
 import { PythonImportsModule } from "../python-imports/python-imports.module";
 
-import { CodependixCommand } from "./codependix.command";
-import { CodependixService } from "./codependix.service";
+import { MapCommand } from "./map.command";
+import { MapService } from "./map.service";
 
 /** Wires the codependix CLI command together with its collaborators. */
 @Module({
   controllers: [],
-  exports: [CodependixCommand, CodependixService],
+  exports: [MapCommand, MapService],
   imports: [
     ConfigurationModule,
     DeliveryModule,
@@ -25,6 +25,6 @@ import { CodependixService } from "./codependix.service";
     TypescriptModule,
     WorkspaceGraphModule,
   ],
-  providers: [CodependixCommand, CodependixService],
+  providers: [MapCommand, MapService],
 })
-export class CodependixModule {}
+export class MapModule {}

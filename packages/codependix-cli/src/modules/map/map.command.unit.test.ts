@@ -1,64 +1,66 @@
-import { InputService } from "@codependix/configuration";
+import {
+  conflictingRunModeError,
+  InputService,
+  missingInputError,
+  promptCancelledError,
+} from "@codependix/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { CodependixCommand } from "./codependix.command";
-import { CodependixService } from "./codependix.service";
+import { MapCommand } from "./map.command";
+import { MapService } from "./map.service";
 
 import type { GraphRunOutcome } from "../delivery/delivery.types";
-import type { CodependixCommandOptions } from "./codependix.types";
+import type { MapCommandOptions } from "./map.types";
 
-describe(CodependixCommand, () => {
-  let command: CodependixCommand;
-  let codependixService: CodependixService;
+describe(MapCommand, () => {
+  let command: MapCommand;
+  let codependixService: MapService;
   let inputService: InputService;
   let loggerService: LoggerService;
 
   /** Builds a command whose collaborators are freshly mocked. */
-  function buildCommand(): CodependixCommand {
-    return new CodependixCommand(
-      codependixService,
-      inputService,
-      loggerService,
-    );
+  function buildCommand(): MapCommand {
+    return new MapCommand(codependixService, inputService, loggerService);
   }
 
   /** Runs a freshly built command with the given options. */
-  async function run(options: CodependixCommandOptions = {}): Promise<void> {
+  async function run(options: MapCommandOptions = {}): Promise<void> {
     await buildCommand().run([], options);
   }
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        CodependixCommand,
+        MapCommand,
         {
-          provide: CodependixService,
-          useValue: createMock<CodependixService>(),
+          provide: MapService,
+          useValue: createMock<MapService>(),
         },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
-    command = await module.resolve(CodependixCommand);
+    command = await module.resolve(MapCommand);
   });
 
   beforeEach(() => {
     process.exitCode = 0;
-    codependixService = createMock<CodependixService>();
+    codependixService = createMock<MapService>();
     inputService = createMock<InputService>();
     loggerService = createMock<LoggerService>();
     vi.mocked(codependixService.run).mockResolvedValue({
       failures: [],
       results: [],
     });
-    // Non-interactive by default, so a test that means to exercise prompting
-    // has to say so — an accidental prompt would otherwise pass silently.
-    vi.mocked(inputService.canPrompt).mockReturnValue(false);
+    // The command no longer picks the mode — it forwards whatever came back —
+    // so a fixed hand-back stands in for the resolution, and the tests that
+    // care what was forwarded set their own.
+    vi.mocked(inputService.resolveOptions).mockResolvedValue({ write: true });
     vi.mocked(inputService.parseFlagOption).mockImplementation(
       (value) => value ?? true,
     );
@@ -77,10 +79,10 @@ describe(CodependixCommand, () => {
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
       providers: [
-        CodependixCommand,
+        MapCommand,
         {
-          provide: CodependixService,
-          useValue: createMock<CodependixService>(),
+          provide: MapService,
+          useValue: createMock<MapService>(),
         },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
@@ -89,22 +91,15 @@ describe(CodependixCommand, () => {
 
     const logger = await module.resolve(LoggerService);
 
-    expect(logger.setContext).toHaveBeenCalledWith("CodependixCommand");
+    expect(logger.setContext).toHaveBeenCalledWith("MapCommand");
   });
 
-  it("rejects a command line naming neither --check nor --write", async () => {
-    await run({});
-
-    expect(process.exitCode).toBe(1);
-    expect(codependixService.run).not.toHaveBeenCalled();
-  });
-
-  it("prompts for the mode when neither flag was given and the session can be asked", async () => {
-    vi.mocked(inputService.canPrompt).mockReturnValue(true);
-    vi.mocked(inputService.promptForSelect).mockResolvedValue("check");
+  it("runs whatever options the shared input service resolved", async () => {
+    vi.mocked(inputService.resolveOptions).mockResolvedValue({ check: true });
 
     await run({});
 
+    expect(inputService.resolveOptions).toHaveBeenCalledWith({});
     expect(process.exitCode).toBe(0);
     expect(codependixService.run).toHaveBeenCalledWith(
       { check: true },
@@ -112,22 +107,25 @@ describe(CodependixCommand, () => {
     );
   });
 
-  it("runs the write mode a prompt resolved to", async () => {
-    vi.mocked(inputService.canPrompt).mockReturnValue(true);
-    vi.mocked(inputService.promptForSelect).mockResolvedValue("write");
+  it("reports two modes named at once as a rejected command line", async () => {
+    vi.mocked(inputService.resolveOptions).mockRejectedValue(
+      conflictingRunModeError(),
+    );
 
-    await run({});
+    await run({ check: true, write: true });
 
-    expect(codependixService.run).toHaveBeenCalledWith(
-      { write: true },
-      process.cwd(),
+    expect(process.exitCode).toBe(1);
+    expect(codependixService.run).not.toHaveBeenCalled();
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🕸️ Rejected the command line",
+      undefined,
+      { reason: "Only one of --check or --write may be given." },
     );
   });
 
-  it("fails and logs when the mode prompt was cancelled", async () => {
-    vi.mocked(inputService.canPrompt).mockReturnValue(true);
-    vi.mocked(inputService.promptForSelect).mockRejectedValue(
-      new Error("Prompt did not resolve to one of: check, write."),
+  it("reports an unanswerable prompt as a rejected command line", async () => {
+    vi.mocked(inputService.resolveOptions).mockRejectedValue(
+      missingInputError("A run mode (--check or --write)"),
     );
 
     await run({});
@@ -135,25 +133,44 @@ describe(CodependixCommand, () => {
     expect(process.exitCode).toBe(1);
     expect(codependixService.run).not.toHaveBeenCalled();
     expect(loggerService.error).toHaveBeenCalledWith(
+      "🕸️ Rejected the command line",
+      undefined,
+      {
+        reason:
+          "A run mode (--check or --write) is required, and stdin is not a terminal so it cannot be asked for.",
+      },
+    );
+  });
+
+  it("reports a dismissed prompt as a rejected command line", async () => {
+    vi.mocked(inputService.resolveOptions).mockRejectedValue(
+      promptCancelledError("A run mode (--check or --write)"),
+    );
+
+    await run({});
+
+    expect(process.exitCode).toBe(1);
+    expect(codependixService.run).not.toHaveBeenCalled();
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🕸️ Rejected the command line",
+      undefined,
+      { reason: "A run mode (--check or --write) was not chosen." },
+    );
+  });
+
+  it("reports anything else the resolution threw as a failed run", async () => {
+    vi.mocked(inputService.resolveOptions).mockRejectedValue(
+      new Error("Prompt did not resolve to one of: check, write."),
+    );
+
+    await run({});
+
+    expect(process.exitCode).toBe(1);
+    expect(loggerService.error).toHaveBeenCalledWith(
       "💥 Failed running codependix",
       undefined,
       { reason: "Prompt did not resolve to one of: check, write." },
     );
-  });
-
-  it("never prompts when --no-interactive was given", async () => {
-    await run({ interactive: false });
-
-    expect(process.exitCode).toBe(1);
-    expect(inputService.canPrompt).toHaveBeenCalledWith(false);
-    expect(inputService.promptForSelect).not.toHaveBeenCalled();
-  });
-
-  it("rejects a command line naming both --check and --write", async () => {
-    await run({ check: true, write: true });
-
-    expect(process.exitCode).toBe(1);
-    expect(codependixService.run).not.toHaveBeenCalled();
   });
 
   it("succeeds when every result is current and nothing failed", async () => {
@@ -299,7 +316,13 @@ describe(CodependixCommand, () => {
     expect(inputService.parsePathOption).toHaveBeenCalledWith(undefined);
   });
 
-  it("reads --no-interactive as the opt-out it is", () => {
-    expect(buildCommand().parseInteractive()).toBe(false);
+  it("delegates run-mode resolution to the shared input service", async () => {
+    vi.mocked(inputService.resolveOptions).mockResolvedValue({ write: true });
+
+    await run({ directory: "packages/logger" });
+
+    expect(inputService.resolveOptions).toHaveBeenCalledWith({
+      directory: "packages/logger",
+    });
   });
 });

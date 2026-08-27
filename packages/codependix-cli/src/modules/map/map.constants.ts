@@ -1,19 +1,5 @@
 // ♟️ Constants
 
-import type { CodependixRunMode } from "../delivery/delivery.types";
-
-/**
- * The two run modes a `codependix` command line resolves to.
- *
- * Named as a list rather than only as the `CodependixRunMode` union so a
- * command line naming neither flag can offer them as prompt choices, and
- * `satisfies` keeps the list and the union from drifting apart.
- */
-export const CODEPENDIX_RUN_MODES = [
-  "check",
-  "write",
-] as const satisfies readonly CodependixRunMode[];
-
 /** Graph type `codependix-imports` builds. */
 export const IMPORTS_GRAPH_TYPE = "imports";
 
@@ -46,10 +32,6 @@ export const PYTHON_IMPORTS_GRAPH_TYPE = "pythonImports";
 
 /** `### <subheading>` placed above the Python file-level import graph's anchor. */
 export const PYTHON_IMPORTS_MARKDOWN_SUBHEADING = "Python File Imports";
-
-/** Usage message shown when the command line names neither or both modes. */
-export const USAGE_MESSAGE =
-  "💡 Usage: codependix --check (or codependix --write)";
 
 /**
  * The `projectName` reported for the Workspace Graph's result.

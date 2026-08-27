@@ -1,9 +1,18 @@
 // 🏷️ Types
 
-import type { ResolvedCodependixGraphOutput } from "@codependix/configuration";
+import type {
+  CodependixRunMode as ConfigurationRunMode,
+  ResolvedCodependixGraphOutput,
+} from "@codependix/configuration";
 
-/** Which of the two run modes a command line resolved to. */
-export type CodependixRunMode = "check" | "write";
+/**
+ * Which of the two run modes a command line resolved to.
+ *
+ * Re-exported rather than restated: `@codependix/configuration` owns the list
+ * the prompt offers, and a second hand-written union here would be free to
+ * drift from it.
+ */
+export type CodependixRunMode = ConfigurationRunMode;
 
 /** Arguments shared by every method that delivers one file destination. */
 export interface DeliverFileArguments {
@@ -65,7 +74,7 @@ export interface GraphRunOutcome {
  * Carried as its own field on `DeliverGraphOutputArguments` rather than
  * folded into `ResolvedCodependixGraphOutput`: the section heading and intro
  * line are fixed per graph type, not something a workspace's configuration
- * file resolves, so they are supplied by `CodependixService` at the call site
+ * file resolves, so they are supplied by `MapService` at the call site
  * instead of flowing through configuration resolution.
  */
 export interface MarkdownSectionArguments {

@@ -10,19 +10,9 @@ import type { NestjsModuleGraph } from "@codependix/nestjs";
 import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
 import type { ProjectGraph } from "@nx/devkit";
 
-/** Command-line options `codependix` accepts. */
-export interface CodependixCommandOptions {
-  check?: boolean | undefined;
-  config?: string | undefined;
-  directory?: string | undefined;
-  /** `false` only when `--no-interactive` was given; see `InputService`. */
-  interactive?: boolean | undefined;
-  write?: boolean | undefined;
-}
-
 /**
  * Everything every graph-type pass reads, resolved once per run rather than
- * once per pass — see `CodependixService.run`.
+ * once per pass — see `MapService.run`.
  */
 export interface GraphRunContext {
   configuration: ResolvedCodependixConfiguration;
@@ -30,6 +20,14 @@ export interface GraphRunContext {
   mode: CodependixRunMode;
   projects: NxProject[];
   workingDirectory: string;
+}
+
+/** Command-line options `codependix` accepts. */
+export interface MapCommandOptions {
+  check?: boolean | undefined;
+  config?: string | undefined;
+  directory?: string | undefined;
+  write?: boolean | undefined;
 }
 
 /**

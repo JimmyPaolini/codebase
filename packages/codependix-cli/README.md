@@ -14,14 +14,14 @@ pnpm add --filter <project> --save-dev @codependix/cli
 ```
 
 ```bash
-codependix --write
+codependix map --write
 ```
 
 ## Usage
 
-Exactly two run modes, `--check` and `--write` — no per-graph-type
-subcommand. Which graphs run for a project, and where its export lands, is
-entirely a function of the configuration file; see
+One command, `map`, in exactly two run modes — `--check` and `--write`, with
+no per-graph-type subcommand. Which graphs run for a project, and where its
+export lands, is entirely a function of the configuration file; see
 [`configuration/codependix.config.ts`](../../configuration/codependix.config.ts)
 for this repository's own.
 
@@ -31,14 +31,23 @@ for this repository's own.
 | `--write` | Writes every configured export |
 | `--config [config]` | Path to a `codependix.config.ts`. Searched for upward from `--directory` when omitted |
 | `-d, --directory [directory]` | Workspace root whose Nx project graph this run reads. Defaults to the working directory |
-| `--no-interactive` | Never prompt for a missing run mode |
 
 `--check` and `--write` are mutually exclusive, and one of them is required.
-Naming both is rejected outright — nothing selects a run mode when two are
-named. Naming neither asks which was meant, but only at an interactive
-terminal outside CI; anywhere a prompt would hang, and whenever
-`--no-interactive` is given, it is rejected instead. No mode is ever inferred,
-which is the rule `codometer`'s `--check`/`--write` split follows too.
+Naming both is refused outright — nothing selects a run mode when two are
+named, so there is no question to put. Naming neither is asked about, as a
+two-item menu.
+
+There is no flag that turns the prompt off, because there is nothing to turn
+off where it cannot be answered: a run whose stdin is not a terminal fails
+immediately, naming the flag it wanted, rather than drawing a menu. That
+refusal is load-bearing rather than defensive — `prompts` does not fail on a
+non-terminal stdin. It renders the menu, never resolves, and lets the process
+exit 0, which would turn a scripted run that forgot its mode flag into a
+silent success that wrote nothing. Dismissing the menu at a terminal is
+reported the same way, as a rejected command line rather than a crash.
+
+No mode is ever inferred, which is the rule `codometer`'s `--check`/`--write`
+split follows too.
 
 ```bash
 nx run codebase:codependix:check

@@ -4,7 +4,7 @@ The JSON shape of every graph type, committed beside this guide so a reader sees
 
 ## Every graph type's JSON shape, committed
 
-Each one is rendered by `DeliveryService.renderJson`, so it is byte-identical to what a real `codependix --write` would produce — two-space indentation and a trailing newline.
+Each one is rendered by `DeliveryService.renderJson`, so it is byte-identical to what a real `codependix map --write` would produce — two-space indentation and a trailing newline.
 
 | Graph | Committed as |
 | ----- | ------------ |

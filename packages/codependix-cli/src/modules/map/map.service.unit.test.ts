@@ -16,10 +16,10 @@ import { AnchorsService } from "../anchors/anchors.service";
 import { DeliveryService } from "../delivery/delivery.service";
 import { PythonImportsService } from "../python-imports/python-imports.service";
 
-import { CodependixService } from "./codependix.service";
+import { MapService } from "./map.service";
 
 import type { GraphRunOutcome } from "../delivery/delivery.types";
-import type { GraphRunContext } from "./codependix.types";
+import type { GraphRunContext } from "./map.types";
 import type {
   TypescriptImportGraph,
   TypescriptProjectProgram,
@@ -49,8 +49,8 @@ const TYPESCRIPT_IMPORT_GRAPH: TypescriptImportGraph = {
   projectName: "codependix-imports",
 };
 
-describe(CodependixService, () => {
-  let service: CodependixService;
+describe(MapService, () => {
+  let service: MapService;
   let configurationService: ConfigurationService;
   let moduleGraphService: ModuleGraphService;
   let neighborhoodService: NeighborhoodService;
@@ -92,7 +92,7 @@ describe(CodependixService, () => {
     const module = await Test.createTestingModule({
       providers: [
         AnchorsService,
-        CodependixService,
+        MapService,
         DeliveryService,
         {
           provide: ConfigurationService,
@@ -108,7 +108,7 @@ describe(CodependixService, () => {
       ],
     }).compile();
 
-    service = await module.resolve(CodependixService);
+    service = await module.resolve(MapService);
   });
 
   beforeEach(async () => {

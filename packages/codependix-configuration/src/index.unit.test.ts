@@ -3,14 +3,19 @@ import { describe, expect, it } from "vitest";
 import {
   CODEPENDIX_EXPORT_TARGETS,
   CODEPENDIX_GRAPH_TYPES,
+  CODEPENDIX_RUN_MODES,
   codependixConfigurationSchema,
   ConfigurationFileNotFoundError,
   ConfigurationModule,
   ConfigurationService,
+  conflictingRunModeError,
   DEFAULT_EXPORT_TARGET,
   DEFAULT_MARKDOWN_PATH,
+  InputError,
   InputModule,
   InputService,
+  missingInputError,
+  promptCancelledError,
   UnknownConfigurationFileTypeError,
 } from "./index.js";
 
@@ -27,5 +32,10 @@ describe("codependix-configuration index", () => {
     expect(DEFAULT_MARKDOWN_PATH).toBeDefined();
     expect(InputModule).toBeDefined();
     expect(InputService).toBeDefined();
+    expect(CODEPENDIX_RUN_MODES).toBeDefined();
+    expect(conflictingRunModeError).toBeDefined();
+    expect(InputError).toBeDefined();
+    expect(promptCancelledError).toBeDefined();
+    expect(missingInputError).toBeDefined();
   });
 });

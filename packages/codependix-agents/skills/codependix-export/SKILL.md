@@ -48,27 +48,26 @@ The `codependix-configure` skill covers all three.
 | `--write` | Writes every configured export |
 
 `--check` and `--write` are mutually exclusive, and **one of them is
-required**. A command line naming both is rejected outright before anything
-is read. A command line naming neither is _asked_ which was meant — but only
-at an interactive terminal outside CI, and never when `--no-interactive` is
-given; anywhere else it is rejected the same way. No mode is ever inferred and
-no default write happens.
+required**. A command line naming both is refused outright before anything is
+read. A command line naming neither is _asked_ which was meant, as a two-item
+menu. No mode is ever inferred and no default write happens.
 
-**An agent should always name the mode explicitly.** A non-interactive run
-that omits it exits non-zero having done nothing, which reads like a broken
-tool rather than a missing flag.
+**An agent should always name the mode explicitly.** There is no flag that
+suppresses the prompt, because an agent's run has no terminal to draw it on:
+that run fails immediately, naming the flag it wanted. Reading that failure as
+a broken tool is the mistake to avoid — it is a missing flag, and the fix is
+to add `--check` or `--write`.
 
-Three options qualify whichever mode was picked:
+Two options qualify whichever mode was picked:
 
 | Option | Meaning |
 | ------ | ------- |
 | `--config [config]` | Path to a `codependix.config.ts`. Searched for upward from the directory when omitted |
 | `-d, --directory [directory]` | Workspace root whose Nx project graph this run reads. Defaults to the working directory |
-| `--no-interactive` | Never prompt for a missing run mode. Redundant once a mode is named |
 
 ```bash
-codependix --write
-codependix --check --directory . --config configuration/codependix.config.ts
+codependix map --write
+codependix map --check --directory . --config configuration/codependix.config.ts
 ```
 
 ## Codependix reads the Nx project graph

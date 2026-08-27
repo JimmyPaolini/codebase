@@ -2,7 +2,11 @@ import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { MARKDOWN_SECTION_INTRO_LINE, USAGE_MESSAGE } from "@codependix/cli";
+import { MARKDOWN_SECTION_INTRO_LINE } from "@codependix/cli";
+import {
+  conflictingRunModeError,
+  missingInputError,
+} from "@codependix/configuration";
 
 import { anchorsService, deliveryService } from "./builders";
 import { fence, fenceJson, table } from "./document";
@@ -195,7 +199,7 @@ async function buildJsonDocument(): Promise<ExampleDocument> {
           ],
         ),
         heading: "Every graph type's JSON shape, committed",
-        note: "Each one is rendered by `DeliveryService.renderJson`, so it is byte-identical to what a real `codependix --write` would produce — two-space indentation and a trailing newline.",
+        note: "Each one is rendered by `DeliveryService.renderJson`, so it is byte-identical to what a real `codependix map --write` would produce — two-space indentation and a trailing newline.",
       },
       {
         body: "Two workspace-level rules are switched off for `**/codependix-*graph.json`, for the same reason. `configuration/eslint.config.ts` turns `jsonc/sort-array-values` **off**: these arrays come out of the Nx project graph, a NestJS container, or a `ts.Program`, in whichever order each source discovers its projects, modules, or files — not alphabetical order. And `configuration/.oxfmtignore` and `.prettierignore` exclude the files outright: codependix renders them with `JSON.stringify(…, 2)`, which puts one array element per line, while oxfmt collapses a short array onto one. Either rule left on would rewrite what codependix had just written, and the very next `--check` would fail against the tool itself. It is the same reformatting-versus-drift conflict `.oxfmtignore` already resolves for `.conformetry/**`.",
@@ -221,23 +225,25 @@ function buildModesDocument(): ExampleDocument {
         note: "The first result is what `--check` reports for an export nothing has moved. The second names the exact paths that went stale, which is what a reader is given to act on.",
       },
       {
-        body: fence(USAGE_MESSAGE),
+        body: fence(
+          missingInputError("A run mode (--check or --write)").message,
+        ),
         heading: "A command line naming neither mode",
-        note: "`--check` and `--write` are mutually exclusive and one is required. At an interactive terminal a command line naming neither is asked which was meant; anywhere a prompt cannot be shown — CI, a non-interactive shell, or an explicit `--no-interactive` — it prints `USAGE_MESSAGE` and exits non-zero rather than silently defaulting to a write nobody asked for.",
+        note: "`--check` and `--write` are mutually exclusive and one is required. At a terminal, a command line naming neither is asked which was meant, as a two-item menu. Where stdin is not a terminal the run fails with this instead — `prompts` would otherwise draw a menu nobody can answer, never resolve, and let the process exit 0 having written nothing.",
       },
       {
-        body: fence("Only one of --check or --write may be given"),
+        body: fence(conflictingRunModeError().message),
         heading: "A command line naming both modes",
-        note: "Rejected outright as well, and with a different reason — nothing selects a run mode when two are named.",
+        note: "Refused outright rather than asked about — nothing selects a run mode when two are named, so there is no question to put.",
       },
       {
-        body: "`CodependixService.run` attempts every project regardless of whether an earlier one failed, collecting each failure as a `ProjectRunFailure` rather than aborting the loop. `CodependixCommand.reportOutcome` then reports the failures and the stale exports together, and fails the run if either list is non-empty. That is the whole of the guarantee: `--write` either fully succeeds, or names exactly which projects failed while still completing every other one.",
+        body: "`MapService.run` attempts every project regardless of whether an earlier one failed, collecting each failure as a `ProjectRunFailure` rather than aborting the loop. `MapCommand.reportOutcome` then reports the failures and the stale exports together, and fails the run if either list is non-empty. That is the whole of the guarantee: `--write` either fully succeeds, or names exactly which projects failed while still completing every other one.",
         heading: "One project failing names itself and stops nothing",
         note: "[container-rooting](../container-rooting) shows the same guarantee acting on three real containers, one of which refuses to load.",
       },
     ],
     summary:
-      "What `--check` reports, what `--write` acts on, and the two command lines codependix refuses outright.",
+      "What `--check` reports, what `--write` acts on, the command line codependix asks about, and the one it refuses outright.",
     title: "`--check` versus `--write`",
   };
 }

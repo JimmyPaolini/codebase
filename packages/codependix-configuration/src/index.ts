@@ -29,5 +29,16 @@ export type {
   ResolvedCodependixMarkdownOutput,
   ResolveForProjectArguments,
 } from "./modules/configuration/configuration.types";
+export { CODEPENDIX_RUN_MODES } from "./modules/input/input.constants";
+export {
+  conflictingRunModeError,
+  InputError,
+  missingInputError,
+  promptCancelledError,
+} from "./modules/input/input.errors";
 export { InputModule } from "./modules/input/input.module";
 export { InputService } from "./modules/input/input.service";
+export type {
+  CodependixRunMode,
+  CodependixRunModeOptions,
+} from "./modules/input/input.types";

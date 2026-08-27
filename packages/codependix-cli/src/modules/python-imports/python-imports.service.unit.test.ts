@@ -13,7 +13,7 @@ import { DeliveryService } from "../delivery/delivery.service";
 
 import { PythonImportsService } from "./python-imports.service";
 
-import type { GraphRunContext } from "../codependix/codependix.types";
+import type { GraphRunContext } from "../map/map.types";
 import type { PythonImportGraph } from "@codependix/imports";
 
 const PYTHON_IMPORT_GRAPH: PythonImportGraph = {
