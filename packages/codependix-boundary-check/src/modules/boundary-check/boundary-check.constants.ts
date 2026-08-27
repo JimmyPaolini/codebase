@@ -3,6 +3,15 @@
 import type { CodependixGraphType } from "@codependix/configuration";
 
 /**
+ * The scope a violation found in the whole-workspace Nx graph is reported
+ * under.
+ *
+ * The Nx level is judged once for the repository rather than once per
+ * project, so it has no project name to report against.
+ */
+export const WORKSPACE_SCOPE = "workspace";
+
+/**
  * The order the four graph levels are judged in.
  *
  * Cheapest first, and it is not a small difference: the Nx level reads a graph

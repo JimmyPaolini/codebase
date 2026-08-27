@@ -9,7 +9,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { BoundaryCheckService } from "./boundary-check.service";
 import { BoundaryGraphService } from "./boundary-graph.service";
 
-import type { GraphRunContext } from "../map/map.types";
+import type { BoundaryCheckContext } from "./boundary-check.types";
 import type { BoundaryGraph, BoundaryViolation } from "@codependix/boundaries";
 import type {
   CodependixBoundaryRule,
@@ -50,7 +50,7 @@ describe(BoundaryCheckService, () => {
   /** Builds a context whose configuration declares the given rules. */
   function buildContext(
     boundaries: Partial<ResolvedCodependixBoundariesConfiguration> = {},
-  ): GraphRunContext {
+  ): BoundaryCheckContext {
     return {
       configuration: {
         boundaries: {
@@ -67,7 +67,6 @@ describe(BoundaryCheckService, () => {
         workspace: {},
       },
       graph: { dependencies: {}, nodes: {} },
-      mode: "check",
       projects: [{ absoluteRoot: "/workspace/packages/a", name: "a" }],
       workingDirectory: "/workspace",
     };
@@ -210,6 +209,28 @@ describe(BoundaryCheckService, () => {
       { error: "boom", projectName: "a" },
     ]);
     expect(evaluatedGraphs).toHaveLength(1);
+  });
+
+  it("records a non-Error rejection as its string form", async () => {
+    // A rejection carrying a string rather than an `Error` is what a
+    // third-party container can hand back, and the failure collector has to
+    // name it rather than print "[object Object]".
+    vi.mocked(nestjsProjectService.discoverProjects).mockReturnValue([
+      {
+        absoluteRoot: "/workspace/packages/a",
+        name: "a",
+        rootModuleFile: "src/main.ts",
+      },
+    ]);
+    vi.mocked(nestjsProjectService.exploreProject).mockRejectedValueOnce(
+      "boom",
+    );
+
+    const outcome = await service.run(buildContext({ nestjs: RULE_LIST }));
+
+    expect(outcome.failures).toStrictEqual([
+      { error: "boom", projectName: "a" },
+    ]);
   });
 
   it("judges every TypeScript project's file-level import graph", async () => {

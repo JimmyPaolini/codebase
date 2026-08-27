@@ -1,4 +1,8 @@
 import { BoundaryReportService } from "@codependix/boundaries";
+import {
+  type BoundaryCheckOutcome,
+  BoundaryCheckService,
+} from "@codependix/boundary-check";
 import { InputService, missingInputError } from "@codependix/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -6,14 +10,12 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { BoundaryCheckService } from "../boundary-check/boundary-check.service";
 import { RUN_MODE_SUBJECT } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { MapCommand } from "./map.command";
 import { MapService } from "./map.service";
 
-import type { BoundaryCheckOutcome } from "../boundary-check/boundary-check.types";
 import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { RunMode } from "../run-plan/run-plan.types";
 import type { MapCommandOptions } from "./map.types";

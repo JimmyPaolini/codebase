@@ -4,14 +4,15 @@ import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
 import { WorkspaceGraphService } from "@codependix/nx";
 import { Injectable } from "@nestjs/common";
 
-import { WORKSPACE_GRAPH_PROJECT_NAME } from "../map/map.constants";
-
-import { BOUNDARY_LEVEL_ORDER } from "./boundary-check.constants";
+import {
+  BOUNDARY_LEVEL_ORDER,
+  WORKSPACE_SCOPE,
+} from "./boundary-check.constants";
 import { BoundaryGraphService } from "./boundary-graph.service";
 
-import type { ProjectRunFailure } from "../delivery/delivery.types";
-import type { GraphRunContext } from "../map/map.types";
 import type {
+  BoundaryCheckContext,
+  BoundaryCheckFailure,
   BoundaryCheckOutcome,
   LevelCheckArguments,
 } from "./boundary-check.types";
@@ -55,11 +56,11 @@ export class BoundaryCheckService {
 
   // 🔏 Private Methods
 
-  /** Turns a raised error into a `ProjectRunFailure` for the given project. */
+  /** Turns a raised error into a `BoundaryCheckFailure` for the given project. */
   private collectProjectFailure(
     projectName: string,
     error: unknown,
-  ): ProjectRunFailure {
+  ): BoundaryCheckFailure {
     return {
       error: error instanceof Error ? error.message : String(error),
       projectName,
@@ -121,7 +122,7 @@ export class BoundaryCheckService {
       const graph = this.boundaryGraphService.buildNxGraph({
         graph: context.graph,
         projects: context.projects,
-        scope: WORKSPACE_GRAPH_PROJECT_NAME,
+        scope: WORKSPACE_SCOPE,
         workingDirectory: context.workingDirectory,
         workspaceGraph: this.workspaceGraphService.buildWorkspaceGraph(
           context.graph,
@@ -135,9 +136,7 @@ export class BoundaryCheckService {
       };
     } catch (error) {
       return {
-        failures: [
-          this.collectProjectFailure(WORKSPACE_GRAPH_PROJECT_NAME, error),
-        ],
+        failures: [this.collectProjectFailure(WORKSPACE_SCOPE, error)],
         violations: [],
       };
     }
@@ -158,7 +157,7 @@ export class BoundaryCheckService {
     projects: readonly Project[];
     rules: readonly CodependixBoundaryRule[];
   }): Promise<BoundaryCheckOutcome> {
-    const failures: ProjectRunFailure[] = [];
+    const failures: BoundaryCheckFailure[] = [];
     const violations: BoundaryViolation[] = [];
 
     for (const project of args.projects) {
@@ -220,7 +219,9 @@ export class BoundaryCheckService {
    * declaring no rule is skipped before anything is built, which is what
    * keeps the gate affordable.
    */
-  public async run(context: GraphRunContext): Promise<BoundaryCheckOutcome> {
+  public async run(
+    context: BoundaryCheckContext,
+  ): Promise<BoundaryCheckOutcome> {
     const { boundaries } = context.configuration;
     const outcomes: BoundaryCheckOutcome[] = [];
 

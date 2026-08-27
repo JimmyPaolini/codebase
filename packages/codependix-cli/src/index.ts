@@ -9,10 +9,6 @@ export {
 export { AnchorsModule } from "./modules/anchors/anchors.module";
 export { AnchorsService } from "./modules/anchors/anchors.service";
 export type { AnchorCheckResult } from "./modules/anchors/anchors.types";
-export { BoundaryCheckModule } from "./modules/boundary-check/boundary-check.module";
-export { BoundaryCheckService } from "./modules/boundary-check/boundary-check.service";
-export type { BoundaryCheckOutcome } from "./modules/boundary-check/boundary-check.types";
-export { BoundaryGraphService } from "./modules/boundary-check/boundary-graph.service";
 export { DeliveryModule } from "./modules/delivery/delivery.module";
 export { DeliveryService } from "./modules/delivery/delivery.service";
 export type {

@@ -75,6 +75,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 - **🕸️ codependix** - Dependency graph export toolchain that reads what each project depends on, renders it as JSON and Markdown diagrams, and gates the rules those graphs are judged against
   - **[codependix-agents](packages/codependix-agents)** - Agent skills for the codependix toolchain, installable by any workspace that uses codependix
   - **[codependix-boundaries](packages/codependix-boundaries)** - Evaluates declared rules against a built graph and reports the edges and cycles that break them
+  - **[codependix-boundary-check](packages/codependix-boundary-check)** - Builds each level's graph for a workspace and judges it against the declared rules
   - **[codependix-cli](packages/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks, and gates the rules over them
   - **[codependix-configuration](packages/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules
   - **[codependix-examples](packages/codependix-examples)** - Sixteen subjects built to be graphed, each carrying the guide codependix renders from it

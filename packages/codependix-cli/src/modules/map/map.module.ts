@@ -1,10 +1,10 @@
+import { BoundaryCheckModule } from "@codependix/boundary-check";
 import { ConfigurationModule, InputModule } from "@codependix/configuration";
 import { TypescriptModule } from "@codependix/imports";
 import { ModuleGraphModule, NestjsProjectModule } from "@codependix/nestjs";
 import { NeighborhoodModule, WorkspaceGraphModule } from "@codependix/nx";
 import { Module } from "@nestjs/common";
 
-import { BoundaryCheckModule } from "../boundary-check/boundary-check.module";
 import { DeliveryModule } from "../delivery/delivery.module";
 import { PythonImportsModule } from "../python-imports/python-imports.module";
 import { RunPlanModule } from "../run-plan/run-plan.module";

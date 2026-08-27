@@ -107,8 +107,9 @@ It depends on `@codependix/configuration` and nothing else. The obvious design w
 which would drag `@nx/devkit`, `nestjs-spelunker` and `typescript` behind
 anything that wants only rule evaluation. Instead it defines a `BoundaryGraph`
 of its own, and the adapters that flatten the four into it live in
-[`@codependix/cli`](../codependix-cli/README.md), which already builds all
-four and already owns delivery.
+[`@codependix/boundary-check`](../codependix-boundary-check/README.md), which
+depends on the builders so that neither this package nor the command-line host
+has to.
 
 ## Test
 

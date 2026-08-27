@@ -98,6 +98,14 @@ const codependixConfiguration: CodependixConfiguration = {
     ],
     nx: [
       {
+        from: { id: ["codependix-boundary-check"] },
+        kind: "forbid",
+        message:
+          "codependix-boundary-check builds each level's graph and judges it, and is called by a host rather than calling one. Depending back on codependix-cli would close a cycle between the host and the logic it hosts.",
+        name: "codependix-boundary-check-does-not-reach-the-host",
+        to: { id: ["codependix-cli"] },
+      },
+      {
         kind: "acyclic",
         message:
           "Two projects that depend on each other cannot be built, released, or reasoned about apart. Stated here rather than left to Nx because an implicit edge closes a cycle just as a real import does, and `@nx/enforce-module-boundaries` has no import statement to flag for one.",
@@ -126,6 +134,7 @@ const codependixConfiguration: CodependixConfiguration = {
         name: "codependix-boundaries-is-a-leaf",
         to: {
           id: [
+            "codependix-boundary-check",
             "codependix-cli",
             "codependix-imports",
             "codependix-nestjs",

@@ -89,6 +89,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[callidescope-nx](packages/callidescope-nx)**: Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets, scoped through the Nx dependency graph — the only callidescope package that knows Nx exists
 - **[callidescope-output](packages/callidescope-output)**: Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **[codependix-boundaries](packages/codependix-boundaries)**: Evaluates declared rules against a built graph and reports the edges and cycles that break them — a leaf depending only on `codependix-configuration`
+- **[codependix-boundary-check](packages/codependix-boundary-check)**: Builds each level's graph for a workspace and judges it against the declared rules — the adapters between the four graph builders and `codependix-boundaries`
 - **[codependix-cli](packages/codependix-cli)**: Command-line host that exports dependency graphs as JSON and Markdown anchor blocks, and gates the rules those graphs are judged against — see [Codependix](#codependix) for its agent skills
 - **[codependix-configuration](packages/codependix-configuration)**: Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules
 - **[codependix-examples](packages/codependix-examples)**: Runnable examples of the codependix toolchain — subjects built to be graphed, each carrying the guide codependix renders from it

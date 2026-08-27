@@ -97,6 +97,7 @@ every other one.
 | ------- | ---- |
 | [`@codependix/cli`](.) | Orchestrates the four graph builders and delivers their exports |
 | [`@codependix/boundaries`](../codependix-boundaries/README.md) | Evaluates declared rules against a built graph and reports the edges and cycles that break them |
+| [`@codependix/boundary-check`](../codependix-boundary-check/README.md) | Builds each level's graph for a workspace and judges it — the adapters between the graph builders and the evaluator |
 | [`@codependix/configuration`](../codependix-configuration/README.md) | Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules |
 | [`@codependix/examples`](../codependix-examples/README.md) | Sixteen subjects built to be graphed, each with the guide codependix renders from it |
 | [`@codependix/nx`](../codependix-nx/README.md) | Builds a project's Nx Neighborhood and the whole-workspace Workspace Graph |

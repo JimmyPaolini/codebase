@@ -1,22 +1,22 @@
 import path from "node:path";
 
 import { BoundaryReportService } from "@codependix/boundaries";
+import { BoundaryCheckService } from "@codependix/boundary-check";
 import { InputError, InputService } from "@codependix/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { BoundaryCheckService } from "../boundary-check/boundary-check.service";
 import { CHECK_NAMES } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { MapService } from "./map.service";
 
-import type { BoundaryCheckOutcome } from "../boundary-check/boundary-check.types";
 import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { RunMode } from "../run-plan/run-plan.types";
 import type { MapCommandOptions } from "./map.types";
+import type { BoundaryCheckOutcome } from "@codependix/boundary-check";
 
 /**
  * CLI entry point for the codependix dependency graph workflow.
