@@ -1,6 +1,14 @@
-# Module spread
+# 🕸️ Module spread
 
 **Reaches six modules, and calls five of them directly.**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+Then read the `## Module spread` table in [`output/report.md`](../../output/report.md).
 
 A module-spread finding needs **both** halves:
 
@@ -22,3 +30,7 @@ Look at the five direct calls and ask which of them belong to one another. A
 method joining unrelated concerns is usually a dispatcher wearing the name of a
 domain operation. The remedy is to give each concern its own caller — not to
 inline anything.
+
+## Next
+
+[spread near miss](../spread-near-miss/README.md).

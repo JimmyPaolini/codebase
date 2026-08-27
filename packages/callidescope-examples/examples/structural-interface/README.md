@@ -1,6 +1,14 @@
-# Structural interface
+# 🧬 Structural interface
 
 **`provider.ingest(document)` → `FilesystemProviderService.ingest`**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+No finding. What it proves is the edge to a class that never writes `implements`, asserted in [the test suite](../../testing/examples.integration.test.ts).
 
 Two things make this hard for anything that indexes by name:
 
@@ -18,3 +26,7 @@ optional refinement, it is the only thing that works here.
 ```
 
 Expansion is capped: see [`implementation-fan-out`](../implementation-fan-out).
+
+## Next
+
+[base class](../base-class/README.md).

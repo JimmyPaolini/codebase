@@ -20,7 +20,7 @@ import {
   NX_GRAPH_TYPE,
   NX_MARKDOWN_SUBHEADING,
   WORKSPACE_GRAPH_PROJECT_NAME,
-} from "./codependix.constants";
+} from "./map.constants";
 
 import type {
   CodependixRunMode,
@@ -30,13 +30,13 @@ import type {
   ProjectRunResult,
 } from "../delivery/delivery.types";
 import type {
-  CodependixCommandOptions,
   GraphRunContext,
+  MapCommandOptions,
   NestjsModuleGraphExport,
   NxNeighborhoodExport,
   NxWorkspaceGraphExport,
   TypescriptImportGraphExport,
-} from "./codependix.types";
+} from "./map.types";
 import type {
   CodependixGraphType,
   ResolvedCodependixConfiguration,
@@ -69,7 +69,7 @@ import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
  * while still completing every other one.
  */
 @Injectable()
-export class CodependixService {
+export class MapService {
   // 🏗 Dependency Injection
 
   constructor(
@@ -83,7 +83,7 @@ export class CodependixService {
     private readonly typescriptService: TypescriptService,
     private readonly workspaceGraphService: WorkspaceGraphService,
   ) {
-    this.logger.setContext(CodependixService.name);
+    this.logger.setContext(MapService.name);
   }
 
   // 🔐 Private Fields
@@ -128,7 +128,7 @@ export class CodependixService {
   }
 
   /** Resolves the run mode a command line's options selected. */
-  private resolveMode(options: CodependixCommandOptions): CodependixRunMode {
+  private resolveMode(options: MapCommandOptions): CodependixRunMode {
     return options.check === true ? "check" : "write";
   }
 
@@ -322,7 +322,7 @@ export class CodependixService {
    * graphs finish.
    */
   async run(
-    options: CodependixCommandOptions,
+    options: MapCommandOptions,
     workingDirectory: string,
   ): Promise<GraphRunOutcome> {
     const configuration = await this.configurationService.loadConfiguration({

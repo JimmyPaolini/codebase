@@ -5,7 +5,7 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
-import { CodependixModule } from "./modules/codependix/codependix.module";
+import { MapModule } from "./modules/map/map.module";
 
 /**
  * Root NestJS application module.
@@ -20,7 +20,7 @@ import { CodependixModule } from "./modules/codependix/codependix.module";
     }),
     DiscoveryModule,
     LoggerModule,
-    CodependixModule,
+    MapModule,
   ],
 })
 export class MainModule {}

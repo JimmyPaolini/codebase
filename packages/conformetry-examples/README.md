@@ -12,7 +12,8 @@ instances, and an Nx target that runs it. Nothing here requires reading anything
 else here first.
 
 ```bash
-pnpm exec nx run conformetry-examples:hello-template
+pnpm exec nx run conformetry-examples:examples          # every example, gated on what its guide promises
+pnpm exec nx run conformetry-examples:hello-template    # one example, and watch its output
 ```
 
 Agents arriving from a conformance report should start at
@@ -228,7 +229,30 @@ collision is answered rather than suppressed:
 | ESLint, `oxfmt`, `tsc` | A template file holds mustache where an identifier belongs, and is not parseable as the language its extension names. | `examples/*/templates/**` and `examples/*/instances/**` are excluded; each example's `conformetry.config.ts` and `embed.ts` are **not**, and are linted and type-checked like any other source |
 | Project structure | `examples/` is not one of the fixed set of project subfolders. | Declared in `configuration/codebase-structure.json` |
 | `codometer` `sizeLimit` | Nothing here is built or shipped, so there is no compiled output to size. | A `codometer` target with no `PROJECT_LIMITS` entry, the same as the two `*-agents` packages |
-| Project tags | A `framework:*` tag would have the Nx host resolve this repository's tag-scoped instance globs inside this package, sweeping the drifted fixtures into its own conformance run. | `language:typescript`, `name:conformetry-examples`, `type:package`, and nothing else |
+| Project tags | `framework:nestjs` is accurate — the embedding example boots a real Nest container — and it is safe because every tag-scoped instance glob in `configuration/conformetry.config.ts` is under `src/modules/`, which this package does not have. Carrying the tag under a `src/modules/` layout would sweep the drifted fixtures into this repository's own conformance run. | `framework:nestjs`, `language:typescript`, `name:conformetry-examples`, `type:package` — and no `src/`, which is what keeps the tag free to be accurate |
+
+## Layout
+
+```text
+conformetry-examples/
+├── examples/
+│   ├── tsconfig.json                   what lets Vite transform the NestJS instances
+│   └── <name>/
+│       ├── README.md                   the guide for this example
+│       ├── conformetry.config.ts       its own generators and instance globs
+│       ├── templates/                  what the generator renders
+│       └── instances/                  what it rendered, or what drifted from it
+└── testing/
+    └── examples.integration.test.ts    every example, run and asserted
+
+```
+
+Every example is self-contained: its own configuration, its own template folder,
+its own instances, and an Nx target that runs it. Nothing here requires reading
+anything else here first.
+
+This package has no `src/`, and that is what keeps `framework:nestjs` safe to
+declare — see [the table above](#conventions-this-package-deliberately-breaks).
 
 ## Test
 
@@ -249,12 +273,14 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 <!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
+  conformetry_cli["conformetry-cli"]
   conformetry_configuration["conformetry-configuration"]
   conformetry_core["conformetry-core"]
   conformetry_examples["conformetry-examples"]
   conformetry_generation["conformetry-generation"]
   conformetry_nx["conformetry-nx"]
   conformetry_validation["conformetry-validation"]
+  conformetry_examples -.-> conformetry_cli
   conformetry_examples --> conformetry_configuration
   conformetry_examples --> conformetry_core
   conformetry_examples --> conformetry_generation
@@ -263,6 +289,8 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_examples subject
 ```
+
+_Dashed edges are dependencies Nx inferred from configuration rather than from code._
 <!-- codependix:end name="codependix-nx" -->
 
 ### File Imports
@@ -277,14 +305,14 @@ _This project has no internal file imports._
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1089-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-100.22_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1095-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-104.49_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-90-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-49-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-50-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-48-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-49-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-7-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
@@ -303,7 +331,7 @@ _This project has no internal file imports._
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-33-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-1-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-70-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-32-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-33-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-36-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-171-64748b?style=flat-square)
 ![Comment Lines](https://img.shields.io/badge/Comment_Lines-307-475569?style=flat-square)
@@ -327,16 +355,16 @@ _This project has no internal file imports._
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-9-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-257-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-59-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-10-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-174-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-116-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-275-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-61-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-13-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-184-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-125-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-23-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-24-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-26-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-209-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-31-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-224-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -455,23 +483,23 @@ _This project has no internal file imports._
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-38-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1467-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1532-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-38-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-86-8b5cf6?style=flat-square)
+![H2](https://img.shields.io/badge/H2-89-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-9-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-138-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-7-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-16-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-149-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-9-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-24-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-15-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-114-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-66-059669?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-16-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-118-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-70-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-72-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-283-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-74-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-304-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-2-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

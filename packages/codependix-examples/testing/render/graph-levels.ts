@@ -107,7 +107,7 @@ export async function buildJsonExports(): Promise<ExampleJsonExport[]> {
   ];
 }
 
-/** Renders a value the way `codependix --write` renders every JSON export. */
+/** Renders a value the way `codependix map --write` renders every JSON export. */
 function renderJson(value: unknown): string {
   return deliveryService.renderJson(value);
 }

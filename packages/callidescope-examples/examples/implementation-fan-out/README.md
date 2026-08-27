@@ -1,6 +1,14 @@
-# Implementation fan-out
+# 🌫️ Implementation fan-out
 
 **`sink.emit(line)` → nothing, because three candidates exceed a cap of two**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+Then read `unresolvedCallCount` in [`output/report.json`](../../output/report.json)'s summary. It is 2: this dropped expansion, and the computed member name.
 
 `maximumImplementationCandidates` is the primary noise control on structural
 matching. A member named `emit`, `run`, or `sync` matches dozens of unrelated
@@ -15,9 +23,13 @@ The default is eight. This package sets it to two so three small classes
 demonstrate the same behavior that would otherwise need nine.
 
 Raise the cap and the three edges appear:
-[`testing/findings.integration.test.ts`](../../testing/findings.integration.test.ts)
+[`testing/examples.integration.test.ts`](../../testing/examples.integration.test.ts)
 traces the fixtures a second time with the cap lifted and asserts exactly that,
 which is the only way to show a cap doing something.
 
 Compare with [`structural-interface`](../structural-interface), where one
 implementation sits under the cap and resolves.
+
+## Next
+
+[mutual recursion](../mutual-recursion/README.md).

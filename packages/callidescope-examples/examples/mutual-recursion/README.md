@@ -1,6 +1,14 @@
-# Mutual recursion
+# 🔄 Mutual recursion
 
 **A cycle of three, collapsed before depth is measured.**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+Then read `cyclicComponentCount` in [`output/report.json`](../../output/report.json)'s summary. It is 1 — the cycle of three, counted once.
 
 `descend → branch → leaf → descend`. The three are condensed into one component,
 so they contribute three frames once, and every frame is marked `(cycle)`:
@@ -27,3 +35,7 @@ run summary and appears in **no** stack.
 
 `traverse` sits above the cycle and gives it a root. Real recursive code is
 always called from somewhere, and this is that somewhere.
+
+## Next
+
+[entry points](../entry-points/README.md).

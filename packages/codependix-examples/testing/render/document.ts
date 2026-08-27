@@ -1,6 +1,8 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+import { EXAMPLE_EMOJI, nextExample } from "./reading-order";
+
 import type {
   ExampleDocument,
   ExampleFile,
@@ -58,13 +60,34 @@ export function fenceJson(value: unknown): string {
  * Shaped so `markdownlint` passes on the result without a fix pass: one
  * top-level heading, a blank line either side of every heading and every
  * fenced block, and exactly one trailing newline.
+ *
+ * `## Run it` and `## Next` are rendered rather than authored, because every
+ * example in this package is run the same way and the reading order already
+ * lives in one place. That is the shape every `*-examples` package in this
+ * workspace shares — see this package's `AGENTS.md`.
  */
 export function renderDocument(document: ExampleDocument): string {
-  const lines = [`# ${document.title}`, "", document.summary];
+  const emoji = EXAMPLE_EMOJI[document.id];
+  const heading =
+    emoji === undefined ? document.title : `${emoji} ${document.title}`;
+
+  const lines = [
+    `# ${heading}`,
+    "",
+    document.summary,
+    "",
+    "## Run it",
+    "",
+    fence("nx run codependix-examples:examples", "bash"),
+    "",
+    RUN_IT_NOTE,
+  ];
 
   for (const section of document.sections) {
     lines.push("", `## ${section.heading}`, "", section.note, "", section.body);
   }
+
+  lines.push("", "## Next", "", renderNext(document.id));
 
   return `${lines.join("\n").trimEnd()}\n`;
 }
@@ -89,7 +112,13 @@ export function resolveFiles(document: ExampleDocument): ExampleFile[] {
   ];
 }
 
-// 💾 Delivery
+/** What every guide says about the command above, rendered once. */
+const RUN_IT_NOTE = [
+  "Everything below is rendered from the subject in this directory by the real",
+  "graph builders, so a claim that stops being true fails a check rather than",
+  "misleading anybody. The command above fails if what is committed here has",
+  "drifted; `:write` regenerates it.",
+].join("\n");
 
 /** Renders a Markdown table from a header row and its body rows. */
 export function table(headers: string[], rows: string[][]): string {
@@ -99,6 +128,8 @@ export function table(headers: string[], rows: string[][]): string {
     ...rows.map((row) => `| ${row.join(" | ")} |`),
   ].join("\n");
 }
+
+// 💾 Delivery
 
 /** Writes a file, or reports whether what is on disk already matches. */
 function deliverFile(args: {
@@ -123,4 +154,13 @@ function readFileOrEmpty(filePath: string): string {
   } catch {
     return "";
   }
+}
+
+/** The `## Next` body: the following example, or the way back to the guide. */
+function renderNext(id: string): string {
+  const following = nextExample(id);
+
+  return following === undefined
+    ? "Nothing left — back to the [package guide](../../README.md)."
+    : `[${following}](../${following}/README.md).`;
 }

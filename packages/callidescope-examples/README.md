@@ -18,10 +18,13 @@ bad. The reports under [`output/`](output) and the
 sees the shape without running anything.
 
 ```bash
-nx run callidescope-examples:callidescope          # check the committed reports
-nx run callidescope-examples:callidescope:write    # regenerate them
-nx run callidescope-examples:vitest                # assert every finding below
+nx run callidescope-examples:examples          # check the committed reports
+nx run callidescope-examples:examples:write    # regenerate them
+nx run callidescope-examples:vitest            # assert every finding below
 ```
+
+Agents arriving from a callidescope finding should start at [AGENTS.md](AGENTS.md),
+which maps "callidescope reported X" to the example that explains X.
 
 ## How to read a stack
 
@@ -49,6 +52,29 @@ Each directory under [`examples/`](examples) is one example, carries its own
 `README.md`, and is readable on its own. Each is also one **module** in
 callidescope's sense, which is the unit module spread and misplacement are
 measured against.
+
+**The whole package is traced as one unit.** An example directory carries no
+`tsconfig.json` of its own, so it cannot be traced alone — which is why every
+example's `## Run it` names the same command and then says where in the
+committed output to look. Read them in the order below for a walkthrough:
+[plain-call](examples/plain-call/README.md) →
+[injected-dependency](examples/injected-dependency/README.md) →
+[structural-interface](examples/structural-interface/README.md) →
+[base-class](examples/base-class/README.md) →
+[constructed-class](examples/constructed-class/README.md) →
+[callback-argument](examples/callback-argument/README.md) →
+[computed-member](examples/computed-member/README.md) →
+[implementation-fan-out](examples/implementation-fan-out/README.md) →
+[mutual-recursion](examples/mutual-recursion/README.md) →
+[entry-points](examples/entry-points/README.md) →
+[deep-stack](examples/deep-stack/README.md) →
+[forwarding-stack](examples/forwarding-stack/README.md) →
+[shared-tail](examples/shared-tail/README.md) →
+[module-spread](examples/module-spread/README.md) →
+[spread-near-miss](examples/spread-near-miss/README.md) →
+[misplaced-callable](examples/misplaced-callable/README.md) →
+[receipt](examples/receipt/README.md) →
+[frame-annotations](examples/frame-annotations/README.md).
 
 ### The resolution table, made executable
 
@@ -178,7 +204,7 @@ why, because it uses the opposite one from the workspace around it:
 | Run | Flag | Why |
 | --- | ---- | --- |
 | `nx run codebase:callidescope` | `--check depth` | A stack got longer in this change, and this change is what fixes it |
-| `nx run callidescope-examples:callidescope` | `--check reports` | The traced source is frozen fixture code, so a stale report means a fixture or the resolver moved |
+| `nx run callidescope-examples:examples` | `--check reports` | The traced source is frozen fixture code, so a stale report means a fixture or the resolver moved |
 
 The workspace cannot check its own report on a branch: the call graph moves on
 nearly every change, so freshness would fail pull requests for being behind
@@ -327,13 +353,40 @@ Moving to `examples/` dissolved that without suppressing anything. There is no
 `src/modules/` for those patterns to match, so the tag is free to be accurate
 about a dependency that is genuinely real.
 
+## Layout
+
+```text
+callidescope-examples/
+├── callidescope.config.ts             what traces this package, and every limit it sets
+├── examples/
+│   └── <name>/
+│       ├── README.md                  the guide for this example
+│       └── *.ts                       the fixture callables
+├── output/
+│   ├── report.json                    the whole run, machine-readable
+│   ├── report.md                      the printed trees, between anchors
+│   └── diagram.md                     the same stacks, drawn
+├── src/
+│   ├── index.ts                       the barrel — an `exported-function` root
+│   └── main.ts                        the bootstrap — a `module-bootstrap` root
+└── testing/
+    └── examples.integration.test.ts   every finding this guide documents
+```
+
+`src/` is the one thing this package has that its three sibling `*-examples`
+packages do not, and it is a requirement rather than a leftover: the
+`module-bootstrap` and `exported-function` entry-point rules key on the
+**literal paths** `src/main.ts` and `src/index.ts`, so those two fixtures cannot
+live under `examples/` with the rest. They are the only files in this package
+outside `examples/`.
+
 ## Test
 
 ```bash
 nx run callidescope-examples:vitest
 ```
 
-[`testing/findings.integration.test.ts`](testing/findings.integration.test.ts)
+[`testing/examples.integration.test.ts`](testing/examples.integration.test.ts)
 traces the fixtures and asserts every finding this guide documents — the stack
 depths, the floor, the spread and misplacement findings, the unfollowable
 frames, the entry-point kinds. A fixture whose meaning silently changed when the
@@ -660,6 +713,7 @@ _This project defines no NestJS modules to graph._
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_examples_base_class_base_class_ts["examples/base-class/base-class.ts"]
   file_examples_base_class_base_task_ts["examples/base-class/base-task.ts"]
@@ -690,7 +744,7 @@ graph LR
   file_examples_structural_interface_structural_provider_ts["examples/structural-interface/structural-provider.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_main_ts["src/main.ts"]
-  file_testing_findings_integration_test_ts["testing/findings.integration.test.ts"]
+  file_testing_examples_integration_test_ts["testing/examples.integration.test.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_examples_base_class_base_class_ts --> file_examples_base_class_base_task_ts
@@ -712,7 +766,7 @@ graph LR
   file_src_index_ts --> file_examples_plain_call_normalize_label_ts
   file_src_main_ts --> file_examples_injected_dependency_inventory_ts
   file_src_main_ts --> file_examples_injected_dependency_orders_ts
-  file_testing_findings_integration_test_ts --> file_callidescope_config_ts
+  file_testing_examples_integration_test_ts --> file_callidescope_config_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 
@@ -722,14 +776,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1251-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-231.07_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1305-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-240.59_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-22-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-34-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-35-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-34-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-35-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-3-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
@@ -743,12 +797,12 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-1-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-8-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-24-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-49-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-54-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-59-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-108-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-113-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-0-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-19-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-57-0284c7?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-21-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-58-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-32-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-141-64748b?style=flat-square)
 ![Comment Lines](https://img.shields.io/badge/Comment_Lines-371-475569?style=flat-square)
@@ -772,16 +826,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-4473-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-4474-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-799-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-315-8b5cf6?style=flat-square)
 ![JSON Properties](https://img.shields.io/badge/JSON_Properties-3038-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-1362-16a34a?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-1363-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-516-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-492-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-442-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-3484-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-443-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-3485-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
@@ -900,23 +954,23 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-21-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-708-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-971-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-21-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-22-8b5cf6?style=flat-square)
+![H2](https://img.shields.io/badge/H2-59-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-0-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-102-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-5-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-15-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-144-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-20-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-12-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-56-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-37-059669?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-13-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-63-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-79-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-17-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-169-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-36-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-234-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

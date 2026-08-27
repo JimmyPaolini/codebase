@@ -22,7 +22,7 @@ import type {
  * and the NestJS module graph — resolves to the same
  * `ResolvedCodependixGraphOutput` shape and is delivered the same way: a JSON
  * file, an anchored or standalone Markdown file, or both. This service is
- * the one place that shape is turned into file I/O, so `CodependixService`
+ * the one place that shape is turned into file I/O, so `MapService`
  * only has to render each graph type's own JSON and diagram content and hand
  * it over.
  */
@@ -232,7 +232,7 @@ export class DeliveryService {
    *
    * Falls back to the historical hard failure when the caller supplied no
    * `markdownSection` — there is nothing safe to build without a heading and
-   * intro line, and `CodependixService` always supplies one for every real
+   * intro line, and `MapService` always supplies one for every real
    * anchored destination it delivers.
    */
   private writeAutoCreatedAnchorSection(args: {
