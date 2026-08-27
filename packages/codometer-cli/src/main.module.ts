@@ -12,6 +12,7 @@ import { LoggerModule } from "@codebase/logger";
 import { environmentSchema } from "./constants";
 import { ChangesModule } from "./modules/changes/changes.module";
 import { CodometerModule } from "./modules/codometer/codometer.module";
+import { ConfigurationModule as CodometerCliConfigurationModule } from "./modules/configuration/configuration.module";
 
 /**
  * Root NestJS application module.
@@ -27,6 +28,7 @@ import { CodometerModule } from "./modules/codometer/codometer.module";
     DiscoveryModule,
     LoggerModule,
     ChangesModule,
+    CodometerCliConfigurationModule,
     CodometerModule,
     CodometerDiscoveryModule,
     ConfigurationModule,

@@ -15,9 +15,6 @@ const WORKSPACE_MARKER = "pnpm-workspace.yaml";
 /** Directory every project's build output is emitted beneath. */
 const BUILD_DIRECTORY = "dist";
 
-/** Manifest whose presence is what makes a directory a project. */
-const MANIFEST_FILE = "package.json";
-
 /**
  * Name of the target holding a project's compiled JavaScript.
  *
@@ -60,18 +57,6 @@ const findWorkspaceDirectory = (searchDirectory: string): string => {
     candidateDirectory = parentDirectory;
   }
 };
-
-/**
- * Whether a directory holds a project at all.
- *
- * A folder carrying no manifest is no project, so it gets no target rather
- * than one over a build nobody emits. A project that has not been built yet
- * and a folder that was never going to have a build must not read alike: the
- * first is an empty target, which is what the empty-match rule exists to
- * report on.
- */
-const holdsProject = (directory: string): boolean =>
-  existsSync(path.join(directory, MANIFEST_FILE));
 
 // 🧱 Shared Configuration
 
@@ -169,27 +154,6 @@ const buildWorkspaceConfiguration = (): CodometerConfiguration => ({
   },
 });
 
-/**
- * What codometer measures for anything that is not a project of its own.
- *
- * Every project carries a `codometer.config.ts` calling `defineProject`, and
- * codometer takes the first file it finds walking upward, so this default
- * answers for the two things no project file covers: the workspace directory
- * itself, measured as one repository with no target and no glob, and any
- * folder that is not a project at all — `configuration/`, `scripts/` — which
- * gets the conventions and nothing else.
- *
- * A project is still handled here as a fallback rather than an error, so a
- * newly generated project measures sensibly before anyone writes its file.
- * What it cannot do is gate one: limits live in the project files now, which
- * is the point of the split. A project whose file is missing is measured and
- * reported like the rest and gated by nothing.
- *
- * @see [`packages/codometer-examples/README.md`](../packages/codometer-examples/README.md)
- * for the guided tour, and
- * [`packages/codometer-examples/AGENTS.md`](../packages/codometer-examples/AGENTS.md)
- * for the message-to-example lookup table.
- */
 // 🧬 Inheritance
 
 /**
@@ -231,18 +195,24 @@ export const defineProject =
     ...options,
   });
 
-const codometerConfiguration: CodometerConfigurationFactory = (context) => {
-  const workspaceDirectory = findWorkspaceDirectory(
-    context.configurationDirectory,
-  );
-
-  if (context.directory === workspaceDirectory) {
-    return buildWorkspaceConfiguration();
-  }
-
-  return holdsProject(context.directory)
-    ? buildProjectConfiguration(context, workspaceDirectory)
-    : { ...sharedConfiguration };
-};
-
-export default codometerConfiguration;
+/**
+ * What this file answers with when codometer reads it directly.
+ *
+ * The workspace configuration and nothing else. Every project declares its own
+ * `codometer.config.ts` calling `defineProject`, and codometer takes the first
+ * file it finds walking upward, so this is only ever reached for the workspace
+ * directory itself — measured as one repository, with no target and no glob.
+ *
+ * It used to branch on the directory it was called with, deriving a project's
+ * configuration when it recognised one and falling back to the conventions
+ * otherwise. That arrangement is gone. One file answering differently for every
+ * folder put a project's configuration nowhere a reader of that project could
+ * find it, and left `codometer configuration` unable to list what a repository
+ * gates without first knowing every directory the factory might be asked about.
+ *
+ * @see [`packages/codometer-examples/README.md`](../packages/codometer-examples/README.md)
+ * for the guided tour, and
+ * [`packages/codometer-examples/AGENTS.md`](../packages/codometer-examples/AGENTS.md)
+ * for the message-to-example lookup table.
+ */
+export default buildWorkspaceConfiguration();
