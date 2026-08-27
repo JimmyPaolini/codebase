@@ -51,60 +51,15 @@ testing/                            # Shared test utilities
 
 ### Module Graph
 
-The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
+The modules this project defines and the imports between them are exported by
+[codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/codependix-cli)
+into the `## 🕸️ Codependix` section of [README.md](README.md), alongside this
+project's Nx neighborhood and its file-level import graph. Regenerate all three
+with:
 
-<!-- nestjs-module-graph-start -->
-
-```mermaid
-flowchart LR
-  BoxesMotifModule
-  ChainMotifModule
-  ConfigModule([ConfigModule])
-  DiscoveryModule
-  GenerateModule
-  GridGeometryModule
-  LoggerModule([LoggerModule])
-  MainModule
-  MeanderGenerationModule
-  MosaicMotifModule
-  MotifTransformsModule
-  SnakeMotifModule
-  StartModule
-  SvgRenderingModule
-  SwirlMotifModule
-  WhirlMotifModule
-  BoxesMotifModule --> GridGeometryModule
-  BoxesMotifModule --> MotifTransformsModule
-  ChainMotifModule --> GridGeometryModule
-  ChainMotifModule --> MotifTransformsModule
-  ChainMotifModule --> SnakeMotifModule
-  GenerateModule --> MeanderGenerationModule
-  MainModule --> DiscoveryModule
-  MainModule --> GenerateModule
-  MainModule --> StartModule
-  MeanderGenerationModule --> BoxesMotifModule
-  MeanderGenerationModule --> ChainMotifModule
-  MeanderGenerationModule --> GridGeometryModule
-  MeanderGenerationModule --> MosaicMotifModule
-  MeanderGenerationModule --> SnakeMotifModule
-  MeanderGenerationModule --> SvgRenderingModule
-  MeanderGenerationModule --> SwirlMotifModule
-  MeanderGenerationModule --> WhirlMotifModule
-  MosaicMotifModule --> GridGeometryModule
-  MosaicMotifModule --> MotifTransformsModule
-  MosaicMotifModule --> SvgRenderingModule
-  SnakeMotifModule --> GridGeometryModule
-  SnakeMotifModule --> MotifTransformsModule
-  StartModule --> MeanderGenerationModule
-  SwirlMotifModule --> GridGeometryModule
-  SwirlMotifModule --> MotifTransformsModule
-  WhirlMotifModule --> GridGeometryModule
-  WhirlMotifModule --> MotifTransformsModule
+```bash
+nx run codebase:codependix:write
 ```
-
-_Rounded modules are global: every module can inject them, so their edges are left out._
-
-<!-- nestjs-module-graph-end -->
 
 ## Development
 
