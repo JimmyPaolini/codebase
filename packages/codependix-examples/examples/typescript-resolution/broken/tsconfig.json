@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "target": "not-a-real-target"
+  },
+  "include": ["src/**/*.ts"]
+}

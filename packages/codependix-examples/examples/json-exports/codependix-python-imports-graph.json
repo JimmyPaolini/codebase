@@ -1,0 +1,17 @@
+{
+  "edges": [
+    {
+      "source": "catalog.py",
+      "target": "settings.py"
+    }
+  ],
+  "fileNames": [
+    "__init__.py",
+    "catalog.py",
+    "settings.py"
+  ],
+  "isolatedFileNames": [
+    "__init__.py"
+  ],
+  "projectName": "python"
+}

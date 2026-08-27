@@ -199,17 +199,6 @@
               "ruleId": "any-file"
             }
           ],
-          "name": "examples"
-        },
-        {
-          "children": [
-            {
-              "ruleId": "kebab-case-folder"
-            },
-            {
-              "ruleId": "any-file"
-            }
-          ],
           "name": "data"
         },
         {

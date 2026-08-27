@@ -1,0 +1,3 @@
+defaults:
+  nx:
+    target: markdown

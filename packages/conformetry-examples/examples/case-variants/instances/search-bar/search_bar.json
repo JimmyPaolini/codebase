@@ -1,0 +1,7 @@
+{
+  "camel": "spelledOutByHand",
+  "kebab": "search-bar",
+  "owner": "platform",
+  "pascal": "SearchBar",
+  "snake": "search_bar"
+}

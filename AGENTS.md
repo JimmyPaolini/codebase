@@ -74,6 +74,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[codometer-languages](packages/codometer-languages)**: Every input language analyzer codometer measures, behind one `analyze()` call
 - **[codometer-output](packages/codometer-output)**: Every codometer output format — JSON reports, README badges, and the pull request change report
 - **[codometer-size](packages/codometer-size)**: Compresses a target's matched files and measures their size
+- **[conformetry-examples](packages/conformetry-examples)**: Eleven runnable examples of the conformetry toolchain, each with its own configuration, template, instances, and guide
 - **[lexico-components](packages/lexico-components)**: Shared React component library (shadcn/ui, Radix UI)
 - **[lexico-entities](packages/lexico-entities)**: Shared TypeORM entities and GraphQL types package
 - **[logger](packages/logger)**: Shared pino-backed NestJS `LoggerService` and `LoggerModule`
@@ -84,9 +85,11 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
 - **[callidescope-examples](packages/callidescope-examples)**: A small codebase built to be traced, carrying one worked example per callidescope rule, finding, and output — plus a `README.md` guide and an `AGENTS.md` lookup table for acting on a finding
 - **[callidescope-graph](packages/callidescope-graph)**: Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
+- **[callidescope-nx](packages/callidescope-nx)**: Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets, scoped through the Nx dependency graph — the only callidescope package that knows Nx exists
 - **[callidescope-output](packages/callidescope-output)**: Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **[codependix-cli](packages/codependix-cli)**: Command-line host that exports dependency graphs as JSON and Markdown anchor blocks — see [Codependix](#codependix) for its agent skills
 - **[codependix-configuration](packages/codependix-configuration)**: Reads `codependix.config.ts` and resolves per-project export destinations
+- **[codependix-examples](packages/codependix-examples)**: Fifteen subjects built to be graphed, each carrying the guide codependix renders from it
 - **[codependix-imports](packages/codependix-imports)**: Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
 - **[codependix-nestjs](packages/codependix-nestjs)**: Explores a NestJS project's container and builds its module graph
 - **[codependix-nx](packages/codependix-nx)**: Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
@@ -127,6 +130,14 @@ These three are authored in
 from the lockfile like any other vendored skill, so what this repository loads is
 exactly what another workspace gets. Edit the package, never the installed copy —
 `skills update` overwrites it.
+
+When a behavior needs to be **seen** rather than described, run it:
+[`packages/conformetry-examples`](packages/conformetry-examples) holds eleven
+self-contained examples, each with its own configuration, template, instances,
+and Nx target. Its [AGENTS.md](packages/conformetry-examples/AGENTS.md) maps
+"conformance reported X" to the example that reproduces X in about a second, so
+a finding can be understood without the surrounding project's conventions
+muddying it. Five instances there are broken on purpose — do not repair them.
 
 The generator namespace is emitted from `configuration/conformetry.config.ts`
 into the gitignored `.conformetry/` directory on `pnpm install`, so it is never

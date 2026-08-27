@@ -1,0 +1,4 @@
+{{namePascalCase}}
+
+Plain text has no tree to compare, so the text validator asks that every line
+the template declares is still present.

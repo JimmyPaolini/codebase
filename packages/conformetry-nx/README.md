@@ -390,6 +390,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   conformetry_configuration["conformetry-configuration"]
   conformetry_core["conformetry-core"]
+  conformetry_examples["conformetry-examples"]
   conformetry_generation["conformetry-generation"]
   conformetry_json["conformetry-json"]
   conformetry_jupyter["conformetry-jupyter"]
@@ -400,6 +401,7 @@ graph LR
   conformetry_typescript["conformetry-typescript"]
   conformetry_validation["conformetry-validation"]
   logger["logger"]
+  conformetry_examples --> conformetry_nx
   conformetry_nx --> conformetry_configuration
   conformetry_nx --> conformetry_core
   conformetry_nx --> conformetry_generation

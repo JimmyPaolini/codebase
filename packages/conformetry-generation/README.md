@@ -42,9 +42,18 @@ values cannot corrupt source code. `buildNameSubstitutions` derives
 single name; callers merge their own inputs over the result, so an explicit
 input of the same key always wins.
 
-> Mustache renders an unknown placeholder as an empty string rather than
-> leaving the token visible, so a template referencing a field nobody supplies
-> produces a silent hole.
+> **An interpolated placeholder nobody supplied raises
+> `MissingSubstitutionError`.** Mustache would otherwise render it as an empty
+> string rather than leaving the token visible, and because generation and
+> validation render identically, both halves of the loop lost the same value and
+> agreed that nothing was wrong. A hole rendered into both sides of a comparison
+> is not something that comparison can report, so the renderer refuses instead.
+>
+> Section tags are exempt, deliberately: `{{#field}}` and `{{^field}}` are
+> conditionals, so an absent name is how a template asks for a block to be
+> skipped or taken. A supplied value that is the empty string is an answer too —
+> only an absent key is a hole. Together those are how a template says
+> "optional": ask with a section, interpolate inside it.
 
 Paths once used a `__field__` syntax of their own, on the assumption that
 braces were not portable across filesystems. They are — and the separate syntax
@@ -142,10 +151,12 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   conformetry_cli["conformetry-cli"]
   conformetry_configuration["conformetry-configuration"]
+  conformetry_examples["conformetry-examples"]
   conformetry_generation["conformetry-generation"]
   conformetry_nx["conformetry-nx"]
   conformetry_cli --> conformetry_generation
   conformetry_configuration --> conformetry_generation
+  conformetry_examples --> conformetry_generation
   conformetry_nx --> conformetry_generation
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_generation subject
@@ -177,6 +188,7 @@ graph LR
   file_src_modules_generation_generation_service_unit_test_ts["src/modules/generation/generation.service.unit.test.ts"]
   file_src_modules_generation_generation_types_ts["src/modules/generation/generation.types.ts"]
   file_src_modules_rendering_rendering_constants_ts["src/modules/rendering/rendering.constants.ts"]
+  file_src_modules_rendering_rendering_errors_ts["src/modules/rendering/rendering.errors.ts"]
   file_src_modules_rendering_rendering_module_ts["src/modules/rendering/rendering.module.ts"]
   file_src_modules_rendering_rendering_service_ts["src/modules/rendering/rendering.service.ts"]
   file_src_modules_rendering_rendering_service_unit_test_ts["src/modules/rendering/rendering.service.unit.test.ts"]
@@ -195,7 +207,9 @@ graph LR
   file_src_modules_generation_generation_service_unit_test_ts --> file_src_modules_rendering_rendering_service_ts
   file_src_modules_rendering_rendering_module_ts --> file_src_modules_rendering_rendering_service_ts
   file_src_modules_rendering_rendering_service_ts --> file_src_modules_rendering_rendering_constants_ts
+  file_src_modules_rendering_rendering_service_ts --> file_src_modules_rendering_rendering_errors_ts
   file_src_modules_rendering_rendering_service_ts --> file_src_modules_rendering_rendering_types_ts
+  file_src_modules_rendering_rendering_service_unit_test_ts --> file_src_modules_rendering_rendering_errors_ts
   file_src_modules_rendering_rendering_service_unit_test_ts --> file_src_modules_rendering_rendering_service_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
@@ -206,23 +220,23 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1053-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-41.73_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1197-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-46.53_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-16-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-17-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-4.62_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-5.83_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-16-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-17-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-8-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-4-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-29-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-32-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -230,16 +244,16 @@ graph LR
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-3-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-9-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-6-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-43-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-22-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-45-4ade80?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-7-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-52-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-27-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-59-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-20-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-49-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-37-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-17-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-54-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-146-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-57-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-40-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-18-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-62-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-168-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -356,7 +370,7 @@ graph LR
 ![Constants Files](https://img.shields.io/badge/Constants_Files-2-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-2-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
+![Errors Files](https://img.shields.io/badge/Errors_Files-1-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-3-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)

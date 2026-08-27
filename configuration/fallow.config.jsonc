@@ -31,6 +31,10 @@
     "{applications,packages,tools}/*/src/generators.ts",
     "{applications,packages,tools}/*/src/repl.ts",
     "{applications,packages,tools}/*/testing/**/*.ts",
+    // conformetry-examples: every example is read and run rather than imported,
+    // so nothing in the module graph reaches one. knip names the same paths in
+    // its own entry list for the same reason.
+    "packages/conformetry-examples/examples/*/*.ts",
     // codometer finds these by walking up from the project it is measuring,
     // never by importing them, so nothing in the module graph reaches one.
     // knip names the root file in its own entry list for the same reason.
@@ -89,6 +93,11 @@
   // was suppressing is simply used. `configuration/knip.config.ts` carries the
   // same reasons, split across the workspaces knip scopes each run to.
   "ignoreDependencies": [
+    // Registered by name in nx.json's `plugins` array and loaded by Nx, so no
+    // static import proves it is used. It has to be a root dependency for Nx
+    // to resolve that name at all. `@conformetry/nx` needs no entry here only
+    // because `configuration/conformetry.config.ts` imports its types.
+    "@callidescope/nx",
     // Depended on so that pnpm links its `conformetry` bin into
     // node_modules/.bin, which it does only for a root dependency.
     "@conformetry/cli",
@@ -173,6 +182,11 @@
     "**/applications/lexico-ingestion/src/modules/literature/literature.constants.ts",
     "**/build/**",
     "**/conformetry-templates/**",
+    // 🕸️ Codependix example subjects: input to be graphed, unreachable from any
+    // entry point by construction. One carries a `tsconfig.json` the compiler is
+    // meant to refuse, and another a module that throws the moment it is
+    // imported, so neither belongs in a module graph of this repository's code.
+    "**/packages/codependix-examples/examples/*/*/**",
     "**/coverage/**",
     "**/data/library/**",
     "**/data/wikipedia/**",
@@ -183,6 +197,8 @@
     "**/node_modules/**",
     "**/packages/codometer-examples/examples/compiled/**",
     "**/packages/codometer-examples/examples/corpus/**",
+    "**/packages/conformetry-examples/examples/*/instances/**",
+    "**/packages/conformetry-examples/examples/*/templates/**",
     "**/pnpm-lock.yaml",
     "**/src/lib/database.types.ts",
     "**/src/routeTree.gen.ts",

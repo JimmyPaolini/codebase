@@ -185,6 +185,7 @@ graph LR
   conformetry_cli["conformetry-cli"]
   conformetry_configuration["conformetry-configuration"]
   conformetry_core["conformetry-core"]
+  conformetry_examples["conformetry-examples"]
   conformetry_files["conformetry-files"]
   conformetry_json["conformetry-json"]
   conformetry_jupyter["conformetry-jupyter"]
@@ -196,6 +197,7 @@ graph LR
   conformetry_validation["conformetry-validation"]
   conformetry_cli --> conformetry_core
   conformetry_configuration --> conformetry_core
+  conformetry_examples --> conformetry_core
   conformetry_files --> conformetry_core
   conformetry_json --> conformetry_core
   conformetry_jupyter --> conformetry_core

@@ -211,10 +211,14 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_examples["callidescope-examples"]
   callidescope_graph["callidescope-graph"]
+  callidescope_nx["callidescope-nx"]
   callidescope_output["callidescope-output"]
   callidescope_cli --> callidescope_configuration
+  callidescope_examples --> callidescope_configuration
   callidescope_graph --> callidescope_configuration
+  callidescope_nx --> callidescope_configuration
   callidescope_output --> callidescope_configuration
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class callidescope_configuration subject

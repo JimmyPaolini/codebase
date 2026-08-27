@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "@codebase/logger": "workspace:*",
+    "@codependix/cli": "workspace:*",
+    "@codependix/configuration": "workspace:*",
+    "@codependix/imports": "workspace:*",
+    "@codependix/nestjs": "workspace:*",
+    "@codependix/nx": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "@nx/devkit": "catalog:",
+    "reflect-metadata": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@nx/eslint-plugin": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "name": "@codependix/examples",
+  "private": true,
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "version": "0.0.1"
+}

@@ -212,6 +212,34 @@ a capped run says so.
 side — what it calls, and what calls it — the two questions a refactor or a
 rename needs answered together before either one is safe.
 
+## Scoping by Nx project name
+
+`--directories` takes paths, because callidescope has no idea what workspace
+tool you use — a directory holding a `tsconfig.json` is the whole contract, and
+it holds in a monorepo, a single package, or neither.
+
+An Nx workspace can hand the selecting to Nx instead, through
+[`@callidescope/nx`](../callidescope-nx/README.md) — a plugin that infers a
+trace target onto every project:
+
+```bash
+nx run-many -t trace --projects=tag:type:package
+nx affected -t trace
+nx run callidescope-graph:depth --address="src/foo.service.ts#FooService.bar"
+```
+
+It infers a `trace`, a `depth`, and a `breadth` target onto every project, so
+`callidescope`, `depth`, and `breadth` all become tasks — with Nx's own project
+selection, caching, and affected-detection for free, none of which a flag here
+could offer. It also traces each project **with its
+Nx dependencies**, so a stack is not truncated the moment it crosses a package
+boundary — the graph knowledge that makes the plugin worth having.
+
+It is a separate package rather than a flag here on purpose: this CLI depends
+on nothing Nx-shaped, and a flag that only worked when an optional package
+happened to be installed would advertise in `--help` something that silently
+did nothing without it.
+
 ## What it reports
 
 **Deep call stacks.** The single deepest path below each entry point, when it
@@ -340,6 +368,7 @@ every resolver ends the same way. `jscpd` already covers real duplication.
 | [`@callidescope/cli`](.) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
 | [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
+| [`@callidescope/nx`](../callidescope-nx/README.md) | Nx plugin: per-project `trace`/`depth`/`breadth` targets, scoped through the Nx dependency graph |
 | [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
 | [`@callidescope/examples`](../callidescope-examples/README.md) | A traced fixture codebase carrying one worked example of everything above |
 
@@ -672,16 +701,22 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_examples["callidescope-examples"]
   callidescope_graph["callidescope-graph"]
+  callidescope_nx["callidescope-nx"]
   callidescope_output["callidescope-output"]
   logger["logger"]
   callidescope_cli --> callidescope_configuration
   callidescope_cli --> callidescope_graph
   callidescope_cli --> callidescope_output
   callidescope_cli --> logger
+  callidescope_examples -.-> callidescope_cli
+  callidescope_nx --> callidescope_cli
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class callidescope_cli subject
 ```
+
+_Dashed edges are dependencies Nx inferred from configuration rather than from code._
 <!-- codependix:end name="codependix-nx" -->
 
 ### NestJS Module Graph
@@ -894,14 +929,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5729-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-181.01_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5744-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-181.76_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-47-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-21.43_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-21.52_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

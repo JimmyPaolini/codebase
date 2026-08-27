@@ -14,9 +14,11 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 ```mermaid
 graph LR
   codependix_cli["codependix-cli"]
+  codependix_examples["codependix-examples"]
   codependix_nestjs["codependix-nestjs"]
   logger["logger"]
   codependix_cli --> codependix_nestjs
+  codependix_examples --> codependix_nestjs
   codependix_nestjs --> logger
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_nestjs subject

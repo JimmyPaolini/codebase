@@ -3,6 +3,7 @@
   "description": "",
   "devDependencies": {
     "@callidescope/configuration": "workspace:*",
+    "@callidescope/nx": "workspace:*",
     "@codebase/logger": "workspace:*",
     "@codependix/configuration": "workspace:*",
     "@codometer/configuration": "workspace:*",
@@ -115,5 +116,5 @@
     ]
   },
   "type": "module",
-  "version": "1.41.0"
+  "version": "1.42.0"
 }

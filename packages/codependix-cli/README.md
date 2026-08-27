@@ -52,9 +52,24 @@ every other one.
 | ------- | ---- |
 | [`@codependix/cli`](.) | Orchestrates the four graph builders and delivers their exports |
 | [`@codependix/configuration`](../codependix-configuration/README.md) | Reads `codependix.config.ts` and resolves per-project export destinations |
+| [`@codependix/examples`](../codependix-examples/README.md) | Fifteen subjects built to be graphed, each with the guide codependix renders from it |
 | [`@codependix/nx`](../codependix-nx/README.md) | Builds a project's Nx Neighborhood and the whole-workspace Workspace Graph |
 | [`@codependix/nestjs`](../codependix-nestjs/README.md) | Explores a NestJS project's container and builds its module graph |
 | [`@codependix/imports`](../codependix-imports/README.md) | Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements |
+
+## Examples
+
+Every behavior described above — and every one that is not, because it lived
+only in a JSDoc comment until now — has a worked example rendered by the real
+tool in
+[`packages/codependix-examples`](../codependix-examples/README.md):
+
+- [README](../codependix-examples/README.md) — one directory per example, each
+  readable on its own, plus configuring a first export destination and adopting
+  codependix in a workspace with no anchor blocks anywhere yet
+- [AGENTS.md](../codependix-examples/AGENTS.md) — a "codependix said X → open
+  this example" table, weighted toward the refusals and toward `--check`
+  staleness
 
 ## Start
 
@@ -83,6 +98,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
+  codependix_examples["codependix-examples"]
   codependix_imports["codependix-imports"]
   codependix_nestjs["codependix-nestjs"]
   codependix_nx["codependix-nx"]
@@ -92,6 +108,7 @@ graph LR
   codependix_cli --> codependix_nestjs
   codependix_cli --> codependix_nx
   codependix_cli --> logger
+  codependix_examples --> codependix_cli
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_cli subject
 ```
@@ -358,14 +375,14 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4393-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-151.64_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4402-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-151.88_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-40-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.79_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.89_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

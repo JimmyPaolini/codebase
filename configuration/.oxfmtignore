@@ -43,6 +43,11 @@ package-lock.json
 pnpm-lock.yaml
 tmp
 **/conformetry-templates/**
+# Conformetry example fixtures: a template file holds mustache where an
+# identifier belongs, so it is not parseable as the language its extension
+# names. Each example's own conformetry.config.ts is formatted normally.
+**/packages/conformetry-examples/examples/*/instances/**
+**/packages/conformetry-examples/examples/*/templates/**
 # Emitted from the conformetry configuration; the emitter's output is
 # authoritative, and reformatting it makes every conformetry command fail the
 # drift check after a `format` run.
@@ -55,3 +60,12 @@ tmp
 **/data/wikipedia
 **/data/wiktionary
 yarn.lock
+
+# 🕸️ Every dependency graph codependix writes as JSON. It renders them with
+# `JSON.stringify(…, 2)`, which puts one array element per line; oxfmt collapses
+# a short array onto one. Reformatting one therefore makes the very next
+# `codependix --check` fail against what `codependix --write` just wrote — the
+# same conflict this file already resolves for `.conformetry/**`, and the same
+# reason `configuration/eslint.config.ts` turns `jsonc/sort-array-values` off
+# for exactly these files.
+**/codependix-*graph.json

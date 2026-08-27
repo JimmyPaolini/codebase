@@ -256,6 +256,14 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
+    "packages/callidescope-nx": {
+      // An Nx plugin is loaded by name, never imported: the CommonJS shim, the
+      // plugin entry it requires, and every executor Nx resolves from
+      // `executors.json` are all roots nothing in this workspace references.
+      entry: ["src/index.cjs", "src/index.ts", "src/executors/*/executor.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      project: "src/**/*.ts",
+    },
     "packages/callidescope-output": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
@@ -271,6 +279,21 @@ const config: KnipConfig = {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
+    },
+
+    // codependix packages: the examples package, whose `examples/` directory
+    // holds subjects to be graphed and the guides rendered from them, neither of
+    // which anything imports.
+    "packages/codependix-examples": {
+      entry: ["testing/render-examples.ts", "testing/**/*.test.ts"],
+      ignoreDependencies: [
+        // Imported by the example NestJS containers under `examples/`, which are
+        // input to be graphed rather than code knip's project scope covers.
+        // Booting one needs both present in this package's own node_modules.
+        "@nestjs/common",
+        "reflect-metadata",
+      ],
+      project: "testing/**/*.ts",
     },
 
     // conformetry packages: NestJS service/command application scaffolds
@@ -292,6 +315,16 @@ const config: KnipConfig = {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
+    },
+    // conformetry-examples: runnable examples of the toolchain. Example code
+    // exists to be read and run, not imported, so every file here is an entry
+    // point in its own right — without saying so, knip reports the whole
+    // package as unused. The fixture trees are excluded because a template
+    // file is not valid TypeScript until it has been rendered.
+    "packages/conformetry-examples": {
+      entry: ["examples/*/conformetry.config.ts", "examples/*/*.ts"],
+      ignore: ["examples/*/instances/**", "examples/*/templates/**"],
+      project: "examples/**/*.ts",
     },
     "packages/conformetry-generation": {
       entry: ["src/index.ts"],

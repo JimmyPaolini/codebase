@@ -139,9 +139,11 @@ graph LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
   callidescope_graph["callidescope-graph"]
+  callidescope_nx["callidescope-nx"]
   callidescope_output["callidescope-output"]
   logger["logger"]
   callidescope_cli --> callidescope_output
+  callidescope_nx --> callidescope_output
   callidescope_output --> callidescope_configuration
   callidescope_output --> callidescope_graph
   callidescope_output --> logger
