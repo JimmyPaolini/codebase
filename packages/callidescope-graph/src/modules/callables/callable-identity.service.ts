@@ -97,7 +97,17 @@ export class CallableIdentityService {
     return body.statements.length;
   }
 
-  /** True when a declaration is reachable from outside its own file. */
+  /**
+   * True when a declaration is reachable from outside its own file.
+   *
+   * Three shapes carry the keyword, and only one of them carries it on the
+   * declaration the graph holds. A method's `export` sits on its class, and an
+   * arrow constant's sits on the variable statement above the arrow — the shape
+   * a React component, an anchor builder, and most barrel exports are written
+   * in. Reading the arrow's own modifiers alone leaves every one of them
+   * looking unexported, and so promoted as an orphan rather than classified as
+   * the barrel export it is.
+   */
   public isExported(declaration: CallableDeclaration): boolean {
     const modifierFlags = ts.getCombinedModifierFlags(declaration);
 
@@ -105,7 +115,11 @@ export class CallableIdentityService {
       return true;
     }
 
-    const owner = ts.findAncestor(declaration, ts.isClassDeclaration);
+    const owner = ts.findAncestor(
+      declaration,
+      (node): node is ts.ClassDeclaration | ts.VariableDeclaration =>
+        ts.isClassDeclaration(node) || ts.isVariableDeclaration(node),
+    );
 
     return (
       owner !== undefined &&

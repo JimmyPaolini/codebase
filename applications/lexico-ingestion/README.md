@@ -107,7 +107,7 @@ This project was generated from the [nestjs-command-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `applications/lexico-ingestion`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -638,8 +638,8 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `LexemesService.enrichLexeme` | 8 | `lexico-ingestion:modules/etymology`, `lexico-ingestion:modules/forms`, `lexico-ingestion:modules/part-of-speech`, `lexico-ingestion:modules/principal-parts`, `lexico-ingestion:modules/pronunciation`, `lexico-ingestion:modules/translations` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:71` |
-| `LexemesService.saveLexemeRelations` | 6 | `lexico-ingestion:modules/forms`, `lexico-ingestion:modules/principal-parts`, `lexico-ingestion:modules/pronunciation`, `lexico-ingestion:modules/words` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:216` |
+| `LexemesService.enrichLexeme` | 8 | `applications/lexico-ingestion:modules/etymology`, `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/part-of-speech`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/translations` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:71` |
+| `LexemesService.saveLexemeRelations` | 6 | `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/words` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:216` |
 
 ### Breadth
 
@@ -920,7 +920,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 | Callable | Declared in | Called from | Callers |
 | --- | --- | --- | --- |
-| `NumeralsService.toDecimal` | `lexico-ingestion:modules/numerals` | `lexico-ingestion:modules/literature` | 2/2 |
+| `NumeralsService.toDecimal` | `applications/lexico-ingestion:modules/numerals` | `applications/lexico-ingestion:modules/literature` | 2/2 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

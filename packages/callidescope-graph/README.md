@@ -39,14 +39,14 @@ This project was generated from the [nestjs-service-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `callidescope-graph`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/callidescope-graph`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
-| Callables | 168 |
-| Files | 55 |
-| Calls traced | 135 |
-| Call stacks | 5 |
+| Callables | 192 |
+| Files | 63 |
+| Calls traced | 160 |
+| Call stacks | 6 |
 | Deepest stack | 5 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
@@ -67,7 +67,20 @@ Call stacks traced through `callidescope-graph`, deepest first. Each frame shows
            ↳ Reads the name a property, variable, or parameter declaration binds.
 ```
 
-**2. `CallSitesService.visit`** — depth 3 · orphan-root
+**2. `AddressDepthService.toStack`** — depth 4 · orphan-root
+
+```text
+🚀 AddressDepthService.toStack(…): CallAddressStack [packages/callidescope-graph/src/modules/graph/address-depth.service.ts:105]
+   ↳ Turns one raw id path into the frames a report can print.
+  └─> PathsService.buildFrame(args: { callable: DiscoveredCallable; isCycle: boolean; }): StackFrame [packages/callidescope-graph/src/modules/graph/paths.service.ts:103]
+     ↳ Turns one callable into a frame a report can print.
+    └─> DocumentationService.read(args: ReadDocumentationArguments): CallableDocumentation | undefined [packages/callidescope-graph/src/modules/documentation/documentation.service.ts:78]
+       ↳ Reads the documentation comment, if the callable has one.
+      └─> DocumentationService.readSymbol(args: ReadDocumentationArguments): ts.Symbol | undefined [packages/callidescope-graph/src/modules/documentation/documentation.service.ts:51]
+         ↳ Resolves the symbol a declaration's documentation hangs off.
+```
+
+**3. `CallSitesService.visit`** — depth 3 · orphan-root
 
 ```text
 🚀 CallSitesService.visit(node: ts.Node): void [packages/callidescope-graph/src/modules/edges/call-sites.service.ts:62]
@@ -76,17 +89,17 @@ Call stacks traced through `callidescope-graph`, deepest first. Each frame shows
     └─> CallSitesService.filter(…)(argument: ts.Expression): argument is ts.Expression & ts.SignatureDeclaration [packages/callidescope-graph/src/modules/edges/call-sites.service.ts:46]
 ```
 
-**3. `WorkspaceService.isExcluded`** — depth 2 · orphan-root
+<details>
+<summary>3 more call stacks</summary>
+
+**4. `WorkspaceService.isExcluded`** — depth 2 · orphan-root
 
 ```text
-🚀 WorkspaceService.isExcluded(workspaceRelativePath: string): boolean [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:167]
-  └─> WorkspaceService.some(…)(glob: string): boolean [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:169]
+🚀 WorkspaceService.isExcluded(workspaceRelativePath: string): boolean [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:187]
+  └─> WorkspaceService.some(…)(glob: string): boolean [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:189]
 ```
 
-<details>
-<summary>2 more call stacks</summary>
-
-**4. `ClassesService.readMemberDeclarations`** — depth 2 · orphan-root
+**5. `ClassesService.readMemberDeclarations`** — depth 2 · orphan-root
 
 ```text
 🚀 ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:149]
@@ -94,12 +107,12 @@ Call stacks traced through `callidescope-graph`, deepest first. Each frame shows
   └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:163]
 ```
 
-**5. `EdgesService.resolveCallableId`** — depth 2 · orphan-root
+**6. `EdgesService.resolveCallableId`** — depth 2 · orphan-root
 
 ```text
 🚀 EdgesService.resolveCallableId(…): string | undefined [packages/callidescope-graph/src/modules/edges/edges.service.ts:202]
    ↳ Maps a resolved declaration to the callable it belongs to.
-  └─> WorkspaceService.toWorkspaceRelative(args: { absolutePath: string; workspaceRoot: string; }): string [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:272]
+  └─> WorkspaceService.toWorkspaceRelative(args: { absolutePath: string; workspaceRoot: string; }): string [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:294]
      ↳ Rewrites an absolute path as workspace-relative with POSIX separators.
 ```
 
@@ -118,15 +131,16 @@ None.
 | `SymbolResolutionService.resolveSymbol` | 6 | `SymbolResolutionService.unwrapAlias`, `SymbolResolutionService.every(…)`, `SymbolResolutionService.readBodied`, `SymbolResolutionService.readResolution`, `SymbolResolutionService.find(…)`, `SymbolResolutionService.resolveThroughHierarchy` | `packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:165` |
 
 <details>
-<summary>60 more callables</summary>
+<summary>72 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `GraphAssemblyService.assemble` | 6 | `GraphService.assemble`, `EdgesService.build`, `ComponentsService.condense`, `GraphAssemblyService.map(…)`, `BreadthService.measure`, `GraphDepthService.measure` | `packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44` |
+| `AddressService.resolve` | 4 | `AddressService.parseAddress`, `AddressService.describeInvalidAddress`, `AddressService.findMatches`, `AddressService.toCandidates` | `packages/callidescope-graph/src/modules/callables/address.service.ts:138` |
 | `ClassesService.resolveImplementations` | 4 | `ClassesService.collectDerived`, `ClassesService.filter(…)`, `ClassesService.filterAssignable`, `ClassesService.flatMap(…)` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:207` |
 | `CohesionService.findModuleSpreads` | 4 | `CohesionService.isSpreadAllowed`, `CohesionService.readDepth`, `CohesionService.readDirectModuleIds`, `CohesionService.toSorted(…)` | `packages/callidescope-graph/src/modules/cohesion/cohesion.service.ts:202` |
 | `DocumentationService.read` | 4 | `DocumentationService.readSymbol`, `DocumentationService.readSummary`, `DocumentationService.filter(…)`, `DocumentationService.map(…)` | `packages/callidescope-graph/src/modules/documentation/documentation.service.ts:78` |
-| `WorkspaceService.listProjectRoots` | 3 | `WorkspaceService.filter(…)`, `WorkspaceService.map(…)`, `WorkspaceService.filter(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:91` |
-| `WorkspaceService.discoverProjects` | 3 | `WorkspaceService.listProjectRoots`, `WorkspaceService.readProjectName`, `WorkspaceService.toSorted(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:192` |
+| `WorkspaceService.discoverProjects` | 3 | `WorkspaceService.map(…)`, `WorkspaceService.findAllProjectDirectories`, `WorkspaceService.toSorted(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:214` |
 | `ProgramService.buildProgram` | 3 | `ProgramService.parseConfiguration`, `CompilerHostService.createHost`, `ProgramService.map(…)` | `packages/callidescope-graph/src/modules/program/program.service.ts:70` |
 | `ProgramService.parseConfiguration` | 3 | `ProgramService.readJsonConfigFile(…)`, `ProgramConfigurationError.constructor`, `ProgramService.map(…)` | `packages/callidescope-graph/src/modules/program/program.service.ts:102` |
 | `CallablesService.collectFromProgram` | 3 | `CallablesService.readOwnedPath`, `WorkspaceService.isTestFile`, `CallablesService.collectFromFile` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:77` |
@@ -135,9 +149,11 @@ None.
 | `EdgesService.collectCallbackEdges` | 3 | `EdgesService.map(…)`, `EdgesService.filter(…)`, `EdgesService.map(…)` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:127` |
 | `EntriesService.classify` | 3 | `EntriesService.hasConfiguredDecorator`, `EntriesService.isCommandRunnerMethod`, `EntriesService.isBootstrapFunction` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:49` |
 | `ComponentsService.condense` | 3 | `ComponentsService.openNode`, `ComponentsService.step`, `ComponentsService.buildSuccessors` | `packages/callidescope-graph/src/modules/graph/components.service.ts:183` |
-| `DepthService.measure` | 3 | `DepthService.combine`, `DepthService.readOwnModules`, `DepthService.hasUnresolved` | `packages/callidescope-graph/src/modules/graph/depth.service.ts:132` |
+| `GraphDepthService.measure` | 3 | `GraphDepthService.combine`, `GraphDepthService.readOwnModules`, `GraphDepthService.hasUnresolved` | `packages/callidescope-graph/src/modules/graph/graph-depth.service.ts:132` |
+| `AddressService.parseAddress` | 2 | `AddressService.parseSymbolPath`, `AddressService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/callables/address.service.ts:70` |
 | `CallableIdentityService.readDisplayName` | 2 | `CallableIdentityService.readMemberName`, `CallableIdentityService.readEnclosingTypeName` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:117` |
 | `CallableIdentityService.readMemberName` | 2 | `CallableIdentityService.readBindingName`, `CallableIdentityService.describeCallbackArgument` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:179` |
+| `WorkspaceService.findProjectDirectories` | 2 | `WorkspaceService.toWorkspaceRelative`, `WorkspaceService.isExcludedFromScan` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:76` |
 | `ProgramService.buildPrograms` | 2 | `ProgramService.buildProgram`, `ProgramService.assignOwnership` | `packages/callidescope-graph/src/modules/program/program.service.ts:138` |
 | `CallablesService.visit` | 2 | `CallablesService.isCallableDeclaration`, `CallablesService.describe` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:49` |
 | `CallablesService.readOwnedPath` | 2 | `ProgramService.toRealPath`, `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:162` |
@@ -151,16 +167,21 @@ None.
 | `EdgesService.resolveSite` | 2 | `SymbolResolutionService.resolveConstructor`, `SymbolResolutionService.resolve` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:226` |
 | `EdgesService.build` | 2 | `CallSitesService.collect`, `EdgesService.buildSiteEdges` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:251` |
 | `EntriesService.hasConfiguredDecorator` | 2 | `EntriesService.some(…)`, `EntriesService.readDecoratorNames` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:85` |
+| `PathsService.buildDeepestPath` | 2 | `PathsService.orderMembers`, `PathsService.buildFrame` | `packages/callidescope-graph/src/modules/graph/paths.service.ts:59` |
+| `PathsService.buildFrame` | 2 | `DocumentationService.read`, `SignaturesService.read` | `packages/callidescope-graph/src/modules/graph/paths.service.ts:103` |
+| `AddressDepthService.toStack` | 2 | `PathsService.buildFrame`, `AddressDepthService.isLowerBound` | `packages/callidescope-graph/src/modules/graph/address-depth.service.ts:105` |
+| `AddressDepthService.buildDownwardStacks` | 2 | `AddressDepthService.traverse`, `AddressDepthService.map(…)` | `packages/callidescope-graph/src/modules/graph/address-depth.service.ts:172` |
+| `AddressDepthService.buildUpwardStacks` | 2 | `AddressDepthService.traverse`, `AddressDepthService.map(…)` | `packages/callidescope-graph/src/modules/graph/address-depth.service.ts:195` |
 | `ComponentsService.finishFrame` | 2 | `ComponentsService.closeNode`, `ComponentsService.liftLowLink` | `packages/callidescope-graph/src/modules/graph/components.service.ts:72` |
 | `ComponentsService.step` | 2 | `ComponentsService.finishFrame`, `ComponentsService.visitSuccessor` | `packages/callidescope-graph/src/modules/graph/components.service.ts:116` |
 | `ComponentsService.visitSuccessor` | 2 | `ComponentsService.openNode`, `ComponentsService.liftLowLink` | `packages/callidescope-graph/src/modules/graph/components.service.ts:139` |
 | `GraphService.assemble` | 2 | `GraphService.append`, `GraphService.map(…)` | `packages/callidescope-graph/src/modules/graph/graph.service.ts:44` |
-| `PathsService.toFrame` | 2 | `DocumentationService.read`, `SignaturesService.read` | `packages/callidescope-graph/src/modules/graph/paths.service.ts:57` |
-| `PathsService.buildDeepestPath` | 2 | `PathsService.orderMembers`, `PathsService.toFrame` | `packages/callidescope-graph/src/modules/graph/paths.service.ts:82` |
+| `AddressService.toCandidates` | 1 | `AddressService.map(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:113` |
 | `CallableIdentityService.readEnclosingTypeName` | 1 | `CallableIdentityService.findAncestor(…)` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:125` |
 | `CallableIdentityService.readKind` | 1 | `CallableIdentityService.readBoundKind` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:138` |
-| `WorkspaceService.buildFileFilter` | 1 | `WorkspaceService.listIgnoredFiles` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:143` |
-| `WorkspaceService.isExcluded` | 1 | `WorkspaceService.some(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:167` |
+| `WorkspaceService.findAllProjectDirectories` | 1 | `WorkspaceService.findProjectDirectories` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:54` |
+| `WorkspaceService.buildFileFilter` | 1 | `WorkspaceService.listIgnoredFiles` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:163` |
+| `WorkspaceService.isExcluded` | 1 | `WorkspaceService.some(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:187` |
 | `CompilerHostService.resolveModuleCache` | 1 | `CompilerHostService.createModuleResolutionCache(…)` | `packages/callidescope-graph/src/modules/program/compiler-host.service.ts:40` |
 | `CompilerHostService.createHost` | 1 | `CompilerHostService.resolveModuleCache` | `packages/callidescope-graph/src/modules/program/compiler-host.service.ts:76` |
 | `CallablesService.collect` | 1 | `CallablesService.collectFromProgram` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:189` |
@@ -178,10 +199,14 @@ None.
 | `EntriesService.isCommandRunnerMethod` | 1 | `EntriesService.hasConfiguredDecorator` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:103` |
 | `EntriesService.readDecoratorNames` | 1 | `EntriesService.map(…)` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:121` |
 | `EntriesService.resolve` | 1 | `EntriesService.classify` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:139` |
-| `ComponentsService.buildSuccessors` | 1 | `ComponentsService.map(…)` | `packages/callidescope-graph/src/modules/graph/components.service.ts:160` |
-| `DepthService.combine` | 1 | `DepthService.foldSuccessors` | `packages/callidescope-graph/src/modules/graph/depth.service.ts:34` |
-| `DepthService.hasUnresolved` | 1 | `DepthService.some(…)` | `packages/callidescope-graph/src/modules/graph/depth.service.ts:102` |
 | `SignaturesService.read` | 1 | `SignaturesService.map(…)` | `packages/callidescope-graph/src/modules/signatures/signatures.service.ts:65` |
+| `AddressDepthService.isLowerBound` | 1 | `AddressDepthService.some(…)` | `packages/callidescope-graph/src/modules/graph/address-depth.service.ts:71` |
+| `AddressDepthService.step` | 1 | `AddressDepthService.follow` | `packages/callidescope-graph/src/modules/graph/address-depth.service.ts:79` |
+| `AddressDepthService.traverse` | 1 | `AddressDepthService.step` | `packages/callidescope-graph/src/modules/graph/address-depth.service.ts:143` |
+| `BreadthService.describeDirectCalls` | 1 | `BreadthService.toReferences` | `packages/callidescope-graph/src/modules/graph/breadth.service.ts:59` |
+| `ComponentsService.buildSuccessors` | 1 | `ComponentsService.map(…)` | `packages/callidescope-graph/src/modules/graph/components.service.ts:160` |
+| `GraphDepthService.combine` | 1 | `GraphDepthService.foldSuccessors` | `packages/callidescope-graph/src/modules/graph/graph-depth.service.ts:34` |
+| `GraphDepthService.hasUnresolved` | 1 | `GraphDepthService.some(…)` | `packages/callidescope-graph/src/modules/graph/graph-depth.service.ts:102` |
 
 </details>
 
@@ -236,6 +261,7 @@ flowchart LR
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
   GraphModule --> DocumentationModule
+  GraphModule --> EdgesModule
   GraphModule --> SignaturesModule
   ProgramModule --> WorkspaceModule
 ```
@@ -250,6 +276,10 @@ _Rounded modules are global: every module can inject them, so their edges are le
 graph LR
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
+  file_src_modules_callables_address_constants_ts["src/modules/callables/address.constants.ts"]
+  file_src_modules_callables_address_service_ts["src/modules/callables/address.service.ts"]
+  file_src_modules_callables_address_service_unit_test_ts["src/modules/callables/address.service.unit.test.ts"]
+  file_src_modules_callables_address_types_ts["src/modules/callables/address.types.ts"]
   file_src_modules_callables_callable_identity_service_ts["src/modules/callables/callable-identity.service.ts"]
   file_src_modules_callables_callable_identity_service_unit_test_ts["src/modules/callables/callable-identity.service.unit.test.ts"]
   file_src_modules_callables_callables_constants_ts["src/modules/callables/callables.constants.ts"]
@@ -288,14 +318,21 @@ graph LR
   file_src_modules_entries_entries_service_ts["src/modules/entries/entries.service.ts"]
   file_src_modules_entries_entries_service_unit_test_ts["src/modules/entries/entries.service.unit.test.ts"]
   file_src_modules_entries_entries_types_ts["src/modules/entries/entries.types.ts"]
+  file_src_modules_graph_address_depth_constants_ts["src/modules/graph/address-depth.constants.ts"]
+  file_src_modules_graph_address_depth_service_ts["src/modules/graph/address-depth.service.ts"]
+  file_src_modules_graph_address_depth_service_unit_test_ts["src/modules/graph/address-depth.service.unit.test.ts"]
+  file_src_modules_graph_address_depth_types_ts["src/modules/graph/address-depth.types.ts"]
   file_src_modules_graph_breadth_service_ts["src/modules/graph/breadth.service.ts"]
   file_src_modules_graph_breadth_service_unit_test_ts["src/modules/graph/breadth.service.unit.test.ts"]
   file_src_modules_graph_components_constants_ts["src/modules/graph/components.constants.ts"]
   file_src_modules_graph_components_service_ts["src/modules/graph/components.service.ts"]
   file_src_modules_graph_components_service_unit_test_ts["src/modules/graph/components.service.unit.test.ts"]
   file_src_modules_graph_components_types_ts["src/modules/graph/components.types.ts"]
-  file_src_modules_graph_depth_service_ts["src/modules/graph/depth.service.ts"]
-  file_src_modules_graph_depth_service_unit_test_ts["src/modules/graph/depth.service.unit.test.ts"]
+  file_src_modules_graph_graph_assembly_service_ts["src/modules/graph/graph-assembly.service.ts"]
+  file_src_modules_graph_graph_assembly_service_unit_test_ts["src/modules/graph/graph-assembly.service.unit.test.ts"]
+  file_src_modules_graph_graph_assembly_types_ts["src/modules/graph/graph-assembly.types.ts"]
+  file_src_modules_graph_graph_depth_service_ts["src/modules/graph/graph-depth.service.ts"]
+  file_src_modules_graph_graph_depth_service_unit_test_ts["src/modules/graph/graph-depth.service.unit.test.ts"]
   file_src_modules_graph_graph_constants_ts["src/modules/graph/graph.constants.ts"]
   file_src_modules_graph_graph_module_ts["src/modules/graph/graph.module.ts"]
   file_src_modules_graph_graph_service_ts["src/modules/graph/graph.service.ts"]
@@ -326,11 +363,20 @@ graph LR
   file_testing_programs_ts["testing/programs.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
+  file_src_modules_callables_address_service_ts --> file_src_modules_callables_address_constants_ts
+  file_src_modules_callables_address_service_ts --> file_src_modules_callables_address_types_ts
+  file_src_modules_callables_address_service_ts --> file_src_modules_callables_callables_types_ts
+  file_src_modules_callables_address_service_unit_test_ts --> file_src_modules_callables_address_service_ts
+  file_src_modules_callables_address_service_unit_test_ts --> file_src_modules_callables_callables_types_ts
+  file_src_modules_callables_address_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_callables_address_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_callables_address_types_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_callables_callable_identity_service_ts --> file_src_modules_callables_callables_constants_ts
   file_src_modules_callables_callable_identity_service_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_callables_callable_identity_service_unit_test_ts --> file_src_modules_callables_callable_identity_service_ts
   file_src_modules_callables_callable_identity_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_callables_callable_identity_service_unit_test_ts --> file_testing_programs_ts
+  file_src_modules_callables_callables_module_ts --> file_src_modules_callables_address_service_ts
   file_src_modules_callables_callables_module_ts --> file_src_modules_callables_callable_identity_service_ts
   file_src_modules_callables_callables_module_ts --> file_src_modules_callables_callables_service_ts
   file_src_modules_callables_callables_module_ts --> file_src_modules_program_program_module_ts
@@ -366,7 +412,7 @@ graph LR
   file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_cohesion_cohesion_service_ts
   file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_cohesion_cohesion_types_ts
   file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_graph_components_service_ts
-  file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_graph_depth_service_ts
+  file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_graph_graph_depth_service_ts
   file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_testing_modules_ts
@@ -428,10 +474,26 @@ graph LR
   file_src_modules_entries_entries_service_unit_test_ts --> file_testing_programs_ts
   file_src_modules_entries_entries_types_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_entries_entries_types_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_graph_address_depth_service_ts --> file_src_modules_callables_callables_types_ts
+  file_src_modules_graph_address_depth_service_ts --> file_src_modules_graph_address_depth_constants_ts
+  file_src_modules_graph_address_depth_service_ts --> file_src_modules_graph_address_depth_types_ts
+  file_src_modules_graph_address_depth_service_ts --> file_src_modules_graph_paths_service_ts
+  file_src_modules_graph_address_depth_service_unit_test_ts --> file_src_modules_callables_callables_types_ts
+  file_src_modules_graph_address_depth_service_unit_test_ts --> file_src_modules_documentation_documentation_service_ts
+  file_src_modules_graph_address_depth_service_unit_test_ts --> file_src_modules_graph_address_depth_service_ts
+  file_src_modules_graph_address_depth_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_graph_address_depth_service_unit_test_ts --> file_src_modules_graph_paths_service_ts
+  file_src_modules_graph_address_depth_service_unit_test_ts --> file_src_modules_signatures_signatures_service_ts
+  file_src_modules_graph_address_depth_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_graph_address_depth_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_graph_address_depth_types_ts --> file_src_modules_callables_callables_types_ts
+  file_src_modules_graph_address_depth_types_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_graph_breadth_service_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_graph_breadth_service_ts --> file_src_modules_graph_graph_types_ts
   file_src_modules_graph_breadth_service_unit_test_ts --> file_src_modules_graph_breadth_service_ts
   file_src_modules_graph_breadth_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_graph_breadth_service_unit_test_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_graph_breadth_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_graph_breadth_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_graph_components_service_ts --> file_src_modules_graph_components_constants_ts
   file_src_modules_graph_components_service_ts --> file_src_modules_graph_components_types_ts
@@ -440,16 +502,35 @@ graph LR
   file_src_modules_graph_components_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_graph_components_service_unit_test_ts --> file_src_modules_graph_graph_types_ts
   file_src_modules_graph_components_service_unit_test_ts --> file_testing_modules_ts
-  file_src_modules_graph_depth_service_ts --> file_src_modules_graph_graph_types_ts
-  file_src_modules_graph_depth_service_unit_test_ts --> file_src_modules_graph_components_service_ts
-  file_src_modules_graph_depth_service_unit_test_ts --> file_src_modules_graph_depth_service_ts
-  file_src_modules_graph_depth_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
-  file_src_modules_graph_depth_service_unit_test_ts --> file_src_modules_graph_graph_types_ts
-  file_src_modules_graph_depth_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_graph_graph_assembly_service_ts --> file_src_modules_edges_edges_service_ts
+  file_src_modules_graph_graph_assembly_service_ts --> file_src_modules_graph_breadth_service_ts
+  file_src_modules_graph_graph_assembly_service_ts --> file_src_modules_graph_components_service_ts
+  file_src_modules_graph_graph_assembly_service_ts --> file_src_modules_graph_graph_assembly_types_ts
+  file_src_modules_graph_graph_assembly_service_ts --> file_src_modules_graph_graph_depth_service_ts
+  file_src_modules_graph_graph_assembly_service_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_graph_graph_assembly_service_unit_test_ts --> file_src_modules_graph_breadth_service_ts
+  file_src_modules_graph_graph_assembly_service_unit_test_ts --> file_src_modules_graph_components_service_ts
+  file_src_modules_graph_graph_assembly_service_unit_test_ts --> file_src_modules_graph_graph_assembly_service_ts
+  file_src_modules_graph_graph_assembly_service_unit_test_ts --> file_src_modules_graph_graph_assembly_types_ts
+  file_src_modules_graph_graph_assembly_service_unit_test_ts --> file_src_modules_graph_graph_depth_service_ts
+  file_src_modules_graph_graph_assembly_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_graph_graph_assembly_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_graph_graph_assembly_service_unit_test_ts --> file_testing_programs_ts
+  file_src_modules_graph_graph_assembly_types_ts --> file_src_modules_callables_callables_types_ts
+  file_src_modules_graph_graph_assembly_types_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_graph_graph_depth_service_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_graph_graph_depth_service_unit_test_ts --> file_src_modules_graph_components_service_ts
+  file_src_modules_graph_graph_depth_service_unit_test_ts --> file_src_modules_graph_graph_depth_service_ts
+  file_src_modules_graph_graph_depth_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_graph_graph_depth_service_unit_test_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_graph_graph_depth_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_graph_graph_module_ts --> file_src_modules_documentation_documentation_module_ts
+  file_src_modules_graph_graph_module_ts --> file_src_modules_edges_edges_module_ts
+  file_src_modules_graph_graph_module_ts --> file_src_modules_graph_address_depth_service_ts
   file_src_modules_graph_graph_module_ts --> file_src_modules_graph_breadth_service_ts
   file_src_modules_graph_graph_module_ts --> file_src_modules_graph_components_service_ts
-  file_src_modules_graph_graph_module_ts --> file_src_modules_graph_depth_service_ts
+  file_src_modules_graph_graph_module_ts --> file_src_modules_graph_graph_assembly_service_ts
+  file_src_modules_graph_graph_module_ts --> file_src_modules_graph_graph_depth_service_ts
   file_src_modules_graph_graph_module_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_graph_graph_module_ts --> file_src_modules_graph_paths_service_ts
   file_src_modules_graph_graph_module_ts --> file_src_modules_signatures_signatures_module_ts
@@ -464,7 +545,7 @@ graph LR
   file_src_modules_graph_paths_service_unit_test_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_graph_paths_service_unit_test_ts --> file_src_modules_documentation_documentation_service_ts
   file_src_modules_graph_paths_service_unit_test_ts --> file_src_modules_graph_components_service_ts
-  file_src_modules_graph_paths_service_unit_test_ts --> file_src_modules_graph_depth_service_ts
+  file_src_modules_graph_paths_service_unit_test_ts --> file_src_modules_graph_graph_depth_service_ts
   file_src_modules_graph_paths_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_graph_paths_service_unit_test_ts --> file_src_modules_graph_paths_service_ts
   file_src_modules_graph_paths_service_unit_test_ts --> file_src_modules_signatures_signatures_service_ts
@@ -531,40 +612,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-9228-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-285.96_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10588-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-326.69_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-13-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-78-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-89-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-41.37_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-47.68_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-78-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-36-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-89-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-48-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-29-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-226-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-32-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-270-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-19-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-22-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-12-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-30-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-427-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-148-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-530-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-45-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-548-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-365-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-98-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-420-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-774-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-33-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-482-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-169-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-602-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-49-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-651-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-425-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-116-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-485-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-917-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -676,14 +757,14 @@ graph LR
 ### Conventions
 
 ![Module Files](https://img.shields.io/badge/Module_Files-10-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-19-0284c7?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-22-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-11-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-11-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-13-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-14-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-1-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-19-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-22-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-16a34a?style=flat-square)
 

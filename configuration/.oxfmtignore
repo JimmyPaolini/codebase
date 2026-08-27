@@ -43,10 +43,20 @@ package-lock.json
 pnpm-lock.yaml
 tmp
 **/conformetry-templates/**
+# Conformetry example fixtures: a template file holds mustache where an
+# identifier belongs, so it is not parseable as the language its extension
+# names. Each example's own conformetry.config.ts is formatted normally.
+**/packages/conformetry-examples/examples/*/instances/**
+**/packages/conformetry-examples/examples/*/templates/**
 # Emitted from the conformetry configuration; the emitter's output is
 # authoritative, and reformatting it makes every conformetry command fail the
 # drift check after a `format` run.
 **/.conformetry/**
+# Callidescope writes this report and then checks the file back against what a
+# fresh run would produce, byte for byte. Reformatting it makes
+# `callidescope-examples:callidescope` report it stale the moment `format` runs
+# — the same failure mode as the emitted conformetry plugin above.
+**/packages/callidescope-examples/output/**
 **/data/wikipedia
 **/data/wiktionary
 yarn.lock

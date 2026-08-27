@@ -481,10 +481,19 @@ the flag table promises.
 | ------- | ---- |
 | [`@codometer/cli`](README.md) | Measures the repository and writes the reports. Knows nothing about any particular repository |
 | [`@codometer/configuration`](../codometer-configuration/README.md) | Reads `codometer.config.ts` and resolves exclusions, output destinations, custom statistics, and the Python interpreter |
+| [`@codometer/examples`](../codometer-examples/README.md) | A sample corpus with known contents and one runnable example per behavior above, each asserted by a test |
 
 Which paths to skip, where the output goes, and how Python is reached are all
 configuration. That split is what lets the CLI be a general tool rather than
 one repository's script.
+
+Everything above has a runnable example in
+[`@codometer/examples`](../codometer-examples/README.md), measured against a
+sample corpus whose counts are stated and checked — including a reproduction of
+each refusal, which is where a reader is most likely to be stuck. An agent that
+has already been handed a refusal and needs the fix should start from that
+package's [AGENTS.md](../codometer-examples/AGENTS.md), which maps each message
+codometer prints to the example that reproduces it.
 
 ## Start
 
@@ -520,7 +529,7 @@ This project was generated from the [nestjs-command-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `codometer-cli`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codometer-cli`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -641,8 +650,8 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodometerService.measureTarget` | 17 | `codometer-discovery:modules/discovery`, `codometer-discovery:modules/targets`, `codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:275` |
-| `CodometerService.analyzeLanguage` | 15 | `codometer-customization:modules/customization`, `codometer-languages:modules/languages`, `codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:62` |
+| `CodometerService.measureTarget` | 17 | `packages/codometer-discovery:modules/discovery`, `packages/codometer-discovery:modules/targets`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:275` |
+| `CodometerService.analyzeLanguage` | 15 | `packages/codometer-customization:modules/customization`, `packages/codometer-languages:modules/languages`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:62` |
 
 ### Breadth
 

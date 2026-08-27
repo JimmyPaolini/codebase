@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "@callidescope/configuration": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "reflect-metadata": "catalog:",
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@nx/eslint-plugin": "catalog:",
+    "@swc-node/register": "catalog:",
+    "@swc/helpers": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "vitest": "catalog:"
+  },
+  "main": "src/index.ts",
+  "name": "@callidescope/examples",
+  "private": true,
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "types": "src/index.ts",
+  "version": "0.0.1"
+}

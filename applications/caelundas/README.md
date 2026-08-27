@@ -140,7 +140,7 @@ This project was generated from the [nestjs-command-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `caelundas`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `applications/caelundas`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -1125,11 +1125,11 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `AspectsService.detectSimpleAspects` | 10 | `caelundas:modules/ingresses`, `caelundas:modules/major-aspects`, `caelundas:modules/minor-aspects`, `caelundas:modules/phases`, `caelundas:modules/retrogrades`, `caelundas:modules/specialty-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:90` |
-| `PerfectiveService.detectOrbitalEvents` | 10 | `caelundas:modules/annual-solar-cycle`, `caelundas:modules/ingresses`, `caelundas:modules/monthly-lunar-cycle`, `caelundas:modules/phases`, `caelundas:modules/retrogrades` | `applications/caelundas/src/modules/perfective/perfective.service.ts:149` |
-| `ProgressiveService.detect` | 10 | `caelundas:modules/annual-solar-cycle`, `caelundas:modules/aspects`, `caelundas:modules/eclipses`, `caelundas:modules/ingresses`, `caelundas:modules/monthly-lunar-cycle`, `caelundas:modules/phases`, `caelundas:modules/retrogrades`, `caelundas:modules/twilights` | `applications/caelundas/src/modules/progressive/progressive.service.ts:47` |
-| `AspectsService.detectCompositeAspects` | 8 | `caelundas:modules/quadruple-aspects`, `caelundas:modules/quintuple-aspects`, `caelundas:modules/sextuple-aspects`, `caelundas:modules/stellium`, `caelundas:modules/triple-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:72` |
-| `PerfectiveService.detectObservationalEvents` | 7 | `caelundas:modules/daily-cycles`, `caelundas:modules/eclipses`, `caelundas:modules/twilights` | `applications/caelundas/src/modules/perfective/perfective.service.ts:117` |
+| `AspectsService.detectSimpleAspects` | 10 | `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/major-aspects`, `applications/caelundas:modules/minor-aspects`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/specialty-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:90` |
+| `PerfectiveService.detectOrbitalEvents` | 10 | `applications/caelundas:modules/annual-solar-cycle`, `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/monthly-lunar-cycle`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades` | `applications/caelundas/src/modules/perfective/perfective.service.ts:149` |
+| `ProgressiveService.detect` | 10 | `applications/caelundas:modules/annual-solar-cycle`, `applications/caelundas:modules/aspects`, `applications/caelundas:modules/eclipses`, `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/monthly-lunar-cycle`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/twilights` | `applications/caelundas/src/modules/progressive/progressive.service.ts:47` |
+| `AspectsService.detectCompositeAspects` | 8 | `applications/caelundas:modules/quadruple-aspects`, `applications/caelundas:modules/quintuple-aspects`, `applications/caelundas:modules/sextuple-aspects`, `applications/caelundas:modules/stellium`, `applications/caelundas:modules/triple-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:72` |
+| `PerfectiveService.detectObservationalEvents` | 7 | `applications/caelundas:modules/daily-cycles`, `applications/caelundas:modules/eclipses`, `applications/caelundas:modules/twilights` | `applications/caelundas/src/modules/perfective/perfective.service.ts:117` |
 
 ### Breadth
 
@@ -1615,10 +1615,10 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 | Callable | Declared in | Called from | Callers |
 | --- | --- | --- | --- |
-| `CalendarService.buildInstantEvent` | `caelundas:modules/calendar` | `caelundas:modules/daily-cycles` | 8/9 |
-| `typedFromEntries` | `caelundas:modules/caelundas` | `caelundas:modules/ephemeris` | 6/6 |
-| `MathService.normalizeForComparison` | `caelundas:modules/math` | `caelundas:modules/retrogrades` | 4/4 |
-| `objectEntries` | `caelundas:modules/caelundas` | `caelundas:modules/ingresses` | 2/2 |
+| `CalendarService.buildInstantEvent` | `applications/caelundas:modules/calendar` | `applications/caelundas:modules/daily-cycles` | 8/9 |
+| `typedFromEntries` | `applications/caelundas:modules/caelundas` | `applications/caelundas:modules/ephemeris` | 6/6 |
+| `MathService.normalizeForComparison` | `applications/caelundas:modules/math` | `applications/caelundas:modules/retrogrades` | 4/4 |
+| `objectEntries` | `applications/caelundas:modules/caelundas` | `applications/caelundas:modules/ingresses` | 2/2 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

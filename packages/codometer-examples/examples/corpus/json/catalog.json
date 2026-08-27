@@ -1,0 +1,21 @@
+{
+  "currency": "USD",
+  "discontinued": null,
+  "items": [
+    {
+      "available": true,
+      "identifier": "item-1",
+      "name": "Kettle",
+      "price": 2400,
+      "tags": ["kitchen", "metal"]
+    },
+    {
+      "available": false,
+      "identifier": "item-2",
+      "name": "Teapot",
+      "price": 1800,
+      "tags": ["kitchen"]
+    }
+  ],
+  "revision": 7
+}

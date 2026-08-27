@@ -1,0 +1,174 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "conformetry-examples",
+  "projectType": "library",
+  "sourceRoot": "packages/conformetry-examples",
+  "tags": ["language:typescript", "name:conformetry-examples", "type:package"],
+  "targets": {
+    "ambiguous-attribution": {
+      "cache": false,
+      "description": "Show one path two templates explain unequally, then one they tie on. Exits non-zero: the tie is reported as an ambiguous instance",
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts templates --config packages/conformetry-examples/examples/ambiguous-attribution/conformetry.config.ts --instances packages/conformetry-examples/examples/ambiguous-attribution/instances/guide",
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts templates --config packages/conformetry-examples/examples/ambiguous-attribution/conformetry.config.ts --instances packages/conformetry-examples/examples/ambiguous-attribution/instances/atlas",
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/ambiguous-attribution/conformetry.config.ts"
+        ],
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        },
+        "parallel": false
+      }
+    },
+    "case-variants": {
+      "cache": false,
+      "description": "Validate an instance whose paths and contents use all four derived case variants, one of them overridden",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/case-variants/conformetry.config.ts",
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        }
+      }
+    },
+    "codometer": {},
+    "drift-catalogue": {
+      "cache": false,
+      "description": "Report one instance per kind of drift conformetry catches. Exits non-zero: five of the six instances are drifted on purpose",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/drift-catalogue/conformetry.config.ts",
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        }
+      }
+    },
+    "embedding": {
+      "cache": false,
+      "description": "Generate and validate through the runtime packages directly, with no command-line host",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register packages/conformetry-examples/examples/embedding/embed.ts",
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        }
+      }
+    },
+    "eslint": {},
+    "failure-modes": {
+      "cache": false,
+      "description": "Validate a TODO template comment any comment satisfies, then a template asking for a value nobody supplies. Exits non-zero: the second is refused rather than rendered as a hole",
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/failure-modes/conformetry.config.ts --instances packages/conformetry-examples/examples/failure-modes/instances/documented",
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/failure-modes/conformetry.config.ts --instances packages/conformetry-examples/examples/failure-modes/instances/unowned"
+        ],
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        },
+        "parallel": false
+      }
+    },
+    "hello-template": {
+      "cache": false,
+      "description": "Validate the smallest possible template against its one instance",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/hello-template/conformetry.config.ts",
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        }
+      }
+    },
+    "knip": {},
+    "language-validators": {
+      "cache": false,
+      "description": "Validate one instance holding a file for every language validator, plus two extensions only the fallback claims",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/language-validators/conformetry.config.ts",
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        }
+      }
+    },
+    "lint-codebase": {},
+    "markdown-lint": {},
+    "nx-host": {
+      "cache": false,
+      "description": "Show what the command-line host does with tag-scoped instance groups: nothing, because locating them needs a project graph",
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts instances --config packages/conformetry-examples/examples/nx-host/conformetry.config.ts",
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/nx-host/conformetry.config.ts"
+        ],
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        },
+        "parallel": false
+      }
+    },
+    "oxfmt": {},
+    "prettier": {},
+    "scoring-thresholds": {
+      "cache": false,
+      "description": "Validate two instance groups held to different thresholds. Exits zero, and still prints the lenient group's findings",
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/scoring-thresholds/conformetry.config.ts",
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/scoring-thresholds/conformetry.config.ts --threshold 0.5"
+        ],
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        },
+        "parallel": false
+      }
+    },
+    "spell-check": {},
+    "structural-not-textual": {
+      "cache": false,
+      "description": "Validate a reformatted instance beside one missing a single export. Exits non-zero: only the second is a finding",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/structural-not-textual/conformetry.config.ts",
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        }
+      }
+    },
+    "test-coverage": {},
+    "two-directions": {
+      "cache": false,
+      "description": "Ask which templates explain a path, then which instances a template explains, against the same fixtures",
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts instances --config packages/conformetry-examples/examples/two-directions/conformetry.config.ts",
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts templates --config packages/conformetry-examples/examples/two-directions/conformetry.config.ts --instances packages/conformetry-examples/examples/two-directions/instances/alpha"
+        ],
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
+        },
+        "parallel": false
+      }
+    },
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

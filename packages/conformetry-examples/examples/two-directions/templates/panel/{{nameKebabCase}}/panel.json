@@ -1,0 +1,4 @@
+{
+  "kind": "panel",
+  "name": "{{nameKebabCase}}"
+}

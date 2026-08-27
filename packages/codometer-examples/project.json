@@ -1,0 +1,22 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "codometer-examples",
+  "projectType": "library",
+  "sourceRoot": "packages/codometer-examples",
+  "tags": ["language:typescript", "name:codometer-examples", "type:package"],
+  "targets": {
+    "codometer": {
+      "dependsOn": []
+    },
+    "knip": {},
+    "lint-codebase": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "prettier": {},
+    "spell-check": {},
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

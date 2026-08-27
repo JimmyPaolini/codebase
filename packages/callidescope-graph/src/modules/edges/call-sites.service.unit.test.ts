@@ -90,6 +90,21 @@ describe(CallSitesService, () => {
     ).toStrictEqual(["Thing"]);
   });
 
+  it("finds the single call an expression-bodied arrow is", () => {
+    // A concise body is the call itself rather than a block containing one, so
+    // walking only its children steps straight past it and the arrow reports
+    // no callees at all.
+    expect(
+      collectSites({
+        displayName: "entry",
+        source: `
+          function work(): number { return 1; }
+          export const entry = (): number => work();
+        `,
+      }),
+    ).toStrictEqual(["work"]);
+  });
+
   it("does not descend into a nested function literal", () => {
     // A literal is its own frame; attributing its calls to the enclosing body
     // is how a shallow orchestrator inherits a callback's whole depth.

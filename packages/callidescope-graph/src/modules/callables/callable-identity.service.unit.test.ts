@@ -175,6 +175,26 @@ describe(CallableIdentityService, () => {
     ).toBe(true);
   });
 
+  it("marks an exported arrow constant as exported", () => {
+    // The declaration the graph holds is the arrow, and the `export` keyword
+    // sits above it on the variable statement. React components and barrel
+    // exports are written this way, so missing it leaves them promoted as
+    // orphans rather than classified as the exports they are.
+    expect(
+      findNode("export const entry = (): void => {};", "entry").isExported,
+    ).toBe(true);
+  });
+
+  it("marks a file-local arrow constant as not exported", () => {
+    const nodes = describeFixture(
+      "const hidden = (): void => {};\nexport function entry(): void { hidden(); }",
+    );
+
+    expect(
+      nodes.find((node) => node.displayName === "hidden")?.isExported,
+    ).toBe(false);
+  });
+
   it("marks a file-local function as not exported", () => {
     const nodes = describeFixture(
       "function hidden(): void {} export function entry(): void { hidden(); }",

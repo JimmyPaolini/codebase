@@ -166,6 +166,7 @@ export class TemplateDiscoveryService {
       instance: fs.readFileSync(instanceFilePath, "utf8"),
       instanceFilePath,
       renderedTemplate: this.renderingService.renderContent({
+        subject: args.templateFilePath,
         substitutions: args.substitutions,
         templateContent: fs.readFileSync(args.templateFilePath, "utf8"),
       }),
@@ -183,6 +184,7 @@ export class TemplateDiscoveryService {
     return path.join(
       args.instancePath,
       this.renderingService.renderPath({
+        subject: args.templateFilePath,
         substitutions: args.substitutions,
         templatePath: path.relative(
           args.templateDirectoryPath,

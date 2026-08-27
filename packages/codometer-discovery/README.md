@@ -8,7 +8,7 @@ nx run codometer-discovery:vitest
 
 ## 🔭 Callidescope
 
-Call stacks traced through `codometer-discovery`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codometer-discovery`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |

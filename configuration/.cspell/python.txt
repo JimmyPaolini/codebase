@@ -10,6 +10,7 @@ DOTALL
 dtype
 finditer
 frozenset
+functools
 getattr
 hasattr
 ipykernel

@@ -8,7 +8,7 @@ nx run codometer-size:vitest
 
 ## 🔭 Callidescope
 
-Call stacks traced through `codometer-size`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codometer-size`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |

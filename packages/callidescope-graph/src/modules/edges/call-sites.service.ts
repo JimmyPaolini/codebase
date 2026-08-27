@@ -74,7 +74,14 @@ export class CallSitesService {
       ts.forEachChild(node, visit);
     };
 
-    ts.forEachChild(body, visit);
+    // A block's calls are its children; a concise arrow body *is* the call, so
+    // walking only its children would step straight past it and leave the
+    // arrow reporting no callees.
+    if (ts.isBlock(body)) {
+      ts.forEachChild(body, visit);
+    } else {
+      visit(body);
+    }
 
     return sites;
   }

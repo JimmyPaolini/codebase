@@ -7,6 +7,7 @@ export type {
   FormatterAdapter,
   GeneratorDefinition,
 } from "./modules/generation/generation.types";
+export { MissingSubstitutionError } from "./modules/rendering/rendering.errors";
 export { RenderingModule } from "./modules/rendering/rendering.module";
 export { RenderingService } from "./modules/rendering/rendering.service";
 export type { Substitutions } from "./modules/rendering/rendering.types";

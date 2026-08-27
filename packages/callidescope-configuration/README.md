@@ -155,13 +155,13 @@ This project was generated from the [nestjs-service-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `callidescope-configuration`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/callidescope-configuration`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
-| Callables | 19 |
-| Files | 9 |
-| Calls traced | 18 |
+| Callables | 31 |
+| Files | 13 |
+| Calls traced | 23 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
@@ -179,17 +179,19 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.resolveConfiguration` | 6 | `ConfigurationService.resolveEntryPoints`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownDestination`, `ConfigurationService.resolveProjectReadmes`, `ConfigurationService.resolveWorkspaceStructure` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:360` |
-| `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:325` |
-| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:171` |
+| `ConfigurationService.resolveConfiguration` | 8 | `ConfigurationService.resolveAllowSpreadFor`, `ConfigurationService.resolveEntryPoints`, `ConfigurationService.resolveExclude`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownDestination`, `ConfigurationService.resolveProjectReadmes`, `ConfigurationService.resolveWorkspaceStructure` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:375` |
+| `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:340` |
+| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:177` |
 
 <details>
-<summary>2 more callables</summary>
+<summary>4 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.findRepositoryRoot` | 1 | `ConfigurationService.some(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:110` |
-| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:134` |
+| `InputService.promptForSelect` | 2 | `InputService.map(…)`, `InputService.find(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:87` |
+| `ConfigurationService.findRepositoryRoot` | 1 | `ConfigurationService.some(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:109` |
+| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:133` |
+| `InputService.parseCommaDelimitedOption` | 1 | `InputService.map(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:55` |
 
 </details>
 
@@ -225,6 +227,7 @@ graph LR
 ```mermaid
 flowchart LR
   ConfigurationModule
+  InputModule
 ```
 <!-- codependix:end name="codependix-nestjs" -->
 
@@ -244,6 +247,11 @@ graph LR
   file_src_modules_configuration_configuration_service_ts["src/modules/configuration/configuration.service.ts"]
   file_src_modules_configuration_configuration_service_unit_test_ts["src/modules/configuration/configuration.service.unit.test.ts"]
   file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
+  file_src_modules_input_input_constants_ts["src/modules/input/input.constants.ts"]
+  file_src_modules_input_input_module_ts["src/modules/input/input.module.ts"]
+  file_src_modules_input_input_service_ts["src/modules/input/input.service.ts"]
+  file_src_modules_input_input_service_unit_test_ts["src/modules/input/input.service.unit.test.ts"]
+  file_src_modules_input_input_types_ts["src/modules/input/input.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
@@ -259,6 +267,10 @@ graph LR
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_errors_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_types_ts --> file_src_modules_configuration_call_graph_types_ts
+  file_src_modules_input_input_module_ts --> file_src_modules_input_input_service_ts
+  file_src_modules_input_input_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_input_input_service_ts --> file_src_modules_input_input_types_ts
+  file_src_modules_input_input_service_unit_test_ts --> file_src_modules_input_input_service_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 
@@ -268,40 +280,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2126-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-78.89_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-4-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-14-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2429-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-87.60_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-19-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-7.56_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-9.55_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-14-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-19-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-40-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-2-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-134-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-4-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-144-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-3-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-4-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-66-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-14-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-53-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-27-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-111-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-37-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-77-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-170-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-363-475569?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-4-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-12-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-6-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-86-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-25-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-76-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-35-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-120-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-48-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-80-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-191-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-414-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -322,16 +334,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-130-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-132-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-30-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-84-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-68-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-86-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-70-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-7-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-30-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-118-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-120-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
@@ -412,15 +424,15 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-1-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-1-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-2-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-2-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-1-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-2-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-2-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-3-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-1-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-3-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-4-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-16a34a?style=flat-square)
 

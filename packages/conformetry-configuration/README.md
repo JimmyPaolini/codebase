@@ -109,9 +109,12 @@ Groups exist so substitutions can differ per glob. `type` is `packages` for one
 set of paths and `applications` for another, and no generic rule can tell them
 apart.
 
-> **Every placeholder a template uses must be supplied here.** Mustache renders
-> an unknown placeholder as an empty string, so a missing entry shows up as a
-> silent hole in the rendered comparison rather than an error.
+> **Every placeholder a template uses must be supplied here.** A missing entry
+> fails the run with `MissingSubstitutionError` rather than rendering as an
+> empty string — see
+> [`@conformetry/generation`](../conformetry-generation/README.md) for why that
+> is an error and not a finding, and for the section syntax a template uses to
+> make a placeholder genuinely optional.
 
 `tags` is carried through untouched by this package, which has no notion of a
 host to match labels against. [`@conformetry/nx`](../conformetry-nx/README.md)
@@ -259,7 +262,7 @@ This project was generated from the [nestjs-service-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `conformetry-configuration`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/conformetry-configuration`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
