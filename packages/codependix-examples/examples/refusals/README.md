@@ -1,6 +1,17 @@
-# Every refusal, with its reproduction
+# 🚫 Every refusal, with its reproduction
 
 Every way codependix refuses a configuration or a command line, each with the reproduction that produces it — because a refusal is where a reader gets stuck.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## A `both` target with no `json` destination
 
@@ -58,3 +69,7 @@ ConfigurationFileNotFoundError: Configuration file not found: <examples>/refusal
 ```text
 UnknownConfigurationFileTypeError: Unsupported configuration file type: <examples>/refusals/unsupported-type/codependix.config.yaml
 ```
+
+## Next
+
+[json-exports](../json-exports/README.md).

@@ -1,6 +1,17 @@
-# Configuration resolution, field by field
+# ⚙️ Configuration resolution, field by field
 
 Every configuration field, resolved by the real loader — including the two a reader is most likely to assume wrongly.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## `defaults`, a per-project override, and the two glob lists
 
@@ -101,3 +112,7 @@ The configuration declares a `graphqlSchemas` field no codependix has an opinion
   }
 }
 ```
+
+## Next
+
+[export-targets](../export-targets/README.md).

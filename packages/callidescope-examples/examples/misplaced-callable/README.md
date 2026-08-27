@@ -1,6 +1,14 @@
-# Misplaced callable
+# 📦 Misplaced callable
 
 **`formatCurrency` is declared here, and both its callers live in `receipt`**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+Then read the `## Possibly misplaced` table in [`output/report.md`](../../output/report.md).
 
 ```text
 formatCurrency | declared in …:misplaced-callable | called from …:receipt | 2/2
@@ -23,3 +31,7 @@ callers, but they sit in two different modules, so the majority is 50% and
 nothing is reported.
 
 The callers are in [`receipt`](../receipt).
+
+## Next
+
+[receipt](../receipt/README.md).

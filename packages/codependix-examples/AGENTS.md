@@ -1,19 +1,21 @@
-# CodependixExamples: Worked Examples
+# 🕸️ Codependix Examples — Agent Guide
 
-## Quick Start
+Subjects built to be graphed, and the guides rendered from them: one worked
+example per thing codependix builds, each rendered by the real graph builders
+from the subject beside it. Read [README.md](README.md) for the guided tour;
+this file is the lookup table for when codependix has already said something.
 
-**Type**: Examples package — subjects built to be graphed, and the guides
-rendered from them
-
-**Purpose**: Fifteen worked examples of what codependix builds, each rendered by
-the real graph builders from the subject beside it. Reach for it when codependix
-says something you need to act on.
+## Run one
 
 ```bash
-nx run codependix-examples:examples          # Fail if any committed guide has drifted
-nx run codependix-examples:examples:write    # Re-render every guide
-nx run codependix-examples:vitest            # The tests that keep every claim true
+nx run codependix-examples:examples          # fail if any committed guide has drifted
+nx run codependix-examples:examples:write    # re-render every guide
+nx run codependix-examples:vitest            # the tests that keep every claim true
 ```
+
+There is no per-example command. Every guide is rendered from its subject by the
+same run, which is why each one's `## Run it` names the command above — a
+subject carries no `project.json` and cannot be exported on its own.
 
 ## Codependix said X — open this example
 
@@ -65,7 +67,7 @@ examples/<example>/README.md      # Rendered from the subject beside it
 examples/<example>/<subject>/     # The code being graphed — nested, and scoped out of the linters
 testing/render-examples.ts        # Entry point: --check or --write
 testing/render/                   # One module per example, plain exported functions
-testing/*.unit.test.ts            # The tests that keep every documented claim true
+testing/*.integration.test.ts     # The tests that keep every documented claim true
 ```
 
 There is no `src/`. This package ships examples, not an application — no CLI, no
@@ -94,13 +96,32 @@ directory would drag it into the lint run.
 2. **Render it** from the matching module in `testing/render/`. Each exports a
    `build*Documents()` returning `ExampleDocument`s whose `id` is the directory
    name.
-3. **Add the `id` to `EXAMPLE_ORDER`** in `testing/render/catalog.ts` — the one
-   place the reading order is written down. A document missing from it fails the
-   run rather than being silently dropped.
+3. **Add the `id` to `EXAMPLE_ORDER`** in `testing/render/reading-order.ts` —
+   the one place the reading order is written down, and what the rendered
+   `## Next` links chain through. A document missing from it fails the run
+   rather than being silently dropped. Add an entry to `EXAMPLE_EMOJI` beside
+   it; the rendered title carries it.
 4. **Assert the behavior** in `testing/`, not just the rendering — the point of
    an example is the claim it makes, and a test is what stops that claim from
    quietly reversing.
 5. **Regenerate and commit**, then add a row to the README's table.
+
+## Do not fix a deliberately broken example
+
+Several subjects are malformed on purpose, and each one is the reproduction of a
+refusal or a failure a reader will hit:
+
+- `container-rooting/failing-container` refuses to load, which is how the guide
+  shows that one project failing stops no other.
+- `typescript-resolution/broken` carries a `tsconfig.json` the compiler cannot
+  parse.
+- `refusals/unsupported-type` names a graph type codependix does not have.
+- `configuration-resolution/unknown-fields` carries a field codependix has no
+  opinion about, to show it is stripped rather than rejected.
+
+Repairing any of them deletes the only place that behavior is demonstrated. If a
+guide's claim about one stops being true, the tool changed — that is the
+regression the `examples` check exists to catch.
 
 ## Constraints worth knowing
 
@@ -122,10 +143,13 @@ directory would drag it into the lint run.
   it, so without that file the `@Module()` decorators reach Node untransformed
   and every container boot dies with a bare `SyntaxError`.
 
-## Key Files
+## Key files
 
-- [README.md](README.md): the human guide, and the reasoning behind the layout
-- [testing/render/catalog.ts](testing/render/catalog.ts): every example, in reading order
-- [testing/render/builders.ts](testing/render/builders.ts): the codependix services the examples render through
-- [testing/render/document.ts](testing/render/document.ts): Markdown rendering and the check/write delivery
-- [project.json](project.json): the `examples` target, and why both its configurations are safe on a branch
+| File | What it is |
+| ---- | ---------- |
+| [README.md](README.md) | The human guide, and the reasoning behind the layout |
+| [testing/render/reading-order.ts](testing/render/reading-order.ts) | Every example, in reading order, and its emoji |
+| [testing/render/catalog.ts](testing/render/catalog.ts) | Collects every built document and puts it in that order |
+| [testing/render/builders.ts](testing/render/builders.ts) | The codependix services the examples render through |
+| [testing/render/document.ts](testing/render/document.ts) | Markdown rendering, `## Run it`/`## Next`, and check/write delivery |
+| [project.json](project.json) | The `examples` target, and why both its configurations are safe on a branch |

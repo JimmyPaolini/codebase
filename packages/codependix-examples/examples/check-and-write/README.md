@@ -1,6 +1,17 @@
-# `--check` versus `--write`
+# 🔀 `--check` versus `--write`
 
 What `--check` reports, what `--write` acts on, the command line codependix asks about, and the one it refuses outright.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## A current export, and the same export after it drifts
 
@@ -44,3 +55,7 @@ Only one of --check or --write may be given.
 [container-rooting](../container-rooting) shows the same guarantee acting on three real containers, one of which refuses to load.
 
 `MapService.run` attempts every project regardless of whether an earlier one failed, collecting each failure as a `ProjectRunFailure` rather than aborting the loop. `MapCommand.reportOutcome` then reports the failures and the stale exports together, and fails the run if either list is non-empty. That is the whole of the guarantee: `--write` either fully succeeds, or names exactly which projects failed while still completing every other one.
+
+## Next
+
+[refusals](../refusals/README.md).

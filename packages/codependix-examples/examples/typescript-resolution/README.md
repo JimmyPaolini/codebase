@@ -1,6 +1,17 @@
-# Imports resolve through the compiler
+# 🧭 Imports resolve through the compiler
 
 TypeScript imports resolve through the compiler, not through a heuristic — and only an import declaration with a string-literal specifier counts.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## The resolved graph
 
@@ -51,3 +62,7 @@ Every one of these is a choice rather than a gap, and every one is a claim a res
 ```text
 TypescriptProjectConfigurationError: Could not read <examples>/typescript-resolution/broken/tsconfig.json: Argument for '--target' option must be: 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'es2022', 'es2023', 'es2024', 'es2025', 'esnext'.
 ```
+
+## Next
+
+[python-scanner](../python-scanner/README.md).
