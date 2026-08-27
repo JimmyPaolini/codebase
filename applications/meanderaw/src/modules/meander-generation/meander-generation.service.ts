@@ -1,9 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
+import { SnakeMotifService } from "../snake-motif/snake-motif.service";
+import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
+import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
+import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
-import { BoxesMotifService } from "./boxes-motif.service";
-import { ChainMotifService } from "./chain-motif.service";
 import { InvalidModifierError } from "./invalid-modifier.errors";
 import { InvalidPeriodError } from "./invalid-period.errors";
 import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
@@ -18,11 +23,6 @@ import {
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
 } from "./meander-generation.constants";
-import { MosaicMotifService } from "./mosaic-motif.service";
-import { SnakeMotifService } from "./snake-motif.service";
-import { SvgRenderingService } from "./svg-rendering.service";
-import { SwirlMotifService } from "./swirl-motif.service";
-import { WhirlMotifService } from "./whirl-motif.service";
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
 import type {

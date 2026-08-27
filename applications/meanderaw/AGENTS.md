@@ -57,22 +57,49 @@ The modules this project defines and the imports between them, published by `nx 
 
 ```mermaid
 flowchart LR
-  subgraph group0["meanderaw"]
-    GenerateBatchModule
-    GenerateModule
-    MainModule
-    MeanderGenerationModule
-  end
-  subgraph group1["logger"]
-    LoggerModule([LoggerModule])
-  end
+  BoxesMotifModule
+  ChainMotifModule
   ConfigModule([ConfigModule])
   DiscoveryModule
-  GenerateBatchModule --> MeanderGenerationModule
+  GenerateModule
+  GridGeometryModule
+  LoggerModule([LoggerModule])
+  MainModule
+  MeanderGenerationModule
+  MosaicMotifModule
+  MotifTransformsModule
+  SnakeMotifModule
+  StartModule
+  SvgRenderingModule
+  SwirlMotifModule
+  WhirlMotifModule
+  BoxesMotifModule --> GridGeometryModule
+  BoxesMotifModule --> MotifTransformsModule
+  ChainMotifModule --> GridGeometryModule
+  ChainMotifModule --> MotifTransformsModule
+  ChainMotifModule --> SnakeMotifModule
   GenerateModule --> MeanderGenerationModule
   MainModule --> DiscoveryModule
-  MainModule --> GenerateBatchModule
   MainModule --> GenerateModule
+  MainModule --> StartModule
+  MeanderGenerationModule --> BoxesMotifModule
+  MeanderGenerationModule --> ChainMotifModule
+  MeanderGenerationModule --> GridGeometryModule
+  MeanderGenerationModule --> MosaicMotifModule
+  MeanderGenerationModule --> SnakeMotifModule
+  MeanderGenerationModule --> SvgRenderingModule
+  MeanderGenerationModule --> SwirlMotifModule
+  MeanderGenerationModule --> WhirlMotifModule
+  MosaicMotifModule --> GridGeometryModule
+  MosaicMotifModule --> MotifTransformsModule
+  MosaicMotifModule --> SvgRenderingModule
+  SnakeMotifModule --> GridGeometryModule
+  SnakeMotifModule --> MotifTransformsModule
+  StartModule --> MeanderGenerationModule
+  SwirlMotifModule --> GridGeometryModule
+  SwirlMotifModule --> MotifTransformsModule
+  WhirlMotifModule --> GridGeometryModule
+  WhirlMotifModule --> MotifTransformsModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._

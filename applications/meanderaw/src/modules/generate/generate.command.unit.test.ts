@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { LoggerService } from "@codebase/logger";
 
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { OutputFilenameService } from "../meander-generation/output-filename.service";
+import { OutputFilenameService } from "../svg-rendering/output-filename.service";
 
 import { GenerateCommand } from "./generate.command";
 

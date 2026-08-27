@@ -1,53 +1,38 @@
 import { Module } from "@nestjs/common";
 
+import { BoxesMotifModule } from "../boxes-motif/boxes-motif.module";
+import { ChainMotifModule } from "../chain-motif/chain-motif.module";
 import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
+import { MosaicMotifModule } from "../mosaic-motif/mosaic-motif.module";
+import { SnakeMotifModule } from "../snake-motif/snake-motif.module";
+import { SvgRenderingModule } from "../svg-rendering/svg-rendering.module";
+import { SwirlMotifModule } from "../swirl-motif/swirl-motif.module";
+import { WhirlMotifModule } from "../whirl-motif/whirl-motif.module";
 
-import { BoxesMotifService } from "./boxes-motif.service";
-import { ChainMotifService } from "./chain-motif.service";
 import { MeanderGenerationService } from "./meander-generation.service";
-import { MosaicMotifService } from "./mosaic-motif.service";
-import { MosaicSymmetryService } from "./mosaic-symmetry.service";
-import { MosaicTileGenerationService } from "./mosaic-tile-generation.service";
-import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
-import { MosaicTilesService } from "./mosaic-tiles.service";
-import { MotifTransformsService } from "./motif-transforms.service";
-import { OutputFilenameService } from "./output-filename.service";
-import { SnakeMotifService } from "./snake-motif.service";
-import { SnakeSequenceService } from "./snake-sequence.service";
-import { SvgRenderingService } from "./svg-rendering.service";
-import { SwirlMotifService } from "./swirl-motif.service";
-import { WhirlMotifService } from "./whirl-motif.service";
 
 /**
- * Wires up the services that turn generation parameters (type, rows, repeat
- * count) into a finished SVG document.
+ * Wires up the dispatcher that turns generation parameters (type, rows,
+ * repeat count) into a finished SVG document, by importing one module per
+ * motif and selecting between them on `type`.
+ *
+ * Re-exports what the command modules resolve — the mosaic tile services
+ * among them — so `generate` and `start` depend on this one module rather
+ * than reaching past it into each motif's own.
  */
 @Module({
   controllers: [],
-  exports: [
-    MeanderGenerationService,
-    MosaicTileGenerationService,
-    MosaicSymmetryService,
-    MosaicTilesService,
-    OutputFilenameService,
+  exports: [MeanderGenerationService, MosaicMotifModule, SvgRenderingModule],
+  imports: [
+    BoxesMotifModule,
+    ChainMotifModule,
+    GridGeometryModule,
+    MosaicMotifModule,
+    SnakeMotifModule,
+    SvgRenderingModule,
+    SwirlMotifModule,
+    WhirlMotifModule,
   ],
-  imports: [GridGeometryModule],
-  providers: [
-    MosaicMotifService,
-    BoxesMotifService,
-    ChainMotifService,
-    MeanderGenerationService,
-    MosaicTileGenerationService,
-    MosaicTileMotifService,
-    MosaicSymmetryService,
-    MosaicTilesService,
-    MotifTransformsService,
-    OutputFilenameService,
-    SnakeMotifService,
-    SnakeSequenceService,
-    SvgRenderingService,
-    SwirlMotifService,
-    WhirlMotifService,
-  ],
+  providers: [MeanderGenerationService],
 })
 export class MeanderGenerationModule {}
