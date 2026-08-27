@@ -78,11 +78,11 @@ Config: [validate-branch-name.config.cjs](../../../validate-branch-name.config.c
 `configuration/lint-staged.config.ts` declares three patterns, in this order. A
 staged `package.json` matches all three, so all four commands run.
 
-| Staged file pattern                     | Commands lint-staged runs                                                                                                                                                                                                                                                                                                                       |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `{**/package.json,pnpm-workspace.yaml}` | `validation lockfile`, run as the CLI directly rather than through its Nx target                                                                                                                                                                                                                                                                |
-| `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                                                                                                                                                                                                                             |
-| `*` (every staged path)                 | `nx affected --target=lint-codebase --target=callidescope --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=nx-project-graphs --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate` |
+| Staged file pattern                     | Commands lint-staged runs                                                                                                                                                                                                                                                                                            |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{**/package.json,pnpm-workspace.yaml}` | `validation lockfile`, run as the CLI directly rather than through its Nx target                                                                                                                                                                                                                                     |
+| `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                                                                                                                                                                                                  |
+| `*` (every staged path)                 | `nx affected --target=lint-codebase --target=callidescope --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate` |
 
 There is deliberately no per-file-type row any more. `lint-codebase` is an
 `nx:noop` aggregator whose `dependsOn` list holds every static check, and each
@@ -215,18 +215,19 @@ Config: [applications/affirmations/project.json](../../../applications/affirmati
 
 #### Sync checks
 
-Every synchronization command is its own Nx target on the `synchronization` project — `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `nestjs-module-graphs`, `nx-project-graphs`, `pull-request-template`, and `skill-exclusions` — run directly rather than through a shared aggregate, the same way `codebase:codometer` and `codebase:callidescope` are run. There is no `sync-*` target, no `scripts/sync-*.ts` script, and no `synchronization:synchronize` aggregate target — those were retired when the work moved into [tools/synchronization](../../../tools/synchronization). `lint-codebase`'s dependents name each derivation target directly.
+Every synchronization command is its own Nx target on the `synchronization` project — `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `pull-request-template`, and `skill-exclusions` — run directly rather than through a shared aggregate, the same way `codebase:codometer` and `codebase:callidescope` are run. There is no `sync-*` target, no `scripts/sync-*.ts` script, and no `synchronization:synchronize` aggregate target — those were retired when the work moved into [tools/synchronization](../../../tools/synchronization). `lint-codebase`'s dependents name each derivation target directly.
 
-| Check command                                             | Write command | What it validates                                                                                                                                           |
-| --------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `nx run synchronization:conformetry-generators:check`     | `:write`      | AGENTS.md generators table matches [configuration/conformetry.config.ts](../../../configuration/conformetry.config.ts)                                      |
-| `nx run synchronization:conventional-config:check`        | `:write`      | Types/scopes consistent across [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs), `.vscode/settings.json`, skill docs |
-| `nx run synchronization:devcontainer-configuration:check` | `:write`      | Cloud and local devcontainer configs share common fields                                                                                                    |
-| `nx run synchronization:nestjs-module-graphs:check`       | `:write`      | Each NestJS project's README module graph matches its `*.module.ts` files                                                                                   |
-| `nx run synchronization:nx-project-graphs:check`          | `:write`      | Each project's README neighborhood graph matches the Nx project graph                                                                                       |
-| `nx run synchronization:pull-request-template:check`      | `:write`      | [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md) in sync with skills and prompts                                               |
-| `nx run synchronization:skill-exclusions:check`           | `:write`      | Installed-skill exclusion lists match `skills-lock.json`                                                                                                    |
-| `nx run codebase:sync-vscode-extensions:check`            | `:write`      | `.vscode/extensions.json` matches devcontainer extension lists                                                                                              |
+The `nestjs-module-graphs` and `nx-project-graphs` targets were retired too, per issue #296: [codependix](../../../packages/codependix-cli) now derives the same NestJS module graphs and Nx neighborhood graphs through its own anchor blocks, checked by `nx run codebase:codependix` instead.
+
+| Check command                                             | Write command           | What it validates                                                                                                                                           |
+| --------------------------------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nx run synchronization:conformetry-generators:check`     | `:write`                | AGENTS.md generators table matches [configuration/conformetry.config.ts](../../../configuration/conformetry.config.ts)                                      |
+| `nx run synchronization:conventional-config:check`        | `:write`                | Types/scopes consistent across [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs), `.vscode/settings.json`, skill docs |
+| `nx run synchronization:devcontainer-configuration:check` | `:write`                | Cloud and local devcontainer configs share common fields                                                                                                    |
+| `nx run synchronization:pull-request-template:check`      | `:write`                | [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md) in sync with skills and prompts                                               |
+| `nx run synchronization:skill-exclusions:check`           | `:write`                | Installed-skill exclusion lists match `skills-lock.json`                                                                                                    |
+| `nx run codebase:sync-vscode-extensions:check`            | `:write`                | `.vscode/extensions.json` matches devcontainer extension lists                                                                                              |
+| `nx run codebase:codependix --configuration=check`        | `--configuration=write` | Each project's README codependix blocks match its real Nx, NestJS, and import graphs                                                                        |
 
 > **Lesson**: If sync checks fail, it means a source of truth was edited without updating its counterpart. Example: editing `configuration/conformetry.config.ts` requires regenerating the `AGENTS.md` generators table. Editing `configuration/conventional.config.cjs` requires regenerating `.vscode/settings.json`, the PR template, and the types/scopes tables in AGENTS.md and the branch and commit skills.
 
@@ -291,14 +292,13 @@ pnpm exec nx affected --target=knip,vulture --configuration=write --files=<stage
 pnpm exec nx run synchronization:conformetry-generators:write
 pnpm exec nx run synchronization:conventional-config:write
 pnpm exec nx run synchronization:devcontainer-configuration:write
-pnpm exec nx run synchronization:nestjs-module-graphs:write
-pnpm exec nx run synchronization:nx-project-graphs:write
 pnpm exec nx run synchronization:pull-request-template:write
 pnpm exec nx run synchronization:skill-exclusions:write
 pnpm exec nx run codebase:sync-vscode-extensions:write
+pnpm exec nx run codebase:codependix --configuration=write
 
 # Or every derivation at once
-pnpm exec nx run-many --targets=conformetry-generators,conventional-config,devcontainer-configuration,nx-project-graphs,pull-request-template,skill-exclusions --configuration=write
+pnpm exec nx run-many --targets=conformetry-generators,conventional-config,devcontainer-configuration,pull-request-template,skill-exclusions --configuration=write
 ```
 
 #### Validate Fixes Passed
@@ -319,7 +319,7 @@ pnpm exec nx affected --target=markdown-lint --configuration=check --files=<stag
 pnpm exec nx affected --target=knip,vulture --configuration=check --files=<staged-files>
 
 # Validate sync checks fixed themselves (re-run the check configuration)
-pnpm exec nx run-many --targets=conformetry-generators,conventional-config,devcontainer-configuration,nx-project-graphs,pull-request-template,skill-exclusions --configuration=check
+pnpm exec nx run-many --targets=conformetry-generators,conventional-config,devcontainer-configuration,pull-request-template,skill-exclusions --configuration=check
 pnpm exec nx run codebase:sync-vscode-extensions:check
 ```
 
