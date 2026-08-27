@@ -83,7 +83,7 @@ export class ChainMotifService implements MotifService {
 
   /** Draws one repeat unit's subpaths plus its own border, as an SVG path attribute value. */
   path(geometry: GridGeometry, unit: MotifUnit): string {
-    const { modifier, rows, unitIndex } = unit;
+    const { isLastUnit, modifier, rows, unitIndex } = unit;
     const points = this.snakeSequenceService.unitPoints(
       rows,
       unitIndex,
@@ -119,6 +119,7 @@ export class ChainMotifService implements MotifService {
     return (
       pathData +
       this.snakeMotifService.borderSegment(geometry, {
+        isLastUnit,
         rows,
         xOffset,
         ...(modifier ? { modifier } : {}),

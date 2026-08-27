@@ -38,7 +38,12 @@ export class SnakeMotifService implements MotifService {
 
   // 🌎 Public Methods
 
-  /** Draws one unit's own top/bottom border segment, spanning just that unit's width. */
+  /**
+   * Draws one unit's own top/bottom border segment, spanning just that
+   * unit's width. `isLastUnit` is deliberately ignored: the zigzag reaches
+   * the full unit width on every unit, so the final unit's border is
+   * already flush with it and has nothing to clip.
+   */
   borderSegment(geometry: GridGeometry, unit: UnitBorderOptions): string {
     const { modifier, rows, xOffset } = unit;
     const leftX = this.gridGeometryService.formatCoordinate(
@@ -57,7 +62,7 @@ export class SnakeMotifService implements MotifService {
 
   /** Draws one repeat unit's zigzag plus its own border, as an SVG path attribute value. */
   path(geometry: GridGeometry, unit: MotifUnit): string {
-    const { modifier, rows, unitIndex } = unit;
+    const { isLastUnit, modifier, rows, unitIndex } = unit;
     const points = this.snakeSequenceService.unitPoints(
       rows,
       unitIndex,
@@ -76,6 +81,7 @@ export class SnakeMotifService implements MotifService {
     return (
       this.pointsToPathData(points, toXCoordinate, toYCoordinate) +
       this.borderSegment(geometry, {
+        isLastUnit,
         rows,
         xOffset,
         ...(modifier ? { modifier } : {}),

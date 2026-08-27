@@ -124,6 +124,17 @@ export interface MosaicTile {
   readonly rows: number;
 }
 
+/**
+ * Which repeat unit of a {@link MosaicTile} `MosaicTileMotifService.path`
+ * draws. Grouped into one object rather than passed alongside the tile so
+ * the method stays inside the workspace's parameter limit, and so
+ * `isLastUnit` reads the same here as it does in {@link MotifUnit}.
+ */
+export interface MosaicTileUnit {
+  readonly isLastUnit: boolean;
+  readonly unitIndex: number;
+}
+
 /** A point in the transforms layer expressed as `[xLevel, yLevel]` grid levels, not yet converted to pixel coordinates. */
 export type MotifLevelPoint = readonly [number, number];
 
@@ -151,8 +162,15 @@ export interface MotifService {
   rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number;
 }
 
-/** Which repeat unit a motif service's `path` draws and the modifier (if any) applied to it. */
+/**
+ * Which repeat unit a motif service's `path` draws and the modifier (if
+ * any) applied to it. `isLastUnit` is what lets a type whose central motif
+ * stops short of its own unit width — `mosaic`, `swirl`, `whirl` — clip the
+ * final unit's border flush with that motif instead of trailing a stub off
+ * the end of the pattern, with no following unit to fill the gap.
+ */
 export interface MotifUnit {
+  readonly isLastUnit: boolean;
   readonly modifier?: Modifier;
   readonly rows: number;
   readonly unitIndex: number;
@@ -173,8 +191,15 @@ export interface RepeatPatternOptions {
   readonly rows: number;
 }
 
-/** The row count, optional modifier, and horizontal offset one repeat unit's own border segment is drawn against. */
+/**
+ * The row count, optional modifier, and horizontal offset one repeat unit's
+ * own border segment is drawn against. `isLastUnit` clips the segment flush
+ * with the central motif's own rightmost point for the types whose motif
+ * stops short of its unit width; `snake` and `chain`, whose zigzag reaches
+ * the full width, accept it and ignore it.
+ */
 export interface UnitBorderOptions {
+  readonly isLastUnit: boolean;
   readonly modifier?: Modifier;
   readonly rows: number;
   readonly xOffset: number;

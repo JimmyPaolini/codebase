@@ -6,6 +6,16 @@ import { MotifTransformsService } from "./motif-transforms.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";
 
+// 🔧 Configuration
+
+/** The rightmost x-coordinate a stretch of path data draws. */
+const rightmostX = (pathData: string): number =>
+  Math.max(
+    ...[...pathData.matchAll(/[MH]([\d.]+)/g)].map((match) => Number(match[1])),
+  );
+
+// 🧪 Tests
+
 describe(SnakeMotifService, () => {
   let service: SnakeMotifService;
   let gridGeometryService: GridGeometryService;
@@ -52,7 +62,9 @@ describe(SnakeMotifService, () => {
     it("draws the first unit's zigzag plus its own border, matching the reference geometry at 4 rows", () => {
       const geometry = gridGeometryService.compute(4);
 
-      expect(service.path(geometry, { rows: 4, unitIndex: 0 })).toBe(
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 4, unitIndex: 0 }),
+      ).toBe(
         "M3.75 18.75H33.75V33.75H18.75V48.75H48.75V18.75M3.75 3.75H48.75M48.75 63.75H3.75",
       );
     });
@@ -60,7 +72,9 @@ describe(SnakeMotifService, () => {
     it("shifts each subsequent unit by unitWidth, matching the reference geometry at 4 rows", () => {
       const geometry = gridGeometryService.compute(4);
 
-      expect(service.path(geometry, { rows: 4, unitIndex: 1 })).toBe(
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 4, unitIndex: 1 }),
+      ).toBe(
         "M48.75 18.75H78.75V33.75H63.75V48.75H93.75V18.75M48.75 3.75H93.75M93.75 63.75H48.75",
       );
     });
@@ -68,7 +82,9 @@ describe(SnakeMotifService, () => {
     it("matches the reference geometry at 6 rows", () => {
       const geometry = gridGeometryService.compute(6);
 
-      expect(service.path(geometry, { rows: 6, unitIndex: 0 })).toBe(
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 6, unitIndex: 0 }),
+      ).toBe(
         "M2.5 12.5H42.5V42.5H22.5V32.5H32.5V22.5H12.5V52.5H52.5V12.5M2.5 2.5H52.5M52.5 62.5H2.5",
       );
     });
@@ -78,6 +94,7 @@ describe(SnakeMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "edge" },
           rows: 6,
           unitIndex: 0,
@@ -92,6 +109,7 @@ describe(SnakeMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "flip" },
           rows: 6,
           unitIndex: 0,
@@ -106,6 +124,7 @@ describe(SnakeMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "flip" },
           rows: 6,
           unitIndex: 1,
@@ -142,9 +161,107 @@ describe(SnakeMotifService, () => {
     it("spans just one unit's width, unlike boxes's shared full-pattern border", () => {
       const geometry = gridGeometryService.compute(4);
 
-      expect(service.borderSegment(geometry, { rows: 4, xOffset: 0 })).toBe(
-        "M3.75 3.75H48.75M48.75 63.75H3.75",
-      );
+      expect(
+        service.borderSegment(geometry, {
+          isLastUnit: false,
+          rows: 4,
+          xOffset: 0,
+        }),
+      ).toBe("M3.75 3.75H48.75M48.75 63.75H3.75");
     });
+  });
+
+  describe.each([
+    ["plain", undefined],
+    ["flip", { name: "flip" } as const],
+  ])("last unit with %s", (_label, modifier) => {
+    const rowsValues = [4, 5, 6, 7, 8];
+
+    it.each(rowsValues)(
+      "already ends its border flush with its own zigzag, needing no clipping, at %i rows",
+      (rows) => {
+        const geometry = gridGeometryService.compute(rows);
+        const unitIndex = 5;
+        const options = {
+          isLastUnit: true,
+          rows,
+          xOffset: unitIndex * service.unitWidth(geometry, rows, modifier),
+          ...(modifier ? { modifier } : {}),
+        };
+        const fullPath = service.path(geometry, {
+          isLastUnit: true,
+          rows,
+          unitIndex,
+          ...(modifier ? { modifier } : {}),
+        });
+        const border = service.borderSegment(geometry, options);
+        const trace = fullPath.slice(0, fullPath.length - border.length);
+
+        expect(rightmostX(border)).toBe(rightmostX(trace));
+      },
+    );
+  });
+
+  /**
+   * The `edge` family widens the unit pitch by one grid level beyond the
+   * zigzag's own span, so every unit's border reaches a level past where its
+   * zigzag stops — for an interior unit that level is the channel separating
+   * it from the next unit, and for the last unit it is a trailing stub with
+   * no next unit behind it. Locked here as the behavior that actually ships:
+   * it is the same shape as the defect issue #338 clips out of `mosaic`,
+   * `swirl`, and `whirl`, and that issue scopes `snake` and `chain` out and
+   * requires them unchanged.
+   */
+  describe.each([
+    ["edge", { name: "edge" } as const],
+    ["edge-flip", { name: "edge-flip" } as const],
+  ])("last unit with %s", (_label, modifier) => {
+    const rowsValues = [4, 5, 6, 7, 8];
+
+    it.each(rowsValues)(
+      "still reaches one grid unit past its own zigzag, at %i rows",
+      (rows) => {
+        const geometry = gridGeometryService.compute(rows);
+        const unitIndex = 5;
+        const options = {
+          isLastUnit: true,
+          modifier,
+          rows,
+          xOffset: unitIndex * service.unitWidth(geometry, rows, modifier),
+        };
+        const fullPath = service.path(geometry, {
+          isLastUnit: true,
+          modifier,
+          rows,
+          unitIndex,
+        });
+        const border = service.borderSegment(geometry, options);
+        const trace = fullPath.slice(0, fullPath.length - border.length);
+
+        expect(rightmostX(border)).toBeCloseTo(
+          rightmostX(trace) + geometry.unit,
+          4,
+        );
+      },
+    );
+  });
+
+  describe.each([
+    ["plain", undefined],
+    ["edge", { name: "edge" } as const],
+    ["flip", { name: "flip" } as const],
+    ["edge-flip", { name: "edge-flip" } as const],
+  ])("last unit with %s", (_label, modifier) => {
+    it.each([4, 5, 6, 7, 8])(
+      "draws the same path whether or not it is the pattern's last, at %i rows",
+      (rows) => {
+        const geometry = gridGeometryService.compute(rows);
+        const unit = { rows, unitIndex: 5, ...(modifier ? { modifier } : {}) };
+
+        expect(service.path(geometry, { ...unit, isLastUnit: true })).toBe(
+          service.path(geometry, { ...unit, isLastUnit: false }),
+        );
+      },
+    );
   });
 });

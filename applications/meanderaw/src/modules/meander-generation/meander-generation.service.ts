@@ -76,6 +76,7 @@ export class MeanderGenerationService {
       { length: parameters.repeatCount },
       (_value, unitIndex) =>
         motifService.path(geometry, {
+          isLastUnit: unitIndex === parameters.repeatCount - 1,
           rows: parameters.rows,
           unitIndex,
           ...(parameters.modifier ? { modifier: parameters.modifier } : {}),
