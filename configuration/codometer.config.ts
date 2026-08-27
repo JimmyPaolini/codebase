@@ -55,7 +55,7 @@ const PATH_SEPARATOR = "/";
  */
 const PROJECT_LIMITS: Record<string, string> = {
   "packages/callidescope-cli": "70 KB",
-  "packages/callidescope-configuration": "9 KB",
+  "packages/callidescope-configuration": "10 KB",
   "packages/codometer-cli": "84 KB",
   "packages/codometer-configuration": "13 KB",
   "packages/conformetry-cli": "14 KB",
@@ -234,6 +234,14 @@ const buildWorkspaceConfiguration = (): CodometerConfiguration => ({
  * single compiled tree, or gated by more than one limit — carries a
  * configuration file of its own, which fully replaces this one for that folder
  * and declares its limits there rather than in the table above.
+ * `packages/codometer-examples` is one of them, and its configuration is worth
+ * reading beside this one: every field used here has a runnable example there,
+ * measured against a corpus whose counts are stated and checked.
+ *
+ * @see [`packages/codometer-examples/README.md`](../packages/codometer-examples/README.md)
+ * for the guided tour, and
+ * [`packages/codometer-examples/AGENTS.md`](../packages/codometer-examples/AGENTS.md)
+ * for the message-to-example lookup table.
  */
 const codometerConfiguration: CodometerConfigurationFactory = (context) => {
   const workspaceDirectory = findWorkspaceDirectory(

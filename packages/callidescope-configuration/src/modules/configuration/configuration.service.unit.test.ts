@@ -20,7 +20,6 @@ import {
   DEFAULT_MINIMUM_CALLERS,
   DEFAULT_MODULES_DIRECTORY,
   DEFAULT_PREVIEW_COUNT,
-  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
   DEFAULT_PROJECT_README_HEADING,
   DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_SPREAD_THRESHOLD,
@@ -77,7 +76,7 @@ describe(ConfigurationService, () => {
     expect(configuration.exclude).toStrictEqual([...DEFAULT_EXCLUDE_GLOBS]);
     expect(configuration.excludeFrom).toStrictEqual([]);
     expect(configuration.ignoreCallees).toStrictEqual([]);
-    expect(configuration.projects).toStrictEqual([]);
+    expect(configuration.directories).toStrictEqual([]);
     expect(configuration.allowSpreadFor).toStrictEqual([
       ...DEFAULT_ALLOW_SPREAD_FOR,
     ]);
@@ -140,19 +139,17 @@ describe(ConfigurationService, () => {
 
     expect(configuration.workspaceStructure).toStrictEqual({
       modulesDirectory: DEFAULT_MODULES_DIRECTORY,
-      projectContainerDirectories: [...DEFAULT_PROJECT_CONTAINER_DIRECTORIES],
       rootModuleSegment: DEFAULT_ROOT_MODULE_SEGMENT,
     });
   });
 
   it("keeps an authored workspace structure and defaults the rest", () => {
     const configuration = service.resolveConfiguration({
-      workspaceStructure: { projectContainerDirectories: ["services"] },
+      workspaceStructure: { modulesDirectory: "features" },
     });
 
     expect(configuration.workspaceStructure).toStrictEqual({
-      modulesDirectory: DEFAULT_MODULES_DIRECTORY,
-      projectContainerDirectories: ["services"],
+      modulesDirectory: "features",
       rootModuleSegment: DEFAULT_ROOT_MODULE_SEGMENT,
     });
   });
@@ -388,14 +385,14 @@ describe(ConfigurationService, () => {
 
   it("loads a configuration file named explicitly", async () => {
     const configurationPath = await writeConfiguration({
-      projects: ["caelundas"],
+      directories: ["packages/caelundas"],
     });
 
     const configuration = await service.loadConfiguration({
       configurationPath,
     });
 
-    expect(configuration.projects).toStrictEqual(["caelundas"]);
+    expect(configuration.directories).toStrictEqual(["packages/caelundas"]);
   });
 
   it("loads a JSONC configuration, comments included", async () => {

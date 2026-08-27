@@ -12,6 +12,15 @@
     "type:application"
   ],
   "targets": {
+    "build": {
+      "cache": false,
+      "description": "Build Meanderaw by regenerating every meander SVG in the generate-batch sweep (every type, every compatible modifier, structural-minimum-through-8 rows) into output/",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register src/main.ts generate-batch",
+        "cwd": "{projectRoot}"
+      }
+    },
     "codometer": {},
     "dependency-cruiser": {},
     "knip": {},

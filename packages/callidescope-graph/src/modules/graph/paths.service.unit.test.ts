@@ -10,7 +10,7 @@ import { DocumentationService } from "../documentation/documentation.service";
 import { SignaturesService } from "../signatures/signatures.service";
 
 import { ComponentsService } from "./components.service";
-import { DepthService } from "./depth.service";
+import { GraphDepthService } from "./graph-depth.service";
 import { GraphService } from "./graph.service";
 import { PathsService } from "./paths.service";
 
@@ -45,7 +45,7 @@ function buildPath(args: {
     callableIds: args.ids,
     graph,
   });
-  const measurement = new DepthService().measure({
+  const measurement = new GraphDepthService().measure({
     condensed,
     graph,
     moduleIdByCallable: new Map(args.ids.map((id) => [id, "example:one"])),

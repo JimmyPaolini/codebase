@@ -19,6 +19,48 @@
       "skillPath": "skills/engineering/codebase-design/SKILL.md",
       "computedHash": "e6394592ecf4b5aa5bc93f95a20d0a56314788bde2e1221f87296d3becb734a2"
     },
+    "codependix-configure": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/codependix-agents/skills/codependix-configure/SKILL.md",
+      "computedHash": "d82205c6e554afd6a02df822c70632a00e1e31d2f4bfd424313d08cca8d22191"
+    },
+    "codependix-export": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/codependix-agents/skills/codependix-export/SKILL.md",
+      "computedHash": "f4f6fbf705d2edd7ff437e43e129165291fbf8b6668c89d1a2e9138c2616a6c4"
+    },
+    "codependix-navigate": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/codependix-agents/skills/codependix-navigate/SKILL.md",
+      "computedHash": "92a3eaec1e3b305bb3034e098e6bf6dc85cf9808b9d99b5e718fda6da981fdce"
+    },
+    "codependix-triage": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/codependix-agents/skills/codependix-triage/SKILL.md",
+      "computedHash": "afe6b9e16c052341bb6f7f1b37e76cd064b0544e6e1989ada96b5e0043b869a5"
+    },
+    "codometer-configure": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/codometer-agents/skills/codometer-configure/SKILL.md",
+      "computedHash": "183ee926aac656086e2969f53dd911f00a60fddd7ffb077f1cb7ac6182bd59a8"
+    },
+    "codometer-measure": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/codometer-agents/skills/codometer-measure/SKILL.md",
+      "computedHash": "e2dff4186eaa6089e52d76748be66d540d5b22946029cfef95bd78550ee5b645"
+    },
+    "codometer-triage": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/codometer-agents/skills/codometer-triage/SKILL.md",
+      "computedHash": "e96d367bd007b66edcf9ab86d6b7c10081968e5c15220d4ba1549ff664dc1d07"
+    },
     "conformetry-configure": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",

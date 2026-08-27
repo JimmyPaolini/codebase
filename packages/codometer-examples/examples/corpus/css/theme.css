@@ -1,0 +1,24 @@
+/* A sample theme, written so the CSS analyzer has rules to count. */
+
+:root {
+  --color-background: #ffffff;
+  --color-foreground: #111827;
+  --spacing-small: 4px;
+}
+
+.order,
+.order-line {
+  color: var(--color-foreground);
+  padding: var(--spacing-small);
+}
+
+.order-line:last-child {
+  border-bottom: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #111827;
+    --color-foreground: #f9fafb;
+  }
+}

@@ -95,7 +95,7 @@ MIT — see [LICENSE](../../LICENSE).
 
 ## 🔭 Callidescope
 
-Call stacks traced through `lexico`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `applications/lexico`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -480,7 +480,7 @@ None.
 
 | Callable | Declared in | Called from | Callers |
 | --- | --- | --- | --- |
-| `transformForms` | `lexico:lib` | `lexico:routes` | 2/2 |
+| `transformForms` | `applications/lexico:lib` | `applications/lexico:routes` | 2/2 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

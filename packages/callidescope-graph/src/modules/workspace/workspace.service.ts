@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
@@ -8,8 +8,8 @@ import { LoggerService } from "@codebase/logger";
 
 import {
   DEFAULT_MODULES_DIRECTORY,
-  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
   DEFAULT_ROOT_MODULE_SEGMENT,
+  EXCLUDED_SCAN_DIRECTORY_NAMES,
   TEST_DIRECTORY_SEGMENT,
   TEST_FILE_PATTERN,
 } from "./workspace.constants";
@@ -44,14 +44,79 @@ export class WorkspaceService {
 
   private modulesDirectory: string = DEFAULT_MODULES_DIRECTORY;
 
-  private projectContainerDirectories: readonly string[] =
-    DEFAULT_PROJECT_CONTAINER_DIRECTORIES;
-
   private rootModuleSegment: string = DEFAULT_ROOT_MODULE_SEGMENT;
 
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /** Walks the whole workspace for every directory holding a `tsconfig.json`. */
+  private findAllProjectDirectories(workspaceRoot: string): string[] {
+    const found: string[] = [];
+
+    this.findProjectDirectories({
+      directory: workspaceRoot,
+      found,
+      workspaceRoot,
+    });
+
+    return found;
+  }
+
+  /**
+   * Walks a directory recursively, collecting every subdirectory that holds
+   * its own `tsconfig.json`.
+   *
+   * Descends into a `tsconfig.json`-holding directory too rather than
+   * stopping there: a project nesting a second program under it — a
+   * `testing/tsconfig.json`, a generated subpackage — is not a reason to miss
+   * everything below it, and the directories this skips already keep the walk
+   * from wandering into a dependency or a build artifact.
+   */
+  private findProjectDirectories(args: {
+    directory: string;
+    found: string[];
+    workspaceRoot: string;
+  }): void {
+    if (existsSync(path.join(args.directory, "tsconfig.json"))) {
+      args.found.push(
+        this.toWorkspaceRelative({
+          absolutePath: args.directory,
+          workspaceRoot: args.workspaceRoot,
+        }),
+      );
+    }
+
+    for (const entry of readdirSync(args.directory, { withFileTypes: true })) {
+      if (!entry.isDirectory() || this.isExcludedFromScan(entry.name)) {
+        continue;
+      }
+
+      this.findProjectDirectories({
+        directory: path.join(args.directory, entry.name),
+        found: args.found,
+        workspaceRoot: args.workspaceRoot,
+      });
+    }
+  }
+
+  /**
+   * True for a directory a whole-workspace scan should never descend into.
+   *
+   * A name holding `{{`/`}}` is a scaffolding template's own placeholder
+   * directory, never a real one — its `tsconfig.json`, if it has one, is
+   * written for a generator to fill in later and cannot build a program on
+   * its own.
+   */
+  private isExcludedFromScan(directoryName: string): boolean {
+    return (
+      directoryName.startsWith(".") ||
+      directoryName.includes("{{") ||
+      (EXCLUDED_SCAN_DIRECTORY_NAMES as readonly string[]).includes(
+        directoryName,
+      )
+    );
+  }
 
   /**
    * Asks git which tracked files an ignore file excludes.
@@ -85,51 +150,6 @@ export class WorkspaceService {
 
       return [];
     }
-  }
-
-  /** Lists the project directories inside one container directory. */
-  private listProjectRoots(args: {
-    container: string;
-    workspaceRoot: string;
-  }): string[] {
-    const containerPath = path.join(args.workspaceRoot, args.container);
-
-    if (!existsSync(containerPath)) {
-      return [];
-    }
-
-    return readdirSync(containerPath, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => `${args.container}/${entry.name}`)
-      .filter((root) =>
-        existsSync(path.join(args.workspaceRoot, root, "project.json")),
-      );
-  }
-
-  /** Reads a project's declared name, falling back to its directory name. */
-  private readProjectName(args: {
-    manifestPath: string;
-    root: string;
-  }): string {
-    try {
-      const manifest: unknown = JSON.parse(
-        readFileSync(args.manifestPath, "utf8"),
-      );
-
-      if (typeof manifest === "object" && manifest !== null) {
-        const { name } = manifest as { name?: unknown };
-
-        if (typeof name === "string" && name.length > 0) {
-          return name;
-        }
-      }
-    } catch {
-      this.logger.warn("🔭 Skipped an unreadable project manifest", undefined, {
-        manifestPath: args.manifestPath,
-      });
-    }
-
-    return path.basename(args.root);
   }
 
   // 🌎 Public Methods
@@ -171,7 +191,7 @@ export class WorkspaceService {
   }
 
   /**
-   * Points project discovery and module identity at a workspace's own layout.
+   * Points module identity at a workspace's own layout.
    *
    * Defaults to this repository's own layout so a caller that never invokes
    * this keeps today's behavior; a host embedding callidescope calls this
@@ -179,46 +199,48 @@ export class WorkspaceService {
    */
   public configure(structure: WorkspaceStructure): void {
     this.modulesDirectory = structure.modulesDirectory;
-    this.projectContainerDirectories = structure.projectContainerDirectories;
     this.rootModuleSegment = structure.rootModuleSegment;
   }
 
   /**
-   * Finds every Nx project holding a `tsconfig.json`.
+   * Resolves the project directories a run will trace.
    *
-   * A project without one cannot be turned into a program, so it is skipped
-   * rather than reported: a Python project is not a gap in the call graph.
+   * Each of `args.directories` is trusted as a project root outright rather
+   * than searched for a `tsconfig.json` beneath it: naming a directory is
+   * the caller saying exactly what it means to trace. Passing none is what
+   * asks for the whole workspace instead, found by walking it for every
+   * `tsconfig.json` there is — the only case that needs a search at all.
    */
   public discoverProjects(args: DiscoverProjectsArguments): WorkspaceProject[] {
-    const wanted = new Set(args.projectNames);
+    const roots =
+      args.directories.length > 0
+        ? args.directories.map((directory) =>
+            this.toWorkspaceRelative({
+              absolutePath: path.resolve(args.workspaceRoot, directory),
+              workspaceRoot: args.workspaceRoot,
+            }),
+          )
+        : this.findAllProjectDirectories(args.workspaceRoot);
+
     const projects: WorkspaceProject[] = [];
 
-    for (const container of this.projectContainerDirectories) {
-      const roots = this.listProjectRoots({
-        container,
-        workspaceRoot: args.workspaceRoot,
-      });
+    for (const root of roots) {
+      const configurationPath = path.join(
+        args.workspaceRoot,
+        root,
+        "tsconfig.json",
+      );
 
-      for (const root of roots) {
-        const configurationPath = path.join(
-          args.workspaceRoot,
-          root,
-          "tsconfig.json",
+      if (!existsSync(configurationPath)) {
+        this.logger.warn(
+          "🔭 Skipped a directory without a tsconfig.json",
+          undefined,
+          { root },
         );
-
-        if (!existsSync(configurationPath)) {
-          continue;
-        }
-
-        const name = this.readProjectName({
-          manifestPath: path.join(args.workspaceRoot, root, "project.json"),
-          root,
-        });
-
-        if (wanted.size === 0 || wanted.has(name)) {
-          projects.push({ configurationPath, name, root });
-        }
+        continue;
       }
+
+      projects.push({ configurationPath, name: root, root });
     }
 
     // Sorted so that the file-ownership tie-break, and therefore every depth

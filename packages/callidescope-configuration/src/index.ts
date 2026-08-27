@@ -28,6 +28,7 @@ export type {
 } from "./modules/configuration/call-graph.types";
 // 📤 Exports
 export {
+  CALLIDESCOPE_OUTPUT_FORMATS,
   callidescopeConfigurationSchema,
   CONFIGURATION_FILE_NAMES,
   DEFAULT_ALLOW_SPREAD_FOR,
@@ -44,7 +45,6 @@ export {
   DEFAULT_MODULES_DIRECTORY,
   DEFAULT_OUTPUT_FORMAT,
   DEFAULT_PREVIEW_COUNT,
-  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
   DEFAULT_PROJECT_README_HEADING,
   DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_SPREAD_THRESHOLD,
@@ -80,3 +80,5 @@ export type {
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";
+export { InputModule } from "./modules/input/input.module";
+export { InputService } from "./modules/input/input.service";

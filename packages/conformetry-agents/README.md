@@ -57,7 +57,7 @@ package, never that one.
 
 ## 🔭 Callidescope
 
-Call stacks traced through `conformetry-agents`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/conformetry-agents`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |

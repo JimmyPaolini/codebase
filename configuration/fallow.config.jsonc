@@ -39,7 +39,11 @@
     // never by importing them, so nothing in the module graph reaches one.
     // knip names the root file in its own entry list for the same reason.
     "{applications,packages,tools}/*/codometer.config.cjs",
+    "{applications,packages,tools}/*/codometer.config.ts",
     "codometer.config.ts",
+    // Read by the codometer command line, one per documented behavior, and
+    // reached by nothing in the module graph for the same reason.
+    "packages/codometer-examples/examples/**/*.config.ts",
     "configuration/**",
     "packages/lexico-entities/src/modules/database/migrations/**/*.ts",
     "release.config.cjs",
@@ -88,6 +92,10 @@
     // Named as a string in conformetry-validation's language registry and
     // imported on demand, so no static import proves it is used.
     "@conformetry/text",
+    // Depended on by codometer-examples so its tests spawn the command line
+    // they document; they resolve its entry point through the manifest and run
+    // it as a process rather than importing it.
+    "@codometer/cli",
     // Declared by every service package for the conformance-scaffolded
     // `testing/mocks.ts`, which only the packages whose tests mock a
     // dependency go on to import.
@@ -170,6 +178,8 @@
     "**/helm/**/templates/**",
     "**/library.json",
     "**/node_modules/**",
+    "**/packages/codometer-examples/examples/compiled/**",
+    "**/packages/codometer-examples/examples/corpus/**",
     "**/packages/conformetry-examples/examples/*/instances/**",
     "**/packages/conformetry-examples/examples/*/templates/**",
     "**/pnpm-lock.yaml",

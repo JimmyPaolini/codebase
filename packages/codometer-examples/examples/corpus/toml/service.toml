@@ -1,0 +1,18 @@
+# Settings the sample service reads.
+
+[service]
+name = "orders"
+port = 8080
+tags = ["sample", "corpus"]
+
+[service.limits]
+maximum_lines = 99
+timeout_seconds = 30
+
+[[routes]]
+method = "GET"
+path = "/orders"
+
+[[routes]]
+method = "POST"
+path = "/orders"

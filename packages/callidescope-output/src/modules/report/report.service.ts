@@ -12,7 +12,7 @@ import {
   TRUNCATION_SUFFIX,
 } from "./report.constants";
 
-import type { CallStack, StackFrame } from "@callidescope/configuration";
+import type { StackFrame } from "@callidescope/configuration";
 
 /**
  * Renders one call stack as an indented tree.
@@ -119,8 +119,15 @@ export class ReportService {
 
   // 🌎 Public Methods
 
-  /** Renders every frame of a stack, the entry point first. */
-  public renderStackTree(stack: CallStack): string {
+  /**
+   * Renders every frame of a stack, the entry point first.
+   *
+   * Takes anything holding a frame list rather than a full `CallStack`: a
+   * depth or entry-point kind is never read here, so a caller with a path
+   * that has neither — an address-centered lookup, for one — does not have to
+   * fabricate one to call this.
+   */
+  public renderStackTree(stack: { frames: readonly StackFrame[] }): string {
     return stack.frames
       .map((frame, depth) => this.renderFrame({ depth, frame }))
       .join("\n");

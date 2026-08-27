@@ -70,6 +70,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
   - **[callidescope-graph](packages/callidescope-graph)** - Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
   - **[callidescope-output](packages/callidescope-output)** - Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **🕸️ codependix** - Dependency graph export toolchain that reads what each project depends on and renders it as JSON and Markdown diagrams
+  - **[codependix-agents](packages/codependix-agents)** - Agent skills for the codependix toolchain, installable by any workspace that uses codependix
   - **[codependix-cli](packages/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks
   - **[codependix-configuration](packages/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations
   - **[codependix-imports](packages/codependix-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
@@ -82,6 +83,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
   - **[codometer-configuration](packages/codometer-configuration)** - Reads `codometer.config.ts` for exclusion globs, output destinations and their render/write callbacks, and the Python interpreter
   - **[codometer-customization](packages/codometer-customization)** - Evaluates codometer's configured custom counters
   - **[codometer-discovery](packages/codometer-discovery)** - Glob matching and gitignore-aware file walking, plus resolving configured measurement targets to file sets
+  - **[codometer-examples](packages/codometer-examples)** - A sample corpus with known contents and one runnable example per thing codometer does, with tests that assert every number the guides quote
   - **[codometer-languages](packages/codometer-languages)** - Every input language analyzer codometer measures, behind one `analyze()` call
   - **[codometer-output](packages/codometer-output)** - Every codometer output format - JSON reports, README badges, and the pull request change report
   - **[codometer-size](packages/codometer-size)** - Compresses a target's matched files and measures their size
@@ -176,6 +178,7 @@ graph LR
   callidescope_configuration["callidescope-configuration"]
   callidescope_graph["callidescope-graph"]
   callidescope_output["callidescope-output"]
+  codependix_agents["codependix-agents"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_imports["codependix-imports"]
@@ -304,36 +307,36 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-204235-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-10.90_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-444-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-1610-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-213012-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-11.34_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-473-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-1697-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1565-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-618-0ea5e9?style=flat-square)
-![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-33-0369a1?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1652-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-645-0ea5e9?style=flat-square)
+![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-34-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-889-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-4102-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-917-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-4327-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-14-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-19-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-418-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-121-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-529-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-8425-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-3098-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-9687-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-1836-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-11498-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-6910-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2091-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-8379-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-16858-475569?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-431-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-122-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-547-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-8788-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-3189-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-10067-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-1910-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-11951-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-7193-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2155-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-8840-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-18424-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-50-ca8a04?style=flat-square)
 
 ### Python
@@ -353,17 +356,17 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-196-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-11165-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-2073-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-716-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-5638-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-4754-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-80-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-419-0ea5e9?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-202-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-11329-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-2116-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-732-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-5742-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-4833-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-82-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-426-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-2215-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-8042-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-2252-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-8189-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-10-ea580c?style=flat-square)
 
 ### YAML
@@ -444,17 +447,17 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-168-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-244-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-36-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-157-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-164-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-176-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-252-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-38-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-165-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-175-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-10-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-19-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-33-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-387-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-398-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-18-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-11-16a34a?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-13-16a34a?style=flat-square)
 
 ### Jupyter
 
@@ -481,24 +484,187 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-179-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-56516-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-163-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-1327-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-2002-a78bfa?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-187-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-59110-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-171-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-1396-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-2047-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-96-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-9151-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-1119-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-5265-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-9472-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-1143-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-5338-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-493-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-5025-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-1304-059669?style=flat-square)
-![Images](https://img.shields.io/badge/Images-6671-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-1671-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-22422-ef4444?style=flat-square)
-![Block Quotes](https://img.shields.io/badge/Block_Quotes-28-ca8a04?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-510-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-5192-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-1381-059669?style=flat-square)
+![Images](https://img.shields.io/badge/Images-6979-10b981?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-1723-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-23235-ef4444?style=flat-square)
+![Block Quotes](https://img.shields.io/badge/Block_Quotes-29-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through ``, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 74 |
+| Files | 17 |
+| Calls traced | 70 |
+| Call stacks | 8 |
+| Deepest stack | 8 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 3 |
+
+### Call stacks (depth)
+
+**1. `main`** — depth ≥ 8 · orphan-root
+
+```text
+🚀 main(): Promise<void> [scripts/orchestrate-agents.ts:216]
+   ↳ Run all configured Copilot prompts in parallel or sequentially based on the input file's mode.
+  └─> runSessions(…): Promise<void> [scripts/orchestrate-agents.ts:321]
+     ↳ Run configured sessions in the selected mode.
+    └─> runCopilotCommand(copilotArguments: string[]): Promise<void> [scripts/orchestrate-agents.ts:258]
+       ↳ Run a single Copilot command and resolve when the process exits.
+      └─> anonymous(…): void [scripts/orchestrate-agents.ts:259]
+        └─> on(…)(exitCode: number | null, signal: NodeJS.Signals | null): void [scripts/orchestrate-agents.ts:283]
+          └─> buildSessionFailureMessage(context: SessionFailureContext): string [scripts/orchestrate-agents.ts:119]
+             ↳ Build a detailed failure message when a session exits non-zero.
+            └─> formatLabeledMessage(heading: string, entries: [label: string, value: string][]): string [scripts/orchestrate-agents.ts:154]
+               ↳ Build labeled multi-line log messages with consistent formatting.
+              └─> map(…)([label, value]: [label: string, value: string]): string [scripts/orchestrate-agents.ts:160]
+```
+
+**2. `main`** — depth 6 · orphan-root
+
+```text
+🚀 main(): void [scripts/sync-vscode-extensions.ts:153]
+   ↳ Script entrypoint that reads the source extension manifest and runs the selected mode.
+  └─> handleCheckMode(extensions: ExtensionsJson): void [scripts/sync-vscode-extensions.ts:117]
+     ↳ Verifies both devcontainer files are synchronized with .vscode/extensions.json.
+    └─> checkSync(…): boolean [scripts/sync-vscode-extensions.ts:65]
+       ↳ Compares one devcontainer's extension fields against the canonical extension lists.
+      └─> reportExtensionsDiff(recommendations: string[], devcontainerExtensions: string[]): void [scripts/sync-vscode-extensions.ts:174]
+         ↳ Reports differences for the auto-installed devcontainer extension list.
+        └─> showDifference(source: string[], target: string[]): void [scripts/sync-vscode-extensions.ts:214]
+           ↳ Prints missing and extra extension identifiers for a compared list.
+          └─> forEach(…)(item: string): void [scripts/sync-vscode-extensions.ts:220]
+```
+
+**3. `main`** — depth 4 · orphan-root
+
+```text
+🚀 main(): void [.devcontainer/scripts/sync-vscode-extensions.ts:154]
+  └─> checkSync(…): boolean [.devcontainer/scripts/sync-vscode-extensions.ts:70]
+    └─> showDifference(source: string[], target: string[]): void [.devcontainer/scripts/sync-vscode-extensions.ts:56]
+      └─> forEach(…)(item: string): void [.devcontainer/scripts/sync-vscode-extensions.ts:62]
+```
+
+<details>
+<summary>5 more call stacks</summary>
+
+**4. `codometerConfiguration`** — depth 3 · orphan-root
+
+```text
+🚀 codometerConfiguration(context: CodometerConfigurationContext): CodometerConfiguration [configuration/codometer.config.ts:238]
+   ↳ Everything codometer needs to know about this repository in particular.
+  └─> buildProjectConfiguration(…): CodometerConfiguration [configuration/codometer.config.ts:168]
+     ↳ What a run measuring one project measures, derived from where that project is.
+    └─> toConfiguredPath(systemPath: string): string [configuration/codometer.config.ts:81]
+       ↳ Rewrites a path in the separator globs and configured paths are written with.
+```
+
+**5. `main`** — depth 3 · orphan-root
+
+```text
+🚀 main(): void [.devcontainer/scripts/sync-vscode-settings.ts:96]
+  └─> checkSync(workspace: Settings, machine: Settings): boolean [.devcontainer/scripts/sync-vscode-settings.ts:48]
+    └─> forEach(…)(key: string): void [.devcontainer/scripts/sync-vscode-settings.ts:66]
+```
+
+**6. `anonymous`** — depth 3 · orphan-root
+
+```text
+🚀 anonymous(files: string[]): string[] [configuration/lint-staged.config.ts:113]
+  └─> getStagedFilesFlags(files: string[]): string [configuration/lint-staged.config.ts:45]
+     ↳ Renders staged paths as one workspace-relative `--files=` flag each. `--files` also accepts a single comma-separated…
+    └─> map(…)(file: string): string [configuration/lint-staged.config.ts:47]
+```
+
+**7. `bodyCoAuthoredOnly`** — depth 2 · orphan-root
+
+```text
+🚀 bodyCoAuthoredOnly(parsed: Commit): RuleOutcome [configuration/commitlint.config.ts:20]
+   ↳ Every non-empty body line must be a `Co-authored-by:` trailer.
+  └─> filter(…)(line: string): boolean [configuration/commitlint.config.ts:23]
+```
+
+**8. `footerCoAuthoredOnly`** — depth 2 · orphan-root
+
+```text
+🚀 footerCoAuthoredOnly(parsed: Commit): RuleOutcome [configuration/commitlint.config.ts:34]
+   ↳ Every non-empty footer line must be a `Co-authored-by:` trailer.
+  └─> filter(…)(line: string): boolean [configuration/commitlint.config.ts:37]
+```
+
+</details>
+
+### Module spread
+
+None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `anonymous` | 6 | `readCopilotArgumentValue`, `formatTimestamp`, `on(…)`, `on(…)`, `on(…)`, `on(…)` | `scripts/orchestrate-agents.ts:259` |
+| `main` | 5 | `formatTimestamp`, `loadPlan`, `resolveCopilotArguments`, `runSessions`, `logScriptCompletion` | `scripts/orchestrate-agents.ts:216` |
+| `codometerConfiguration` | 4 | `findWorkspaceDirectory`, `buildWorkspaceConfiguration`, `holdsProject`, `buildProjectConfiguration` | `configuration/codometer.config.ts:238` |
+
+<details>
+<summary>28 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `main` | 4 | `loadWorkspaceSettings`, `loadMachineSettings`, `checkSync`, `writeSync` | `.devcontainer/scripts/sync-vscode-settings.ts:96` |
+| `buildSessionFailureMessage` | 4 | `getTailLines`, `formatLabeledMessage`, `formatTimestamp`, `formatDuration` | `scripts/orchestrate-agents.ts:119` |
+| `on(…)` | 3 | `formatTimestamp`, `formatDuration`, `buildSessionFailureMessage` | `scripts/orchestrate-agents.ts:283` |
+| `checkSync` | 3 | `reportExtensionsDiff`, `reportRecommendationsDiff`, `reportUnwantedRecommendationsDiff` | `scripts/sync-vscode-extensions.ts:65` |
+| `showDifference` | 2 | `forEach(…)`, `forEach(…)` | `.devcontainer/scripts/sync-vscode-extensions.ts:56` |
+| `main` | 2 | `checkSync`, `writeSync` | `.devcontainer/scripts/sync-vscode-extensions.ts:154` |
+| `checkSync` | 2 | `forEach(…)`, `forEach(…)` | `.devcontainer/scripts/sync-vscode-settings.ts:48` |
+| `bodyCoAuthoredOnly` | 2 | `filter(…)`, `every(…)` | `configuration/commitlint.config.ts:20` |
+| `footerCoAuthoredOnly` | 2 | `filter(…)`, `every(…)` | `configuration/commitlint.config.ts:34` |
+| `loadPlan` | 2 | `catch(…)`, `then(…)` | `scripts/orchestrate-agents.ts:187` |
+| `logScriptCompletion` | 2 | `formatTimestamp`, `formatDuration` | `scripts/orchestrate-agents.ts:203` |
+| `runSessions` | 2 | `map(…)`, `runCopilotCommand` | `scripts/orchestrate-agents.ts:321` |
+| `handleWriteMode` | 2 | `checkSync`, `writeSync` | `scripts/sync-vscode-extensions.ts:136` |
+| `main` | 2 | `handleCheckMode`, `handleWriteMode` | `scripts/sync-vscode-extensions.ts:153` |
+| `showDifference` | 2 | `forEach(…)`, `forEach(…)` | `scripts/sync-vscode-extensions.ts:214` |
+| `buildProjectConfiguration` | 1 | `toConfiguredPath` | `configuration/codometer.config.ts:168` |
+| `checkSync` | 1 | `showDifference` | `.devcontainer/scripts/sync-vscode-extensions.ts:70` |
+| `getStagedFilesFlags` | 1 | `map(…)` | `configuration/lint-staged.config.ts:45` |
+| `anonymous` | 1 | `getStagedFilesFlags` | `configuration/lint-staged.config.ts:113` |
+| `buildProcessStartFailureMessage` | 1 | `formatLabeledMessage` | `scripts/orchestrate-agents.ts:106` |
+| `formatLabeledMessage` | 1 | `map(…)` | `scripts/orchestrate-agents.ts:154` |
+| `resolveCopilotArguments` | 1 | `map(…)` | `scripts/orchestrate-agents.ts:251` |
+| `runCopilotCommand` | 1 | `anonymous` | `scripts/orchestrate-agents.ts:258` |
+| `on(…)` | 1 | `buildProcessStartFailureMessage` | `scripts/orchestrate-agents.ts:312` |
+| `handleCheckMode` | 1 | `checkSync` | `scripts/sync-vscode-extensions.ts:117` |
+| `reportExtensionsDiff` | 1 | `showDifference` | `scripts/sync-vscode-extensions.ts:174` |
+| `reportRecommendationsDiff` | 1 | `showDifference` | `scripts/sync-vscode-extensions.ts:188` |
+| `reportUnwantedRecommendationsDiff` | 1 | `showDifference` | `scripts/sync-vscode-extensions.ts:202` |
+
+</details>
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

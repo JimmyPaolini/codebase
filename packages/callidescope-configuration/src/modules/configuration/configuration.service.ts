@@ -24,7 +24,6 @@ import {
   DEFAULT_MODULES_DIRECTORY,
   DEFAULT_OUTPUT_FORMAT,
   DEFAULT_PREVIEW_COUNT,
-  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
   DEFAULT_PROJECT_README_HEADING,
   DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_SPREAD_THRESHOLD,
@@ -167,6 +166,13 @@ export class ConfigurationService {
       : JSON.parse(configurationContent);
   }
 
+  /** Applies the default globs exempt from the module-spread finding. */
+  private resolveAllowSpreadFor(
+    allowSpreadFor: string[] | undefined,
+  ): string[] {
+    return allowSpreadFor ?? [...DEFAULT_ALLOW_SPREAD_FOR];
+  }
+
   /** Resolves a configuration path against the cwd, then the repository root. */
   private resolveConfigurationPath(configurationPath: string): string {
     const absolutePath = path.resolve(configurationPath);
@@ -211,6 +217,18 @@ export class ConfigurationService {
       includeOrphans: authored.includeOrphans ?? true,
       includeTests: authored.includeTests ?? false,
     };
+  }
+
+  /**
+   * Applies the directories no repository wants traced, on top of a
+   * configuration's own.
+   *
+   * Additive rather than a replacement: the defaults are directories no
+   * repository wants traced, so a configuration naming its own noise should
+   * not have to restate them to keep them out.
+   */
+  private resolveExclude(exclude: string[] | undefined): string[] {
+    return [...new Set([...DEFAULT_EXCLUDE_GLOBS, ...(exclude ?? [])])];
   }
 
   /** Applies defaults to the JSON output destination, if one was named. */
@@ -304,9 +322,6 @@ export class ConfigurationService {
 
     return {
       modulesDirectory: authored.modulesDirectory ?? DEFAULT_MODULES_DIRECTORY,
-      projectContainerDirectories: authored.projectContainerDirectories ?? [
-        ...DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
-      ],
       rootModuleSegment:
         authored.rootModuleSegment ?? DEFAULT_ROOT_MODULE_SEGMENT,
     };
@@ -361,19 +376,10 @@ export class ConfigurationService {
     configuration: CallidescopeConfiguration,
   ): ResolvedCallidescopeConfiguration {
     return {
-      allowSpreadFor: configuration.allowSpreadFor ?? [
-        ...DEFAULT_ALLOW_SPREAD_FOR,
-      ],
+      allowSpreadFor: this.resolveAllowSpreadFor(configuration.allowSpreadFor),
+      directories: configuration.directories ?? [],
       entryPoints: this.resolveEntryPoints(configuration.entryPoints),
-      // Additive rather than a replacement: the defaults are directories no
-      // repository wants traced, so a configuration naming its own noise should
-      // not have to restate them to keep them out.
-      exclude: [
-        ...new Set([
-          ...DEFAULT_EXCLUDE_GLOBS,
-          ...(configuration.exclude ?? []),
-        ]),
-      ],
+      exclude: this.resolveExclude(configuration.exclude),
       excludeFrom: configuration.excludeFrom ?? [],
       ignoreCallees: configuration.ignoreCallees ?? [],
       limits: this.resolveLimits(configuration.limits),
@@ -386,7 +392,6 @@ export class ConfigurationService {
         mermaid: this.resolveMarkdownDestination(configuration.output?.mermaid),
         projectReadmes: this.resolveProjectReadmes(configuration.output),
       },
-      projects: configuration.projects ?? [],
       workspaceStructure: this.resolveWorkspaceStructure(
         configuration.workspaceStructure,
       ),

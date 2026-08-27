@@ -82,7 +82,7 @@ MIT — see [LICENSE](../../LICENSE).
 
 ## 🔭 Callidescope
 
-Call stacks traced through `logger`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/logger`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |

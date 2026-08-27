@@ -439,7 +439,7 @@ See [LICENSE](../../LICENSE) for licensing information.
 
 ## 🔭 Callidescope
 
-Call stacks traced through `lexico-components`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/lexico-components`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -2247,7 +2247,7 @@ None.
 
 | Callable | Declared in | Called from | Callers |
 | --- | --- | --- | --- |
-| `cn` | `lexico-components:lib` | `lexico-components:components` | 219/219 |
+| `cn` | `packages/lexico-components:lib` | `packages/lexico-components:components` | 219/219 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

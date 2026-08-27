@@ -65,7 +65,7 @@ This project was generated from the [nestjs-command-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `meanderaw`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `applications/meanderaw`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -600,8 +600,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5846-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-386.14_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5850-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-386.95_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-8-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-54-3178c6?style=flat-square)
 
@@ -628,8 +628,8 @@ graph LR
 ![Constants](https://img.shields.io/badge/Constants-393-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-221-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-62-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-229-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-590-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-232-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-593-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -650,16 +650,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-106-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-26-7c3aed?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-115-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-28-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-8-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-72-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-54-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-79-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-58-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-7-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-8-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-21-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-96-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-103-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-5-ea580c?style=flat-square)
 
 ### YAML
