@@ -1,6 +1,17 @@
-# All four export targets
+# 🎯 All four export targets
 
 The same graph delivered at each of the four export targets, and the property that explains why `both` is named rather than inferred.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## `target: "none"`
 
@@ -42,3 +53,7 @@ The `json` destination is configured and the target is `markdown`, so nothing is
 ```text
 README.md
 ```
+
+## Next
+
+[markdown-modes](../markdown-modes/README.md).

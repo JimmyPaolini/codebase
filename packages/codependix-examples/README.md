@@ -26,11 +26,19 @@ nx run codependix-examples:examples:write    # regenerate them
 nx run codependix-examples:vitest            # assert every claim below
 ```
 
+Agents arriving from a codependix export should start at [AGENTS.md](AGENTS.md),
+which maps "codependix said X" to the example that explains X.
+
 ## The examples
 
 Each directory under [`examples/`](examples) is one example, carries its own
 `README.md`, and is readable on its own. The subject it graphs sits in that same
 directory.
+
+Every guide is **rendered**, so each one opens with the same `## Run it` command
+and closes with a `## Next` link — the reading order below is the same list the
+renderer chains them with, declared once in
+[`testing/render/reading-order.ts`](testing/render/reading-order.ts).
 
 ### The four levels
 
@@ -140,11 +148,12 @@ never run over input that exists precisely to look malformed.
 ## Layout
 
 ```text
-examples/<example>/           # One example: its rendered README.md, and the subject it graphs
-examples/<example>/<subject>  # The code being graphed — nested, and scoped out of the linters
-testing/render-examples.ts    # Regenerates every README.md above
-testing/render/               # One module per example, plain exported functions
-testing/*.unit.test.ts        # Asserts every claim those guides make
+examples/<example>/README.md         # The rendered guide, and any JSON export it commits
+examples/<example>/<subject>         # The code being graphed — nested, and scoped out of the linters
+testing/render-examples.ts           # The `examples` target: regenerates or checks every guide above
+testing/render/                      # One module per example, plus the reading order and emoji
+testing/examples.integration.test.ts # Asserts every claim those guides make
+testing/graphs.integration.test.ts   # Asserts the graphs the guides are rendered from
 ```
 
 The nesting is the rule the tooling reads: one level under `examples/` is the

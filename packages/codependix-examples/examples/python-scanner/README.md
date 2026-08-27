@@ -1,6 +1,17 @@
-# The whole surface of the Python statement scanner
+# 🐍 The whole surface of the Python statement scanner
 
 Python imports are scanned, not compiled — so every case the scanner handles, and every case it deliberately refuses, has a source file.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## The scanned graph
 
@@ -69,3 +80,7 @@ sibling.py
 `PYTHON_PROJECT_EXCLUDED_DIRECTORY_NAMES` names them.
 
 `.git`, `.mypy_cache`, `.pytest_cache`, `.ruff_cache`, `.venv`, `__pycache__`, and `node_modules` are walked past rather than into. None of them can be committed here — this repository's `.gitignore` claims every one — so the exclusion is proved by a unit test that creates a `__pycache__` directory at run time and checks it never reaches the graph.
+
+## Next
+
+[configuration-resolution](../configuration-resolution/README.md).

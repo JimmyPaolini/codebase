@@ -1,6 +1,17 @@
-# Both Markdown modes
+# 📝 Both Markdown modes
 
 An anchored splice into a named block inside a file somebody else is authoring, and a standalone file whose entire contents are the export.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## Anchored: spliced into a named block in an existing file
 
@@ -50,3 +61,7 @@ markdown: { anchor: "codependix-nx", path: "docs/graphs.md" } // → docs/graphs
 markdown: { path: "docs/atlas-service-graph.md" }            // → a standalone file
 markdown: {}                                                 // → refused
 ```
+
+## Next
+
+[auto-created-sections](../auto-created-sections/README.md).
