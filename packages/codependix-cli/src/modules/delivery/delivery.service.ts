@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { AnchorNotFoundError } from "../anchors/anchors.errors";
+import { AnchorNotFoundError } from "../anchors/anchors.constants";
 import { AnchorsService } from "../anchors/anchors.service";
 
 import { JSON_INDENTATION } from "./delivery.constants";

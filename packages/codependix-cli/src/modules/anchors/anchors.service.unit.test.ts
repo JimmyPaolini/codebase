@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { AnchorNotFoundError } from "./anchors.errors";
+import { AnchorNotFoundError } from "./anchors.constants";
 import { AnchorsService } from "./anchors.service";
 
 const README_WITH_ANCHOR = [

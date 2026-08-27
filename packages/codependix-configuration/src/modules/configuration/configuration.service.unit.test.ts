@@ -6,8 +6,10 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
-import { DEFAULT_INCLUDE_GLOBS } from "./configuration.constants";
-import { ConfigurationFileNotFoundError } from "./configuration.errors";
+import {
+  ConfigurationFileNotFoundError,
+  DEFAULT_INCLUDE_GLOBS,
+} from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 
 /** Writes a JSON configuration holding whatever the caller passes. */

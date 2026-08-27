@@ -9,6 +9,7 @@ import { createJiti } from "jiti";
 import {
   codependixConfigurationSchema,
   CONFIGURATION_FILE_NAMES,
+  ConfigurationFileNotFoundError,
   DEFAULT_EXPORT_TARGET,
   DEFAULT_INCLUDE_GLOBS,
   DEFAULT_MARKDOWN_PATH,
@@ -16,7 +17,6 @@ import {
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
-import { ConfigurationFileNotFoundError } from "./configuration.errors";
 
 import type {
   CodependixConfiguration,
