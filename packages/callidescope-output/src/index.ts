@@ -5,8 +5,10 @@ export type {
   BuildReportArguments,
   SyncJsonArguments,
 } from "./modules/output-json/output-json.types";
-export { FOREIGN_ANCHOR_PATTERN } from "./modules/output-markdown/output-markdown.constants";
-export { MissingMarkdownPathError } from "./modules/output-markdown/output-markdown.errors";
+export {
+  FOREIGN_ANCHOR_PATTERN,
+  MissingMarkdownPathError,
+} from "./modules/output-markdown/output-markdown.constants";
 export { OutputMarkdownModule } from "./modules/output-markdown/output-markdown.module";
 export { OutputMarkdownService } from "./modules/output-markdown/output-markdown.service";
 export type {

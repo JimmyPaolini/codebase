@@ -10,7 +10,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { CompilerHostService } from "./compiler-host.service";
-import { ProgramConfigurationError } from "./program.errors";
+import { ProgramConfigurationError } from "./program.constants";
 import { ProgramService } from "./program.service";
 
 import type { WorkspaceProject } from "../workspace/workspace.types";
