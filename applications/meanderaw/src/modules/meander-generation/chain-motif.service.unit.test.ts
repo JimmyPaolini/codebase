@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { rightmostX } from "../../../testing/path-data";
+import { rightmostX, splitTrace } from "../../../testing/path-data";
 
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
@@ -137,12 +137,14 @@ describe(ChainMotifService, () => {
 
   describe.each([
     ["plain", undefined],
+    ["edge", { name: "edge" } as const],
     ["flip", { name: "flip" } as const],
+    ["edge-flip", { name: "edge-flip" } as const],
   ])("last unit with %s", (_label, modifier) => {
     const rowsValues = [4, 5, 6, 7, 8];
 
     it.each(rowsValues)(
-      "already ends its border flush with its own chain, needing no clipping, at %i rows",
+      "ends its border flush with the rightmost point its own chain reaches, at %i rows",
       (rows) => {
         const geometry = gridGeometryService.compute(rows);
         const unitIndex = 5;
@@ -153,80 +155,36 @@ describe(ChainMotifService, () => {
             unitIndex * snakeMotifService.unitWidth(geometry, rows, modifier),
           ...(modifier ? { modifier } : {}),
         };
-        const fullPath = service.path(geometry, {
-          isLastUnit: true,
-          rows,
-          unitIndex,
-          ...(modifier ? { modifier } : {}),
-        });
-        const border = snakeMotifService.borderSegment(geometry, options);
-        const trace = fullPath.slice(0, fullPath.length - border.length);
+        const { border, trace } = splitTrace(
+          service.path(geometry, {
+            isLastUnit: true,
+            rows,
+            unitIndex,
+            ...(modifier ? { modifier } : {}),
+          }),
+          snakeMotifService.borderSegment(geometry, options),
+        );
 
         expect(rightmostX(border)).toBe(rightmostX(trace));
       },
     );
-  });
-
-  /**
-   * The `edge` family widens the unit pitch by one grid level beyond the
-   * chain's own span, so every unit's border reaches a level past where its
-   * chain stops — for an interior unit that level is the channel separating
-   * it from the next unit, and for the last unit it is a trailing stub with
-   * no next unit behind it. Locked here as the behavior that actually ships:
-   * it is the same shape as the defect issue #338 clips out of `mosaic`,
-   * `swirl`, and `whirl`, and that issue scopes `snake` and `chain` out and
-   * requires them unchanged.
-   */
-  describe.each([
-    ["edge", { name: "edge" } as const],
-    ["edge-flip", { name: "edge-flip" } as const],
-  ])("last unit with %s", (_label, modifier) => {
-    const rowsValues = [4, 5, 6, 7, 8];
 
     it.each(rowsValues)(
-      "still reaches one grid unit past its own chain, at %i rows",
+      "reaches the full unit pitch for an interior unit, staying contiguous with the next one, at %i rows",
       (rows) => {
         const geometry = gridGeometryService.compute(rows);
         const unitIndex = 5;
+        const unitWidth = snakeMotifService.unitWidth(geometry, rows, modifier);
         const options = {
-          isLastUnit: true,
-          modifier,
+          isLastUnit: false,
           rows,
-          xOffset:
-            unitIndex * snakeMotifService.unitWidth(geometry, rows, modifier),
+          xOffset: unitIndex * unitWidth,
+          ...(modifier ? { modifier } : {}),
         };
-        const fullPath = service.path(geometry, {
-          isLastUnit: true,
-          modifier,
-          rows,
-          unitIndex,
-        });
-        const border = snakeMotifService.borderSegment(geometry, options);
-        const trace = fullPath.slice(0, fullPath.length - border.length);
 
-        expect(rightmostX(border)).toBeCloseTo(
-          rightmostX(trace) + geometry.unit,
-          4,
-        );
-      },
-    );
-  });
-
-  describe.each([
-    ["plain", undefined],
-    ["edge", { name: "edge" } as const],
-    ["flip", { name: "flip" } as const],
-    ["edge-flip", { name: "edge-flip" } as const],
-  ])("last unit with %s", (_label, modifier) => {
-    it.each([4, 5, 6, 7, 8])(
-      "draws the same path whether or not it is the pattern's last, at %i rows",
-      (rows) => {
-        const geometry = gridGeometryService.compute(rows);
-        const unit = { rows, unitIndex: 5, ...(modifier ? { modifier } : {}) };
-
-        expect(service.path(geometry, { ...unit, isLastUnit: true })).toBe(
-          service.path(geometry, { ...unit, isLastUnit: false }),
-        );
+        expect(
+          rightmostX(snakeMotifService.borderSegment(geometry, options)),
+        ).toBeCloseTo(geometry.offset + (unitIndex + 1) * unitWidth, 4);
       },
     );
   });
