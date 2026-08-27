@@ -25,7 +25,7 @@ The first result is what `--check` reports for an export nothing has moved. The 
 
 ## A command line naming neither mode
 
-`--check` and `--write` are mutually exclusive and one is required. A command line naming neither prints `USAGE_MESSAGE` and exits non-zero rather than silently defaulting to a write nobody asked for.
+`--check` and `--write` are mutually exclusive and one is required. At an interactive terminal a command line naming neither is asked which was meant; anywhere a prompt cannot be shown — CI, a non-interactive shell, or an explicit `--no-interactive` — it prints `USAGE_MESSAGE` and exits non-zero rather than silently defaulting to a write nobody asked for.
 
 ```text
 💡 Usage: codependix --check (or codependix --write)

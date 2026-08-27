@@ -29,3 +29,5 @@ export type {
   ResolvedCodependixMarkdownOutput,
   ResolveForProjectArguments,
 } from "./modules/configuration/configuration.types";
+export { InputModule } from "./modules/input/input.module";
+export { InputService } from "./modules/input/input.service";

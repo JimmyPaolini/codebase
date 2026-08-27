@@ -93,9 +93,11 @@ has to do the same.
 
 ## A rejected command line
 
-`--check` and `--write` are mutually exclusive and one is required. A command
-line naming neither, or both, is rejected before anything is read — nothing is
-inferred and no default write happens. Pick one.
+`--check` and `--write` are mutually exclusive and one is required. Naming
+both is rejected before anything is read. Naming neither is rejected too
+wherever a prompt cannot be shown — a non-interactive shell, CI, or an
+explicit `--no-interactive` — and asked about only at an interactive terminal.
+Nothing is inferred and no default write happens. Pick one.
 
 ## A `--write` that produced no files
 

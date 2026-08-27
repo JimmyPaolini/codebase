@@ -1,4 +1,4 @@
-import { ConfigurationModule } from "@codependix/configuration";
+import { ConfigurationModule, InputModule } from "@codependix/configuration";
 import { TypescriptModule } from "@codependix/imports";
 import { ModuleGraphModule, NestjsProjectModule } from "@codependix/nestjs";
 import { NeighborhoodModule, WorkspaceGraphModule } from "@codependix/nx";
@@ -17,6 +17,7 @@ import { CodependixService } from "./codependix.service";
   imports: [
     ConfigurationModule,
     DeliveryModule,
+    InputModule,
     ModuleGraphModule,
     NeighborhoodModule,
     NestjsProjectModule,

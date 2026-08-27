@@ -9,6 +9,8 @@ import {
   ConfigurationService,
   DEFAULT_EXPORT_TARGET,
   DEFAULT_MARKDOWN_PATH,
+  InputModule,
+  InputService,
   UnknownConfigurationFileTypeError,
 } from "./index.js";
 
@@ -23,5 +25,7 @@ describe("codependix-configuration index", () => {
     expect(CODEPENDIX_EXPORT_TARGETS).toBeDefined();
     expect(DEFAULT_EXPORT_TARGET).toBeDefined();
     expect(DEFAULT_MARKDOWN_PATH).toBeDefined();
+    expect(InputModule).toBeDefined();
+    expect(InputService).toBeDefined();
   });
 });

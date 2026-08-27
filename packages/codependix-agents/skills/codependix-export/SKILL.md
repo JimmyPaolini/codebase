@@ -48,15 +48,23 @@ The `codependix-configure` skill covers all three.
 | `--write` | Writes every configured export |
 
 `--check` and `--write` are mutually exclusive, and **one of them is
-required**. A command line naming neither, or both, is rejected outright
-before anything is read — no mode is inferred and no default write happens.
+required**. A command line naming both is rejected outright before anything
+is read. A command line naming neither is _asked_ which was meant — but only
+at an interactive terminal outside CI, and never when `--no-interactive` is
+given; anywhere else it is rejected the same way. No mode is ever inferred and
+no default write happens.
 
-Two options qualify whichever mode was picked:
+**An agent should always name the mode explicitly.** A non-interactive run
+that omits it exits non-zero having done nothing, which reads like a broken
+tool rather than a missing flag.
+
+Three options qualify whichever mode was picked:
 
 | Option | Meaning |
 | ------ | ------- |
 | `--config [config]` | Path to a `codependix.config.ts`. Searched for upward from the directory when omitted |
 | `-d, --directory [directory]` | Workspace root whose Nx project graph this run reads. Defaults to the working directory |
+| `--no-interactive` | Never prompt for a missing run mode. Redundant once a mode is named |
 
 ```bash
 codependix --write

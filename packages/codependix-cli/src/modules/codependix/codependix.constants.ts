@@ -1,5 +1,19 @@
 // ♟️ Constants
 
+import type { CodependixRunMode } from "../delivery/delivery.types";
+
+/**
+ * The two run modes a `codependix` command line resolves to.
+ *
+ * Named as a list rather than only as the `CodependixRunMode` union so a
+ * command line naming neither flag can offer them as prompt choices, and
+ * `satisfies` keeps the list and the union from drifting apart.
+ */
+export const CODEPENDIX_RUN_MODES = [
+  "check",
+  "write",
+] as const satisfies readonly CodependixRunMode[];
+
 /** Graph type `codependix-imports` builds. */
 export const IMPORTS_GRAPH_TYPE = "imports";
 

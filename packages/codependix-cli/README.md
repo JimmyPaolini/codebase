@@ -31,10 +31,14 @@ for this repository's own.
 | `--write` | Writes every configured export |
 | `--config [config]` | Path to a `codependix.config.ts`. Searched for upward from `--directory` when omitted |
 | `-d, --directory [directory]` | Workspace root whose Nx project graph this run reads. Defaults to the working directory |
+| `--no-interactive` | Never prompt for a missing run mode |
 
-`--check` and `--write` are mutually exclusive, and one of them is required —
-a command line naming neither or both is rejected outright, the same rule
-`codometer`'s `--check`/`--write` split follows.
+`--check` and `--write` are mutually exclusive, and one of them is required.
+Naming both is rejected outright — nothing selects a run mode when two are
+named. Naming neither asks which was meant, but only at an interactive
+terminal outside CI; anywhere a prompt would hang, and whenever
+`--no-interactive` is given, it is rejected instead. No mode is ever inferred,
+which is the rule `codometer`'s `--check`/`--write` split follows too.
 
 ```bash
 nx run codebase:codependix:check

@@ -1,3 +1,4 @@
+import { InputService } from "@codependix/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -13,11 +14,16 @@ import type { CodependixCommandOptions } from "./codependix.types";
 describe(CodependixCommand, () => {
   let command: CodependixCommand;
   let codependixService: CodependixService;
+  let inputService: InputService;
   let loggerService: LoggerService;
 
   /** Builds a command whose collaborators are freshly mocked. */
   function buildCommand(): CodependixCommand {
-    return new CodependixCommand(codependixService, loggerService);
+    return new CodependixCommand(
+      codependixService,
+      inputService,
+      loggerService,
+    );
   }
 
   /** Runs a freshly built command with the given options. */
@@ -33,6 +39,7 @@ describe(CodependixCommand, () => {
           provide: CodependixService,
           useValue: createMock<CodependixService>(),
         },
+        { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
@@ -43,11 +50,24 @@ describe(CodependixCommand, () => {
   beforeEach(() => {
     process.exitCode = 0;
     codependixService = createMock<CodependixService>();
+    inputService = createMock<InputService>();
     loggerService = createMock<LoggerService>();
     vi.mocked(codependixService.run).mockResolvedValue({
       failures: [],
       results: [],
     });
+    // Non-interactive by default, so a test that means to exercise prompting
+    // has to say so — an accidental prompt would otherwise pass silently.
+    vi.mocked(inputService.canPrompt).mockReturnValue(false);
+    vi.mocked(inputService.parseFlagOption).mockImplementation(
+      (value) => value ?? true,
+    );
+    vi.mocked(inputService.parseOptionalOption).mockImplementation(
+      (value) => value,
+    );
+    vi.mocked(inputService.parsePathOption).mockImplementation(
+      (value) => value ?? process.cwd(),
+    );
   });
 
   it("is defined", () => {
@@ -62,6 +82,7 @@ describe(CodependixCommand, () => {
           provide: CodependixService,
           useValue: createMock<CodependixService>(),
         },
+        { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
@@ -76,6 +97,56 @@ describe(CodependixCommand, () => {
 
     expect(process.exitCode).toBe(1);
     expect(codependixService.run).not.toHaveBeenCalled();
+  });
+
+  it("prompts for the mode when neither flag was given and the session can be asked", async () => {
+    vi.mocked(inputService.canPrompt).mockReturnValue(true);
+    vi.mocked(inputService.promptForSelect).mockResolvedValue("check");
+
+    await run({});
+
+    expect(process.exitCode).toBe(0);
+    expect(codependixService.run).toHaveBeenCalledWith(
+      { check: true },
+      process.cwd(),
+    );
+  });
+
+  it("runs the write mode a prompt resolved to", async () => {
+    vi.mocked(inputService.canPrompt).mockReturnValue(true);
+    vi.mocked(inputService.promptForSelect).mockResolvedValue("write");
+
+    await run({});
+
+    expect(codependixService.run).toHaveBeenCalledWith(
+      { write: true },
+      process.cwd(),
+    );
+  });
+
+  it("fails and logs when the mode prompt was cancelled", async () => {
+    vi.mocked(inputService.canPrompt).mockReturnValue(true);
+    vi.mocked(inputService.promptForSelect).mockRejectedValue(
+      new Error("Prompt did not resolve to one of: check, write."),
+    );
+
+    await run({});
+
+    expect(process.exitCode).toBe(1);
+    expect(codependixService.run).not.toHaveBeenCalled();
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "💥 Failed running codependix",
+      undefined,
+      { reason: "Prompt did not resolve to one of: check, write." },
+    );
+  });
+
+  it("never prompts when --no-interactive was given", async () => {
+    await run({ interactive: false });
+
+    expect(process.exitCode).toBe(1);
+    expect(inputService.canPrompt).toHaveBeenCalledWith(false);
+    expect(inputService.promptForSelect).not.toHaveBeenCalled();
   });
 
   it("rejects a command line naming both --check and --write", async () => {
@@ -191,12 +262,44 @@ describe(CodependixCommand, () => {
     );
   });
 
-  it("parses options from the command line", () => {
-    expect(command.parseCheck(undefined)).toBe(true);
-    expect(command.parseConfig("codependix.config.ts")).toBe(
-      "codependix.config.ts",
+  // Each of these asserts the hand-off, not the parsed value: the rules
+  // themselves are the input service's, and are covered by its own tests.
+  // Sentinels rather than realistic answers, so a parser reintroduced inline
+  // here fails rather than coincidentally agreeing with the stub.
+
+  it("delegates --check to the shared input service", () => {
+    vi.mocked(inputService.parseFlagOption).mockReturnValue(false);
+
+    expect(buildCommand().parseCheck(undefined)).toBe(false);
+    expect(inputService.parseFlagOption).toHaveBeenCalledWith(undefined);
+  });
+
+  it("delegates --write to the shared input service", () => {
+    vi.mocked(inputService.parseFlagOption).mockReturnValue(false);
+
+    expect(buildCommand().parseWrite(undefined)).toBe(false);
+    expect(inputService.parseFlagOption).toHaveBeenCalledWith(undefined);
+  });
+
+  it("delegates --config to the shared input service", () => {
+    vi.mocked(inputService.parseOptionalOption).mockReturnValue("parsed");
+
+    expect(buildCommand().parseConfig("  codependix.config.ts  ")).toBe(
+      "parsed",
     );
-    expect(command.parseDirectory(undefined)).toBe(process.cwd());
-    expect(command.parseWrite(undefined)).toBe(true);
+    expect(inputService.parseOptionalOption).toHaveBeenCalledWith(
+      "  codependix.config.ts  ",
+    );
+  });
+
+  it("delegates --directory to the shared input service", () => {
+    vi.mocked(inputService.parsePathOption).mockReturnValue("parsed");
+
+    expect(buildCommand().parseDirectory(undefined)).toBe("parsed");
+    expect(inputService.parsePathOption).toHaveBeenCalledWith(undefined);
+  });
+
+  it("reads --no-interactive as the opt-out it is", () => {
+    expect(buildCommand().parseInteractive()).toBe(false);
   });
 });

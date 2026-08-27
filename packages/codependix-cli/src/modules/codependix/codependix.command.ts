@@ -1,11 +1,12 @@
 import path from "node:path";
 
+import { InputService } from "@codependix/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { USAGE_MESSAGE } from "./codependix.constants";
+import { CODEPENDIX_RUN_MODES, USAGE_MESSAGE } from "./codependix.constants";
 import { CodependixService } from "./codependix.service";
 
 import type { GraphRunOutcome } from "../delivery/delivery.types";
@@ -28,6 +29,7 @@ export class CodependixCommand extends CommandRunner {
 
   constructor(
     private readonly codependixService: CodependixService,
+    private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -67,29 +69,44 @@ export class CodependixCommand extends CommandRunner {
   }
 
   /**
-   * Reads exactly one run mode from the command line, or reports why not.
+   * Returns the options with exactly one run mode set, or nothing.
    *
-   * A command line naming neither flag, or both, has nothing to select a run
-   * mode with — mirroring how `codometer`'s `--check`/`--write` split is kept
-   * from silently defaulting to a write nobody asked for.
+   * A command line naming both flags is rejected outright — there is no
+   * sensible reading of "check and also write". A command line naming
+   * neither is asked which it meant, when the session can be asked; it is
+   * rejected otherwise, mirroring how `codometer`'s `--check`/`--write`
+   * split is kept from silently defaulting to a write nobody asked for.
    */
-  private selectMode(options: CodependixCommandOptions): boolean {
+  private async resolveOptions(
+    options: CodependixCommandOptions,
+  ): Promise<CodependixCommandOptions | undefined> {
     if (options.check === true && options.write === true) {
       this.logger.error("🕸️ Rejected the command line", undefined, {
         reason: "Only one of --check or --write may be given",
       });
-      return false;
+      return undefined;
     }
 
-    if (options.check !== true && options.write !== true) {
+    if (options.check === true || options.write === true) {
+      return options;
+    }
+
+    if (!this.inputService.canPrompt(options.interactive)) {
       this.logger.error("🕸️ Rejected the command line", undefined, {
         reason: "Either --check or --write is required",
         usage: USAGE_MESSAGE,
       });
-      return false;
+      return undefined;
     }
 
-    return true;
+    const mode = await this.inputService.promptForSelect({
+      choices: CODEPENDIX_RUN_MODES,
+      message: "Check every configured export, or write them?",
+    });
+
+    return mode === "check"
+      ? { ...options, check: true }
+      : { ...options, write: true };
   }
 
   // 🌎 Public Methods
@@ -100,7 +117,7 @@ export class CodependixCommand extends CommandRunner {
     flags: "--check",
   })
   public parseCheck(value: boolean | undefined): boolean {
-    return value ?? true;
+    return this.inputService.parseFlagOption(value);
   }
 
   /** Parses the optional configuration path from command-line input. */
@@ -109,7 +126,7 @@ export class CodependixCommand extends CommandRunner {
     flags: "--config [config]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return value;
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Parses the directory whose Nx workspace this run reads. */
@@ -118,7 +135,16 @@ export class CodependixCommand extends CommandRunner {
     flags: "-d, --directory [directory]",
   })
   public parseDirectory(value: string | undefined): string {
-    return value ?? process.cwd();
+    return this.inputService.parsePathOption(value);
+  }
+
+  /** Parses the opt-out from interactive prompting. */
+  @Option({
+    description: "Never prompt for missing values",
+    flags: "--no-interactive",
+  })
+  public parseInteractive(): boolean {
+    return false;
   }
 
   /** Parses the `--write` flag from command-line input. */
@@ -127,7 +153,7 @@ export class CodependixCommand extends CommandRunner {
     flags: "--write",
   })
   public parseWrite(value: boolean | undefined): boolean {
-    return value ?? true;
+    return this.inputService.parseFlagOption(value);
   }
 
   /**
@@ -143,16 +169,19 @@ export class CodependixCommand extends CommandRunner {
     _passedParameters: string[],
     options: CodependixCommandOptions = {},
   ): Promise<void> {
-    if (!this.selectMode(options)) {
-      process.exitCode = 1;
-      return;
-    }
-
-    const workingDirectory = path.resolve(options.directory ?? process.cwd());
-
     try {
+      const resolvedOptions = await this.resolveOptions(options);
+
+      if (resolvedOptions === undefined) {
+        process.exitCode = 1;
+        return;
+      }
+
+      const workingDirectory = path.resolve(
+        resolvedOptions.directory ?? process.cwd(),
+      );
       const outcome = await this.codependixService.run(
-        options,
+        resolvedOptions,
         workingDirectory,
       );
 

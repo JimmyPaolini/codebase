@@ -15,6 +15,8 @@ export interface CodependixCommandOptions {
   check?: boolean | undefined;
   config?: string | undefined;
   directory?: string | undefined;
+  /** `false` only when `--no-interactive` was given; see `InputService`. */
+  interactive?: boolean | undefined;
   write?: boolean | undefined;
 }
 

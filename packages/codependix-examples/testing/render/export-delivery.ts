@@ -223,7 +223,7 @@ function buildModesDocument(): ExampleDocument {
       {
         body: fence(USAGE_MESSAGE),
         heading: "A command line naming neither mode",
-        note: "`--check` and `--write` are mutually exclusive and one is required. A command line naming neither prints `USAGE_MESSAGE` and exits non-zero rather than silently defaulting to a write nobody asked for.",
+        note: "`--check` and `--write` are mutually exclusive and one is required. At an interactive terminal a command line naming neither is asked which was meant; anywhere a prompt cannot be shown — CI, a non-interactive shell, or an explicit `--no-interactive` — it prints `USAGE_MESSAGE` and exits non-zero rather than silently defaulting to a write nobody asked for.",
       },
       {
         body: fence("Only one of --check or --write may be given"),
