@@ -804,7 +804,6 @@ graph LR
 ```mermaid
 flowchart LR
   ChangesModule
-  CodometerModule
   ConfigModule([ConfigModule])
   ConfigurationModule
   CssModule
@@ -813,6 +812,7 @@ flowchart LR
   DiscoveryModule
   DocumentsModule
   HclModule
+  InputModule
   JsonModule
   JupyterModule
   LanguagesModule
@@ -820,6 +820,7 @@ flowchart LR
   LoggerModule([LoggerModule])
   MainModule
   MarkdownModule
+  MeasureModule
   PythonModule
   RenderModule
   ReportModule
@@ -833,19 +834,11 @@ flowchart LR
   YamlModule
   ChangesModule --> ChangesModule
   ChangesModule --> DocumentsModule
+  ChangesModule --> InputModule
   ChangesModule --> RenderModule
-  CodometerModule --> ConfigurationModule
-  CodometerModule --> CustomizationModule
-  CodometerModule --> DeliveryModule
-  CodometerModule --> DiscoveryModule
-  CodometerModule --> LanguagesModule
-  CodometerModule --> LimitsModule
-  CodometerModule --> ReportModule
-  CodometerModule --> RunPlanModule
-  CodometerModule --> SizeModule
-  CodometerModule --> TargetsModule
   ConfigurationModule --> ConfigurationModule
   ConfigurationModule --> DiscoveryModule
+  ConfigurationModule --> InputModule
   DeliveryModule --> JsonModule
   DeliveryModule --> MarkdownModule
   JupyterModule --> JsonModule
@@ -863,15 +856,27 @@ flowchart LR
   LanguagesModule --> TypescriptModule
   LanguagesModule --> YamlModule
   MainModule --> ChangesModule
-  MainModule --> CodometerModule
   MainModule --> ConfigurationModule
   MainModule --> ConfigurationModule
   MainModule --> CustomizationModule
   MainModule --> DiscoveryModule
   MainModule --> DiscoveryModule
+  MainModule --> InputModule
   MainModule --> JsonModule
   MainModule --> LanguagesModule
   MainModule --> MarkdownModule
+  MainModule --> MeasureModule
+  MeasureModule --> ConfigurationModule
+  MeasureModule --> CustomizationModule
+  MeasureModule --> DeliveryModule
+  MeasureModule --> DiscoveryModule
+  MeasureModule --> InputModule
+  MeasureModule --> LanguagesModule
+  MeasureModule --> LimitsModule
+  MeasureModule --> ReportModule
+  MeasureModule --> RunPlanModule
+  MeasureModule --> SizeModule
+  MeasureModule --> TargetsModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -896,15 +901,6 @@ graph LR
   file_src_modules_changes_changes_constants_ts["src/modules/changes/changes.constants.ts"]
   file_src_modules_changes_changes_module_ts["src/modules/changes/changes.module.ts"]
   file_src_modules_changes_changes_types_ts["src/modules/changes/changes.types.ts"]
-  file_src_modules_codometer_codometer_command_integration_test_ts["src/modules/codometer/codometer.command.integration.test.ts"]
-  file_src_modules_codometer_codometer_command_ts["src/modules/codometer/codometer.command.ts"]
-  file_src_modules_codometer_codometer_command_unit_test_ts["src/modules/codometer/codometer.command.unit.test.ts"]
-  file_src_modules_codometer_codometer_constants_ts["src/modules/codometer/codometer.constants.ts"]
-  file_src_modules_codometer_codometer_module_ts["src/modules/codometer/codometer.module.ts"]
-  file_src_modules_codometer_codometer_service_ts["src/modules/codometer/codometer.service.ts"]
-  file_src_modules_codometer_codometer_service_unit_test_ts["src/modules/codometer/codometer.service.unit.test.ts"]
-  file_src_modules_codometer_codometer_types_ts["src/modules/codometer/codometer.types.ts"]
-  file_src_modules_codometer_documentation_measurement_types_ts["src/modules/codometer/documentation-measurement.types.ts"]
   file_src_modules_configuration_configuration_command_ts["src/modules/configuration/configuration.command.ts"]
   file_src_modules_configuration_configuration_command_unit_test_ts["src/modules/configuration/configuration.command.unit.test.ts"]
   file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
@@ -919,9 +915,7 @@ graph LR
   file_src_modules_delivery_delivery_service_ts["src/modules/delivery/delivery.service.ts"]
   file_src_modules_delivery_delivery_service_unit_test_ts["src/modules/delivery/delivery.service.unit.test.ts"]
   file_src_modules_delivery_delivery_types_ts["src/modules/delivery/delivery.types.ts"]
-  file_src_modules_limits_empty_target_errors_ts["src/modules/limits/empty-target.errors.ts"]
   file_src_modules_limits_limits_constants_ts["src/modules/limits/limits.constants.ts"]
-  file_src_modules_limits_limits_errors_ts["src/modules/limits/limits.errors.ts"]
   file_src_modules_limits_limits_module_ts["src/modules/limits/limits.module.ts"]
   file_src_modules_limits_limits_service_integration_test_ts["src/modules/limits/limits.service.integration.test.ts"]
   file_src_modules_limits_limits_service_ts["src/modules/limits/limits.service.ts"]
@@ -929,6 +923,14 @@ graph LR
   file_src_modules_limits_limits_types_ts["src/modules/limits/limits.types.ts"]
   file_src_modules_limits_metric_index_service_ts["src/modules/limits/metric-index.service.ts"]
   file_src_modules_limits_metric_index_service_unit_test_ts["src/modules/limits/metric-index.service.unit.test.ts"]
+  file_src_modules_measure_measure_command_integration_test_ts["src/modules/measure/measure.command.integration.test.ts"]
+  file_src_modules_measure_measure_command_ts["src/modules/measure/measure.command.ts"]
+  file_src_modules_measure_measure_command_unit_test_ts["src/modules/measure/measure.command.unit.test.ts"]
+  file_src_modules_measure_measure_constants_ts["src/modules/measure/measure.constants.ts"]
+  file_src_modules_measure_measure_module_ts["src/modules/measure/measure.module.ts"]
+  file_src_modules_measure_measure_service_ts["src/modules/measure/measure.service.ts"]
+  file_src_modules_measure_measure_service_unit_test_ts["src/modules/measure/measure.service.unit.test.ts"]
+  file_src_modules_measure_measure_types_ts["src/modules/measure/measure.types.ts"]
   file_src_modules_report_report_constants_ts["src/modules/report/report.constants.ts"]
   file_src_modules_report_report_module_ts["src/modules/report/report.module.ts"]
   file_src_modules_report_report_service_ts["src/modules/report/report.service.ts"]
@@ -951,52 +953,14 @@ graph LR
   file_src_main_end_to_end_test_ts --> file_testing_fixture_tree_ts
   file_src_main_module_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_modules_changes_changes_module_ts
-  file_src_main_module_ts --> file_src_modules_codometer_codometer_module_ts
   file_src_main_module_ts --> file_src_modules_configuration_configuration_module_ts
+  file_src_main_module_ts --> file_src_modules_measure_measure_module_ts
   file_src_main_ts --> file_src_main_module_ts
   file_src_main_ts --> file_src_main_utilities_ts
   file_src_main_utilities_unit_test_ts --> file_src_main_utilities_ts
   file_src_modules_changes_changes_command_ts --> file_src_modules_changes_changes_types_ts
   file_src_modules_changes_changes_command_unit_test_ts --> file_src_modules_changes_changes_command_ts
   file_src_modules_changes_changes_module_ts --> file_src_modules_changes_changes_command_ts
-  file_src_modules_codometer_codometer_command_integration_test_ts --> file_src_main_module_ts
-  file_src_modules_codometer_codometer_command_integration_test_ts --> file_src_modules_codometer_codometer_command_ts
-  file_src_modules_codometer_codometer_command_integration_test_ts --> file_src_modules_report_report_types_ts
-  file_src_modules_codometer_codometer_command_integration_test_ts --> file_testing_fixture_tree_ts
-  file_src_modules_codometer_codometer_command_ts --> file_src_modules_codometer_codometer_service_ts
-  file_src_modules_codometer_codometer_command_ts --> file_src_modules_codometer_codometer_types_ts
-  file_src_modules_codometer_codometer_command_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_codometer_codometer_command_ts --> file_src_modules_report_report_service_ts
-  file_src_modules_codometer_codometer_command_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_codometer_codometer_command_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_codometer_codometer_command_ts
-  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_codometer_codometer_service_ts
-  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_codometer_codometer_types_ts
-  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_codometer_documentation_measurement_types_ts
-  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_report_report_service_ts
-  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_codometer_codometer_command_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_codometer_codometer_module_ts --> file_src_modules_codometer_codometer_command_ts
-  file_src_modules_codometer_codometer_module_ts --> file_src_modules_codometer_codometer_service_ts
-  file_src_modules_codometer_codometer_module_ts --> file_src_modules_delivery_delivery_module_ts
-  file_src_modules_codometer_codometer_module_ts --> file_src_modules_limits_limits_module_ts
-  file_src_modules_codometer_codometer_module_ts --> file_src_modules_report_report_module_ts
-  file_src_modules_codometer_codometer_module_ts --> file_src_modules_run_plan_run_plan_module_ts
-  file_src_modules_codometer_codometer_service_ts --> file_src_modules_codometer_codometer_types_ts
-  file_src_modules_codometer_codometer_service_ts --> file_src_modules_codometer_documentation_measurement_types_ts
-  file_src_modules_codometer_codometer_service_ts --> file_src_modules_limits_limits_service_ts
-  file_src_modules_codometer_codometer_service_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_codometer_codometer_service_ts --> file_src_modules_limits_metric_index_service_ts
-  file_src_modules_codometer_codometer_service_ts --> file_src_modules_report_report_types_ts
-  file_src_modules_codometer_codometer_service_unit_test_ts --> file_src_modules_codometer_codometer_service_ts
-  file_src_modules_codometer_codometer_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
-  file_src_modules_codometer_codometer_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
-  file_src_modules_codometer_codometer_service_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_codometer_codometer_types_ts --> file_src_modules_codometer_documentation_measurement_types_ts
-  file_src_modules_codometer_codometer_types_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_codometer_codometer_types_ts --> file_src_modules_report_report_types_ts
   file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_types_ts
@@ -1015,16 +979,15 @@ graph LR
   file_src_modules_configuration_render_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_render_configuration_service_unit_test_ts --> file_src_modules_configuration_render_configuration_service_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_delivery_delivery_service_ts --> file_src_modules_codometer_codometer_types_ts
-  file_src_modules_delivery_delivery_service_ts --> file_src_modules_codometer_documentation_measurement_types_ts
+  file_src_modules_delivery_delivery_service_ts --> file_src_modules_delivery_delivery_constants_ts
   file_src_modules_delivery_delivery_service_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_delivery_delivery_service_ts --> file_src_modules_measure_measure_types_ts
   file_src_modules_delivery_delivery_service_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_codometer_codometer_types_ts
-  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_codometer_documentation_measurement_types_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_measure_measure_types_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_delivery_delivery_types_ts --> file_src_modules_codometer_codometer_types_ts
+  file_src_modules_delivery_delivery_types_ts --> file_src_modules_measure_measure_types_ts
   file_src_modules_delivery_delivery_types_ts --> file_src_modules_report_report_types_ts
   file_src_modules_delivery_delivery_types_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_limits_limits_module_ts --> file_src_modules_limits_limits_service_ts
@@ -1034,9 +997,7 @@ graph LR
   file_src_modules_limits_limits_service_integration_test_ts --> file_src_modules_limits_metric_index_service_ts
   file_src_modules_limits_limits_service_integration_test_ts --> file_testing_fixture_tree_ts
   file_src_modules_limits_limits_service_integration_test_ts --> file_testing_mocks_ts
-  file_src_modules_limits_limits_service_ts --> file_src_modules_limits_empty_target_errors_ts
   file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_constants_ts
-  file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_errors_ts
   file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
   file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
@@ -1047,24 +1008,59 @@ graph LR
   file_src_modules_limits_metric_index_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_limits_metric_index_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
   file_src_modules_limits_metric_index_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_measure_measure_command_integration_test_ts --> file_src_main_module_ts
+  file_src_modules_measure_measure_command_integration_test_ts --> file_src_modules_measure_measure_command_ts
+  file_src_modules_measure_measure_command_integration_test_ts --> file_src_modules_report_report_types_ts
+  file_src_modules_measure_measure_command_integration_test_ts --> file_testing_fixture_tree_ts
+  file_src_modules_measure_measure_command_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_measure_measure_command_ts --> file_src_modules_measure_measure_service_ts
+  file_src_modules_measure_measure_command_ts --> file_src_modules_measure_measure_types_ts
+  file_src_modules_measure_measure_command_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_measure_measure_command_ts --> file_src_modules_run_plan_run_plan_constants_ts
+  file_src_modules_measure_measure_command_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_measure_measure_command_ts --> file_src_modules_run_plan_run_plan_types_ts
+  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_measure_measure_command_ts
+  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_measure_measure_service_ts
+  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_measure_measure_types_ts
+  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_measure_measure_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_delivery_delivery_module_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_limits_limits_module_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_measure_measure_command_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_measure_measure_service_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_report_report_module_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_run_plan_run_plan_module_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_limits_metric_index_service_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_measure_measure_types_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_measure_measure_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_measure_measure_types_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_report_report_module_ts --> file_src_modules_report_report_service_ts
   file_src_modules_report_report_service_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_report_report_service_ts --> file_src_modules_report_report_constants_ts
   file_src_modules_report_report_service_ts --> file_src_modules_report_report_types_ts
-  file_src_modules_report_report_service_unit_test_ts --> file_src_modules_codometer_documentation_measurement_types_ts
   file_src_modules_report_report_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_report_report_service_unit_test_ts --> file_src_modules_measure_measure_types_ts
   file_src_modules_report_report_service_unit_test_ts --> file_src_modules_report_report_service_ts
   file_src_modules_report_report_service_unit_test_ts --> file_src_modules_report_report_types_ts
-  file_src_modules_report_report_types_ts --> file_src_modules_codometer_documentation_measurement_types_ts
   file_src_modules_report_report_types_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_report_report_types_ts --> file_src_modules_measure_measure_types_ts
   file_src_modules_run_plan_run_plan_module_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_codometer_codometer_types_ts
+  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_measure_measure_types_ts
   file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_codometer_codometer_types_ts
+  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_measure_measure_types_ts
   file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
   file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_run_plan_run_plan_types_ts --> file_src_modules_codometer_codometer_types_ts
+  file_src_modules_run_plan_run_plan_types_ts --> file_src_modules_measure_measure_types_ts
+  file_src_modules_run_plan_run_plan_types_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_repl_ts --> file_src_main_module_ts
   file_testing_mocks_ts --> file_src_modules_report_report_types_ts
 ```
@@ -1076,19 +1072,19 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8310-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-268.45_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8494-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-275.02_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-10-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-65-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-62-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-33.82_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-34.89_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-64-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-38-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-61-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-37-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-37-db2777?style=flat-square)
@@ -1101,15 +1097,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-16-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-22-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-21-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-331-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-129-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-373-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-87-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-294-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-301-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-89-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-449-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-942-475569?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-339-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-131-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-385-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-85-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-290-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-304-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-93-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-440-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-950-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -1224,13 +1220,12 @@ graph LR
 ![Service Files](https://img.shields.io/badge/Service_Files-8-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-3-16a34a?style=flat-square)
 ![Constants Files](https://img.shields.io/badge/Constants_Files-7-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-8-db2777?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-7-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-1-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-2-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-13-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-2-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-13-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-2-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 
 ### Jupyter
 

@@ -407,14 +407,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3635-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-132.04_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3640-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-132.16_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-42-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.71_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.83_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -436,7 +436,7 @@ graph LR
 ![Methods](https://img.shields.io/badge/Methods-46-15803d?style=flat-square)
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-161-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-75-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-102-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-103-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-155-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-47-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-203-64748b?style=flat-square)
@@ -557,11 +557,10 @@ graph LR
 ![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-6-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-3-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-10-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-10-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 
 ### Jupyter
 

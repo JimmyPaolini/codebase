@@ -253,14 +253,14 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3272-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-158.22_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3281-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-159.17_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-27-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-57-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Corpus Size](https://img.shields.io/badge/Corpus_Size-8.32_kB_gzip-6b7280?style=flat-square)
+![Corpus Size](https://img.shields.io/badge/Corpus_Size-8.37_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -285,8 +285,8 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ![Constants](https://img.shields.io/badge/Constants-167-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-74-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-34-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-223-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1065-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-225-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1069-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -426,14 +426,14 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-12-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-847-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-854-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-12-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-62-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-1-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-112-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-113-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-9-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-28-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-2-4ade80?style=flat-square)
@@ -442,7 +442,7 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ![Links](https://img.shields.io/badge/Links-58-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-34-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-244-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-251-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-1-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-1-a16207?style=flat-square)
 <!-- SAMPLE_STATISTICS_END -->

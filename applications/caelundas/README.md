@@ -3240,11 +3240,10 @@ graph LR
 ![Constants Files](https://img.shields.io/badge/Constants_Files-26-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-26-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-2-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
-![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-74-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-10-0284c7?style=flat-square)
-![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-74-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-10-7c3aed?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 
 ### Jupyter
 
