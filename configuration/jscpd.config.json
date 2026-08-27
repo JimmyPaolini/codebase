@@ -15,6 +15,8 @@
     "**/output/**",
     "**/packages/codometer-examples/examples/compiled/**",
     "**/packages/codometer-examples/examples/corpus/**",
+    "**/packages/conformetry-examples/examples/*/instances/**",
+    "**/packages/conformetry-examples/examples/*/templates/**",
     "**/pnpm-lock.yaml",
     "**/src/**/*.constants.ts",
     "**/src/**/*.types.ts",

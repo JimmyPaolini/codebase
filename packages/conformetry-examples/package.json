@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "@conformetry/configuration": "workspace:*",
+    "@conformetry/core": "workspace:*",
+    "@conformetry/generation": "workspace:*",
+    "@conformetry/nx": "workspace:*",
+    "@conformetry/validation": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "@nestjs/core": "catalog:",
+    "reflect-metadata": "catalog:"
+  },
+  "devDependencies": {
+    "@nx/eslint-plugin": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "name": "@conformetry/examples",
+  "private": true,
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "version": "0.0.1"
+}

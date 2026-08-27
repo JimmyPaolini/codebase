@@ -315,9 +315,15 @@ An explicit input of the same name always wins over the derived variant. Full
 mustache is available — sections, inverted sections, partials — with HTML
 escaping disabled so substituted values cannot corrupt source code.
 
-> **Supply every placeholder a template uses.** Mustache renders an unknown
-> placeholder as an empty string rather than leaving the token visible, so a
-> missing substitution produces a silent hole rather than an error.
+> **Supply every placeholder a template uses.** An interpolated placeholder
+> nobody supplied fails the run with `MissingSubstitutionError`, naming the
+> placeholder and the template file. Mustache would otherwise render it as an
+> empty string, and since validation renders exactly as generation does, both
+> sides would lose the same value and report nothing.
+>
+> Sections are the exception, and are how a template asks for something
+> optional: `{{#owner}}Owner: {{owner}}{{/owner}}` renders nothing when `owner`
+> is absent, rather than refusing.
 
 ## Validators
 

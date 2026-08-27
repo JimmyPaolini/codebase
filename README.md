@@ -93,6 +93,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
   - **[conformetry-cli](packages/conformetry-cli)** - Command-line host that expands globs, prompts for inputs, and runs generation and validation
   - **[conformetry-configuration](packages/conformetry-configuration)** - Configuration loading, template discovery, and generator input resolution
   - **[conformetry-core](packages/conformetry-core)** - Shared error types, language validator contracts, and finding reporting
+  - **[conformetry-examples](packages/conformetry-examples)** - Eleven runnable examples of the toolchain, each with its own configuration, template, instances, and guide, executed by CI so the guides cannot rot
   - **[conformetry-files](packages/conformetry-files)** - Checks that every file a template declares exists, whatever its extension
   - **[conformetry-generation](packages/conformetry-generation)** - Mustache template rendering and scaffold file generation
   - **[conformetry-json](packages/conformetry-json)** - JSON and JSONC validator parsing through `jsonc-parser`

@@ -1,0 +1,7 @@
+{
+  "camel": "{{nameCamelCase}}",
+  "kebab": "{{nameKebabCase}}",
+  "owner": "{{owner}}",
+  "pascal": "{{namePascalCase}}",
+  "snake": "{{nameSnakeCase}}"
+}

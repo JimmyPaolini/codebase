@@ -29,6 +29,12 @@ yarn.lock
 **/applications/lexico-ingestion/src/modules/library/library.constants.ts
 **/library.json
 
+# 👔 Conformetry example fixtures
+# Templates hold mustache where identifiers belong; instances are drifted on
+# purpose. Each example's own conformetry.config.ts is formatted normally.
+**/packages/conformetry-examples/examples/*/instances/**
+**/packages/conformetry-examples/examples/*/templates/**
+
 # 🧪 Coverage
 **/coverage
 .nyc_output

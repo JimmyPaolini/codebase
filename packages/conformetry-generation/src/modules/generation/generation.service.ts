@@ -118,6 +118,7 @@ export class GenerationService {
       const instancePath = path.join(
         args.instanceDirectoryPath,
         this.renderingService.renderPath({
+          subject: templatePath,
           substitutions: args.substitutions,
           templatePath: entry.name,
         }),
@@ -161,6 +162,7 @@ export class GenerationService {
     await args.filesystem.writeFile(
       args.instancePath,
       this.renderingService.renderContent({
+        subject: args.templatePath,
         substitutions: args.substitutions,
         templateContent,
       }),
