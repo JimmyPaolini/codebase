@@ -12,7 +12,8 @@ instances, and an Nx target that runs it. Nothing here requires reading anything
 else here first.
 
 ```bash
-pnpm exec nx run conformetry-examples:hello-template
+pnpm exec nx run conformetry-examples:examples          # every example, gated on what its guide promises
+pnpm exec nx run conformetry-examples:hello-template    # one example, and watch its output
 ```
 
 Agents arriving from a conformance report should start at
@@ -228,7 +229,30 @@ collision is answered rather than suppressed:
 | ESLint, `oxfmt`, `tsc` | A template file holds mustache where an identifier belongs, and is not parseable as the language its extension names. | `examples/*/templates/**` and `examples/*/instances/**` are excluded; each example's `conformetry.config.ts` and `embed.ts` are **not**, and are linted and type-checked like any other source |
 | Project structure | `examples/` is not one of the fixed set of project subfolders. | Declared in `configuration/codebase-structure.json` |
 | `codometer` `sizeLimit` | Nothing here is built or shipped, so there is no compiled output to size. | A `codometer` target with no `PROJECT_LIMITS` entry, the same as the two `*-agents` packages |
-| Project tags | A `framework:*` tag would have the Nx host resolve this repository's tag-scoped instance globs inside this package, sweeping the drifted fixtures into its own conformance run. | `language:typescript`, `name:conformetry-examples`, `type:package`, and nothing else |
+| Project tags | `framework:nestjs` is accurate — the embedding example boots a real Nest container — and it is safe because every tag-scoped instance glob in `configuration/conformetry.config.ts` is under `src/modules/`, which this package does not have. Carrying the tag under a `src/modules/` layout would sweep the drifted fixtures into this repository's own conformance run. | `framework:nestjs`, `language:typescript`, `name:conformetry-examples`, `type:package` — and no `src/`, which is what keeps the tag free to be accurate |
+
+## Layout
+
+```text
+conformetry-examples/
+├── examples/
+│   ├── tsconfig.json                   what lets Vite transform the NestJS instances
+│   └── <name>/
+│       ├── README.md                   the guide for this example
+│       ├── conformetry.config.ts       its own generators and instance globs
+│       ├── templates/                  what the generator renders
+│       └── instances/                  what it rendered, or what drifted from it
+└── testing/
+    └── examples.integration.test.ts    every example, run and asserted
+
+```
+
+Every example is self-contained: its own configuration, its own template folder,
+its own instances, and an Nx target that runs it. Nothing here requires reading
+anything else here first.
+
+This package has no `src/`, and that is what keeps `framework:nestjs` safe to
+declare — see [the table above](#conventions-this-package-deliberately-breaks).
 
 ## Test
 

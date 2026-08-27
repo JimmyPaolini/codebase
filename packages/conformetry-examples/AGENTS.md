@@ -13,7 +13,7 @@ The three conformetry skills own the workflow —
 This file is where those skills point when a behavior needs to be _seen_ rather
 than described.
 
-## Running an example
+## Run one
 
 ```bash
 pnpm exec nx run conformetry-examples:<example-directory-name>
@@ -21,6 +21,16 @@ pnpm exec nx run conformetry-examples:<example-directory-name>
 
 The target name is the directory name. Some exit non-zero on purpose; the table
 below says which.
+
+To run all eleven and have every exit code and quoted line checked:
+
+```bash
+pnpm exec nx run conformetry-examples:examples
+```
+
+Four of the per-example targets exit non-zero by design, which is why running
+them as a plain batch could never be the gate — the aggregate checks each
+against the outcome its own guide promises.
 
 ## A report said X. Which example explains X?
 
@@ -108,11 +118,66 @@ which runs the commands each example's Nx target runs and checks both the exit
 code and the text the guide quotes. If a guide and the tool ever disagree, that
 suite fails.
 
-## Do not edit an example to make it pass
+## Layout
+
+```text
+conformetry-examples/
+├── examples/
+│   ├── tsconfig.json                   what lets Vite transform the NestJS instances
+│   └── <name>/
+│       ├── README.md                   the guide for this example
+│       ├── conformetry.config.ts       its own generators and instance globs
+│       ├── templates/                  what the generator renders
+│       └── instances/                  what it rendered, or what drifted from it
+└── testing/
+    └── examples.integration.test.ts    every example, run and asserted
+```
+
+- Every example is self-contained. Nothing here requires reading anything else
+  here first, which is the whole point of reproducing a behavior in this package
+  rather than in a real project.
+- **There is no `src/`**, and that is load-bearing: every tag-scoped instance
+  glob in `configuration/conformetry.config.ts` is under `src/modules/`, so the
+  absence of that directory is what keeps this repository's own conformance run
+  from reaching the drifted fixtures — even though the package carries
+  `framework:nestjs`, which is accurate because the embedding example boots a
+  real Nest container.
+- `examples/tsconfig.json` exists for the NestJS instances. Vite resolves a
+  file's compiler options through the nearest tsconfig whose `include` claims it,
+  so without it the decorators reach Node untransformed.
+
+## Adding an example
+
+- One directory under `examples/`, named for the question it answers.
+- Its own `conformetry.config.ts`, `templates/`, and `instances/`. Do not reach
+  into another example's fixtures — self-containment is the feature.
+- A `README.md`: `# <emoji> Title`, then `## Run it` with the target and the
+  output it prints, then the explanation, then `## Next` linking to the next
+  example.
+- An Nx target named for the directory, in `project.json`. The suite reads the
+  command out of that target, so the target is the single definition of how the
+  example runs.
+- A row in the `## The examples` table in [README.md](README.md), a row in the
+  exit-code table above, and an entry in `EXPECTATIONS` in
+  `testing/examples.integration.test.ts`. An example added without an
+  expectation fails the suite rather than going unchecked.
+
+## Do not fix a deliberately broken example
 
 Five instances in `drift-catalogue`, one in `structural-not-textual`, and one in
 `ambiguous-attribution` are **broken on purpose**. Repairing them destroys the
 example and fails the suite that expects the failure. If a conformance run in
 this repository reports them, the instance globs are wrong, not the fixtures —
-this package carries no `framework:*` tag precisely so that the repository's own
-tag-scoped globs cannot reach them.
+this package has no `src/` precisely so that the repository's own tag-scoped
+globs cannot reach them.
+
+`failure-modes` additionally holds a template asking for a value nobody supplies,
+which is refused rather than rendered as a hole. That refusal is the example.
+
+## Key files
+
+| File | What it is |
+| ---- | ---------- |
+| [README.md](README.md) | The guided tour, and the `## The examples` index |
+| [project.json](project.json) | One target per example, and the `examples` aggregate |
+| [testing/examples.integration.test.ts](testing/examples.integration.test.ts) | Every example's expected exit code and quoted output |
