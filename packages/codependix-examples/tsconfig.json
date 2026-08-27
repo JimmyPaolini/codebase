@@ -16,5 +16,10 @@
   },
   "exclude": ["dist", "examples", "node_modules", "output"],
   "extends": "../../configuration/tsconfig.json",
-  "include": ["eslint.config.ts", "testing/**/*.ts", "vitest.config.ts"]
+  "include": [
+    "codometer.config.ts",
+    "eslint.config.ts",
+    "testing/**/*.ts",
+    "vitest.config.ts"
+  ]
 }

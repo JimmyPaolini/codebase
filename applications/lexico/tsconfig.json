@@ -31,6 +31,7 @@
   "exclude": [],
   "extends": "../../configuration/tsconfig.json",
   "include": [
+    "codometer.config.ts",
     "eslint.config.ts",
     "src/**/*.js",
     "src/**/*.jsx",

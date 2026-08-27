@@ -353,7 +353,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | Measure | Value |
 | --- | --- |
 | Callables | 69 |
-| Files | 32 |
+| Files | 33 |
 | Calls traced | 53 |
 | Call stacks | 14 |
 | Deepest stack | 8 |
