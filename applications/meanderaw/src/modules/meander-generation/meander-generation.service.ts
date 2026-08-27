@@ -9,13 +9,13 @@ import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
-import { InvalidModifierError } from "./invalid-modifier.errors";
-import { InvalidPeriodError } from "./invalid-period.errors";
-import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
-import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
-import { InvalidRowsError } from "./invalid-rows.errors";
 import {
   COMPATIBLE_MODIFIERS,
+  InvalidModifierError,
+  InvalidPeriodError,
+  InvalidRepeatCountCycleError,
+  InvalidRepeatCountError,
+  InvalidRowsError,
   MAXIMUM_VALUE,
   MINIMUM_PERIOD,
   MINIMUM_REPEAT_COUNT,

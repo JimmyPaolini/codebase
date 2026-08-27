@@ -16,13 +16,13 @@ import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
-import { InvalidPeriodError } from "./invalid-period.errors";
-import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
-import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
-import { InvalidRowsError } from "./invalid-rows.errors";
 import {
   COMPATIBLE_MODIFIERS,
   DEFAULT_REPEAT_COUNT,
+  InvalidPeriodError,
+  InvalidRepeatCountCycleError,
+  InvalidRepeatCountError,
+  InvalidRowsError,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,

@@ -128,3 +128,61 @@ export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   swirl: 4,
   whirl: 4,
 };
+
+// 🚨 Errors
+
+/** Thrown when a modifier's `name` isn't listed as compatible with the requested type. */
+export class InvalidModifierError extends Error {
+  constructor(
+    modifierName: string,
+    type: string,
+    compatibleModifierNames: readonly string[],
+  ) {
+    super(
+      `modifier "${modifierName}" is not compatible with type "${type}"; compatible modifiers: ${
+        compatibleModifierNames.length > 0
+          ? compatibleModifierNames.join(", ")
+          : "none"
+      }`,
+    );
+    this.name = "InvalidModifierError";
+  }
+}
+
+/** Thrown when `alternated`'s `period` falls outside the shared bounds, or `repeatCount` isn't a whole multiple of it. */
+export class InvalidPeriodError extends Error {
+  constructor(period: number, minimum: number, maximum: number) {
+    super(
+      `period must be between ${minimum} and ${maximum}, received ${period}`,
+    );
+    this.name = "InvalidPeriodError";
+  }
+}
+
+/** Thrown when `repeatCount` isn't a whole multiple of a modifier's rotation cycle length. */
+export class InvalidRepeatCountCycleError extends Error {
+  constructor(repeatCount: number, cycleLength: number, modifierName: string) {
+    super(
+      `repeatCount must be a multiple of ${cycleLength} for modifier "${modifierName}", received ${repeatCount}`,
+    );
+    this.name = "InvalidRepeatCountCycleError";
+  }
+}
+
+/** Thrown when `repeatCount` falls outside the shared minimum and maximum. */
+export class InvalidRepeatCountError extends Error {
+  constructor(repeatCount: number, minimum: number, maximum: number) {
+    super(
+      `repeatCount must be between ${minimum} and ${maximum}, received ${repeatCount}`,
+    );
+    this.name = "InvalidRepeatCountError";
+  }
+}
+
+/** Thrown when `rows` falls outside a type's structural minimum or the shared maximum. */
+export class InvalidRowsError extends Error {
+  constructor(rows: number, minimum: number, maximum: number) {
+    super(`rows must be between ${minimum} and ${maximum}, received ${rows}`);
+    this.name = "InvalidRowsError";
+  }
+}

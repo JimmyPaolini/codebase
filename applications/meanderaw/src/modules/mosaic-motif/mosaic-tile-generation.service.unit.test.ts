@@ -2,8 +2,10 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { InvalidRepeatCountError } from "../meander-generation/invalid-repeat-count.errors";
-import { InvalidRowsError } from "../meander-generation/invalid-rows.errors";
+import {
+  InvalidRepeatCountError,
+  InvalidRowsError,
+} from "../meander-generation/meander-generation.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
