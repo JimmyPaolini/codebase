@@ -8,7 +8,7 @@ export default {
   targets: [
     {
       ...compiledJavaScriptTarget,
-      include: ["dist/applications/meanderaw/**/*.js"],
+      include: ["dist/**/*.js"],
     },
   ],
 };

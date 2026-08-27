@@ -28,9 +28,26 @@
       "types": "./src/index.ts"
     }
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "main": "./src/index.ts",
   "name": "@codebase/lexico-entities",
   "private": true,
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "default": "./dist/src/index.js",
+        "import": "./dist/src/index.js",
+        "require": "./dist/src/index.js",
+        "types": "./dist/src/index.d.ts"
+      }
+    },
+    "main": "./dist/src/index.js",
+    "types": "./dist/src/index.d.ts"
+  },
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

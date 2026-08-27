@@ -18,7 +18,8 @@
       "options": {
         "command": "vite build",
         "cwd": "applications/lexico"
-      }
+      },
+      "outputs": ["{projectRoot}/dist"]
     },
     "codometer": {},
     "dependency-cruiser": {},

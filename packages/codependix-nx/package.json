@@ -19,12 +19,26 @@
     ".": "./src/index.ts",
     "./package.json": "./package.json"
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "main": "src/index.ts",
   "name": "@codependix/nx",
   "private": true,
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "exports": {
+      ".": {
+        "default": "./dist/src/index.js",
+        "types": "./dist/src/index.d.ts"
+      },
+      "./package.json": "./package.json"
+    },
+    "main": "./dist/src/index.js",
+    "registry": "https://registry.npmjs.org",
+    "types": "./dist/src/index.d.ts"
   },
   "type": "module",
   "typeCoverage": {

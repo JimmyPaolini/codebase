@@ -8,7 +8,7 @@ export default {
   targets: [
     {
       ...compiledJavaScriptTarget,
-      include: ["dist/packages/codometer-discovery/**/*.js"],
+      include: ["dist/**/*.js"],
     },
   ],
 };

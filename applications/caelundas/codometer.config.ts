@@ -8,7 +8,7 @@ export default {
   targets: [
     {
       ...compiledJavaScriptTarget,
-      include: ["dist/applications/caelundas/**/*.js"],
+      include: ["dist/**/*.js"],
     },
   ],
 };

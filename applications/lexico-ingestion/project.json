@@ -22,8 +22,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "applications/lexico-ingestion/src/main.ts",
-        "outputPath": "dist/applications/lexico-ingestion",
+        "outputPath": "applications/lexico-ingestion/dist",
         "tsConfig": "applications/lexico-ingestion/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

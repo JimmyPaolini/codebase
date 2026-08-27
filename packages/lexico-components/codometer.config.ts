@@ -46,8 +46,7 @@ export default {
     {
       analyses: ["size"],
       compression: "gzip",
-      directory: "../..",
-      include: ["dist/packages/lexico-components/**/*.js"],
+      include: ["dist/**/*.js"],
       name: "Library bundle",
     },
   ],

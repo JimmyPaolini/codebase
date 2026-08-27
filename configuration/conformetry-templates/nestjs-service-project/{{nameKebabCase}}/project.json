@@ -21,8 +21,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "{{type}}/{{nameKebabCase}}/src/index.ts",
-        "outputPath": "dist/{{type}}/{{nameKebabCase}}",
+        "outputPath": "{{type}}/{{nameKebabCase}}/dist",
         "tsConfig": "{{type}}/{{nameKebabCase}}/tsconfig.build.json"
       },
       "outputs": [

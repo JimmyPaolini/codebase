@@ -8,7 +8,7 @@ export default {
   targets: [
     {
       ...compiledJavaScriptTarget,
-      include: ["dist/packages/lexico-entities/**/*.js"],
+      include: ["dist/**/*.js"],
     },
   ],
 };

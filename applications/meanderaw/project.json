@@ -22,8 +22,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "applications/meanderaw/src/main.ts",
-        "outputPath": "dist/applications/meanderaw",
+        "outputPath": "applications/meanderaw/dist",
         "tsConfig": "applications/meanderaw/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
