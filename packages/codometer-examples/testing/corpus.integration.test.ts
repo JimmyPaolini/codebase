@@ -109,7 +109,7 @@ describe("the sample corpus and the counts its guides quote", () => {
       // the corpus, so the codebase target never sees them and only the two
       // JavaScript samples inside the corpus are counted. What happens when
       // they are copied into the corpus's ignored `generated/` folder is
-      // asserted in examples.end-to-end.test.ts.
+      // asserted in examples.integration.test.ts.
       expect(readMetric(report, "codebase", "javascript.files")).toBe(2);
     });
 

@@ -7,6 +7,24 @@
       "skillPath": "skills/engineering/ask-matt/SKILL.md",
       "computedHash": "b2e8ef5ffc2f142022c1e1e1bba68073f0821356a8e1cf1b23670f61d13fe50b"
     },
+    "callidescope-configure": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/callidescope-agents/skills/callidescope-configure/SKILL.md",
+      "computedHash": "34b5327387c5f0dced6c6058e4bfeba986aff3e1025e741c0465aebac3e55806"
+    },
+    "callidescope-trace": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/callidescope-agents/skills/callidescope-trace/SKILL.md",
+      "computedHash": "826e2404a5d9bd1d799b49671669868354efe47ebe7e241758999f0c032ad8c7"
+    },
+    "callidescope-triage": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/callidescope-agents/skills/callidescope-triage/SKILL.md",
+      "computedHash": "48325462f3841af550850fefee3463f8d20c5d21bed9e260accfbec9ddb474a7"
+    },
     "code-review": {
       "source": "mattpocock/skills",
       "sourceType": "github",

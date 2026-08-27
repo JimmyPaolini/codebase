@@ -1,35 +1,25 @@
-# @codometer/examples
+# ⏲️ Codometer Examples — Agent Guide
 
 A sample corpus with known contents, and one runnable example per thing
 codometer does. Read [README.md](README.md) for the guided tour; this file is
 the lookup table for when codometer has already said something and you need to
 know what to do about it.
 
-## What lives here
+## Run one
 
-- `examples/corpus/` — twenty-seven samples across twelve languages, plus the
-  `.gitignore` that hides its stand-in build directory. This is the thing being
-  measured. Its counts are stated in the README and asserted by the tests.
-- `examples/compiled/` — two stand-ins for build output, sitting beside the corpus
-  rather than inside it, which is where build output really lives. The target
-  examples reach them with a `directory` hop.
-- `examples/<name>/*.config.ts` — one configuration per behavior. Every one is
-  runnable against the corpus and carries its own explanation in a doc comment
-  above the configuration object.
-- `codometer.config.ts` — this package's own configuration, and itself the
-  configuration-discovery example: a factory that answers differently for the
-  package than for the folders beneath it, replacing the workspace root's
-  outright.
-- `testing/` — the harness that drives the real command line, and the two
-  end-to-end tests that assert every number the guides quote. They are
-  end-to-end rather than integration because each one spawns the real command
-  line, which bootstraps Nest and reaches a Python interpreter.
+```bash
+nx run codometer-examples:examples     # every example, gated on the exit code its guide promises
+nx run codometer-examples:vitest       # every number and refusal message the guides quote
+```
 
-There is no `src/`. Every line of TypeScript here is either a configuration the
-tool reads or a test that runs it, which is why the package declares no
-`dependency-cruiser`, `oxlint`, or `build` target.
+One example on its own, which is what a guide's `## Run it` section names:
 
-## Codometer said this — open this
+```bash
+cd packages/codometer-examples
+codometer --directory examples/corpus --config examples/<name>/<file>.config.ts --check limits
+```
+
+## Codometer said X — open this example
 
 | It said | It means | Open |
 | ------- | -------- | ---- |
@@ -61,6 +51,66 @@ tool reads or a test that runs it, which is why the package declares no
   TypeScript-specific: `files`, `interfaces`, `enums`, `decorators`,
   `docComments`, `genericDeclarations`.
 
+## Layout
+
+```text
+codometer-examples/
+├── codometer.config.ts                what measures this package, and its first example
+├── examples/
+│   ├── corpus/                        the fixture every example measures
+│   ├── compiled/                      stand-ins for build output, beside the corpus
+│   └── <name>/
+│       ├── README.md                  the guide for this example
+│       └── *.config.ts                one configuration per variant
+└── testing/
+    ├── codometer.ts                   the command-line driver every test goes through
+    ├── run-examples.ts                the `examples` target's runner
+    ├── corpus.integration.test.ts     the corpus contents the guides quote
+    └── examples.integration.test.ts   every example, asserted against its guide
+```
+
+- `examples/corpus/` and `examples/compiled/` are **fixtures, not examples**.
+  They carry no `README.md` and must not be given one: a markdown file inside
+  the corpus would move the very counts every guide quotes, and the `Corpus`
+  target is gated on its gzipped size.
+- Every other directory under `examples/` is one example, carries its own
+  `README.md`, and is readable on its own.
+- There is no `src/`. Every line of TypeScript here is either a configuration
+  the tool reads or a test that runs it, which is why the package declares no
+  `dependency-cruiser`, `oxlint`, or `build` target.
+
+## Adding an example
+
+- One folder under `examples/`, named for the behavior rather than numbered.
+- One configuration file per variant, named for what it varies
+  (`brotli.config.ts`, `reordered.config.ts`).
+- A `README.md` in that folder: `# <emoji> Title`, then `## Run it` with the
+  exact command and the exit code it produces, then the explanation, then
+  `## Next` linking to the next example. `nx run codometer-examples:examples`
+  fails on an example with no `README.md`.
+- A row in the `## The examples` index table in [README.md](README.md), and a
+  `## Next` link from the example before it in that order.
+- An entry in `EXPECTED_EXIT_CODES` in `testing/run-examples.ts`. A
+  configuration with no entry fails the `examples` target.
+- The assertion goes in `testing/examples.integration.test.ts` in the same
+  change. An example with no test is a claim, not an example.
+- If the example writes anything, run it through `withCorpusCopy` — the
+  committed corpus must never be written to, or every other test's counts move.
+
+## Do not fix a deliberately broken example
+
+Ten of this package's configurations are meant to fail, and six of them exit
+non-zero on purpose. `limits/unprefixed.config.ts` writes a path that binds to nothing,
+`limits/ambiguous.config.ts` writes a path that reads two ways,
+`limits/empty-target-limited.config.ts` limits a target that matches nothing,
+and `python/unreachable-interpreter.config.ts` names an interpreter that is not
+installed. Each one is the reproduction of a refusal a reader will hit, and
+"fixing" it deletes the only place that refusal is demonstrated.
+
+The exit code each one produces is recorded in `EXPECTED_EXIT_CODES` and in the
+guide beside it. If a run disagrees with both, the tool changed — that is the
+regression this package exists to catch.
+
 ## Changing the corpus
 
 The corpus is a fixture with published numbers, so a change to it is a change to
@@ -76,22 +126,19 @@ the guides:
 Never update a guide's number by hand without re-running. The numbers are the
 only reason this package exists.
 
-`examples/corpus/generated/` is empty in the repository and must stay that way. Nothing
-ignored may be committed here: a file that is both tracked and ignored makes
-`git add` fail, and lint-staged re-stages every file it touches, so one such
-file breaks the pre-commit hook on every later commit — not only the one that
-introduced it. The two compiled samples live in `examples/compiled/`, beside the corpus
-and tracked normally, and the ignore demonstration copies them in at run time.
+`examples/corpus/generated/` is empty in the repository and must stay that way.
+Nothing ignored may be committed here: a file that is both tracked and ignored
+makes `git add` fail, and lint-staged re-stages every file it touches, so one
+such file breaks the pre-commit hook on every later commit — not only the one
+that introduced it. The two compiled samples live in `examples/compiled/`,
+beside the corpus and tracked normally, and the ignore demonstration copies them
+in at run time.
 
-## Adding an example
+## Key files
 
-- One folder under `examples/`, named for the behavior rather than numbered.
-- One configuration file per variant, named for what it varies
-  (`brotli.config.ts`, `reordered.config.ts`).
-- The explanation goes in a doc comment above the configuration object,
-  including the exact command that runs it. The README links to the file; the
-  file explains itself.
-- Add the assertion to `testing/examples.end-to-end.test.ts` in the same
-  change. An example with no test is a claim, not an example.
-- If the example writes anything, run it through `withCorpusCopy` — the
-  committed corpus must never be written to, or every other test's counts move.
+| File | What it is |
+| ---- | ---------- |
+| [README.md](README.md) | The guided tour, and the `## The examples` index |
+| [codometer.config.ts](codometer.config.ts) | What measures this package, and the discovery example |
+| [testing/codometer.ts](testing/codometer.ts) | The command-line seam every test and the runner go through |
+| [testing/run-examples.ts](testing/run-examples.ts) | The `examples` target, and the completeness checks |

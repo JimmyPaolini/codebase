@@ -48,6 +48,9 @@
     // below.
     // installed-skills-start
     ".agents/skills/ask-matt/**",
+    ".agents/skills/callidescope-configure/**",
+    ".agents/skills/callidescope-trace/**",
+    ".agents/skills/callidescope-triage/**",
     ".agents/skills/code-review/**",
     ".agents/skills/codebase-design/**",
     ".agents/skills/codependix-configure/**",

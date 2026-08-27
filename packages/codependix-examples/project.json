@@ -4,7 +4,12 @@
   "name": "codependix-examples",
   "projectType": "library",
   "sourceRoot": "packages/codependix-examples",
-  "tags": ["language:typescript", "name:codependix-examples", "type:package"],
+  "tags": [
+    "framework:nestjs",
+    "language:typescript",
+    "name:codependix-examples",
+    "type:package"
+  ],
   "targets": {
     "codometer": {},
     "examples": {

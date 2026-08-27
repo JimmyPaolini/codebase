@@ -1,6 +1,17 @@
-# One hop, and every rule the renderer applies
+# 🏘️ One hop, and every rule the renderer applies
 
 A Neighborhood is one hop in each direction, and that is the point. Beside it, the Workspace Graph of the same workspace, and one example per rule the renderer applies.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## The middle project's Neighborhood
 
@@ -99,3 +110,7 @@ atlas-application
 atlas-core
 atlas-service
 ```
+
+## Next
+
+[ambient-modules](../ambient-modules/README.md).

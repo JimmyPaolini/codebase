@@ -5,37 +5,10 @@ import { buildGraphLevelDocuments } from "./graph-levels";
 import { buildNestjsDocuments } from "./nestjs-graphs";
 import { buildNxDocuments } from "./nx-graphs";
 import { buildPythonDocuments } from "./python-imports";
+import { EXAMPLE_ORDER } from "./reading-order";
 import { buildTypescriptDocuments } from "./typescript-imports";
 
 import type { ExampleDocument } from "./types";
-
-// ♟️ Constants
-
-/**
- * Every example, in the order the package README lists them.
- *
- * Named here rather than derived from a numeric filename prefix: each example
- * is a directory a reader can open on its own, and its name is what the guides
- * link to. The order is a reading order, and this is the one place it is
- * written down.
- */
-export const EXAMPLE_ORDER = [
-  "graph-levels",
-  "neighborhood-scope",
-  "ambient-modules",
-  "preview-mode",
-  "container-rooting",
-  "typescript-resolution",
-  "python-scanner",
-  "configuration-resolution",
-  "export-targets",
-  "markdown-modes",
-  "auto-created-sections",
-  "check-and-write",
-  "refusals",
-  "json-exports",
-  "workspace-drift",
-] as const;
 
 // 📇 Collecting
 
