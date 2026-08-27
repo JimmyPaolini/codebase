@@ -14,8 +14,10 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 ```mermaid
 graph LR
   codependix_cli["codependix-cli"]
+  codependix_examples["codependix-examples"]
   codependix_imports["codependix-imports"]
   codependix_cli --> codependix_imports
+  codependix_examples --> codependix_imports
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_imports subject
 ```
@@ -252,14 +254,14 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2485-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-90.51_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2490-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-90.97_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-31-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-14.54_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-14.61_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

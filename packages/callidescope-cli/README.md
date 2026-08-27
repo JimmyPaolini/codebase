@@ -701,16 +701,22 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_examples["callidescope-examples"]
   callidescope_graph["callidescope-graph"]
+  callidescope_nx["callidescope-nx"]
   callidescope_output["callidescope-output"]
   logger["logger"]
   callidescope_cli --> callidescope_configuration
   callidescope_cli --> callidescope_graph
   callidescope_cli --> callidescope_output
   callidescope_cli --> logger
+  callidescope_examples -.-> callidescope_cli
+  callidescope_nx --> callidescope_cli
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class callidescope_cli subject
 ```
+
+_Dashed edges are dependencies Nx inferred from configuration rather than from code._
 <!-- codependix:end name="codependix-nx" -->
 
 ### NestJS Module Graph
@@ -923,14 +929,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5729-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-181.01_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5744-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-181.76_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-47-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-21.43_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-21.52_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

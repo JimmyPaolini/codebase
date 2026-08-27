@@ -137,8 +137,10 @@ graph LR
   caelundas["caelundas"]
   callidescope_cli["callidescope-cli"]
   callidescope_graph["callidescope-graph"]
+  callidescope_nx["callidescope-nx"]
   callidescope_output["callidescope-output"]
   codependix_cli["codependix-cli"]
+  codependix_examples["codependix-examples"]
   codependix_nestjs["codependix-nestjs"]
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
@@ -156,8 +158,10 @@ graph LR
   caelundas --> logger
   callidescope_cli --> logger
   callidescope_graph --> logger
+  callidescope_nx --> logger
   callidescope_output --> logger
   codependix_cli --> logger
+  codependix_examples --> logger
   codependix_nestjs --> logger
   codometer_changes --> logger
   codometer_cli --> logger

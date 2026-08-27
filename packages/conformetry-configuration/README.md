@@ -463,6 +463,7 @@ graph LR
   conformetry_cli["conformetry-cli"]
   conformetry_configuration["conformetry-configuration"]
   conformetry_core["conformetry-core"]
+  conformetry_examples["conformetry-examples"]
   conformetry_files["conformetry-files"]
   conformetry_generation["conformetry-generation"]
   conformetry_nx["conformetry-nx"]
@@ -471,6 +472,7 @@ graph LR
   conformetry_cli --> conformetry_configuration
   conformetry_configuration --> conformetry_core
   conformetry_configuration --> conformetry_generation
+  conformetry_examples --> conformetry_configuration
   conformetry_files --> conformetry_configuration
   conformetry_nx --> conformetry_configuration
   conformetry_validation --> conformetry_configuration
@@ -610,14 +612,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4754-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-160.63_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4756-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-160.71_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-38-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-22.59_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-22.60_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

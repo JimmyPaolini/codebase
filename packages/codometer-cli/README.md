@@ -736,6 +736,7 @@ graph LR
   codometer_configuration["codometer-configuration"]
   codometer_customization["codometer-customization"]
   codometer_discovery["codometer-discovery"]
+  codometer_examples["codometer-examples"]
   codometer_languages["codometer-languages"]
   codometer_output["codometer-output"]
   codometer_size["codometer-size"]
@@ -748,6 +749,7 @@ graph LR
   codometer_cli --> codometer_output
   codometer_cli --> codometer_size
   codometer_cli --> logger
+  codometer_examples --> codometer_cli
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codometer_cli subject
 ```

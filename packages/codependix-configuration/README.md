@@ -15,7 +15,9 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
+  codependix_examples["codependix-examples"]
   codependix_cli --> codependix_configuration
+  codependix_examples --> codependix_configuration
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_configuration subject
 ```

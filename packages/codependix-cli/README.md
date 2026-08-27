@@ -98,6 +98,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
+  codependix_examples["codependix-examples"]
   codependix_imports["codependix-imports"]
   codependix_nestjs["codependix-nestjs"]
   codependix_nx["codependix-nx"]
@@ -107,6 +108,7 @@ graph LR
   codependix_cli --> codependix_nestjs
   codependix_cli --> codependix_nx
   codependix_cli --> logger
+  codependix_examples --> codependix_cli
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_cli subject
 ```
@@ -373,14 +375,14 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4393-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-151.64_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4402-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-151.88_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-40-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.79_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.89_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
