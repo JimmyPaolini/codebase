@@ -12,6 +12,22 @@
     "type:application"
   ],
   "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "applications/caelundas",
+            "output": "."
+          }
+        ],
+        "main": "applications/caelundas/src/main.ts",
+        "outputPath": "dist/applications/caelundas",
+        "tsConfig": "applications/caelundas/tsconfig.build.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
     "codometer": {},
     "dependency-cruiser": {},
     "download-ephemeris": {
@@ -25,6 +41,7 @@
     },
     "knip": {},
     "lint-codebase": {},
+    "make-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
