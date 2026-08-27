@@ -29,6 +29,11 @@
             "glob": "src/executors/**/schema.json",
             "input": "packages/callidescope-nx",
             "output": "."
+          },
+          {
+            "glob": "src/index.cjs",
+            "input": "packages/callidescope-nx",
+            "output": "."
           }
         ],
         "main": "packages/callidescope-nx/src/index.ts",

@@ -39,6 +39,11 @@
             "glob": "src/generators/**/schema.json",
             "input": "packages/conformetry-nx",
             "output": "."
+          },
+          {
+            "glob": "src/index.cjs",
+            "input": "packages/conformetry-nx",
+            "output": "."
           }
         ],
         "main": "packages/conformetry-nx/src/index.ts",
