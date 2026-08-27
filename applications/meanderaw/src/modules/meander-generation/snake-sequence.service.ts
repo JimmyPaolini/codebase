@@ -200,6 +200,24 @@ export class SnakeSequenceService {
   }
 
   /**
+   * The rightmost grid level the zigzag itself reaches, as opposed to the
+   * pitch its border spans: the `edge` family widens that pitch one level
+   * past this (see {@link unitWidthLevels}) so consecutive units' borders
+   * meet flush across the channel between them, and for every other
+   * modifier the two agree.
+   *
+   * Independent of `unitIndex`, which is why it doesn't take one: the only
+   * thing `unitIndex` changes in {@link unitPoints} is whether the
+   * sequence is mirrored horizontally, and a horizontal mirror negates the
+   * distance from center in `y` alone, leaving every `x` level untouched.
+   */
+  unitTraceRightLevel(rows: number, modifier: Modifier | undefined): number {
+    return this.motifTransformsService.rightmostLevel([
+      this.unitPoints(rows, 0, modifier),
+    ]);
+  }
+
+  /**
    * How many grid levels one repeat unit spans: `rows` when the `edge`
    * family widens the pitch to close flush against the shared border,
    * `flipPitchLevels(rows)` for bare `flip`'s fused tile, otherwise the

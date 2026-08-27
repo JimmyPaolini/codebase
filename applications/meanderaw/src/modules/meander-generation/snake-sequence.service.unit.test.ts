@@ -159,6 +159,50 @@ describe(SnakeSequenceService, () => {
     });
   });
 
+  describe("unitTraceRightLevel", () => {
+    it("agrees with the unit pitch when no modifier widens it", () => {
+      expect(service.unitTraceRightLevel(6, undefined)).toBe(5);
+      expect(service.unitTraceRightLevel(6, undefined)).toBe(
+        service.unitWidthLevels(6, undefined),
+      );
+    });
+
+    it("agrees with bare flip's fused tile pitch", () => {
+      expect(service.unitTraceRightLevel(6, { name: "flip" })).toBe(
+        service.unitWidthLevels(6, { name: "flip" }),
+      );
+    });
+
+    it("falls one level short of the edge family's widened pitch", () => {
+      for (const modifier of [
+        { name: "edge" },
+        { name: "edge-flip" },
+      ] as const) {
+        expect(service.unitTraceRightLevel(6, modifier)).toBe(
+          service.unitWidthLevels(6, modifier) - 1,
+        );
+      }
+    });
+
+    it.each([4, 5, 6, 7, 8])(
+      "reads the same for a mirrored unit, since the mirror is horizontal, at %i rows",
+      (rows) => {
+        const modifier = { name: "edge-flip" } as const;
+        const rightmostOf = (unitIndex: number): number =>
+          Math.max(
+            ...service
+              .unitPoints(rows, unitIndex, modifier)
+              .map(([xLevel]) => xLevel),
+          );
+
+        expect(rightmostOf(0)).toBe(rightmostOf(1));
+        expect(service.unitTraceRightLevel(rows, modifier)).toBe(
+          rightmostOf(1),
+        );
+      },
+    );
+  });
+
   describe("unitWidthLevels", () => {
     it("spans rows minus one levels without a modifier", () => {
       expect(service.unitWidthLevels(6, undefined)).toBe(5);

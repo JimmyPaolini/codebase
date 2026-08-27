@@ -69,7 +69,10 @@ export class MosaicTileGenerationService {
 
     const geometry = this.gridGeometryService.compute(tile.rows);
     const unitPaths = Array.from({ length: repeatCount }, (_value, unitIndex) =>
-      this.mosaicMotifService.path(geometry, tile, unitIndex),
+      this.mosaicMotifService.path(geometry, tile, {
+        isLastUnit: unitIndex === repeatCount - 1,
+        unitIndex,
+      }),
     );
     const overhang = this.mosaicMotifService.leadingOverhang(geometry, tile);
     const paths = overhang ? [overhang, ...unitPaths] : unitPaths;

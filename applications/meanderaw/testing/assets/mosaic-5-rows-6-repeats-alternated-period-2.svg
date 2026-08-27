@@ -4,5 +4,5 @@
 <path d="M99 15V27M99 39V51M123 15V51M111 15V27M111 39V51M135 15V51M99 3H147M99 63H147" stroke="black" stroke-width="6" stroke-linecap="square"/>
 <path d="M147 15V27M147 39V51M171 15V51M159 15V27M159 39V51M183 15V51M147 3H195M147 63H195" stroke="black" stroke-width="6" stroke-linecap="square"/>
 <path d="M195 15V27M195 39V51M219 15V51M207 15V27M207 39V51M231 15V51M195 3H243M195 63H243" stroke="black" stroke-width="6" stroke-linecap="square"/>
-<path d="M243 15V27M243 39V51M267 15V51M255 15V27M255 39V51M279 15V51M243 3H291M243 63H291" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M243 15V27M243 39V51M267 15V51M255 15V27M255 39V51M279 15V51M243 3H279M243 63H279" stroke="black" stroke-width="6" stroke-linecap="square"/>
 </svg>

@@ -71,7 +71,7 @@ export class MosaicMotifService implements MotifService {
     unit: MotifUnit,
     period: number,
   ): string {
-    const { rows, unitIndex } = unit;
+    const { isLastUnit, rows, unitIndex } = unit;
     const format = (value: number): string => this.format(value);
     const tileStartColumn = unitIndex * 2 * period;
     const runs = this.motifTransformsService.alternate(1, rows - 1, 1);
@@ -95,12 +95,31 @@ export class MosaicMotifService implements MotifService {
       geometry.offset + tileStartColumn * geometry.unit,
     );
     const capRightX = format(
-      geometry.offset + (tileStartColumn + 2 * period) * geometry.unit,
+      geometry.offset +
+        (tileStartColumn + this.capColumns(2 * period, isLastUnit)) *
+          geometry.unit,
     );
     const capTopY = format(geometry.offset);
     const capBottomY = format(geometry.offset + rows * geometry.unit);
 
     return `${runSegments}M${tileStartX} ${capTopY}H${capRightX}M${tileStartX} ${capBottomY}H${capRightX}`;
+  }
+
+  /**
+   * How many grid units the unit's two cap ticks span: its own tile's
+   * `columns` for every interior unit, so the tick stays contiguous with
+   * the next tile's own first column, and one less for the last unit,
+   * which has no following tile to reach — a full-width tick there would
+   * trail a bare stub one grid unit past the last column the tile actually
+   * draws, and past the canvas edge {@link rightEdge} declares.
+   *
+   * A single-column tile's last unit therefore caps to zero length, which
+   * `stroke-linecap="square"` renders as a small square mark centered on
+   * the bar — exactly what the reference files' cropped canvases already
+   * showed of it.
+   */
+  private capColumns(columns: number, isLastUnit: boolean): number {
+    return isLastUnit ? columns - 1 : columns;
   }
 
   /**
@@ -134,7 +153,7 @@ export class MosaicMotifService implements MotifService {
     unit: MotifUnit,
     shape: DotShape,
   ): string {
-    const { rows, unitIndex } = unit;
+    const { isLastUnit, rows, unitIndex } = unit;
     const format = (value: number): string => this.format(value);
     const dotLevels = this.motifTransformsService.dotLevels(rows, shape);
     const period = dotLevels.length;
@@ -163,7 +182,8 @@ export class MosaicMotifService implements MotifService {
       geometry.offset + tileStartColumn * geometry.unit,
     );
     const capRightX = format(
-      geometry.offset + (tileStartColumn + period) * geometry.unit,
+      geometry.offset +
+        (tileStartColumn + this.capColumns(period, isLastUnit)) * geometry.unit,
     );
     const capTopY = format(geometry.offset);
     const capBottomY = format(geometry.offset + rows * geometry.unit);
@@ -226,7 +246,7 @@ export class MosaicMotifService implements MotifService {
    * way 3 rows already was.
    */
   private splitPath(geometry: GridGeometry, unit: MotifUnit): string {
-    const { rows, unitIndex } = unit;
+    const { isLastUnit, rows, unitIndex } = unit;
     const format = (value: number): string => this.format(value);
     const columnX = geometry.offset + unitIndex * geometry.unit;
     const runs = this.motifTransformsService.alternate(1, rows - 1, 1);
@@ -237,7 +257,8 @@ export class MosaicMotifService implements MotifService {
     );
 
     const capRightX = format(
-      geometry.offset + unitIndex * geometry.unit + geometry.unit,
+      geometry.offset +
+        (unitIndex + this.capColumns(1, isLastUnit)) * geometry.unit,
     );
     const capTopY = format(geometry.offset);
     const capBottomY = format(geometry.offset + rows * geometry.unit);
@@ -256,7 +277,7 @@ export class MosaicMotifService implements MotifService {
    * the two levels a dot gives up.
    */
   path(geometry: GridGeometry, unit: MotifUnit): string {
-    const { modifier, rows, unitIndex } = unit;
+    const { isLastUnit, modifier, rows, unitIndex } = unit;
     const format = (value: number): string => this.format(value);
 
     if (modifier?.name === "alternated") {
@@ -273,7 +294,8 @@ export class MosaicMotifService implements MotifService {
 
     const columnX = format(geometry.offset + unitIndex * geometry.unit);
     const capRightX = format(
-      geometry.offset + unitIndex * geometry.unit + geometry.unit,
+      geometry.offset +
+        (unitIndex + this.capColumns(1, isLastUnit)) * geometry.unit,
     );
     const barTopY = format(geometry.offset + geometry.unit);
     const barBottomY = format(geometry.offset + (rows - 1) * geometry.unit);
@@ -285,12 +307,13 @@ export class MosaicMotifService implements MotifService {
 
   /**
    * The x-coordinate of the last unit's own column, before the
-   * stroke-width margin — deliberately NOT the last unit's cap tick, which
-   * overshoots one full grid unit further right. Verified against `5`, `6`,
-   * and `8 rows bars.svg`: each reference file's declared canvas width
-   * stops exactly at this column plus `offset`, cropping the final cap's
-   * overshoot (which would otherwise reach into where a thirteenth,
-   * nonexistent unit's column would start) off the visible canvas.
+   * stroke-width margin — one full grid unit short of where an interior
+   * unit's cap tick reaches. Verified against the `5`, `6`, and `8` rows
+   * `bars.svg` reference files: each declared canvas width stops exactly at
+   * this column plus `offset`. The reference files got there by cropping the
+   * final cap's overshoot off the visible canvas; {@link capColumns} now
+   * clips that cap flush with this edge instead, so nothing is drawn past
+   * it in the first place.
    *
    * `alternated` widens each repeat unit's tile to `2 * period` columns
    * (see {@link alternatedPath}), so its last touched column is

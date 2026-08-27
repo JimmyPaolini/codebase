@@ -4,5 +4,5 @@
 <path d="M27 15V27M27 39V51M27 3H39M27 63H39" stroke="black" stroke-width="6" stroke-linecap="square"/>
 <path d="M39 15V27M39 39V51M39 3H51M39 63H51" stroke="black" stroke-width="6" stroke-linecap="square"/>
 <path d="M51 15V27M51 39V51M51 3H63M51 63H63" stroke="black" stroke-width="6" stroke-linecap="square"/>
-<path d="M63 15V27M63 39V51M63 3H75M63 63H75" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M63 15V27M63 39V51M63 3H63M63 63H63" stroke="black" stroke-width="6" stroke-linecap="square"/>
 </svg>

@@ -1,11 +1,15 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { rightmostX, splitTrace } from "../../../testing/path-data";
+
 import { GridGeometryService } from "./grid-geometry.service";
 import { MotifTransformsService } from "./motif-transforms.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";
 import { SwirlMotifService } from "./swirl-motif.service";
+
+// 🧪 Tests
 
 describe(SwirlMotifService, () => {
   let service: SwirlMotifService;
@@ -48,15 +52,17 @@ describe(SwirlMotifService, () => {
     it("draws the first unit's two-armed spiral plus its own border, matching the reference geometry at 5 rows", () => {
       const geometry = gridGeometryService.compute(5);
 
-      expect(service.path(geometry, { rows: 5, unitIndex: 0 })).toBe(
-        "M15 27V39H27V15H3V51H39V15H75V51H51V27H63V39M3 3H87M3 63H87",
-      );
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 5, unitIndex: 0 }),
+      ).toBe("M15 27V39H27V15H3V51H39V15H75V51H51V27H63V39M3 3H87M3 63H87");
     });
 
     it("shifts each subsequent unit by unitWidth, matching the reference geometry at 5 rows", () => {
       const geometry = gridGeometryService.compute(5);
 
-      expect(service.path(geometry, { rows: 5, unitIndex: 1 })).toBe(
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 5, unitIndex: 1 }),
+      ).toBe(
         "M99 27V39H111V15H87V51H123V15H159V51H135V27H147V39M87 3H171M87 63H171",
       );
     });
@@ -66,6 +72,7 @@ describe(SwirlMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "flip" },
           rows: 4,
           unitIndex: 0,
@@ -80,6 +87,7 @@ describe(SwirlMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "flip" },
           rows: 4,
           unitIndex: 1,
@@ -104,9 +112,65 @@ describe(SwirlMotifService, () => {
     it("draws both top and bottom segments in the same left-to-right direction, unlike snake/chain/whirl", () => {
       const geometry = gridGeometryService.compute(5);
 
-      expect(service.borderSegment(geometry, { rows: 5, xOffset: 0 })).toBe(
-        "M3 3H87M3 63H87",
-      );
+      expect(
+        service.borderSegment(geometry, {
+          isLastUnit: false,
+          rows: 5,
+          xOffset: 0,
+        }),
+      ).toBe("M3 3H87M3 63H87");
     });
+  });
+
+  describe.each([
+    ["plain", undefined],
+    ["flip", { name: "flip" } as const],
+  ])("last unit's border with %s", (_label, modifier) => {
+    const rowsValues = [4, 5, 6, 7, 8];
+
+    it.each(rowsValues)(
+      "ends flush with the rightmost point its own trace reaches, at %i rows",
+      (rows) => {
+        const geometry = gridGeometryService.compute(rows);
+        const unitIndex = 5;
+        const xOffset = unitIndex * service.unitWidth(geometry, rows, modifier);
+        const options = {
+          isLastUnit: true,
+          rows,
+          xOffset,
+          ...(modifier ? { modifier } : {}),
+        };
+        const { border, trace } = splitTrace(
+          service.path(geometry, {
+            isLastUnit: true,
+            rows,
+            unitIndex,
+            ...(modifier ? { modifier } : {}),
+          }),
+          service.borderSegment(geometry, options),
+        );
+
+        expect(rightmostX(border)).toBe(rightmostX(trace));
+      },
+    );
+
+    it.each(rowsValues)(
+      "reaches a full unit width for an interior unit, staying contiguous with the next one, at %i rows",
+      (rows) => {
+        const geometry = gridGeometryService.compute(rows);
+        const unitIndex = 5;
+        const unitWidth = service.unitWidth(geometry, rows, modifier);
+        const options = {
+          isLastUnit: false,
+          rows,
+          xOffset: unitIndex * unitWidth,
+          ...(modifier ? { modifier } : {}),
+        };
+
+        expect(
+          rightmostX(service.borderSegment(geometry, options)),
+        ).toBeCloseTo(geometry.offset + (unitIndex + 1) * unitWidth, 4);
+      },
+    );
   });
 });

@@ -1,6 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { COORDINATE_ROUNDING_TOLERANCE } from "../../../testing/path-data";
+
 import { GridGeometryService } from "./grid-geometry.service";
 import { MosaicMotifService } from "./mosaic-motif.service";
 import { MotifTransformsService } from "./motif-transforms.service";
@@ -120,17 +122,39 @@ const motifUnit = (
   unitIndex: number,
 ): MotifUnit =>
   variant.modifier
-    ? { modifier: variant.modifier, rows, unitIndex }
-    : { rows, unitIndex };
+    ? { isLastUnit: false, modifier: variant.modifier, rows, unitIndex }
+    : { isLastUnit: false, rows, unitIndex };
 
 /**
- * How far a measured blank may exceed the stroke width before it counts as
- * a real gap. `GridGeometryService.formatCoordinate` rounds every
- * coordinate to five decimal places, so at a row count whose grid unit
- * doesn't divide the canvas evenly (7, 9, 11) two rounded endpoints can
- * leave a blank a few millionths of a pixel over the limit.
+ * How far right a unit's two cap ticks reach, and how far right its own
+ * marks do. The caps are the only segments drawn on the outermost grid
+ * levels — the bar spans levels 1 through `rows - 1` and every dot sits
+ * inside that — so the extreme `fromY` values separate the two without
+ * needing to re-derive either coordinate from the geometry.
  */
-const roundingTolerance = 0.0001;
+const rightmostReach = (pathData: string): { caps: number; marks: number } => {
+  const segments = parseSegments(pathData);
+  const levels = segments.map((segment) => segment.fromY);
+  const capLevels = new Set([Math.max(...levels), Math.min(...levels)]);
+  const rightmostOf = (of: PathSegment[]): number =>
+    Math.max(...of.map((segment) => Math.max(segment.fromX, segment.toX)));
+
+  return {
+    caps: rightmostOf(
+      segments.filter((segment) => capLevels.has(segment.fromY)),
+    ),
+    marks: rightmostOf(
+      segments.filter((segment) => !capLevels.has(segment.fromY)),
+    ),
+  };
+};
+
+/** The same options as {@link motifUnit}, marked as the pattern's last unit. */
+const lastMotifUnit = (
+  variant: MosaicVariant,
+  rows: number,
+  unitIndex: number,
+): MotifUnit => ({ ...motifUnit(variant, rows, unitIndex), isLastUnit: true });
 
 // 🧪 Tests
 
@@ -161,45 +185,45 @@ describe(MosaicMotifService, () => {
     it("draws the first unit's bar, matching the reference geometry at 5 rows", () => {
       const geometry = gridGeometryService.compute(5);
 
-      expect(service.path(geometry, { rows: 5, unitIndex: 0 })).toBe(
-        "M3 15V51M3 3H15M3 63H15",
-      );
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 5, unitIndex: 0 }),
+      ).toBe("M3 15V51M3 3H15M3 63H15");
     });
 
     it("shifts each subsequent unit by one grid unit, matching the reference geometry at 5 rows", () => {
       const geometry = gridGeometryService.compute(5);
 
-      expect(service.path(geometry, { rows: 5, unitIndex: 1 })).toBe(
-        "M15 15V51M15 3H27M15 63H27",
-      );
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 5, unitIndex: 1 }),
+      ).toBe("M15 15V51M15 3H27M15 63H27");
 
-      expect(service.path(geometry, { rows: 5, unitIndex: 11 })).toBe(
-        "M135 15V51M135 3H147M135 63H147",
-      );
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 5, unitIndex: 11 }),
+      ).toBe("M135 15V51M135 3H147M135 63H147");
     });
 
     it("draws a shallower bar at 6 rows, matching the reference geometry", () => {
       const geometry = gridGeometryService.compute(6);
 
-      expect(service.path(geometry, { rows: 6, unitIndex: 0 })).toBe(
-        "M2.5 12.5V52.5M2.5 2.5H12.5M2.5 62.5H12.5",
-      );
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 6, unitIndex: 0 }),
+      ).toBe("M2.5 12.5V52.5M2.5 2.5H12.5M2.5 62.5H12.5");
     });
 
     it("draws a deeper bar at 8 rows, matching the reference geometry", () => {
       const geometry = gridGeometryService.compute(8);
 
-      expect(service.path(geometry, { rows: 8, unitIndex: 0 })).toBe(
-        "M1.875 9.375V54.375M1.875 1.875H9.375M1.875 61.875H9.375",
-      );
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 8, unitIndex: 0 }),
+      ).toBe("M1.875 9.375V54.375M1.875 1.875H9.375M1.875 61.875H9.375");
     });
 
     it("draws a plain rectangle-free bar at the structural minimum of 3 rows", () => {
       const geometry = gridGeometryService.compute(3);
 
-      expect(service.path(geometry, { rows: 3, unitIndex: 0 })).toBe(
-        "M5 25V45M5 5H25M5 65H25",
-      );
+      expect(
+        service.path(geometry, { isLastUnit: false, rows: 3, unitIndex: 0 }),
+      ).toBe("M5 25V45M5 5H25M5 65H25");
     });
 
     it("draws period 1's zigzag with both columns filled against the caps at 5 rows", () => {
@@ -207,6 +231,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "alternated", period: 1 },
           rows: 5,
           unitIndex: 0,
@@ -219,6 +244,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "alternated", period: 1 },
           rows: 5,
           unitIndex: 1,
@@ -231,6 +257,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "alternated", period: 1 },
           rows: 8,
           unitIndex: 0,
@@ -245,6 +272,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "alternated", period: 2 },
           rows: 5,
           unitIndex: 0,
@@ -259,6 +287,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "alternated", period: 2 },
           rows: 5,
           unitIndex: 1,
@@ -273,6 +302,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "dot", shape: "bounce" },
           rows: 6,
           unitIndex: 0,
@@ -287,6 +317,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "dot", shape: "bounce" },
           rows: 6,
           unitIndex: 1,
@@ -301,6 +332,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "dot", shape: "bounce" },
           rows: 8,
           unitIndex: 0,
@@ -315,6 +347,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "dot", shape: "up" },
           rows: 6,
           unitIndex: 0,
@@ -329,6 +362,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "dot", shape: "up" },
           rows: 8,
           unitIndex: 0,
@@ -351,6 +385,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "dot", shape: "bounce" },
           rows: 5,
           unitIndex: 0,
@@ -359,6 +394,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "dot", shape: "up" },
           rows: 5,
           unitIndex: 0,
@@ -368,10 +404,15 @@ describe(MosaicMotifService, () => {
 
     it("falls through to the unmodified bar for the dot modifier at 3 rows, where the bar has no two levels to give up", () => {
       const geometry = gridGeometryService.compute(3);
-      const plainPath = service.path(geometry, { rows: 3, unitIndex: 0 });
+      const plainPath = service.path(geometry, {
+        isLastUnit: false,
+        rows: 3,
+        unitIndex: 0,
+      });
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "dot", shape: "up" },
           rows: 3,
           unitIndex: 0,
@@ -388,6 +429,7 @@ describe(MosaicMotifService, () => {
       // instead.
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "split" },
           rows: 6,
           unitIndex: 0,
@@ -397,10 +439,15 @@ describe(MosaicMotifService, () => {
 
     it("degenerates the split modifier to the unmodified bar at 4 rows, the same way 3 rows already did", () => {
       const geometry = gridGeometryService.compute(4);
-      const plainPath = service.path(geometry, { rows: 4, unitIndex: 0 });
+      const plainPath = service.path(geometry, {
+        isLastUnit: false,
+        rows: 4,
+        unitIndex: 0,
+      });
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "split" },
           rows: 4,
           unitIndex: 0,
@@ -413,6 +460,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "split" },
           rows: 5,
           unitIndex: 0,
@@ -425,6 +473,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "split" },
           rows: 5,
           unitIndex: 1,
@@ -437,6 +486,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "split" },
           rows: 7,
           unitIndex: 0,
@@ -451,6 +501,7 @@ describe(MosaicMotifService, () => {
 
       expect(
         service.path(geometry, {
+          isLastUnit: false,
           modifier: { name: "split" },
           rows: 3,
           unitIndex: 0,
@@ -475,7 +526,9 @@ describe(MosaicMotifService, () => {
 
         expect(
           longestBlank(pathData, geometry.strokeWidth),
-        ).toBeLessThanOrEqual(geometry.strokeWidth + roundingTolerance);
+        ).toBeLessThanOrEqual(
+          geometry.strokeWidth + COORDINATE_ROUNDING_TOLERANCE,
+        );
       },
     );
 
@@ -487,7 +540,41 @@ describe(MosaicMotifService, () => {
 
         expect(
           longestBlank(pathData, geometry.strokeWidth),
-        ).toBeLessThanOrEqual(geometry.strokeWidth + roundingTolerance);
+        ).toBeLessThanOrEqual(
+          geometry.strokeWidth + COORDINATE_ROUNDING_TOLERANCE,
+        );
+      },
+    );
+
+    it.each(
+      variants.flatMap((variant) =>
+        rowsValues.map((rows) => [variant.label, rows, variant] as const),
+      ),
+    )(
+      "ends the last unit's cap ticks flush with its own last column, for %s at %i rows",
+      (_label, rows, variant) => {
+        const geometry = gridGeometryService.compute(rows);
+        const { caps, marks } = rightmostReach(
+          service.path(geometry, lastMotifUnit(variant, rows, 5)),
+        );
+
+        expect(caps).toBe(marks);
+      },
+    );
+
+    it.each(
+      variants.flatMap((variant) =>
+        rowsValues.map((rows) => [variant.label, rows, variant] as const),
+      ),
+    )(
+      "keeps an interior unit's cap ticks reaching into the next tile, for %s at %i rows",
+      (_label, rows, variant) => {
+        const geometry = gridGeometryService.compute(rows);
+        const { caps, marks } = rightmostReach(
+          service.path(geometry, motifUnit(variant, rows, 5)),
+        );
+
+        expect(caps).toBeCloseTo(marks + geometry.unit, 4);
       },
     );
 
@@ -498,6 +585,7 @@ describe(MosaicMotifService, () => {
 
         for (const shape of ["bounce", "up"] as const) {
           const pathData = service.path(geometry, {
+            isLastUnit: false,
             modifier: { name: "dot", shape },
             rows,
             unitIndex: 0,

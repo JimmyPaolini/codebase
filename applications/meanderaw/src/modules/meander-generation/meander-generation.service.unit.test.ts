@@ -4,6 +4,8 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { COORDINATE_ROUNDING_TOLERANCE } from "../../../testing/path-data";
+
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
@@ -11,6 +13,13 @@ import { InvalidPeriodError } from "./invalid-period.errors";
 import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
 import { InvalidRowsError } from "./invalid-rows.errors";
+import {
+  COMPATIBLE_MODIFIERS,
+  DEFAULT_REPEAT_COUNT,
+  SPIN_CYCLE_LENGTH,
+  SPIN_FAMILY_MODIFIER_NAMES,
+  STRUCTURAL_MINIMUM_ROWS,
+} from "./meander-generation.constants";
 import { MeanderGenerationService } from "./meander-generation.service";
 import { MosaicMotifService } from "./mosaic-motif.service";
 import { MotifTransformsService } from "./motif-transforms.service";
@@ -19,6 +28,120 @@ import { SnakeSequenceService } from "./snake-sequence.service";
 import { SvgRenderingService } from "./svg-rendering.service";
 import { SwirlMotifService } from "./swirl-motif.service";
 import { WhirlMotifService } from "./whirl-motif.service";
+
+import type { MeanderType, Modifier } from "./meander-generation.types";
+
+// 🔧 Configuration
+
+/** One generated pattern the sweep below checks: the type, its optional modifier, and a label for the test name. */
+interface PatternCase {
+  readonly label: string;
+  readonly modifier?: Modifier;
+  readonly repeatCount: number;
+  readonly rows: number;
+  readonly type: MeanderType;
+}
+
+/**
+ * Every {@link Modifier} one `COMPATIBLE_MODIFIERS` name stands for: a
+ * parameterized modifier expands to one entry per parameter value the
+ * services document, and every other name to a single entry.
+ */
+const modifiersNamed = (name: string): Modifier[] => {
+  switch (name) {
+    case "alternated": {
+      return [1, 2, 3].map((period) => ({ name: "alternated", period }));
+    }
+    case "dot": {
+      return [
+        { name: "dot", shape: "bounce" },
+        { name: "dot", shape: "up" },
+      ];
+    }
+    case "edge": {
+      return [{ name: "edge" }];
+    }
+    case "edge-flip": {
+      return [{ name: "edge-flip" }];
+    }
+    case "flip": {
+      return [{ name: "flip" }];
+    }
+    case "spin": {
+      return [{ name: "spin" }];
+    }
+    case "spin-flip": {
+      return [{ name: "spin-flip" }];
+    }
+    case "split": {
+      return [{ name: "split" }];
+    }
+    default: {
+      throw new Error(`Unknown modifier name: ${name}`);
+    }
+  }
+};
+
+/**
+ * Every type/modifier pairing `COMPATIBLE_MODIFIERS` allows, swept over the
+ * row counts each type supports, at the repeat count its modifier's own
+ * cycle admits — `SPIN_CYCLE_LENGTH` for the spin family, the shared
+ * default otherwise. `alternated` is swept over the periods
+ * `MosaicMotifService` documents rather than the whole allowed range.
+ */
+const patternCases: readonly PatternCase[] = (
+  ["boxes", "chain", "mosaic", "snake", "swirl", "whirl"] as const
+).flatMap((type) => {
+  const modifiers: readonly (Modifier | undefined)[] = [
+    undefined,
+    ...COMPATIBLE_MODIFIERS[type].flatMap((name) => modifiersNamed(name)),
+  ];
+
+  return modifiers.flatMap((modifier) =>
+    [STRUCTURAL_MINIMUM_ROWS[type], 5, 6, 7, 8].map((rows) => ({
+      label: `${type} at ${rows} rows${modifier ? ` with ${modifier.name}` : ""}`,
+      repeatCount:
+        modifier && SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name)
+          ? SPIN_CYCLE_LENGTH
+          : DEFAULT_REPEAT_COUNT,
+      rows,
+      type,
+      ...(modifier ? { modifier } : {}),
+    })),
+  );
+});
+
+/**
+ * The rightmost x-coordinate any path in the document draws, and the
+ * rightmost the canvas can hold: the declared width less the half stroke
+ * width `stroke-linecap="square"` adds past every endpoint. Both are read
+ * out of the rendered document rather than recomputed, so the assertion
+ * cannot drift with the geometry it is checking.
+ */
+const rightmostCoordinates = (
+  svg: string,
+): { available: number; drawn: number } => {
+  const width = Number(/width="([\d.]+)"/.exec(svg)?.[1]);
+  const strokeWidth = Number(/stroke-width="([\d.]+)"/.exec(svg)?.[1]);
+  const xCoordinates = [...svg.matchAll(/[MH]([\d.]+)/g)].map((match) =>
+    Number(match[1]),
+  );
+
+  if (
+    Number.isNaN(width) ||
+    Number.isNaN(strokeWidth) ||
+    xCoordinates.length === 0
+  ) {
+    throw new Error(`Unreadable generated document: ${svg}`);
+  }
+
+  return {
+    available: width - strokeWidth / 2,
+    drawn: Math.max(...xCoordinates),
+  };
+};
+
+// 🧪 Tests
 
 describe(MeanderGenerationService, () => {
   let service: MeanderGenerationService;
@@ -532,6 +655,27 @@ describe(MeanderGenerationService, () => {
             type,
           }),
         ).toThrow(/not compatible/i);
+      },
+    );
+  });
+
+  describe("border containment", () => {
+    it.each(
+      patternCases.map((patternCase) => [patternCase.label, patternCase]),
+    )(
+      "draws nothing past the declared canvas for %s",
+      (_label, patternCase) => {
+        const svg = service.generate({
+          repeatCount: patternCase.repeatCount,
+          rows: patternCase.rows,
+          type: patternCase.type,
+          ...(patternCase.modifier ? { modifier: patternCase.modifier } : {}),
+        });
+        const { available, drawn } = rightmostCoordinates(svg);
+
+        expect(drawn).toBeLessThanOrEqual(
+          available + COORDINATE_ROUNDING_TOLERANCE,
+        );
       },
     );
   });

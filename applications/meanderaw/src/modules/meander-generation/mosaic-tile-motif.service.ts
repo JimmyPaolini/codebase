@@ -6,6 +6,7 @@ import type {
   GridGeometry,
   MosaicPiece,
   MosaicTile,
+  MosaicTileUnit,
 } from "./meander-generation.types";
 
 /**
@@ -81,8 +82,19 @@ export class MosaicTileMotifService {
       .join("");
   }
 
-  /** Draws one repeat unit's marks and its two cap ticks, as an SVG path attribute value. */
-  path(geometry: GridGeometry, tile: MosaicTile, unitIndex: number): string {
+  /**
+   * Draws one repeat unit's marks and its two cap ticks, as an SVG path
+   * attribute value.
+   *
+   * The last unit's cap ticks stop at {@link rightEdge} — the rightmost
+   * point that unit's own marks reach — rather than at its tile's column
+   * span. Every other unit's ticks span the full tile so they stay
+   * contiguous with the next tile's own; the last unit has no next tile to
+   * hand the remainder to, so a full-span tick there would trail a bare stub
+   * past the canvas edge {@link rightEdge} declares.
+   */
+  path(geometry: GridGeometry, tile: MosaicTile, unit: MosaicTileUnit): string {
+    const { isLastUnit, unitIndex } = unit;
     const tileStartColumn = unitIndex * tile.columns;
     const markSegments = tile.pieces
       .map((piece) => this.markSegment(geometry, piece, tileStartColumn))
@@ -92,7 +104,9 @@ export class MosaicTileMotifService {
       geometry.offset + tileStartColumn * geometry.unit,
     );
     const capRightX = this.format(
-      geometry.offset + (tileStartColumn + tile.columns) * geometry.unit,
+      isLastUnit
+        ? this.rightEdge(geometry, tile, unitIndex + 1)
+        : geometry.offset + (tileStartColumn + tile.columns) * geometry.unit,
     );
     const capTopY = this.format(geometry.offset);
     const capBottomY = this.format(geometry.offset + tile.rows * geometry.unit);
@@ -101,10 +115,12 @@ export class MosaicTileMotifService {
   }
 
   /**
-   * How far right the drawn marks reach, before the stroke-width margin —
-   * the cap ticks' own one-unit overshoot past the last column is cropped
-   * off the canvas, the same way {@link MosaicMotifService.rightEdge} crops
-   * it. A tile whose last column anchors a horizontal dash reaches a full
+   * How far right the drawn marks reach, before the stroke-width margin.
+   * {@link path} clips the last unit's cap ticks to exactly this, so nothing
+   * is drawn past it — where it once relied on the canvas cropping the
+   * ticks' own one-unit overshoot, the same way
+   * {@link MosaicMotifService.rightEdge} did. A tile whose last column
+   * anchors a horizontal dash reaches a full
    * unit further than one that ends in dots, which is exactly why `lines`
    * declares a wider canvas than `dots` at the same repeat count.
    */

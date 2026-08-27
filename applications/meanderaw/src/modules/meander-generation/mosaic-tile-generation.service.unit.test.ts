@@ -122,9 +122,12 @@ describe(MosaicTileGenerationService, () => {
     it("draws the all-dots tile the way 6 rows dots.svg does", () => {
       // The reference file traces each dot as a sub-pixel jog rather than a
       // true zero-length segment, and draws its bottom cap right to left;
-      // every coordinate below is otherwise the reference's own.
+      // every coordinate below is otherwise the reference's own. Its two cap
+      // ticks collapse onto the single dot column here because this one unit
+      // is also the pattern's last, so there is no following tile for a
+      // full-width tick to stay contiguous with.
       expect(service.generate(dots, 1)).toContain(
-        'd="M2.5 12.5H2.5M2.5 22.5H2.5M2.5 32.5H2.5M2.5 42.5H2.5M2.5 52.5H2.5M2.5 2.5H12.5M2.5 62.5H12.5"',
+        'd="M2.5 12.5H2.5M2.5 22.5H2.5M2.5 32.5H2.5M2.5 42.5H2.5M2.5 52.5H2.5M2.5 2.5H2.5M2.5 62.5H2.5"',
       );
     });
 

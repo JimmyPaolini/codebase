@@ -95,6 +95,16 @@ export class WhirlMotifService implements MotifService {
     return rows;
   }
 
+  /** Every point sequence one repeat unit traces: the base spiral, plus `flip`'s mirrored twin fused onto it. */
+  private subpaths(
+    rows: number,
+    modifier?: Modifier,
+  ): readonly (readonly MotifLevelPoint[])[] {
+    return modifier?.name === "flip"
+      ? [this.basePoints(rows), this.flippedPoints(rows)]
+      : [this.basePoints(rows)];
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -107,14 +117,27 @@ export class WhirlMotifService implements MotifService {
    * width. A version of `SnakeMotifService.borderSegment` parameterized on
    * width explicitly, instead of computing it via `this.unitWidth`, could
    * still be shared between the two — that refactor just hasn't been done.
+   *
+   * Where it does differ from `snake`: the last unit's segment stops at
+   * {@link MotifTransformsService.rightmostLevel}, flush with where its own
+   * spiral trace ends.
+   * Every other unit keeps the full width so its border stays contiguous
+   * with the next unit's; the last unit has no next unit to hand the
+   * remainder to, so spanning the full width would trail a bare stub off
+   * the end of the pattern.
    */
   borderSegment(geometry: GridGeometry, unit: UnitBorderOptions): string {
-    const { modifier, rows, xOffset } = unit;
+    const { isLastUnit, modifier, rows, xOffset } = unit;
+    const rightWidth = isLastUnit
+      ? this.motifTransformsService.rightmostLevel(
+          this.subpaths(rows, modifier),
+        ) * geometry.unit
+      : this.unitWidth(geometry, rows, modifier);
     const leftX = this.gridGeometryService.formatCoordinate(
       geometry.offset + xOffset,
     );
     const rightX = this.gridGeometryService.formatCoordinate(
-      geometry.offset + xOffset + this.unitWidth(geometry, rows, modifier),
+      geometry.offset + xOffset + rightWidth,
     );
     const topY = this.gridGeometryService.formatCoordinate(geometry.offset);
     const bottomY = this.gridGeometryService.formatCoordinate(
@@ -126,7 +149,7 @@ export class WhirlMotifService implements MotifService {
 
   /** Draws one repeat unit's spiral (and its mirrored twin when `flip` is set) plus its own border, as an SVG path attribute value. */
   path(geometry: GridGeometry, unit: MotifUnit): string {
-    const { modifier, rows, unitIndex } = unit;
+    const { isLastUnit, modifier, rows, unitIndex } = unit;
     const xOffset = unitIndex * this.unitWidth(geometry, rows, modifier);
     const toXCoordinate = (level: number): string =>
       this.gridGeometryService.formatCoordinate(
@@ -136,11 +159,7 @@ export class WhirlMotifService implements MotifService {
       this.gridGeometryService.formatCoordinate(
         geometry.offset + level * geometry.unit,
       );
-    const subpaths =
-      modifier?.name === "flip"
-        ? [this.basePoints(rows), this.flippedPoints(rows)]
-        : [this.basePoints(rows)];
-    const pathData = subpaths
+    const pathData = this.subpaths(rows, modifier)
       .map((points) =>
         this.snakeMotifService.pointsToPathData(
           points,
@@ -153,6 +172,7 @@ export class WhirlMotifService implements MotifService {
     return (
       pathData +
       this.borderSegment(geometry, {
+        isLastUnit,
         rows,
         xOffset,
         ...(modifier ? { modifier } : {}),

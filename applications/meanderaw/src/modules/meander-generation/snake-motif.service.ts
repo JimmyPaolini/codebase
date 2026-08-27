@@ -38,14 +38,31 @@ export class SnakeMotifService implements MotifService {
 
   // 🌎 Public Methods
 
-  /** Draws one unit's own top/bottom border segment, spanning just that unit's width. */
+  /**
+   * Draws one unit's own top/bottom border segment, spanning just that
+   * unit's width.
+   *
+   * The last unit's segment stops at
+   * {@link SnakeSequenceService.unitTraceRightLevel} instead, flush with
+   * where its own zigzag ends. That only moves anything under the `edge`
+   * family, whose widened pitch reaches one grid level past the zigzag: for
+   * an interior unit that level is the channel to the next unit and the
+   * border has to cross it, while for the last unit there is no next unit
+   * and a full-width segment would trail a bare stub off the end of the
+   * pattern. Every other modifier's pitch already agrees with its trace, so
+   * the two branches produce the same segment.
+   */
   borderSegment(geometry: GridGeometry, unit: UnitBorderOptions): string {
-    const { modifier, rows, xOffset } = unit;
+    const { isLastUnit, modifier, rows, xOffset } = unit;
+    const rightWidth = isLastUnit
+      ? this.snakeSequenceService.unitTraceRightLevel(rows, modifier) *
+        geometry.unit
+      : this.unitWidth(geometry, rows, modifier);
     const leftX = this.gridGeometryService.formatCoordinate(
       geometry.offset + xOffset,
     );
     const rightX = this.gridGeometryService.formatCoordinate(
-      geometry.offset + xOffset + this.unitWidth(geometry, rows, modifier),
+      geometry.offset + xOffset + rightWidth,
     );
     const topY = this.gridGeometryService.formatCoordinate(geometry.offset);
     const bottomY = this.gridGeometryService.formatCoordinate(
@@ -57,7 +74,7 @@ export class SnakeMotifService implements MotifService {
 
   /** Draws one repeat unit's zigzag plus its own border, as an SVG path attribute value. */
   path(geometry: GridGeometry, unit: MotifUnit): string {
-    const { modifier, rows, unitIndex } = unit;
+    const { isLastUnit, modifier, rows, unitIndex } = unit;
     const points = this.snakeSequenceService.unitPoints(
       rows,
       unitIndex,
@@ -76,6 +93,7 @@ export class SnakeMotifService implements MotifService {
     return (
       this.pointsToPathData(points, toXCoordinate, toYCoordinate) +
       this.borderSegment(geometry, {
+        isLastUnit,
         rows,
         xOffset,
         ...(modifier ? { modifier } : {}),

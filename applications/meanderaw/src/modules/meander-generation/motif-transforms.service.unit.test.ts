@@ -36,6 +36,46 @@ describe(MotifTransformsService, () => {
     expect(service).toBeDefined();
   });
 
+  describe("rightmostLevel", () => {
+    it("reports the largest x level across every subpath", () => {
+      expect(
+        service.rightmostLevel([
+          [
+            [0, 1],
+            [3, 1],
+          ],
+          [
+            [7, 2],
+            [2, 2],
+          ],
+        ]),
+      ).toBe(7);
+    });
+
+    it("reads a single subpath the same way", () => {
+      expect(
+        service.rightmostLevel([
+          [
+            [1, 0],
+            [4, 0],
+            [4, 3],
+          ],
+        ]),
+      ).toBe(4);
+    });
+
+    it("accepts a fractional level, which the mirror pivot produces", () => {
+      expect(
+        service.rightmostLevel([
+          [
+            [0, 0],
+            [6.5, 1],
+          ],
+        ]),
+      ).toBe(6.5);
+    });
+  });
+
   describe("rotate", () => {
     it("leaves the sequence unchanged for zero quarter turns", () => {
       expect(service.rotate(points, center, 0)).toStrictEqual(points);
