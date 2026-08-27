@@ -45,6 +45,13 @@
     // reached by nothing in the module graph for the same reason.
     "packages/codometer-examples/examples/**/*.config.ts",
     "configuration/**",
+    // Every fixture in the callidescope examples package exists to be traced,
+    // not imported — an orphan-root fixture is *defined* by having no caller.
+    // Declared as entry points rather than excluded, exactly as
+    // `configuration/knip.config.ts` declares the same files, so what they
+    // import stays in the module graph instead of reading as unreachable too.
+    "packages/callidescope-examples/examples/**/*.ts",
+    "packages/callidescope-examples/src/**/*.ts",
     "packages/lexico-entities/src/modules/database/migrations/**/*.ts",
     "release.config.cjs",
     "validate-branch-name.config.cjs",
