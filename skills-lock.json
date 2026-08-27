@@ -7,29 +7,23 @@
       "skillPath": "skills/engineering/ask-matt/SKILL.md",
       "computedHash": "b2e8ef5ffc2f142022c1e1e1bba68073f0821356a8e1cf1b23670f61d13fe50b"
     },
-    "callidescope-analysis": {
+    "callidescope-configuration": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
-      "skillPath": "packages/callidescope-agents/skills/callidescope-analysis/SKILL.md",
-      "computedHash": "045bd2febb19f951594545ef990a6aea0311b2dc00b4899e35e831cd1bbedfc7"
-    },
-    "callidescope-configure": {
-      "source": "JimmyPaolini/codebase",
-      "sourceType": "github",
-      "skillPath": "packages/callidescope-agents/skills/callidescope-configure/SKILL.md",
-      "computedHash": "c0dd76c00993c8e112bc30934dccdab62ac5a6305aae54affaeafdc166ee0678"
+      "skillPath": "packages/callidescope-agents/skills/callidescope-configuration/SKILL.md",
+      "computedHash": "e56c7e0805c272754d19a1c1d7c352e4b2e63bf79d766268bf708e969d6989c2"
     },
     "callidescope-trace": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/callidescope-agents/skills/callidescope-trace/SKILL.md",
-      "computedHash": "1aa1f8bfc68f22355ba1cc9232e6fd96166695d7e8d08e2e1f93eb764aad529f"
+      "computedHash": "6878eceb61adfd9663ad43c0366685d3a5d283247cbde0ff3af24b3e0da473d4"
     },
     "callidescope-triage": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/callidescope-agents/skills/callidescope-triage/SKILL.md",
-      "computedHash": "ef8571688817f7ba238ee1b40b98eca1172bc31f6a001e1de7c6d1ac0f03c852"
+      "computedHash": "472ccd334b66220424efb61168e8ceeed43d041c38d33c80ed812513a04e98aa"
     },
     "code-review": {
       "source": "mattpocock/skills",

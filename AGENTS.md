@@ -81,7 +81,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 ### Tools
 
-- **[callidescope-agents](packages/callidescope-agents)**: The callidescope toolchain's agent skills, published from this repository and installable by any workspace that uses callidescope — see [Callidescope](#callidescope) for the four
+- **[callidescope-agents](packages/callidescope-agents)**: The callidescope toolchain's agent skills, published from this repository and installable by any workspace that uses callidescope — see [Callidescope](#callidescope) for the three
 - **[callidescope-cli](packages/callidescope-cli)**: Command-line host that traces call stacks through injected dependencies and flags the ones that are too deep
 - **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
 - **[callidescope-examples](packages/callidescope-examples)**: A small codebase built to be traced, carrying one worked example per callidescope rule, finding, and output — plus a `README.md` guide and an `AGENTS.md` lookup table for acting on a finding
@@ -211,27 +211,27 @@ from the lockfile the same way. Edit the package, never the installed copy.
 Callidescope traces call stacks across the workspace — following calls through
 injected dependencies, which is the edge no file-at-a-time tool can see — and
 flags the ones that got too deep, alongside callables that are too wide, spread
-across unrelated modules, or apparently in the wrong file. Four skills carry
-that toolchain for a coding agent: the same three moments as above, plus asking
-the call graph a question about one callable before refactoring it.
+across unrelated modules, or apparently in the wrong file. Three skills carry
+that toolchain for a coding agent, the same three moments as above:
 
 - [callidescope-trace](packages/callidescope-agents/skills/callidescope-trace/SKILL.md)
-  — running a trace, or reading a printed stack
-- [callidescope-configure](packages/callidescope-agents/skills/callidescope-configure/SKILL.md)
-  — writing `callidescope.config.ts`
+  — running `callidescope`, `depth`, or `breadth`, and reading what it printed
+- [callidescope-configuration](packages/callidescope-agents/skills/callidescope-configuration/SKILL.md)
+  — the flags, and the `callidescope.config.ts` they read alongside
 - [callidescope-triage](packages/callidescope-agents/skills/callidescope-triage/SKILL.md)
   — acting on a failed depth or breadth gate, a stale report, or a refused run
-- [callidescope-analysis](packages/callidescope-agents/skills/callidescope-analysis/SKILL.md)
-  — reading `depth <address>` and `breadth <address>` to scope a refactor
 
-These four are authored in
+These three are authored in
 [`packages/callidescope-agents`](packages/callidescope-agents) and installed
 back from the lockfile the same way. Edit the package, never the installed copy.
 
-The fourth exists for the same reason `codependix-navigate` does: `depth` and
-`breadth` against a single address gate nothing and report on no workspace, so
-"what would this rename touch" shares no vocabulary with "run the trace" — and
-a skill's `description` is its entire trigger surface.
+`depth <address>` and `breadth <address>` sit inside the trace skill rather
+than in one of their own: they gate nothing, but reading one callable's callers
+and reading a whole workspace's stacks are the same act of reading a call
+graph. Every flag they accept sits in the configuration skill alongside the
+workspace run's, because a flag cannot be explained apart from the
+configuration field it reads — `--check breadth` is refused outright without
+`limits.maximumBreadth`.
 
 ## Work Scope
 
@@ -756,7 +756,7 @@ a vendored copy:
 | [github/gh-stack](https://github.com/github/gh-stack)               | MIT        | 1                                                                                                             |
 | [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT        | 1                                                                                                             |
 | [pbakaus/impeccable](https://github.com/pbakaus/impeccable)         | Apache-2.0 | 1                                                                                                             |
-| [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase)   | MIT        | 14, the `conformetry-*`, `codometer-*`, `codependix-*`, and `callidescope-*` skills this repository publishes |
+| [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase)   | MIT        | 13, the `conformetry-*`, `codometer-*`, `codependix-*`, and `callidescope-*` skills this repository publishes |
 
 `skills-lock.json` maps each individual skill to its source.
 

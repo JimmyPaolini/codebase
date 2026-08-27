@@ -39,8 +39,7 @@ ignorePaths:
   - "**/.agents/licenses/**"
   # installed-skills-start
   - "**/.agents/skills/ask-matt/**"
-  - "**/.agents/skills/callidescope-analysis/**"
-  - "**/.agents/skills/callidescope-configure/**"
+  - "**/.agents/skills/callidescope-configuration/**"
   - "**/.agents/skills/callidescope-trace/**"
   - "**/.agents/skills/callidescope-triage/**"
   - "**/.agents/skills/code-review/**"

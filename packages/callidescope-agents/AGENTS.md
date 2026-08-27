@@ -20,7 +20,7 @@ directory. There is no manifest, no `node_modules`, and nothing beside it. So:
 
 - **A skill may not link outside its own directory.** A relative link to a
   sibling skill resolves here and dangles for anyone who installs only one.
-  The test enforces this, which is why the four skills refer to each other by
+  The test enforces this, which is why the three skills refer to each other by
   name in prose rather than by link.
 - **A bundled script may import only Node built-ins.** Workspace packages are
   unreachable twice over: they expose TypeScript sources needing a
@@ -58,22 +58,29 @@ Content rules worth knowing before editing:
   The skills tool silently skips a skill missing either, so it fails by not
   existing rather than by reporting anything.
 
-## Why there are four skills and not three
+## Where the line between the three falls
 
-`conformetry-agents` and `codometer-agents` each ship three, split by the three
-moments of using a gate: run it, configure it, act on what it said.
-`callidescope-trace`, `callidescope-configure`, and `callidescope-triage` are
-those three.
+`conformetry-agents`, `codometer-agents`, and `codependix-agents` each split by
+the moments of using a gate: run it, configure it, act on what it said.
+`callidescope-trace`, `callidescope-configuration`, and `callidescope-triage`
+are those three, and the two boundaries that are easy to get wrong are worth
+stating.
 
-`callidescope-analysis` is the fourth because callidescope ships two commands —
-`depth <address>` and `breadth <address>` — that gate nothing and report on no
-workspace. They answer a question about one callable that a refactor asks
-before it starts, and that no `--check` ever asks. It is its own skill rather
-than a section inside `callidescope-trace` because a `description` is a skill's
-entire trigger surface: "what would this rename touch" and "run the trace"
-share no vocabulary, so one description covering both would match neither well.
+**`depth <address>` and `breadth <address>` belong with the trace, not on their
+own.** They gate nothing and report on no workspace, which is a real
+difference — but reading one callable's callers and reading a whole workspace's
+stacks are the same act of reading a call graph, described by the same
+resolution rules, and an agent asking "what would this rename touch" is asking
+to read one rather than to configure anything. An earlier draft gave them a
+fourth skill; folding them back in keeps one description covering every way of
+reading the graph instead of splitting that trigger surface in two.
 
-`codependix-agents` reached four the same way, for the same reason.
+**Every flag lives in `callidescope-configuration`, including the three that
+`depth` and `breadth` accept.** A flag is a way of telling callidescope what to
+do whichever command carries it, and `--check`, `--write`, and `--directories`
+cannot be explained without the configuration fields they read — `--check
+breadth` is refused outright without `limits.maximumBreadth`. Splitting flags
+from the file they layer over would mean neither half was usable alone.
 
 ## Validating
 

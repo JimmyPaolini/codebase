@@ -28,21 +28,22 @@ holds, most of which are specific to this workspace.
 
 | Skill | Reach for it when |
 | ----- | ----------------- |
-| [callidescope-trace](skills/callidescope-trace/SKILL.md) | Running a trace, choosing a `--check` set, narrowing with `--directories`, picking a `--format`, or reading a printed stack |
-| [callidescope-configure](skills/callidescope-configure/SKILL.md) | Writing a `callidescope.config.ts` — limits, entry points, exclusions, ignored callees, and output destinations |
+| [callidescope-trace](skills/callidescope-trace/SKILL.md) | Running `callidescope`, `depth`, or `breadth`, and reading what any of them printed — a stack, a spread row, a caller list |
+| [callidescope-configuration](skills/callidescope-configuration/SKILL.md) | Telling a run what to do — the flags, and the `callidescope.config.ts` they read alongside |
 | [callidescope-triage](skills/callidescope-triage/SKILL.md) | A depth or breadth gate failed, a committed report went stale, a spread or misplacement row needs acting on, or a run was refused |
-| [callidescope-analysis](skills/callidescope-analysis/SKILL.md) | Deciding whether to extract, inline, move, or rename one callable, via `depth <address>` and `breadth <address>` |
 
-The first three mirror conformetry's generate / configure / validate,
-codometer's measure / configure / triage, and codependix's export / configure /
-triage: run the tool, tell it what to enforce, act on what it said.
+That is conformetry's generate / configure / validate, codometer's measure /
+configure / triage, and codependix's export / configure / triage, one more
+time: run the tool, tell it what to enforce, act on what it said.
 
-The fourth is callidescope's own. `depth` and `breadth` against a single
-address answer questions — _what would this rename touch_, _where do I cut this
-callable in two_ — that no `--check` ever asks, and that share no vocabulary
-with running a trace. Since a skill's `description` is its entire trigger
-surface, folding that into `callidescope-trace` would have meant it never fired
-for the questions it answers.
+The line between the first two is what a run _says_ against what a run is
+_told_. `depth <address>` and `breadth <address>` sit with the trace rather
+than on their own, because reading one callable's callers and reading a whole
+workspace's stacks are the same act of reading a call graph — and an agent
+asking "what would this rename touch" is asking to read one, not to configure
+anything. Every flag those commands accept is in the configuration skill
+alongside the flags the workspace run accepts, since a flag is a way of telling
+callidescope what to do whichever command carries it.
 
 ## Why there are no bundled scripts
 

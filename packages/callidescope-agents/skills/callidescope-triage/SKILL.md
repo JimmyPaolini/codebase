@@ -84,7 +84,7 @@ happens in a repository that chose a number.
 The fix is to **split the callable along the responsibilities its callees
 already group into**, not to inline anything. Run the `breadth` command against
 the callable's address to see the direct callees and callers side by side
-before deciding where the seam goes — the `callidescope-analysis` skill covers
+before deciding where the seam goes — the `callidescope-trace` skill covers
 reading that.
 
 ## A module-spread row
@@ -199,4 +199,4 @@ not about the configuration that measured it. The fix belongs in the code. Turn
 to the configuration only when the measurement itself is wrong — a module
 identifier derived from the wrong directory, an entry-point rule missing, a
 cross-cutting logger inflating everything's numbers — and the
-`callidescope-configure` skill covers each of those.
+`callidescope-configuration` skill covers each of those.

@@ -67,8 +67,7 @@ applications/meanderaw/output/** linguist-generated
 .agents/licenses/** linguist-vendored
 # installed-skills-start
 .agents/skills/ask-matt/** linguist-vendored
-.agents/skills/callidescope-analysis/** linguist-vendored
-.agents/skills/callidescope-configure/** linguist-vendored
+.agents/skills/callidescope-configuration/** linguist-vendored
 .agents/skills/callidescope-trace/** linguist-vendored
 .agents/skills/callidescope-triage/** linguist-vendored
 .agents/skills/code-review/** linguist-vendored

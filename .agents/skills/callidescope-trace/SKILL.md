@@ -1,128 +1,52 @@
 ---
 name: callidescope-trace
-description: Run a callidescope trace and read what it printed — choosing between --check depth, --check breadth, and --check reports, narrowing a run with --directories, picking a --format, deciding whether a run writes anything, or reading a printed call stack frame by frame. Use when running callidescope or npx callidescope, when wiring a depth gate into CI or a commit hook, when a whole-workspace run is too slow, when a stack printed a depth as "≥ n", or when reading a committed markdown report, mermaid diagram, or JSON report it produced. Covers the command-line host directly, without assuming any task runner.
+description: Run callidescope and read what it printed — a whole-workspace trace, or the depth and breadth commands against one callable addressed as file#qualified-name. Use when running callidescope or npx callidescope, when reading a call stack, a module-spread row, a breadth row, or a possibly-misplaced row, when a depth printed as "≥ n" needs interpreting, when reading a committed markdown report, mermaid diagram, or JSON report, or when asking who calls this, what does it call, what would this rename touch, and where should this callable be split before a refactor starts.
 license: MIT
 ---
 
-# Running a callidescope trace
+# Running callidescope and reading what it says
 
-Callidescope builds one call graph for a TypeScript workspace, measures how
-deep a stack gets below each entry point, and reports the paths that exceed a
-configured limit. It follows calls through **injected dependencies** — the hop
-from `this.someService.load()` into `SomeService.load` — which is the edge no
-file-at-a-time tool can see.
+Callidescope builds one call graph for a TypeScript workspace and measures the
+shape of it. It follows calls through **injected dependencies** — the hop from
+`this.someService.load()` into `SomeService.load` — which is the edge no
+file-at-a-time tool can see, and where most of a framework codebase's control
+flow actually lives.
+
+Three commands, answering three different questions:
 
 ```bash
-npx callidescope
+npx callidescope                                        # the whole workspace
+npx callidescope depth src/foo.service.ts#FooService.bar    # one callable, vertically
+npx callidescope breadth src/foo.service.ts#FooService.bar  # one callable, horizontally
 ```
 
 A repository with no configuration file is traced with defaults rather than
-told to write one, so a bare run always produces something. What it _gates_ on,
-and what it _writes_, are both opt-in.
+told to write one, so a bare run always produces something. What a run _gates_
+on and what it _writes_ are both opt-in and both live in the
+`callidescope-configuration` skill; this one is about reading the result.
 
-## The two decisions a run makes
+## `callidescope`: the whole workspace
 
-Every invocation answers two independent questions, and neither implies the
-other:
+Reports four findings.
 
-| Question | Answered by |
-| -------- | ----------- |
-| What does this run fail on? | `--check`, a comma-separated set |
-| What does this run rewrite? | `--write`, plus the destinations in the configuration |
+**Deep call stacks.** The single deepest path below each entry point, when it
+exceeds `limits.maximumDepth`. Only one path per entry point is ever built, so
+a wide graph costs no more than a narrow one.
 
-A run given neither `--write` nor `--check reports` **reads no destination and
-rewrites none**. It traces, prints, and exits. That is what makes a bare run
-safe to type inside somebody's checkout, and it is why `--check depth` on a
-pull request leaves every committed report exactly as it found it.
+**Module spread.** A callable whose transitive callees reach many unrelated
+modules **and** which calls several of them directly. Both conditions matter:
+transitive reach alone flags every entry point, because an entry point
+legitimately reaches the whole program. A spread row is therefore specifically
+a callable _personally orchestrating_ unrelated concerns.
 
-## `--check` takes a set, and the set matters
+**Breadth.** How many callables one callable calls directly. Reported always;
+gated only when `limits.maximumBreadth` is set, which is the one limit with no
+default.
 
-| Value | What fails the run |
-| ----- | ------------------ |
-| `depth` | A call stack deeper than `limits.maximumDepth` |
-| `breadth` | A callable calling more callables directly than `limits.maximumBreadth` |
-| `reports` | A configured destination no longer holding what a fresh run would write |
+**Possibly misplaced callables.** A callable whose callers nearly all sit in
+one _other_ module of the same project. The output is a concrete move.
 
-Three refusals to expect, all of them deliberate:
-
-- **`--check` with no value is refused.** A set with nothing in it is
-  indistinguishable from the flag having been left off, so reading it as "gate
-  nothing" would produce a gate that cannot fail. `--check "$GATES"` with the
-  variable unset would then pass forever over a stack twice as deep as anything
-  allowed — worse than no gate, because it looks like protection.
-- **An unrecognized value is refused**, and the message lists what is accepted.
-- **`--check breadth` with no `limits.maximumBreadth` configured is refused.**
-  Breadth is the one limit with no default: until a repository picks a number,
-  nothing can exceed it, and falling back to an unbounded limit would look
-  exactly like passing.
-
-## Why `depth` and `reports` belong on opposite sides of a pull request
-
-**Depth is the gate.** A stack got longer in this change, and this change is
-what fixes it. Run it on every pull request, and on every commit if you like —
-depth reads source and needs no build, which is what keeps it cheap enough for
-a commit hook.
-
-```bash
-npx callidescope --check depth
-```
-
-**Staleness is not a gate.** A report goes stale whenever the call graph moves
-anywhere, which is nearly every change. Gating on it would fail pull requests
-for drift they did not cause. Publish the report on the default branch instead,
-where nothing else is competing to rewrite the same block:
-
-```bash
-npx callidescope --write
-```
-
-`--write --check reports` is **refused outright**: a report cannot be stale in
-the run that just wrote it, so a command line asking for both has misunderstood
-one of them and would pass whatever it was meant to catch.
-
-## Narrowing a run with `--directories`
-
-This is the difference between a whole-workspace analysis and a one-second
-check. Each directory named needs its own `tsconfig.json`, and only those
-TypeScript programs get built:
-
-```bash
-npx callidescope -d packages/foo,packages/bar --check depth
-```
-
-Omit it and callidescope walks the working directory for every `tsconfig.json`
-it can find. On a large monorepo that is the slow path — reach for it when you
-want the workspace-wide picture, not when you want an answer about one package.
-
-`--directories` takes **paths**, not project names. Callidescope has no idea
-what workspace tool a repository uses; a directory holding a `tsconfig.json` is
-the whole contract, and it holds in a monorepo, in a single package, or in
-neither. The same list can be set once as `directories` in the configuration
-file.
-
-An Nx workspace can hand the selecting to Nx instead, through the separate
-`@callidescope/nx` plugin, which infers `trace`, `depth`, and `breadth` targets
-onto every project and traces each one _with its Nx dependencies_ — so a stack
-is not truncated the moment it crosses a package boundary. It is a separate
-package rather than a flag here on purpose: this CLI depends on nothing
-Nx-shaped, and a flag that worked only when an optional package happened to be
-installed would advertise in `--help` something that silently did nothing.
-
-## `--format` decides what prints, not what is written
-
-Printing and writing are independent, and both can be on at once. `--format`
-names one of `markdown` (the default), `mermaid`, or `json` for standard
-output; the destinations in the configuration decide what reaches a file.
-
-- **`markdown`** is the default because it is the one rendering that reads in a
-  terminal, pastes into an issue, and is already what the files hold.
-- **`json`** is for a machine reading standard output. Note that the JSON
-  report carries every documentation comment **in full**, while the printed
-  tree shortens them — so a script wanting complete text should read JSON
-  rather than parse the tree.
-- **`mermaid`** prints diagram source to paste somewhere that draws it.
-
-## Reading a printed stack
+## Reading a stack
 
 ```text
 Stack #1 | 🚨 [DEPTH ≥ 10 > 6] (decorated-method)
@@ -132,37 +56,122 @@ Stack #1 | 🚨 [DEPTH ≥ 10 > 6] (decorated-method)
      ↳ Measure aggregated statistics for the provided directory.
 ```
 
-Four things to read off it:
-
 - **`≥ 10` is a floor, not a measurement.** Something on that path could not be
   followed — a callback invoked through a parameter, a computed member name —
   and the run says so rather than quietly under-reporting. The real depth is at
-  least ten. Do not treat the number as exact, and do not treat the `≥` as a
-  defect.
+  least ten. Not a defect, and not a number to distrust: `≥ 10` against a limit
+  of 6 is a genuine failure. `Unfollowable calls` in the summary counts them.
 - **The parenthesized kind is the entry-point rule that claimed the root.**
   `orphan-root` means nothing in the repository calls it: either dead code, or
   an entry-point rule the configuration is missing.
 - **Every frame carries `file:line`**, so the next step is opening one.
-- **A frame printed `(…): ReturnType`** had a signature over 80 characters —
-  almost always a constructor taking a dozen injected services. A summary over
-  120 characters prints only its opening sentence, unmarked; only a single
-  sentence with no boundary to cut on is trimmed and marked `…`.
+- **Each frame is annotated from the type checker** — the signature, and the
+  JSDoc prose collapsed to one line — which is what makes a stack readable
+  rather than a list of places to go look. A frame printed `(…): ReturnType`
+  had a signature over 80 characters, almost always a constructor taking a
+  dozen injected services. A summary over 120 characters prints only its
+  opening sentence, unmarked; only a single sentence with no boundary to cut on
+  is trimmed and marked `…`.
 
-## The other three findings
+**Shortening applies to the printed tree only.** The JSON report carries every
+comment in full, so a script wanting complete text should read JSON rather than
+parse the tree.
 
-Depth is not the only thing a run reports.
+**The mermaid rendering draws all the stacks as one flowchart**, not one
+apiece. A single stack is a straight line, and a straight line is a list with
+extra steps; drawn together the shared tails converge — every command reaching
+the same repository, every resolver ending in the same service — and that
+convergence is what a picture shows and an indented tree cannot. Entry points
+are stadiums and everything else boxes, shape rather than color because the
+diagram is read in whichever theme the reader has. A diagram stops at 300
+callables, drops whole stacks rather than trimming so it never contains an edge
+into something it did not draw, and says how many it left out.
 
-- **Module spread** — a callable whose transitive callees reach many unrelated
-  modules **and** which calls several of them directly. Both conditions matter:
-  transitive reach alone flags every entry point, because an entry point
-  legitimately reaches the whole program.
-- **Breadth** — how many callables one callable calls directly. Reported
-  always; gated only when `limits.maximumBreadth` is set and `--check breadth`
-  is asked for.
-- **Possibly misplaced callables** — a callable whose callers nearly all sit in
-  one _other_ module of the same project. The output is a concrete move.
+## Addressing one callable
 
-## What a run does and does not follow
+`depth` and `breadth` take `<file>#<qualified-name>` — the file path and the
+qualified name callidescope already prints in every stack frame, joined by `#`.
+It is the same shape a Python traceback or an ESLint rule id uses, which means
+it is exactly what you can copy out of a report.
+
+A file holding more than one declaration under the same qualified name — two
+overloads, two callbacks bound to the same property — is disambiguated with a
+trailing `:<line>`:
+
+```bash
+npx callidescope depth src/foo.service.ts#FooService.bar:118
+```
+
+When it cannot tell which one was meant, the run says so and prints every
+candidate's line, so the disambiguated address is a copy away.
+
+Neither command writes anything, compares a destination, or takes `--check`,
+`--write`, `--json`, or `--markdown`. A lookup only ever prints. Both do take
+the same workspace-scoping flags as `callidescope` itself, because resolving an
+address still means tracing the workspace first.
+
+## `breadth`: what it calls, and what calls it
+
+Prints the callable's **direct callees and direct callers side by side** — the
+two questions a refactor or a rename needs answered together, before either one
+is safe.
+
+- **A rename.** The callers are the exhaustive list of what has to be updated.
+  This is the one question a text search answers badly in a
+  dependency-injected codebase: a call through `this.someService.load()` is
+  found by the type checker and missed by a grep for the class name.
+- **An extraction.** Extracting a responsibility out of a wide callable means
+  moving _some subset of the callees it names_. The callee list is the raw
+  material for choosing the seam — look for the subset that shares a concern,
+  and take those.
+- **An inline.** A callable with one caller and few callees is a candidate for
+  folding into that caller. Breadth confirms the "one caller" part rather than
+  assuming it.
+
+It reports on a callable nobody has flagged. It does not need a finding to be
+worth running.
+
+## `depth`: every chain above and below
+
+Prints **every path above the callable and every path below it** — every caller
+chain up to a root, every callee chain down to a leaf — rather than folding
+each direction into the single deepest one that `callidescope`'s own report
+keeps.
+
+That difference is the point. The workspace report answers "how deep does this
+get", so one path per entry point is enough. `depth` answers "what is this
+callable actually part of", and a callable reached from a dozen places, or
+reaching a dozen leaves, is exactly the shape it is asked to show in full.
+
+Each direction is capped at 200 paths, and a capped run says so. The cap exists
+because a widely-called utility whose callees fan out just as wide multiplies
+those branches together — enumerating every path is not bounded by construction
+the way one deepest path is.
+
+- **Turning a depth finding into a plan.** The workspace report names the
+  stack; `depth` against a frame in the middle of it shows every _other_ chain
+  that frame participates in, which is what tells you whether collapsing a
+  forwarding layer is safe or whether three other callers depend on it.
+- **Testing a "this looks misplaced" hunch.** The caller trees show where the
+  callable is really used from — the same evidence the possibly-misplaced
+  finding is built on, in full rather than summarized.
+
+## Which one to reach for
+
+| The question | The command |
+| ------------ | ----------- |
+| Is anything in this workspace too deep, too wide, or misplaced? | `callidescope` |
+| What breaks if I rename this? | `breadth` |
+| Where do I cut this callable in two? | `breadth` |
+| Can I inline this? | `breadth` |
+| Can I collapse this layer? | `depth` |
+| What is this callable actually part of? | `depth` |
+| Does this belong in this file? | `depth` |
+
+## What the graph does and does not contain
+
+The same resolution rules govern all three commands, and they decide what any
+of them can tell you.
 
 | Written as | Resolved to |
 | ---------- | ----------- |
@@ -174,50 +183,43 @@ Depth is not the only thing a run reports.
 | `list.map(callback)` | The callback, as its own frame — `map` itself is external |
 | `target[key]()` | Nothing. Recorded as unfollowable rather than guessed |
 
-Calls into dependencies are leaves. Whether `Array.prototype.map` is deeply
-implemented says nothing about whether _your_ layering is too deep, and
-counting it would move every number on an unrelated upgrade.
+Four consequences worth holding on to:
+
+- **Structural matching is not optional**, because classes routinely satisfy an
+  interface without writing `implements`. It also means a caller list can
+  contain a class that never actually calls the callable at runtime — check
+  `maximumImplementationCandidates` when a result looks implausibly wide.
+- **A computed member call resolves to nothing.** A caller reaching the
+  callable that way will not appear, so `breadth` does not fully cover a rename
+  in a codebase that dispatches through computed names.
+- **Calls into dependencies are leaves.** Whether `Array.prototype.map` is
+  deeply implemented says nothing about whether _your_ layering is too deep,
+  and counting it would move every number on an unrelated upgrade.
+- **`ignoreCallees` globs are dropped from the graph entirely**, so a callable
+  the configuration ignores — typically a logger — appears in no list and
+  counts toward nobody's depth or breadth.
 
 **Cycles are collapsed before depth is measured**, so a mutually recursive
-cluster of three contributes three frames once. That is why the numbers do not
-move between runs: detecting a repeat visit mid-walk would make the answer
-depend on which path arrived first, and a linter whose numbers move on their
-own is not usable as a gate.
+cluster of three contributes three frames once — an honest floor on a stack
+that has no ceiling. That is why the numbers do not move between runs:
+detecting a repeat visit mid-walk would make the answer depend on which path
+arrived first, and a linter whose numbers move on its own is not usable as a
+gate.
 
-## Prompting, and why it will not hang a script
+**Depth is only meaningful relative to a root**, and most code in a framework
+codebase is called by the framework rather than by the repository. Roots are
+therefore configurable — decorated methods, lifecycle hooks, bootstraps, index
+exports — and anything left with no caller is promoted to an orphan root rather
+than dropped.
 
-`callidescope`, `depth`, and `breadth` all prompt interactively for a value
-left off the command line — `depth` and `breadth` for a missing `<address>`,
-all three for a missing `--format`. **Prompting is gated on an attached
-terminal outside CI**, so a script, a hook, or a CI job gets the non-prompting
-behavior for free and a missing value is reported as a rejected command line
-instead. `--no-interactive` opts out explicitly when you want that behavior at
-a real terminal too.
+## After reading
 
-## Where a report can land
+To narrow, gate, or publish a run, and to change any of the thresholds above,
+reach for the `callidescope-configuration` skill. When a run fails or a report
+reads stale, reach for `callidescope-triage`.
 
-Four destinations, each independent and each configured rather than flagged
-(`--json` and `--markdown` name one path apiece as a convenience):
-
-| Destination | What it writes |
-| ----------- | -------------- |
-| `json` | The whole run as JSON, at one path |
-| `markdown` | The whole run, spliced between markers in one file |
-| `mermaid` | The same report with its stacks drawn as one flowchart |
-| `projectReadmes` | One section per traced project, in that project's own readme |
-
-The `callidescope-configure` skill covers writing those. Two facts worth
-knowing before reading one:
-
-- **All the stacks are drawn as one flowchart**, not one apiece. A single stack
-  is a straight line, and a straight line is a list with extra steps; drawn
-  together, the shared tails converge, and that convergence is what a picture
-  shows and an indented tree cannot. A diagram stops at 300 callables and says
-  how many stacks it dropped, dropping whole stacks so it never contains an
-  edge into something it did not draw.
-- **Never hand-edit inside the markers.** The next `--write` replaces the block
-  wholesale, so an edited report is a diff that silently disappears.
-
-When a run fails, or a report reads stale, reach for the `callidescope-triage`
-skill. When the question is about one callable rather than the workspace, reach
-for `callidescope-analysis`.
+A refactor moves the call graph, which makes every committed report stale.
+Re-run the write configuration once the change lands, and lint **before**
+regenerating: every frame carries a `file:line`, so a formatter that sorts
+class members moves the line numbers of everything after it, and a report
+written before that sort is stale the moment it lands.
