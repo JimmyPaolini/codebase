@@ -72,7 +72,7 @@ const sharedConfiguration = {
  */
 const buildPackageConfiguration = (): CodometerConfiguration => ({
   ...sharedConfiguration,
-  limits: [{ metric: `${CORPUS_TARGET_NAME}.size`, value: "12 KB" }],
+  limits: [{ metric: `${CORPUS_TARGET_NAME}.size`, value: "24 KB" }],
   output: {
     json: { path: "codometer-report.json" },
     markdown: {

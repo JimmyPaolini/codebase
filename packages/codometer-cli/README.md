@@ -247,7 +247,7 @@ codometer configuration --limits
 ```text
 | Directory        | Metric                    | Label | Severity | Value   | Declared in                          |
 | ---              | ---                       | ---   | ---      | ---     | ---                                  |
-| packages/logger  | `Compiled JavaScript.size`| —     | fail     | 6.00 kB | `packages/logger/codometer.config.ts`|
+| packages/logger  | `Compiled JavaScript.size`| —     | fail     | 12.00 kB | `packages/logger/codometer.config.ts`|
 ```
 
 It walks for every configuration file beneath the directory it is given — in
