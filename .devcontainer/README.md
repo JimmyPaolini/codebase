@@ -190,16 +190,11 @@ The `🧑‍🔧 Make Codebase` job in [`.github/workflows/make-codebase.yml`](.
 
 **Pull requests are currently skipped.** No build cache has ever existed, so every layer misses and the image is rebuilt from scratch — about eleven minutes, of which roughly six and a half is the `python` feature compiling CPython from source under `optimize: true`. That overran the twelve-minute job cap and the job was cancelled mid-test.
 
-Pushes to `main` run and write the cache. Two things are published, and it is worth keeping them apart:
+Pushes to `main` run and publish `ghcr.io/jimmypaolini/codebase-devcontainer:latest`. That image is both the usable image and the build cache: this configuration is compose-based, and for compose configurations the devcontainer CLI bakes `BUILDKIT_INLINE_CACHE=1` into the feature build, so the published image carries its own layer metadata and the next run's `cacheFrom` resolves against it.
 
-| Tag | Written by | What it is for |
-| --- | ---------- | -------------- |
-| `:latest` | `imageName` + `push: filter` | The usable image — pull it to run the devcontainer without building |
-| `:build-cache` | `cacheTo` | The layer cache `cacheFrom` reads on the next run |
+There is deliberately no separate cache tag. The CLI refuses `--cache-to` for a compose configuration — `--cache-to not supported.`, a hard build failure rather than a degraded run — along with `--push` and `--output`. Pushing is done by the action afterwards, not the CLI, which is why `push: filter` works where `--push` would not.
 
-The image is **not** a cache source. The action publishes it with a plain `docker push`, which embeds no inline cache metadata, so `cacheTo` is what makes the next build fast — pushing the image alone does nothing for build time. The cache lives in the registry rather than the Actions cache because GitHub evicts entries unused for seven days, and `.devcontainer/**` changes are routinely further apart than that.
-
-Restore the pull request path once a `main` run has written a `:build-cache` tag.
+Restore the pull request path once a `main` run has published an image.
 
 Note the standing tension: the job only triggers on `.devcontainer/**` changes, which are exactly the changes that invalidate feature layers. The `python` feature is layer 11 of 16, so a change that lands in a later layer still reuses it, while one landing earlier does not.
 

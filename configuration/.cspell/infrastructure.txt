@@ -4,6 +4,7 @@ alertmanager
 apikey
 aquasecurity
 bitnami
+buildkit
 buildx
 bullmq
 burstable
