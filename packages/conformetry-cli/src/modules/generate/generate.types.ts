@@ -10,6 +10,4 @@ export interface GenerateCommandOptions {
   config?: string;
   directory?: string;
   generator: string;
-  /** False when `--no-interactive` was passed. */
-  interactive?: boolean;
 }

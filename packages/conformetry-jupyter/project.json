@@ -21,8 +21,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "packages/conformetry-jupyter/src/index.ts",
-        "outputPath": "dist/packages/conformetry-jupyter",
+        "outputPath": "packages/conformetry-jupyter/dist",
         "tsConfig": "packages/conformetry-jupyter/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

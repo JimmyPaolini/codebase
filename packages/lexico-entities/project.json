@@ -21,8 +21,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "packages/lexico-entities/src/index.ts",
-        "outputPath": "dist/packages/lexico-entities",
+        "outputPath": "packages/lexico-entities/dist",
         "tsConfig": "packages/lexico-entities/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

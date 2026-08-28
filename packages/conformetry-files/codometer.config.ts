@@ -8,7 +8,7 @@ export default {
   targets: [
     {
       ...compiledJavaScriptTarget,
-      include: ["dist/packages/conformetry-files/**/*.js"],
+      include: ["dist/**/*.js"],
     },
   ],
 };

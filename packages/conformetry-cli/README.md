@@ -67,7 +67,6 @@ Renders one generator's template folder into a target directory.
 | `--generator <name>` | Which generator from the registry to run. Required |
 | `--config [path]` | Configuration file to read. Defaults to `configuration/conformetry.config.ts` |
 | `--directory [path]` | Where to write the rendered files |
-| `--no-interactive` | Never prompt; fail instead when a required input is missing |
 
 A generator's own inputs are passed as flags alongside these:
 
@@ -81,8 +80,23 @@ rather than declared ahead of time. This is also why the generator is selected
 with `--generator` and not `--name`: almost every generator takes a `name`, and
 reserving that flag would leave no way to supply it.
 
-Missing required inputs are prompted for when stdin is a TTY and `CI` is not
-`true`. Otherwise the command fails rather than hanging.
+**Missing inputs are prompted for whenever stdin is a terminal**, and there is
+no flag to turn that off — an attached terminal is the whole condition, so a
+script, a hook, or a CI job is never prompted.
+
+**Every input a generator declares is required.** A generator substitutes each
+of its placeholders, and mustache renders a missing one as an empty string
+rather than failing, so an optional input would quietly produce a hole in the
+generated file. `nx g conformetry:<template>` has always taken that line; this
+command now does too, so the same generator asks for the same values whichever
+way it is run.
+
+With no terminal, a missing input is therefore **refused** — naming the flag to
+pass — and the run exits non-zero. That refusal is the load-bearing half.
+`prompts` does not fail on a non-terminal stdin: it draws its menu, never
+resolves, and lets the process **exit 0 having generated nothing**, which is how
+this command used to hang in CI. It now asserts a terminal before prompting at
+all and reports a rejected command line instead.
 
 ### `conformetry templates`
 
@@ -892,14 +906,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2478-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-90.57_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2571-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-94.14_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-35-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-34-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-11.96_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-12.74_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -907,25 +921,25 @@ graph LR
 ![Interfaces](https://img.shields.io/badge/Interfaces-5-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-27-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-52-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-26-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-51-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
-![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-1-f7df1e?style=flat-square)
+![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-8-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-17-8b5cf6?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-16-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-10-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-133-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-137-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-32-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-89-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-76-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-85-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-131-0284c7?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-90-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-79-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-81-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-130-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-23-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-145-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-243-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-161-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-265-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -946,16 +960,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-154-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-34-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-102-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-83-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-169-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-36-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-13-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-111-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-91-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-8-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-9-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-32-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-138-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-35-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-150-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML

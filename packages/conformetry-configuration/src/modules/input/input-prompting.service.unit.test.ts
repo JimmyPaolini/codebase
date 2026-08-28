@@ -1,6 +1,14 @@
 import { Test } from "@nestjs/testing";
 import prompts from "prompts";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { InputPromptingService } from "./input-prompting.service";
 import { InputSchemaService } from "./input-schema.service";
@@ -22,8 +30,17 @@ describe(InputPromptingService, () => {
     service = await module.resolve(InputPromptingService);
   });
 
+  const originalIsTty = process.stdin.isTTY;
+
   beforeEach(() => {
     promptRunner.mockReset();
+    // A terminal, so each test exercises the prompt rather than the refusal
+    // standing in front of it.
+    process.stdin.isTTY = true;
+  });
+
+  afterEach(() => {
+    process.stdin.isTTY = originalIsTty;
   });
 
   it("is defined", () => {
@@ -114,6 +131,34 @@ describe(InputPromptingService, () => {
           propertySchema: { type: "string" },
         }),
       ).resolves.toBeUndefined();
+    });
+  });
+
+  describe("isAtTerminal", () => {
+    it.each([
+      [true, true],
+      [false, false],
+    ])("reads a stdin isTTY of %s as %s", (isTty, expected) => {
+      process.stdin.isTTY = isTty;
+
+      expect(service.isAtTerminal()).toBe(expected);
+    });
+
+    // `prompts` would otherwise draw its menu, never resolve, and let the
+    // process exit 0 having generated nothing.
+    it("refuses to prompt when stdin is not a terminal", async () => {
+      process.stdin.isTTY = false;
+
+      await expect(
+        service.promptForInput({
+          inputName: "name",
+          isRequired: true,
+          propertySchema: { type: "string" },
+        }),
+      ).rejects.toThrow(
+        "name is required, and stdin is not a terminal so it cannot be asked for. Pass --name.",
+      );
+      expect(promptRunner).not.toHaveBeenCalled();
     });
   });
 });

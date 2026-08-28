@@ -15,11 +15,18 @@
     "@vitest/coverage-v8": "catalog:",
     "vitest": "catalog:"
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "main": "src/index.ts",
   "name": "@codometer/size",
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "main": "./dist/src/index.js",
+    "registry": "https://registry.npmjs.org",
+    "types": "./dist/src/index.d.ts"
   },
   "type": "module",
   "typeCoverage": {

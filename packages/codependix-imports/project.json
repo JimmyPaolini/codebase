@@ -21,8 +21,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "packages/codependix-imports/src/index.ts",
-        "outputPath": "dist/packages/codependix-imports",
+        "outputPath": "packages/codependix-imports/dist",
         "tsConfig": "packages/codependix-imports/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

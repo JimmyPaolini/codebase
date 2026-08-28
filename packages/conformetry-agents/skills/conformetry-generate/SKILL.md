@@ -103,9 +103,17 @@ pass `--directory` there when you mean to write into the workspace.
 
 ## Running without a person present
 
-The command-line host prompts only when the session is interactive and `CI` is
-unset. Force it off with `--no-interactive`, and expect a hard error naming any
-required input you did not pass rather than a silent default.
+The command-line host prompts whenever stdin is a terminal, and there is no
+flag to turn that off — an attached terminal is the whole condition, so an
+agent shell, a hook, or a CI job is never prompted.
+
+**Every input a generator declares is required**, on both entrypoints: a
+generator substitutes each of its placeholders, and mustache renders a missing
+one as an empty string rather than failing, so an optional input would quietly
+put a hole in the generated file. With no terminal, an input you did not pass
+is therefore a hard error naming the flag to pass — never a silent default, and
+never a menu drawn where nothing can answer it. Pass every input the template
+declares, or run where you can be asked.
 
 ## After generating
 

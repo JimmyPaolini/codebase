@@ -260,4 +260,122 @@ describe(AddressReportService, () => {
       ...directCalls,
     });
   });
+
+  // 📚 Several callables in one document
+
+  it("renders json as an array even for a single callable", () => {
+    const empty: CallAddressTreeResult = { stacks: [], truncated: false };
+
+    const rendered = service.renderDepthReports({
+      format: "json",
+      reports: [{ address: "a.ts#Foo.bar", downward: empty, upward: empty }],
+    });
+
+    // Always an array, so a script parses one run's output without first
+    // counting how many addresses it asked about.
+    expect(JSON.parse(rendered)).toStrictEqual([
+      { above: empty, address: "a.ts#Foo.bar", below: empty },
+    ]);
+  });
+
+  it("renders json as one array holding every callable asked about", () => {
+    const empty: CallAddressTreeResult = { stacks: [], truncated: false };
+
+    const rendered = service.renderDepthReports({
+      format: "json",
+      reports: [
+        { address: "a.ts#Foo.bar", downward: empty, upward: empty },
+        { address: "b.ts#Bar.baz", downward: empty, upward: empty },
+      ],
+    });
+
+    expect(JSON.parse(rendered)).toStrictEqual([
+      { above: empty, address: "a.ts#Foo.bar", below: empty },
+      { above: empty, address: "b.ts#Bar.baz", below: empty },
+    ]);
+  });
+
+  it("gives each callable its own headed markdown section", () => {
+    const empty: CallAddressTreeResult = { stacks: [], truncated: false };
+
+    const rendered = service.renderDepthReports({
+      format: "markdown",
+      reports: [
+        { address: "a.ts#Foo.bar", downward: empty, upward: empty },
+        { address: "b.ts#Bar.baz", downward: empty, upward: empty },
+      ],
+    });
+
+    expect(rendered).toContain("# 🔭 Callidescope depth — `a.ts#Foo.bar`");
+    expect(rendered).toContain("# 🔭 Callidescope depth — `b.ts#Bar.baz`");
+  });
+
+  // A single address must render byte-for-byte what the singular method does,
+  // so the flag change costs no existing markdown reader anything.
+  it("renders one callable's markdown identically to the singular render", () => {
+    const empty: CallAddressTreeResult = { stacks: [], truncated: false };
+    const report = { address: "a.ts#Foo.bar", downward: empty, upward: empty };
+
+    expect(
+      service.renderDepthReports({ format: "markdown", reports: [report] }),
+    ).toBe(service.renderDepth({ ...report, format: "markdown" }));
+  });
+
+  it("renders breadth json as an array holding every callable", () => {
+    const directCalls = { callees: [], callers: [] };
+    const location = buildSourceLocation();
+
+    const rendered = service.renderBreadthReports({
+      format: "json",
+      reports: [
+        {
+          address: "a.ts#Foo.bar",
+          directCalls,
+          displayName: "Foo.bar",
+          id: "a#0",
+          location,
+        },
+        {
+          address: "b.ts#Bar.baz",
+          directCalls,
+          displayName: "Bar.baz",
+          id: "b#0",
+          location,
+        },
+      ],
+    });
+
+    expect(JSON.parse(rendered)).toStrictEqual([
+      { address: "a.ts#Foo.bar", callable: "Foo.bar", ...directCalls },
+      { address: "b.ts#Bar.baz", callable: "Bar.baz", ...directCalls },
+    ]);
+  });
+
+  it("gives each callable its own headed breadth section", () => {
+    const directCalls = { callees: [], callers: [] };
+    const location = buildSourceLocation();
+
+    const rendered = service.renderBreadthReports({
+      format: "markdown",
+      reports: [
+        {
+          address: "a.ts#Foo.bar",
+          directCalls,
+          displayName: "Foo.bar",
+          id: "a#0",
+          location,
+        },
+        {
+          address: "b.ts#Bar.baz",
+          directCalls,
+          displayName: "Bar.baz",
+          id: "b#0",
+          location,
+        },
+      ],
+    });
+
+    expect(rendered).toContain("# 🔭 Callidescope breadth — `a.ts#Foo.bar`");
+    expect(rendered).toContain("# 🔭 Callidescope breadth — `b.ts#Bar.baz`");
+  });
 });

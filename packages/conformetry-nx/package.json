@@ -45,6 +45,14 @@
     "./src/executors/*": "./src/executors/*",
     "./src/generators/*": "./src/generators/*"
   },
+  "files": [
+    "dist",
+    "executors.json",
+    "generators.json",
+    "LICENSE",
+    "README.md",
+    "src"
+  ],
   "generators": "./generators.json",
   "main": "src/index.ts",
   "name": "@conformetry/nx",
@@ -55,7 +63,22 @@
   "private": true,
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "exports": {
+      ".": {
+        "default": "./dist/src/index.cjs",
+        "import": "./dist/src/index.cjs",
+        "require": "./dist/src/index.cjs",
+        "types": "./dist/src/index.d.ts"
+      },
+      "./executors.json": "./executors.json",
+      "./generators.json": "./generators.json",
+      "./package.json": "./package.json",
+      "./src/executors/*": "./dist/src/executors/*",
+      "./src/generators/*": "./dist/src/generators/*"
+    },
+    "main": "./dist/src/index.js",
+    "registry": "https://registry.npmjs.org",
+    "types": "./dist/src/index.d.ts"
   },
   "type": "module",
   "typeCoverage": {

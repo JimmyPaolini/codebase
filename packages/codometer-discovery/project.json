@@ -21,8 +21,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "packages/codometer-discovery/src/index.ts",
-        "outputPath": "dist/packages/codometer-discovery",
+        "outputPath": "packages/codometer-discovery/dist",
         "tsConfig": "packages/codometer-discovery/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

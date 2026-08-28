@@ -1,9 +1,9 @@
 import path from "node:path";
 
 import {
-  CALLIDESCOPE_OUTPUT_FORMATS,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_PREVIEW_COUNT,
+  InputError,
   InputService,
 } from "@callidescope/configuration";
 import {
@@ -100,6 +100,14 @@ export class CallidescopeCommand extends CommandRunner {
     return (
       configuration.output.projectReadmes?.previewCount ?? DEFAULT_PREVIEW_COUNT
     );
+  }
+
+  /** Logs a command line the input service refused, and fails the run. */
+  private rejectCommandLine(error: InputError): void {
+    this.logger.error("🔭 Rejected the command line", undefined, {
+      reason: error.message,
+    });
+    process.exitCode = 1;
   }
 
   /**
@@ -222,23 +230,6 @@ export class CallidescopeCommand extends CommandRunner {
     return args.mode.checksBreadth;
   }
 
-  /** Fills in `--format` by prompting, when it was left off and can be asked. */
-  private async resolveOptions(
-    options: CallidescopeCommandOptions,
-    canPrompt: boolean,
-  ): Promise<CallidescopeCommandOptions> {
-    if (options.format !== undefined || !canPrompt) {
-      return options;
-    }
-
-    const format = await this.inputService.promptForSelect({
-      choices: CALLIDESCOPE_OUTPUT_FORMATS,
-      message: "Which output format?",
-    });
-
-    return { ...options, format };
-  }
-
   /** Writes every configured destination, returning the stale ones. */
   private syncDestinations(args: SyncDestinationsArguments): string[] {
     const stale: string[] = [];
@@ -297,6 +288,48 @@ export class CallidescopeCommand extends CommandRunner {
     return stale;
   }
 
+  /** Traces the workspace, reports, and sets the exit code. */
+  private async traceWorkspace(
+    options: CallidescopeCommandOptions,
+  ): Promise<void> {
+    const resolvedOptions =
+      await this.inputService.resolveFormatOption(options);
+    const prepared = await this.runPlanService.prepareRun(resolvedOptions);
+
+    if (prepared === undefined) {
+      return;
+    }
+
+    const { configuration, mode, workspaceRoot } = prepared;
+
+    const outcome = this.callidescopeService.trace({
+      configuration,
+      directories: resolvedOptions.directories ?? configuration.directories,
+      workspaceRoot,
+    });
+
+    this.report({ configuration, result: outcome.result });
+
+    // Reports are produced before either finding is weighed, so a run that
+    // writes and gates leaves its reports behind even when the gate trips.
+    const stalePaths = this.runPlanService.touchesFiles(mode)
+      ? this.syncDestinations({
+          check: mode.checksReports,
+          configuration,
+          projectRoots: outcome.projectRoots,
+          result: outcome.result,
+        })
+      : [];
+
+    this.logger.info("🔭 Finished a call-stack trace", undefined, {
+      deepStackCount: outcome.result.deepStacks.length,
+      staleReportCount: stalePaths.length,
+      wideCallableCount: outcome.result.wideCallables.length,
+    });
+
+    this.reportFindings({ mode, result: outcome.result, stalePaths });
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -340,15 +373,6 @@ export class CallidescopeCommand extends CommandRunner {
   })
   public parseFormat(value: string | undefined): CallidescopeOutputFormat {
     return this.inputService.parseFormat(value);
-  }
-
-  /** Parses the opt-out from interactive prompting. */
-  @Option({
-    description: "Never prompt for missing values",
-    flags: "--no-interactive",
-  })
-  public parseInteractive(): boolean {
-    return false;
   }
 
   /** Parses `--json`. */
@@ -397,41 +421,14 @@ export class CallidescopeCommand extends CommandRunner {
     _passedParameters: string[],
     options: CallidescopeCommandOptions,
   ): Promise<void> {
-    const canPrompt = this.inputService.canPrompt(options.interactive);
-    const resolvedOptions = await this.resolveOptions(options, canPrompt);
-    const prepared = await this.runPlanService.prepareRun(resolvedOptions);
+    try {
+      await this.traceWorkspace(options);
+    } catch (error) {
+      if (!(error instanceof InputError)) {
+        throw error;
+      }
 
-    if (prepared === undefined) {
-      return;
+      this.rejectCommandLine(error);
     }
-
-    const { configuration, mode, workspaceRoot } = prepared;
-
-    const outcome = this.callidescopeService.trace({
-      configuration,
-      directories: resolvedOptions.directories ?? configuration.directories,
-      workspaceRoot,
-    });
-
-    this.report({ configuration, result: outcome.result });
-
-    // Reports are produced before either finding is weighed, so a run that
-    // writes and gates leaves its reports behind even when the gate trips.
-    const stalePaths = this.runPlanService.touchesFiles(mode)
-      ? this.syncDestinations({
-          check: mode.checksReports,
-          configuration,
-          projectRoots: outcome.projectRoots,
-          result: outcome.result,
-        })
-      : [];
-
-    this.logger.info("🔭 Finished a call-stack trace", undefined, {
-      deepStackCount: outcome.result.deepStacks.length,
-      staleReportCount: stalePaths.length,
-      wideCallableCount: outcome.result.wideCallables.length,
-    });
-
-    this.reportFindings({ mode, result: outcome.result, stalePaths });
   }
 }

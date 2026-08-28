@@ -2,8 +2,13 @@
 
 /** Options the `depth` and `breadth` executors accept. */
 export interface AddressExecutorOptions {
-  /** `<file>#<qualified-name>`, the form every callidescope stack prints. */
-  readonly address?: string | undefined;
+  /**
+   * The callables to look up, each `<file>#<qualified-name>`.
+   *
+   * Plural to match the `--addresses` the command line takes, so one target
+   * run answers about a whole rename rather than one callable at a time.
+   */
+  readonly addresses?: string[] | undefined;
   readonly configurationPath?: string | undefined;
   readonly format?: string | undefined;
   /** Nx project names to resolve against, replacing the target's own project. */

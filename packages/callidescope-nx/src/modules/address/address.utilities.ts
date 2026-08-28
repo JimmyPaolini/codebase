@@ -10,7 +10,7 @@ import type { AddressExecutorOptions } from "../../executors/address.types";
 import type { ExecutorContext } from "@nx/devkit";
 
 /**
- * Runs one address lookup on behalf of the `depth` or `breadth` executor.
+ * Runs the address lookups on behalf of the `depth` or `breadth` executor.
  *
  * The two differ in a single call, so the scoping, the refusals, and the
  * printing are stated once here rather than twice in the executors — which are
@@ -21,11 +21,15 @@ export async function runAddressExecutor(args: {
   kind: "breadth" | "depth";
   options: AddressExecutorOptions;
 }): Promise<{ success: boolean }> {
-  const { address } = args.options;
+  const addresses = (args.options.addresses ?? []).filter(
+    (address) => address !== "",
+  );
 
-  if (address === undefined || address === "") {
+  // Refused rather than prompted for: a task runner has nobody to ask, which
+  // is the same reason the command line refuses one there.
+  if (addresses.length === 0) {
     throw new Error(
-      `The callidescope ${args.kind} executor needs an --address, as in "--address=src/foo.service.ts#FooService.bar".`,
+      `The callidescope ${args.kind} executor needs --addresses, as in "--addresses=src/foo.service.ts#FooService.bar".`,
     );
   }
 
@@ -37,7 +41,7 @@ export async function runAddressExecutor(args: {
   const optionsService = await resolveOptionsService();
   const addressService = await resolveAddressService();
   const lookupArguments = {
-    address,
+    addresses,
     ...(args.options.configurationPath === undefined
       ? {}
       : { configurationPath: args.options.configurationPath }),

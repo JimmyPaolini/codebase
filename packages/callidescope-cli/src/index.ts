@@ -8,6 +8,10 @@ export type {
 } from "./modules/address-lookup/address-lookup.types";
 export { AddressReportModule } from "./modules/address-report/address-report.module";
 export { AddressReportService } from "./modules/address-report/address-report.service";
+export type {
+  BreadthReport,
+  DepthReport,
+} from "./modules/address-report/address-report.types";
 export { CallidescopeModule } from "./modules/callidescope/callidescope.module";
 export { CallidescopeService } from "./modules/callidescope/callidescope.service";
 export type {
