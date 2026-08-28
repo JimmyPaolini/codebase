@@ -222,6 +222,16 @@ invocation predating this flag already did, so scripts and CI jobs are
 unaffected. `all` is reserved: a configuration cannot declare a template of
 that name.
 
+**A template whose instances are scoped by project tags cannot be located by
+this host**, and a narrowed run says so rather than reporting nothing found. A
+group carrying `tags` reads its globs _inside each project the tags select_, so
+`src/modules/*` has no meaning until a project root is joined to it — which
+only a host with a project graph can do. Such a group is left out rather than
+expanded from the working directory, where it would match whatever happened to
+sit at the same relative path and measure it against a template scoped to other
+projects. Run those through [`@conformetry/nx`](../conformetry-nx/README.md),
+or pass `--instances` with the paths to check.
+
 Naming a template that does not exist is **refused**, listing the real names,
 rather than silently narrowing to nothing. A selection that matches no
 instances is reported as _"no instances belong to …"_ rather than as a clean

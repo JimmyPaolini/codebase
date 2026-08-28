@@ -138,6 +138,13 @@ describe(ValidateCommand, () => {
       unmatched: [],
     });
     vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(false);
+    // Which groups this host can locate is the discovery service's rule, and
+    // is tested there. Here every group is locatable unless a test says
+    // otherwise, so these cases exercise the command's reaction rather than
+    // restating the rule.
+    vi.mocked(instanceDiscoveryService.readWorkspaceGroups).mockImplementation(
+      (groups) => [...groups],
+    );
   });
 
   it("is defined", () => {
@@ -427,6 +434,64 @@ describe(ValidateCommand, () => {
       );
       expect(validationService.validate).not.toHaveBeenCalled();
       expect(process.exitCode).toBeUndefined();
+    });
+
+    // A tagged group's globs are read inside each project its tags select, and
+    // this host resolves no tags. Saying so is the difference between "I
+    // cannot see this template's instances" and "it has none".
+    it("says a tag-scoped template needs a tag-resolving host", async () => {
+      vi.mocked(
+        configurationService.loadConformetryConfiguration,
+      ).mockResolvedValue([
+        {
+          inputs: {},
+          instances: [
+            { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
+          ],
+          name: "widget",
+          templatePath: "configuration/templates/widget",
+        },
+      ]);
+
+      vi.mocked(instanceDiscoveryService.readWorkspaceGroups).mockReturnValue(
+        [],
+      );
+
+      const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+
+      await command.run([], { templates: ["widget"] });
+
+      expect(write).toHaveBeenCalledWith(
+        expect.stringContaining("locates instances by project tag"),
+      );
+      expect(process.exitCode).toBeUndefined();
+    });
+
+    // Expanding it from the working directory would match whatever sat at the
+    // same relative path and measure it against a template scoped elsewhere.
+    it("never globs a tag-scoped group from the working directory", async () => {
+      vi.mocked(
+        configurationService.loadConformetryConfiguration,
+      ).mockResolvedValue([
+        {
+          inputs: {},
+          instances: [
+            { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
+          ],
+          name: "widget",
+          templatePath: "configuration/templates/widget",
+        },
+      ]);
+
+      vi.mocked(instanceDiscoveryService.readWorkspaceGroups).mockReturnValue(
+        [],
+      );
+
+      await command.run([], { templates: ["widget"] });
+
+      expect(instanceDiscoveryService.findInstances).not.toHaveBeenCalledWith(
+        expect.objectContaining({ patterns: ["src/modules/*"] }),
+      );
     });
 
     it("validates only the selected template's instances", async () => {

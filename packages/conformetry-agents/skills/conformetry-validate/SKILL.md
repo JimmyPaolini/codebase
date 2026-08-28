@@ -53,6 +53,15 @@ does not exist is refused with the real names listed, and a selection matching
 no instances is reported as _"no instances belong to …"_ rather than as a clean
 report, so a typo cannot read as a pass.
 
+**A template whose instance groups carry `tags` cannot be located by the
+command-line host at all.** Those globs are read inside each project the tags
+select, so `src/modules/*` means nothing until a project root is joined to it.
+The host leaves such a group out rather than globbing it from the working
+directory, and a narrowed run tells you so instead of reporting nothing found.
+Reach for the Nx targets there, or pass `--instances` with the paths. This is
+why `conformetry validate --templates nestjs-service-module` can report nothing
+to check while `nx run <project>:conformetry-validate` checks plenty.
+
 **An agent shell is not a terminal**, so omitting `--templates` there validates
 every template exactly as it did before the flag existed — it never waits on
 the picker a terminal would be offered. `--templates all` says the same thing

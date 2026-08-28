@@ -15,13 +15,28 @@ pnpm exec nx run conformetry-examples:nx-host
 ```text
 No instances were found. Check the instance globs in the configuration.
 All checked files conform.
+No instances belong to nx-module, so nothing was checked.
+nx-module locates instances by project tag, which this host cannot resolve. Run validation through @conformetry/nx, or pass --instances with the paths to check.
 ```
 
 That is the demonstration, not a failure. Both of this configuration's instance
-groups are tag-scoped, and the command-line host locates instances by glob
-alone, resolved from the directory it runs in — so `src/modules/*`, which the Nx
-host would read _inside_ every `framework:nestjs` project, matches nothing at
-the workspace root.
+groups are tag-scoped, and locating them needs a project graph: `src/modules/*`
+is read _inside_ every `framework:nestjs` project, so it has no meaning at all
+until a project root is joined to it.
+
+The command-line host therefore **leaves a tag-scoped group alone rather than
+expanding it from the directory it runs in**. That distinction matters more than
+it looks. Globbing `src/modules/*` at the workspace root happens to match
+nothing _here_ — but in a workspace that has a root-level `src/modules/`, it
+would match whatever sits there and measure it against a template scoped to
+entirely different projects. The group is not addressed to this host, so it is
+not read by it.
+
+The third command is what that looks like when you ask for the template by
+name. A run with no template filter has a whole workspace to report on and says the
+ordinary thing; a run narrowed to `nx-module` alone would otherwise render an empty
+findings list as a clean report, so it says which template it could not locate
+and which host can.
 
 ## The configuration
 

@@ -106,20 +106,24 @@ export class ValidateCommand extends CommandRunner {
     groups: ConformetryInstanceGroup[];
     workingDirectory: string;
   }): Instance[] {
-    return args.groups.flatMap((group) => {
-      return this.instanceDiscoveryService.findInstances({
-        // A group may name only labels, which this host has nothing to match
-        // them against — it locates instances by glob alone.
-        patterns: group.patterns ?? [],
-        ...(group.substitutions === undefined
-          ? {}
-          : { substitutions: group.substitutions }),
-        ...(group.threshold === undefined
-          ? {}
-          : { threshold: group.threshold }),
-        workingDirectory: args.workingDirectory,
+    // Tag-scoped groups are dropped rather than expanded: their globs are read
+    // inside each project their tags select, and this host resolves no tags.
+    return this.instanceDiscoveryService
+      .readWorkspaceGroups(args.groups)
+      .flatMap((group) => {
+        return this.instanceDiscoveryService.findInstances({
+          // A group may name only labels, which this host has nothing to match
+          // them against — it locates instances by glob alone.
+          patterns: group.patterns ?? [],
+          ...(group.substitutions === undefined
+            ? {}
+            : { substitutions: group.substitutions }),
+          ...(group.threshold === undefined
+            ? {}
+            : { threshold: group.threshold }),
+          workingDirectory: args.workingDirectory,
+        });
       });
-    });
   }
 
   /**
@@ -156,11 +160,32 @@ export class ValidateCommand extends CommandRunner {
     selectedTemplates: ConformetryGeneratorDefinition[],
   ): void {
     const templateNames = selectedTemplates.map((template) => template.name);
+    // A template whose every group is tag-scoped was never searched for at
+    // all, which is a different answer from having been searched for and not
+    // found — and the reader's next move is a different command, not an edit.
+    const tagScopedNames = selectedTemplates
+      .filter((template) => {
+        return (
+          template.instances.length > 0 &&
+          this.instanceDiscoveryService.readWorkspaceGroups(template.instances)
+            .length === 0
+        );
+      })
+      .map((template) => template.name);
 
     process.stdout.write(
-      `No instances belong to ${templateNames.join(", ")}, so nothing was checked.\n`,
+      [
+        `No instances belong to ${templateNames.join(", ")}, so nothing was checked.`,
+        ...(tagScopedNames.length === 0
+          ? []
+          : [
+              `${tagScopedNames.join(", ")} locates instances by project tag, which this host cannot resolve. Run validation through @conformetry/nx, or pass --instances with the paths to check.`,
+            ]),
+        "",
+      ].join("\n"),
     );
     this.logger.info("🫙 Validated nothing", undefined, {
+      tagScopedNames,
       templateNames,
     });
   }
