@@ -9,6 +9,7 @@ export type {
   ConformetryInstanceGroup,
   JsonSchemaDefinition,
 } from "./modules/configuration/configuration.types";
+export { InstanceGroupService } from "./modules/configuration/instance-group.service";
 export { InputOptionsService } from "./modules/input/input-options.service";
 export { InputPromptingService } from "./modules/input/input-prompting.service";
 export { InputSchemaService } from "./modules/input/input-schema.service";

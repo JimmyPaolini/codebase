@@ -1,3 +1,4 @@
+import { InstanceGroupService } from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -22,7 +23,7 @@ describe(ScopeService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ScopeService],
+      providers: [InstanceGroupService, ScopeService],
     }).compile();
 
     service = await module.resolve(ScopeService);

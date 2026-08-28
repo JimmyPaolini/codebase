@@ -5,6 +5,8 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { InstanceGroupService } from "../configuration/instance-group.service";
+
 import { InstanceDiscoveryModule } from "./instance-discovery.module";
 import { InstanceDiscoveryService } from "./instance-discovery.service";
 
@@ -111,7 +113,7 @@ describe(InstanceDiscoveryService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [InstanceDiscoveryModule],
-      providers: [InstanceDiscoveryService],
+      providers: [InstanceDiscoveryService, InstanceGroupService],
     }).compile();
 
     service = await module.resolve(InstanceDiscoveryService);
