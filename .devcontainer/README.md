@@ -186,7 +186,13 @@ Exit code is `0` if all tests pass, `1` if any fail.
 
 ### Run tests in CI
 
-The `test-devcontainer` job in `.github/workflows/build-devcontainer.yml` runs these tests automatically on every PR that touches `.devcontainer/**`. It builds the container image (or pulls from cache) and executes the test script inside it.
+The `🧑‍🔧 Make Codebase` job in [`.github/workflows/make-codebase.yml`](../.github/workflows/make-codebase.yml) builds the container image and executes the test script inside it. It is scoped by `on.paths` to changes under `.devcontainer/**`.
+
+**Pull requests are currently skipped.** The job's `cacheFrom` points at `ghcr.io/jimmypaolini/codebase-devcontainer`, and that image has never been published — so every layer misses and the image is rebuilt from scratch, about eleven minutes, of which roughly six and a half is the `python` feature compiling CPython from source under `optimize: true`. That overran the twelve-minute job cap and the job was cancelled mid-test.
+
+Pushes to `main` still run, and `push: filter` publishes the image on each one. That publish is what seeds the cache — BuildKit stores layer cache metadata with the image, so once one run has pushed, later builds import those layers instead of rebuilding them. Restore the pull request path once an image exists.
+
+Note the standing tension: the job only triggers on `.devcontainer/**` changes, which are exactly the changes that invalidate feature layers. The `python` feature is layer 11 of 16, so a change that lands in a later layer still reuses it, while one landing earlier does not.
 
 ## Customization
 
