@@ -188,9 +188,18 @@ Exit code is `0` if all tests pass, `1` if any fail.
 
 The `🧑‍🔧 Make Codebase` job in [`.github/workflows/make-codebase.yml`](../.github/workflows/make-codebase.yml) builds the container image and executes the test script inside it. It is scoped by `on.paths` to changes under `.devcontainer/**`.
 
-**Pull requests are currently skipped.** The job's `cacheFrom` points at `ghcr.io/jimmypaolini/codebase-devcontainer`, and that image has never been published — so every layer misses and the image is rebuilt from scratch, about eleven minutes, of which roughly six and a half is the `python` feature compiling CPython from source under `optimize: true`. That overran the twelve-minute job cap and the job was cancelled mid-test.
+**Pull requests are currently skipped.** No build cache has ever existed, so every layer misses and the image is rebuilt from scratch — about eleven minutes, of which roughly six and a half is the `python` feature compiling CPython from source under `optimize: true`. That overran the twelve-minute job cap and the job was cancelled mid-test.
 
-Pushes to `main` still run, and `push: filter` publishes the image on each one. That publish is what seeds the cache — BuildKit stores layer cache metadata with the image, so once one run has pushed, later builds import those layers instead of rebuilding them. Restore the pull request path once an image exists.
+Pushes to `main` run and write the cache. Two things are published, and it is worth keeping them apart:
+
+| Tag | Written by | What it is for |
+| --- | ---------- | -------------- |
+| `:latest` | `imageName` + `push: filter` | The usable image — pull it to run the devcontainer without building |
+| `:build-cache` | `cacheTo` | The layer cache `cacheFrom` reads on the next run |
+
+The image is **not** a cache source. The action publishes it with a plain `docker push`, which embeds no inline cache metadata, so `cacheTo` is what makes the next build fast — pushing the image alone does nothing for build time. The cache lives in the registry rather than the Actions cache because GitHub evicts entries unused for seven days, and `.devcontainer/**` changes are routinely further apart than that.
+
+Restore the pull request path once a `main` run has written a `:build-cache` tag.
 
 Note the standing tension: the job only triggers on `.devcontainer/**` changes, which are exactly the changes that invalidate feature layers. The `python` feature is layer 11 of 16, so a change that lands in a later layer still reuses it, while one landing earlier does not.
 
