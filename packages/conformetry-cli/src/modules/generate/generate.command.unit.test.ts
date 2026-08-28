@@ -193,7 +193,10 @@ describe(GenerateCommand, () => {
       // nothing else — no `promptWhenMissing` — is passed alongside these two.
       expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith({
         rawArguments: expect.any(Array) as string[],
-        schema: { properties: { name: { type: "string" } } },
+        schema: {
+          properties: { name: { type: "string" } },
+          required: ["name"],
+        },
       });
     });
 
@@ -234,6 +237,60 @@ describe(GenerateCommand, () => {
       expect(command.parseConfig("path")).toBeDefined();
       expect(command.parseDirectory("dir")).toBeDefined();
       expect(command.parseGenerator("widget")).toBeDefined();
+    });
+  });
+
+  describe("required inputs", () => {
+    // What `conformetry-nx` has always told Nx about the same generators: a
+    // generator substitutes every placeholder it declares, and mustache
+    // renders a missing one as empty, so an optional input is a silent hole.
+    it("declares every configured input required", async () => {
+      vi.mocked(
+        configurationService.loadConformetryConfiguration,
+      ).mockResolvedValue([
+        {
+          inputs: {
+            description: { type: "string" },
+            name: { type: "string" },
+          },
+          instances: [],
+          name: "widget",
+          templatePath: "configuration/templates/widget",
+        },
+      ]);
+
+      await command.run([], { generator: "widget" });
+
+      expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith({
+        rawArguments: expect.any(Array) as string[],
+        schema: {
+          properties: {
+            description: { type: "string" },
+            name: { type: "string" },
+          },
+          required: ["description", "name"],
+        },
+      });
+    });
+
+    it("declares nothing required for a generator taking no inputs", async () => {
+      vi.mocked(
+        configurationService.loadConformetryConfiguration,
+      ).mockResolvedValue([
+        {
+          inputs: {},
+          instances: [],
+          name: "widget",
+          templatePath: "configuration/templates/widget",
+        },
+      ]);
+
+      await command.run([], { generator: "widget" });
+
+      expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith({
+        rawArguments: expect.any(Array) as string[],
+        schema: { properties: {}, required: [] },
+      });
     });
   });
 });
