@@ -46,11 +46,13 @@ jobs:
     # pull request path once a run has published an image.
     if: github.event_name != 'pull_request'
 
-    # 20, not 12. The seeding run is cold by definition — ~11 minutes to build,
-    # plus the image upload, plus the test — and the uniform 12-minute pull
-    # request cap in #350 is what cancelled this job mid-test in the first
-    # place. Revisit once a warm run has shown what the real ceiling is.
-    timeout-minutes: 20
+    # 30, not 12. The seeding run is cold by definition and now also exports a
+    # cache and pushes an image: ~11 minutes to build, plus the cache export,
+    # plus the image upload, plus ~2 for the test. The uniform 12-minute pull
+    # request cap in #350 is what cancelled this job mid-test to begin with,
+    # and being cancelled mid-upload would seed nothing while looking like
+    # progress. Bring it back down once a warm run has shown the real ceiling.
+    timeout-minutes: 30
 
     steps:
       - name: 📥 Checkout Repository
@@ -78,14 +80,31 @@ jobs:
         with:
           configFile: .devcontainer/cloud/devcontainer.json
           imageName: ghcr.io/jimmypaolini/codebase-devcontainer
+
+          # A dedicated `:build-cache` tag, not the image itself. The action
+          # publishes with a plain `docker push`, which embeds no inline cache,
+          # so the image is not a usable cache source however often it is
+          # pushed — `cacheTo` is what writes one. Registry rather than
+          # `type=gha`: GitHub evicts cache entries unused for seven days, and
+          # this workflow only fires on `.devcontainer/**` changes, which are
+          # routinely further apart than that. A cache that expires before the
+          # next run is one nobody can see failing.
           cacheFrom: |
-            type=gha,scope=devcontainer
-            ghcr.io/jimmypaolini/codebase-devcontainer
+            type=registry,ref=ghcr.io/jimmypaolini/codebase-devcontainer:build-cache
+          cacheTo: |
+            type=registry,ref=ghcr.io/jimmypaolini/codebase-devcontainer:build-cache,mode=max
+
+          # `refFilterForPush` and `eventFilterForPush` are both flat lists of
+          # literal strings — `getMultilineInput`, compared with `===` against
+          # `GITHUB_REF` and `GITHUB_EVENT_NAME`. They are not the nested
+          # `on:`-style object they look like. Written as one, every line
+          # mismatched and the push was skipped on the one event it existed to
+          # allow, silently, for as long as no push event ever reached it.
           push: filter
+          refFilterForPush: |
+            refs/heads/main
           eventFilterForPush: |
-            push:
-              branches:
-                - main
+            push
           env: |
             CI=true
             GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
@@ -97,8 +116,7 @@ jobs:
           configFile: .devcontainer/cloud/devcontainer.json
           imageName: ghcr.io/jimmypaolini/codebase-devcontainer
           cacheFrom: |
-            type=gha,scope=devcontainer
-            ghcr.io/jimmypaolini/codebase-devcontainer
+            type=registry,ref=ghcr.io/jimmypaolini/codebase-devcontainer:build-cache
           push: never
           env: |
             CI=true
