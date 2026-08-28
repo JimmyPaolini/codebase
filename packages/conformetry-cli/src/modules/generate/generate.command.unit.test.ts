@@ -1,6 +1,7 @@
 import {
   ConfigurationService,
   InputError,
+  InputPromptingService,
   InputService,
 } from "@conformetry/configuration";
 import { GenerationService } from "@conformetry/generation";
@@ -39,6 +40,7 @@ describe(GenerateCommand, () => {
   let command: GenerateCommand;
   let configurationService: ConfigurationService;
   let generationService: GenerationService;
+  let inputPromptingService: InputPromptingService;
   let inputService: InputService;
   let commandLogger: LoggerService;
 
@@ -54,6 +56,10 @@ describe(GenerateCommand, () => {
           provide: GenerationService,
           useValue: createMock<GenerationService>(),
         },
+        {
+          provide: InputPromptingService,
+          useValue: createMock<InputPromptingService>(),
+        },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
@@ -62,6 +68,7 @@ describe(GenerateCommand, () => {
     command = await module.resolve(GenerateCommand);
     configurationService = await module.resolve(ConfigurationService);
     generationService = await module.resolve(GenerationService);
+    inputPromptingService = await module.resolve(InputPromptingService);
     inputService = await module.resolve(InputService);
     commandLogger = await module.resolve(LoggerService);
   });
@@ -80,6 +87,7 @@ describe(GenerateCommand, () => {
       generatedFilePaths: ["/w/generated/widget/my-widget.ts"],
       outputDirectoryPath: "/w/generated/widget",
     });
+    vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(false);
   });
 
   afterEach(() => {
@@ -104,6 +112,10 @@ describe(GenerateCommand, () => {
           provide: GenerationService,
           useValue: createMock<GenerationService>(),
         },
+        {
+          provide: InputPromptingService,
+          useValue: createMock<InputPromptingService>(),
+        },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
@@ -114,8 +126,8 @@ describe(GenerateCommand, () => {
   });
 
   describe("run", () => {
-    it("renders the named generator and reports what it wrote", async () => {
-      await command.run([], { generator: "widget" });
+    it("renders the named template and reports what it wrote", async () => {
+      await command.run([], { template: "widget" });
 
       expect(generationService.runGenerator).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -129,15 +141,15 @@ describe(GenerateCommand, () => {
     });
 
     it("writes into the directory the caller named", async () => {
-      await command.run([], { directory: "/tmp/out", generator: "widget" });
+      await command.run([], { directory: "/tmp/out", template: "widget" });
 
       expect(generationService.runGenerator).toHaveBeenCalledWith(
         expect.objectContaining({ instancePath: "/tmp/out" }),
       );
     });
 
-    it("falls back to a directory named after the generator", async () => {
-      await command.run([], { generator: "widget" });
+    it("falls back to a directory named after the template", async () => {
+      await command.run([], { template: "widget" });
 
       expect(generationService.runGenerator).toHaveBeenCalledWith(
         expect.objectContaining({ instancePath: "generated/widget" }),
@@ -147,7 +159,7 @@ describe(GenerateCommand, () => {
     it("reads the configuration path the caller named", async () => {
       await command.run([], {
         config: "custom/conformetry.config.ts",
-        generator: "widget",
+        template: "widget",
       });
 
       expect(
@@ -155,31 +167,31 @@ describe(GenerateCommand, () => {
       ).toHaveBeenCalledWith("custom/conformetry.config.ts");
     });
 
-    it("names the available generators when asked for an unknown one", async () => {
-      await expect(command.run([], { generator: "nope" })).rejects.toThrow(
-        'Unknown generator "nope". Available: widget',
+    it("names the available templates when asked for an unknown one", async () => {
+      await expect(command.run([], { template: "nope" })).rejects.toThrow(
+        'Unknown template "nope". Available: widget',
       );
     });
 
-    it("logs a debug entry marker naming the generator", async () => {
-      await command.run([], { generator: "widget" });
+    it("logs a debug entry marker naming the template", async () => {
+      await command.run([], { template: "widget" });
 
       expect(commandLogger.debug).toHaveBeenCalledWith(
         "🏗 Generating a conformetry instance",
         undefined,
-        { generator: "widget" },
+        { template: "widget" },
       );
     });
 
-    it("logs and rejects an unknown generator", async () => {
-      await expect(command.run([], { generator: "nope" })).rejects.toThrow(
-        'Unknown generator "nope"',
+    it("logs and rejects an unknown template", async () => {
+      await expect(command.run([], { template: "nope" })).rejects.toThrow(
+        'Unknown template "nope"',
       );
 
       expect(commandLogger.error).toHaveBeenCalledWith(
-        "🚫 Rejected an unknown generator",
+        "🚫 Rejected an unknown template",
         undefined,
-        { generator: "nope" },
+        { template: "nope" },
       );
     });
 
@@ -187,7 +199,7 @@ describe(GenerateCommand, () => {
     // read, no CI check. It hands over the arguments and the schema, and the
     // input service refuses on its own where nobody can be asked.
     it("asks for the generator's inputs without deciding whether to prompt", async () => {
-      await command.run([], { generator: "widget" });
+      await command.run([], { template: "widget" });
 
       // An exact object rather than `objectContaining`: the point is that
       // nothing else — no `promptWhenMissing` — is passed alongside these two.
@@ -210,7 +222,7 @@ describe(GenerateCommand, () => {
       // Reported rather than thrown: nothing was generated, and the reader's
       // next move is to pass the flag it named.
       await expect(
-        command.run([], { generator: "widget" }),
+        command.run([], { template: "widget" }),
       ).resolves.toBeUndefined();
       expect(process.exitCode).toBe(1);
       expect(commandLogger.error).toHaveBeenCalledWith(
@@ -226,9 +238,94 @@ describe(GenerateCommand, () => {
         new Error("Rendering failed."),
       );
 
-      await expect(command.run([], { generator: "widget" })).rejects.toThrow(
+      await expect(command.run([], { template: "widget" })).rejects.toThrow(
         "Rendering failed.",
       );
+    });
+  });
+
+  describe("template selection", () => {
+    // Supplying a value is itself how a caller opts out of being asked, so a
+    // named template must not reach the picker even at a terminal.
+    it("never prompts when the caller named a template", async () => {
+      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
+
+      await command.run([], { template: "widget" });
+
+      expect(inputPromptingService.promptForTemplate).not.toHaveBeenCalled();
+      expect(generationService.runGenerator).toHaveBeenCalledWith(
+        expect.objectContaining({
+          definition: expect.objectContaining({ name: "widget" }) as unknown,
+        }),
+      );
+    });
+
+    it("offers the configured templates when none was named", async () => {
+      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
+      vi.mocked(inputPromptingService.promptForTemplate).mockResolvedValue(
+        "widget",
+      );
+
+      await command.run([], {});
+
+      expect(inputPromptingService.promptForTemplate).toHaveBeenCalledWith([
+        { name: "widget" },
+      ]);
+      expect(generationService.runGenerator).toHaveBeenCalledWith(
+        expect.objectContaining({
+          definition: expect.objectContaining({ name: "widget" }) as unknown,
+        }),
+      );
+    });
+
+    it("offers each template's description alongside its name", async () => {
+      vi.mocked(
+        configurationService.loadConformetryConfiguration,
+      ).mockResolvedValue([
+        {
+          description: "A widget module",
+          inputs: {},
+          instances: [],
+          name: "widget",
+          templatePath: "configuration/templates/widget",
+        },
+      ]);
+      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
+      vi.mocked(inputPromptingService.promptForTemplate).mockResolvedValue(
+        "widget",
+      );
+
+      await command.run([], {});
+
+      expect(inputPromptingService.promptForTemplate).toHaveBeenCalledWith([
+        { description: "A widget module", name: "widget" },
+      ]);
+    });
+
+    // A prompt nobody can answer is what once let this command exit 0 having
+    // generated nothing, so the names go in the message instead.
+    it("names the available templates when nobody can be asked", async () => {
+      await command.run([], {});
+
+      expect(process.exitCode).toBe(1);
+      expect(commandLogger.error).toHaveBeenCalledWith(
+        "🚫 Rejected the command line",
+        undefined,
+        { reason: expect.stringContaining("Available: widget") as string },
+      );
+      expect(generationService.runGenerator).not.toHaveBeenCalled();
+    });
+
+    it("refuses a cancelled picker rather than generating nothing", async () => {
+      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
+      vi.mocked(inputPromptingService.promptForTemplate).mockResolvedValue(
+        undefined,
+      );
+
+      await command.run([], {});
+
+      expect(process.exitCode).toBe(1);
+      expect(generationService.runGenerator).not.toHaveBeenCalled();
     });
   });
 
@@ -236,7 +333,7 @@ describe(GenerateCommand, () => {
     it("parses each option through the input service", () => {
       expect(command.parseConfig("path")).toBeDefined();
       expect(command.parseDirectory("dir")).toBeDefined();
-      expect(command.parseGenerator("widget")).toBeDefined();
+      expect(command.parseTemplate("widget")).toBeDefined();
     });
   });
 
@@ -259,7 +356,7 @@ describe(GenerateCommand, () => {
         },
       ]);
 
-      await command.run([], { generator: "widget" });
+      await command.run([], { template: "widget" });
 
       expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith({
         rawArguments: expect.any(Array) as string[],
@@ -285,7 +382,7 @@ describe(GenerateCommand, () => {
         },
       ]);
 
-      await command.run([], { generator: "widget" });
+      await command.run([], { template: "widget" });
 
       expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith({
         rawArguments: expect.any(Array) as string[],

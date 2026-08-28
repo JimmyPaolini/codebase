@@ -60,7 +60,7 @@ instance says `spelledOutByHand` where `searchBar` would otherwise be — and
 generation agrees, because it is passed the same value:
 
 ```bash
-pnpm exec nx run conformetry-cli:start -- generate --generator case-variants --name 'search bar' --nameCamelCase spelledOutByHand --owner platform --directory tmp/conformetry-examples/case-variants --config packages/conformetry-examples/examples/case-variants/conformetry.config.ts
+pnpm exec nx run conformetry-cli:start -- generate --template case-variants --name 'search bar' --nameCamelCase spelledOutByHand --owner platform --directory tmp/conformetry-examples/case-variants --config packages/conformetry-examples/examples/case-variants/conformetry.config.ts
 ```
 
 The result is byte-identical to `instances/search-bar/`, which this package's

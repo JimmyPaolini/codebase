@@ -37,7 +37,7 @@ conformetry templates
 A generator with neither `inputs` nor `instances` is legal: it renders a fixed
 template that nothing validates afterwards.
 
-### Three collisions the configuration refuses to load with
+### Four collisions the configuration refuses to load with
 
 1. **Two generators may not share a `name`.** A host resolves the first match,
    leaving the other unreachable.
@@ -45,6 +45,9 @@ template that nothing validates afterwards.
    tell which generator a matching instance belongs to.
 3. **A name may not be empty or contain a path separator.** It becomes a
    filename in the emitted Nx plugin.
+4. **A name may not be `all`.** `validate --templates all` already means every
+   template, and a generator answering to that word would make the same token
+   mean two things on one command line.
 
 ### Instance groups: where output already lives
 
@@ -88,8 +91,9 @@ deliberately rather than by accident: `project`, `module`, `type`, and
 `directory` all steer where output lands. Declaring an input called `project` on
 a generator whose groups carry tags additionally turns it into a project picker.
 
-`config`, `generator`, `help`, and `instancePath` are reserved and never treated
-as inputs. `name` is deliberately _not_ reserved.
+`config`, `help`, `instancePath`, and `template` are reserved and never treated
+as inputs — `--template` is how the command-line host selects which template to
+render. `name` is deliberately _not_ reserved.
 
 ## Writing a template
 

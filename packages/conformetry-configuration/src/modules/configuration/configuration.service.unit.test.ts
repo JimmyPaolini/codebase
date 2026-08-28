@@ -312,6 +312,11 @@ describe(ConfigurationService, () => {
         [{ name: "../escape", templatePath: "t/1" }],
         "cannot contain a path separator",
       ],
+      [
+        "a generator named after the all-templates sentinel",
+        [{ name: "all", templatePath: "t/1" }],
+        "reserved: `validate --templates all`",
+      ],
     ])("refuses %s", async (_description, definitions, message) => {
       // A host resolves the first match, so a collision shadows silently
       // rather than erroring where it is used.

@@ -287,7 +287,7 @@ describe("the examples this package ships", () => {
           [
             ...CONFORMETRY_COMMAND,
             "generate",
-            "--generator",
+            "--template",
             generator,
             "--config",
             `packages/conformetry-examples/examples/${directory}/conformetry.config.ts`,

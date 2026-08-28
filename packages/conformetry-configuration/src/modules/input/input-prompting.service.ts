@@ -2,9 +2,9 @@ import { Injectable } from "@nestjs/common";
 import prompts from "prompts";
 
 import { InputSchemaService } from "./input-schema.service";
-import { missingInputError } from "./input.constants";
+import { ALL_TEMPLATES_SELECTION, missingInputError } from "./input.constants";
 
-import type { PromptRunner, SchemaInput } from "./input.types";
+import type { PromptRunner, SchemaInput, TemplateChoice } from "./input.types";
 
 /**
  * Asks the user for input values interactively.
@@ -15,9 +15,15 @@ import type { PromptRunner, SchemaInput } from "./input.types";
  * poor place for it, because forgetting to consult it is what hung this CLI
  * in non-interactive environments.
  *
- * `isAtTerminal` stays public because one caller genuinely needs the question
+ * `isAtTerminal` stays public because some callers genuinely need the question
  * rather than the refusal: an **optional** input nobody can be asked about is
- * left out, where a required one is refused.
+ * left out where a required one is refused, and the two template pickers below
+ * are only ever reached once a command has already asked it.
+ *
+ * Those pickers widen this service's remit from "values a schema declares" to
+ * "also, which template to run". That is a deliberate trade: one prompting
+ * seam is easier to keep honest than two, and a second one would have to read
+ * the terminal for itself.
  */
 @Injectable()
 export class InputPromptingService {
@@ -45,6 +51,21 @@ export class InputPromptingService {
     if (!this.isAtTerminal()) {
       throw missingInputError(inputName);
     }
+  }
+
+  /** Renders one template as a choice, omitting an absent description. */
+  private describeChoice(template: TemplateChoice): {
+    description?: string;
+    title: string;
+    value: string;
+  } {
+    return {
+      ...(template.description === undefined
+        ? {}
+        : { description: template.description }),
+      title: template.name,
+      value: template.name,
+    };
   }
 
   // 🌎 Public Methods
@@ -88,5 +109,63 @@ export class InputPromptingService {
     const value: unknown = response.value;
 
     return typeof value === "string" ? value : undefined;
+  }
+
+  /**
+   * Asks which single template to run, filtering as the caller types.
+   *
+   * Autocomplete rather than a plain select because a template name is long
+   * by design — `nestjs-service-module` — and typing a fragment is what makes
+   * that cheap. Whether anybody can be asked at all is the caller's decision,
+   * already taken by the time this is reached.
+   */
+  public async promptForTemplate(
+    templates: readonly TemplateChoice[],
+  ): Promise<string | undefined> {
+    const response = await this.promptRunner({
+      choices: templates.map((template) => this.describeChoice(template)),
+      message: "Which template should be rendered?",
+      name: "template",
+      type: "autocomplete",
+    });
+    const value: unknown = response.template;
+
+    return typeof value === "string" ? value : undefined;
+  }
+
+  /**
+   * Asks which templates to narrow a run to, offering the `all` sentinel
+   * alongside them so the picker can express everything the flag can.
+   *
+   * Ticking nothing resolves to no selection rather than an empty one: an
+   * empty narrowing would validate nothing at all, where the caller plainly
+   * declined to narrow.
+   */
+  public async promptForTemplates(
+    templates: readonly TemplateChoice[],
+  ): Promise<string[] | undefined> {
+    const response = await this.promptRunner({
+      choices: [
+        {
+          description: "Every configured template",
+          title: ALL_TEMPLATES_SELECTION,
+          value: ALL_TEMPLATES_SELECTION,
+        },
+        ...templates.map((template) => this.describeChoice(template)),
+      ],
+      message: "Which templates should be validated?",
+      name: "templates",
+      type: "autocompleteMultiselect",
+    });
+    const value: unknown = response.templates;
+
+    if (!Array.isArray(value)) {
+      return undefined;
+    }
+
+    const entries: unknown[] = value;
+    const selected = entries.filter((entry) => typeof entry === "string");
+
+    return selected.length === 0 ? undefined : selected;
   }
 }
