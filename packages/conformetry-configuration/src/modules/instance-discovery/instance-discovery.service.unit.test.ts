@@ -257,6 +257,17 @@ describe(InstanceDiscoveryService, () => {
     });
   });
 
+  describe("readWorkspaceGroups", () => {
+    it.each([
+      ["an untagged group", { patterns: ["packages/*"] }, 1],
+      ["a group tagged empty", { patterns: ["packages/*"], tags: [] }, 1],
+      ["a tagged group", { patterns: ["src/*"], tags: ["nestjs"] }, 0],
+      ["a group naming only tags", { tags: ["nestjs"] }, 0],
+    ])("keeps %s as %i group(s)", (_description, group, expected) => {
+      expect(service.readWorkspaceGroups([group])).toHaveLength(expected);
+    });
+  });
+
   describe("takeInventory", () => {
     it("reads every declared template", () => {
       expect(
@@ -279,6 +290,47 @@ describe(InstanceDiscoveryService, () => {
         "widget",
         "gadget",
       ]);
+    });
+
+    // A tagged group's globs are read inside each project the tags select, so
+    // this host has no root to join them to. Expanding them from the working
+    // directory would silently measure whatever happened to sit at the same
+    // relative path against a template scoped to other projects.
+    it("ignores a group whose globs are scoped by project tags", () => {
+      expect(
+        service.takeInventory({
+          configuration: [
+            {
+              inputs: {},
+              instances: [
+                { patterns: ["packages/*/src/modules/*"], tags: ["nestjs"] },
+              ],
+              name: "widget",
+              templatePath: "configuration/templates/widget",
+            },
+          ],
+          workingDirectory,
+        }).weighed,
+      ).toStrictEqual([]);
+    });
+
+    // An explicit `--instances` glob is the caller speaking for themselves,
+    // so it is honoured whatever the configuration's groups are scoped by.
+    it("still honours the caller's own globs alongside a tagged group", () => {
+      expect(
+        service.takeInventory({
+          configuration: [
+            {
+              inputs: {},
+              instances: [{ patterns: ["src/modules/*"], tags: ["nestjs"] }],
+              name: "widget",
+              templatePath: "configuration/templates/widget",
+            },
+          ],
+          instancePatterns: [INSTANCE_PATTERN],
+          workingDirectory,
+        }).weighed,
+      ).toHaveLength(1);
     });
 
     it("finds nothing when the caller's globs match nothing", () => {

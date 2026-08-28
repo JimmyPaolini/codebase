@@ -1,6 +1,7 @@
 import {
   ConfigurationService,
   InputError,
+  InputPromptingService,
   InputService,
 } from "@conformetry/configuration";
 import { GenerationService } from "@conformetry/generation";
@@ -9,26 +10,40 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
+import {
+  DEFAULT_CONFIGURATION_PATH,
+  removedGeneratorOptionError,
+  unknownTemplateError,
+} from "../../constants.js";
 
-import { DEFAULT_GENERATED_DIRECTORY } from "./generate.constants";
+import {
+  DEFAULT_GENERATED_DIRECTORY,
+  missingTemplateError,
+} from "./generate.constants";
 
 import type { GenerateCommandOptions } from "./generate.types";
-import type { JsonSchemaDefinition } from "@conformetry/configuration";
+import type {
+  ConformetryConfiguration,
+  JsonSchemaDefinition,
+} from "@conformetry/configuration";
 
 /**
- * Runs a conformetry generator from the configured registry.
+ * Renders a conformetry template from the configured registry.
  *
- * Unknown options are allowed through deliberately: a generator's parameters
- * are not known until the generator is chosen, so they cannot be declared as
- * flags ahead of time. They are matched against the generator's own schema
- * instead. This is also why the generator is selected with `--generator`
- * rather than `--name` — nearly every generator takes a `name` parameter, and
+ * Unknown options are allowed through deliberately: a template's parameters
+ * are not known until the template is chosen, so they cannot be declared as
+ * flags ahead of time. They are matched against the template's own schema
+ * instead. This is also why the template is selected with `--template` rather
+ * than `--name` — nearly every template takes a `name` parameter, and
  * reserving that flag made it impossible to supply.
+ *
+ * `--template` is optional at the parse layer so a bare `generate` reaches
+ * this command and can offer a picker instead of failing at argument parsing
+ * with a name the reader would have had to look up elsewhere.
  */
 @Command({
   allowUnknownOptions: true,
-  description: "Render a generator's template into a new instance",
+  description: "Render a template into a new instance",
   name: "generate",
 })
 @Injectable()
@@ -38,6 +53,7 @@ export class GenerateCommand extends CommandRunner {
   constructor(
     private readonly configurationService: ConfigurationService,
     private readonly generationService: GenerationService,
+    private readonly inputPromptingService: InputPromptingService,
     private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
@@ -51,30 +67,42 @@ export class GenerateCommand extends CommandRunner {
 
   // 🔏 Private Methods
 
-  /** Resolves the generator's inputs and writes its files. */
+  /** Resolves the template's inputs and writes its files. */
   private async generate(
     passedParameters: readonly string[],
     options: GenerateCommandOptions,
   ): Promise<void> {
-    this.logger.debug("🏗 Generating a conformetry instance", undefined, {
-      generator: options.generator,
-    });
+    const rawArguments = [...passedParameters, ...process.argv.slice(2)];
+
+    this.rejectRemovedGeneratorOption(rawArguments);
 
     const configuration =
       await this.configurationService.loadConformetryConfiguration(
         options.config ?? DEFAULT_CONFIGURATION_PATH,
       );
+    const templateName = await this.resolveTemplateName({
+      configuration,
+      templateName: options.template,
+    });
+
+    this.logger.debug("🏗 Generating a conformetry instance", undefined, {
+      template: templateName,
+    });
+
     const definition = configuration.find((generator) => {
-      return generator.name === options.generator;
+      return generator.name === templateName;
     });
 
     if (definition === undefined) {
-      this.logger.error("🚫 Rejected an unknown generator", undefined, {
-        generator: options.generator,
+      this.logger.error("🚫 Rejected an unknown template", undefined, {
+        template: templateName,
       });
-      throw new Error(
-        `Unknown generator "${options.generator}". Available: ${configuration.map((generator) => generator.name).join(", ")}`,
-      );
+      throw unknownTemplateError({
+        availableTemplateNames: configuration.map(
+          (generator) => generator.name,
+        ),
+        templateName,
+      });
     }
 
     // Every input is required, which is what `conformetry-nx` has always told
@@ -88,7 +116,7 @@ export class GenerateCommand extends CommandRunner {
       required: Object.keys(definition.inputs),
     };
     const inputs = await this.inputService.resolveGeneratorInputs({
-      rawArguments: [...passedParameters, ...process.argv.slice(2)],
+      rawArguments,
       schema,
     });
     const result = await this.generationService.runGenerator({
@@ -128,6 +156,67 @@ export class GenerateCommand extends CommandRunner {
     process.exitCode = 1;
   }
 
+  /**
+   * Refuses the flag `--template` replaced, rather than ignoring it.
+   *
+   * Unknown options are allowed through so a template's own inputs can be
+   * passed as flags, which means commander does not reject `--generator` for
+   * this command the way it would for any other. Without this it would be
+   * read as an input nothing declares and quietly discarded, leaving a stale
+   * script to prompt or to fail for the wrong reason.
+   */
+  private rejectRemovedGeneratorOption(rawArguments: readonly string[]): void {
+    const isRemovedOption = rawArguments.some((argument) => {
+      return argument === "--generator" || argument.startsWith("--generator=");
+    });
+
+    if (isRemovedOption) {
+      this.logger.error("🚫 Rejected a removed option", undefined, {
+        option: "--generator",
+      });
+      throw removedGeneratorOptionError();
+    }
+  }
+
+  /**
+   * Settles which template to render: the one named, the one picked, or none.
+   *
+   * The missing case and the unknown case are decided together here rather
+   * than split between argument parsing and the command body, which is what
+   * lets the picker sit between them. Whether anybody can be asked is read
+   * from the one predicate that knows — a non-terminal stdin is what once let
+   * a prompt hang a CI job until it timed out.
+   */
+  private async resolveTemplateName(args: {
+    configuration: ConformetryConfiguration;
+    templateName: string | undefined;
+  }): Promise<string> {
+    if (args.templateName !== undefined) {
+      return args.templateName;
+    }
+
+    const availableNames = args.configuration.map((generator) => {
+      return generator.name;
+    });
+
+    if (!this.inputPromptingService.isAtTerminal()) {
+      throw missingTemplateError(availableNames);
+    }
+
+    // The loaded configuration is handed over as-is: a definition already
+    // carries the name and description a choice needs, and mapping it here
+    // would be a second source the picker could disagree with.
+    const chosenName = await this.inputPromptingService.promptForTemplate(
+      args.configuration,
+    );
+
+    if (chosenName === undefined) {
+      throw missingTemplateError(availableNames);
+    }
+
+    return chosenName;
+  }
+
   // 🌎 Public Methods
 
   /** Parses the optional configuration path. */
@@ -148,21 +237,22 @@ export class GenerateCommand extends CommandRunner {
     return this.inputService.parseOptionalOption(value);
   }
 
-  /** Parses the name of the generator to run. */
+  /**
+   * Parses the name of the template to render.
+   *
+   * Optional, so a bare `generate` is not rejected at argument parsing with a
+   * name the reader has not been shown yet.
+   */
   @Option({
-    description: "Name of the generator to run",
-    flags: "--generator <generator>",
-    required: true,
+    description: "Name of the template to render",
+    flags: "--template [name]",
   })
-  public parseGenerator(value: string): string {
-    return this.inputService.parseRequiredOption({
-      optionName: "generator",
-      value,
-    });
+  public parseTemplate(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
   }
 
   /**
-   * Runs the generator, reporting a refused command line as one.
+   * Renders the template, reporting a refused command line as one.
    *
    * Only an `InputError` is caught: a required input nobody could be asked
    * for is a flag the caller has to pass, where anything else is a genuine

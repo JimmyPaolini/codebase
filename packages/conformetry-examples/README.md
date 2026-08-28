@@ -100,12 +100,14 @@ Full reference: [`@conformetry/configuration`](../conformetry-configuration/READ
 ### 3. Scaffold from it
 
 ```bash
-conformetry generate --generator hello --name world
+conformetry generate --template hello --name world
 ```
 
-A generator's own inputs are passed as flags. Unknown flags are accepted
-deliberately — which inputs exist is not known until the generator is chosen —
-which is also why the generator is selected with `--generator` and not `--name`.
+A template's own inputs are passed as flags. Unknown flags are accepted
+deliberately — which inputs exist is not known until the template is chosen —
+which is also why the template is selected with `--template` and not `--name`.
+Omitting `--template` at a terminal offers a picker over every configured
+template instead of failing.
 
 Missing required inputs are prompted for when stdin is a TTY and `CI` is not
 `true`. Otherwise the command fails rather than hanging.

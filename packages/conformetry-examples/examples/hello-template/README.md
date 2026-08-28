@@ -18,7 +18,7 @@ Then close the loop by hand: scaffold a new instance, and measure the thing you
 just scaffolded against the template that produced it.
 
 ```bash
-pnpm exec nx run conformetry-cli:start -- generate --generator hello --name mars --directory tmp/conformetry-examples/hello-template --config packages/conformetry-examples/examples/hello-template/conformetry.config.ts
+pnpm exec nx run conformetry-cli:start -- generate --template hello --name mars --directory tmp/conformetry-examples/hello-template --config packages/conformetry-examples/examples/hello-template/conformetry.config.ts
 ```
 
 ```text

@@ -1,5 +1,7 @@
 import {
+  ALL_TEMPLATES_SELECTION,
   ConfigurationService,
+  InputPromptingService,
   InputService,
   InstanceDiscoveryService,
   TemplateDiscoveryService,
@@ -11,10 +13,15 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
+import {
+  DEFAULT_CONFIGURATION_PATH,
+  unknownTemplateError,
+} from "../../constants.js";
 
 import type { ValidateCommandOptions } from "./validate.types.js";
 import type {
+  ConformetryConfiguration,
+  ConformetryGeneratorDefinition,
   ConformetryInstanceGroup,
   Instance,
 } from "@conformetry/configuration";
@@ -24,9 +31,16 @@ import type { RunValidationResult } from "@conformetry/validation";
  * Validates instances against their conformetry templates.
  *
  * Which paths are instances comes from the configuration's `instances` globs,
- * which `--instances` overrides for a one-off run. Every option is optional
- * and none is ever prompted for: an absent filter means "everything", which is
- * a meaningful default rather than a missing answer.
+ * which `--instances` overrides for a one-off run, and `--templates` narrows
+ * the other half of the pairing. Neither flag overrides the other: each
+ * removes candidates from one side before templates and instances are paired,
+ * so a run is their intersection.
+ *
+ * `--templates` is the one option that is asked for when absent, because it
+ * is the one whose absence is genuinely a question rather than a default. It
+ * is asked only where somebody can answer: with no terminal the run falls
+ * back to every template, which is exactly what every invocation predating
+ * this flag already did.
  */
 @Command({
   description:
@@ -41,6 +55,7 @@ export class ValidateCommand extends CommandRunner {
     private readonly configurationService: ConfigurationService,
     private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly templateDiscoveryService: TemplateDiscoveryService,
+    private readonly inputPromptingService: InputPromptingService,
     private readonly inputService: InputService,
     private readonly reportingService: ReportingService,
     private readonly validationService: ValidationService,
@@ -91,23 +106,214 @@ export class ValidateCommand extends CommandRunner {
     groups: ConformetryInstanceGroup[];
     workingDirectory: string;
   }): Instance[] {
-    return args.groups.flatMap((group) => {
-      return this.instanceDiscoveryService.findInstances({
-        // A group may name only labels, which this host has nothing to match
-        // them against — it locates instances by glob alone.
-        patterns: group.patterns ?? [],
-        ...(group.substitutions === undefined
-          ? {}
-          : { substitutions: group.substitutions }),
-        ...(group.threshold === undefined
-          ? {}
-          : { threshold: group.threshold }),
-        workingDirectory: args.workingDirectory,
+    // Tag-scoped groups are dropped rather than expanded: their globs are read
+    // inside each project their tags select, and this host resolves no tags.
+    return this.instanceDiscoveryService
+      .readWorkspaceGroups(args.groups)
+      .flatMap((group) => {
+        return this.instanceDiscoveryService.findInstances({
+          // A group may name only labels, which this host has nothing to match
+          // them against — it locates instances by glob alone.
+          patterns: group.patterns ?? [],
+          ...(group.substitutions === undefined
+            ? {}
+            : { substitutions: group.substitutions }),
+          ...(group.threshold === undefined
+            ? {}
+            : { threshold: group.threshold }),
+          workingDirectory: args.workingDirectory,
+        });
       });
+  }
+
+  /**
+   * Offers a picker, or declines to ask where nobody could answer.
+   *
+   * Declining resolves to no selection rather than to a refusal, which is
+   * where this parts company with `generate`: a template that cannot be
+   * chosen leaves that command with nothing to render, where this one still
+   * has a whole workspace to validate.
+   *
+   * The loaded configuration is handed over as-is — a definition already
+   * carries the name and description a choice needs, so mapping it here would
+   * be a second source the picker could disagree with.
+   */
+  private async promptForTemplateNames(
+    configuration: ConformetryConfiguration,
+  ): Promise<string[] | undefined> {
+    if (!this.inputPromptingService.isAtTerminal()) {
+      return undefined;
+    }
+
+    return this.inputPromptingService.promptForTemplates(configuration);
+  }
+
+  /**
+   * Reports a narrowing that matched nothing, as itself.
+   *
+   * A run with no instances produces no findings, and a report rendering no
+   * findings is indistinguishable from a clean one — which would turn naming
+   * a real template that happens to have nothing under it into a green
+   * result. The reader is told nothing matched instead.
+   */
+  private reportEmptySelection(
+    selectedTemplates: ConformetryGeneratorDefinition[],
+  ): void {
+    const templateNames = selectedTemplates.map((template) => template.name);
+    // A template whose every group is tag-scoped was never searched for at
+    // all, which is a different answer from having been searched for and not
+    // found — and the reader's next move is a different command, not an edit.
+    const tagScopedNames = selectedTemplates
+      .filter((template) => {
+        return (
+          template.instances.length > 0 &&
+          this.instanceDiscoveryService.readWorkspaceGroups(template.instances)
+            .length === 0
+        );
+      })
+      .map((template) => template.name);
+
+    process.stdout.write(
+      [
+        `No instances belong to ${templateNames.join(", ")}, so nothing was checked.`,
+        ...(tagScopedNames.length === 0
+          ? []
+          : [
+              `${tagScopedNames.join(", ")} locates instances by project tag, which this host cannot resolve. Run validation through @conformetry/nx, or pass --instances with the paths to check.`,
+            ]),
+        "",
+      ].join("\n"),
+    );
+    this.logger.info("🫙 Validated nothing", undefined, {
+      tagScopedNames,
+      templateNames,
     });
   }
 
-  /** Reads every configured generator's template folder. */
+  /**
+   * Writes the report and fails the run when anything fell short.
+   *
+   * The report is the command's product, not a log line: it is a multi-line
+   * document written for a reader, and routing it through the logger would
+   * both bury it in log framing and force prose no telemetry can group on.
+   */
+  private reportResult(args: {
+    result: RunValidationResult;
+    workingDirectory: string;
+  }): void {
+    process.stdout.write(
+      `${this.reportingService.formatReport({
+        fileResults: args.result.fileResults,
+        scores: args.result.scores,
+        workingDirectory: args.workingDirectory,
+      })}\n`,
+    );
+
+    const failedCount = args.result.scores.filter((score) => !score.ok).length;
+    const unmatchedCount = args.result.unmatched.length;
+
+    this.logger.info("👔 Validated conformetry instances", undefined, {
+      count: args.result.checkedPaths.length,
+      failedCount,
+      unmatchedCount,
+    });
+
+    if (!args.result.ok) {
+      process.exitCode = 1;
+      this.logger.warn("⚠️ Rejected non-conforming instances", undefined, {
+        failedCount,
+        unmatchedCount,
+      });
+      throw new Error(this.describeFailure(args.result));
+    }
+  }
+
+  /**
+   * Pairs the two filters into the instances a run covers.
+   *
+   * With both flags supplied the globbed paths are intersected with the
+   * selected templates' own instances, rather than one flag winning: each
+   * simply removes candidates from one side.
+   */
+  private selectInstances(args: {
+    configuration: ConformetryConfiguration;
+    instanceGlobs: string[] | undefined;
+    selectedTemplates: ConformetryGeneratorDefinition[] | undefined;
+    workingDirectory: string;
+  }): Instance[] {
+    const templateInstances = this.findInstances({
+      groups: (args.selectedTemplates ?? args.configuration).flatMap(
+        (generator) => generator.instances,
+      ),
+      workingDirectory: args.workingDirectory,
+    });
+
+    if (args.instanceGlobs === undefined) {
+      return templateInstances;
+    }
+
+    const globbedInstances = this.findInstances({
+      groups: [{ patterns: args.instanceGlobs }],
+      workingDirectory: args.workingDirectory,
+    });
+
+    if (args.selectedTemplates === undefined) {
+      return globbedInstances;
+    }
+
+    const selectedPaths = new Set(
+      templateInstances.map((instance) => instance.path),
+    );
+
+    return globbedInstances.filter((instance) => {
+      return selectedPaths.has(instance.path);
+    });
+  }
+
+  /**
+   * Narrows the run to the selected templates, or leaves it whole.
+   *
+   * `undefined` means no narrowing, which is a different thing from an empty
+   * selection: it is what an absent flag, the `all` sentinel, and a cancelled
+   * picker all mean, and it reproduces the run this command made before the
+   * flag existed.
+   */
+  private async selectTemplates(args: {
+    configuration: ConformetryConfiguration;
+    templateNames: string[] | undefined;
+  }): Promise<ConformetryGeneratorDefinition[] | undefined> {
+    const selectedNames =
+      args.templateNames ??
+      (await this.promptForTemplateNames(args.configuration));
+
+    if (
+      selectedNames === undefined ||
+      selectedNames.includes(ALL_TEMPLATES_SELECTION)
+    ) {
+      return undefined;
+    }
+
+    return selectedNames.map((templateName) => {
+      const definition = args.configuration.find((generator) => {
+        return generator.name === templateName;
+      });
+
+      if (definition === undefined) {
+        this.logger.error("🚫 Rejected an unknown template", undefined, {
+          template: templateName,
+        });
+        throw unknownTemplateError({
+          availableTemplateNames: args.configuration.map((generator) => {
+            return generator.name;
+          }),
+          templateName,
+        });
+      }
+
+      return definition;
+    });
+  }
+
   // 🌎 Public Methods
 
   /** Parses the optional configuration path. */
@@ -138,6 +344,20 @@ export class ValidateCommand extends CommandRunner {
     return this.inputService.parseCommaDelimitedOption(value);
   }
 
+  /**
+   * Parses the optional template filter.
+   *
+   * Comma-delimited like its `--instances` and `--languages` siblings, so all
+   * three read the same way on a command line.
+   */
+  @Option({
+    description: `Comma-separated template names to validate, or "${ALL_TEMPLATES_SELECTION}" for every one`,
+    flags: "--templates [names]",
+  })
+  public parseTemplates(value: string | undefined): string[] | undefined {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
   /** Parses the optional run-level conformance threshold. */
   @Option({
     description:
@@ -162,14 +382,25 @@ export class ValidateCommand extends CommandRunner {
       await this.configurationService.loadConformetryConfiguration(
         options.config ?? DEFAULT_CONFIGURATION_PATH,
       );
+    const selectedTemplates = await this.selectTemplates({
+      configuration,
+      templateNames: options.templates,
+    });
+    const instances = this.selectInstances({
+      configuration,
+      instanceGlobs: options.instances,
+      selectedTemplates,
+      workingDirectory,
+    });
+
+    if (selectedTemplates !== undefined && instances.length === 0) {
+      this.reportEmptySelection(selectedTemplates);
+
+      return;
+    }
+
     const result = await this.validationService.validate({
-      instances: this.findInstances({
-        groups:
-          options.instances === undefined
-            ? configuration.flatMap((generator) => generator.instances)
-            : [{ patterns: options.instances }],
-        workingDirectory,
-      }),
+      instances,
       ...(options.threshold === undefined
         ? {}
         : { threshold: options.threshold }),
@@ -177,37 +408,11 @@ export class ValidateCommand extends CommandRunner {
         ? {}
         : { languageNames: options.languages }),
       templates: this.templateDiscoveryService.collectTemplates({
-        configuration,
+        configuration: selectedTemplates ?? configuration,
         workingDirectory,
       }),
     });
 
-    // The report is the command's product, not a log line: it is a multi-line
-    // document written for a reader, and routing it through the logger would
-    // both bury it in log framing and force prose no telemetry can group on.
-    process.stdout.write(
-      `${this.reportingService.formatReport({
-        fileResults: result.fileResults,
-        scores: result.scores,
-        workingDirectory,
-      })}\n`,
-    );
-    const failedCount = result.scores.filter((score) => !score.ok).length;
-    const unmatchedCount = result.unmatched.length;
-
-    this.logger.info("👔 Validated conformetry instances", undefined, {
-      count: result.checkedPaths.length,
-      failedCount,
-      unmatchedCount,
-    });
-
-    if (!result.ok) {
-      process.exitCode = 1;
-      this.logger.warn("⚠️ Rejected non-conforming instances", undefined, {
-        failedCount,
-        unmatchedCount,
-      });
-      throw new Error(this.describeFailure(result));
-    }
+    this.reportResult({ result, workingDirectory });
   }
 }

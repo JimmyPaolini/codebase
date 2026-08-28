@@ -122,12 +122,13 @@
     "markdown-lint": {},
     "nx-host": {
       "cache": false,
-      "description": "Show what the command-line host does with tag-scoped instance groups: nothing, because locating them needs a project graph",
+      "description": "Show what the command-line host does with tag-scoped instance groups: leaves them to a host that can locate them, and says so when asked for one by name",
       "executor": "nx:run-commands",
       "options": {
         "commands": [
           "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts instances --config packages/conformetry-examples/examples/nx-host/conformetry.config.ts",
-          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/nx-host/conformetry.config.ts"
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/nx-host/conformetry.config.ts",
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --templates nx-module --config packages/conformetry-examples/examples/nx-host/conformetry.config.ts"
         ],
         "cwd": "{workspaceRoot}",
         "env": {

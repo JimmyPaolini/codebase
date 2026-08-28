@@ -84,7 +84,13 @@ const EXPECTATIONS: Record<string, ExampleExpectation> = {
   },
   "nx-host": {
     exitCode: 0,
-    present: ["No instances were found.", "All checked files conform."],
+    present: [
+      "No instances were found.",
+      "All checked files conform.",
+      // A narrowed run names the host that can locate what this one cannot,
+      // rather than rendering an empty findings list as a clean report.
+      "locates instances by project tag, which this host cannot resolve",
+    ],
   },
   "scoring-thresholds": {
     exitCode: 0,
@@ -287,7 +293,7 @@ describe("the examples this package ships", () => {
           [
             ...CONFORMETRY_COMMAND,
             "generate",
-            "--generator",
+            "--template",
             generator,
             "--config",
             `packages/conformetry-examples/examples/${directory}/conformetry.config.ts`,
