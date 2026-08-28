@@ -1,4 +1,5 @@
 import { buildAnchorDocuments } from "./anchor-placement";
+import { buildBoundaryDocuments } from "./boundary-rules";
 import { buildConfigurationDocuments } from "./configuration";
 import { buildDeliveryDocuments } from "./export-delivery";
 import { buildGraphLevelDocuments } from "./graph-levels";
@@ -23,6 +24,7 @@ export async function collectDocuments(): Promise<ExampleDocument[]> {
     ...(await buildConfigurationDocuments()),
     ...(await buildDeliveryDocuments()),
     ...buildAnchorDocuments(),
+    ...buildBoundaryDocuments(),
   ]);
 }
 

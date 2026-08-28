@@ -2,14 +2,8 @@ import { Test } from "@nestjs/testing";
 import prompts from "prompts";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import {
-  conflictingRunModeError,
-  missingInputError,
-  promptCancelledError,
-} from "./input.constants";
+import { missingInputError, promptCancelledError } from "./input.constants";
 import { InputService } from "./input.service";
-
-import type { CodependixRunModeOptions } from "./input.types";
 
 // Mocked at the module boundary so the service's own wiring is exercised and
 // no test ever reaches for a terminal.
@@ -136,61 +130,5 @@ describe(InputService, () => {
       }),
     ).rejects.toThrow(missingInputError("A run mode").message);
     expect(promptRunner).not.toHaveBeenCalled();
-  });
-
-  // 🚦 Run mode resolution
-
-  it.each([
-    ["check", { check: true }],
-    ["write", { write: true }],
-  ] as const)(
-    "passes %s through when it was already named",
-    async (_, options) => {
-      process.stdin.isTTY = false;
-
-      await expect(service.resolveOptions(options)).resolves.toStrictEqual(
-        options,
-      );
-      expect(promptRunner).not.toHaveBeenCalled();
-    },
-  );
-
-  it("refuses a command line naming both run modes", async () => {
-    await expect(
-      service.resolveOptions({ check: true, write: true }),
-    ).rejects.toThrow(conflictingRunModeError().message);
-  });
-
-  it("asks which mode was meant when neither was named", async () => {
-    process.stdin.isTTY = true;
-    promptRunner.mockResolvedValue({ value: "write" });
-
-    await expect(service.resolveOptions({})).resolves.toStrictEqual({
-      write: true,
-    });
-  });
-
-  it("carries the caller's other options through the prompt unchanged", async () => {
-    process.stdin.isTTY = true;
-    promptRunner.mockResolvedValue({ value: "check" });
-    // Typed as a caller's own options would be, rather than passed as a bare
-    // literal: the constraint's properties are all optional, so a literal
-    // sharing none of them is rejected before the call is ever made.
-    const options: CodependixRunModeOptions & { directory?: string } = {
-      directory: "packages/logger",
-    };
-
-    await expect(service.resolveOptions(options)).resolves.toStrictEqual({
-      check: true,
-      directory: "packages/logger",
-    });
-  });
-
-  it("fails rather than asking when neither mode was named off a terminal", async () => {
-    process.stdin.isTTY = false;
-
-    await expect(service.resolveOptions({})).rejects.toThrow(
-      missingInputError("A run mode (--check or --write)").message,
-    );
   });
 });

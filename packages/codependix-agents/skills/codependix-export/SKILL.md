@@ -1,6 +1,6 @@
 ---
 name: codependix-export
-description: Run a codependix dependency graph export, choose between --check and --write, point a run at a workspace root or a configuration file, or read a Mermaid block or JSON graph it produced. Use when running codependix or npx codependix, when a run exits 0 having written nothing, when looking for a flag that selects one graph type, when wiring codependix into a CI step, or when reading an exported Nx Neighborhood, NestJS module graph, or file-level import graph. Covers the command-line host directly, without assuming any task runner.
+description: Run a codependix dependency graph export or boundary check, choose between --check boundaries, --check reports, and --write, point a run at a workspace root or a configuration file, or read a Mermaid block or JSON graph it produced. Use when running codependix or npx codependix, when a run exits 0 having written nothing, when --check is refused for carrying no value, when looking for a flag that selects one graph type, when wiring codependix into a CI step, or when reading an exported Nx Neighborhood, NestJS module graph, or file-level import graph. Covers the command-line host directly, without assuming any task runner.
 license: MIT
 ---
 
@@ -40,23 +40,42 @@ debugging one. Before looking for a defect, confirm in this order:
 
 The `codependix-configure` skill covers all three.
 
-## Exactly two run modes
+## One `--write`, and two things `--check` can gate
+
+`--check` takes a **comma-separated set**, and naming the set is what selects
+which finding fails the run.
 
 | Mode | Meaning |
 | ---- | ------- |
-| `--check` | Verifies every configured export is current, writing nothing |
+| `--check boundaries` | Fails on an edge or a cycle breaking a declared rule. Reads no destination and writes nothing |
+| `--check reports` | Fails on a configured destination no longer holding what a fresh run would write |
 | `--write` | Writes every configured export |
 
-`--check` and `--write` are mutually exclusive, and **one of them is
-required**. A command line naming both is refused outright before anything is
-read. A command line naming neither is _asked_ which was meant, as a two-item
-menu. No mode is ever inferred and no default write happens.
+The two `--check` names exist because the findings belong on opposite sides of
+a pull request. A broken boundary is caused by the branch and fixed by the
+branch, so it gates every branch. A stale export moves with the workspace it
+describes, so gating it on a branch fails every branch that changed a project
+graph rather than anything the branch did. `reports` is deliberately spelled
+the same as callidescope's and codometer's, because it is the same finding.
+
+Combinations:
+
+- `--write --check boundaries` is legal — a boundary has no destination to be
+  stale.
+- `--write --check reports` is refused — an export cannot be stale in the run
+  that just wrote it.
+- **A bare `--check`, or one whose value is only commas, is refused.** Read as
+  "gate nothing" it would be a gate that cannot fail. If a run is rejected
+  with `--check needs a value`, the fix is to name the set, not to drop the
+  flag.
+- Naming neither `--check` nor `--write` is _asked_ which was meant, as a
+  three-item menu. No mode is ever inferred and no default write happens.
 
 **An agent should always name the mode explicitly.** There is no flag that
 suppresses the prompt, because an agent's run has no terminal to draw it on:
 that run fails immediately, naming the flag it wanted. Reading that failure as
 a broken tool is the mistake to avoid — it is a missing flag, and the fix is
-to add `--check` or `--write`.
+to add `--check <set>` or `--write`.
 
 Two options qualify whichever mode was picked:
 
@@ -67,7 +86,8 @@ Two options qualify whichever mode was picked:
 
 ```bash
 codependix map --write
-codependix map --check --directory . --config configuration/codependix.config.ts
+codependix map --check boundaries --directory . --config configuration/codependix.config.ts
+codependix map --check reports --directory . --config configuration/codependix.config.ts
 ```
 
 ## Codependix reads the Nx project graph
@@ -115,11 +135,17 @@ project that fails to boot its container, is collected as a failure while every
 other project still runs. `--write` either fully succeeds or names exactly
 which projects failed.
 
-Two findings are reported separately, and either one fails the run:
+Three findings are reported separately, and any one of them fails the run:
 
-- **Failures** — projects that raised before their exports could be resolved.
-- **Stale exports** — in `--check`, configured exports that disagree with a
-  freshly built graph.
+- **Failures** — projects that raised before their exports could be resolved,
+  or whose graph could not be built to judge.
+- **Stale exports** — under `--check reports`, configured exports that
+  disagree with a freshly built graph.
+- **Boundary violations** — under `--check boundaries`, edges and cycles
+  breaking a declared rule. Each names its level, its scope, the rule, both
+  endpoints, and whatever the rule says about why it exists. They go to the
+  console and the exit code and nowhere else: a list of things currently
+  wrong is not a document worth publishing.
 
 A project resolving to `target: "none"` is left out of the results **entirely**
 rather than reported as up to date, so an exit code depends only on exports
@@ -164,5 +190,8 @@ The next `--write` replaces an anchor block wholesale. A diagram edited by hand
 is a diff that silently disappears on the following run, and reviewers see a
 change that reverts itself for no visible reason.
 
-**Re-running `--write` is the entire fix for a stale `--check`.** Reach for the
-`codependix-triage` skill when a run fails for any other reason.
+**Re-running `--write` is the entire fix for a stale `--check reports`.** It
+is never the fix for a `--check boundaries` failure — that is a real edge in
+real code, and writing an export does not remove it. Reach for the
+`codependix-triage` skill for either one, and for `codependix-configure` to
+read or change the rules themselves.

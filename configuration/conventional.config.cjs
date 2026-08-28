@@ -174,7 +174,7 @@ const scopes = [
   },
   {
     description:
-      "Dependency graph export CLI and the configuration package it reads",
+      "Dependency graph export CLI, the configuration package it reads, and the package that judges the graphs against declared rules",
     name: "codependix",
   },
   {

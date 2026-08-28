@@ -1,6 +1,6 @@
 # 🔀 `--check` versus `--write`
 
-What `--check` reports, what `--write` acts on, the command line codependix asks about, and the one it refuses outright.
+What each `--check` name gates, what `--write` acts on, the command line codependix asks about, and the four it refuses outright.
 
 ## Run it
 
@@ -34,20 +34,37 @@ The first result is what `--check` reports for an export nothing has moved. The 
 ]
 ```
 
-## A command line naming neither mode
+## A command line naming no mode at all
 
-`--check` and `--write` are mutually exclusive and one is required. At a terminal, a command line naming neither is asked which was meant, as a two-item menu. Where stdin is not a terminal the run fails with this instead — `prompts` would otherwise draw a menu nobody can answer, never resolve, and let the process exit 0 having written nothing.
+At a terminal, a command line naming neither `--check` nor `--write` is asked which was meant, as a three-item menu — `boundaries`, `reports`, `write`. Where stdin is not a terminal the run fails with this instead: `prompts` would otherwise draw a menu nobody can answer, never resolve, and let the process exit 0 having done nothing.
 
 ```text
 A run mode (--check or --write) is required, and stdin is not a terminal so it cannot be asked for.
 ```
 
-## A command line naming both modes
+## A `--check` carrying no value
 
-Refused outright rather than asked about — nothing selects a run mode when two are named, so there is no question to put.
+`--check` names which finding fails the run, so a bare one is a mistake rather than a shorthand. Read as "gate nothing" it would be a gate that cannot fail — `--check "$GATES"` with the variable unset would pass forever over a workspace whose every rule was broken, which is worse than no gate at all because it looks like protection. A value of only separators is refused the same way.
 
 ```text
-Only one of --check or --write may be given.
+--check needs a value. It takes a comma-separated set drawn from "boundaries" and "reports", as in "--check boundaries,reports".
+```
+
+## A `--check` naming something it does not know
+
+Every mistake on one command line is collected before any of them is reported, so two typos are two lines to fix rather than two runs. `limits` is codometer’s word and `depth` is callidescope’s; `reports` is deliberately the same word in all three, because a configured destination going stale is one finding rather than three.
+
+```text
+--check does not accept "limits". It takes a comma-separated set drawn from "boundaries" and "reports", as in "--check boundaries,reports".
+--check does not accept "depth". It takes a comma-separated set drawn from "boundaries" and "reports", as in "--check boundaries,reports".
+```
+
+## `--write` together with `--check reports`
+
+Refused, because an export cannot be stale in the run that just wrote it. `--write --check boundaries` is legal for the mirror-image reason: a boundary has no destination to be stale, so writing every export and judging every graph in one run is two independent things rather than a contradiction.
+
+```text
+--write cannot be combined with --check reports: an export cannot be stale in the run that just wrote it. Drop one of them, or run --write and --check reports separately.
 ```
 
 ## One project failing names itself and stops nothing
@@ -58,4 +75,4 @@ Only one of --check or --write may be given.
 
 ## Next
 
-[refusals](../refusals/README.md).
+[boundary-rules](../boundary-rules/README.md).

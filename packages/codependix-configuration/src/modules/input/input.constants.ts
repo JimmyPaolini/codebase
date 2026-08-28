@@ -1,14 +1,6 @@
 // ♟️ Constants
 
 /**
- * The two run modes a `codependix map` command line resolves to.
- *
- * A list rather than only the `CodependixRunMode` union, so the prompt can
- * offer them as choices and the union can be derived rather than restated.
- */
-export const CODEPENDIX_RUN_MODES = ["check", "write"] as const;
-
-/**
  * Thrown when a command line cannot be turned into a run.
  *
  * One class rather than one per cause: every cause is the same event to
@@ -26,10 +18,6 @@ export class InputError extends Error {
     this.name = "InputError";
   }
 }
-
-/** A command line naming both `--check` and `--write`. */
-export const conflictingRunModeError = (): InputError =>
-  new InputError("Only one of --check or --write may be given.");
 
 /**
  * A required value that cannot be asked for, because stdin is not a terminal.

@@ -35,6 +35,7 @@ describe(PythonImportsService, () => {
   ): GraphRunContext {
     return {
       configuration: {
+        boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
         defaults: {},
         exclude: [],
         include: ["**"],
