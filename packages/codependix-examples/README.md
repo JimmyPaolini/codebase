@@ -186,6 +186,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 <!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
+  codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_examples["codependix-examples"]
@@ -193,6 +194,7 @@ graph LR
   codependix_nestjs["codependix-nestjs"]
   codependix_nx["codependix-nx"]
   logger["logger"]
+  codependix_examples --> codependix_boundaries
   codependix_examples --> codependix_cli
   codependix_examples --> codependix_configuration
   codependix_examples --> codependix_imports
@@ -215,6 +217,7 @@ graph LR
   file_testing_graphs_integration_test_ts["testing/graphs.integration.test.ts"]
   file_testing_render_examples_ts["testing/render-examples.ts"]
   file_testing_render_anchor_placement_ts["testing/render/anchor-placement.ts"]
+  file_testing_render_boundary_rules_ts["testing/render/boundary-rules.ts"]
   file_testing_render_builders_ts["testing/render/builders.ts"]
   file_testing_render_catalog_ts["testing/render/catalog.ts"]
   file_testing_render_configuration_ts["testing/render/configuration.ts"]
@@ -250,7 +253,11 @@ graph LR
   file_testing_render_anchor_placement_ts --> file_testing_render_export_delivery_ts
   file_testing_render_anchor_placement_ts --> file_testing_render_paths_ts
   file_testing_render_anchor_placement_ts --> file_testing_render_types_ts
+  file_testing_render_boundary_rules_ts --> file_testing_render_builders_ts
+  file_testing_render_boundary_rules_ts --> file_testing_render_document_ts
+  file_testing_render_boundary_rules_ts --> file_testing_render_types_ts
   file_testing_render_catalog_ts --> file_testing_render_anchor_placement_ts
+  file_testing_render_catalog_ts --> file_testing_render_boundary_rules_ts
   file_testing_render_catalog_ts --> file_testing_render_configuration_ts
   file_testing_render_catalog_ts --> file_testing_render_export_delivery_ts
   file_testing_render_catalog_ts --> file_testing_render_graph_levels_ts
@@ -306,36 +313,36 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3897-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-190.18_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-58-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-79-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4128-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-204.61_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-59-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-80-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-64-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-65-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-13-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-27-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-210-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-221-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-1-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-2-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-17-8b5cf6?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-25-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-218-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-225-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-3-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-176-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-45-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-170-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-155-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-135-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-279-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-484-475569?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-181-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-47-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-177-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-162-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-138-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-293-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-504-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -356,16 +363,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-15-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-267-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-268-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-57-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-30-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-154-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-117-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-155-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-118-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-18-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-54-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-223-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-224-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -482,24 +489,24 @@ graph LR
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-16-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1300-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-16-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-107-8b5cf6?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-17-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1382-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-17-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-116-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-0-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-151-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-161-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-4-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-16-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-7-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-51-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-52-059669?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-54-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-56-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-73-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-345-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-81-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-383-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

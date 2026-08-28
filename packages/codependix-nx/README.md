@@ -13,9 +13,11 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 <!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
+  codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_examples["codependix-examples"]
   codependix_nx["codependix-nx"]
+  codependix_boundaries --> codependix_nx
   codependix_cli --> codependix_nx
   codependix_examples --> codependix_nx
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px

@@ -13,10 +13,12 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 <!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
+  codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_examples["codependix-examples"]
   codependix_nestjs["codependix-nestjs"]
   logger["logger"]
+  codependix_boundaries --> codependix_nestjs
   codependix_cli --> codependix_nestjs
   codependix_examples --> codependix_nestjs
   codependix_nestjs --> logger

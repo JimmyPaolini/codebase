@@ -611,7 +611,7 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5417-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-163.37_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-163.30_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-39-3178c6?style=flat-square)
 

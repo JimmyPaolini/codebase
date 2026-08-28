@@ -142,6 +142,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 <!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
+  codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_examples["codependix-examples"]
@@ -149,6 +150,7 @@ graph LR
   codependix_nestjs["codependix-nestjs"]
   codependix_nx["codependix-nx"]
   logger["logger"]
+  codependix_cli --> codependix_boundaries
   codependix_cli --> codependix_configuration
   codependix_cli --> codependix_imports
   codependix_cli --> codependix_nestjs
@@ -166,6 +168,8 @@ graph LR
 ```mermaid
 flowchart LR
   AnchorsModule
+  BoundariesModule
+  BoundaryCheckModule
   ConfigModule([ConfigModule])
   ConfigurationModule
   DeliveryModule
@@ -179,11 +183,19 @@ flowchart LR
   NestjsProjectModule
   PythonImportsModule
   PythonModule
+  RunPlanModule
   TypescriptModule
   WorkspaceGraphModule
+  BoundaryCheckModule --> BoundariesModule
+  BoundaryCheckModule --> ModuleGraphModule
+  BoundaryCheckModule --> NestjsProjectModule
+  BoundaryCheckModule --> PythonModule
+  BoundaryCheckModule --> TypescriptModule
+  BoundaryCheckModule --> WorkspaceGraphModule
   DeliveryModule --> AnchorsModule
   MainModule --> DiscoveryModule
   MainModule --> MapModule
+  MapModule --> BoundaryCheckModule
   MapModule --> ConfigurationModule
   MapModule --> DeliveryModule
   MapModule --> InputModule
@@ -191,11 +203,13 @@ flowchart LR
   MapModule --> NeighborhoodModule
   MapModule --> NestjsProjectModule
   MapModule --> PythonImportsModule
+  MapModule --> RunPlanModule
   MapModule --> TypescriptModule
   MapModule --> WorkspaceGraphModule
   PythonImportsModule --> ConfigurationModule
   PythonImportsModule --> DeliveryModule
   PythonImportsModule --> PythonModule
+  RunPlanModule --> InputModule
   WorkspaceGraphModule --> NeighborhoodModule
 ```
 
@@ -241,6 +255,12 @@ graph LR
   file_src_modules_python_imports_python_imports_service_ts["src/modules/python-imports/python-imports.service.ts"]
   file_src_modules_python_imports_python_imports_service_unit_test_ts["src/modules/python-imports/python-imports.service.unit.test.ts"]
   file_src_modules_python_imports_python_imports_types_ts["src/modules/python-imports/python-imports.types.ts"]
+  file_src_modules_run_plan_run_plan_constants_ts["src/modules/run-plan/run-plan.constants.ts"]
+  file_src_modules_run_plan_run_plan_module_ts["src/modules/run-plan/run-plan.module.ts"]
+  file_src_modules_run_plan_run_plan_module_unit_test_ts["src/modules/run-plan/run-plan.module.unit.test.ts"]
+  file_src_modules_run_plan_run_plan_service_ts["src/modules/run-plan/run-plan.service.ts"]
+  file_src_modules_run_plan_run_plan_service_unit_test_ts["src/modules/run-plan/run-plan.service.unit.test.ts"]
+  file_src_modules_run_plan_run_plan_types_ts["src/modules/run-plan/run-plan.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
@@ -272,14 +292,21 @@ graph LR
   file_src_modules_map_map_command_ts --> file_src_modules_delivery_delivery_types_ts
   file_src_modules_map_map_command_ts --> file_src_modules_map_map_service_ts
   file_src_modules_map_map_command_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_command_ts --> file_src_modules_run_plan_run_plan_constants_ts
+  file_src_modules_map_map_command_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_map_map_command_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_delivery_delivery_types_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_map_map_command_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_map_map_service_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_command_unit_test_ts --> file_src_modules_run_plan_run_plan_constants_ts
+  file_src_modules_map_map_command_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_map_map_command_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_map_map_module_ts --> file_src_modules_delivery_delivery_module_ts
   file_src_modules_map_map_module_ts --> file_src_modules_map_map_command_ts
   file_src_modules_map_map_module_ts --> file_src_modules_map_map_service_ts
   file_src_modules_map_map_module_ts --> file_src_modules_python_imports_python_imports_module_ts
+  file_src_modules_map_map_module_ts --> file_src_modules_run_plan_run_plan_module_ts
   file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_command_ts
   file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_module_ts
   file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_service_ts
@@ -307,6 +334,15 @@ graph LR
   file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_map_map_types_ts
   file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
+  file_src_modules_run_plan_run_plan_module_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_run_plan_run_plan_module_unit_test_ts --> file_src_modules_run_plan_run_plan_module_ts
+  file_src_modules_run_plan_run_plan_module_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_constants_ts
+  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_types_ts
+  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_constants_ts
+  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
@@ -421,40 +457,40 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4531-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-156.35_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-39-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5259-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-180.61_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-8-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-45-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.89_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-22.79_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-39-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-13-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-45-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-15-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-15-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-91-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-17-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-113-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-12-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-11-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-175-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-51-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-162-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-64-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-235-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-169-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-46-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-152-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-418-475569?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-14-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-19-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-13-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-200-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-65-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-180-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-85-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-269-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-199-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-56-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-178-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-534-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -475,16 +511,16 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-170-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-171-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-36-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-13-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-112-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-92-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-113-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-93-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-9-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-35-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-151-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-152-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
@@ -565,14 +601,14 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-5-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-4-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-6-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-5-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-1-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-4-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-5-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-5-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-11-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-13-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 
