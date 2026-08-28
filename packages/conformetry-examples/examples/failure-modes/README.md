@@ -94,7 +94,7 @@ the same way.
 Generation refuses the same way, for the same reason:
 
 ```bash
-pnpm exec nx run conformetry-cli:start -- generate --generator missing-input --name unowned --no-interactive --directory tmp/conformetry-examples/failure-modes --config packages/conformetry-examples/examples/failure-modes/conformetry.config.ts
+pnpm exec nx run conformetry-cli:start -- generate --generator missing-input --name unowned --directory tmp/conformetry-examples/failure-modes --config packages/conformetry-examples/examples/failure-modes/conformetry.config.ts
 ```
 
 ### Why this had to be an error
