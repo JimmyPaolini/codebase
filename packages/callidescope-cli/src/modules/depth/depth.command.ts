@@ -1,7 +1,4 @@
-import {
-  CALLIDESCOPE_OUTPUT_FORMATS,
-  InputService,
-} from "@callidescope/configuration";
+import { InputError, InputService } from "@callidescope/configuration";
 import { AddressDepthService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -15,15 +12,17 @@ import type {
   AddressCommandOptions,
   LocatedWorkspace,
 } from "../address-lookup/address-lookup.types";
-import type { CallidescopeOutputFormat } from "@callidescope/configuration";
+import type {
+  CallableId,
+  CallidescopeOutputFormat,
+} from "@callidescope/configuration";
 
 /**
  * CLI entry point that prints the call stacks above and below one callable.
  */
 @Command({
-  arguments: "<address>",
   description:
-    "Print every call stack above and below one callable, addressed as <file>#<qualified-name>",
+    "Print every call stack above and below one or more callables, each addressed as <file>#<qualified-name>",
   name: "depth",
 })
 @Injectable()
@@ -47,65 +46,138 @@ export class DepthCommand extends CommandRunner {
 
   // 🔏 Private Methods
 
-  /** Logs why an address could not be acted on, and fails the run. */
-  private rejectAddress(problem: string | undefined): void {
+  /**
+   * Matches every address against the trace, or fails the run naming each one
+   * that did not match.
+   *
+   * All or nothing: a run that printed the addresses it understood and
+   * skipped the rest would put a partial report on the stream under an exit
+   * code that says it succeeded for the ones it did.
+   */
+  private identifyAddresses(args: {
+    addresses: readonly string[];
+    workspace: LocatedWorkspace;
+  }): undefined | { address: string; id: CallableId }[] {
+    const identified: { address: string; id: CallableId }[] = [];
+    const problems: string[] = [];
+
+    for (const address of args.addresses) {
+      const resolution = this.addressLookupService.resolve({
+        address,
+        workspace: args.workspace,
+      });
+      const problem = this.addressLookupService.describeProblem({
+        address,
+        resolution,
+      });
+
+      if (problem !== undefined || resolution.kind !== "resolved") {
+        problems.push(problem ?? `"${address}" resolved to nothing.`);
+        continue;
+      }
+
+      identified.push({ address, id: resolution.id });
+    }
+
+    if (problems.length > 0) {
+      this.rejectAddresses(problems);
+      return undefined;
+    }
+
+    return identified;
+  }
+
+  /** Traces every path above and below each resolved address, and prints them. */
+  private async printDepth(options: AddressCommandOptions): Promise<void> {
+    const resolvedOptions =
+      await this.inputService.resolveFormatOption(options);
+    // Traced before the addresses are read, not after: the trace is what the
+    // prompt completes against, and it is the same trace the lookup needs, so
+    // asking first would either offer nothing or cost a second one.
+    const workspace = await this.addressLookupService.locate(resolvedOptions);
+    const addresses = await this.resolveAddresses({
+      options: resolvedOptions,
+      workspace,
+    });
+    const identified = this.identifyAddresses({ addresses, workspace });
+
+    if (identified === undefined) {
+      return;
+    }
+
+    process.stdout.write(
+      this.addressReportService.renderDepthReports({
+        format: workspace.configuration.output.format,
+        reports: identified.map(({ address, id }) => ({
+          address,
+          downward: this.addressDepthService.buildDownwardStacks({
+            callablesById: workspace.located.callablesById,
+            graph: workspace.located.graph,
+            startId: id,
+          }),
+          upward: this.addressDepthService.buildUpwardStacks({
+            callablesById: workspace.located.callablesById,
+            graph: workspace.located.graph,
+            startId: id,
+          }),
+        })),
+      }),
+    );
+  }
+
+  /** Logs why one or more addresses could not be acted on, and fails the run. */
+  private rejectAddresses(problems: readonly string[]): void {
     this.logger.error("🔭 Rejected a callable address", undefined, {
-      problem,
+      problems,
+    });
+    process.exitCode = 1;
+  }
+
+  /** Logs a command line the input service refused, and fails the run. */
+  private rejectCommandLine(error: InputError): void {
+    this.logger.error("🔭 Rejected the command line", undefined, {
+      reason: error.message,
     });
     process.exitCode = 1;
   }
 
   /**
-   * Reads the address argument, completing it against what the trace found
-   * when it is missing and the session can be prompted, or failing the run
-   * otherwise.
+   * Reads `--addresses`, completing it against what the trace found when the
+   * flag was left off.
+   *
+   * The prompt refuses rather than draws itself when stdin is not a terminal,
+   * so a scripted run that forgot the flag fails loudly instead of exiting 0
+   * having rendered a menu nobody could answer.
    */
-  private async resolveAddress(args: {
-    canPrompt: boolean;
-    passedParameters: readonly string[];
+  private async resolveAddresses(args: {
+    options: AddressCommandOptions;
     workspace: LocatedWorkspace;
-  }): Promise<string | undefined> {
-    const address = args.passedParameters[0];
+  }): Promise<readonly string[]> {
+    const addresses = args.options.addresses ?? [];
 
-    if (address !== undefined) {
-      return address;
+    if (addresses.length > 0) {
+      return addresses;
     }
 
-    if (args.canPrompt) {
-      return this.inputService.promptForAutocomplete({
-        message: "Which callable? (file#qualified-name)",
-        suggestions: this.addressLookupService.listAddresses(args.workspace),
-      });
-    }
-
-    this.logger.error("🔭 Rejected the command line", undefined, {
-      reasons: [
-        'depth needs a callable address, as in "depth src/foo.service.ts#FooService.bar".',
-      ],
+    return this.inputService.promptForAutocompleteMultiselect({
+      message: "Which callables? (file#qualified-name)",
+      subject:
+        'At least one callable address, as in "depth --addresses src/foo.service.ts#FooService.bar"',
+      suggestions: this.addressLookupService.listAddresses(args.workspace),
     });
-    process.exitCode = 1;
-
-    return undefined;
-  }
-
-  /** Fills in `--format` by prompting, when it was left off and can be asked. */
-  private async resolveOptions(
-    options: AddressCommandOptions,
-    canPrompt: boolean,
-  ): Promise<AddressCommandOptions> {
-    if (options.format !== undefined || !canPrompt) {
-      return options;
-    }
-
-    const format = await this.inputService.promptForSelect({
-      choices: CALLIDESCOPE_OUTPUT_FORMATS,
-      message: "Which output format?",
-    });
-
-    return { ...options, format };
   }
 
   // 🌎 Public Methods
+
+  /** Parses `--addresses`, a comma-separated list of callable addresses. */
+  @Option({
+    description:
+      "Comma-separated callable addresses, each <file>#<qualified-name>",
+    flags: "-a, --addresses [addresses]",
+  })
+  public parseAddresses(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
 
   /** Parses `--config`. */
   @Option({
@@ -134,72 +206,26 @@ export class DepthCommand extends CommandRunner {
     return this.inputService.parseFormat(value);
   }
 
-  /** Parses the opt-out from interactive prompting. */
-  @Option({
-    description: "Never prompt for missing values",
-    flags: "--no-interactive",
-  })
-  public parseInteractive(): boolean {
-    return false;
-  }
-
   /**
-   * Resolves the address, traces every path above and below it, and prints
-   * them.
+   * Resolves the addresses, traces every path above and below each, and
+   * prints them.
+   *
+   * Only a refused command line is caught: it is the reader's own typing to
+   * fix, so it is reported as such rather than as a crash. Anything else
+   * propagates with its stack intact.
    */
   public async run(
-    passedParameters: string[],
+    _passedParameters: string[],
     options: AddressCommandOptions,
   ): Promise<void> {
-    const canPrompt = this.inputService.canPrompt(options.interactive);
-    const resolvedOptions = await this.resolveOptions(options, canPrompt);
-    // Traced before the address is read, not after: the trace is what the
-    // prompt completes against, and it is the same trace the lookup needs, so
-    // asking first would either offer nothing or cost a second one.
-    const workspace = await this.addressLookupService.locate(resolvedOptions);
-    const address = await this.resolveAddress({
-      canPrompt,
-      passedParameters,
-      workspace,
-    });
+    try {
+      await this.printDepth(options);
+    } catch (error) {
+      if (!(error instanceof InputError)) {
+        throw error;
+      }
 
-    if (address === undefined) {
-      return;
+      this.rejectCommandLine(error);
     }
-
-    const resolution = this.addressLookupService.resolve({
-      address,
-      workspace,
-    });
-    const problem = this.addressLookupService.describeProblem({
-      address,
-      resolution,
-    });
-
-    if (problem !== undefined || resolution.kind !== "resolved") {
-      this.rejectAddress(problem);
-      return;
-    }
-
-    const { id } = resolution;
-    const downward = this.addressDepthService.buildDownwardStacks({
-      callablesById: workspace.located.callablesById,
-      graph: workspace.located.graph,
-      startId: id,
-    });
-    const upward = this.addressDepthService.buildUpwardStacks({
-      callablesById: workspace.located.callablesById,
-      graph: workspace.located.graph,
-      startId: id,
-    });
-
-    process.stdout.write(
-      this.addressReportService.renderDepth({
-        address,
-        downward,
-        format: workspace.configuration.output.format,
-        upward,
-      }),
-    );
   }
 }

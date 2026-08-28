@@ -1,6 +1,6 @@
 ---
 name: callidescope-configure
-description: Tell callidescope what to do — the command-line flags (--check, --write, --directories, --format, --config, --json, --markdown, --no-interactive) and the callidescope.config.ts they read alongside, covering depth, breadth, and spread limits, call-stack entry points, exclusions and ignored callees, the workspace's module layout, and where a run writes its JSON, markdown, mermaid, and per-project reports. Use when wiring a depth gate into CI or a commit hook, when a whole-workspace run is too slow, when choosing between --check and --write, when a repository has no callidescope configuration yet, when a trace judges code it should not be judging, when everything is reported as an orphan root, or when deciding where a committed report should live.
+description: Tell callidescope what to do — the command-line flags (--check, --write, --addresses, --directories, --format, --config, --json, --markdown) and the callidescope.config.ts they read alongside, covering depth, breadth, and spread limits, call-stack entry points, exclusions and ignored callees, the workspace's module layout, and where a run writes its JSON, markdown, mermaid, and per-project reports. Use when wiring a depth gate into CI or a commit hook, when a whole-workspace run is too slow, when choosing between --check and --write, when a repository has no callidescope configuration yet, when a trace judges code it should not be judging, when everything is reported as an orphan root, or when deciding where a committed report should live.
 license: MIT
 ---
 
@@ -30,6 +30,7 @@ pull request leaves every committed report exactly as it found it.
 
 | Flag | Meaning |
 | ---- | ------- |
+| `-a, --addresses` | Comma-separated callable addresses, each `<file>#<qualified-name>`. `depth` and `breadth` only. Prompted for when omitted |
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |
 | `-d, --directories` | Comma-separated project directories to trace, each holding its own `tsconfig.json` |
 | `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default |
@@ -37,10 +38,10 @@ pull request leaves every committed report exactly as it found it.
 | `-m, --markdown` | Path to splice the markdown block into |
 | `--check` | Fail on a comma-separated set drawn from `breadth`, `depth`, and `reports` |
 | `--write` | Write every configured destination |
-| `--no-interactive` | Never prompt for a missing value |
 
 `--config`, `--directories`, and `--format` are the three that `depth` and
-`breadth` also take. The rest are the whole-workspace command's alone, because
+`breadth` also take, and `--addresses` is theirs alone — it names what to
+report on, which a whole-workspace trace never needs. The rest are the whole-workspace command's alone, because
 a lookup never writes or compares a destination.
 
 ### `--check` takes a set, and the set matters
@@ -137,13 +138,25 @@ terminal, pastes into an issue, and is already what the files hold.
 
 ### Prompting, and why it will not hang a script
 
-`callidescope`, `depth`, and `breadth` all prompt interactively for a value
-left off the command line — `depth` and `breadth` for a missing `<address>`,
-all three for a missing `--format`. **Prompting is gated on an attached
-terminal outside CI**, so a script, a hook, or a CI job gets the non-prompting
-behavior for free and a missing value is reported as a rejected command line
-instead. `--no-interactive` opts out explicitly when you want that behavior at
-a real terminal too.
+`callidescope`, `depth`, and `breadth` all prompt for a value left off the
+command line — `depth` and `breadth` for a missing `--addresses`, all three for
+a missing `--format`. There is no flag to turn that off, because **an attached
+terminal is the whole condition**: a script, a hook, or a CI job never has one
+and so is never prompted.
+
+What each command does with a value it cannot ask for depends on whether
+anything else could supply it:
+
+| Value | With no terminal |
+| ----- | ---------------- |
+| `--addresses`, which `depth` and `breadth` need | **Refused**, exit non-zero. Nothing else can supply it |
+| `--format` | The format in the configuration stands, and the run proceeds |
+
+The refusal is the load-bearing half. `prompts` does not fail on a
+non-terminal stdin — it draws its menu, never resolves, and lets the process
+**exit 0 having done nothing** — so a required value asserts a terminal before
+it prompts at all and reports a rejected command line instead. Without that,
+a CI run that forgot an argument would read as a green one.
 
 ## The configuration file
 

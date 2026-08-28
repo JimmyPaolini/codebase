@@ -177,28 +177,50 @@ Narrowing with `--directories` is the difference between a whole-workspace
 analysis and a one-second check, because each project needs its own TypeScript
 program.
 
-## Depth and breadth for one callable
+## Depth and breadth for named callables
 
 `callidescope` reports the whole workspace; `depth` and `breadth` answer a
-narrower question about one callable, addressed the way a Python traceback or
-an ESLint rule id points at a symbol — the file path and the qualified name
-callidescope already prints in every stack, joined by `#`:
+narrower question about callables you name, addressed the way a Python
+traceback or an ESLint rule id points at a symbol — the file path and the
+qualified name callidescope already prints in every stack, joined by `#`:
 
 ```bash
-callidescope depth src/foo.service.ts#FooService.bar
-callidescope breadth src/foo.service.ts#FooService.bar
+callidescope depth --addresses src/foo.service.ts#FooService.bar
+callidescope breadth --addresses src/foo.service.ts#FooService.bar
 ```
+
+`--addresses` is comma-separated, so one run can report on several callables —
+which is what a rename spanning a handful of them actually needs:
+
+```bash
+callidescope depth --addresses src/foo.service.ts#FooService.bar,src/bar.service.ts#BarService.baz
+```
+
+**Every address has to resolve, or the run prints nothing.** A report covering
+the addresses that were understood, under an exit code claiming success, is
+worse than no report; a run naming an address it cannot match reports each
+failure and exits non-zero.
 
 A file holding more than one declaration under the same qualified name — two
 overloads, two callbacks bound to the same property — is disambiguated with a
 trailing `:<line>`, and both commands print every candidate's line when they
 cannot tell which one was meant.
 
+**`--addresses` is prompted for when omitted.** At a terminal, both commands
+offer every callable the trace found as an autocompleting multiselect, so the
+flag is something to skip rather than something to look up. With no terminal
+there is nobody to ask, so the run is refused by name and exits non-zero
+rather than drawing a menu nothing can answer.
+
 Both accept the same workspace-scoping flags as `callidescope` itself —
 `--directories`, `--config`, and `--format` — since resolving an address still
 means tracing the workspace first. Neither takes `--check`,
 `--write`, `--json`, or `--markdown`: a lookup only ever prints, to whichever
 format `--format` names.
+
+Under `--format json` both print **an array**, whatever the address count, so
+one run is one document `JSON.parse` accepts without first counting how many
+addresses were asked about.
 
 **`depth`** prints every path above the callable and every path below it —
 every caller chain up to a root, every callee chain down to a leaf — rather
@@ -225,7 +247,7 @@ trace target onto every project:
 ```bash
 nx run-many -t trace --projects=tag:type:package
 nx affected -t trace
-nx run callidescope-graph:depth --address="src/foo.service.ts#FooService.bar"
+nx run callidescope-graph:depth --addresses="src/foo.service.ts#FooService.bar"
 ```
 
 It infers a `trace`, a `depth`, and a `breadth` target onto every project, so
@@ -876,6 +898,7 @@ graph LR
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_report_address_report_service_ts
+  file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_report_address_report_types_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
@@ -932,40 +955,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5871-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-186.68_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6379-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-205.19_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-48-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-47-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-22.03_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-23.39_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
 ![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-47-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-15-0ea5e9?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-19-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-33-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-122-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-32-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-132-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
-![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-1-f7df1e?style=flat-square)
+![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-10-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-17-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-14-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-231-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-78-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-222-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-87-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-212-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-224-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-51-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-251-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-423-475569?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-248-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-91-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-240-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-99-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-230-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-223-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-55-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-301-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-518-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
