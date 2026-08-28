@@ -7,6 +7,7 @@ import { TemplateDiscoveryService } from "../template-discovery/template-discove
 import { InstanceDiscoveryLocatingService } from "./instance-discovery-locating.service";
 import { InstanceDiscoveryMatchingService } from "./instance-discovery-matching.service";
 
+import type { ConformetryInstanceGroup } from "../configuration/configuration.types.js";
 import type { TemplateDefinition } from "../template-discovery/template-discovery.types.js";
 import type {
   FindInstancesArguments,
@@ -132,6 +133,31 @@ export class InstanceDiscoveryService {
     });
   }
 
+  /**
+   * Keeps the groups a host with no project graph can actually locate.
+   *
+   * A group carrying `tags` reads its globs *inside each project the tags
+   * select*, so `src/modules/*` has no meaning until a project root is joined
+   * to it. This package has no notion of a project, so such a group is not
+   * addressed to it and is left out rather than expanded from the working
+   * directory — which would match whatever happened to sit at the same
+   * relative path and measure it against a template scoped to other projects.
+   * `@conformetry/nx` resolves those groups first, so what reaches discovery
+   * from there is already workspace-relative and untagged groups are all that
+   * is left to read.
+   *
+   * Dropping them is deliberately silent here and reported by the caller: this
+   * is a question about one group, and only a command knows whether the run it
+   * was asked for has been left with nothing.
+   */
+  public readWorkspaceGroups(
+    groups: readonly ConformetryInstanceGroup[],
+  ): ConformetryInstanceGroup[] {
+    return groups.filter((group) => {
+      return group.tags === undefined || group.tags.length === 0;
+    });
+  }
+
   /** Lists every file a matched instance's template requires it to have. */
   public resolveInstanceFiles(instances: MatchedInstance[]): InstanceFile[] {
     return instances.flatMap((instance) => {
@@ -232,7 +258,9 @@ export class InstanceDiscoveryService {
     const patterns =
       args.instancePatterns ??
       args.configuration.flatMap((generator) =>
-        generator.instances.flatMap((group) => group.patterns ?? []),
+        this.readWorkspaceGroups(generator.instances).flatMap(
+          (group) => group.patterns ?? [],
+        ),
       );
     const instances = this.findInstances({
       patterns,

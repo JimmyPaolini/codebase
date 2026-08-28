@@ -38,7 +38,7 @@ describe(MainModule, () => {
     const command = await module.resolve(GenerateCommand);
 
     expect(command).toBeDefined();
-    expect(command.parseGenerator("example")).toBe("example");
+    expect(command.parseTemplate("example")).toBe("example");
   });
 
   it("resolves the instances command with every dependency injected", async () => {

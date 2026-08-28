@@ -38,8 +38,34 @@ conformetry validate
 ```
 
 Both accept a language filter, and the command-line host also accepts a one-off
-glob override in place of the configured instances. Narrowing is for iterating;
-let the full run be the gate.
+glob override in place of the configured instances and a `--templates` filter
+naming which templates to measure against. Narrowing is for iterating; let the
+full run be the gate.
+
+```bash
+conformetry validate --templates nestjs-service-module
+conformetry validate --templates nestjs-service-module --languages typescript
+```
+
+`--templates` and `--instances` narrow opposite halves of the pairing and the
+run is their intersection — neither overrides the other. Naming a template that
+does not exist is refused with the real names listed, and a selection matching
+no instances is reported as _"no instances belong to …"_ rather than as a clean
+report, so a typo cannot read as a pass.
+
+**A template whose instance groups carry `tags` cannot be located by the
+command-line host at all.** Those globs are read inside each project the tags
+select, so `src/modules/*` means nothing until a project root is joined to it.
+The host leaves such a group out rather than globbing it from the working
+directory, and a narrowed run tells you so instead of reporting nothing found.
+Reach for the Nx targets there, or pass `--instances` with the paths. This is
+why `conformetry validate --templates nestjs-service-module` can report nothing
+to check while `nx run <project>:conformetry-validate` checks plenty.
+
+**An agent shell is not a terminal**, so omitting `--templates` there validates
+every template exactly as it did before the flag existed — it never waits on
+the picker a terminal would be offered. `--templates all` says the same thing
+explicitly; `all` is reserved and cannot name a template.
 
 ## Reading a report
 

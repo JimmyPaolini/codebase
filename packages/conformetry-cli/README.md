@@ -13,7 +13,7 @@ npm install --save-dev @conformetry/cli
 
 ```bash
 # Scaffold a new module from the `nestjs-service-module` template
-conformetry generate --generator nestjs-service-module --name billing
+conformetry generate --template nestjs-service-module --name billing
 
 # Check every existing instance still matches the template it came from
 conformetry validate
@@ -60,35 +60,53 @@ own `ast` module rather than reimplementing a parser.
 
 ### `conformetry generate`
 
-Renders one generator's template folder into a target directory.
+Renders one template folder into a target directory.
 
 | Flag | Purpose |
 | ---- | ------- |
-| `--generator <name>` | Which generator from the registry to run. Required |
+| `--template [name]` | Which template from the registry to render. Asked for when omitted |
 | `--config [path]` | Configuration file to read. Defaults to `configuration/conformetry.config.ts` |
 | `--directory [path]` | Where to write the rendered files |
 
-A generator's own inputs are passed as flags alongside these:
+A template's own inputs are passed as flags alongside these:
 
 ```bash
-conformetry generate --generator react-component --name search-bar
+conformetry generate --template react-component --name search-bar
 ```
 
+**Omitting `--template` at a terminal offers a picker** — an autocomplete over
+every configured template, each shown with its description, filtering as you
+type. A name like `nestjs-service-module` is long by design, and typing
+`service` is what makes it cheap to reach; nobody has to break off and run
+`conformetry templates` to look one up. Passing `--template` skips the picker
+entirely, because supplying a value is itself how a caller opts out of being
+asked.
+
+With no terminal, a missing template is **refused** — listing every available
+name — rather than waited on, so a CI job fails immediately instead of hanging
+until it times out.
+
+**`--generator` was removed rather than kept as an alias**, and passing it is
+refused by name. Unknown flags are accepted here so a template's own inputs can
+be passed as flags, which means commander would otherwise read `--generator` as
+an input nothing declares and drop it silently — the "appears to work" the
+rename set out to avoid.
+
 Unknown flags are accepted deliberately. Which inputs exist is not known until
-the generator is chosen, so they are matched against that generator's schema
-rather than declared ahead of time. This is also why the generator is selected
-with `--generator` and not `--name`: almost every generator takes a `name`, and
+the template is chosen, so they are matched against that template's schema
+rather than declared ahead of time. This is also why the template is selected
+with `--template` and not `--name`: almost every template takes a `name`, and
 reserving that flag would leave no way to supply it.
 
 **Missing inputs are prompted for whenever stdin is a terminal**, and there is
 no flag to turn that off — an attached terminal is the whole condition, so a
 script, a hook, or a CI job is never prompted.
 
-**Every input a generator declares is required.** A generator substitutes each
+**Every input a template declares is required.** A template substitutes each
 of its placeholders, and mustache renders a missing one as an empty string
 rather than failing, so an optional input would quietly produce a hole in the
 generated file. `nx g conformetry:<template>` has always taken that line; this
-command now does too, so the same generator asks for the same values whichever
+command now does too, so the same template asks for the same values whichever
 way it is run.
 
 With no terminal, a missing input is therefore **refused** — naming the flag to
@@ -101,8 +119,9 @@ all and reports a rejected command line instead.
 ### `conformetry templates`
 
 Names every template the loaded configuration declares, with its description
-and folder. Nothing else answers that question: a generator is addressed by its
-full name, and one guessed at is rejected.
+and folder. `generate` and `validate` both offer that list as a picker now, so
+this command is for reading it rather than for looking a name up before typing
+one.
 
 | Flag | Purpose |
 | ---- | ------- |
@@ -178,11 +197,45 @@ the template it was generated from.
 | `--config [path]` | Configuration file to read |
 | `--instances [globs]` | Comma-separated globs to validate, overriding the configuration |
 | `--languages [names]` | Comma-separated languages to run — `typescript`, `markdown`, `python`, `json`, `jupyter`, `text` |
+| `--templates [names]` | Comma-separated template names to narrow the run to, or `all` for every one |
 | `--threshold [ratio]` | Lowest conformance score an instance may have, 0 to 1. The weakest of the three threshold levels |
 
 Every flag is optional; an absent filter means "everything". The command exits
 non-zero when any instance scores below its threshold, which is what makes it
 usable as a pre-merge gate.
+
+**`--templates` and `--instances` are two independent filters**, and a run
+is their intersection — each removes candidates from one side before templates
+and instances are paired:
+
+| `--instances` | `--templates` | What is validated |
+| ------------- | ------------- | ----------------- |
+| absent | `all`, or absent with no terminal | Every template against every configured instance |
+| present | `all`, or absent with no terminal | The globbed instances against every applicable template |
+| absent | named | Every instance belonging to those templates, against them |
+| present | named | The globbed instances narrowed to those templates' instances |
+
+Omitting `--templates` at a terminal offers the same picker `generate` does,
+ticking more than one, with `all` offered alongside the names. With no terminal
+it falls back to every template rather than asking — which is exactly what an
+invocation predating this flag already did, so scripts and CI jobs are
+unaffected. `all` is reserved: a configuration cannot declare a template of
+that name.
+
+**A template whose instances are scoped by project tags cannot be located by
+this host**, and a narrowed run says so rather than reporting nothing found. A
+group carrying `tags` reads its globs _inside each project the tags select_, so
+`src/modules/*` has no meaning until a project root is joined to it — which
+only a host with a project graph can do. Such a group is left out rather than
+expanded from the working directory, where it would match whatever happened to
+sit at the same relative path and measure it against a template scoped to other
+projects. Run those through [`@conformetry/nx`](../conformetry-nx/README.md),
+or pass `--instances` with the paths to check.
+
+Naming a template that does not exist is **refused**, listing the real names,
+rather than silently narrowing to nothing. A selection that matches no
+instances is reported as _"no instances belong to …"_ rather than as a clean
+report, so "nothing to check" can be told apart from "everything checks out".
 
 ## Scoring
 

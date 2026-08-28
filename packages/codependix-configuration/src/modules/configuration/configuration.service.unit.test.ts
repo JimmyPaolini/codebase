@@ -7,10 +7,13 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
 import {
+  codependixConfigurationSchema,
   ConfigurationFileNotFoundError,
   DEFAULT_INCLUDE_GLOBS,
 } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
+
+import type { CodependixBoundaryRule } from "./configuration.types";
 
 /** Writes a JSON configuration holding whatever the caller passes. */
 async function writeConfiguration(configuration: unknown): Promise<string> {
@@ -244,6 +247,84 @@ describe(ConfigurationService, () => {
       });
 
       expect(configuration.defaults.nx?.target).toBe("both");
+    });
+  });
+
+  describe("boundaries", () => {
+    it("resolves every level to an empty list when none is declared", () => {
+      expect(service.resolveConfiguration({}).boundaries).toStrictEqual({
+        imports: [],
+        nestjs: [],
+        nx: [],
+        pythonImports: [],
+      });
+    });
+
+    it("keeps the rules a level declares", () => {
+      const rule: CodependixBoundaryRule = {
+        from: { tags: ["type:application"] },
+        kind: "forbid",
+        name: "applications-are-leaves",
+        to: { tags: ["type:application"] },
+      };
+
+      expect(
+        service.resolveConfiguration({ boundaries: { nx: [rule] } }).boundaries,
+      ).toStrictEqual({
+        imports: [],
+        nestjs: [],
+        nx: [rule],
+        pythonImports: [],
+      });
+    });
+
+    it("accepts an access rule and an acyclic rule at the same level", () => {
+      const parsed = codependixConfigurationSchema.safeParse({
+        boundaries: {
+          imports: [
+            {
+              from: { path: ["**/*.types.ts"] },
+              kind: "forbid",
+              message: "Types are the leaf of a module.",
+              name: "types-files-do-not-reach-services",
+              to: { path: ["**/*.service.ts"] },
+            },
+            { kind: "acyclic", name: "no-cycles", nodes: { path: ["src/**"] } },
+          ],
+        },
+      });
+
+      expect(parsed.success).toBe(true);
+    });
+
+    it("refuses a selector naming no field at all", () => {
+      const parsed = codependixConfigurationSchema.safeParse({
+        boundaries: {
+          nx: [{ from: {}, kind: "forbid", name: "empty", to: { id: ["a"] } }],
+        },
+      });
+
+      expect(parsed.success).toBe(false);
+    });
+
+    it("refuses a rule kind it does not know", () => {
+      const parsed = codependixConfigurationSchema.safeParse({
+        boundaries: {
+          nx: [
+            { from: { id: ["a"] }, kind: "warn", name: "x", to: { id: ["b"] } },
+          ],
+        },
+      });
+
+      expect(parsed.success).toBe(false);
+    });
+
+    it("refuses a rule with no name", () => {
+      const parsed = codependixConfigurationSchema.safeParse({
+        boundaries: { nx: [{ kind: "acyclic", name: "" }] },
+      });
+
+      expect(parsed.success).toBe(false);
     });
   });
 

@@ -19,9 +19,11 @@ import {
 } from "./configuration.constants";
 
 import type {
+  CodependixBoundariesConfiguration,
   CodependixConfiguration,
   CodependixGraphOutput,
   LoadConfigurationArguments,
+  ResolvedCodependixBoundariesConfiguration,
   ResolvedCodependixConfiguration,
   ResolvedCodependixGraphOutput,
   ResolveForProjectArguments,
@@ -146,6 +148,24 @@ export class ConfigurationService {
   }
 
   /**
+   * Fills in the four graph levels a `boundaries` block may leave out.
+   *
+   * Every level resolves to a list rather than to `undefined`, so a caller
+   * walks all four without asking which ones were configured — the same
+   * reason `include` resolves to a list nobody wrote.
+   */
+  private resolveBoundaries(
+    boundaries: CodependixBoundariesConfiguration | undefined,
+  ): ResolvedCodependixBoundariesConfiguration {
+    return {
+      imports: boundaries?.imports ?? [],
+      nestjs: boundaries?.nestjs ?? [],
+      nx: boundaries?.nx ?? [],
+      pythonImports: boundaries?.pythonImports ?? [],
+    };
+  }
+
+  /**
    * Resolves a configuration path against the cwd, then the workspace root.
    */
   private resolveConfigurationPath(configurationPath: string): string {
@@ -266,6 +286,7 @@ export class ConfigurationService {
     configuration: CodependixConfiguration,
   ): ResolvedCodependixConfiguration {
     return {
+      boundaries: this.resolveBoundaries(configuration.boundaries),
       defaults: configuration.defaults ?? {},
       exclude: configuration.exclude ?? [],
       include: configuration.include ?? [...DEFAULT_INCLUDE_GLOBS],

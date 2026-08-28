@@ -25,3 +25,17 @@ export type {
   NxNeighborhoodExport,
   NxWorkspaceGraphExport,
 } from "./modules/map/map.types";
+export {
+  CHECK_BOUNDARIES,
+  CHECK_NAMES,
+  CHECK_REPORTS,
+  CHECK_SEPARATOR,
+  RUN_MODE_CHOICES,
+  RUN_MODE_SUBJECT,
+} from "./modules/run-plan/run-plan.constants";
+export { RunPlanModule } from "./modules/run-plan/run-plan.module";
+export { RunPlanService } from "./modules/run-plan/run-plan.service";
+export type {
+  RunMode,
+  RunModeSelection,
+} from "./modules/run-plan/run-plan.types";

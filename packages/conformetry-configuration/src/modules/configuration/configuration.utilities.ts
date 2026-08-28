@@ -2,6 +2,8 @@
 
 import path from "node:path";
 
+import { ALL_TEMPLATES_SELECTION } from "../input/input.constants";
+
 import type { z } from "zod";
 
 /**
@@ -44,6 +46,7 @@ export function assertNoCollisions(
       keysOf: (definition) => [definition.templatePath],
     }),
     ...findUnusableNames(definitions),
+    ...findReservedNames(definitions),
   ];
 
   for (const issue of issues) {
@@ -81,6 +84,27 @@ function findDuplicates<Definition extends { name: string }>(args: {
     .map(([key, owner]) => ({
       message: args.describe(key, owner.names),
       path: [owner.lastIndex],
+    }));
+}
+
+/**
+ * Reports a name that would shadow the all-templates sentinel.
+ *
+ * `validate --templates all` means every template. A generator answering to
+ * that name would make the same word mean two things on one command line, and
+ * whichever meaning won would silently discard the other.
+ */
+function findReservedNames(
+  definitions: {
+    readonly name: string;
+  }[],
+): { message: string; path: (number | string)[] }[] {
+  return definitions
+    .map((definition, index) => ({ index, name: definition.name }))
+    .filter(({ name }) => name === ALL_TEMPLATES_SELECTION)
+    .map(({ index, name }) => ({
+      message: `Generator "${name}" is named after a selection that is reserved: \`validate --templates all\` already means every template.`,
+      path: [index],
     }));
 }
 

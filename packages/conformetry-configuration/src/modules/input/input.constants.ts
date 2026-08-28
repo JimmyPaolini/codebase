@@ -6,14 +6,26 @@
  *
  * `name` is deliberately absent: nearly every generator takes a `name` input,
  * and reserving the flag made it impossible to supply from the CLI. The
- * generator is selected with `--generator` instead.
+ * template is selected with `--template` instead.
  */
 export const RESERVED_GENERATOR_OPTION_NAMES = new Set([
   "config",
-  "generator",
   "help",
   "instancePath",
+  "template",
 ]);
+
+/**
+ * How a caller says "every template" to `validate --templates`.
+ *
+ * A sentinel rather than a second flag, because supplying a value is how this
+ * command line opts out of being prompted: omitting `--templates` in a
+ * terminal asks, and passing `all` decides without narrowing. It lives beside
+ * the other command-line vocabulary because that is what it is — the word a
+ * caller types — and `assertNoCollisions` reads it from here so a template can
+ * never be named the same thing.
+ */
+export const ALL_TEMPLATES_SELECTION = "all";
 
 /** Option names accepted as the generator output directory, in precedence order. */
 export const TARGET_DIRECTORY_OPTION_KEYS = [

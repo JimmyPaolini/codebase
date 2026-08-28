@@ -57,7 +57,7 @@ the same generator behaves differently depending on how you invoke it.
 
 | | Nx plugin | Command-line host |
 | --- | --- | --- |
-| Invocation | `nx g conformetry:<name>` | `conformetry generate --generator <name>` |
+| Invocation | `nx g conformetry:<name>` | `conformetry generate --template <name>` |
 | Inputs | **every declared input is required** | none is ever required |
 | Missing input | refuses, or prompts | refuses when the template interpolates it |
 | Default destination | resolved from the workspace | `generated/<generator-name>` |
@@ -78,6 +78,19 @@ absent — rather than relying on a bare `{{owner}}`.
 
 A generator is addressed by its full name on both paths — there are no short
 alternative names. Both hosts list the real names when you get one wrong.
+
+**The flag is `--template`, not `--generator`.** It matches the word the
+configuration (`templatePath`), the `templates` command, and the conformance
+report already use. `--generator` was removed rather than kept as an alias, and
+passing it is refused by name — this command accepts unknown flags so a
+template's inputs can be passed as flags, so without that refusal a stale
+script would have its `--generator` silently dropped and appear to work.
+
+`--template` is also optional at the command line. Omitting it at a terminal
+offers an autocomplete over every configured template, each with its
+description; **an agent shell is not a terminal, so always pass it** — omitted
+there, the run is refused with the available names listed rather than left
+waiting on a prompt.
 
 ## Where the output lands
 

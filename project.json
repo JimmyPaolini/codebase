@@ -113,14 +113,14 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/codependix-cli/src/main.ts map --directory . --config configuration/codependix.config.ts --check"
+          "command": "node --import @swc-node/register/esm-register packages/codependix-cli/src/main.ts map --directory . --config configuration/codependix.config.ts --check boundaries"
         },
         "write": {
           "command": "node --import @swc-node/register/esm-register packages/codependix-cli/src/main.ts map --directory . --config configuration/codependix.config.ts --write"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Export every configured Nx, NestJS, and file-import dependency graph. Two configurations and no third, mirroring `codebase:callidescope` and `codebase:codometer`: this target is absent from `lint-codebase`'s `dependsOn`, so no run of it ever forwards a configuration here, and `write` means publish on the default branch and nowhere else. `check` verifies every configured export is current without writing; a pull request gates neither, since the exports move with the workspace they describe and would otherwise fail every branch that changed a project graph rather than anything the branch itself did. The release workflow runs `write`, after `callidescope` and the module-graph synchronization have run, so a project's `## \ud83d\udd78\ufe0f Codependix` anchor reflects the same commit those write. The README glob is an input because `write` splices Markdown into anchor blocks placed by hand in those files.",
+      "description": "Export every configured Nx, NestJS, and file-import dependency graph, and gate the rules those graphs are judged against. Two configurations and no third, mirroring `codebase:callidescope` and `codebase:codometer`: this target is absent from `lint-codebase`'s `dependsOn`, so no run of it ever forwards a configuration here, and `write` means publish on the default branch and nowhere else. `check` runs `--check boundaries`, which reads no destination and writes nothing \u2014 a broken boundary is caused by the branch and fixed by it, so it gates every pull request, exactly where `codebase:callidescope`'s `check` runs `--check depth`. The command line also accepts `--check reports`, which is what a bare `--check` used to mean, and nothing runs it: a configured export moves with the workspace it describes and would fail every branch that changed a project graph rather than anything the branch itself did. The release workflow runs `write`, after `callidescope` and the module-graph synchronization have run, so a project's `## \ud83d\udd78\ufe0f Codependix` anchor reflects the same commit those write. The README glob is an input because `write` splices Markdown into anchor blocks placed by hand in those files.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",

@@ -127,11 +127,6 @@ export class MapService {
     };
   }
 
-  /** Resolves the run mode a command line's options selected. */
-  private resolveMode(options: MapCommandOptions): CodependixRunMode {
-    return options.check === true ? "check" : "write";
-  }
-
   /**
    * Resolves one project's export target for a graph type, including its
    * workspace-relative root, so `include`/`exclude` globs may match either.
@@ -313,35 +308,42 @@ export class MapService {
   // 🌎 Public Methods
 
   /**
-   * Runs every configured graph export, resolving the shared `GraphRunContext`
-   * exactly once.
+   * Resolves everything every pass reads, exactly once per run.
+   *
+   * Separate from `run` because a run that only judges boundaries needs the
+   * same configuration and the same project graph while delivering nothing —
+   * see `BoundaryCheckService`, which reads this context and writes no file.
+   */
+  async buildContext(args: {
+    mode: CodependixRunMode;
+    options: MapCommandOptions;
+    workingDirectory: string;
+  }): Promise<GraphRunContext> {
+    const { mode, options, workingDirectory } = args;
+    const configuration = await this.configurationService.loadConfiguration({
+      configurationPath: options.config,
+      searchDirectory: workingDirectory,
+    });
+    const graph = await this.neighborhoodService.readProjectGraph();
+
+    return {
+      configuration,
+      graph,
+      mode,
+      projects: this.neighborhoodService.readProjects(graph, workingDirectory),
+      workingDirectory,
+    };
+  }
+
+  /**
+   * Runs every configured graph export against an already-resolved context.
    *
    * Every pass is attempted regardless of whether an earlier one reported a
    * failure: the four graph types are independent, so a NestJS project
    * failing to boot its container has no bearing on whether the Nx or import
    * graphs finish.
    */
-  async run(
-    options: MapCommandOptions,
-    workingDirectory: string,
-  ): Promise<GraphRunOutcome> {
-    const configuration = await this.configurationService.loadConfiguration({
-      configurationPath: options.config,
-      searchDirectory: workingDirectory,
-    });
-    const graph = await this.neighborhoodService.readProjectGraph();
-    const projects = this.neighborhoodService.readProjects(
-      graph,
-      workingDirectory,
-    );
-    const context: GraphRunContext = {
-      configuration,
-      graph,
-      mode: this.resolveMode(options),
-      projects,
-      workingDirectory,
-    };
-
+  async run(context: GraphRunContext): Promise<GraphRunOutcome> {
     const nxOutcome = this.runNxGraphs(context);
     const nestjsOutcome = await this.runNestjsGraphs(context);
     const importsOutcome = this.runImportGraphs(context);
