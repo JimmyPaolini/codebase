@@ -40,11 +40,35 @@ const codependixConfiguration: CodependixConfiguration = {
    * about stale exports and belongs on the default branch. A broken boundary
    * is caused by the branch and fixed by it, so it gates every pull request.
    *
-   * Four rules, every one of them verified to hold across `packages/`,
-   * `applications/`, and `tools/` before it was written down. That is
-   * deliberate, and the same reasoning `callidescope.config.ts` sets out for
-   * its `maximumDepth`: a rule that arrives red is a backlog rather than a
-   * gate, and a red pipeline nobody can act on teaches people to ignore it.
+   * Every rule was verified to hold across `packages/`, `applications/`, and
+   * `tools/` before it was written down. That is deliberate, and the same
+   * reasoning `callidescope.config.ts` sets out for its `maximumDepth`: a rule
+   * that arrives red is a backlog rather than a gate, and a red pipeline
+   * nobody can act on teaches people to ignore it.
+   *
+   * The `nx` block restates all 32 `depConstraints` from
+   * `configuration/eslint.config.ts`, translated mechanically:
+   * `onlyDependOnLibsWithTags` is an `allow` rule, `notDependOnLibsWithTags`
+   * is a `forbid` rule, and an empty `onlyDependOnLibsWithTags` — "may depend
+   * on nothing" — is a `forbid` reaching everything.
+   *
+   * **This is a deliberate duplication, and it costs something.** Two places
+   * now state the same layering, and a change to one has to be made in the
+   * other. It is kept because the two gates do not see the same graph:
+   * `@nx/enforce-module-boundaries` reads import statements, so an
+   * `implicitDependencies` entry is invisible to it, while these rules read
+   * the project graph and see both. Every rule here therefore gates at least
+   * as much as its ESLint counterpart, and most gate more.
+   *
+   * One rule needed narrowing to arrive green, and it is the whole
+   * demonstration: `conformetry-examples` declares an implicit dependency on
+   * `conformetry-cli` that no import backs, which ESLint has nothing to flag.
+   * It carries `edges: { implicit: false }` and says why. Nothing else needed
+   * it.
+   *
+   * ESLint keeps one advantage this cannot match: it reports at the import
+   * site, with a line number. Deleting the `depConstraints` in favour of these
+   * would trade that away, so both run.
    *
    * One was drafted and dropped — "no `*.command.ts` imports another
    * `*.command.ts`". It does not hold: `lexico-ingestion` and
@@ -97,6 +121,365 @@ const codependixConfiguration: CodependixConfiguration = {
       },
     ],
     nx: [
+      {
+        from: { tags: ["type:application"] },
+        kind: "allow",
+        message:
+          "An application composes packages; it never composes another application. Two applications that depend on each other cannot be deployed or versioned apart.",
+        name: "applications-depend-only-on-packages",
+        to: { tags: ["type:package"] },
+      },
+      {
+        from: { tags: ["name:callidescope-configuration"] },
+        kind: "forbid",
+        message:
+          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+        name: "callidescope-configuration-is-a-leaf",
+        to: { id: ["*"] },
+      },
+      {
+        from: { tags: ["name:callidescope-graph"] },
+        kind: "allow",
+        message:
+          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+        name: "callidescope-graph-layer",
+        to: { tags: ["name:callidescope-configuration", "name:logger"] },
+      },
+      {
+        from: { tags: ["name:callidescope-output"] },
+        kind: "allow",
+        message:
+          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+        name: "callidescope-output-layer",
+        to: {
+          tags: [
+            "name:callidescope-configuration",
+            "name:callidescope-graph",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:callidescope-cli"] },
+        kind: "allow",
+        message:
+          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+        name: "callidescope-cli-layer",
+        to: {
+          tags: [
+            "name:callidescope-configuration",
+            "name:callidescope-graph",
+            "name:callidescope-output",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:callidescope-nx"] },
+        kind: "allow",
+        message:
+          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+        name: "callidescope-nx-layer",
+        to: {
+          tags: [
+            "name:callidescope-cli",
+            "name:callidescope-configuration",
+            "name:callidescope-graph",
+            "name:callidescope-output",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:codometer-configuration"] },
+        kind: "forbid",
+        message:
+          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+        name: "codometer-configuration-is-a-leaf",
+        to: { id: ["*"] },
+      },
+      {
+        from: { tags: ["name:codometer-changes"] },
+        kind: "allow",
+        message:
+          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+        name: "codometer-changes-layer",
+        to: { tags: ["name:logger"] },
+      },
+      {
+        from: { tags: ["name:codometer-discovery"] },
+        kind: "allow",
+        message:
+          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+        name: "codometer-discovery-layer",
+        to: { tags: ["name:codometer-configuration", "name:logger"] },
+      },
+      {
+        from: { tags: ["name:codometer-languages"] },
+        kind: "allow",
+        message:
+          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+        name: "codometer-languages-layer",
+        to: { tags: ["name:codometer-configuration", "name:logger"] },
+      },
+      {
+        from: { tags: ["name:codometer-customization"] },
+        kind: "allow",
+        message:
+          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+        name: "codometer-customization-layer",
+        to: {
+          tags: ["name:codometer-configuration", "name:codometer-languages"],
+        },
+      },
+      {
+        from: { tags: ["name:codometer-size"] },
+        kind: "allow",
+        message:
+          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+        name: "codometer-size-layer",
+        to: { tags: ["name:codometer-configuration", "name:logger"] },
+      },
+      {
+        from: { tags: ["name:codometer-output"] },
+        kind: "allow",
+        message:
+          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+        name: "codometer-output-layer",
+        to: {
+          tags: [
+            "name:codometer-changes",
+            "name:codometer-configuration",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:codometer-cli"] },
+        kind: "allow",
+        message:
+          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+        name: "codometer-cli-layer",
+        to: {
+          tags: [
+            "name:codometer-changes",
+            "name:codometer-configuration",
+            "name:codometer-customization",
+            "name:codometer-discovery",
+            "name:codometer-languages",
+            "name:codometer-output",
+            "name:codometer-size",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-core"] },
+        kind: "forbid",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-core-is-a-leaf",
+        to: { id: ["*"] },
+      },
+      {
+        from: { tags: ["name:conformetry-generation"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-generation-layer",
+        to: { tags: ["name:conformetry-core"] },
+      },
+      {
+        from: { tags: ["name:conformetry-configuration"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-configuration-layer",
+        to: { tags: ["name:conformetry-core", "name:conformetry-generation"] },
+      },
+      {
+        from: { tags: ["name:conformetry-files"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-files-layer",
+        to: {
+          tags: ["name:conformetry-configuration", "name:conformetry-core"],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-json"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-json-layer",
+        to: {
+          tags: ["name:conformetry-configuration", "name:conformetry-core"],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-markdown"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-markdown-layer",
+        to: {
+          tags: ["name:conformetry-configuration", "name:conformetry-core"],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-python"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-python-layer",
+        to: {
+          tags: ["name:conformetry-configuration", "name:conformetry-core"],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-text"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-text-layer",
+        to: {
+          tags: ["name:conformetry-configuration", "name:conformetry-core"],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-typescript"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-typescript-layer",
+        to: {
+          tags: ["name:conformetry-configuration", "name:conformetry-core"],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-jupyter"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-jupyter-layer",
+        to: {
+          tags: [
+            "name:conformetry-configuration",
+            "name:conformetry-core",
+            "name:conformetry-json",
+            "name:conformetry-markdown",
+            "name:conformetry-python",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-validation"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-validation-layer",
+        to: {
+          tags: [
+            "name:conformetry-configuration",
+            "name:conformetry-core",
+            "name:conformetry-files",
+            "name:conformetry-json",
+            "name:conformetry-jupyter",
+            "name:conformetry-markdown",
+            "name:conformetry-python",
+            "name:conformetry-text",
+            "name:conformetry-typescript",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-layer",
+        to: {
+          tags: [
+            "name:conformetry-configuration",
+            "name:conformetry-core",
+            "name:conformetry-generation",
+            "name:conformetry-validation",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-nx"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-nx-layer",
+        to: {
+          tags: [
+            "name:conformetry-configuration",
+            "name:conformetry-core",
+            "name:conformetry-generation",
+            "name:conformetry-json",
+            "name:conformetry-jupyter",
+            "name:conformetry-markdown",
+            "name:conformetry-python",
+            "name:conformetry-text",
+            "name:conformetry-typescript",
+            "name:conformetry-validation",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        edges: { implicit: false },
+        from: { tags: ["name:conformetry-examples"] },
+        kind: "allow",
+        message:
+          "The examples package sits above every runtime package and above the Nx host, and may not import the command-line host — the claim its embedding example makes. Narrowed to explicit edges because its `implicitDependencies` entry on conformetry-cli is a task-graph dependency, so its examples re-run when the host changes, rather than an import.",
+        name: "conformetry-examples-layer",
+        to: {
+          tags: [
+            "name:conformetry-configuration",
+            "name:conformetry-core",
+            "name:conformetry-generation",
+            "name:conformetry-nx",
+            "name:conformetry-validation",
+          ],
+        },
+      },
+      {
+        from: { tags: ["type:package"] },
+        kind: "forbid",
+        message:
+          "A package is shared code and must stay usable without whatever application happens to consume it.",
+        name: "packages-do-not-depend-on-applications",
+        to: { tags: ["type:application"] },
+      },
+      {
+        from: { tags: ["framework:react"] },
+        kind: "forbid",
+        message:
+          "A React project must not pull a NestJS container into a browser bundle.",
+        name: "react-does-not-depend-on-nestjs",
+        to: { tags: ["framework:nestjs"] },
+      },
+      {
+        from: { tags: ["domain:caelundas"] },
+        kind: "forbid",
+        message:
+          "The two domains share no code by design; anything genuinely common belongs in a package neither owns.",
+        name: "caelundas-does-not-reach-lexico",
+        to: { tags: ["domain:lexico"] },
+      },
+      {
+        from: { tags: ["domain:lexico"] },
+        kind: "forbid",
+        message:
+          "The two domains share no code by design; anything genuinely common belongs in a package neither owns.",
+        name: "lexico-does-not-reach-caelundas",
+        to: { tags: ["domain:caelundas"] },
+      },
       {
         kind: "acyclic",
         message:
