@@ -1,8 +1,9 @@
-import { BoundariesService } from "@codependix/boundaries";
 import { PythonService, TypescriptService } from "@codependix/imports";
 import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
 import { WorkspaceGraphService } from "@codependix/nx";
 import { Injectable } from "@nestjs/common";
+
+import { BoundariesService } from "../boundaries/boundaries.service";
 
 import {
   BOUNDARY_LEVEL_ORDER,
@@ -11,12 +12,15 @@ import {
 import { BoundaryGraphService } from "./boundary-graph.service";
 
 import type {
+  BoundaryGraph,
+  BoundaryViolation,
+} from "../boundaries/boundaries.types";
+import type {
   BoundaryCheckContext,
   BoundaryCheckFailure,
   BoundaryCheckOutcome,
   LevelCheckArguments,
 } from "./boundary-check.types";
-import type { BoundaryGraph, BoundaryViolation } from "@codependix/boundaries";
 import type {
   CodependixBoundaryRule,
   CodependixGraphType,

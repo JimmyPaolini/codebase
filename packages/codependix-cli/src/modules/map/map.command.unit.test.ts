@@ -1,8 +1,9 @@
-import { BoundaryReportService } from "@codependix/boundaries";
 import {
   type BoundaryCheckOutcome,
   BoundaryCheckService,
-} from "@codependix/boundary-check";
+  BoundaryReportService,
+  type BoundaryViolation,
+} from "@codependix/boundaries";
 import { InputService, missingInputError } from "@codependix/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -19,7 +20,6 @@ import { MapService } from "./map.service";
 import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { RunMode } from "../run-plan/run-plan.types";
 import type { MapCommandOptions } from "./map.types";
-import type { BoundaryViolation } from "@codependix/boundaries";
 
 /** Builds a run mode, defaulting every flag a test does not name. */
 function buildMode(overrides: Partial<RunMode> = {}): RunMode {

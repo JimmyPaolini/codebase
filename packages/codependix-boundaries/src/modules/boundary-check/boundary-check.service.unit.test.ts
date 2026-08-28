@@ -1,4 +1,3 @@
-import { BoundariesService } from "@codependix/boundaries";
 import { PythonService, TypescriptService } from "@codependix/imports";
 import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
 import { WorkspaceGraphService } from "@codependix/nx";
@@ -6,11 +5,16 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { BoundariesService } from "../boundaries/boundaries.service";
+
 import { BoundaryCheckService } from "./boundary-check.service";
 import { BoundaryGraphService } from "./boundary-graph.service";
 
+import type {
+  BoundaryGraph,
+  BoundaryViolation,
+} from "../boundaries/boundaries.types";
 import type { BoundaryCheckContext } from "./boundary-check.types";
-import type { BoundaryGraph, BoundaryViolation } from "@codependix/boundaries";
 import type {
   CodependixBoundaryRule,
   ResolvedCodependixBoundariesConfiguration,

@@ -100,16 +100,31 @@ no module instead of silently selecting all of them. A selector stating no
 field at all is refused by the configuration schema, since it reads exactly
 like a typo.
 
-## Why this package is a leaf
+## The two halves, and the one seam between them
 
-It depends on `@codependix/configuration` and nothing else. The obvious design would read `Neighborhood`, `NestjsModuleGraph`,
-`TypescriptImportGraph` and `PythonImportGraph` from the three graph packages,
-which would drag `@nx/devkit`, `nestjs-spelunker` and `typescript` behind
-anything that wants only rule evaluation. Instead it defines a `BoundaryGraph`
-of its own, and the adapters that flatten the four into it live in
-[`@codependix/boundary-check`](../codependix-boundary-check/README.md), which
-depends on the builders so that neither this package nor the command-line host
-has to.
+`src/modules/boundaries/` evaluates rules and knows nothing about workspaces: a
+`BoundaryGraph` and a list of rules go in, and violations come out.
+`src/modules/boundary-check/` is what turns a real workspace into those graphs
+— one adapter per level, plus the orchestration around them.
+
+`BoundaryGraph` is the seam, and it is deliberately not any of the four real
+graph types. Each adapter flattens a `Neighborhood`, a `NestjsModuleGraph`, or
+an import graph into it, so rule evaluation never sees `@nx/devkit`,
+`nestjs-spelunker`, or `typescript` and could be lifted out again without
+touching a rule.
+
+`BoundaryCheckService.run` walks the four levels in `BOUNDARY_LEVEL_ORDER` —
+cheapest first — and **skips any level with no declared rules before building
+anything**. That is what keeps the gate affordable: judging the NestJS level
+means booting every container in preview mode, and judging the TypeScript level
+means building a `ts.Program` per project. A workspace declaring only Nx rules
+pays for neither. Each level also isolates one project's failure to that
+project, so a container that will not boot is collected as a
+`BoundaryCheckFailure` while every other project is still judged.
+
+Nothing here depends on `@codependix/cli` — the host calls in, never the
+reverse — and a rule in `configuration/codependix.config.ts` says so, so the
+two cannot close a cycle.
 
 ## Test
 

@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { BoundaryViolation } from "@codependix/boundaries";
+import type { BoundaryViolation } from "../boundaries/boundaries.types";
 import type {
   CodependixBoundaryRule,
   CodependixGraphType,

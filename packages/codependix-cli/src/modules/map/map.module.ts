@@ -1,4 +1,4 @@
-import { BoundaryCheckModule } from "@codependix/boundary-check";
+import { BoundaryCheckModule } from "@codependix/boundaries";
 import { ConfigurationModule, InputModule } from "@codependix/configuration";
 import { TypescriptModule } from "@codependix/imports";
 import { ModuleGraphModule, NestjsProjectModule } from "@codependix/nestjs";

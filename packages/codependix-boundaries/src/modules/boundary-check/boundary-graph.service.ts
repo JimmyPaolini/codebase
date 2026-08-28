@@ -2,7 +2,10 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import type { BoundaryGraph, BoundaryNode } from "@codependix/boundaries";
+import type {
+  BoundaryGraph,
+  BoundaryNode,
+} from "../boundaries/boundaries.types";
 import type {
   PythonImportGraph,
   TypescriptImportGraph,
