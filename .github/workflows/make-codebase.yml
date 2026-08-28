@@ -32,27 +32,18 @@ jobs:
   make-codebase:
     name: 🧑‍🔧 Make Codebase
     runs-on: ubuntu-latest
-    # Pull requests are skipped until the registry cache is seeded. Every layer
-    # of this build is currently a cache miss —
-    # `ghcr.io/jimmypaolini/codebase-devcontainer` has never been published, so
-    # `cacheFrom` imports nothing and the image is rebuilt cold, ~11 minutes for
-    # the build and ~2 for the test. A skip rather than a `push: never` run, so
-    # a pull request cannot report a pass for a devcontainer nobody built.
+    # 20, measured rather than guessed. Both ends are known now that a cache
+    # exists: a warm run is 3m39s (build 1m26s, every feature layer CACHED),
+    # and the cold ceiling is the seeding run's 14m01s — 10m51s to build, 1m50s
+    # to test, 1m12s to push. A pull request never pushes, so its own ceiling
+    # is lower still.
     #
-    # `push` is deliberately still live: `push: filter` below publishes the
-    # image on every `.devcontainer/**` change that lands on main, and that
-    # publish is the only thing that seeds the cache the pull request path
-    # needs. Disabling the job outright would have foreclosed it. Restore the
-    # pull request path once a run has published an image.
-    if: github.event_name != 'pull_request'
-
-    # 30, not 12. The seeding run is cold by definition and also pushes the
-    # image: ~11 minutes to build, plus the upload, plus ~2 for the test. The
-    # uniform 12-minute pull request cap in #350 is what cancelled this job
-    # mid-test to begin with, and being cancelled mid-upload would seed nothing
-    # while looking like progress. Bring it down once a warm run has shown the
-    # real ceiling.
-    timeout-minutes: 30
+    # A change under `.devcontainer/**` is cold from whichever feature layer it
+    # touches onward, so the cold case is the one to size for, not the common
+    # one. The uniform 12-minute cap in #350 sat below even the floor and
+    # cancelled this job outright; 30 was headroom for an unmeasured run and is
+    # no longer needed.
+    timeout-minutes: 20
 
     steps:
       - name: 📥 Checkout Repository

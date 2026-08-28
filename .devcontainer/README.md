@@ -188,13 +188,20 @@ Exit code is `0` if all tests pass, `1` if any fail.
 
 The `🧑‍🔧 Make Codebase` job in [`.github/workflows/make-codebase.yml`](../.github/workflows/make-codebase.yml) builds the container image and executes the test script inside it. It is scoped by `on.paths` to changes under `.devcontainer/**`.
 
-**Pull requests are currently skipped.** No build cache has ever existed, so every layer misses and the image is rebuilt from scratch — about eleven minutes, of which roughly six and a half is the `python` feature compiling CPython from source under `optimize: true`. That overran the twelve-minute job cap and the job was cancelled mid-test.
+Pushes to `main` publish `ghcr.io/jimmypaolini/codebase-devcontainer:latest`, and that image is both the usable image and the build cache. This configuration is compose-based, and for compose configurations the devcontainer CLI bakes `BUILDKIT_INLINE_CACHE=1` into the feature build, so the published image carries its own layer metadata and the next run's `cacheFrom` resolves against it. Pull the image to run the devcontainer without building it.
 
-Pushes to `main` run and publish `ghcr.io/jimmypaolini/codebase-devcontainer:latest`. That image is both the usable image and the build cache: this configuration is compose-based, and for compose configurations the devcontainer CLI bakes `BUILDKIT_INLINE_CACHE=1` into the feature build, so the published image carries its own layer metadata and the next run's `cacheFrom` resolves against it.
+There is deliberately no separate cache tag. The CLI refuses `--cache-to` for a compose configuration — `--cache-to not supported.`, a hard build failure rather than a degraded run — along with `--push` and `--output`. Pushing is done by the action afterwards rather than by the CLI, which is why `push: filter` works where `--push` would not.
 
-There is deliberately no separate cache tag. The CLI refuses `--cache-to` for a compose configuration — `--cache-to not supported.`, a hard build failure rather than a degraded run — along with `--push` and `--output`. Pushing is done by the action afterwards, not the CLI, which is why `push: filter` works where `--push` would not.
+What the cache is worth, measured across the two runs either side of it being seeded:
 
-Restore the pull request path once a `main` run has published an image.
+| | Build | Test | Push | Total |
+| --- | ----- | ---- | ---- | ----- |
+| Cold, no cache | 10m51s | 1m50s | 1m12s | 14m01s |
+| Warm, every feature layer `CACHED` | 1m26s | 2m04s | — | 3m39s |
+
+Roughly six and a half of those cold minutes are the `python` feature compiling CPython from source under `optimize: true`. That cost is now paid only when a change invalidates that layer.
+
+A change under `.devcontainer/**` is cold from whichever feature layer it touches onward, so editing an early feature still costs close to the cold figure while editing a late one does not. The job's twenty-minute timeout is sized for that cold case rather than the common one.
 
 Note the standing tension: the job only triggers on `.devcontainer/**` changes, which are exactly the changes that invalidate feature layers. The `python` feature is layer 11 of 16, so a change that lands in a later layer still reuses it, while one landing earlier does not.
 
