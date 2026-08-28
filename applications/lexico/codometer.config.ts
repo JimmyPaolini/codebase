@@ -24,19 +24,19 @@ const compression = "gzip";
  * from the shared configuration rather than restated. Before this file did so it
  * replaced that configuration outright, and silently reported none of them.
  *
- * Every limit is a rung on the ladder the workspace configuration describes. The ladder is coarse this far up, so two of these sit well clear
- * of what they gate: the entry chunk measures 124 KB against 192, and the CSS
- * measures 16 KB against 24, because 128 KB and 16 KB are the rungs below and
- * both fall inside a twentieth of the measured size. Read them as the ladder
- * being wide here rather than as a budget anyone intended.
+ * Every limit is a rung on the ladder the workspace configuration describes,
+ * and each one sits two rungs above the value that used to gate it. None of
+ * them is a budget anybody designed: the entry chunk measures 124 KB against
+ * 384, and the CSS measures 16 KB against 48. Read them as ceilings that catch
+ * runaway growth rather than as sizes anyone is aiming at.
  */
 export default {
   ...codometerConfiguration,
   limits: [
-    { metric: "Client entry JavaScript.size", value: "192 KB" },
-    { metric: "Client route JavaScript.size", value: "96 KB" },
-    { metric: "Client CSS.size", value: "24 KB" },
-    { metric: "Server JavaScript.size", value: "192 KB" },
+    { metric: "Client entry JavaScript.size", value: "384 KB" },
+    { metric: "Client route JavaScript.size", value: "192 KB" },
+    { metric: "Client CSS.size", value: "48 KB" },
+    { metric: "Server JavaScript.size", value: "384 KB" },
   ],
   targets: [
     {

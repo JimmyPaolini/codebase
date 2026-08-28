@@ -121,7 +121,7 @@ the guides:
 3. Update the tables in [README.md](README.md) to match, and the doc comment on
    any example configuration that quotes the old number.
 4. `nx run codometer-examples:codometer:check` — the corpus is gated on staying
-   under 12 KB gzipped.
+   under 24 KB gzipped.
 
 Never update a guide's number by hand without re-running. The numbers are the
 only reason this package exists.

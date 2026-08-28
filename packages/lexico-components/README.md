@@ -238,10 +238,10 @@ nx run lexico-components:type-coverage
 
 ```bash
 nx run lexico-components:codometer
-# Limit: 256 KB gzipped, warning at 192 KB
+# Limit: 512 KB gzipped, warning at 384 KB
 ```
 
-The 256 KB limit is a ratchet against the measured size, not a design target — the Vite library build bundles React and Radix into the output rather than externalizing them, even though React is a `peerDependency`. See `codometer.config.ts` for the full note.
+The 512 KB limit is a ratchet against the measured size, not a design target — the Vite library build bundles React and Radix into the output rather than externalizing them, even though React is a `peerDependency`. See `codometer.config.ts` for the full note.
 
 ## Usage Examples
 

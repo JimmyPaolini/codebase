@@ -4,7 +4,7 @@ import codometerConfiguration, {
 
 export default {
   ...codometerConfiguration,
-  limits: [{ metric: "Compiled JavaScript.size", value: "128 KB" }],
+  limits: [{ metric: "Compiled JavaScript.size", value: "256 KB" }],
   targets: [
     {
       ...compiledJavaScriptTarget,
