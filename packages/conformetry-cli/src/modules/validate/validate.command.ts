@@ -13,7 +13,10 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
+import {
+  DEFAULT_CONFIGURATION_PATH,
+  unknownTemplateError,
+} from "../../constants.js";
 
 import type { ValidateCommandOptions } from "./validate.types.js";
 import type {
@@ -119,22 +122,26 @@ export class ValidateCommand extends CommandRunner {
     });
   }
 
-  /** Offers a picker, or declines to ask where nobody could answer. */
-  private async promptForTemplates(
+  /**
+   * Offers a picker, or declines to ask where nobody could answer.
+   *
+   * Declining resolves to no selection rather than to a refusal, which is
+   * where this parts company with `generate`: a template that cannot be
+   * chosen leaves that command with nothing to render, where this one still
+   * has a whole workspace to validate.
+   *
+   * The loaded configuration is handed over as-is — a definition already
+   * carries the name and description a choice needs, so mapping it here would
+   * be a second source the picker could disagree with.
+   */
+  private async promptForTemplateNames(
     configuration: ConformetryConfiguration,
   ): Promise<string[] | undefined> {
     if (!this.inputPromptingService.isAtTerminal()) {
       return undefined;
     }
 
-    return this.inputPromptingService.promptForTemplates(
-      configuration.map((generator) => ({
-        ...(generator.description === undefined
-          ? {}
-          : { description: generator.description }),
-        name: generator.name,
-      })),
-    );
+    return this.inputPromptingService.promptForTemplates(configuration);
   }
 
   /**
@@ -146,9 +153,9 @@ export class ValidateCommand extends CommandRunner {
    * result. The reader is told nothing matched instead.
    */
   private reportEmptySelection(
-    selectedGenerators: ConformetryGeneratorDefinition[],
+    selectedTemplates: ConformetryGeneratorDefinition[],
   ): void {
-    const templateNames = selectedGenerators.map((generator) => generator.name);
+    const templateNames = selectedTemplates.map((template) => template.name);
 
     process.stdout.write(
       `No instances belong to ${templateNames.join(", ")}, so nothing was checked.\n`,
@@ -197,6 +204,48 @@ export class ValidateCommand extends CommandRunner {
   }
 
   /**
+   * Pairs the two filters into the instances a run covers.
+   *
+   * With both flags supplied the globbed paths are intersected with the
+   * selected templates' own instances, rather than one flag winning: each
+   * simply removes candidates from one side.
+   */
+  private selectInstances(args: {
+    configuration: ConformetryConfiguration;
+    instanceGlobs: string[] | undefined;
+    selectedTemplates: ConformetryGeneratorDefinition[] | undefined;
+    workingDirectory: string;
+  }): Instance[] {
+    const templateInstances = this.findInstances({
+      groups: (args.selectedTemplates ?? args.configuration).flatMap(
+        (generator) => generator.instances,
+      ),
+      workingDirectory: args.workingDirectory,
+    });
+
+    if (args.instanceGlobs === undefined) {
+      return templateInstances;
+    }
+
+    const globbedInstances = this.findInstances({
+      groups: [{ patterns: args.instanceGlobs }],
+      workingDirectory: args.workingDirectory,
+    });
+
+    if (args.selectedTemplates === undefined) {
+      return globbedInstances;
+    }
+
+    const selectedPaths = new Set(
+      templateInstances.map((instance) => instance.path),
+    );
+
+    return globbedInstances.filter((instance) => {
+      return selectedPaths.has(instance.path);
+    });
+  }
+
+  /**
    * Narrows the run to the selected templates, or leaves it whole.
    *
    * `undefined` means no narrowing, which is a different thing from an empty
@@ -204,12 +253,13 @@ export class ValidateCommand extends CommandRunner {
    * picker all mean, and it reproduces the run this command made before the
    * flag existed.
    */
-  private async selectGenerators(args: {
+  private async selectTemplates(args: {
     configuration: ConformetryConfiguration;
     templateNames: string[] | undefined;
   }): Promise<ConformetryGeneratorDefinition[] | undefined> {
     const selectedNames =
-      args.templateNames ?? (await this.promptForTemplates(args.configuration));
+      args.templateNames ??
+      (await this.promptForTemplateNames(args.configuration));
 
     if (
       selectedNames === undefined ||
@@ -227,54 +277,15 @@ export class ValidateCommand extends CommandRunner {
         this.logger.error("🚫 Rejected an unknown template", undefined, {
           template: templateName,
         });
-        throw new Error(
-          `Unknown template "${templateName}". Available: ${args.configuration.map((generator) => generator.name).join(", ")}`,
-        );
+        throw unknownTemplateError({
+          availableTemplateNames: args.configuration.map((generator) => {
+            return generator.name;
+          }),
+          templateName,
+        });
       }
 
       return definition;
-    });
-  }
-
-  /**
-   * Pairs the two filters into the instances a run covers.
-   *
-   * With both flags supplied the globbed paths are intersected with the
-   * selected templates' own instances, rather than one flag winning: each
-   * simply removes candidates from one side.
-   */
-  private selectInstances(args: {
-    configuration: ConformetryConfiguration;
-    instanceGlobs: string[] | undefined;
-    selectedGenerators: ConformetryGeneratorDefinition[] | undefined;
-    workingDirectory: string;
-  }): Instance[] {
-    const templateInstances = this.findInstances({
-      groups: (args.selectedGenerators ?? args.configuration).flatMap(
-        (generator) => generator.instances,
-      ),
-      workingDirectory: args.workingDirectory,
-    });
-
-    if (args.instanceGlobs === undefined) {
-      return templateInstances;
-    }
-
-    const globbedInstances = this.findInstances({
-      groups: [{ patterns: args.instanceGlobs }],
-      workingDirectory: args.workingDirectory,
-    });
-
-    if (args.selectedGenerators === undefined) {
-      return globbedInstances;
-    }
-
-    const selectedPaths = new Set(
-      templateInstances.map((instance) => instance.path),
-    );
-
-    return globbedInstances.filter((instance) => {
-      return selectedPaths.has(instance.path);
     });
   }
 
@@ -346,19 +357,19 @@ export class ValidateCommand extends CommandRunner {
       await this.configurationService.loadConformetryConfiguration(
         options.config ?? DEFAULT_CONFIGURATION_PATH,
       );
-    const selectedGenerators = await this.selectGenerators({
+    const selectedTemplates = await this.selectTemplates({
       configuration,
       templateNames: options.templates,
     });
     const instances = this.selectInstances({
       configuration,
       instanceGlobs: options.instances,
-      selectedGenerators,
+      selectedTemplates,
       workingDirectory,
     });
 
-    if (selectedGenerators !== undefined && instances.length === 0) {
-      this.reportEmptySelection(selectedGenerators);
+    if (selectedTemplates !== undefined && instances.length === 0) {
+      this.reportEmptySelection(selectedTemplates);
 
       return;
     }
@@ -372,7 +383,7 @@ export class ValidateCommand extends CommandRunner {
         ? {}
         : { languageNames: options.languages }),
       templates: this.templateDiscoveryService.collectTemplates({
-        configuration: selectedGenerators ?? configuration,
+        configuration: selectedTemplates ?? configuration,
         workingDirectory,
       }),
     });

@@ -268,38 +268,16 @@ describe(GenerateCommand, () => {
 
       await command.run([], {});
 
-      expect(inputPromptingService.promptForTemplate).toHaveBeenCalledWith([
-        { name: "widget" },
-      ]);
+      // The loaded configuration itself, not a mapping of it: the picker can
+      // then never disagree with what this command would actually run.
+      expect(inputPromptingService.promptForTemplate).toHaveBeenCalledWith(
+        CONFIGURATION,
+      );
       expect(generationService.runGenerator).toHaveBeenCalledWith(
         expect.objectContaining({
           definition: expect.objectContaining({ name: "widget" }) as unknown,
         }),
       );
-    });
-
-    it("offers each template's description alongside its name", async () => {
-      vi.mocked(
-        configurationService.loadConformetryConfiguration,
-      ).mockResolvedValue([
-        {
-          description: "A widget module",
-          inputs: {},
-          instances: [],
-          name: "widget",
-          templatePath: "configuration/templates/widget",
-        },
-      ]);
-      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
-      vi.mocked(inputPromptingService.promptForTemplate).mockResolvedValue(
-        "widget",
-      );
-
-      await command.run([], {});
-
-      expect(inputPromptingService.promptForTemplate).toHaveBeenCalledWith([
-        { description: "A widget module", name: "widget" },
-      ]);
     });
 
     // A prompt nobody can answer is what once let this command exit 0 having
@@ -314,6 +292,32 @@ describe(GenerateCommand, () => {
         { reason: expect.stringContaining("Available: widget") as string },
       );
       expect(generationService.runGenerator).not.toHaveBeenCalled();
+    });
+
+    // `allowUnknownOptions` is on, so commander accepts `--generator` instead
+    // of rejecting it. Left alone it would be read as an input nothing
+    // declares and quietly dropped, which is exactly the "appears to work"
+    // the rename set out to avoid.
+    it.each(["--generator", "--generator=widget"])(
+      "refuses %s rather than ignoring it",
+      async (argument) => {
+        await expect(command.run([argument], {})).rejects.toThrow(
+          "--generator was removed. Pass --template instead",
+        );
+        expect(generationService.runGenerator).not.toHaveBeenCalled();
+      },
+    );
+
+    it("logs the removed option it refused", async () => {
+      await expect(command.run(["--generator"], {})).rejects.toThrow(
+        "--generator was removed",
+      );
+
+      expect(commandLogger.error).toHaveBeenCalledWith(
+        "🚫 Rejected a removed option",
+        undefined,
+        { option: "--generator" },
+      );
     });
 
     it("refuses a cancelled picker rather than generating nothing", async () => {

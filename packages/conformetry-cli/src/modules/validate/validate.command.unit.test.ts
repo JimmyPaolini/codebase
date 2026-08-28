@@ -534,10 +534,11 @@ describe(ValidateCommand, () => {
 
       await command.run([], {});
 
-      expect(inputPromptingService.promptForTemplates).toHaveBeenCalledWith([
-        { description: "A widget module", name: "widget" },
-        { name: "gadget" },
-      ]);
+      // The loaded configuration itself, not a mapping of it: the picker can
+      // then never disagree with what this command would actually run.
+      expect(inputPromptingService.promptForTemplates).toHaveBeenCalledWith(
+        TWO_TEMPLATES,
+      );
       expect(validationService.validate).toHaveBeenCalledWith(
         expect.objectContaining({ instances: [GADGET_INSTANCE] }),
       );

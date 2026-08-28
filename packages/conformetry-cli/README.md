@@ -86,6 +86,12 @@ With no terminal, a missing template is **refused** — listing every available
 name — rather than waited on, so a CI job fails immediately instead of hanging
 until it times out.
 
+**`--generator` was removed rather than kept as an alias**, and passing it is
+refused by name. Unknown flags are accepted here so a template's own inputs can
+be passed as flags, which means commander would otherwise read `--generator` as
+an input nothing declares and drop it silently — the "appears to work" the
+rename set out to avoid.
+
 Unknown flags are accepted deliberately. Which inputs exist is not known until
 the template is chosen, so they are matched against that template's schema
 rather than declared ahead of time. This is also why the template is selected

@@ -81,8 +81,10 @@ alternative names. Both hosts list the real names when you get one wrong.
 
 **The flag is `--template`, not `--generator`.** It matches the word the
 configuration (`templatePath`), the `templates` command, and the conformance
-report already use. `--generator` was removed rather than kept as an alias, so
-a stale script fails at argument parsing instead of appearing to work.
+report already use. `--generator` was removed rather than kept as an alias, and
+passing it is refused by name — this command accepts unknown flags so a
+template's inputs can be passed as flags, so without that refusal a stale
+script would have its `--generator` silently dropped and appear to work.
 
 `--template` is also optional at the command line. Omitting it at a terminal
 offers an autocomplete over every configured template, each with its

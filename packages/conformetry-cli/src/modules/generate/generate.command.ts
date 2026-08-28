@@ -10,7 +10,11 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
+import {
+  DEFAULT_CONFIGURATION_PATH,
+  removedGeneratorOptionError,
+  unknownTemplateError,
+} from "../../constants.js";
 
 import {
   DEFAULT_GENERATED_DIRECTORY,
@@ -68,6 +72,10 @@ export class GenerateCommand extends CommandRunner {
     passedParameters: readonly string[],
     options: GenerateCommandOptions,
   ): Promise<void> {
+    const rawArguments = [...passedParameters, ...process.argv.slice(2)];
+
+    this.rejectRemovedGeneratorOption(rawArguments);
+
     const configuration =
       await this.configurationService.loadConformetryConfiguration(
         options.config ?? DEFAULT_CONFIGURATION_PATH,
@@ -89,9 +97,12 @@ export class GenerateCommand extends CommandRunner {
       this.logger.error("🚫 Rejected an unknown template", undefined, {
         template: templateName,
       });
-      throw new Error(
-        `Unknown template "${templateName}". Available: ${configuration.map((generator) => generator.name).join(", ")}`,
-      );
+      throw unknownTemplateError({
+        availableTemplateNames: configuration.map(
+          (generator) => generator.name,
+        ),
+        templateName,
+      });
     }
 
     // Every input is required, which is what `conformetry-nx` has always told
@@ -105,7 +116,7 @@ export class GenerateCommand extends CommandRunner {
       required: Object.keys(definition.inputs),
     };
     const inputs = await this.inputService.resolveGeneratorInputs({
-      rawArguments: [...passedParameters, ...process.argv.slice(2)],
+      rawArguments,
       schema,
     });
     const result = await this.generationService.runGenerator({
@@ -146,6 +157,28 @@ export class GenerateCommand extends CommandRunner {
   }
 
   /**
+   * Refuses the flag `--template` replaced, rather than ignoring it.
+   *
+   * Unknown options are allowed through so a template's own inputs can be
+   * passed as flags, which means commander does not reject `--generator` for
+   * this command the way it would for any other. Without this it would be
+   * read as an input nothing declares and quietly discarded, leaving a stale
+   * script to prompt or to fail for the wrong reason.
+   */
+  private rejectRemovedGeneratorOption(rawArguments: readonly string[]): void {
+    const isRemovedOption = rawArguments.some((argument) => {
+      return argument === "--generator" || argument.startsWith("--generator=");
+    });
+
+    if (isRemovedOption) {
+      this.logger.error("🚫 Rejected a removed option", undefined, {
+        option: "--generator",
+      });
+      throw removedGeneratorOptionError();
+    }
+  }
+
+  /**
    * Settles which template to render: the one named, the one picked, or none.
    *
    * The missing case and the unknown case are decided together here rather
@@ -170,13 +203,11 @@ export class GenerateCommand extends CommandRunner {
       throw missingTemplateError(availableNames);
     }
 
+    // The loaded configuration is handed over as-is: a definition already
+    // carries the name and description a choice needs, and mapping it here
+    // would be a second source the picker could disagree with.
     const chosenName = await this.inputPromptingService.promptForTemplate(
-      args.configuration.map((generator) => ({
-        ...(generator.description === undefined
-          ? {}
-          : { description: generator.description }),
-        name: generator.name,
-      })),
+      args.configuration,
     );
 
     if (chosenName === undefined) {
