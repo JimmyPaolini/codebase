@@ -21,8 +21,6 @@ export interface CallidescopeCommandOptions {
   /** Project directories to trace. Every project in the workspace when omitted. */
   readonly directories?: string[] | undefined;
   readonly format?: CallidescopeOutputFormat | undefined;
-  /** `false` when `--no-interactive` opted out of prompting for a missing value. */
-  readonly interactive?: boolean | undefined;
   readonly json?: string | undefined;
   readonly markdown?: string | undefined;
   readonly write?: boolean | undefined;

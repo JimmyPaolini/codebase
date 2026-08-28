@@ -11,7 +11,7 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     emptyOutDir: true,
-    outDir: "../../dist/applications/lexico",
+    outDir: "dist",
     reportCompressedSize: true,
     rolldownOptions: {
       external: ["expo-sqlite"],

@@ -8,7 +8,7 @@ export default {
   targets: [
     {
       ...compiledJavaScriptTarget,
-      include: ["dist/applications/lexico-ingestion/**/*.js"],
+      include: ["dist/**/*.js"],
     },
   ],
 };

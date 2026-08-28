@@ -21,7 +21,7 @@
           }
         ],
         "main": "packages/logger/src/index.ts",
-        "outputPath": "dist/packages/logger",
+        "outputPath": "packages/logger/dist",
         "tsConfig": "packages/logger/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

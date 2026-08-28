@@ -27,3 +27,30 @@ export const GENERATE_COMMAND_TOKEN = "generate";
 
 /** Directory generated output lands in when the caller names no target. */
 export const DEFAULT_GENERATED_OUTPUT_DIRECTORY = "generated";
+
+/**
+ * Thrown when a command line cannot be turned into a run.
+ *
+ * One class rather than one per cause: every cause is the same event to
+ * whoever catches it — nothing was generated, and the fix is to retype the
+ * flags. Only the wording varies, which is what the factory below does.
+ */
+export class InputError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InputError";
+  }
+}
+
+/**
+ * A required input that cannot be asked for, because stdin is not a terminal.
+ *
+ * `prompts` does not fail there — it draws its menu, never resolves, and the
+ * process exits 0 having done nothing, which is exactly how this CLI used to
+ * hang in non-interactive environments. Naming the flag to pass is the whole
+ * remedy, so the message carries it.
+ */
+export const missingInputError = (inputName: string): InputError =>
+  new InputError(
+    `${inputName} is required, and stdin is not a terminal so it cannot be asked for. Pass --${inputName}.`,
+  );

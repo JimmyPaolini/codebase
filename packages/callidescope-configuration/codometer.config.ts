@@ -8,7 +8,7 @@ export default {
   targets: [
     {
       ...compiledJavaScriptTarget,
-      include: ["dist/packages/callidescope-configuration/**/*.js"],
+      include: ["dist/**/*.js"],
     },
   ],
 };

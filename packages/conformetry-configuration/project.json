@@ -21,8 +21,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "packages/conformetry-configuration/src/index.ts",
-        "outputPath": "dist/packages/conformetry-configuration",
+        "outputPath": "packages/conformetry-configuration/dist",
         "tsConfig": "packages/conformetry-configuration/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

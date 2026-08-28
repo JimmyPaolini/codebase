@@ -750,6 +750,45 @@ Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vit
 
 See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for patterns.
 
+### Build Output and Publishing
+
+**Every build writes into its own project's `dist/`** — `packages/logger/dist`,
+`applications/caelundas/dist` — never a top-level `dist/`. That is what lets one
+path be correct in both places a manifest is read: the workspace resolves a
+package through its own directory, and a published tarball is that same
+directory. `dist` is already in `.gitignore` and in the folder-structure rule's
+`ignorePatterns`, so nothing has to be taught about it per project.
+
+**`configuration/tsconfig.json` sets `declaration: true`**, so every build emits
+`.d.ts` beside its `.js`. Nothing consumed declarations before they existed, so
+turning this off again silently removes the types a published package ships.
+
+**A package's `main`, `types`, and `exports` deliberately still point at
+TypeScript sources**, and `publishConfig` carries the emitted paths beside them.
+pnpm applies those overrides at publish time, so one manifest serves both
+readers: the workspace and the Nx plugins load source, while a published
+consumer gets `./dist/src/index.js` with declarations beside it. Verify a change
+here by packing rather than by reading — run `pnpm pack` in the package and
+inspect the tarball's `package.json`.
+
+This split is not stylistic. **`@conformetry/nx` and `@callidescope/nx` are
+registered in `nx.json`, and Nx loads them while it builds the project graph —
+before any target can run.** Between them they pull in 18 workspace packages,
+`@codebase/logger` included. Point any of those at built output and the graph
+cannot load until they are built, and they cannot be built without the graph.
+Only `publishConfig` escapes that circularity, which is why the real fields stay
+on source.
+
+Two further details worth knowing before changing this:
+
+- **pnpm applies only a known set of `publishConfig` fields** — `main`, `types`,
+  `exports`, and `bin` among them. `executors`, `generators`, and `nx` are not,
+  so the two Nx plugins keep those at the top level and list the JSON files they
+  name in `files`.
+- **`files` must name `dist`.** With no explicit `files`, packing falls back to
+  the ignore files, and `dist` is gitignored — the tarball would ship no build
+  output at all.
+
 ## Agent Context
 
 `.agents/skills/` and this file are the single sources of truth. Every other agent entrypoint is a symlink to them, so edit the source and never the mirror:

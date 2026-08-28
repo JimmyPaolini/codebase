@@ -1,4 +1,8 @@
-import { ConfigurationService, InputService } from "@conformetry/configuration";
+import {
+  ConfigurationService,
+  InputError,
+  InputService,
+} from "@conformetry/configuration";
 import { GenerationService } from "@conformetry/generation";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -47,19 +51,81 @@ export class GenerateCommand extends CommandRunner {
 
   // 🔏 Private Methods
 
-  /**
-   * Whether missing values may be asked for interactively.
-   *
-   * `process.stdin.isTTY` is `undefined` rather than `false` when stdin is not
-   * a terminal, so it is coerced explicitly — treating that `undefined` as
-   * "unset, so prompt" is what used to hang the command in CI.
-   */
-  private canPrompt(options: GenerateCommandOptions): boolean {
-    return (
-      options.interactive !== false &&
-      process.stdin.isTTY &&
-      process.env["CI"] !== "true"
+  /** Resolves the generator's inputs and writes its files. */
+  private async generate(
+    passedParameters: readonly string[],
+    options: GenerateCommandOptions,
+  ): Promise<void> {
+    this.logger.debug("🏗 Generating a conformetry instance", undefined, {
+      generator: options.generator,
+    });
+
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        options.config ?? DEFAULT_CONFIGURATION_PATH,
+      );
+    const definition = configuration.find((generator) => {
+      return generator.name === options.generator;
+    });
+
+    if (definition === undefined) {
+      this.logger.error("🚫 Rejected an unknown generator", undefined, {
+        generator: options.generator,
+      });
+      throw new Error(
+        `Unknown generator "${options.generator}". Available: ${configuration.map((generator) => generator.name).join(", ")}`,
+      );
+    }
+
+    // Every input is required, which is what `conformetry-nx` has always told
+    // Nx about the same generators: a conformetry generator substitutes each
+    // of its placeholders, and mustache renders a missing one as empty rather
+    // than failing, so an optional input would silently produce a hole. This
+    // command used to pass `properties` alone, leaving every input optional
+    // and every missing one skipped — the hole nobody was warned about.
+    const schema: JsonSchemaDefinition = {
+      properties: definition.inputs,
+      required: Object.keys(definition.inputs),
+    };
+    const inputs = await this.inputService.resolveGeneratorInputs({
+      rawArguments: [...passedParameters, ...process.argv.slice(2)],
+      schema,
+    });
+    const result = await this.generationService.runGenerator({
+      definition: {
+        name: definition.name,
+        templateDirectoryPath: definition.templatePath,
+      },
+      inputs,
+      instancePath:
+        options.directory ??
+        `${DEFAULT_GENERATED_DIRECTORY}/${definition.name}`,
+    });
+
+    // The file list is what the caller asked for, so it goes to stdout; the
+    // log line carries the same facts as data a telemetry backend can group.
+    process.stdout.write(
+      `${result.generatedFilePaths.map((filePath) => `  ${filePath}`).join("\n")}\n`,
     );
+    this.logger.info("✨ Generated instance files", undefined, {
+      count: result.generatedFilePaths.length,
+      outputDirectoryPath: result.outputDirectoryPath,
+    });
+  }
+
+  /**
+   * Logs a command line the input service refused, and fails the run.
+   *
+   * A required input that could not be asked for is the reader's own typing
+   * to fix, so it is reported as a rejected command line rather than as a
+   * crash. Nothing was generated, and the next move is to pass the flag it
+   * named, not to read a stack trace.
+   */
+  private rejectCommandLine(error: InputError): void {
+    this.logger.error("🚫 Rejected the command line", undefined, {
+      reason: error.message,
+    });
+    process.exitCode = 1;
   }
 
   // 🌎 Public Methods
@@ -95,66 +161,25 @@ export class GenerateCommand extends CommandRunner {
     });
   }
 
-  /** Parses the opt-out from interactive prompting. */
-  @Option({
-    description: "Never prompt for missing values",
-    flags: "--no-interactive",
-  })
-  public parseInteractive(): boolean {
-    return false;
-  }
-
-  /** Resolves the generator's inputs and writes its files. */
+  /**
+   * Runs the generator, reporting a refused command line as one.
+   *
+   * Only an `InputError` is caught: a required input nobody could be asked
+   * for is a flag the caller has to pass, where anything else is a genuine
+   * failure and keeps its stack.
+   */
   public async run(
     passedParameters: string[],
     options: GenerateCommandOptions,
   ): Promise<void> {
-    this.logger.debug("🏗 Generating a conformetry instance", undefined, {
-      generator: options.generator,
-    });
+    try {
+      await this.generate(passedParameters, options);
+    } catch (error) {
+      if (!(error instanceof InputError)) {
+        throw error;
+      }
 
-    const configuration =
-      await this.configurationService.loadConformetryConfiguration(
-        options.config ?? DEFAULT_CONFIGURATION_PATH,
-      );
-    const definition = configuration.find((generator) => {
-      return generator.name === options.generator;
-    });
-
-    if (definition === undefined) {
-      this.logger.error("🚫 Rejected an unknown generator", undefined, {
-        generator: options.generator,
-      });
-      throw new Error(
-        `Unknown generator "${options.generator}". Available: ${configuration.map((generator) => generator.name).join(", ")}`,
-      );
+      this.rejectCommandLine(error);
     }
-
-    const schema: JsonSchemaDefinition = { properties: definition.inputs };
-    const inputs = await this.inputService.resolveGeneratorInputs({
-      promptWhenMissing: this.canPrompt(options),
-      rawArguments: [...passedParameters, ...process.argv.slice(2)],
-      schema,
-    });
-    const result = await this.generationService.runGenerator({
-      definition: {
-        name: definition.name,
-        templateDirectoryPath: definition.templatePath,
-      },
-      inputs,
-      instancePath:
-        options.directory ??
-        `${DEFAULT_GENERATED_DIRECTORY}/${definition.name}`,
-    });
-
-    // The file list is what the caller asked for, so it goes to stdout; the
-    // log line carries the same facts as data a telemetry backend can group.
-    process.stdout.write(
-      `${result.generatedFilePaths.map((filePath) => `  ${filePath}`).join("\n")}\n`,
-    );
-    this.logger.info("✨ Generated instance files", undefined, {
-      count: result.generatedFilePaths.length,
-      outputDirectoryPath: result.outputDirectoryPath,
-    });
   }
 }

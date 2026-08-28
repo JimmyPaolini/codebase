@@ -34,7 +34,7 @@ describe(depthExecutor, () => {
     expect.hasAssertions();
 
     const context = buildContext();
-    const options = { address: "src/foo.service.ts#FooService.bar" };
+    const options = { addresses: ["src/foo.service.ts#FooService.bar"] };
 
     await expect(depthExecutor(options, context)).resolves.toStrictEqual({
       success: true,
