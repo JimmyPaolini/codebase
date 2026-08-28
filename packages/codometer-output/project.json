@@ -21,8 +21,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "packages/codometer-output/src/index.ts",
-        "outputPath": "dist/packages/codometer-output",
+        "outputPath": "packages/codometer-output/dist",
         "tsConfig": "packages/codometer-output/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

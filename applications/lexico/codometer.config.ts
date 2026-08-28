@@ -2,9 +2,6 @@ import codometerConfiguration from "../../configuration/codometer.config.js";
 
 // 🎯 Targets
 
-/** How each target reaches the tree the build is written to, two levels up. */
-const directory = "../..";
-
 /** What every target below measures, and how. */
 const analyses = ["size"] as const;
 
@@ -45,32 +42,25 @@ export default {
     {
       analyses: [...analyses],
       compression,
-      directory,
-      include: ["dist/applications/lexico/client/assets/index-*.js"],
+      include: ["dist/client/assets/index-*.js"],
       name: "Client entry JavaScript",
     },
     {
       analyses: [...analyses],
       compression,
-      directory,
-      include: [
-        "dist/applications/lexico/client/**/*.js",
-        "!dist/applications/lexico/client/assets/index-*.js",
-      ],
+      include: ["dist/client/**/*.js", "!dist/client/assets/index-*.js"],
       name: "Client route JavaScript",
     },
     {
       analyses: [...analyses],
       compression,
-      directory,
-      include: ["dist/applications/lexico/client/**/*.css"],
+      include: ["dist/client/**/*.css"],
       name: "Client CSS",
     },
     {
       analyses: [...analyses],
       compression,
-      directory,
-      include: ["dist/applications/lexico/server/**/*.js"],
+      include: ["dist/server/**/*.js"],
       name: "Server JavaScript",
     },
   ],

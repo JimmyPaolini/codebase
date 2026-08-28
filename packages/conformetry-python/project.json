@@ -21,8 +21,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "packages/conformetry-python/src/index.ts",
-        "outputPath": "dist/packages/conformetry-python",
+        "outputPath": "packages/conformetry-python/dist",
         "tsConfig": "packages/conformetry-python/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

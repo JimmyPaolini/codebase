@@ -35,6 +35,12 @@
     "./package.json": "./package.json",
     "./src/executors/*": "./src/executors/*"
   },
+  "files": [
+    "dist",
+    "executors.json",
+    "LICENSE",
+    "README.md"
+  ],
   "main": "src/index.ts",
   "name": "@callidescope/nx",
   "nx": {
@@ -43,7 +49,20 @@
   "private": true,
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "exports": {
+      ".": {
+        "default": "./dist/src/index.cjs",
+        "import": "./dist/src/index.cjs",
+        "require": "./dist/src/index.cjs",
+        "types": "./dist/src/index.d.ts"
+      },
+      "./executors.json": "./executors.json",
+      "./package.json": "./package.json",
+      "./src/executors/*": "./dist/src/executors/*"
+    },
+    "main": "./dist/src/index.js",
+    "registry": "https://registry.npmjs.org",
+    "types": "./dist/src/index.d.ts"
   },
   "type": "module",
   "typeCoverage": {

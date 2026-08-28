@@ -29,10 +29,16 @@
             "glob": "src/executors/**/schema.json",
             "input": "packages/callidescope-nx",
             "output": "."
+          },
+          {
+            "glob": "src/index.cjs",
+            "input": "packages/callidescope-nx",
+            "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "packages/callidescope-nx/src/index.ts",
-        "outputPath": "dist/packages/callidescope-nx",
+        "outputPath": "packages/callidescope-nx/dist",
         "tsConfig": "packages/callidescope-nx/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

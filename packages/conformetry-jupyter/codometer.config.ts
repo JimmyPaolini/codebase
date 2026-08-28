@@ -8,7 +8,7 @@ export default {
   targets: [
     {
       ...compiledJavaScriptTarget,
-      include: ["dist/packages/conformetry-jupyter/**/*.js"],
+      include: ["dist/**/*.js"],
     },
   ],
 };

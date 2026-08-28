@@ -67,9 +67,9 @@ const codometerConfiguration = {
  *
  * Spread by each project that emits compiled JavaScript, which then supplies
  * the one field that differs — the glob naming its own build output. Every
- * project sits two levels beneath the workspace directory and every build is
- * written to `dist/<project path>`, so `directory` and the rest are the same
- * for all of them and are written once here.
+ * build is written to the project's own `dist/`, so the target needs no
+ * `directory` of its own: what it measures already sits beneath the project
+ * being measured.
  *
  * A project that emits nothing declares no target at all rather than an empty
  * one. That is the difference between a project that was never going to have a
@@ -79,9 +79,6 @@ const codometerConfiguration = {
 export const compiledJavaScriptTarget = {
   analyses: ["size"],
   compression: "gzip",
-  // Build output sits outside the project being measured, so the target says
-  // how to get back out to the directory it is written beneath.
-  directory: "../..",
   name: COMPILED_TARGET_NAME,
 } satisfies Omit<
   NonNullable<CodometerConfiguration["targets"]>[number],

@@ -22,8 +22,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "applications/caelundas/src/main.ts",
-        "outputPath": "dist/applications/caelundas",
+        "outputPath": "applications/caelundas/dist",
         "tsConfig": "applications/caelundas/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

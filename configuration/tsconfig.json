@@ -8,7 +8,7 @@
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     // 🏗 Build
-    "declaration": false,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true, // { x?: string } means string|undefined, not string|undefined|missing

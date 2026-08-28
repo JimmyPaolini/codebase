@@ -21,9 +21,29 @@
     "./eslint": "./src/lib/conventional-log-message.eslint-rule.ts",
     "./package.json": "./package.json"
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "main": "src/index.ts",
   "name": "@codebase/logger",
   "private": true,
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "default": "./dist/src/index.js",
+        "types": "./dist/src/index.d.ts"
+      },
+      "./eslint": {
+        "default": "./dist/src/lib/conventional-log-message.eslint-rule.js",
+        "types": "./dist/src/lib/conventional-log-message.eslint-rule.d.ts"
+      },
+      "./package.json": "./package.json"
+    },
+    "main": "./dist/src/index.js",
+    "types": "./dist/src/index.d.ts"
+  },
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

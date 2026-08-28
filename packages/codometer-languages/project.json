@@ -26,8 +26,9 @@
             "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "packages/codometer-languages/src/index.ts",
-        "outputPath": "dist/packages/codometer-languages",
+        "outputPath": "packages/codometer-languages/dist",
         "tsConfig": "packages/codometer-languages/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

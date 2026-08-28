@@ -39,10 +39,16 @@
             "glob": "src/generators/**/schema.json",
             "input": "packages/conformetry-nx",
             "output": "."
+          },
+          {
+            "glob": "src/index.cjs",
+            "input": "packages/conformetry-nx",
+            "output": "."
           }
         ],
+        "generatePackageJson": false,
         "main": "packages/conformetry-nx/src/index.ts",
-        "outputPath": "dist/packages/conformetry-nx",
+        "outputPath": "packages/conformetry-nx/dist",
         "tsConfig": "packages/conformetry-nx/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]

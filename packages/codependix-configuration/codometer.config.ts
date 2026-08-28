@@ -8,7 +8,7 @@ export default {
   targets: [
     {
       ...compiledJavaScriptTarget,
-      include: ["dist/packages/codependix-configuration/**/*.js"],
+      include: ["dist/**/*.js"],
     },
   ],
 };
