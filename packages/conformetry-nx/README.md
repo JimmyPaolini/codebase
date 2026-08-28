@@ -502,6 +502,8 @@ graph LR
   file_src_generators_sync_generator_unit_test_ts["src/generators/sync/generator.unit.test.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
+  file_src_languages_constants_ts["src/languages.constants.ts"]
+  file_src_languages_constants_unit_test_ts["src/languages.constants.unit.test.ts"]
   file_src_main_module_ts["src/main.module.ts"]
   file_src_modules_adapter_adapter_constants_ts["src/modules/adapter/adapter.constants.ts"]
   file_src_modules_adapter_adapter_module_ts["src/modules/adapter/adapter.module.ts"]
@@ -529,7 +531,6 @@ graph LR
   file_src_modules_paths_paths_service_unit_test_ts["src/modules/paths/paths.service.unit.test.ts"]
   file_src_modules_paths_paths_types_ts["src/modules/paths/paths.types.ts"]
   file_src_modules_plugin_plugin_constants_ts["src/modules/plugin/plugin.constants.ts"]
-  file_src_modules_plugin_plugin_constants_unit_test_ts["src/modules/plugin/plugin.constants.unit.test.ts"]
   file_src_modules_plugin_plugin_module_ts["src/modules/plugin/plugin.module.ts"]
   file_src_modules_plugin_plugin_service_ts["src/modules/plugin/plugin.service.ts"]
   file_src_modules_plugin_plugin_service_unit_test_ts["src/modules/plugin/plugin.service.unit.test.ts"]
@@ -570,6 +571,7 @@ graph LR
   file_src_index_ts --> file_src_plugin_context_utilities_ts
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_index_unit_test_ts --> file_src_plugin_context_utilities_ts
+  file_src_languages_constants_unit_test_ts --> file_src_languages_constants_ts
   file_src_main_module_ts --> file_src_modules_generator_generator_module_ts
   file_src_main_module_ts --> file_src_modules_plugin_plugin_module_ts
   file_src_modules_adapter_adapter_module_ts --> file_src_modules_adapter_adapter_service_ts
@@ -610,7 +612,6 @@ graph LR
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_paths_paths_module_ts
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_paths_paths_service_ts
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_scope_scope_service_ts
-  file_src_modules_plugin_plugin_constants_unit_test_ts --> file_src_modules_plugin_plugin_constants_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_adapter_adapter_module_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_generator_generator_module_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_instances_instances_module_ts
@@ -619,6 +620,7 @@ graph LR
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_plugin_plugin_service_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_projects_projects_module_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_scope_scope_module_ts
+  file_src_modules_plugin_plugin_service_ts --> file_src_languages_constants_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_adapter_adapter_service_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_generator_generator_constants_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_generator_generator_service_ts
