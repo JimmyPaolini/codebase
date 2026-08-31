@@ -414,13 +414,12 @@ export class MapService {
    * Builds and delivers every configured NestJS module graph export.
    *
    * Only `framework:nestjs`-tagged projects participate, discovered from the
-   * shared `context.graph` — see `NestjsProjectService`. A project that fails
+   * tags `context.projects` carry — see `NestjsProjectService`. A project that fails
    * to boot its container is recorded as a failure rather than aborting the
    * pass.
    */
   async runNestjsGraphs(context: GraphRunContext): Promise<GraphRunOutcome> {
     const nestjsProjects = this.nestjsProjectService.discoverProjects(
-      context.graph,
       context.projects,
     );
     const results: GraphRunOutcome["results"] = [];

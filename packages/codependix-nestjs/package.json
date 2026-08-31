@@ -4,7 +4,6 @@
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
-    "@nx/devkit": "catalog:",
     "nestjs-spelunker": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"

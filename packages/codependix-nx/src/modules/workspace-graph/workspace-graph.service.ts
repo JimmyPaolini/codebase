@@ -8,9 +8,11 @@ import {
   WORKSPACE_GRAPH_UNCONNECTED,
 } from "./workspace-graph.constants";
 
-import type { NxProject } from "../neighborhood/neighborhood.types";
+import type {
+  NxProject,
+  NxProjectGraph,
+} from "../neighborhood/neighborhood.types";
 import type { WorkspaceGraph } from "./workspace-graph.types";
-import type { ProjectGraph } from "@nx/devkit";
 
 /**
  * Builds the whole-repository Nx dependency graph — every project, every
@@ -38,7 +40,7 @@ export class WorkspaceGraphService {
 
   /** Builds the Workspace Graph from one read of the Nx project graph. */
   buildWorkspaceGraph(
-    graph: ProjectGraph,
+    graph: NxProjectGraph,
     projects: NxProject[],
   ): WorkspaceGraph {
     const knownNames = new Set(projects.map((project) => project.name));

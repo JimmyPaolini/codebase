@@ -8,7 +8,6 @@
     "@codependix/nestjs": "workspace:*",
     "@codependix/nx": "workspace:*",
     "@nestjs/common": "catalog:",
-    "@nx/devkit": "catalog:",
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },

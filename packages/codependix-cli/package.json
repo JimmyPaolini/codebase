@@ -12,7 +12,6 @@
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
-    "@nx/devkit": "catalog:",
     "nest-commander": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",

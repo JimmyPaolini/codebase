@@ -111,7 +111,6 @@ export class BoundaryCheckService {
           ),
         ),
       projects: this.nestjsProjectService.discoverProjects(
-        args.context.graph,
         args.context.projects,
       ),
       rules: args.rules,
@@ -124,7 +123,6 @@ export class BoundaryCheckService {
 
     try {
       const graph = this.boundaryGraphService.buildNxGraph({
-        graph: context.graph,
         projects: context.projects,
         scope: WORKSPACE_SCOPE,
         workingDirectory: context.workingDirectory,
@@ -188,10 +186,7 @@ export class BoundaryCheckService {
         this.boundaryGraphService.buildPythonImportGraph(
           this.pythonService.buildGraph(project),
         ),
-      projects: this.pythonService.discoverProjects(
-        args.context.graph,
-        args.context.projects,
-      ),
+      projects: this.pythonService.discoverProjects(args.context.projects),
       rules: args.rules,
     });
   }

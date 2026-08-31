@@ -6,8 +6,7 @@ import type {
   CodependixGraphType,
   ResolvedCodependixConfiguration,
 } from "@codependix/configuration";
-import type { NxProject } from "@codependix/nx";
-import type { ProjectGraph } from "@nx/devkit";
+import type { NxProject, NxProjectGraph } from "@codependix/nx";
 
 /**
  * Everything a boundary check reads about the workspace it is judging.
@@ -20,7 +19,7 @@ import type { ProjectGraph } from "@nx/devkit";
  */
 export interface BoundaryCheckContext {
   readonly configuration: ResolvedCodependixConfiguration;
-  readonly graph: ProjectGraph;
+  readonly graph: NxProjectGraph;
   readonly projects: NxProject[];
   readonly workingDirectory: string;
 }

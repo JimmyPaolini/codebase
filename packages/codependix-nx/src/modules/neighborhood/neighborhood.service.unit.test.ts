@@ -55,6 +55,7 @@ function buildProjects(names: string[]): NxProject[] {
   return names.map((name) => ({
     absoluteRoot: path.join("/workspace/packages", name),
     name,
+    tags: [],
   }));
 }
 
@@ -109,6 +110,7 @@ describe(NeighborhoodService, () => {
         {
           absoluteRoot: path.join("/workspace", "packages/logger"),
           name: "logger",
+          tags: [],
         },
       ]);
     });
@@ -127,6 +129,31 @@ describe(NeighborhoodService, () => {
           .readProjects(graph, "/workspace")
           .map((project) => project.name),
       ).toStrictEqual(["affirmations", "caelundas"]);
+    });
+
+    it("carries each project's own tags", () => {
+      const graph = buildGraph({}, { logger: "packages/logger" });
+      const node = graph.nodes["logger"];
+      if (node !== undefined) {
+        node.data.tags = ["framework:nestjs", "type:package"];
+      }
+
+      expect(
+        service
+          .readProjects(graph, "/workspace")
+          .map((project) => project.tags),
+      ).toStrictEqual([["framework:nestjs", "type:package"]]);
+    });
+
+    // Nx omits the field entirely for a project that declares no tags.
+    it("reports no tags for a project whose node declares none", () => {
+      const graph = buildGraph({}, { logger: "packages/logger" });
+
+      expect(
+        service
+          .readProjects(graph, "/workspace")
+          .map((project) => project.tags),
+      ).toStrictEqual([[]]);
     });
 
     // The root project contains every other one rather than depending on them.

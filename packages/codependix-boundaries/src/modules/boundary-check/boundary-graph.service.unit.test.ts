@@ -3,24 +3,6 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { BoundaryGraphService } from "./boundary-graph.service";
 
-import type { ProjectGraph } from "@nx/devkit";
-
-const PROJECT_GRAPH: ProjectGraph = {
-  dependencies: {},
-  nodes: {
-    "codependix-cli": {
-      data: { root: "packages/codependix-cli", tags: ["type:package"] },
-      name: "codependix-cli",
-      type: "lib",
-    },
-    "codependix-nx": {
-      data: { root: "packages/codependix-nx" },
-      name: "codependix-nx",
-      type: "lib",
-    },
-  },
-};
-
 describe(BoundaryGraphService, () => {
   let service: BoundaryGraphService;
 
@@ -38,11 +20,11 @@ describe(BoundaryGraphService, () => {
 
   it("carries an Nx project's tags, root, and name", () => {
     const graph = service.buildNxGraph({
-      graph: PROJECT_GRAPH,
       projects: [
         {
           absoluteRoot: "/workspace/packages/codependix-cli",
           name: "codependix-cli",
+          tags: ["type:package"],
         },
       ],
       scope: "workspace",
@@ -78,7 +60,6 @@ describe(BoundaryGraphService, () => {
 
   it("leaves a project's path unset when no discovered project carries it", () => {
     const graph = service.buildNxGraph({
-      graph: PROJECT_GRAPH,
       projects: [],
       scope: "workspace",
       workingDirectory: "/workspace",

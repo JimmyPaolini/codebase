@@ -6,7 +6,6 @@ import { resolveExample } from "./paths";
 
 import type { ExampleDocument } from "./types";
 import type { PythonImportGraph, PythonProject } from "@codependix/imports";
-import type { ProjectGraph } from "@nx/devkit";
 
 // 🏷️ Types
 
@@ -133,44 +132,21 @@ export function buildPythonDocuments(): ExampleDocument[] {
 }
 
 /**
- * Builds the tagged project graph `PythonService.discoverProjects` reads.
- *
- * An example project is not an Nx project, so the tag it would have carried is
- * supplied here — which is also the plainest demonstration of the gate: drop
- * the tag and the project is not discovered at all.
- */
-export function buildTaggedGraph(
-  projectName: string,
-  projectRoot: string,
-): ProjectGraph {
-  return {
-    dependencies: {},
-    nodes: {
-      [projectName]: {
-        data: { root: projectRoot, tags: [PYTHON_PROJECT_TAG] },
-        name: projectName,
-        type: "lib",
-      },
-    },
-  };
-}
-
-/**
  * Describes a project rooted anywhere on disk, through real discovery.
  *
- * `graph` defaults to one carrying the `language:python` tag, which is what an
- * Nx project would have brought with it. Passing one without the tag is how a
- * caller sees the gate refuse: discovery returns nothing at all.
+ * `tags` defaults to the `language:python` tag an Nx project would have
+ * brought with it, since an example project is not an Nx project. Passing tags
+ * without it is how a caller sees the gate refuse: discovery returns nothing
+ * at all.
  */
 export function describeProjectAt(
   absoluteRoot: string,
-  graph?: ProjectGraph,
+  tags: string[] = [PYTHON_PROJECT_TAG],
 ): PythonProject {
   const name = path.basename(absoluteRoot);
-  const [project] = pythonService.discoverProjects(
-    graph ?? buildTaggedGraph(name, absoluteRoot),
-    [{ absoluteRoot, name }],
-  );
+  const [project] = pythonService.discoverProjects([
+    { absoluteRoot, name, tags },
+  ]);
 
   if (project === undefined) {
     throw new Error(`No ${PYTHON_PROJECT_TAG} project at ${absoluteRoot}`);

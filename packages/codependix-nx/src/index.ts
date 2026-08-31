@@ -11,6 +11,7 @@ export type {
   Neighborhood,
   NeighborhoodEdge,
   NxProject,
+  NxProjectGraph,
 } from "./modules/neighborhood/neighborhood.types";
 export {
   WORKSPACE_GRAPH_MERMAID_HEADER,

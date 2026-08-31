@@ -13,7 +13,6 @@ import { NestjsProjectService } from "./nestjs-project.service";
 
 import type { NestjsProject } from "./nestjs-project.types";
 import type { INestApplicationContext } from "@nestjs/common";
-import type { ProjectGraph } from "@nx/devkit";
 import type { SpelunkedTree } from "nestjs-spelunker";
 
 /** Paths the mocked workspace reports as existing. */
@@ -69,16 +68,12 @@ vi.mock("nestjs-spelunker", () => ({
 }));
 
 /** Builds a project graph node with the given tags. */
-function buildGraph(tagsByProject: Record<string, string[]>): ProjectGraph {
-  return {
-    dependencies: {},
-    nodes: Object.fromEntries(
-      Object.entries(tagsByProject).map(([name, tags]) => [
-        name,
-        { data: { root: `packages/${name}`, tags }, name, type: "lib" },
-      ]),
-    ),
-  };
+/** One discovered project, as `codependix-nx` hands it over. */
+function buildTaggedProject(
+  name: string,
+  tags: string[],
+): { absoluteRoot: string; name: string; tags: string[] } {
+  return { absoluteRoot: `/workspace/packages/${name}`, name, tags };
 }
 
 describe(NestjsProjectService, () => {
@@ -126,21 +121,25 @@ describe(NestjsProjectService, () => {
 
   describe("isNestjsProject", () => {
     it("reports true when a project's tags include framework:nestjs", () => {
-      const graph = buildGraph({ caelundas: ["framework:nestjs"] });
-
-      expect(service.isNestjsProject(graph, "caelundas")).toBe(true);
+      expect(
+        service.isNestjsProject(
+          buildTaggedProject("caelundas", ["framework:nestjs"]),
+        ),
+      ).toBe(true);
     });
 
     it("reports false when a project's tags do not include framework:nestjs", () => {
-      const graph = buildGraph({ lexico: ["framework:react"] });
-
-      expect(service.isNestjsProject(graph, "lexico")).toBe(false);
+      expect(
+        service.isNestjsProject(
+          buildTaggedProject("lexico", ["framework:react"]),
+        ),
+      ).toBe(false);
     });
 
-    it("reports false for a project the graph does not know about", () => {
-      const graph = buildGraph({});
-
-      expect(service.isNestjsProject(graph, "unknown")).toBe(false);
+    it("reports false for a project carrying no tags at all", () => {
+      expect(service.isNestjsProject(buildTaggedProject("unknown", []))).toBe(
+        false,
+      );
     });
   });
 
@@ -166,17 +165,17 @@ describe(NestjsProjectService, () => {
 
   describe("discoverProjects", () => {
     it("keeps only the projects tagged framework:nestjs", () => {
-      const graph = buildGraph({
-        caelundas: ["framework:nestjs"],
-        lexico: ["framework:react"],
-      });
-
-      const discovered = service.discoverProjects(graph, [
+      const discovered = service.discoverProjects([
         {
           absoluteRoot: "/workspace/applications/caelundas",
           name: "caelundas",
+          tags: ["framework:nestjs"],
         },
-        { absoluteRoot: "/workspace/applications/lexico", name: "lexico" },
+        {
+          absoluteRoot: "/workspace/applications/lexico",
+          name: "lexico",
+          tags: ["framework:react"],
+        },
       ]);
 
       expect(discovered.map((project) => project.name)).toStrictEqual([
@@ -185,10 +184,12 @@ describe(NestjsProjectService, () => {
     });
 
     it("describes each discovered project", () => {
-      const graph = buildGraph({ logger: ["framework:nestjs"] });
-
-      const discovered = service.discoverProjects(graph, [
-        { absoluteRoot: "/workspace/packages/logger", name: "logger" },
+      const discovered = service.discoverProjects([
+        {
+          absoluteRoot: "/workspace/packages/logger",
+          name: "logger",
+          tags: ["framework:nestjs"],
+        },
       ]);
 
       expect(discovered).toStrictEqual([
