@@ -131,14 +131,20 @@ function. Each is a claim a resolver or scanner change could silently reverse,
 and a guide quoting a diagram the tool no longer renders is worse than no guide.
 
 This is the one place this package differs from its siblings, which run their
-own tool over their own subjects through an Nx target. Codependix cannot:
-`NeighborhoodService.readProjectGraph` calls `createProjectGraphAsync()`, which
-resolves the Nx workspace from the **process working directory** and takes no
-directory argument — `--directory` supplies only the root that export paths are
-resolved against. So the graph builders are called directly, with a project
+own tool over their own subjects through an Nx target. Codependix does not:
+`NeighborhoodService.readProjectGraph` resolves the Nx workspace from the
+**process working directory** unless a configuration names a `projectGraph`
+file to read instead — `--directory` supplies only the root that export paths
+are resolved against. So the graph builders are called directly, with a project
 graph they are handed, and `testing/render-examples.ts` is what calls them —
 beside the tests that assert what it produced, the same place
 `codometer-examples` keeps the harness that drives its own tool.
+
+A `projectGraph` file would let some of these examples run the real command
+line instead. That is a separate decision and deliberately not taken here:
+rendering the guides from the real graph builders is what makes a claim that
+stops being true fail a check, and is recorded in `AGENTS.md` as a virtue
+rather than as drift.
 
 That is also what keeps the subjects out of everything else. They carry no
 `project.json`, so none of them joins this workspace's Nx project graph, the

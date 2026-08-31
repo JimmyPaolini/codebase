@@ -1,9 +1,11 @@
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 import { createProjectGraphAsync } from "@nx/devkit";
 
 import {
+  InvalidProjectGraphError,
   NEIGHBORHOOD_IMPLICIT_LEGEND,
   NEIGHBORHOOD_MERMAID_HEADER,
   NEIGHBORHOOD_SUBJECT_STYLE,
@@ -42,6 +44,25 @@ export class NeighborhoodService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Whether a parsed file looks like a project graph at all.
+   *
+   * Deliberately shallow — a supplied graph's contents are trusted, and this
+   * only separates "Nx wrote this" from "this is some other JSON".
+   */
+  private isProjectGraph(value: unknown): value is NxProjectGraph {
+    if (typeof value !== "object" || value === null) return false;
+
+    const candidate = value as { dependencies?: unknown; nodes?: unknown };
+
+    return (
+      typeof candidate.dependencies === "object" &&
+      candidate.dependencies !== null &&
+      typeof candidate.nodes === "object" &&
+      candidate.nodes !== null
+    );
+  }
 
   // 🌎 Public Methods
 
@@ -132,9 +153,33 @@ export class NeighborhoodService {
     );
   }
 
-  /** Reads the workspace's project graph. */
-  async readProjectGraph(): Promise<NxProjectGraph> {
-    return createProjectGraphAsync({ exitOnError: false });
+  /**
+   * Reads a project graph — the workspace's own, or a supplied one.
+   *
+   * Nx resolves the project graph from the **process working directory** and
+   * takes no directory argument, so a run can only ever graph the workspace it
+   * stands in. `filePath` is the way out of that: point it at the JSON file
+   * that `nx graph --file=graph.json` writes, and codependix graphs whatever
+   * that describes — which is what lets a job graph a repository it merely
+   * checked out.
+   *
+   * A supplied graph is **trusted**, not validated: Nx wrote it, and restating
+   * `ProjectGraph` as a schema to re-check that buys little. The one exception
+   * is the shape check below, which turns an unreadable crash deep inside
+   * `readProjects` into a message naming the file.
+   */
+  async readProjectGraph(filePath?: string): Promise<NxProjectGraph> {
+    if (filePath === undefined) {
+      return createProjectGraphAsync({ exitOnError: false });
+    }
+
+    const parsed: unknown = JSON.parse(await readFile(filePath, "utf8"));
+
+    if (!this.isProjectGraph(parsed)) {
+      throw new InvalidProjectGraphError(filePath);
+    }
+
+    return parsed;
   }
 
   /** Lists every project the graph knows, apart from the workspace root. */

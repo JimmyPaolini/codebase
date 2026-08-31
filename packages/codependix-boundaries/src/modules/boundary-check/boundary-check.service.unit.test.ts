@@ -72,6 +72,7 @@ describe(BoundaryCheckService, () => {
         defaults: {},
         exclude: [],
         include: ["**"],
+        projectGraph: undefined,
         projects: {},
         selection: { projects: [], tags: [] },
         workspace: {},

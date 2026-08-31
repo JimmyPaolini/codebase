@@ -213,6 +213,7 @@ export const codependixConfigurationSchema = z.object({
   defaults: projectConfigurationSchema.optional(),
   exclude: z.array(z.string()).optional(),
   include: z.array(z.string()).optional(),
+  projectGraph: z.string().optional(),
   projects: z.record(z.string(), projectConfigurationSchema).optional(),
   workspace: workspaceConfigurationSchema.optional(),
 });

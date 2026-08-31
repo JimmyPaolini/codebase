@@ -106,8 +106,39 @@ resolve underneath that folder, and the exports land in the wrong place — or
 fail on a readme that is not there — while the graph itself is unaffected.
 
 Run codependix from the workspace root, pass `--directory .`, and select
-projects through the configuration's `include`/`exclude` globs rather than
-through the directory.
+projects through the configuration's `include`/`exclude` globs, or through
+`--projects`/`--tags`, rather than through the directory.
+
+### Graphing a workspace the process is not standing in
+
+A configuration may name a **`projectGraph`** file to read instead of resolving
+one:
+
+```ts
+{ projectGraph: "artifacts/graph.json" }
+```
+
+It is a path, relative to the workspace root, to the JSON that
+`nx graph --file=graph.json` emits. That is the only way to graph a workspace
+the process is not inside — a job that checked out one repository and graphs
+another, or a run with no Nx workspace under it at all. The path resolves
+against the same root every export path does, and a supplied graph's node roots
+are workspace-relative and resolve underneath it too.
+
+It is a configuration field rather than a flag: what graph a run reads is a
+property of the workspace being described, and pinning it once is what a job
+graphing a fixed checkout wants.
+
+**A supplied graph is trusted, not validated.** Nx wrote it, so its contents
+are taken as given; only a file that is not a project graph at all is refused,
+by name, rather than crashing later with nothing pointing at the file. A stale
+or hand-edited graph will produce a diagram that is wrong rather than one that
+fails.
+
+Two things still need real files on disk regardless, so a supplied graph does
+not make a whole run workspace-free: the `nestjs` level boots each container,
+and the `imports` level builds a real `ts.Program`. The `nx` level reads only
+the graph.
 
 ## Four graph types, plus the workspace
 

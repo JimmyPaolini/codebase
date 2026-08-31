@@ -1,9 +1,12 @@
+import { mkdtemp, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { Test } from "@nestjs/testing";
 import { createProjectGraphAsync } from "@nx/devkit";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { InvalidProjectGraphError } from "./neighborhood.constants";
 import { NeighborhoodService } from "./neighborhood.service";
 
 import type { Neighborhood, NxProject } from "./neighborhood.types";
@@ -98,6 +101,70 @@ describe(NeighborhoodService, () => {
       });
       expect(createProjectGraphAsync).toHaveBeenCalledWith({
         exitOnError: false,
+      });
+    });
+
+    describe("a supplied graph", () => {
+      /** Writes a graph file and returns its path. */
+      async function writeGraphFile(content: string): Promise<string> {
+        const directory = await mkdtemp(path.join(tmpdir(), "codependix-nx-"));
+        const filePath = path.join(directory, "graph.json");
+        await writeFile(filePath, content, "utf8");
+
+        return filePath;
+      }
+
+      // The whole point: Nx resolves a graph from the process working
+      // directory and takes no directory argument, so a supplied one is the
+      // only way to graph a workspace the process is not standing in.
+      it("reads the file instead of resolving the working directory", async () => {
+        const filePath = await writeGraphFile(
+          JSON.stringify({
+            dependencies: { widgets: [] },
+            nodes: {
+              widgets: {
+                data: { root: "packages/widgets", tags: ["type:package"] },
+                name: "widgets",
+                type: "lib",
+              },
+            },
+          }),
+        );
+
+        const graph = await service.readProjectGraph(filePath);
+
+        expect(Object.keys(graph.nodes)).toStrictEqual(["widgets"]);
+        expect(createProjectGraphAsync).not.toHaveBeenCalled();
+      });
+
+      // The one check a trusted graph gets: without it these crash deep
+      // inside readProjects with nothing naming the file.
+      it.each([
+        { content: JSON.stringify({ nodes: {} }), what: "no dependencies" },
+        {
+          content: JSON.stringify({ dependencies: {} }),
+          what: "no nodes",
+        },
+        {
+          content: JSON.stringify({ dependencies: null, nodes: null }),
+          what: "null in place of both",
+        },
+        { content: JSON.stringify(null), what: "null itself" },
+        { content: JSON.stringify("a string"), what: "no object at all" },
+      ])("refuses a file with $what", async ({ content }) => {
+        const filePath = await writeGraphFile(content);
+
+        await expect(service.readProjectGraph(filePath)).rejects.toThrow(
+          InvalidProjectGraphError,
+        );
+      });
+
+      it("lets a file that is not JSON at all fail loudly", async () => {
+        const filePath = await writeGraphFile("not json");
+
+        await expect(service.readProjectGraph(filePath)).rejects.toThrow(
+          SyntaxError,
+        );
       });
     });
   });

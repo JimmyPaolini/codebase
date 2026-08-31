@@ -194,6 +194,20 @@ per-project exports does not remove it from the workspace graph.
 draws the graph over the projects it named, and writes it wherever
 `workspace.nx` says. See `codependix-export` for both flags.
 
+## `projectGraph` — reading a graph rather than resolving one
+
+```ts
+{ projectGraph: "artifacts/graph.json" }
+```
+
+A path, relative to the workspace root, to the JSON `nx graph
+--file=graph.json` emits. Named, it is read instead of resolving the process
+working directory's own graph — the only way to graph a workspace the process
+is not standing in. Left out, nothing changes.
+
+The file is **trusted**: only a file that is not a project graph at all is
+refused. See `codependix-export` for what that does and does not cover.
+
 ## Configuring a graph type a project does not have costs nothing
 
 A project that is not a NestJS project never appears in the NestJS pass; a

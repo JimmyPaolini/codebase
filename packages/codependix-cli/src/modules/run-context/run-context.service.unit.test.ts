@@ -54,6 +54,7 @@ describe(RunContextService, () => {
       defaults: {},
       exclude: [],
       include: ["**"],
+      projectGraph: undefined,
       projects: {},
       selection: { projects: [], tags: [] },
       workspace: {},
@@ -97,6 +98,43 @@ describe(RunContextService, () => {
       expect.objectContaining({
         selection: { projects: "widgets", tags: "framework:nestjs" },
       }),
+    );
+  });
+
+  it("reads the working directory's own graph when none is supplied", async () => {
+    await service.build({
+      mode: "write",
+      options: {},
+      workingDirectory: "/workspace",
+    });
+
+    expect(neighborhoodService.readProjectGraph).toHaveBeenCalledWith(
+      undefined,
+    );
+  });
+
+  // A supplied graph is what lets a run graph a workspace it is not standing
+  // in. Its path resolves against the same root every export path does.
+  it("resolves a supplied graph's path against the workspace root", async () => {
+    vi.mocked(configurationService.loadConfiguration).mockResolvedValue({
+      boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
+      defaults: {},
+      exclude: [],
+      include: ["**"],
+      projectGraph: "artifacts/graph.json",
+      projects: {},
+      selection: { projects: [], tags: [] },
+      workspace: {},
+    });
+
+    await service.build({
+      mode: "write",
+      options: {},
+      workingDirectory: "/workspace",
+    });
+
+    expect(neighborhoodService.readProjectGraph).toHaveBeenCalledWith(
+      "/workspace/artifacts/graph.json",
     );
   });
 

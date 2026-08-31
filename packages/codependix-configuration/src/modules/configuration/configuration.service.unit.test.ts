@@ -517,6 +517,27 @@ describe(ConfigurationService, () => {
     });
   });
 
+  describe("projectGraph", () => {
+    it("carries the path a configuration named", () => {
+      expect(
+        service.resolveConfiguration({ projectGraph: "artifacts/graph.json" })
+          .projectGraph,
+      ).toBe("artifacts/graph.json");
+    });
+
+    it("leaves it unset when a configuration names none", () => {
+      expect(service.resolveConfiguration({}).projectGraph).toBeUndefined();
+    });
+
+    it("refuses a projectGraph that is not a path", () => {
+      const parsed = codependixConfigurationSchema.safeParse({
+        projectGraph: 42,
+      });
+
+      expect(parsed.success).toBe(false);
+    });
+  });
+
   describe("a command-line selection", () => {
     /** Resolves a configuration whose only include glob is `packages/*`. */
     function buildConfiguration(

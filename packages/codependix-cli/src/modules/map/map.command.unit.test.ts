@@ -70,7 +70,7 @@ describe(MapCommand, () => {
     await buildCommand().run([], options);
   }
 
-  /** Hands the command a context, as `MapService.buildContext` resolves one. */
+  /** Hands the command a context, as `RunContextService.build` resolves one. */
   function buildContextWithInclude(include: string[]): GraphRunContext {
     return {
       configuration: {
@@ -78,6 +78,7 @@ describe(MapCommand, () => {
         defaults: {},
         exclude: [],
         include,
+        projectGraph: undefined,
         projects: {},
         selection: { projects: [], tags: [] },
         workspace: {},
