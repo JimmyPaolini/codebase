@@ -122,12 +122,53 @@ Each is keyed by name in the configuration:
 
 The whole-workspace Nx graph is configured separately, under `workspace.nx`.
 It is exported **once for the repository** rather than once per project, has no
-per-project override, and is unaffected by `include`/`exclude`.
+per-project override, and is unaffected by `include`/`exclude`. Its node set is
+what `--projects`/`--tags` narrow — see below.
 
 **Participation is per graph type and is not one rule.** A project a given
 graph type does not apply to simply never appears in that type's results, which
 is why configuring a graph type for every project costs nothing: a project with
 no NestJS container is absent from the NestJS pass rather than failing it.
+
+## `--projects` and `--tags` select projects from the command line
+
+Both take a **comma-separated** list, and both do two things at once:
+
+```bash
+codependix map --write --projects widgets,tools/reporting
+codependix map --write --tags framework:nestjs,language:python
+```
+
+**They widen what gets exported.** A project participates when _anything_
+claims it — an `include` glob, a `--projects` glob, or a `--tags` tag. The
+flags add to what the configuration already selected rather than replacing it,
+so `--projects widgets` on a workspace whose `include` is `["**"]` exports
+exactly what it did before. `exclude` still wins over all three: a flag that
+could resurrect an excluded project would make `exclude` advisory.
+
+`--projects` matches the way `include` does, as a glob against a project's
+**name or its workspace-relative root**, so `--projects packages/*` and
+`--projects codependix-*` both work and mean what they look like. `--tags`
+matches a project's own Nx tags exactly.
+
+**They narrow what gets drawn and judged.** Naming a selection also narrows the
+whole-workspace graph's node set and every level `--check boundaries` judges to
+the selected projects. Naming neither selects everything, which is why the
+default behavior of both is unchanged.
+
+> ⚠️ **A narrowed gate sees fewer edges.** `--check boundaries` is the branch
+> gate, so a CI job that passes `--projects` or `--tags` is asking for a
+> smaller check than a whole-workspace run, and a green result means less. Use
+> them to narrow a _local_ run; leave them off in CI unless narrowing is the
+> point.
+
+`include`/`exclude` never do this — they decide which projects have exports
+written for them, and have never reached the workspace graph or the gate. That
+difference is the whole reason the flags exist as flags rather than as
+configuration fields.
+
+Two flags rather than Nx's own `--projects=tag:foo` spelling, deliberately:
+each shows up in `--help` under its own name. Do not "fix" the divergence.
 
 ## What the run reports
 

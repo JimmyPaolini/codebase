@@ -60,10 +60,19 @@ describe(MapService, () => {
   let workspaceGraphService: WorkspaceGraphService;
   let projectRoot: string;
 
-  /** Builds a `GraphRunContext` a test can override selected fields of. */
+  /**
+   * Builds a `GraphRunContext` a test can override selected fields of.
+   *
+   * `selectedProjects` follows `projects` unless a test overrides it, which
+   * is what a run naming no `--projects`/`--tags` selection resolves to.
+   */
   function buildContext(
     overrides: Partial<GraphRunContext> = {},
   ): GraphRunContext {
+    const projects = overrides.projects ?? [
+      { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
+    ];
+
     return {
       configuration: {
         boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
@@ -71,13 +80,13 @@ describe(MapService, () => {
         exclude: [],
         include: ["**"],
         projects: {},
+        selection: { projects: [], tags: [] },
         workspace: {},
       },
       graph: { dependencies: {}, nodes: {} },
       mode: "write",
-      projects: [
-        { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
-      ],
+      projects,
+      selectedProjects: projects,
       workingDirectory: projectRoot,
       ...overrides,
     };
@@ -123,6 +132,7 @@ describe(MapService, () => {
       exclude: [],
       include: ["**"],
       projects: {},
+      selection: { projects: [], tags: [] },
       workspace: {},
     });
     vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
@@ -348,6 +358,35 @@ describe(MapService, () => {
           edges: [{ implicit: false, source: "lexico", target: "logger" }],
           projectNames: ["lexico", "logger"],
         });
+      });
+
+      // Its node set is what a --projects/--tags run narrows, which is the
+      // one thing include/exclude have never reached.
+      it("draws the workspace graph over the selected projects only", () => {
+        vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
+          json: { path: "codependix-workspace-graph.json" },
+          markdown: undefined,
+          target: "json",
+        });
+
+        const selected = [
+          { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
+        ];
+
+        service.runNxGraphs(
+          buildContext({
+            projects: [
+              ...selected,
+              { absoluteRoot: projectRoot, name: "unselected", tags: [] },
+            ],
+            selectedProjects: selected,
+          }),
+        );
+
+        expect(workspaceGraphService.buildWorkspaceGraph).toHaveBeenCalledWith(
+          expect.anything(),
+          selected,
+        );
       });
 
       it("leaves the workspace graph out of the results when its target is none", () => {
@@ -846,29 +885,6 @@ describe(MapService, () => {
 
       expect(service.runPythonImportGraphs(context)).toBe(outcome);
       expect(pythonImportsService.runGraphs).toHaveBeenCalledWith(context);
-    });
-  });
-
-  describe("buildContext", () => {
-    it("loads the configuration and reads the project graph exactly once", async () => {
-      await service.buildContext({
-        mode: "write",
-        options: {},
-        workingDirectory: projectRoot,
-      });
-
-      expect(configurationService.loadConfiguration).toHaveBeenCalledTimes(1);
-      expect(neighborhoodService.readProjectGraph).toHaveBeenCalledTimes(1);
-    });
-
-    it("carries the run mode it was given", async () => {
-      const context = await service.buildContext({
-        mode: "check",
-        options: {},
-        workingDirectory: projectRoot,
-      });
-
-      expect(context.mode).toBe("check");
     });
   });
 

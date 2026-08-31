@@ -83,6 +83,9 @@ export const DEFAULT_INCLUDE_GLOBS = [] as const;
  */
 export const REPOSITORY_ROOT_MARKERS = [".git", "pnpm-workspace.yaml"] as const;
 
+/** Separates the entries of a `--projects` or `--tags` argument. */
+export const SELECTION_SEPARATOR = ",";
+
 /**
  * Validates one end of an access rule, or an acyclic rule's scope.
  *

@@ -111,7 +111,7 @@ export class BoundaryCheckService {
           ),
         ),
       projects: this.nestjsProjectService.discoverProjects(
-        args.context.projects,
+        args.context.selectedProjects,
       ),
       rules: args.rules,
     });
@@ -123,12 +123,12 @@ export class BoundaryCheckService {
 
     try {
       const graph = this.boundaryGraphService.buildNxGraph({
-        projects: context.projects,
+        projects: context.selectedProjects,
         scope: WORKSPACE_SCOPE,
         workingDirectory: context.workingDirectory,
         workspaceGraph: this.workspaceGraphService.buildWorkspaceGraph(
           context.graph,
-          context.projects,
+          context.selectedProjects,
         ),
       });
 
@@ -186,7 +186,9 @@ export class BoundaryCheckService {
         this.boundaryGraphService.buildPythonImportGraph(
           this.pythonService.buildGraph(project),
         ),
-      projects: this.pythonService.discoverProjects(args.context.projects),
+      projects: this.pythonService.discoverProjects(
+        args.context.selectedProjects,
+      ),
       rules: args.rules,
     });
   }
@@ -202,7 +204,9 @@ export class BoundaryCheckService {
             this.typescriptService.buildProgram(project),
           ),
         ),
-      projects: this.typescriptService.discoverProjects(args.context.projects),
+      projects: this.typescriptService.discoverProjects(
+        args.context.selectedProjects,
+      ),
       rules: args.rules,
     });
   }

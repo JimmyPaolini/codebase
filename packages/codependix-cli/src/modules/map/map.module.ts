@@ -7,6 +7,7 @@ import { Module } from "@nestjs/common";
 
 import { DeliveryModule } from "../delivery/delivery.module";
 import { PythonImportsModule } from "../python-imports/python-imports.module";
+import { RunContextModule } from "../run-context/run-context.module";
 import { RunPlanModule } from "../run-plan/run-plan.module";
 
 import { MapCommand } from "./map.command";
@@ -25,6 +26,7 @@ import { MapService } from "./map.service";
     NeighborhoodModule,
     NestjsProjectModule,
     PythonImportsModule,
+    RunContextModule,
     RunPlanModule,
     TypescriptModule,
     WorkspaceGraphModule,

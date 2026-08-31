@@ -33,6 +33,10 @@ describe(PythonImportsService, () => {
   function buildContext(
     overrides: Partial<GraphRunContext> = {},
   ): GraphRunContext {
+    const projects = overrides.projects ?? [
+      { absoluteRoot: projectRoot, name: "affirmations", tags: [] },
+    ];
+
     return {
       configuration: {
         boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
@@ -40,11 +44,13 @@ describe(PythonImportsService, () => {
         exclude: [],
         include: ["**"],
         projects: {},
+        selection: { projects: [], tags: [] },
         workspace: {},
       },
       graph: { dependencies: {}, nodes: {} },
       mode: "write",
-      projects: [{ absoluteRoot: projectRoot, name: "affirmations", tags: [] }],
+      projects,
+      selectedProjects: projects,
       workingDirectory: projectRoot,
       ...overrides,
     };

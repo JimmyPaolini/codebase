@@ -169,6 +169,10 @@ export interface CodependixConfiguration {
    * Separate from `defaults`/`projects`: the Workspace Graph is exported once
    * for the entire repository rather than once per project, so it carries no
    * per-project override and is unaffected by `include`/`exclude`.
+   *
+   * `--projects` and `--tags` do reach it: a run naming a selection narrows
+   * the graph's node set to the projects it named. Its destination is still
+   * read from `workspace` either way.
    */
   workspace?: CodependixWorkspaceConfiguration | undefined;
 }
@@ -228,6 +232,18 @@ export interface CodependixProjectConfiguration {
 }
 
 /**
+ * The `--projects` and `--tags` arguments as the command line captured them.
+ *
+ * Comma-separated strings rather than lists: the host captures raw option
+ * text and hands it over, and splitting it is resolution, which belongs
+ * beside the configuration file this package already parses.
+ */
+export interface CodependixSelectionArguments {
+  projects?: string | undefined;
+  tags?: string | undefined;
+}
+
+/**
  * The Workspace Graph's export configuration, keyed by graph type.
  *
  * Only `nx` is declared: the Workspace Graph is a whole-repository Nx project
@@ -242,6 +258,30 @@ export interface CodependixWorkspaceConfiguration {
 export interface LoadConfigurationArguments {
   configurationPath?: string | undefined;
   searchDirectory?: string | undefined;
+  /** Command-line project selection, unparsed — see `CodependixSelectionArguments`. */
+  selection?: CodependixSelectionArguments | undefined;
+}
+
+/** Arguments accepted when resolving one project's export configuration. */
+export interface ProjectSelectionArguments {
+  configuration: ResolvedCodependixConfiguration;
+  projectName: string;
+  /**
+   * The project's root, relative to the workspace, as read from the Nx
+   * project graph.
+   *
+   * Optional so a caller with no root handy — a test, or a host that only
+   * knows a project by name — still resolves against `include`/`exclude`
+   * globs written against project names.
+   */
+  projectRoot?: string | undefined;
+  /**
+   * The project's own Nx tags, for matching `--tags`.
+   *
+   * Optional for the same reason `projectRoot` is: a caller that knows a
+   * project only by name still resolves against everything else.
+   */
+  projectTags?: string[] | undefined;
 }
 
 /**
@@ -270,6 +310,15 @@ export interface ResolvedCodependixConfiguration {
   exclude: string[];
   include: string[];
   projects: Record<string, CodependixProjectConfiguration>;
+  /**
+   * What `--projects` and `--tags` named, resolved.
+   *
+   * Carried on the resolved configuration rather than passed alongside it so
+   * that everything already handed a configuration — the export passes, the
+   * workspace graph, and the boundary gate — sees the same selection without
+   * a second argument threaded through each of them.
+   */
+  selection: ResolvedCodependixSelection;
   workspace: CodependixWorkspaceConfiguration;
 }
 
@@ -289,18 +338,22 @@ export interface ResolvedCodependixMarkdownOutput {
   path: string;
 }
 
-/** Arguments accepted when resolving one project's export configuration. */
-export interface ResolveForProjectArguments {
-  configuration: ResolvedCodependixConfiguration;
+/**
+ * A run's project selection, split and trimmed.
+ *
+ * Both lists empty means no selection was made at all, which is not the same
+ * as a selection that matches nothing: an absent selection leaves the
+ * whole-workspace graph and the boundary gate judging every project, while a
+ * selection naming something narrows both to what it names.
+ */
+export interface ResolvedCodependixSelection {
+  /** Globs matched against a project's name or its workspace-relative root. */
+  projects: string[];
+  /** Nx tags, matched exactly against a project's own. */
+  tags: string[];
+}
+
+/** Arguments for resolving one project's export configuration. */
+export interface ResolveForProjectArguments extends ProjectSelectionArguments {
   graphType: CodependixGraphType;
-  projectName: string;
-  /**
-   * The project's root, relative to the workspace, as read from the Nx
-   * project graph.
-   *
-   * Optional so a caller with no root handy — a test, or a host that only
-   * knows a project by name — still resolves against `include`/`exclude`
-   * globs written against project names.
-   */
-  projectRoot?: string | undefined;
 }

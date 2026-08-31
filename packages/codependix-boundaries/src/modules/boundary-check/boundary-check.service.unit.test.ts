@@ -39,6 +39,11 @@ const VIOLATION: BoundaryViolation = {
   target: "b",
 };
 
+/** The one project every context in this suite knows about. */
+const PROJECTS = [
+  { absoluteRoot: "/workspace/packages/a", name: "a", tags: [] },
+];
+
 describe(BoundaryCheckService, () => {
   let boundariesService: BoundariesService;
   let moduleGraphService: ModuleGraphService;
@@ -68,12 +73,12 @@ describe(BoundaryCheckService, () => {
         exclude: [],
         include: ["**"],
         projects: {},
+        selection: { projects: [], tags: [] },
         workspace: {},
       },
       graph: { dependencies: {}, nodes: {} },
-      projects: [
-        { absoluteRoot: "/workspace/packages/a", name: "a", tags: [] },
-      ],
+      projects: PROJECTS,
+      selectedProjects: PROJECTS,
       workingDirectory: "/workspace",
     };
   }
@@ -126,6 +131,28 @@ describe(BoundaryCheckService, () => {
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  // --projects/--tags narrow what the gate judges, deliberately: a narrowed
+  // run sees fewer edges than a whole-workspace one.
+  it("judges the selected projects rather than every project", async () => {
+    const context = buildContext({
+      nx: [{ kind: "acyclic", name: "no-cycles" }],
+    });
+
+    await service.run({
+      ...context,
+      projects: [
+        ...PROJECTS,
+        { absoluteRoot: "/workspace/packages/b", name: "b", tags: [] },
+      ],
+      selectedProjects: PROJECTS,
+    });
+
+    expect(workspaceGraphService.buildWorkspaceGraph).toHaveBeenCalledWith(
+      expect.anything(),
+      PROJECTS,
+    );
   });
 
   it("builds no graph at all when no rule is declared", async () => {

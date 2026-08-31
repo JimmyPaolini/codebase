@@ -13,7 +13,10 @@ import {
 } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 
-import type { CodependixBoundaryRule } from "./configuration.types";
+import type {
+  CodependixBoundaryRule,
+  ResolvedCodependixConfiguration,
+} from "./configuration.types";
 
 /** Writes a JSON configuration holding whatever the caller passes. */
 async function writeConfiguration(configuration: unknown): Promise<string> {
@@ -475,7 +478,10 @@ describe(ConfigurationService, () => {
       });
 
       expect(
-        service.isProjectIncluded("packages/codependix-nx", configuration),
+        service.isProjectIncluded({
+          configuration,
+          projectName: "packages/codependix-nx",
+        }),
       ).toBe(true);
     });
 
@@ -508,6 +514,133 @@ describe(ConfigurationService, () => {
       });
 
       expect(resolved.target).toBe("none");
+    });
+  });
+
+  describe("a command-line selection", () => {
+    /** Resolves a configuration whose only include glob is `packages/*`. */
+    function buildConfiguration(
+      selection: { projects?: string; tags?: string } = {},
+    ): ResolvedCodependixConfiguration {
+      return service.resolveConfiguration(
+        {
+          defaults: { nx: { markdown: { anchor: "nx" }, target: "markdown" } },
+          include: ["packages/*"],
+        },
+        selection,
+      );
+    }
+
+    it("splits a comma-separated argument, trimming and dropping blanks", () => {
+      expect(
+        buildConfiguration({ projects: " widgets , ,tools/reporting," })
+          .selection.projects,
+      ).toStrictEqual(["widgets", "tools/reporting"]);
+    });
+
+    it("resolves to empty lists when nothing was named", () => {
+      expect(buildConfiguration().selection).toStrictEqual({
+        projects: [],
+        tags: [],
+      });
+    });
+
+    describe("isProjectIncluded", () => {
+      it("widens rather than replaces what include already selected", () => {
+        const configuration = buildConfiguration({ projects: "widgets" });
+
+        expect(
+          service.isProjectIncluded({
+            configuration,
+            projectName: "packages/codependix-nx",
+          }),
+        ).toBe(true);
+        expect(
+          service.isProjectIncluded({ configuration, projectName: "widgets" }),
+        ).toBe(true);
+      });
+
+      it("matches a --projects glob against a name or a root", () => {
+        const configuration = buildConfiguration({ projects: "tools/*" });
+
+        expect(
+          service.isProjectIncluded({
+            configuration,
+            projectName: "reporting",
+            projectRoot: "tools/reporting",
+          }),
+        ).toBe(true);
+      });
+
+      it("matches a --tags entry against the project's own tags", () => {
+        const configuration = buildConfiguration({
+          tags: "framework:nestjs",
+        });
+
+        expect(
+          service.isProjectIncluded({
+            configuration,
+            projectName: "widgets",
+            projectTags: ["framework:nestjs", "type:package"],
+          }),
+        ).toBe(true);
+        expect(
+          service.isProjectIncluded({
+            configuration,
+            projectName: "widgets",
+            projectTags: ["framework:react"],
+          }),
+        ).toBe(false);
+      });
+
+      // A flag that could resurrect an excluded project would make `exclude`
+      // advisory rather than a statement that a project is never exported.
+      it("lets exclude win over a project the command line named", () => {
+        const configuration = service.resolveConfiguration(
+          { exclude: ["widgets"], include: ["**"] },
+          { projects: "widgets" },
+        );
+
+        expect(
+          service.isProjectIncluded({ configuration, projectName: "widgets" }),
+        ).toBe(false);
+      });
+    });
+
+    describe("isProjectSelected", () => {
+      // What keeps the workspace graph and the boundary gate whole by default.
+      it("selects every project when no selection was named", () => {
+        expect(
+          service.isProjectSelected({
+            configuration: buildConfiguration(),
+            projectName: "anything-at-all",
+          }),
+        ).toBe(true);
+      });
+
+      it("narrows to what a selection named", () => {
+        const configuration = buildConfiguration({ projects: "widgets" });
+
+        expect(
+          service.isProjectSelected({ configuration, projectName: "widgets" }),
+        ).toBe(true);
+        expect(
+          service.isProjectSelected({
+            configuration,
+            projectName: "packages/codependix-nx",
+          }),
+        ).toBe(false);
+      });
+
+      // `include` is about which projects get exports written, and has never
+      // reached the workspace graph or the gate. A selection reaches all three.
+      it("ignores include entirely", () => {
+        const configuration = service.resolveConfiguration({ include: [] }, {});
+
+        expect(
+          service.isProjectSelected({ configuration, projectName: "widgets" }),
+        ).toBe(true);
+      });
     });
   });
 

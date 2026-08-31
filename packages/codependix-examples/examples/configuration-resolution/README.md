@@ -38,7 +38,7 @@ codependix-examples, name only                  → true
 
 ## The Workspace Graph ignores both glob lists
 
-It is exported once for the repository rather than once per project, so it carries no per-project override and `include`/`exclude` never apply to it.
+It is exported once for the repository rather than once per project, so it carries no per-project override and `include`/`exclude` never apply to it. `--projects` and `--tags` are the exception: they narrow which projects are **nodes** in it, while its destination is still read from `workspace.nx`.
 
 ```json
 {

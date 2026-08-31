@@ -72,9 +72,9 @@ export class PythonImportsService {
 
   /**
    * Resolves one project's export target for this graph type, including its
-   * workspace-relative root, so `include`/`exclude` globs may match either —
-   * the same resolution `MapService.resolveProjectOutput` performs
-   * for every other graph type.
+   * workspace-relative root and its Nx tags, so `include`/`exclude` globs may
+   * match either and `--tags` reaches the tags — the same resolution
+   * `MapService.resolveProjectOutput` performs for every other graph type.
    */
   private resolveProjectOutput(args: {
     context: GraphRunContext;
@@ -90,6 +90,9 @@ export class PythonImportsService {
         context.workingDirectory,
         project.absoluteRoot,
       ),
+      projectTags: context.projects.find(
+        (candidate) => candidate.name === project.name,
+      )?.tags,
     });
   }
 
