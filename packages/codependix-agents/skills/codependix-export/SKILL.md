@@ -36,7 +36,9 @@ debugging one. Before looking for a defect, confirm in this order:
 2. The graph types you expected carry a `target` other than `"none"`, which is
    what every unset target defaults to.
 3. The projects you expected match the configured `include` globs and no
-   `exclude` glob.
+   `exclude` glob. `include` defaults to nothing, so a configuration that
+   never names one selects no project at all — the run warns, and still
+   exits zero.
 
 The `codependix-configure` skill covers all three.
 

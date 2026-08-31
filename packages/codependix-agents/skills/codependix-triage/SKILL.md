@@ -158,9 +158,15 @@ Work down this list before suspecting the tool:
    still resolves to `"none"`.
 3. **Is the field spelled `defaults`?** `default` is stripped as an unknown
    key and has no effect.
-4. **Do the projects match `include`, and escape `exclude`?** Both match
+4. **Does the configuration name an `include` at all?** It defaults to
+   nothing, so a configuration naming only `defaults` selects no project and
+   exports nothing. The run warns — `🕸️ Selected no project to export` — and
+   still exits zero, and `--check boundaries` stays green either way, because
+   it judges every project regardless of `include`. Write `include: ["**"]`
+   for whole-workspace coverage.
+5. **Do the projects match `include`, and escape `exclude`?** Both match
    against a project's Nx name _and_ its workspace-relative root.
-5. **Is `--directory` the workspace root?** It is what every project's path
+6. **Is `--directory` the workspace root?** It is what every project's path
    resolves against, not a subtree to scan — Nx resolves the graph itself from
    the process working directory. Pointed at a single project's folder, the
    run still reads the whole graph but resolves every project underneath that

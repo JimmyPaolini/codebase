@@ -329,6 +329,22 @@ describe(ConfigurationService, () => {
   });
 
   describe("resolveForProject", () => {
+    // Participation is declared: naming `defaults` alone selects nothing.
+    it("resolves to none for a configuration naming no include", () => {
+      const configuration = service.resolveConfiguration({
+        defaults: { nx: { markdown: { anchor: "nx" }, target: "markdown" } },
+      });
+
+      expect(configuration.include).toStrictEqual([]);
+      expect(
+        service.resolveForProject({
+          configuration,
+          graphType: "nx",
+          projectName: "codependix-nx",
+        }),
+      ).toStrictEqual({ json: undefined, markdown: undefined, target: "none" });
+    });
+
     it("resolves to none when nothing configures the graph type", () => {
       const configuration = service.resolveConfiguration({});
 
@@ -344,6 +360,7 @@ describe(ConfigurationService, () => {
     it("falls back to the global default for a project naming no override", () => {
       const configuration = service.resolveConfiguration({
         defaults: { nx: { markdown: { anchor: "nx" }, target: "markdown" } },
+        include: ["**"],
       });
 
       const resolved = service.resolveForProject({
@@ -362,6 +379,7 @@ describe(ConfigurationService, () => {
     it("lets a project's own override replace the default outright", () => {
       const configuration = service.resolveConfiguration({
         defaults: { nx: { markdown: { anchor: "nx" }, target: "markdown" } },
+        include: ["**"],
         projects: {
           "codependix-nx": {
             nx: { json: { path: "graph.json" }, target: "json" },
@@ -385,6 +403,7 @@ describe(ConfigurationService, () => {
     it("defaults an anchor destination's markdown path to README.md", () => {
       const configuration = service.resolveConfiguration({
         defaults: { nx: { markdown: { anchor: "nx" }, target: "markdown" } },
+        include: ["**"],
       });
 
       const resolved = service.resolveForProject({
@@ -404,6 +423,7 @@ describe(ConfigurationService, () => {
             target: "markdown",
           },
         },
+        include: ["**"],
       });
 
       const resolved = service.resolveForProject({

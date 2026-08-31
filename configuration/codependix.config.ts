@@ -4,9 +4,9 @@ import { type CodependixConfiguration } from "@codependix/configuration";
  * Every project in the workspace — and the workspace root itself — gets a
  * Markdown export of its own Nx Neighborhood, NestJS module graph, and
  * file-level import graph, spliced into its `README.md` via codependix's
- * anchor-comment mechanism. The same "cover the whole repository by default"
- * philosophy `codometer.config.ts` and `callidescope.config.ts` both follow,
- * but for real this time: no explicit include list is needed, and no JSON
+ * anchor-comment mechanism. That whole-repository coverage is declared, in
+ * the one `include` line below, rather than assumed: `include` defaults to
+ * nothing, so a configuration naming no project exports for none. No JSON
  * output is produced by default at all.
  *
  * Markdown used to be the opt-in exception here, because `AnchorsService`
@@ -529,6 +529,16 @@ const codependixConfiguration: CodependixConfiguration = {
       target: "markdown",
     },
   },
+  /**
+   * Every project participates, stated rather than assumed.
+   *
+   * `include` defaults to nothing so that participation is always declared —
+   * see `DEFAULT_INCLUDE_GLOBS`. Dropping this line does not fall back to
+   * whole-workspace coverage; it stops every export instead, and quietly,
+   * since `--check boundaries` judges every project regardless and stays
+   * green. `codependix --write` warns when it happens.
+   */
+  include: ["**"],
   workspace: {
     nx: {
       markdown: { anchor: "codependix-workspace" },
