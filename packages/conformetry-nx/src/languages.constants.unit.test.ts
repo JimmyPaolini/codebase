@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   LANGUAGE_MODULE_LOADER,
   LANGUAGE_MODULE_NAMESPACES,
-} from "./plugin.constants";
+} from "./languages.constants";
 
 describe("language module loader", () => {
   it("hands back a package Nx already loaded", async () => {

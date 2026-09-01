@@ -788,6 +788,27 @@ Two further details worth knowing before changing this:
 - **`files` must name `dist`.** With no explicit `files`, packing falls back to
   the ignore files, and `dist` is gitignored — the tarball would ship no build
   output at all.
+- **A plugin entry's `resolvePluginService` must stay a static import.** A
+  dynamic `import()` escapes the `@swc-node/register` require hook into Node's
+  own ESM resolver, which cannot load this workspace's extensionless TypeScript
+  sources, and `nx g` then fails with `Cannot find module
+  './plugin-context.utilities'`.
+- **Trimming a plugin entry's re-exports does not shrink that closure**, so do
+  not reach for it. Both entries re-export their package's modules, services,
+  and types, and it reads like the reason Nx pulls in so much — but every one of
+  those names is already reachable through the static `plugin-context.utilities`
+  import above, which imports `MainModule`, which imports every feature module.
+  Measured on the import graph, moving the re-exports to a second entry point
+  removes two local files and **zero** workspace packages from
+  `@conformetry/nx`, and nothing at all from `@callidescope/nx`.
+- **Two further obstacles sit behind the closure**, both verified, so breaking
+  it buys nothing on its own today: `oxfmt` sorts object keys and `exports`
+  conditions are order-sensitive, so a `{ "types": …, "default": … }` map is
+  reformatted with `default` first and `types` becomes unreachable; and
+  `fallow-dead-code` and `vitest` both resolve through the manifest and honor no
+  `source` condition, so pointing `main` or `exports` at `dist/` makes fallow
+  report live code as unused and leaves vitest unable to resolve the package
+  until it is built.
 
 ## Agent Context
 
