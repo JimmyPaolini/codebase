@@ -16,8 +16,9 @@ import type {
  *
  * Written as data rather than as a nested Nx workspace on disk because
  * `NeighborhoodService.readProjectGraph` resolves the project graph from the
- * process working directory and cannot be pointed anywhere else — see this
- * package's README.
+ * process working directory unless a configuration names a `projectGraph`
+ * file — and handing the builders a graph directly is what lets a guide be
+ * rendered from the real ones. See this package's README.
  */
 export interface ExampleWorkspace {
   readonly dependencies: ExampleDependency[];

@@ -161,6 +161,20 @@ export interface CodependixConfiguration {
   exclude?: string[] | undefined;
   /** Project names or roots participating in graph export, as globs. */
   include?: string[] | undefined;
+  /**
+   * A project graph to read instead of resolving the working directory's.
+   *
+   * A path, relative to the workspace root, to the JSON `nx graph
+   * --file=graph.json` emits. Nx resolves a project graph from the process
+   * working directory and takes no directory argument, so this is the only
+   * way to graph a workspace the process is not standing in — a CI job that
+   * checked out one repository and graphs another, or a test with no Nx
+   * workspace under it.
+   *
+   * A supplied graph's node roots are workspace-relative and resolve against
+   * the same root every export path does.
+   */
+  projectGraph?: string | undefined;
   /** Per-project overrides, keyed by the Nx project name. */
   projects?: Record<string, CodependixProjectConfiguration> | undefined;
   /**
@@ -309,6 +323,8 @@ export interface ResolvedCodependixConfiguration {
   defaults: CodependixProjectConfiguration;
   exclude: string[];
   include: string[];
+  /** A project graph to read instead of the working directory's, if named. */
+  projectGraph: string | undefined;
   projects: Record<string, CodependixProjectConfiguration>;
   /**
    * What `--projects` and `--tags` named, resolved.

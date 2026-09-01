@@ -43,6 +43,7 @@ describe(PythonImportsService, () => {
         defaults: {},
         exclude: [],
         include: ["**"],
+        projectGraph: undefined,
         projects: {},
         selection: { projects: [], tags: [] },
         workspace: {},

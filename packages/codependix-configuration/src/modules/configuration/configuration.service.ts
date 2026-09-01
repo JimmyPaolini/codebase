@@ -368,6 +368,7 @@ export class ConfigurationService {
       defaults: configuration.defaults ?? {},
       exclude: configuration.exclude ?? [],
       include: configuration.include ?? [...DEFAULT_INCLUDE_GLOBS],
+      projectGraph: configuration.projectGraph,
       projects: configuration.projects ?? {},
       selection: this.resolveSelection(selection),
       workspace: configuration.workspace ?? {},

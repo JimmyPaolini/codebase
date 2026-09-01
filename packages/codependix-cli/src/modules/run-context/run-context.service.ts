@@ -34,6 +34,22 @@ export class RunContextService {
   // 🔏 Private Methods
 
   /**
+   * Resolves a supplied project graph's path against the workspace root.
+   *
+   * The same root every export path resolves against — `--directory` keeps
+   * its one meaning, and a supplied graph's workspace-relative node roots
+   * resolve underneath it too.
+   */
+  private resolveProjectGraphPath(
+    projectGraph: string | undefined,
+    workingDirectory: string,
+  ): string | undefined {
+    return projectGraph === undefined
+      ? undefined
+      : path.resolve(workingDirectory, projectGraph);
+  }
+
+  /**
    * Narrows every project to the set `--projects` and `--tags` named.
    *
    * A run naming neither selects every project, which is what keeps the
@@ -78,7 +94,12 @@ export class RunContextService {
       searchDirectory: workingDirectory,
       selection: { projects: options.projects, tags: options.tags },
     });
-    const graph = await this.neighborhoodService.readProjectGraph();
+    const graph = await this.neighborhoodService.readProjectGraph(
+      this.resolveProjectGraphPath(
+        configuration.projectGraph,
+        workingDirectory,
+      ),
+    );
     const projects = this.neighborhoodService.readProjects(
       graph,
       workingDirectory,
