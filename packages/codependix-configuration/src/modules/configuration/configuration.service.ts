@@ -14,6 +14,7 @@ import {
   DEFAULT_INCLUDE_GLOBS,
   DEFAULT_MARKDOWN_PATH,
   REPOSITORY_ROOT_MARKERS,
+  SELECTION_SEPARATOR,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
@@ -22,10 +23,13 @@ import type {
   CodependixBoundariesConfiguration,
   CodependixConfiguration,
   CodependixGraphOutput,
+  CodependixSelectionArguments,
   LoadConfigurationArguments,
+  ProjectSelectionArguments,
   ResolvedCodependixBoundariesConfiguration,
   ResolvedCodependixConfiguration,
   ResolvedCodependixGraphOutput,
+  ResolvedCodependixSelection,
   ResolveForProjectArguments,
 } from "./configuration.types";
 
@@ -111,6 +115,21 @@ export class ConfigurationService {
     }
   }
 
+  /** Whether `--projects` or `--tags` names a project. */
+  private isProjectNamedOnCommandLine(
+    args: ProjectSelectionArguments,
+  ): boolean {
+    const { selection } = args.configuration;
+
+    return (
+      this.matchesAnyName(
+        args.projectName,
+        args.projectRoot,
+        selection.projects,
+      ) || (args.projectTags ?? []).some((tag) => selection.tags.includes(tag))
+    );
+  }
+
   /** Loads a configuration module, choosing the reader by extension. */
   private async loadConfigurationModule(args: {
     configurationPath: string;
@@ -130,6 +149,18 @@ export class ConfigurationService {
   /** Whether a project's name matches at least one of a list of globs. */
   private matchesAnyGlob(projectName: string, globs: string[]): boolean {
     return globs.some((glob) => path.matchesGlob(projectName, glob));
+  }
+
+  /** Whether a project's name or its root matches at least one glob. */
+  private matchesAnyName(
+    projectName: string,
+    projectRoot: string | undefined,
+    globs: string[],
+  ): boolean {
+    return (
+      this.matchesAnyGlob(projectName, globs) ||
+      (projectRoot !== undefined && this.matchesAnyGlob(projectRoot, globs))
+    );
   }
 
   /**
@@ -210,32 +241,77 @@ export class ConfigurationService {
     };
   }
 
+  /**
+   * Splits the `--projects` and `--tags` arguments into lists.
+   *
+   * Empty entries are dropped, so a trailing comma and a doubled one are both
+   * read as the author meant them rather than as a glob matching nothing.
+   */
+  private resolveSelection(
+    selection: CodependixSelectionArguments | undefined,
+  ): ResolvedCodependixSelection {
+    return {
+      projects: this.splitSelectionArgument(selection?.projects),
+      tags: this.splitSelectionArgument(selection?.tags),
+    };
+  }
+
+  /** Splits one comma-separated argument, trimming and dropping blanks. */
+  private splitSelectionArgument(argument: string | undefined): string[] {
+    return (argument ?? "")
+      .split(SELECTION_SEPARATOR)
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  }
+
   // 🌎 Public Methods
 
   /**
    * Whether a project participates in graph export at all.
    *
-   * A project matches when at least one include glob claims its name or its
-   * root and no exclude glob claims either — the same rule `codometer`'s file
-   * discovery applies to paths, applied here to a project's name and root.
-   * `projectRoot` is optional: a caller with no root handy still resolves
-   * against globs written against project names.
+   * A project matches when something claims it — an `include` glob, a
+   * `--projects` glob, or a `--tags` tag — and no `exclude` glob claims its
+   * name or root. The command line **widens** what the configuration already
+   * selects rather than replacing it; `exclude` wins over all three, because
+   * a flag that could resurrect an excluded project would make `exclude`
+   * advisory.
+   *
+   * `projectRoot` and `projectTags` are optional: a caller with neither handy
+   * still resolves against globs written against project names.
    */
-  public isProjectIncluded(
-    projectName: string,
-    configuration: ResolvedCodependixConfiguration,
-    projectRoot?: string,
-  ): boolean {
+  public isProjectIncluded(args: ProjectSelectionArguments): boolean {
+    const { configuration, projectName, projectRoot } = args;
     const isIncluded =
-      this.matchesAnyGlob(projectName, configuration.include) ||
-      (projectRoot !== undefined &&
-        this.matchesAnyGlob(projectRoot, configuration.include));
-    const isExcluded =
-      this.matchesAnyGlob(projectName, configuration.exclude) ||
-      (projectRoot !== undefined &&
-        this.matchesAnyGlob(projectRoot, configuration.exclude));
+      this.matchesAnyName(projectName, projectRoot, configuration.include) ||
+      this.isProjectNamedOnCommandLine(args);
+    const isExcluded = this.matchesAnyName(
+      projectName,
+      projectRoot,
+      configuration.exclude,
+    );
 
     return isIncluded && !isExcluded;
+  }
+
+  /**
+   * Whether a project is in the set a run's command line narrowed to.
+   *
+   * A run naming no selection selects **everything**, which is what keeps the
+   * whole-workspace graph and the boundary gate judging every project by
+   * default. Naming one narrows both to what it named.
+   *
+   * This is where `--projects`/`--tags` differ from `include`: `include` is
+   * about which projects have exports written for them, and never reaches the
+   * workspace graph or the gate. A selection reaches all three.
+   */
+  public isProjectSelected(args: ProjectSelectionArguments): boolean {
+    const { selection } = args.configuration;
+
+    if (selection.projects.length === 0 && selection.tags.length === 0) {
+      return true;
+    }
+
+    return this.isProjectNamedOnCommandLine(args);
   }
 
   /**
@@ -256,7 +332,7 @@ export class ConfigurationService {
         : this.resolveConfigurationPath(args.configurationPath);
 
     if (resolvedPath === undefined) {
-      return this.resolveConfiguration({});
+      return this.resolveConfiguration({}, args.selection);
     }
 
     const extension = path.extname(resolvedPath).toLowerCase();
@@ -272,6 +348,7 @@ export class ConfigurationService {
 
     return this.resolveConfiguration(
       codependixConfigurationSchema.parse(configurationModule),
+      args.selection,
     );
   }
 
@@ -284,6 +361,7 @@ export class ConfigurationService {
    */
   public resolveConfiguration(
     configuration: CodependixConfiguration,
+    selection?: CodependixSelectionArguments,
   ): ResolvedCodependixConfiguration {
     return {
       boundaries: this.resolveBoundaries(configuration.boundaries),
@@ -291,6 +369,7 @@ export class ConfigurationService {
       exclude: configuration.exclude ?? [],
       include: configuration.include ?? [...DEFAULT_INCLUDE_GLOBS],
       projects: configuration.projects ?? {},
+      selection: this.resolveSelection(selection),
       workspace: configuration.workspace ?? {},
     };
   }
@@ -310,9 +389,17 @@ export class ConfigurationService {
   public resolveForProject(
     args: ResolveForProjectArguments,
   ): ResolvedCodependixGraphOutput {
-    const { configuration, graphType, projectName, projectRoot } = args;
+    const { configuration, graphType, projectName, projectRoot, projectTags } =
+      args;
 
-    if (!this.isProjectIncluded(projectName, configuration, projectRoot)) {
+    if (
+      !this.isProjectIncluded({
+        configuration,
+        projectName,
+        projectRoot,
+        projectTags,
+      })
+    ) {
       return { json: undefined, markdown: undefined, target: "none" };
     }
 
@@ -328,6 +415,10 @@ export class ConfigurationService {
    * The Workspace Graph is exported once for the whole repository rather than
    * once per project, so it has no per-project override and is unaffected by
    * `include`/`exclude` — those two apply only to `resolveForProject`.
+   *
+   * `--projects` and `--tags` do reach it, through the node set rather than
+   * through this: a run naming a selection draws the graph over the projects
+   * it named. Where that graph lands is still read from `workspace.nx`.
    */
   public resolveForWorkspace(
     configuration: ResolvedCodependixConfiguration,

@@ -31,7 +31,6 @@ import type {
 } from "../delivery/delivery.types";
 import type {
   GraphRunContext,
-  MapCommandOptions,
   NestjsModuleGraphExport,
   NxNeighborhoodExport,
   NxWorkspaceGraphExport,
@@ -39,7 +38,6 @@ import type {
 } from "./map.types";
 import type {
   CodependixGraphType,
-  ResolvedCodependixConfiguration,
   ResolvedCodependixGraphOutput,
 } from "@codependix/configuration";
 import type { TypescriptProject } from "@codependix/imports";
@@ -128,22 +126,32 @@ export class MapService {
   }
 
   /**
-   * Resolves one project's export target for a graph type, including its
-   * workspace-relative root, so `include`/`exclude` globs may match either.
+   * Resolves one project's export target for a graph type.
+   *
+   * Carries the project's workspace-relative root and its Nx tags, so an
+   * `include`/`exclude` glob may match either name or root and a `--tags`
+   * entry reaches the tags. The tags are looked up rather than carried on the
+   * described project: what each graph type describes — a `NestjsProject`, a
+   * `TypescriptProject` — knows its root and its name and nothing else.
    */
   private resolveProjectOutput(args: {
-    configuration: ResolvedCodependixConfiguration;
+    context: GraphRunContext;
     graphType: CodependixGraphType;
     project: { absoluteRoot: string; name: string };
-    workingDirectory: string;
   }): ResolvedCodependixGraphOutput {
-    const { configuration, graphType, project, workingDirectory } = args;
+    const { context, graphType, project } = args;
 
     return this.configurationService.resolveForProject({
-      configuration,
+      configuration: context.configuration,
       graphType,
       projectName: project.name,
-      projectRoot: path.relative(workingDirectory, project.absoluteRoot),
+      projectRoot: path.relative(
+        context.workingDirectory,
+        project.absoluteRoot,
+      ),
+      projectTags: context.projects.find(
+        (candidate) => candidate.name === project.name,
+      )?.tags,
     });
   }
 
@@ -243,10 +251,9 @@ export class MapService {
     for (const project of context.projects) {
       const neighborhood = neighborhoods.get(project.name);
       const resolvedOutput = this.resolveProjectOutput({
-        configuration: context.configuration,
+        context,
         graphType: NX_GRAPH_TYPE,
         project,
-        workingDirectory: context.workingDirectory,
       });
 
       if (neighborhood === undefined || resolvedOutput.target === "none") {
@@ -274,7 +281,7 @@ export class MapService {
   private runWorkspaceGraph(
     context: GraphRunContext,
   ): ProjectRunResult | undefined {
-    const { configuration, graph, mode, projects, workingDirectory } = context;
+    const { configuration, graph, mode, workingDirectory } = context;
     const resolvedOutput =
       this.configurationService.resolveForWorkspace(configuration);
 
@@ -283,7 +290,10 @@ export class MapService {
     }
 
     const workspaceGraph: WorkspaceGraph =
-      this.workspaceGraphService.buildWorkspaceGraph(graph, projects);
+      this.workspaceGraphService.buildWorkspaceGraph(
+        graph,
+        context.selectedProjects,
+      );
     const jsonExport: NxWorkspaceGraphExport = workspaceGraph;
 
     return this.deliveryService.deliverGraphOutput({
@@ -306,34 +316,6 @@ export class MapService {
   }
 
   // 🌎 Public Methods
-
-  /**
-   * Resolves everything every pass reads, exactly once per run.
-   *
-   * Separate from `run` because a run that only judges boundaries needs the
-   * same configuration and the same project graph while delivering nothing —
-   * see `BoundaryCheckService`, which reads this context and writes no file.
-   */
-  async buildContext(args: {
-    mode: CodependixRunMode;
-    options: MapCommandOptions;
-    workingDirectory: string;
-  }): Promise<GraphRunContext> {
-    const { mode, options, workingDirectory } = args;
-    const configuration = await this.configurationService.loadConfiguration({
-      configurationPath: options.config,
-      searchDirectory: workingDirectory,
-    });
-    const graph = await this.neighborhoodService.readProjectGraph();
-
-    return {
-      configuration,
-      graph,
-      mode,
-      projects: this.neighborhoodService.readProjects(graph, workingDirectory),
-      workingDirectory,
-    };
-  }
 
   /**
    * Runs every configured graph export against an already-resolved context.
@@ -384,10 +366,9 @@ export class MapService {
 
     for (const project of typescriptProjects) {
       const resolvedOutput = this.resolveProjectOutput({
-        configuration: context.configuration,
+        context,
         graphType: IMPORTS_GRAPH_TYPE,
         project,
-        workingDirectory: context.workingDirectory,
       });
 
       if (resolvedOutput.target === "none") {
@@ -427,10 +408,9 @@ export class MapService {
 
     for (const project of nestjsProjects) {
       const resolvedOutput = this.resolveProjectOutput({
-        configuration: context.configuration,
+        context,
         graphType: NESTJS_GRAPH_TYPE,
         project,
-        workingDirectory: context.workingDirectory,
       });
 
       if (resolvedOutput.target === "none") {

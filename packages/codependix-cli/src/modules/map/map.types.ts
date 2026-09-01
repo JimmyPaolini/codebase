@@ -22,7 +22,17 @@ export interface GraphRunContext {
   configuration: ResolvedCodependixConfiguration;
   graph: NxProjectGraph;
   mode: CodependixRunMode;
+  /** Every project the graph knows, apart from the workspace root. */
   projects: NxProject[];
+  /**
+   * The projects `--projects` and `--tags` narrowed the run to.
+   *
+   * Identical to `projects` when a run named neither, which is what keeps the
+   * Workspace Graph whole and the boundary gate judging every project by
+   * default. `include`/`exclude` never reach this: they decide which projects
+   * have exports written, not which projects a graph is drawn over.
+   */
+  selectedProjects: NxProject[];
   workingDirectory: string;
 }
 
@@ -37,6 +47,15 @@ export interface MapCommandOptions {
   check?: string | true | undefined;
   config?: string | undefined;
   directory?: string | undefined;
+  /**
+   * Projects to export for beyond what `include` already selects, unparsed.
+   *
+   * Comma-separated globs matched against a project's name or its
+   * workspace-relative root.
+   */
+  projects?: string | undefined;
+  /** Nx tags to export for beyond what `include` selects, unparsed. */
+  tags?: string | undefined;
   write?: boolean | undefined;
 }
 

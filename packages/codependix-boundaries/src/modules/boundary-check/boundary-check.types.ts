@@ -20,7 +20,16 @@ import type { NxProject, NxProjectGraph } from "@codependix/nx";
 export interface BoundaryCheckContext {
   readonly configuration: ResolvedCodependixConfiguration;
   readonly graph: NxProjectGraph;
+  /** Every project the graph knows, apart from the workspace root. */
   readonly projects: NxProject[];
+  /**
+   * The projects the run was narrowed to, which is what every level judges.
+   *
+   * Identical to `projects` unless `--projects` or `--tags` named a
+   * selection, so the gate judges the whole workspace by default and a
+   * narrowed run is something the command line asked for explicitly.
+   */
+  readonly selectedProjects: NxProject[];
   readonly workingDirectory: string;
 }
 

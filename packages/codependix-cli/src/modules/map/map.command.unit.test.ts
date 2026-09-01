@@ -11,6 +11,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { RunContextService } from "../run-context/run-context.service";
 import { RUN_MODE_SUBJECT } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
@@ -48,6 +49,7 @@ describe(MapCommand, () => {
   let codependixService: MapService;
   let inputService: InputService;
   let loggerService: LoggerService;
+  let runContextService: RunContextService;
   let runPlanService: RunPlanService;
 
   /** Builds a command whose collaborators are freshly mocked. */
@@ -58,6 +60,7 @@ describe(MapCommand, () => {
       boundaryReportService,
       inputService,
       loggerService,
+      runContextService,
       runPlanService,
     );
   }
@@ -76,11 +79,13 @@ describe(MapCommand, () => {
         exclude: [],
         include,
         projects: {},
+        selection: { projects: [], tags: [] },
         workspace: {},
       },
       graph: { dependencies: {}, nodes: {} },
       mode: "write",
       projects: [],
+      selectedProjects: [],
       workingDirectory: "/workspace",
     };
   }
@@ -115,6 +120,10 @@ describe(MapCommand, () => {
         { provide: MapService, useValue: createMock<MapService>() },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        {
+          provide: RunContextService,
+          useValue: createMock<RunContextService>(),
+        },
         { provide: RunPlanService, useValue: createMock<RunPlanService>() },
       ],
     }).compile();
@@ -129,8 +138,9 @@ describe(MapCommand, () => {
     codependixService = createMock<MapService>();
     inputService = createMock<InputService>();
     loggerService = createMock<LoggerService>();
+    runContextService = createMock<RunContextService>();
     runPlanService = createMock<RunPlanService>();
-    vi.mocked(codependixService.buildContext).mockResolvedValue(
+    vi.mocked(runContextService.build).mockResolvedValue(
       buildContextWithInclude(["**"]),
     );
     vi.mocked(codependixService.run).mockResolvedValue({
@@ -161,7 +171,7 @@ describe(MapCommand, () => {
     // Nothing else catches it: --check boundaries judges every project
     // regardless of include, so the gate stays green while exports go silent.
     it("warns when no include glob selects a project", async () => {
-      vi.mocked(codependixService.buildContext).mockResolvedValue(
+      vi.mocked(runContextService.build).mockResolvedValue(
         buildContextWithInclude([]),
       );
 
@@ -187,7 +197,7 @@ describe(MapCommand, () => {
         checksReports: false,
         writes: false,
       });
-      vi.mocked(codependixService.buildContext).mockResolvedValue(
+      vi.mocked(runContextService.build).mockResolvedValue(
         buildContextWithInclude([]),
       );
 
@@ -212,6 +222,10 @@ describe(MapCommand, () => {
         { provide: MapService, useValue: createMock<MapService>() },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        {
+          provide: RunContextService,
+          useValue: createMock<RunContextService>(),
+        },
         { provide: RunPlanService, useValue: createMock<RunPlanService>() },
       ],
     }).compile();
@@ -276,7 +290,7 @@ describe(MapCommand, () => {
 
     await run({ directory: "/workspace" });
 
-    expect(codependixService.buildContext).toHaveBeenCalledWith({
+    expect(runContextService.build).toHaveBeenCalledWith({
       mode: "write",
       options: { directory: "/workspace" },
       workingDirectory: "/workspace",
@@ -290,7 +304,7 @@ describe(MapCommand, () => {
 
     await run({});
 
-    expect(codependixService.buildContext).toHaveBeenCalledWith({
+    expect(runContextService.build).toHaveBeenCalledWith({
       mode: "check",
       options: {},
       workingDirectory: process.cwd(),

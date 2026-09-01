@@ -293,7 +293,7 @@ function buildResolutionSections(): ExampleSection[] {
     {
       body: fenceJson(configurationService.resolveForWorkspace(configuration)),
       heading: "The Workspace Graph ignores both glob lists",
-      note: "It is exported once for the repository rather than once per project, so it carries no per-project override and `include`/`exclude` never apply to it.",
+      note: "It is exported once for the repository rather than once per project, so it carries no per-project override and `include`/`exclude` never apply to it. `--projects` and `--tags` are the exception: they narrow which projects are **nodes** in it, while its destination is still read from `workspace.nx`.",
     },
     {
       body: "`ConfigurationService.readDefaultExport` unwraps a configuration module's default export **by name**. A configuration field also called `default` would collide with that unwrapping, which is why the field is `defaults`.",
@@ -326,11 +326,11 @@ function renderInclusion(
 ): string {
   const answer = (projectName: string, projectRoot?: string): string =>
     String(
-      configurationService.isProjectIncluded(
-        projectName,
+      configurationService.isProjectIncluded({
         configuration,
+        projectName,
         projectRoot,
-      ),
+      }),
     );
 
   return fence(

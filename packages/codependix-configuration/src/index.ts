@@ -27,13 +27,16 @@ export type {
   CodependixJsonOutput,
   CodependixMarkdownOutput,
   CodependixProjectConfiguration,
+  CodependixSelectionArguments,
   CodependixWorkspaceConfiguration,
   LoadConfigurationArguments,
+  ProjectSelectionArguments,
   ResolvedCodependixBoundariesConfiguration,
   ResolvedCodependixConfiguration,
   ResolvedCodependixGraphOutput,
   ResolvedCodependixJsonOutput,
   ResolvedCodependixMarkdownOutput,
+  ResolvedCodependixSelection,
   ResolveForProjectArguments,
 } from "./modules/configuration/configuration.types";
 export {

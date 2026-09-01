@@ -10,6 +10,7 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { RunContextService } from "../run-context/run-context.service";
 import { CHECK_NAMES } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
@@ -51,6 +52,7 @@ export class MapCommand extends CommandRunner {
     private readonly boundaryReportService: BoundaryReportService,
     private readonly inputService: InputService,
     private readonly logger: LoggerService,
+    private readonly runContextService: RunContextService,
     private readonly runPlanService: RunPlanService,
   ) {
     super();
@@ -189,7 +191,7 @@ export class MapCommand extends CommandRunner {
     options: MapCommandOptions;
   }): Promise<void> {
     const { mode, options } = args;
-    const context = await this.mapService.buildContext({
+    const context = await this.runContextService.build({
       mode: mode.writes ? "write" : "check",
       options,
       workingDirectory: path.resolve(options.directory ?? process.cwd()),
@@ -247,6 +249,38 @@ export class MapCommand extends CommandRunner {
   })
   public parseDirectory(value: string | undefined): string {
     return this.inputService.parsePathOption(value);
+  }
+
+  /**
+   * Parses the projects a run exports for beyond `include`.
+   *
+   * **Widening, and narrowing.** A named project is added to whatever
+   * `include` already selected, and `exclude` still wins over it. It also
+   * narrows what a run draws and judges: the Workspace Graph's node set and
+   * every level `--check boundaries` judges become the named set. A narrowed
+   * gate sees fewer edges than a whole-workspace one — fine for a local run,
+   * and worth thinking twice about in CI.
+   */
+  @Option({
+    description:
+      "Comma-separated project names or roots to export for, as globs, beyond those include already selects. Also narrows the Workspace Graph and --check boundaries to the named set",
+    flags: "--projects [projects]",
+  })
+  public parseProjects(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /**
+   * Parses the Nx tags a run exports for, matched exactly against a project's
+   * own tags. Widens and narrows exactly as `--projects` does.
+   */
+  @Option({
+    description:
+      "Comma-separated Nx tags to export for, beyond what include already selects. Also narrows the Workspace Graph and --check boundaries to the tagged projects",
+    flags: "--tags [tags]",
+  })
+  public parseTags(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Parses the `--write` flag from command-line input. */

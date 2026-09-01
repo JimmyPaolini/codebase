@@ -132,6 +132,10 @@ always declared: write `include: ["**"]` to cover the whole workspace. A
 project is included when at least one `include` glob claims its name or root
 and no `exclude` glob claims either.
 
+`--projects` and `--tags` widen this from the command line — a project either
+list names participates even when no `include` glob claims it, and `exclude`
+still wins over both. See `codependix-export`.
+
 A configuration naming `defaults` but no `include` is the one to watch for.
 It exports nothing while still exiting zero, and `--check boundaries` judges
 every project regardless of `include`, so the gate stays green. An export run
@@ -184,6 +188,11 @@ There is no workspace-wide NestJS or import graph to configure. The workspace
 graph is exported once for the repository, carries no per-project override, and
 is **unaffected by `include` and `exclude`** — excluding a project from
 per-project exports does not remove it from the workspace graph.
+
+`--projects` and `--tags` are the exception, and they reach it through its
+**node set** rather than through its destination: a run naming a selection
+draws the graph over the projects it named, and writes it wherever
+`workspace.nx` says. See `codependix-export` for both flags.
 
 ## Configuring a graph type a project does not have costs nothing
 
