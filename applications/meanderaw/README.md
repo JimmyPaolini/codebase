@@ -152,6 +152,138 @@ decides which repeat unit is drawn.
 
 One name worth reading twice: the **`dot` modifier** (singular, carrying a `bounce` or
 `up` shape) and the **`dots` sub-family** (plural) are different things one letter apart.
+## 🕳️ Negative Space Survey
+
+<!-- The tile identifiers below are canonical MosaicSymmetryService output (one letter per cell, see mosaic-symmetry.service.ts), not words. cspell:ignore dvvxxd dvvxxvvxxvvxxd dvvxxvdx dvvxxvvxxd dvvxxvvxxvdx hxxhhx hxxhhxxhhxxhhx hxxhhxxh hxxhhxxhhx hxxhhxxhhxxh dldldld dldl dldld dldldl -->
+
+[#340](https://github.com/JimmyPaolini/codebase/issues/340) found genuine four-way
+crossings in the negative space of `mosaic split` and `mosaic alternated period-3`, and
+branching in every family's negative — but only across the 114 named patterns.
+[#412](https://github.com/JimmyPaolini/codebase/issues/412) runs the same measurement
+across all 3,179 tiles of the `mosaic` permutation set committed under
+`output/permutations/` — the only family with an enumerated unit space, so the only one
+this measurement can run over every tile rather than a handful of named modifiers.
+
+### Method
+
+Every `output/permutations/*.svg` file was read from disk — no generation, no motif
+service, the same approach the charter test already uses to gate the corpus — and passed
+to the existing
+[`MeanderTopologyService.measure`](src/modules/meander-topology/meander-topology.service.ts).
+A tile is classified from its own `negativeTJunctions`/`negativeXJunctions`:
+
+- **Crosses**: `negativeXJunctions > 0`.
+- **Branches only**: `negativeTJunctions > 0` and `negativeXJunctions === 0`.
+- **Neither**: both zero.
+
+This measurement adds no committed source: it ran as a temporary test beside
+`meander-topology.service.integration.test.ts`, deleted before this section was
+committed. It is nothing but a loop calling `measure` on each file and tallying the
+result against the two thresholds above — reproducible in a few lines against the
+already-committed service.
+
+One further tally needed a small extension beyond what `measure` reports (see
+"Is the negative itself space-filling?" below): for each cell of the same lattice graph
+`MeanderLatticeService.build` already produces, how many of its corridor-eligible sides
+carry no corridor — the same four-arm check `measure` uses to find negative T- and
+X-junctions, just also recording degree 0.
+
+### Per-class counts
+
+| Class | Tiles | Share |
+| --- | --- | --- |
+| Crosses | 3,070 | 96.6% |
+| Branches only | 104 | 3.3% |
+| Neither | 5 | 0.2% |
+| **Total** | **3,179** | 100% |
+
+By row count:
+
+| Rows | Tiles | Crosses | Branches only | Neither |
+| --- | --- | --- | --- | --- |
+| 4 | 23 | 16 | 6 | 1 |
+| 5 | 68 | 58 | 9 | 1 |
+| 6 | 199 | 182 | 16 | 1 |
+| 7 | 660 | 633 | 26 | 1 |
+| 8 | 2,229 | 2,181 | 47 | 1 |
+
+Crossing is the overwhelming majority, and grows with both row count and column span:
+2,794 of the 3,070 crossing tiles span 2 columns against 276 at 1 column. Issue #340
+already observed that crossing "grows with row count"; this shows it holding far beyond
+the two named tiles the spec measured — crossing negatives are the norm across this
+family's unit space, not the exception the 114-file measurement suggested. The five
+_neither_ tiles are exactly the `lines` sub-family at every swept row count (`lll`
+through `lllllll`): a single vertical line's negative is two straight channels that
+neither branch nor cross, the simplest case there is and the reason a "neither" class
+exists at all.
+
+Every one of the 3,179 tiles still has zero ink T-junctions, zero ink X-junctions, and
+full channel-width compliance — unchanged from what the base branch's own disk-based gate
+already reports for the whole 3,293-file corpus. This survey adds the negative-space
+breakdown; it does not revisit the ink side.
+
+### Is the negative itself space-filling?
+
+Yes, for all 3,179 tiles, by the measurable criterion available: no cell's corridor
+degree is 0. A degree-0 cell is a white cell sealed off from the corridor network on
+every side that has a neighbor — the negative-space analogue of an un-inked lattice
+point, and the specific failure `channelWidthCompliant` catches on the ink side. If a
+tile's negative were drawn as ink by tracing a stroke along every corridor, a sealed cell
+would receive no stroke at all.
+
+Across all 3,179 tiles — 264,117 cells in total, at band termination and in the interior
+alike — **zero have corridor degree 0**. Every white cell touches at least one neighbor
+through a missing ink edge. Drawing any permutation tile's negative as ink would
+therefore leave no region unreached, keeping invariant 2.
+
+This is measured, not proven in general: it states that the corridor skeleton reaches
+every cell, not that a specific rendered path through that skeleton stays exactly one
+stroke width everywhere the family drawn from it eventually decides to run. #415 still
+has to measure its own rendered output rather than assume this result transfers
+unchanged.
+
+### Shortlist
+
+Four candidates scale cleanly across every row count the permutation sweep covers (4
+through 8), which is what makes each "a family" rather than one lucky tile. All four are
+_branches only_, so drawing them relaxes invariant 3 and nothing else — exactly what
+issues #415 and #416 need.
+
+1. **`dvvxxd` → `dvvxxvvxxvvxxd`** (`mosaic`, columns 2, rows 4–8: `dvvxxd`, `dvvxxvdx`,
+   `dvvxxvvxxd`, `dvvxxvvxxvdx`, `dvvxxvvxxvvxxd`). Negative T-junctions grow
+   38 → 48 → 58 → 68 → 78, almost exactly +10 per row. The highest-branching
+   non-crossing family found, at every row count.
+2. **`hxxhhx` → `hxxhhxxhhxxhhx`** (`mosaic`, columns 2, rows 4–8: `hxxhhx`, `hxxhhxxh`,
+   `hxxhhxxhhx`, `hxxhhxxhhxxh`, `hxxhhxxhhxxhhx`). T-junctions grow
+   30 → 40 → 50 → 60 → 70, the same +10-per-row pace, and structurally the simplest
+   of the four — built from one mark kind, the horizontal dash, repeated.
+3. **`dld` → `dldldld`** (`mosaic`, columns 1, rows 4–8: `dld`, `dldl`, `dldld`,
+   `dldldl`, `dldldld`). T-junctions 16, 16, 24, 24, 32. One column of alternating
+   dots and lines, and the most-branching candidate at the cheaper-to-verify column 1
+   width.
+4. **All-dots at columns 1** (`mosaic`, rows 4–8: `ddd`, `dddd`, `ddddd`, `dddddd`,
+   `ddddddd`). T-junctions 10 → 18. Unlike the columns-2 version of the same pattern
+   (flagged below, and crossing), this one never crosses. The lowest-branching pick,
+   useful as a starting point to build up from.
+
+**Flagged, not shortlisted:** all-dots at columns 2 (`dddddd` at 4 rows through
+`dddddddddddddd` at 8 rows) is the single most-crossing tile in the whole corpus — 30
+T-junctions and 54 X-junctions at 8 rows — and scales as cleanly as the branching
+candidates above. Neither #415 nor #416 draws from the crossing class today (#417
+builds its own purpose-designed crossing family instead), so this is recorded for
+whoever revisits that boundary rather than added to the actionable list.
+
+### A note for the branching family
+
+Every one of the 104 _branches only_ tiles' corridor graphs contains at least one cycle
+at the rendered scale (6 repeats): none is a literal tree. Checked directly — for each
+tile, `edges ≠ vertices − components`, the condition for a forest — because the pattern
+repeats periodically along the band and each repeat closes a loop through its neighbors.
+Both scaling families above are single connected components with 20–40 cycles at 8 rows.
+A bounded-tree family cannot adopt one of these corridor graphs unmodified: it would need
+to deliberately omit some corridors — every other "rung", for instance — to break the
+loops before the shape that inspired it can satisfy the tree test (`edges = vertices −
+1`) a bounded-tree charter relaxation needs.
 
 ## 👔 Conformetry
 
