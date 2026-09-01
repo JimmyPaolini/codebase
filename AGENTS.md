@@ -1032,15 +1032,16 @@ read their per-repository configuration from `docs/agents/`. Edit these files
 directly; re-run `/setup-matt-pocock-skills` only to switch issue trackers or
 start over.
 
-| Concern       | Setting                                                                       | Reference                                                      |
-| ------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Issue tracker | GitHub Issues in `JimmyPaolini/codebase`, via the `gh` CLI                    | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
-| Triage labels | The five canonical roles mapped onto this repository's `status:` label family | [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md) |
-| Domain docs   | Single-context — one root `CONTEXT.md` plus root `docs/adr/`                  | [`docs/agents/domain.md`](docs/agents/domain.md)               |
+| Concern       | Setting                                                                                                                          | Reference                                                      |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Issue tracker | GitHub Issues in `JimmyPaolini/codebase`, via the `gh` CLI — one parent issue per pull request, one sub-issue per planned commit | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
+| Triage labels | The five canonical roles mapped onto this repository's `status:` label family                                                    | [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md) |
+| Domain docs   | Single-context — one root `CONTEXT.md` plus root `docs/adr/`                                                                     | [`docs/agents/domain.md`](docs/agents/domain.md)               |
 
-`CONTEXT.md` and `docs/adr/` do not exist yet, and that is expected —
-[domain-modeling](.agents/skills/domain-modeling/SKILL.md) creates them lazily as
-terms and decisions actually get resolved. Do not scaffold them upfront.
+`CONTEXT.md` and `docs/adr/` are both populated now.
+[domain-modeling](.agents/skills/domain-modeling/SKILL.md) grows them lazily, as
+terms and decisions actually get resolved — so add to them when a decision
+lands, rather than scaffolding ahead of the work.
 
 ### Agents
 

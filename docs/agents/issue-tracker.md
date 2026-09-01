@@ -23,6 +23,54 @@ The `gh` token in use carries `gist`, `read:org`, `repo`, and `workflow` — but
 gh auth refresh --scopes read:project,read:org
 ```
 
+## Planning shape: one parent issue per pull request
+
+When planning work — `/to-tickets`, `/to-spec`, or any breakdown that lands in
+this tracker — file **one parent issue per pull request**, and **one sub-issue
+per commit** that pull request is expected to contain.
+
+- **The parent issue is the pull request.** Its title is the title that pull
+  request will carry, in the commit convention above, and its scope is one
+  project or module — the same bound [Work Scope](../../AGENTS.md#work-scope)
+  puts on a branch. Work that will not fit in one reviewable pull request is two
+  parent issues, not one parent with more sub-issues.
+- **Each sub-issue is one commit.** Title it the way that commit message will
+  read, so the branch's history can be written straight off the sub-issue list.
+  Link it with GitHub's native sub-issue relationship rather than a task list,
+  the same mechanism the wayfinder map uses below.
+- **Keep every sub-issue at or below the parent's release significance.** A
+  squash merge shows semantic-release only the pull request title, and the
+  [pull-request-release-significance](../../tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts)
+  check fails a pull request whose branch carries a commit more significant than
+  its title, or a scope the title does not name. Planning the commits as
+  sub-issues is where that is cheapest to get right: a `feat` sub-issue under a
+  `chore` parent is a retitle now, or a failed check later. See
+  [Release Significance](../../AGENTS.md#release-significance).
+
+**Approximate, deliberately.** The sub-issues are a plan for the commits, not a
+contract. Implementation turns up work nobody could see from the outside — a
+commit splits in two, two collapse into one, a fourth appears. That is the
+expected outcome, not a planning failure. Aim for the right shape and count,
+then let the branch correct it: add, close, or retitle sub-issues as the work
+resolves, so the issue list still describes the pull request by the time it
+opens. Do not stall planning trying to predict commits exactly, and do not
+force the implementation to match a plan the code has already disagreed with.
+
+```bash
+# Parent issue — one per pull request
+gh issue create --title "feat(lexico): ✨ add user profile page" --body "..."
+
+# Child issue — one per planned commit, then linked as a native sub-issue
+gh issue create --title "feat(lexico): ✨ add profile route" --body "..."
+gh api repos/JimmyPaolini/codebase/issues/<parent>/sub_issues \
+  --method POST -F sub_issue_id="$(gh api repos/JimmyPaolini/codebase/issues/<child> --jq .id)"
+```
+
+`sub_issue_id` takes the child's numeric **database id** (`gh api ... --jq .id`),
+not its `#number` — the same distinction the dependency edges below draw. Where
+sub-issues are unavailable, fall back to a task list in the parent body with
+`Part of #<parent>` at the top of each child.
+
 ## Conventions
 
 - **Create an issue**: `gh issue create --title "..." --body "..."`. Use a heredoc for multi-line bodies.
