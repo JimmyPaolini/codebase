@@ -40,6 +40,7 @@ function buildProjects(names: string[]): NxProject[] {
   return names.map((name) => ({
     absoluteRoot: `/workspace/packages/${name}`,
     name,
+    tags: [],
   }));
 }
 

@@ -71,7 +71,9 @@ describe(BoundaryCheckService, () => {
         workspace: {},
       },
       graph: { dependencies: {}, nodes: {} },
-      projects: [{ absoluteRoot: "/workspace/packages/a", name: "a" }],
+      projects: [
+        { absoluteRoot: "/workspace/packages/a", name: "a", tags: [] },
+      ],
       workingDirectory: "/workspace",
     };
   }

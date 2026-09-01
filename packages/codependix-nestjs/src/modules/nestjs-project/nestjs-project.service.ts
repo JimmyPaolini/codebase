@@ -20,7 +20,6 @@ import {
 
 import type { NestjsProject } from "./nestjs-project.types";
 import type { DynamicModule, Type } from "@nestjs/common";
-import type { ProjectGraph } from "@nx/devkit";
 import type { SpelunkedTree } from "nestjs-spelunker";
 
 /**
@@ -33,9 +32,9 @@ import type { SpelunkedTree } from "nestjs-spelunker";
  * provider without instantiating any of them. That is what makes a project
  * safe to graph from a workstation or from CI: a project building a
  * `TypeOrmModule.forRootAsync` options factory never has a database
- * contacted. Project discovery reads the already-fetched Nx project graph's
- * own tags rather than walking the filesystem for a `project.json`, since
- * `codependix-cli` has already read that graph for the Nx exports.
+ * contacted. Project discovery reads the tags each project already carries
+ * rather than walking the filesystem for a `project.json`, since whoever
+ * read the Nx project graph for the Nx exports has already collected them.
  */
 @Injectable()
 export class NestjsProjectService {
@@ -141,11 +140,10 @@ export class NestjsProjectService {
    * reads the Nx project graph's own projects in.
    */
   discoverProjects(
-    graph: ProjectGraph,
-    projects: { absoluteRoot: string; name: string }[],
+    projects: { absoluteRoot: string; name: string; tags: string[] }[],
   ): NestjsProject[] {
     return projects
-      .filter((project) => this.isNestjsProject(graph, project.name))
+      .filter((project) => this.isNestjsProject(project))
       .map((project) =>
         this.describeProject(project.absoluteRoot, project.name),
       );
@@ -183,9 +181,7 @@ export class NestjsProjectService {
   }
 
   /** Reports whether a project's Nx tags mark it as a NestJS project. */
-  isNestjsProject(graph: ProjectGraph, projectName: string): boolean {
-    return (graph.nodes[projectName]?.data.tags ?? []).includes(
-      NESTJS_PROJECT_TAG,
-    );
+  isNestjsProject(project: { tags: string[] }): boolean {
+    return project.tags.includes(NESTJS_PROJECT_TAG);
   }
 }

@@ -289,16 +289,7 @@ describe("codependix example graphs", () => {
       expect(() =>
         pythonImports.describeProjectAt(
           resolveExample("python-scanner", "scanner"),
-          {
-            dependencies: {},
-            nodes: {
-              scanner: {
-                data: { root: "scanner" },
-                name: "scanner",
-                type: "lib",
-              },
-            },
-          },
+          [],
         ),
       ).toThrow("language:python");
     });

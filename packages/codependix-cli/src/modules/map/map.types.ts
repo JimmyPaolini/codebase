@@ -7,8 +7,12 @@ import type {
   TypescriptImportGraph,
 } from "@codependix/imports";
 import type { NestjsModuleGraph } from "@codependix/nestjs";
-import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
-import type { ProjectGraph } from "@nx/devkit";
+import type {
+  Neighborhood,
+  NxProject,
+  NxProjectGraph,
+  WorkspaceGraph,
+} from "@codependix/nx";
 
 /**
  * Everything every graph-type pass reads, resolved once per run rather than
@@ -16,7 +20,7 @@ import type { ProjectGraph } from "@nx/devkit";
  */
 export interface GraphRunContext {
   configuration: ResolvedCodependixConfiguration;
-  graph: ProjectGraph;
+  graph: NxProjectGraph;
   mode: CodependixRunMode;
   projects: NxProject[];
   workingDirectory: string;

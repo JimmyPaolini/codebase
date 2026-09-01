@@ -7,7 +7,6 @@ import { PythonProjectService } from "./python-project.service";
 import { PythonService } from "./python.service";
 
 import type { PythonImportGraph, PythonProject } from "./python.types";
-import type { ProjectGraph } from "@nx/devkit";
 
 describe(PythonService, () => {
   let service: PythonService;
@@ -47,9 +46,12 @@ describe(PythonService, () => {
   });
 
   it("delegates discoverProjects to PythonProjectService", () => {
-    const graph = createMock<ProjectGraph>();
     const projects = [
-      { absoluteRoot: "/workspace/affirmations", name: "affirmations" },
+      {
+        absoluteRoot: "/workspace/affirmations",
+        name: "affirmations",
+        tags: ["language:python"],
+      },
     ];
     const discovered = [createMock<PythonProject>()];
 
@@ -57,9 +59,8 @@ describe(PythonService, () => {
       discovered,
     );
 
-    expect(service.discoverProjects(graph, projects)).toBe(discovered);
+    expect(service.discoverProjects(projects)).toBe(discovered);
     expect(pythonProjectService.discoverProjects).toHaveBeenCalledWith(
-      graph,
       projects,
     );
   });

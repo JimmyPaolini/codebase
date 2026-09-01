@@ -10,13 +10,12 @@ import {
 } from "./python.constants";
 
 import type { PythonProject } from "./python.types";
-import type { ProjectGraph } from "@nx/devkit";
 
 /**
  * Discovers the workspace's Python projects and lists each one's source
  * files.
  *
- * Discovery reads the Nx project graph's own `language:python` tag, the same
+ * Discovery reads each project's own `language:python` tag, the same
  * way `codependix-nestjs`'s `NestjsProjectService` reads `framework:nestjs` —
  * rather than probing for a marker file, since a Python project's own
  * `pyproject.toml` is optional (every project is already a member of the
@@ -68,21 +67,18 @@ export class PythonProjectService {
    * preserves.
    */
   discoverProjects(
-    graph: ProjectGraph,
-    projects: { absoluteRoot: string; name: string }[],
+    projects: { absoluteRoot: string; name: string; tags: string[] }[],
   ): PythonProject[] {
     return projects
-      .filter((project) => this.isPythonProject(graph, project.name))
+      .filter((project) => this.isPythonProject(project))
       .map((project) =>
         this.describeProject(project.absoluteRoot, project.name),
       );
   }
 
   /** Reports whether a project's Nx tags mark it as a Python project. */
-  isPythonProject(graph: ProjectGraph, projectName: string): boolean {
-    return (graph.nodes[projectName]?.data.tags ?? []).includes(
-      PYTHON_PROJECT_TAG,
-    );
+  isPythonProject(project: { tags: string[] }): boolean {
+    return project.tags.includes(PYTHON_PROJECT_TAG);
   }
 
   /** Lists a project's own source files, absolute and sorted. */

@@ -75,7 +75,9 @@ describe(MapService, () => {
       },
       graph: { dependencies: {}, nodes: {} },
       mode: "write",
-      projects: [{ absoluteRoot: projectRoot, name: "codependix-nx" }],
+      projects: [
+        { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
+      ],
       workingDirectory: projectRoot,
       ...overrides,
     };
@@ -133,7 +135,7 @@ describe(MapService, () => {
       nodes: {},
     });
     vi.mocked(neighborhoodService.readProjects).mockReturnValue([
-      { absoluteRoot: projectRoot, name: "codependix-nx" },
+      { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
     ]);
     vi.mocked(neighborhoodService.buildNeighborhoods).mockReturnValue(
       new Map([["codependix-nx", NEIGHBORHOOD]]),
@@ -309,8 +311,8 @@ describe(MapService, () => {
       const outcome = service.runNxGraphs(
         buildContext({
           projects: [
-            { absoluteRoot: projectRoot, name: "codependix-nx" },
-            { absoluteRoot: otherProjectRoot, name: "other-project" },
+            { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
+            { absoluteRoot: otherProjectRoot, name: "other-project", tags: [] },
           ],
         }),
       );
@@ -427,7 +429,9 @@ describe(MapService, () => {
       overrides: Partial<GraphRunContext> = {},
     ): GraphRunContext {
       return buildContext({
-        projects: [{ absoluteRoot: projectRoot, name: "codependix-cli" }],
+        projects: [
+          { absoluteRoot: projectRoot, name: "codependix-cli", tags: [] },
+        ],
         ...overrides,
       });
     }
@@ -583,8 +587,12 @@ describe(MapService, () => {
       const outcome = await service.runNestjsGraphs(
         buildNestjsContext({
           projects: [
-            { absoluteRoot: projectRoot, name: "codependix-cli" },
-            { absoluteRoot: otherProjectRoot, name: "other-nestjs-project" },
+            { absoluteRoot: projectRoot, name: "codependix-cli", tags: [] },
+            {
+              absoluteRoot: otherProjectRoot,
+              name: "other-nestjs-project",
+              tags: [],
+            },
           ],
         }),
       );
@@ -611,7 +619,9 @@ describe(MapService, () => {
       overrides: Partial<GraphRunContext> = {},
     ): GraphRunContext {
       return buildContext({
-        projects: [{ absoluteRoot: projectRoot, name: "codependix-imports" }],
+        projects: [
+          { absoluteRoot: projectRoot, name: "codependix-imports", tags: [] },
+        ],
         ...overrides,
       });
     }
@@ -777,8 +787,12 @@ describe(MapService, () => {
       const outcome = service.runImportGraphs(
         buildImportsContext({
           projects: [
-            { absoluteRoot: projectRoot, name: "codependix-imports" },
-            { absoluteRoot: otherProjectRoot, name: "other-imports-project" },
+            { absoluteRoot: projectRoot, name: "codependix-imports", tags: [] },
+            {
+              absoluteRoot: otherProjectRoot,
+              name: "other-imports-project",
+              tags: [],
+            },
           ],
         }),
       );

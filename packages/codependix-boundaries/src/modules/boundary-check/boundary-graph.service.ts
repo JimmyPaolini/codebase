@@ -12,15 +12,14 @@ import type {
 } from "@codependix/imports";
 import type { NestjsModuleGraph } from "@codependix/nestjs";
 import type { NxProject, WorkspaceGraph } from "@codependix/nx";
-import type { ProjectGraph } from "@nx/devkit";
 
 /**
  * Flattens each of codependix's four graphs into the one shape rules read.
  *
  * The adapters live here, in the host that already builds all four, rather
  * than in `@codependix/boundaries` — which would otherwise have to depend on
- * `@nx/devkit`, `nestjs-spelunker` and `typescript` to name the types it
- * translates, for a package whose whole job is evaluating rules. The four
+ * `nestjs-spelunker` and `typescript` to name the types it translates, for a
+ * package whose whole job is evaluating rules. The four
  * already share an identical `{ source, target }` edge shape by construction,
  * so each adapter is only ever nodes, edges, and the attributes rules select
  * on.
@@ -94,19 +93,18 @@ export class BoundaryGraphService {
    * rule is a statement about the shape of the graph, and a neighborhood is
    * the same graph shown twice from either end of every edge.
    *
-   * Tags are read straight off the Nx project graph, because they are what
-   * makes this level worth having — `NxProject` carries only a name and a
-   * root, so a tag rule reaches nothing unless the adapter carries them.
+   * Tags come off the `NxProject`s themselves, because they are what makes
+   * this level worth having: a tag rule reaches nothing unless the nodes it
+   * judges carry them.
    */
   public buildNxGraph(args: {
-    graph: ProjectGraph;
     projects: readonly NxProject[];
     scope: string;
     workingDirectory: string;
     workspaceGraph: WorkspaceGraph;
   }): BoundaryGraph {
-    const roots = new Map(
-      args.projects.map((project) => [project.name, project.absoluteRoot]),
+    const projectsByName = new Map(
+      args.projects.map((project) => [project.name, project]),
     );
 
     return {
@@ -114,9 +112,12 @@ export class BoundaryGraphService {
       level: "nx",
       nodes: args.workspaceGraph.projectNames.map((name) => ({
         id: name,
-        path: this.resolveProjectRoot(roots.get(name), args.workingDirectory),
+        path: this.resolveProjectRoot(
+          projectsByName.get(name)?.absoluteRoot,
+          args.workingDirectory,
+        ),
         project: name,
-        tags: args.graph.nodes[name]?.data.tags,
+        tags: projectsByName.get(name)?.tags,
       })),
       scope: args.scope,
     };

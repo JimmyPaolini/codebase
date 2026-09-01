@@ -8,21 +8,6 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { PythonProjectService } from "./python-project.service";
 
-import type { ProjectGraph } from "@nx/devkit";
-
-/** Builds a project graph node with the given tags. */
-function buildGraph(tagsByProject: Record<string, string[]>): ProjectGraph {
-  return {
-    dependencies: {},
-    nodes: Object.fromEntries(
-      Object.entries(tagsByProject).map(([name, tags]) => [
-        name,
-        { data: { root: `applications/${name}`, tags }, name, type: "app" },
-      ]),
-    ),
-  };
-}
-
 /** Writes a project holding the given files under a fresh temp directory. */
 async function buildProject(
   files: Record<string, string>,
@@ -39,6 +24,14 @@ async function buildProject(
   }
 
   return { absoluteRoot: workspaceRoot };
+}
+
+/** One discovered project, as `codependix-nx` hands it over. */
+function buildTaggedProject(
+  name: string,
+  tags: string[],
+): { absoluteRoot: string; name: string; tags: string[] } {
+  return { absoluteRoot: `/workspace/applications/${name}`, name, tags };
 }
 
 describe(PythonProjectService, () => {
@@ -70,37 +63,33 @@ describe(PythonProjectService, () => {
 
   describe("isPythonProject", () => {
     it("reports true when a project's tags include language:python", () => {
-      const graph = buildGraph({ affirmations: ["language:python"] });
-
-      expect(service.isPythonProject(graph, "affirmations")).toBe(true);
+      expect(
+        service.isPythonProject(
+          buildTaggedProject("affirmations", ["language:python"]),
+        ),
+      ).toBe(true);
     });
 
     it("reports false when a project's tags do not include language:python", () => {
-      const graph = buildGraph({ lexico: ["language:typescript"] });
-
-      expect(service.isPythonProject(graph, "lexico")).toBe(false);
+      expect(
+        service.isPythonProject(
+          buildTaggedProject("lexico", ["language:typescript"]),
+        ),
+      ).toBe(false);
     });
 
-    it("reports false for a project the graph does not know about", () => {
-      const graph = buildGraph({});
-
-      expect(service.isPythonProject(graph, "unknown")).toBe(false);
+    it("reports false for a project carrying no tags at all", () => {
+      expect(service.isPythonProject(buildTaggedProject("unknown", []))).toBe(
+        false,
+      );
     });
   });
 
   describe("discoverProjects", () => {
     it("keeps only the projects tagged language:python", () => {
-      const graph = buildGraph({
-        affirmations: ["language:python"],
-        lexico: ["language:typescript"],
-      });
-
-      const discovered = service.discoverProjects(graph, [
-        {
-          absoluteRoot: "/workspace/applications/affirmations",
-          name: "affirmations",
-        },
-        { absoluteRoot: "/workspace/applications/lexico", name: "lexico" },
+      const discovered = service.discoverProjects([
+        buildTaggedProject("affirmations", ["language:python"]),
+        buildTaggedProject("lexico", ["language:typescript"]),
       ]);
 
       expect(discovered.map((project) => project.name)).toStrictEqual([
@@ -109,13 +98,8 @@ describe(PythonProjectService, () => {
     });
 
     it("describes each discovered project", () => {
-      const graph = buildGraph({ affirmations: ["language:python"] });
-
-      const discovered = service.discoverProjects(graph, [
-        {
-          absoluteRoot: "/workspace/applications/affirmations",
-          name: "affirmations",
-        },
+      const discovered = service.discoverProjects([
+        buildTaggedProject("affirmations", ["language:python"]),
       ]);
 
       expect(discovered).toStrictEqual([

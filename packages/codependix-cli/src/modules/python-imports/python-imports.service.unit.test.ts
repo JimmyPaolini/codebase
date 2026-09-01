@@ -44,7 +44,7 @@ describe(PythonImportsService, () => {
       },
       graph: { dependencies: {}, nodes: {} },
       mode: "write",
-      projects: [{ absoluteRoot: projectRoot, name: "affirmations" }],
+      projects: [{ absoluteRoot: projectRoot, name: "affirmations", tags: [] }],
       workingDirectory: projectRoot,
       ...overrides,
     };
@@ -229,8 +229,12 @@ describe(PythonImportsService, () => {
     const outcome = service.runGraphs(
       buildContext({
         projects: [
-          { absoluteRoot: projectRoot, name: "affirmations" },
-          { absoluteRoot: otherProjectRoot, name: "other-python-project" },
+          { absoluteRoot: projectRoot, name: "affirmations", tags: [] },
+          {
+            absoluteRoot: otherProjectRoot,
+            name: "other-python-project",
+            tags: [],
+          },
         ],
       }),
     );

@@ -14,8 +14,8 @@ import type {
   Neighborhood,
   NeighborhoodEdge,
   NxProject,
+  NxProjectGraph,
 } from "./neighborhood.types";
-import type { ProjectGraph } from "@nx/devkit";
 
 /**
  * Builds each project's one-hop Nx dependency neighborhood.
@@ -53,7 +53,7 @@ export class NeighborhoodService {
    * depending on them, so its neighborhood would say nothing.
    */
   buildNeighborhoods(
-    graph: ProjectGraph,
+    graph: NxProjectGraph,
     projects: NxProject[],
   ): Map<string, Neighborhood> {
     const neighborhoods = new Map<string, Neighborhood>();
@@ -93,7 +93,7 @@ export class NeighborhoodService {
    * target — one project's neighborhood.
    */
   collectEdges(
-    graph: ProjectGraph,
+    graph: NxProjectGraph,
     knownNames: Set<string>,
     subjectName?: string,
   ): NeighborhoodEdge[] {
@@ -133,17 +133,18 @@ export class NeighborhoodService {
   }
 
   /** Reads the workspace's project graph. */
-  async readProjectGraph(): Promise<ProjectGraph> {
+  async readProjectGraph(): Promise<NxProjectGraph> {
     return createProjectGraphAsync({ exitOnError: false });
   }
 
   /** Lists every project the graph knows, apart from the workspace root. */
-  readProjects(graph: ProjectGraph, workspaceRoot: string): NxProject[] {
+  readProjects(graph: NxProjectGraph, workspaceRoot: string): NxProject[] {
     return Object.entries(graph.nodes)
       .filter(([, node]) => node.data.root !== ".")
       .map(([name, node]) => ({
         absoluteRoot: path.join(workspaceRoot, node.data.root),
         name,
+        tags: node.data.tags ?? [],
       }))
       .toSorted((first, second) => first.name.localeCompare(second.name));
   }

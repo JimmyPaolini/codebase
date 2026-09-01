@@ -126,13 +126,12 @@ export class PythonImportsService {
    * export.
    *
    * Only `language:python`-tagged projects participate, discovered from the
-   * shared `context.graph` — see `PythonService`. A project that
+   * tags `context.projects` carry — see `PythonService`. A project that
    * raises while its own export is being resolved is recorded as a failure
    * rather than aborting the pass, the same rule `runImportGraphs` follows.
    */
   runGraphs(context: GraphRunContext): GraphRunOutcome {
     const pythonProjects = this.pythonService.discoverProjects(
-      context.graph,
       context.projects,
     );
     const results: GraphRunOutcome["results"] = [];

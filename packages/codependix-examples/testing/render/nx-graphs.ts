@@ -2,13 +2,17 @@ import { neighborhoodService, workspaceGraphService } from "./builders";
 import { fence } from "./document";
 
 import type { ExampleDocument, ExampleSection } from "./types";
-import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
-import type { ProjectGraph } from "@nx/devkit";
+import type {
+  Neighborhood,
+  NxProject,
+  NxProjectGraph,
+  WorkspaceGraph,
+} from "@codependix/nx";
 
 // 🏷️ Types
 
 /**
- * A whole example workspace, as a description turned into a real `ProjectGraph`.
+ * A whole example workspace, as a description turned into a real project graph.
  *
  * Written as data rather than as a nested Nx workspace on disk because
  * `NeighborhoodService.readProjectGraph` resolves the project graph from the
@@ -24,7 +28,7 @@ export interface ExampleWorkspace {
 interface ExampleDependency {
   readonly source: string;
   readonly target: string;
-  /** Mirrors `ProjectGraphDependency["type"]`, which the renderer reads. */
+  /** Mirrors the Nx dependency type the renderer reads. */
   readonly type: "implicit" | "static";
 }
 
@@ -142,9 +146,9 @@ export function buildNxDocuments(): ExampleDocument[] {
   return [buildScopeDocument(), buildDriftDocument()];
 }
 
-/** Turns an example workspace description into a real `ProjectGraph`. */
-export function buildProjectGraph(workspace: ExampleWorkspace): ProjectGraph {
-  const dependencies: ProjectGraph["dependencies"] = {};
+/** Turns an example workspace description into a real project graph. */
+export function buildProjectGraph(workspace: ExampleWorkspace): NxProjectGraph {
+  const dependencies: NxProjectGraph["dependencies"] = {};
 
   for (const dependency of workspace.dependencies) {
     dependencies[dependency.source] = [

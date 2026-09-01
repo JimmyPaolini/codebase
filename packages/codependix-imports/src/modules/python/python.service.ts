@@ -4,7 +4,6 @@ import { PythonImportGraphService } from "./python-import-graph.service";
 import { PythonProjectService } from "./python-project.service";
 
 import type { PythonImportGraph, PythonProject } from "./python.types";
-import type { ProjectGraph } from "@nx/devkit";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -46,10 +45,9 @@ export class PythonService {
    * `language:python`, and describes each one.
    */
   discoverProjects(
-    graph: ProjectGraph,
-    projects: { absoluteRoot: string; name: string }[],
+    projects: { absoluteRoot: string; name: string; tags: string[] }[],
   ): PythonProject[] {
-    return this.pythonProjectService.discoverProjects(graph, projects);
+    return this.pythonProjectService.discoverProjects(projects);
   }
 
   /** Renders an import graph as a fenced mermaid diagram. */
