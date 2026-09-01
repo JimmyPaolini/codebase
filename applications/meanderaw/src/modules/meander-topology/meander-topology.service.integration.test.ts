@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { Test } from "@nestjs/testing";
@@ -7,25 +7,12 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import {
-  COMPATIBLE_MODIFIERS,
-  DEFAULT_REPEAT_COUNT,
-  SPIN_CYCLE_LENGTH,
-  SPIN_FAMILY_MODIFIER_NAMES,
-  STRUCTURAL_MINIMUM_ROWS,
-  SUPPORTED_MODIFIER_NAMES,
-  SUPPORTED_TYPES,
-} from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
-import {
-  ALTERNATED_SWEEP_PERIODS,
-  DOT_SWEEP_SHAPES,
-  ROWS_SWEEP_MAXIMUM,
-} from "../start/start.constants";
+import { StartCombinationsService } from "../start/start-combinations.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
@@ -80,13 +67,14 @@ interface CharterRelaxation {
  *
  * `chain` and `snake` relax no-branching under `edge` and `edge-flip`, and
  * that entry is a measurement rather than a design decision. The `edge`
- * family widens the unit pitch until the zigzag closes flush against the
- * band's own top and bottom border; the border then runs past the point it
- * lands on, either side, which is three arms of ink meeting — ten of them
- * per document, at every row count, in the committed reference assets as
- * much as in a fresh run. #340's measurement table and the README's charter
- * both report zero T-junctions in ink across every family, and neither is
- * yet aware of these.
+ * family widens the repeat unit past the zigzag it contains, so the zigzag's
+ * terminating vertical lands in the interior of the band border rather than
+ * at its end, and the border runs on either side of it — three arms of ink
+ * meeting, ten per document, at every row count, in the committed reference
+ * assets as much as in a fresh run. The charter in `README.md` and
+ * `AGENTS.md` records this; #340's own measurement table still reports zero
+ * T-junctions across every family and has not been corrected, because
+ * editing that issue is outward-facing.
  */
 const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
   boxes: [],
@@ -96,14 +84,6 @@ const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
   swirl: [],
   whirl: [],
 };
-
-/** Narrows a declared compatible-modifier name to an implemented {@link Modifier} name without an unchecked assertion. */
-const isModifierName = (value: string): value is Modifier["name"] =>
-  SUPPORTED_MODIFIER_NAMES.includes(value);
-
-/** Narrows a supported type name to a {@link MeanderType} without an unchecked assertion. */
-const isMeanderType = (value: string): value is MeanderType =>
-  SUPPORTED_TYPES.includes(value);
 
 /** How a modifier reads in a test name, including whichever parameter it carries. */
 const modifierLabel = (modifier: Modifier): string => {
@@ -118,65 +98,76 @@ const modifierLabel = (modifier: Modifier): string => {
   return modifier.name;
 };
 
-/** Every {@link Modifier} value the sweep covers for one modifier name — the representative values `start` sweeps, not the full range. */
-const modifierValues = (name: Modifier["name"]): Modifier[] => {
-  if (name === "alternated") {
-    return ALTERNATED_SWEEP_PERIODS.map((period) => ({ name, period }));
-  }
+/**
+ * The swept space, read from the same {@link StartCombinationsService} that
+ * `StartCommand` writes `output/` from. Sweeping the shared enumeration
+ * rather than a second copy of it is what makes "the charter gates the
+ * corpus this repository commits" a fact rather than a comment: there is one
+ * composition, and a family added to it widens both at once.
+ *
+ * It is instantiated directly rather than resolved from a testing module
+ * because `it.each` needs the table at collection time, before any
+ * `beforeAll` has run. The service takes no dependencies, so there is
+ * nothing for a container to supply.
+ *
+ * The sweep stops short of `mosaic`'s 3,179 enumerated tiles for one reason:
+ * those are reachable only through a motif service, and the charter is
+ * tested through `MeanderGenerationService.generate`, the single seam every
+ * family, modifier, and validation rule already passes through. Those tiles
+ * are gated from disk instead — see the committed-corpus test below.
+ */
+const charterSweep: readonly CharterCase[] = new StartCombinationsService()
+  .enumerate()
+  .map((parameters) => {
+    const modifier = parameters.modifier
+      ? ` with ${modifierLabel(parameters.modifier)}`
+      : "";
 
-  if (name === "dot") {
-    return DOT_SWEEP_SHAPES.map((shape) => ({ name, shape }));
-  }
-
-  return [{ name }];
-};
+    return {
+      label: `${parameters.type} at ${parameters.rows} rows${modifier}`,
+      parameters,
+      variant: `${parameters.type}${modifier}`,
+    };
+  });
 
 /**
- * The swept space: every family, crossed with every modifier
- * `COMPATIBLE_MODIFIERS` allows it plus no modifier at all, crossed with
- * every row count from that family's own structural minimum through
- * `ROWS_SWEEP_MAXIMUM`.
- *
- * That is deliberately the same space `StartCommand` writes to `output/` —
- * 114 documents — so the figures this test gates are the figures the
- * committed corpus reports, and a widened sweep widens the charter's
- * coverage with it. It stops short of `mosaic`'s 3,179 enumerated tiles for
- * one reason: those are reachable only through a motif service, and the
- * charter is tested through `MeanderGenerationService.generate`, the single
- * seam every family, modifier, and validation rule already passes through.
+ * How many documents `StartCommand` commits: 114 named patterns beside 3,179
+ * enumerated `mosaic` tiles. It is #340's own corpus size, and the number its
+ * space-filling measurement is quoted against.
  */
-const charterSweep: readonly CharterCase[] = SUPPORTED_TYPES.filter(
-  (value): value is MeanderType => isMeanderType(value),
-).flatMap((type) => {
-  const modifiers: readonly (Modifier | undefined)[] = [
-    undefined,
-    ...COMPATIBLE_MODIFIERS[type]
-      .filter((value): value is Modifier["name"] => isModifierName(value))
-      .flatMap((name) => modifierValues(name)),
-  ];
-  const minimum = STRUCTURAL_MINIMUM_ROWS[type];
-  const rowCounts = Array.from(
-    { length: ROWS_SWEEP_MAXIMUM - minimum + 1 },
-    (_value, index) => minimum + index,
-  );
+const COMMITTED_CORPUS_SIZE = 114 + 3179;
 
-  return rowCounts.flatMap((rows) =>
-    modifiers.map((modifier) => ({
-      label: `${type} at ${rows} rows${modifier ? ` with ${modifierLabel(modifier)}` : ""}`,
-      parameters: {
-        repeatCount:
-          modifier && SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name)
-            ? Math.ceil(DEFAULT_REPEAT_COUNT / SPIN_CYCLE_LENGTH) *
-              SPIN_CYCLE_LENGTH
-            : DEFAULT_REPEAT_COUNT,
-        rows,
-        type,
-        ...(modifier ? { modifier } : {}),
-      },
-      variant: `${type}${modifier ? ` with ${modifierLabel(modifier)}` : ""}`,
-    })),
-  );
-});
+/** Where `StartCommand` writes those documents, and where they are committed. */
+const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
+
+/**
+ * Every committed document, read off disk.
+ *
+ * Read one at a time rather than through `Promise.all`: three thousand
+ * concurrent opens is enough to exhaust the descriptor limit on a developer
+ * machine, and the whole read costs a fraction of a second sequentially.
+ */
+const readCommittedCorpus = async (): Promise<
+  { document: string; name: string }[]
+> => {
+  const documents: { document: string; name: string }[] = [];
+
+  for (const directory of [
+    OUTPUT_DIRECTORY,
+    path.join(OUTPUT_DIRECTORY, "permutations"),
+  ]) {
+    const names = await readdir(directory);
+
+    for (const name of names.filter((entry) => entry.endsWith(".svg"))) {
+      documents.push({
+        document: await readFile(path.join(directory, name), "utf8"),
+        name,
+      });
+    }
+  }
+
+  return documents;
+};
 
 /** Whether `parameters` name a drawing the charter declaration allows to break `invariant`. */
 const relaxes = (
@@ -221,6 +212,15 @@ describe(MeanderTopologyService, () => {
   });
 
   describe("the meander charter", () => {
+    // 🎯 The sweep is built by mapping a service's output. If that
+    // enumeration ever shrinks — a renamed constant, a widened union, a type
+    // guard that stops matching — every `it.each` below would quietly cover
+    // less, or nothing at all, without a single failure. This is the guard
+    // against a property test that vacates instead of failing.
+    it("sweeps every named-type combination StartCommand writes", () => {
+      expect(charterSweep).toHaveLength(114);
+    });
+
     it.each(charterSweep)("$label holds it", ({ parameters }) => {
       const topology = topologyService.measure(
         generationService.generate(parameters),
@@ -250,6 +250,28 @@ describe(MeanderTopologyService, () => {
         "mosaic with alternated period 3",
         "mosaic with split",
       ]);
+    });
+
+    it("holds across every committed document, measured from disk", async () => {
+      const documents = await readCommittedCorpus();
+
+      expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
+
+      const measured = documents.map(({ document, name }) => ({
+        name,
+        ...topologyService.measure(document),
+      }));
+
+      expect(
+        measured
+          .filter((topology) => !topology.channelWidthCompliant)
+          .map(({ name }) => name),
+      ).toStrictEqual([]);
+      expect(
+        measured
+          .filter((topology) => topology.inkXJunctions > 0)
+          .map(({ name }) => name),
+      ).toStrictEqual([]);
     });
 
     it.each([
