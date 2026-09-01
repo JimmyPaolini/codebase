@@ -37,6 +37,37 @@ export interface MosaicPiece {
 }
 
 /**
+ * A named, recognizable region of the `mosaic` family's unit space — a
+ * **sub-family** in the repository glossary's sense, arrived at by
+ * recognizing a structural property of a tile rather than by applying a
+ * modifier. Each one is the set of tiles built entirely from a single
+ * {@link MosaicMarkKind}: `dots` from dots, `lines` from the single-column
+ * continuous rule, `dashes` from horizontal dashes, and `diamond` from
+ * vertical ones. A tile that mixes kinds belongs to no sub-family and is
+ * left unnamed rather than forced into the nearest one.
+ *
+ * `diamond` names the same shape the `split` **modifier** constructs, and
+ * both names survive because they play different roles: `split` is a
+ * constructor into the unit space, `diamond` a predicate over it. Nothing
+ * about the `split` modifier or its reference asset changes.
+ */
+export type MosaicSubFamily = "dashes" | "diamond" | "dots" | "lines";
+
+/**
+ * How to build the tile a {@link MosaicSubFamily} is named for: the mark
+ * every cell carries, the column span that mark needs to fill a level on
+ * its own, and how many levels one mark accounts for. A `levelStep` above
+ * one is what makes a sub-family unavailable at some row counts —
+ * `diamond`'s vertical dashes cover levels in pairs, so an interior with an
+ * odd number of levels has no `diamond` tile at all.
+ */
+export interface MosaicSubFamilyShape {
+  readonly columns: number;
+  readonly kind: MosaicMarkKind;
+  readonly levelStep: number;
+}
+
+/**
  * One repeat tile of the `mosaic` family: a `columns` by `rows - 1` grid of
  * cells, each covered exactly once by a dot or by one half of a dash. That
  * exact-cover rule is what makes every mosaic space-filling for free —

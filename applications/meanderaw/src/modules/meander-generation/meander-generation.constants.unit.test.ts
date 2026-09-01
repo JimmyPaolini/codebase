@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   InvalidModifierError,
   InvalidPeriodError,
+  InvalidSubFamilyError,
 } from "./meander-generation.constants";
 
 describe("meander generation errors", () => {
@@ -34,6 +35,28 @@ describe("meander generation errors", () => {
 
       expect(error.name).toBe("InvalidPeriodError");
       expect(error.message).toBe("period must be between 1 and 12, received 0");
+    });
+  });
+
+  describe(InvalidSubFamilyError, () => {
+    it("names the offending sub-family, the type, and the alternatives", () => {
+      const error = new InvalidSubFamilyError("dots", "mosaic", [
+        "dashes",
+        "dots",
+      ]);
+
+      expect(error.name).toBe("InvalidSubFamilyError");
+      expect(error.message).toBe(
+        'sub-family "dots" is not a sub-family of type "mosaic"; sub-families: dashes, dots',
+      );
+    });
+
+    it("reports 'none' for a family whose unit space is latent", () => {
+      const error = new InvalidSubFamilyError("dots", "boxes", []);
+
+      expect(error.message).toBe(
+        'sub-family "dots" is not a sub-family of type "boxes"; sub-families: none',
+      );
     });
   });
 });

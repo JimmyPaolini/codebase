@@ -7,6 +7,7 @@ import {
   MOSAIC_TILE_MAXIMUM_COLUMNS,
   MOSAIC_TILE_MINIMUM_ROWS,
 } from "../mosaic-motif/mosaic-motif.constants";
+import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
@@ -40,6 +41,8 @@ export class StartPermutationsService {
   constructor(
     @Inject(MosaicTileGenerationService)
     private readonly mosaicGenerationService: MosaicTileGenerationService,
+    @Inject(MosaicSubFamilyService)
+    private readonly mosaicSubFamilyService: MosaicSubFamilyService,
     @Inject(MosaicSymmetryService)
     private readonly mosaicSymmetryService: MosaicSymmetryService,
     @Inject(MosaicTilesService)
@@ -54,7 +57,16 @@ export class StartPermutationsService {
 
   // 🔏 Private Methods
 
-  /** Enumerates and renders every mosaic at one row count, across every column span up to the cap. */
+  /**
+   * Enumerates and renders every mosaic at one row count, across every
+   * column span up to the cap.
+   *
+   * A tile that belongs to a named sub-family carries that name after its
+   * identifier, so the handful of tiles a reader already has a word for are
+   * legible in the directory listing rather than hidden among the thousands
+   * that have none. A tile belonging to none is named by its identifier
+   * alone.
+   */
   private sweepRow(rows: number): PermutedMosaic[] {
     const mosaics: PermutedMosaic[] = [];
 
@@ -65,10 +77,12 @@ export class StartPermutationsService {
     ) {
       for (const tile of this.mosaicTilesService.enumerate(rows, columns)) {
         const identifier = this.mosaicSymmetryService.canonicalIdentifier(tile);
+        const subFamily = this.mosaicSubFamilyService.classify(tile);
+        const name = subFamily ? `${identifier}-${subFamily}` : identifier;
 
         mosaics.push({
           columns,
-          fileName: `mosaic-${rows}-rows-${columns}-columns-${identifier}.svg`,
+          fileName: `mosaic-${rows}-rows-${columns}-columns-${name}.svg`,
           identifier,
           rows,
           svg: this.mosaicGenerationService.generate(

@@ -1,6 +1,7 @@
 // 🏷️ Types
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
+import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
 
 /**
  * Which shape `mosaic`'s `dot` modifier's per-phase level sequence follows:
@@ -10,11 +11,17 @@ import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
  */
 export type DotShape = "bounce" | "up";
 
-/** The type, rows, repeat count, and optional modifier needed to generate one meander. */
+/**
+ * The type, rows, repeat count, and optional modifier or sub-family needed
+ * to generate one meander. `modifier` and `subFamily` are two ways of
+ * choosing the same thing — the repeat unit drawn — so asking for both is
+ * rejected rather than resolved.
+ */
 export interface GenerationParameters {
   readonly modifier?: Modifier;
   readonly repeatCount: number;
   readonly rows: number;
+  readonly subFamily?: MosaicSubFamily;
   readonly type: MeanderType;
 }
 

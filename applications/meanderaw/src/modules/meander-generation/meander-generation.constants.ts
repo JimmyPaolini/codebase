@@ -1,5 +1,7 @@
 // ♟️ Constants
 
+import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
+
 import type {
   DotShape,
   MeanderType,
@@ -103,6 +105,22 @@ export const SUPPORTED_TYPES: readonly string[] = [
 ] satisfies readonly MeanderType[];
 
 /**
+ * Which sub-family names each type admits. A sub-family is a named
+ * predicate over a family's unit space, so a family whose unit space is
+ * latent rather than materialized has none to admit — which today is every
+ * family but `mosaic`. `MeanderGenerationService.generate` rejects any
+ * `parameters.subFamily` not listed for `parameters.type`.
+ */
+export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
+  boxes: [],
+  chain: [],
+  mosaic: SUPPORTED_SUB_FAMILIES,
+  snake: [],
+  swirl: [],
+  whirl: [],
+};
+
+/**
  * The smallest `rows` value that still produces a valid, non-degenerate
  * motif for each type. `mosaic`'s vertical bar spans grid levels 1 through
  * `rows - 1`; below 3 rows those two levels collapse to the same level and
@@ -130,6 +148,21 @@ export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
 };
 
 // 🚨 Errors
+
+/**
+ * Thrown when a sub-family and a modifier are requested together. Both
+ * decide which repeat unit is drawn — a modifier by constructing one, a
+ * sub-family by naming a region of the units the family already generates —
+ * so honoring one would mean silently discarding the other.
+ */
+export class ConflictingSubFamilyError extends Error {
+  constructor(subFamily: string, modifierName: string) {
+    super(
+      `sub-family "${subFamily}" cannot be combined with modifier "${modifierName}"; a modifier constructs a repeat unit and a sub-family names one, so only one of them may choose it`,
+    );
+    this.name = "ConflictingSubFamilyError";
+  }
+}
 
 /** Thrown when a modifier's `name` isn't listed as compatible with the requested type. */
 export class InvalidModifierError extends Error {
@@ -184,5 +217,34 @@ export class InvalidRowsError extends Error {
   constructor(rows: number, minimum: number, maximum: number) {
     super(`rows must be between ${minimum} and ${maximum}, received ${rows}`);
     this.name = "InvalidRowsError";
+  }
+}
+
+/** Thrown when a sub-family isn't listed as one of the requested type's own, which for every type but `mosaic` means it has none. */
+export class InvalidSubFamilyError extends Error {
+  constructor(
+    subFamily: string,
+    type: string,
+    subFamilyNames: readonly string[],
+  ) {
+    super(
+      `sub-family "${subFamily}" is not a sub-family of type "${type}"; sub-families: ${
+        subFamilyNames.length > 0 ? subFamilyNames.join(", ") : "none"
+      }`,
+    );
+    this.name = "InvalidSubFamilyError";
+  }
+}
+
+/**
+ * Thrown when a sub-family names no tile at the requested row count. Only
+ * `diamond` can hit this: its vertical dashes cover the bar's interior
+ * levels in pairs, so an interior with an odd number of them cannot be
+ * covered by vertical dashes alone.
+ */
+export class UnavailableSubFamilyError extends Error {
+  constructor(subFamily: string, rows: number) {
+    super(`sub-family "${subFamily}" has no tile at ${rows} rows`);
+    this.name = "UnavailableSubFamilyError";
   }
 }

@@ -58,6 +58,36 @@ describe(OutputFilenameService, () => {
       ).toBe("mosaic-5-rows-6-repeats-alternated-period-2.svg");
     });
 
+    it("appends the sub-family, so a named region of the unit space is legible in the filename", () => {
+      expect(
+        service.build({
+          repeatCount: 6,
+          rows: 6,
+          subFamily: "dots",
+          type: "mosaic",
+        }),
+      ).toBe("mosaic-6-rows-6-repeats-dots.svg");
+    });
+
+    it("names diamond and split apart even though they draw the same shape, so neither overwrites the other", () => {
+      expect(
+        service.build({
+          repeatCount: 12,
+          rows: 5,
+          subFamily: "diamond",
+          type: "mosaic",
+        }),
+      ).toBe("mosaic-5-rows-12-repeats-diamond.svg");
+      expect(
+        service.build({
+          modifier: { name: "split" },
+          repeatCount: 12,
+          rows: 5,
+          type: "mosaic",
+        }),
+      ).toBe("mosaic-5-rows-12-repeats-split.svg");
+    });
+
     it("appends dot's name and shape", () => {
       expect(
         service.build({

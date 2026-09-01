@@ -14,6 +14,7 @@ import {
   SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
+import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
 import { OutputFilenameService } from "../svg-rendering/output-filename.service";
 
 import type {
@@ -21,6 +22,7 @@ import type {
   MeanderType,
   Modifier,
 } from "../meander-generation/meander-generation.types";
+import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type { GenerateCommandOptions } from "./generate.types";
 
 /**
@@ -87,6 +89,11 @@ export class GenerateCommand extends CommandRunner {
   /** Narrows a raw string to a supported {@link Modifier} name without an unchecked assertion. */
   private isSupportedModifierName(value: string): value is Modifier["name"] {
     return SUPPORTED_MODIFIER_NAMES.includes(value);
+  }
+
+  /** Narrows a raw string to a {@link MosaicSubFamily} without an unchecked assertion. */
+  private isSupportedSubFamily(value: string): value is MosaicSubFamily {
+    return SUPPORTED_SUB_FAMILIES.includes(value);
   }
 
   /** Narrows a raw string to a supported {@link MeanderType} without an unchecked assertion. */
@@ -166,6 +173,26 @@ export class GenerateCommand extends CommandRunner {
     return value;
   }
 
+  /**
+   * Parses the `--sub-family` flag, rejecting any name outside the set of
+   * recognized sub-families. Note that `dots` is a sub-family and `dot` is
+   * a modifier: different things, one letter apart, and only the plural is
+   * accepted here.
+   */
+  @Option({
+    description: `Named region of the family's unit space (${SUPPORTED_SUB_FAMILIES.join(", ")}), for --type mosaic`,
+    flags: "-f, --sub-family <subFamily>",
+  })
+  parseSubFamily(value: string): MosaicSubFamily {
+    if (!this.isSupportedSubFamily(value)) {
+      throw new Error(
+        `Unsupported sub-family "${value}". Supported sub-families: ${SUPPORTED_SUB_FAMILIES.join(", ")}`,
+      );
+    }
+
+    return value;
+  }
+
   /** Parses the `--type` flag, rejecting any value outside the supported set. */
   @Option({
     description: `Meander type (${SUPPORTED_TYPES.join(", ")})`,
@@ -193,6 +220,7 @@ export class GenerateCommand extends CommandRunner {
       rows: options.rows,
       type: options.type,
       ...(modifier ? { modifier } : {}),
+      ...(options.subFamily ? { subFamily: options.subFamily } : {}),
     };
     const svg = this.meanderGenerationService.generate(generationParameters);
 

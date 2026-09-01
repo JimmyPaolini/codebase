@@ -7,6 +7,7 @@ import { LoggerService } from "@codebase/logger";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
+import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
@@ -52,6 +53,7 @@ describe(StartCommand, () => {
         },
         OutputFilenameService,
         GridGeometryService,
+        MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
         MosaicSymmetryService,
@@ -92,6 +94,7 @@ describe(StartCommand, () => {
         },
         OutputFilenameService,
         GridGeometryService,
+        MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
         MosaicSymmetryService,
@@ -162,7 +165,7 @@ describe(StartCommand, () => {
       expect(permutations).toHaveLength(3179 + 5);
       expect(contactSheets).toHaveLength(5);
       expect(permutations).toContain(
-        "output/permutations/mosaic-6-rows-1-columns-ddddd.svg",
+        "output/permutations/mosaic-6-rows-1-columns-ddddd-dots.svg",
       );
     });
 

@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
@@ -34,6 +35,7 @@ describe(StartPermutationsService, () => {
     const module = await Test.createTestingModule({
       providers: [
         GridGeometryService,
+        MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
         MosaicSymmetryService,
@@ -88,8 +90,24 @@ describe(StartPermutationsService, () => {
 
       expect(new Set(written).size).toBe(written.length);
       expect(written).toContain(
-        "output/permutations/mosaic-6-rows-1-columns-ddddd.svg",
+        "output/permutations/mosaic-6-rows-1-columns-ddddd-dots.svg",
       );
+    });
+
+    it("carries the sub-family in the filename where a tile has one, and only the identifier where it has none", async () => {
+      await service.write("output");
+
+      const written = mockWriteFile.mock.calls.map(([filePath]) => filePath);
+      const named = written.filter((filePath) =>
+        /-(?:dashes|diamond|dots|lines)\.svg$/.test(filePath),
+      );
+
+      // The mixed dot-and-vertical-dash tile at the smallest size there is
+      // belongs to no sub-family, so nothing is appended to its identifier.
+      expect(written).toContain(
+        "output/permutations/mosaic-4-rows-1-columns-dvx.svg",
+      );
+      expect(named).toHaveLength(94);
     });
   });
 });

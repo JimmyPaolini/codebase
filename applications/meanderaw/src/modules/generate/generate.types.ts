@@ -5,6 +5,7 @@ import type {
   MeanderType,
   Modifier,
 } from "../meander-generation/meander-generation.types";
+import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
 
 /**
  * Parsed `generate` command options, ready to pass to the generation
@@ -16,6 +17,10 @@ import type {
  * modifier's own required parameters (like `alternated`'s `period`, or
  * `dot`'s `shape`) are parsed by a separate `@Option` method with no access
  * to `modifier`.
+ *
+ * `subFamily` needs no such combining: it names a region of the family's
+ * unit space on its own, and it is mutually exclusive with `modifier`,
+ * which the generation service enforces.
  */
 export interface GenerateCommandOptions {
   modifier?: Modifier["name"];
@@ -24,5 +29,6 @@ export interface GenerateCommandOptions {
   repeatCount: number;
   rows: number;
   shape?: DotShape;
+  subFamily?: MosaicSubFamily;
   type: MeanderType;
 }
