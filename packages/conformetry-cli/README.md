@@ -846,6 +846,7 @@ flowchart LR
   GenerateModule --> GenerationModule
   GenerateModule --> InputModule
   GenerationModule --> RenderingModule
+  InstanceDiscoveryModule --> ConfigurationModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule
   InstancesModule --> ConfigurationModule

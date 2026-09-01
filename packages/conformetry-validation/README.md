@@ -203,6 +203,7 @@ graph LR
 <!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
+  ConfigurationModule
   DifferencesModule
   FilesModule
   InstanceDiscoveryModule
@@ -214,6 +215,7 @@ flowchart LR
   ValidationModule
   FilesModule --> DifferencesModule
   FilesModule --> InstanceDiscoveryModule
+  InstanceDiscoveryModule --> ConfigurationModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule
   ReportingModule --> ScoringModule

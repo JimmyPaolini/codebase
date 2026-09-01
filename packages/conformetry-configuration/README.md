@@ -488,6 +488,7 @@ flowchart LR
   InstanceDiscoveryModule
   RenderingModule
   TemplateDiscoveryModule
+  InstanceDiscoveryModule --> ConfigurationModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule
   TemplateDiscoveryModule --> RenderingModule
@@ -510,6 +511,8 @@ graph LR
   file_src_modules_configuration_configuration_service_unit_test_ts["src/modules/configuration/configuration.service.unit.test.ts"]
   file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
   file_src_modules_configuration_configuration_utilities_ts["src/modules/configuration/configuration.utilities.ts"]
+  file_src_modules_configuration_instance_group_service_ts["src/modules/configuration/instance-group.service.ts"]
+  file_src_modules_configuration_instance_group_service_unit_test_ts["src/modules/configuration/instance-group.service.unit.test.ts"]
   file_src_modules_input_input_options_service_ts["src/modules/input/input-options.service.ts"]
   file_src_modules_input_input_options_service_unit_test_ts["src/modules/input/input-options.service.unit.test.ts"]
   file_src_modules_input_input_prompting_service_ts["src/modules/input/input-prompting.service.ts"]
@@ -541,6 +544,7 @@ graph LR
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_modules_configuration_configuration_constants_ts --> file_src_modules_configuration_configuration_utilities_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_service_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_instance_group_service_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_module_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
@@ -549,6 +553,8 @@ graph LR
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_configuration_types_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_utilities_ts --> file_src_modules_input_input_constants_ts
+  file_src_modules_configuration_instance_group_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_instance_group_service_unit_test_ts --> file_src_modules_configuration_instance_group_service_ts
   file_src_modules_input_input_options_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_input_input_options_service_ts --> file_src_modules_input_input_constants_ts
   file_src_modules_input_input_options_service_unit_test_ts --> file_src_modules_input_input_options_service_ts
@@ -584,17 +590,20 @@ graph LR
   file_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_src_modules_instance_discovery_instance_discovery_matching_service_ts
   file_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_src_modules_template_discovery_template_discovery_service_ts
   file_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_src_modules_template_discovery_template_discovery_types_ts
+  file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_configuration_configuration_module_ts
   file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_instance_discovery_instance_discovery_locating_service_ts
   file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_instance_discovery_instance_discovery_matching_service_ts
   file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_instance_discovery_instance_discovery_service_ts
   file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_template_discovery_template_discovery_module_ts
   file_src_modules_instance_discovery_instance_discovery_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_instance_discovery_instance_discovery_service_ts --> file_src_modules_configuration_instance_group_service_ts
   file_src_modules_instance_discovery_instance_discovery_service_ts --> file_src_modules_instance_discovery_instance_discovery_locating_service_ts
   file_src_modules_instance_discovery_instance_discovery_service_ts --> file_src_modules_instance_discovery_instance_discovery_matching_service_ts
   file_src_modules_instance_discovery_instance_discovery_service_ts --> file_src_modules_instance_discovery_instance_discovery_types_ts
   file_src_modules_instance_discovery_instance_discovery_service_ts --> file_src_modules_template_discovery_template_discovery_service_ts
   file_src_modules_instance_discovery_instance_discovery_service_ts --> file_src_modules_template_discovery_template_discovery_types_ts
   file_src_modules_instance_discovery_instance_discovery_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_instance_discovery_instance_discovery_service_unit_test_ts --> file_src_modules_configuration_instance_group_service_ts
   file_src_modules_instance_discovery_instance_discovery_service_unit_test_ts --> file_src_modules_instance_discovery_instance_discovery_module_ts
   file_src_modules_instance_discovery_instance_discovery_service_unit_test_ts --> file_src_modules_instance_discovery_instance_discovery_service_ts
   file_src_modules_instance_discovery_instance_discovery_types_ts --> file_src_modules_configuration_configuration_types_ts
@@ -613,40 +622,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5206-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-176.90_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5298-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-180.42_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-39-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-41-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-25.20_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-26.39_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-39-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-41-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-18-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-13-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-139-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-14-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-141-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-11-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-12-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-15-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-15-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-279-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-106-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-296-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-89-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-265-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-157-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-55-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-259-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-679-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-16-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-284-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-107-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-301-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-90-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-266-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-166-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-56-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-266-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-712-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -758,13 +767,13 @@ graph LR
 ### Conventions
 
 ![Module Files](https://img.shields.io/badge/Module_Files-4-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-9-0284c7?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-10-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
 ![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-4-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-1-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-11-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-12-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 
