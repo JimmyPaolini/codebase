@@ -1,5 +1,6 @@
 import path from "node:path";
 
+import { InstanceGroupService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 
 import { PROJECT_ROOT_PATTERN } from "./scope.constants";
@@ -15,12 +16,18 @@ import type { ConformetryInstanceGroup } from "@conformetry/configuration";
  * project graph writes. Telling the two apart by a field the group already has
  * is what keeps a generator's location stated once — nothing else can
  * contradict it, and so nothing can silently narrow it.
+ *
+ * Which of the two a group is, is `InstanceGroupService`'s to say. The groups
+ * this plugin claims and the ones `@conformetry/configuration` reads on its own
+ * must be exact complements, and nothing fails if they are not — a group both
+ * hosts skipped is simply never validated. One rule, read from one place, is
+ * what rules that out.
  */
 @Injectable()
 export class ScopeService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly instanceGroupService: InstanceGroupService) {}
 
   // 🔐 Private Fields
 
@@ -30,7 +37,7 @@ export class ScopeService {
 
   /** Whether a group locates its instances by project tag. */
   private isProjectGroup(group: ConformetryInstanceGroup): boolean {
-    return group.tags !== undefined && group.tags.length > 0;
+    return this.instanceGroupService.isProjectScoped(group);
   }
 
   // 🌎 Public Methods

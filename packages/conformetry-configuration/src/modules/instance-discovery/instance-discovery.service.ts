@@ -2,6 +2,7 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
+import { InstanceGroupService } from "../configuration/instance-group.service";
 import { TemplateDiscoveryService } from "../template-discovery/template-discovery.service";
 
 import { InstanceDiscoveryLocatingService } from "./instance-discovery-locating.service";
@@ -41,6 +42,7 @@ export class InstanceDiscoveryService {
   constructor(
     private readonly instanceDiscoveryLocatingService: InstanceDiscoveryLocatingService,
     private readonly instanceDiscoveryMatchingService: InstanceDiscoveryMatchingService,
+    private readonly instanceGroupService: InstanceGroupService,
     private readonly templateDiscoveryService: TemplateDiscoveryService,
   ) {}
 
@@ -149,12 +151,15 @@ export class InstanceDiscoveryService {
    * Dropping them is deliberately silent here and reported by the caller: this
    * is a question about one group, and only a command knows whether the run it
    * was asked for has been left with nothing.
+   *
+   * Which groups those are is `InstanceGroupService`'s to say, so that this and
+   * the set `@conformetry/nx` claims stay exact complements.
    */
   public readWorkspaceGroups(
     groups: readonly ConformetryInstanceGroup[],
   ): ConformetryInstanceGroup[] {
     return groups.filter((group) => {
-      return group.tags === undefined || group.tags.length === 0;
+      return !this.instanceGroupService.isProjectScoped(group);
     });
   }
 
