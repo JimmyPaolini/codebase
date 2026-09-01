@@ -126,9 +126,16 @@ workspace-relative root**, so either spelling works:
 { exclude: ["examples/**", "*-fixtures"], include: ["**"] }
 ```
 
-`include` defaults to `["**"]` and `exclude` to empty, so leaving both out
-means every project participates. A project is included when at least one
-`include` glob claims its name or root and no `exclude` glob claims either.
+`include` defaults to **nothing** and `exclude` to empty, so leaving both out
+means no project participates and the run exports nothing. Participation is
+always declared: write `include: ["**"]` to cover the whole workspace. A
+project is included when at least one `include` glob claims its name or root
+and no `exclude` glob claims either.
+
+A configuration naming `defaults` but no `include` is the one to watch for.
+It exports nothing while still exiting zero, and `--check boundaries` judges
+every project regardless of `include`, so the gate stays green. An export run
+warns when it happens — `🕸️ Selected no project to export`.
 
 An excluded project resolves to `target: "none"` for every graph type
 regardless of what `defaults` or its own `projects` entry says — so excluding a

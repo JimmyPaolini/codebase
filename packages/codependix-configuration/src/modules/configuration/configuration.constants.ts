@@ -64,8 +64,15 @@ export const DEFAULT_EXPORT_TARGET: CodependixExportTarget = "none";
 /** Markdown file an anchor-mode destination writes into when it names none. */
 export const DEFAULT_MARKDOWN_PATH = "README.md";
 
-/** Projects that participate in graph export when a configuration names none. */
-export const DEFAULT_INCLUDE_GLOBS = ["**"] as const;
+/**
+ * Projects that participate in graph export when a configuration names none.
+ *
+ * Deliberately empty: participation is always declared. A configuration that
+ * names `defaults` but no `include` exports nothing rather than quietly
+ * covering the whole workspace, which is what lets a later widening argument
+ * mean something — a union with `["**"]` as its base can never add a project.
+ */
+export const DEFAULT_INCLUDE_GLOBS = [] as const;
 
 /**
  * Marks the workspace root during an upward search from the process cwd.

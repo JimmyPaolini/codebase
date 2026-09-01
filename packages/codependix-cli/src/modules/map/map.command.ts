@@ -17,7 +17,7 @@ import { MapService } from "./map.service";
 
 import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { RunMode } from "../run-plan/run-plan.types";
-import type { MapCommandOptions } from "./map.types";
+import type { GraphRunContext, MapCommandOptions } from "./map.types";
 import type { BoundaryCheckOutcome } from "@codependix/boundaries";
 
 /**
@@ -91,6 +91,23 @@ export class MapCommand extends CommandRunner {
   }
 
   /**
+   * Warns when nothing in the configuration selects a single project.
+   *
+   * `include` defaults to nothing, so a configuration naming only `defaults`
+   * exports for no project at all — a run that writes nothing and still exits
+   * zero. Nothing else catches it: `--check boundaries` judges every project
+   * regardless of `include`, so a workspace whose exports have gone silent
+   * still has a green gate.
+   */
+  private reportEmptySelection(include: string[]): void {
+    if (include.length > 0) return;
+
+    this.logger.warn("🕸️ Selected no project to export", undefined, {
+      hint: "name the projects that participate in the configuration's include list",
+    });
+  }
+
+  /**
    * Logs why a run ended before it started, and fails it.
    *
    * A command line the input service refused — two modes named, none named
@@ -110,7 +127,6 @@ export class MapCommand extends CommandRunner {
 
     process.exitCode = 1;
   }
-
   /**
    * Logs an outcome's failures and stale exports, and reports whether the run
    * as a whole should fail.
@@ -136,6 +152,7 @@ export class MapCommand extends CommandRunner {
 
     return outcome.failures.length === 0 && staleProjects.length === 0;
   }
+
   /** Logs what each pass that ran verified, and nothing for one that did not. */
   private reportSuccess(args: {
     boundaryOutcome: BoundaryCheckOutcome | undefined;
@@ -152,6 +169,13 @@ export class MapCommand extends CommandRunner {
     if (args.boundaryOutcome !== undefined) {
       this.logger.info("🕸️ Verified every declared codependix boundary holds");
     }
+  }
+
+  /** Runs the export pass, warning first when it can select nothing. */
+  private async runExports(context: GraphRunContext): Promise<GraphRunOutcome> {
+    this.reportEmptySelection(context.configuration.include);
+
+    return this.mapService.run(context);
   }
 
   /**
@@ -171,7 +195,7 @@ export class MapCommand extends CommandRunner {
       workingDirectory: path.resolve(options.directory ?? process.cwd()),
     });
     const exportOutcome = this.runPlanService.touchesFiles(mode)
-      ? await this.mapService.run(context)
+      ? await this.runExports(context)
       : undefined;
     const boundaryOutcome = mode.checksBoundaries
       ? await this.boundaryCheckService.run(context)

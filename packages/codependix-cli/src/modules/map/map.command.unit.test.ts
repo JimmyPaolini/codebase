@@ -19,7 +19,7 @@ import { MapService } from "./map.service";
 
 import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { RunMode } from "../run-plan/run-plan.types";
-import type { MapCommandOptions } from "./map.types";
+import type { GraphRunContext, MapCommandOptions } from "./map.types";
 
 /** Builds a run mode, defaulting every flag a test does not name. */
 function buildMode(overrides: Partial<RunMode> = {}): RunMode {
@@ -67,6 +67,24 @@ describe(MapCommand, () => {
     await buildCommand().run([], options);
   }
 
+  /** Hands the command a context, as `MapService.buildContext` resolves one. */
+  function buildContextWithInclude(include: string[]): GraphRunContext {
+    return {
+      configuration: {
+        boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
+        defaults: {},
+        exclude: [],
+        include,
+        projects: {},
+        workspace: {},
+      },
+      graph: { dependencies: {}, nodes: {} },
+      mode: "write",
+      projects: [],
+      workingDirectory: "/workspace",
+    };
+  }
+
   /** Hands the command a mode, as the run plan would have resolved one. */
   function selectMode(overrides: Partial<RunMode> = {}): RunMode {
     const mode = buildMode(overrides);
@@ -112,6 +130,9 @@ describe(MapCommand, () => {
     inputService = createMock<InputService>();
     loggerService = createMock<LoggerService>();
     runPlanService = createMock<RunPlanService>();
+    vi.mocked(codependixService.buildContext).mockResolvedValue(
+      buildContextWithInclude(["**"]),
+    );
     vi.mocked(codependixService.run).mockResolvedValue({
       failures: [],
       results: [],
@@ -134,6 +155,46 @@ describe(MapCommand, () => {
 
   it("is defined", () => {
     expect(command).toBeDefined();
+  });
+
+  describe("an empty project selection", () => {
+    // Nothing else catches it: --check boundaries judges every project
+    // regardless of include, so the gate stays green while exports go silent.
+    it("warns when no include glob selects a project", async () => {
+      vi.mocked(codependixService.buildContext).mockResolvedValue(
+        buildContextWithInclude([]),
+      );
+
+      await run({ write: true });
+
+      expect(loggerService.warn).toHaveBeenCalledWith(
+        "🕸️ Selected no project to export",
+        undefined,
+        expect.objectContaining({ hint: expect.any(String) as unknown }),
+      );
+    });
+
+    it("stays quiet when an include glob selects something", async () => {
+      await run({ write: true });
+
+      expect(loggerService.warn).not.toHaveBeenCalled();
+    });
+
+    // The boundary gate reads no include, so an empty one says nothing there.
+    it("stays quiet on a boundaries-only run", async () => {
+      selectMode({
+        checksBoundaries: true,
+        checksReports: false,
+        writes: false,
+      });
+      vi.mocked(codependixService.buildContext).mockResolvedValue(
+        buildContextWithInclude([]),
+      );
+
+      await run({ check: "boundaries" });
+
+      expect(loggerService.warn).not.toHaveBeenCalled();
+    });
   });
 
   it("sets logger context", async () => {
