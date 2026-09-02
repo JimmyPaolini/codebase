@@ -127,9 +127,9 @@ describe(StartCommand, () => {
 
       expect(mockMkdir).toHaveBeenCalledWith("output", { recursive: true });
 
-      // 🎯 rows sweep is 3..8 (mosaic, boxes), 4..8 (chain, snake, swirl,
-      // whirl), or 6..8 (cross), crossed with "no modifier" plus every
-      // compatible modifier (alternated and dot each expand to 2
+      // 🎯 rows sweep is 3..8 (mosaic, boxes, negative), 4..8 (chain,
+      // snake, swirl, whirl), or 6..8 (cross), crossed with "no modifier"
+      // plus every compatible modifier (alternated and dot each expand to 2
       // representative values):
       // mosaic: 6 rows * (1 + 2 + 2 + 1) modifiers = 36
       // boxes: 6 rows * (1 + 1 + 1) modifiers = 18
@@ -138,7 +138,8 @@ describe(StartCommand, () => {
       // swirl: 5 rows * (1 + 1) modifiers = 10
       // whirl: 5 rows * (1 + 1) modifiers = 10
       // cross: 3 rows * (1 + 1) modifiers = 6
-      const expectedNamedTypeCount = 36 + 18 + 20 + 20 + 10 + 10 + 6;
+      // negative: 6 rows * (1 + 1 + 1) modifiers = 18
+      const expectedNamedTypeCount = 36 + 18 + 20 + 20 + 10 + 10 + 6 + 18;
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
@@ -290,13 +291,13 @@ describe(StartCommand, () => {
         realCommand.run([], { outputDirectory: "output" }),
       ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 120 enumerated named-type combinations, and
+      // 🎯 every one of the 138 enumerated named-type combinations, and
       // every one of the 3,179 mosaic tiles, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
       // replace the generation services entirely. The five extra files are
       // the mosaic contact sheets, one per row count.
-      expect(mockWriteFile).toHaveBeenCalledTimes(120 + 3179 + 5);
+      expect(mockWriteFile).toHaveBeenCalledTimes(138 + 3179 + 5);
     });
   });
 });

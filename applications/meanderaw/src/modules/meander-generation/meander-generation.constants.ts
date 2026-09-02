@@ -18,6 +18,7 @@ export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   chain: ["edge", "flip", "edge-flip"],
   cross: ["interrupted"],
   mosaic: ["alternated", "dot", "split"],
+  negative: ["brick", "ruled"],
   snake: ["edge", "flip", "edge-flip"],
   swirl: ["flip"],
   whirl: ["flip"],
@@ -88,6 +89,8 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "split",
   "dot",
   "interrupted",
+  "brick",
+  "ruled",
 ] satisfies readonly Modifier["name"][];
 
 /**
@@ -105,6 +108,7 @@ export const SUPPORTED_TYPES: readonly string[] = [
   "swirl",
   "whirl",
   "cross",
+  "negative",
 ] satisfies readonly MeanderType[];
 
 /**
@@ -119,6 +123,7 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
   chain: [],
   cross: [],
   mosaic: SUPPORTED_SUB_FAMILIES,
+  negative: [],
   snake: [],
   swirl: [],
   whirl: [],
@@ -160,12 +165,22 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * rows so the number and its reason cannot drift apart. One minimum per
  * family is the model here, so the family takes the stricter of its two
  * modes.
+ *
+ * `negative`'s minimum of 3 is its source's minimum of 4, moved down one.
+ * It inks the corridors a `mosaic` tile leaves, and puts a lattice point on
+ * each of that tile's cells — so its own band is one row shorter than the
+ * tile it inverts (see `NEGATIVE_SOURCE_ROW_OFFSET`), and 3 rows is the
+ * shallowest negative the shallowest enumerated tile can yield.
+ * `MOSAIC_TILE_MINIMUM_ROWS` is 4 for its own reason — below it a tile's
+ * interior is a single level and there is nothing to permute — so this
+ * number is that one, and moves with it.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
   chain: 4,
   cross: 6,
   mosaic: 3,
+  negative: 3,
   snake: 4,
   swirl: 4,
   whirl: 4,

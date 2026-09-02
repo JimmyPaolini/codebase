@@ -31,6 +31,7 @@ export type MeanderType =
   | "chain"
   | "cross"
   | "mosaic"
+  | "negative"
   | "snake"
   | "swirl"
   | "whirl";
@@ -42,11 +43,13 @@ export type MeanderType =
  */
 export type Modifier =
   | { readonly name: "alternated"; readonly period: number }
+  | { readonly name: "brick" }
   | { readonly name: "dot"; readonly shape: DotShape }
   | { readonly name: "edge" }
   | { readonly name: "edge-flip" }
   | { readonly name: "flip" }
   | { readonly name: "interrupted" }
+  | { readonly name: "ruled" }
   | { readonly name: "spin" }
   | { readonly name: "spin-flip" }
   | { readonly name: "split" };

@@ -1,3 +1,8 @@
+// cspell:ignore dvvxxd dvvxxvdx dvvxxvvxxd dvvxxvvxxvdx dvvxxvvxxvvxxd
+// cspell:ignore hxxhhx hxxhhxxh hxxhhxxhhx hxxhhxxhhxxh hxxhhxxhhxxhhx
+// cspell:ignore dld dldl dldld dldldl dldldld
+// — mosaic tile identifiers, one letter per cell of the tile, from
+// MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -14,6 +19,8 @@ import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.servic
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
+import { NegativeMotifService } from "../negative-motif/negative-motif.service";
+import { NegativeSourceService } from "../negative-motif/negative-source.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { StartCombinationsService } from "../start/start-combinations.service";
@@ -97,6 +104,15 @@ interface CharterRelaxation {
  * else is declared for it: the break keeps every lattice point painted, so
  * space-filling holds in both modes, and neither mode branches.
  *
+ * `negative` relaxes no-branching in every one of its modes, which is why
+ * its entry names no modifier at all: it inks the corridors a `mosaic` tile
+ * leaves, a cell where three corridors meet becomes a lattice point where
+ * three arms of ink meet, and all three of its sources were chosen off the
+ * survey's _branches only_ shortlist precisely because they branch. Nothing
+ * else is declared for it — its sources have zero negative X-junctions at
+ * every swept row count, so its ink has zero too, and every lattice point of
+ * its canvas carries ink, so space-filling holds.
+ *
  * Only the ink is declared here. Invariants 3 and 4 constrain positive space
  * — a family's negative may branch and cross freely, and no family is failed
  * for it.
@@ -106,6 +122,7 @@ const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
   chain: [{ invariant: "no-branching", modifierNames: ["edge", "edge-flip"] }],
   cross: [{ exceptModifierNames: ["interrupted"], invariant: "no-crossing" }],
   mosaic: [],
+  negative: [{ invariant: "no-branching" }],
   snake: [{ invariant: "no-branching", modifierNames: ["edge", "edge-flip"] }],
   swirl: [],
   whirl: [],
@@ -157,13 +174,15 @@ const charterSweep: readonly CharterCase[] = new StartCombinationsService()
   });
 
 /**
- * How many documents `StartCommand` commits: 120 named patterns beside 3,179
+ * How many documents `StartCommand` commits: 138 named patterns beside 3,179
  * enumerated `mosaic` tiles. #340 measured this corpus at 114 named patterns;
  * the `cross` family added the six the sweep draws for it — three row counts
  * from its structural minimum of 6 through the sweep maximum, solid and
- * `interrupted`.
+ * `interrupted` — and the `negative` family the eighteen it draws for its
+ * own, six row counts from its structural minimum of 3 crossed with its two
+ * modifiers plus none.
  */
-const COMMITTED_CORPUS_SIZE = 120 + 3179;
+const COMMITTED_CORPUS_SIZE = 138 + 3179;
 
 /** Where `StartCommand` writes those documents, and where they are committed. */
 const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
@@ -218,6 +237,59 @@ const NEGATIVE_SPACE_SURVEYED_FAMILIES: ReadonlySet<MeanderType> = new Set([
   "whirl",
 ]);
 
+/**
+ * Every `negative` drawing the sweep commits, beside the committed `mosaic`
+ * permutation whose white space it inks.
+ *
+ * This is what makes "the candidates drawn come from the survey's shortlist"
+ * — #415's second acceptance criterion — a fact rather than a comment. The
+ * right-hand column names files that were on disk before this family
+ * existed, measured by the survey and committed by the permutation sweep, and
+ * the assertion below reads both and compares them. The `rows` on the left is
+ * one lower than the `rows` in the filename on the right, which is the whole
+ * of `NEGATIVE_SOURCE_ROW_OFFSET`.
+ *
+ * The sweep also draws `negative` at 8 rows, one row past the survey's own
+ * range, so those three drawings have no committed source to compare against
+ * and are absent here. They are still gated by the sweep above, which
+ * measures them like every other drawing.
+ */
+const NEGATIVE_SOURCE_DOCUMENTS: readonly {
+  readonly parameters: GenerationParameters;
+  readonly sourceName: string;
+}[] = [
+  ["dvvxxd", "dvvxxvdx", "dvvxxvvxxd", "dvvxxvvxxvdx", "dvvxxvvxxvvxxd"].map(
+    (identifier, index) => ({
+      parameters: {
+        repeatCount: 6,
+        rows: index + 3,
+        type: "negative" as const,
+      },
+      sourceName: `mosaic-${index + 4}-rows-2-columns-${identifier}.svg`,
+    }),
+  ),
+  ["hxxhhx", "hxxhhxxh", "hxxhhxxhhx", "hxxhhxxhhxxh", "hxxhhxxhhxxhhx"].map(
+    (identifier, index) => ({
+      parameters: {
+        modifier: { name: "brick" as const },
+        repeatCount: 6,
+        rows: index + 3,
+        type: "negative" as const,
+      },
+      sourceName: `mosaic-${index + 4}-rows-2-columns-${identifier}-dashes.svg`,
+    }),
+  ),
+  ["dld", "dldl", "dldld", "dldldl", "dldldld"].map((identifier, index) => ({
+    parameters: {
+      modifier: { name: "ruled" as const },
+      repeatCount: 6,
+      rows: index + 3,
+      type: "negative" as const,
+    },
+    sourceName: `mosaic-${index + 4}-rows-1-columns-${identifier}.svg`,
+  })),
+].flat();
+
 /** Whether `parameters` name a drawing the charter declaration allows to break `invariant`. */
 const relaxes = (
   parameters: GenerationParameters,
@@ -255,6 +327,8 @@ describe(MeanderTopologyService, () => {
         MosaicTileGenerationService,
         MosaicTileMotifService,
         MotifTransformsService,
+        NegativeMotifService,
+        NegativeSourceService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,
@@ -274,7 +348,7 @@ describe(MeanderTopologyService, () => {
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
     it("sweeps every named-type combination StartCommand writes", () => {
-      expect(charterSweep).toHaveLength(120);
+      expect(charterSweep).toHaveLength(138);
     });
 
     it.each(charterSweep)("$label holds it", ({ parameters }) => {
@@ -315,6 +389,37 @@ describe(MeanderTopologyService, () => {
         "mosaic with split",
       ]);
     });
+
+    // 🎯 The `negative` family's whole claim, in one assertion: its ink is
+    // the white space of a document this repository already committed. The
+    // two counts are read from two different files by two different routes —
+    // one generated here, one measured off disk — so a change to either side
+    // that stopped them being complements would fail. The `toBeGreaterThan`
+    // is the guard against the assertion passing vacuously on a source with
+    // nothing in its negative to ink.
+    it.each(NEGATIVE_SOURCE_DOCUMENTS)(
+      "inks exactly the corridors $sourceName leaves",
+      async ({ parameters, sourceName }) => {
+        const source = topologyService.measure(
+          await readFile(
+            path.join(OUTPUT_DIRECTORY, "permutations", sourceName),
+            "utf8",
+          ),
+        );
+        const negative = topologyService.measure(
+          generationService.generate(parameters),
+        );
+
+        expect(source.negativeTJunctions).toBeGreaterThan(0);
+        expect({
+          branches: negative.inkTJunctions,
+          crosses: negative.inkXJunctions,
+        }).toStrictEqual({
+          branches: source.negativeTJunctions,
+          crosses: source.negativeXJunctions,
+        });
+      },
+    );
 
     it("holds across every committed document, measured from disk", async () => {
       const documents = await readCommittedCorpus();

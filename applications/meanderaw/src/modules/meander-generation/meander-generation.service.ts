@@ -7,6 +7,7 @@ import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
+import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
@@ -65,6 +66,8 @@ export class MeanderGenerationService {
     private readonly chainMotifService: ChainMotifService,
     @Inject(CrossMotifService)
     private readonly crossMotifService: CrossMotifService,
+    @Inject(NegativeMotifService)
+    private readonly negativeMotifService: NegativeMotifService,
     @Inject(SnakeMotifService)
     private readonly snakeMotifService: SnakeMotifService,
     @Inject(SvgRenderingService)
@@ -163,6 +166,7 @@ export class MeanderGenerationService {
       chain: this.chainMotifService,
       cross: this.crossMotifService,
       mosaic: this.mosaicMotifService,
+      negative: this.negativeMotifService,
       snake: this.snakeMotifService,
       swirl: this.swirlMotifService,
       whirl: this.whirlMotifService,
