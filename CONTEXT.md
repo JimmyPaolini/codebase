@@ -217,3 +217,48 @@ reports` means the same thing in callidescope, codometer, and codependix: a
 configured destination no longer holds what a fresh run would write. Each
 tool's other `--check` name is its own gating word — `depth`, `limits`,
 `boundaries` — because those are the magnitudes only it measures.
+
+## Publishing
+
+**Suite**:
+One of the four toolchains this repository publishes — conformetry, codometer,
+callidescope, codependix — named for the command a reader runs. A suite is a
+product, not a directory: its packages version independently but are documented
+and discovered as one thing.
+_Avoid_: Toolchain family, package group, monorepo project
+
+**Publish set**:
+The packages a release actually sends to npm. Deliberately narrower than the
+packages that build: the `*-agents` and `*-examples` packages are never
+published, because skills travel through `skills-lock.json` and examples are
+fixtures, several broken on purpose.
+_Avoid_: Publishable packages, the packages, release set
+
+**Gate**:
+A control that stops a package reaching npm. Three exist and they are not
+interchangeable: `private` in the manifest, which npm itself refuses to publish
+past; the orchestrator's own projects filter; and the registry's permissions.
+A package outside the publish set is held by the first two, never by only one.
+_Avoid_: Flag, switch, block
+
+**Inline**:
+Compiling another workspace package's code into a package's own build output,
+so the published tarball carries it and never names it as a dependency. What
+is inlined is the code, never the source file — nothing is copied into the
+repository, and the dependency stays a single package here.
+_Avoid_: Vendor, bundle, embed, copy
+
+**Cascade**:
+The patch bump a package receives because something it depends on was
+versioned, rather than because it changed. What keeps independently versioned
+packages within a suite consistent.
+_Avoid_: Ripple, propagate, bump dependents
+
+**Round size**:
+The shape every declared codometer limit takes: a power of two, or three times
+one. `4`, `6`, `12`, `16`, `24`, `32`, `48`, `64`, `96`, `128`, `192`, `256`,
+`384`, `512`. A limit is chosen by rounding a measurement up to the next such
+number, never by recording what a run happened to measure — an exact figure
+reads as a target and invites being edited to whatever the next run produced.
+Nothing enforces this; every limit in the workspace follows it.
+_Avoid_: Budget, rounded limit, nice number
