@@ -17,6 +17,7 @@ import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.servic
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
+import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
@@ -183,6 +184,7 @@ describe(MeanderGenerationService, () => {
         MotifTransformsService,
         NegativeMotifService,
         NegativeSourceService,
+        ParallelMotifService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,

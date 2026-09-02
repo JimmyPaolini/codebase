@@ -29,6 +29,7 @@ export interface GenerateCommandOptions {
   repeatCount: number;
   rows: number;
   shape?: DotShape;
+  strands?: number;
   subFamily?: MosaicSubFamily;
   type: MeanderType;
 }

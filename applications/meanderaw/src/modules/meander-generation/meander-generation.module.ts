@@ -7,6 +7,7 @@ import { CrossMotifModule } from "../cross-motif/cross-motif.module";
 import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
 import { MosaicMotifModule } from "../mosaic-motif/mosaic-motif.module";
 import { NegativeMotifModule } from "../negative-motif/negative-motif.module";
+import { ParallelMotifModule } from "../parallel-motif/parallel-motif.module";
 import { SnakeMotifModule } from "../snake-motif/snake-motif.module";
 import { SvgRenderingModule } from "../svg-rendering/svg-rendering.module";
 import { SwirlMotifModule } from "../swirl-motif/swirl-motif.module";
@@ -40,6 +41,7 @@ import { MotifRegistryService } from "./motif-registry.service";
     GridGeometryModule,
     MosaicMotifModule,
     NegativeMotifModule,
+    ParallelMotifModule,
     SnakeMotifModule,
     SvgRenderingModule,
     SwirlMotifModule,

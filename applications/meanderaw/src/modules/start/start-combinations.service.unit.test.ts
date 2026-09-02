@@ -1,7 +1,10 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { STRUCTURAL_MINIMUM_ROWS } from "../meander-generation/meander-generation.constants";
+
 import { StartCombinationsService } from "./start-combinations.service";
+import { PLIED_SWEEP_STRAND_COUNTS } from "./start.constants";
 
 import type { GenerationParameters } from "../meander-generation/meander-generation.types";
 
@@ -46,6 +49,8 @@ describe(StartCombinationsService, () => {
       { expected: 18, type: "negative" },
       // rows 2..8 × (none + rung + stagger)
       { expected: 21, type: "branch" },
+      // rows 4..8 × (none + plied ×2)
+      { expected: 15, type: "parallel" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
       expect(
         combinations.filter((parameters) => parameters.type === type),
@@ -53,13 +58,25 @@ describe(StartCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(159);
+      expect(combinations).toHaveLength(174);
     });
 
     it("names every combination distinctly", () => {
       const keys = combinations.map((parameters) => JSON.stringify(parameters));
 
       expect(new Set(keys).size).toBe(combinations.length);
+    });
+
+    // 🎯 Two numbers written in two files, made to agree here rather than
+    // by anybody remembering. A `parallel` bundle of N strands needs N rows,
+    // so the deepest ply the sweep draws is exactly the row count the family
+    // may start at. Deepening the sweep without raising the minimum would
+    // enumerate a combination `MeanderGenerationService.generate` refuses,
+    // and this fails before that does.
+    it("sweeps no ply deeper than the row count the parallel family starts at", () => {
+      expect(Math.max(...PLIED_SWEEP_STRAND_COUNTS)).toBe(
+        STRUCTURAL_MINIMUM_ROWS.parallel,
+      );
     });
 
     it("sweeps each type from its own structural minimum through the sweep maximum", () => {

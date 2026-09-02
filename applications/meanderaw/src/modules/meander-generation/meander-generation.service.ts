@@ -13,10 +13,12 @@ import {
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
   InvalidRowsError,
+  InvalidStrandCountError,
   InvalidSubFamilyError,
   MAXIMUM_VALUE,
   MINIMUM_PERIOD,
   MINIMUM_REPEAT_COUNT,
+  MINIMUM_STRANDS,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
@@ -229,6 +231,34 @@ export class MeanderGenerationService {
     }
   }
 
+  /**
+   * Throws {@link InvalidStrandCountError} when `plied`'s `strands` isn't a
+   * whole number between {@link MINIMUM_STRANDS} and the drawing's own row
+   * count.
+   *
+   * The upper bound is `rows` rather than {@link MAXIMUM_VALUE} because it
+   * is the geometry's bound rather than the CLI's: a `parallel` bundle's
+   * innermost strand has `rows - strands + 1` lattice steps of arm, so one
+   * ply past the row count leaves it a bare crossbar running alongside
+   * nothing. `STRUCTURAL_MINIMUM_ROWS` cannot state that, since it is one
+   * number per family and this one moves with the modifier.
+   */
+  private validateStrands(modifier: Modifier | undefined, rows: number): void {
+    if (modifier?.name !== "plied") {
+      return;
+    }
+
+    const { strands } = modifier;
+
+    if (
+      !Number.isInteger(strands) ||
+      strands < MINIMUM_STRANDS ||
+      strands > rows
+    ) {
+      throw new InvalidStrandCountError(strands, MINIMUM_STRANDS, rows);
+    }
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -247,6 +277,7 @@ export class MeanderGenerationService {
     this.validateModifier(parameters.type, parameters.modifier);
     this.validatePeriod(parameters.modifier);
     this.validateModifierCycle(parameters.modifier, parameters.repeatCount);
+    this.validateStrands(parameters.modifier, parameters.rows);
 
     const geometry = this.gridGeometryService.compute(parameters.rows);
     const paths = this.buildPaths(geometry, parameters);

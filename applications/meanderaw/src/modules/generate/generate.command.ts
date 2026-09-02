@@ -56,7 +56,7 @@ export class GenerateCommand extends CommandRunner {
 
   /** Builds the final {@link Modifier}, combining `--modifier`'s name with whichever parameter option that modifier requires. */
   private buildModifier(options: GenerateCommandOptions): Modifier | undefined {
-    const { modifier, period, shape } = options;
+    const { modifier, period, shape, strands } = options;
 
     if (!modifier) {
       return undefined;
@@ -76,6 +76,14 @@ export class GenerateCommand extends CommandRunner {
       }
 
       return { name: "dot", shape };
+    }
+
+    if (modifier === "plied") {
+      if (strands === undefined) {
+        throw new Error('Modifier "plied" requires --strands');
+      }
+
+      return { name: "plied", strands };
     }
 
     return { name: modifier };
@@ -171,6 +179,16 @@ export class GenerateCommand extends CommandRunner {
     }
 
     return value;
+  }
+
+  /** Parses the `--strands` flag as an integer, used only when `--modifier plied` is given. */
+  @Option({
+    description:
+      "Number of strands running alongside one another, for --modifier plied",
+    flags: "-n, --strands <strands>",
+  })
+  parseStrands(value: string): number {
+    return Number.parseInt(value, 10);
   }
 
   /**
