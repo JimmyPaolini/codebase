@@ -152,6 +152,7 @@ decides which repeat unit is drawn.
 
 One name worth reading twice: the **`dot` modifier** (singular, carrying a `bounce` or
 `up` shape) and the **`dots` sub-family** (plural) are different things one letter apart.
+
 ## 🕳️ Negative Space Survey
 
 <!-- The tile identifiers below are canonical MosaicSymmetryService output (one letter per cell, see mosaic-symmetry.service.ts), not words. cspell:ignore dvvxxd dvvxxvvxxvvxxd dvvxxvdx dvvxxvvxxd dvvxxvvxxvdx hxxhhx hxxhhxxhhxxhhx hxxhhxxh hxxhhxxhhx hxxhhxxhhxxh dldldld dldl dldld dldldl -->
