@@ -225,6 +225,46 @@ describe(ParallelMotifService, () => {
     );
   });
 
+  describe("the stroke width", () => {
+    // 🎯 #413's own arithmetic, refused in an assertion rather than in
+    // prose. It states `strokeWidth = unit / (2N)`, which would make a
+    // deeper ply draw a thinner line. Every ply draws at `unit / 2` — the
+    // same number `boxes` declares at the same row count — so the lattice
+    // these drawings read back onto is the lattice every other family's do,
+    // which is what makes the charter sweep's verdict on them comparable at
+    // all.
+    it.each(
+      SWEPT_ROWS.flatMap((rows) =>
+        PLIES.map((ply) => ({
+          ...ply,
+          label: `${ply.label} at ${rows} rows`,
+          rows,
+        })),
+      ),
+    )("stays at half a grid unit for $label", ({ modifier, rows }) => {
+      const geometry = geometryService.compute(rows);
+      const declared = `stroke-width="${geometryService.formatCoordinate(
+        geometry.unit / 2,
+      )}"`;
+
+      expect(
+        generationService.generate({
+          repeatCount: REPEAT_COUNT,
+          rows,
+          type: "parallel",
+          ...(modifier ? { modifier } : {}),
+        }),
+      ).toContain(declared);
+      expect(
+        generationService.generate({
+          repeatCount: REPEAT_COUNT,
+          rows,
+          type: "boxes",
+        }),
+      ).toContain(declared);
+    });
+  });
+
   describe("the charter", () => {
     // 🎯 The family's whole claim, measured through the single seam rather
     // than described: every lattice point of the band carries ink at every
