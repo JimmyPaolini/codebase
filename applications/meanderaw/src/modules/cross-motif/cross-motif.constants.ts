@@ -19,3 +19,13 @@
  * records a search that found none and is careful not to call it a proof.
  */
 export const CROSS_UNIT_COLUMNS = 2;
+
+// 🚨 Errors
+
+/** Thrown when a modifier reaches this family that it draws no bar for; `MeanderGenerationService.generate` rejects those first, so nothing reaches it through the seam. */
+export class UnknownCrossModifierError extends Error {
+  constructor(modifierName: string) {
+    super(`modifier "${modifierName}" names no cross mode`);
+    this.name = "UnknownCrossModifierError";
+  }
+}
