@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { BoxesMotifModule } from "../boxes-motif/boxes-motif.module";
+import { BranchMotifModule } from "../branch-motif/branch-motif.module";
 import { ChainMotifModule } from "../chain-motif/chain-motif.module";
 import { CrossMotifModule } from "../cross-motif/cross-motif.module";
 import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
@@ -33,6 +34,7 @@ import { MotifRegistryService } from "./motif-registry.service";
   exports: [MeanderGenerationService, MosaicMotifModule, SvgRenderingModule],
   imports: [
     BoxesMotifModule,
+    BranchMotifModule,
     ChainMotifModule,
     CrossMotifModule,
     GridGeometryModule,

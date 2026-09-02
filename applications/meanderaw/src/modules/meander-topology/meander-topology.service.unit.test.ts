@@ -178,4 +178,84 @@ describe(MeanderTopologyService, () => {
       expect(service.measure(document)).toStrictEqual(expected);
     });
   });
+
+  describe("connectivity", () => {
+    it.each([
+      {
+        document: buildDocument({ columns: 2, paths: ["M3 3H27"], rows: 1 }),
+        expected: { components: 1, edges: 2, nodes: 3 },
+        label: "one simple arc, a tree with no fork",
+      },
+      {
+        document: buildDocument({
+          columns: 2,
+          paths: ["M3 3H27", "M3 3V15", "M15 3V15", "M27 3V15"],
+          rows: 1,
+        }),
+        expected: { components: 1, edges: 5, nodes: 6 },
+        label: "a spine with a tooth per column, a tree that forks",
+      },
+      {
+        document: buildDocument({
+          columns: 1,
+          paths: ["M3 3H15", "M3 15H15", "M3 3V15", "M15 3V15"],
+          rows: 1,
+        }),
+        expected: { components: 1, edges: 4, nodes: 4 },
+        label: "a closed loop, connected but not a tree",
+      },
+      {
+        document: buildDocument({
+          columns: 2,
+          paths: ["M3 3H27", "M3 15H27"],
+          rows: 1,
+        }),
+        expected: { components: 2, edges: 4, nodes: 6 },
+        label: "two disjoint arcs, a forest that is not a tree",
+      },
+      {
+        document: buildDocument({ columns: 2, paths: ["M15 15H15"], rows: 2 }),
+        expected: { components: 1, edges: 0, nodes: 1 },
+        label: "a square-cap dot, one node joined to nothing",
+      },
+    ])("counts $label", ({ document, expected }) => {
+      expect(service.connectivity(document)).toStrictEqual(expected);
+    });
+
+    // 🎯 The two derived predicates the counts above exist to support,
+    // spelled out once so the arithmetic that defines a tree is written
+    // down beside the numbers rather than only in a family's own test.
+    it.each([
+      {
+        isForest: true,
+        isTree: true,
+        label: "a spine with a tooth per column",
+        paths: ["M3 3H27", "M3 3V15", "M15 3V15", "M27 3V15"],
+      },
+      {
+        isForest: false,
+        isTree: false,
+        label: "a closed loop",
+        paths: ["M3 3H15", "M3 15H15", "M3 3V15", "M15 3V15"],
+      },
+      {
+        isForest: true,
+        isTree: false,
+        label: "two disjoint arcs",
+        paths: ["M3 3H27", "M3 15H27"],
+      },
+    ])("reports $label as forest $isForest and tree $isTree", (testCase) => {
+      const { components, edges, nodes } = service.connectivity(
+        buildDocument({ columns: 2, paths: testCase.paths, rows: 1 }),
+      );
+
+      expect({
+        isForest: edges === nodes - components,
+        isTree: components === 1 && edges === nodes - 1,
+      }).toStrictEqual({
+        isForest: testCase.isForest,
+        isTree: testCase.isTree,
+      });
+    });
+  });
 });

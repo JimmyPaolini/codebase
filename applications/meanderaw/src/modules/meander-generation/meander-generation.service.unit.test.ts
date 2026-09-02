@@ -6,6 +6,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { COORDINATE_ROUNDING_TOLERANCE } from "../../../testing/path-data";
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
@@ -175,6 +176,7 @@ describe(MeanderGenerationService, () => {
         MosaicTileGenerationService,
         MosaicTileMotifService,
         BoxesMotifService,
+        BranchMotifService,
         ChainMotifService,
         CrossMotifService,
         MotifRegistryService,

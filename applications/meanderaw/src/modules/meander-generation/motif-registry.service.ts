@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
@@ -36,6 +37,8 @@ export class MotifRegistryService {
   constructor(
     @Inject(BoxesMotifService)
     private readonly boxesMotifService: BoxesMotifService,
+    @Inject(BranchMotifService)
+    private readonly branchMotifService: BranchMotifService,
     @Inject(ChainMotifService)
     private readonly chainMotifService: ChainMotifService,
     @Inject(CrossMotifService)
@@ -64,6 +67,7 @@ export class MotifRegistryService {
   resolve(type: MeanderType): MotifService {
     const motifServicesByType: Record<MeanderType, MotifService> = {
       boxes: this.boxesMotifService,
+      branch: this.branchMotifService,
       chain: this.chainMotifService,
       cross: this.crossMotifService,
       mosaic: this.mosaicMotifService,

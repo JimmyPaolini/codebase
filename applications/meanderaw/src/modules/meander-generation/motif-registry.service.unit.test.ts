@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
@@ -34,6 +35,7 @@ import type { MeanderType } from "./meander-generation.types";
  */
 const EXPECTED_MOTIF_SERVICES = [
   { expected: BoxesMotifService, type: "boxes" },
+  { expected: BranchMotifService, type: "branch" },
   { expected: ChainMotifService, type: "chain" },
   { expected: CrossMotifService, type: "cross" },
   { expected: MosaicMotifService, type: "mosaic" },
@@ -52,6 +54,7 @@ describe(MotifRegistryService, () => {
     const module = await Test.createTestingModule({
       providers: [
         BoxesMotifService,
+        BranchMotifService,
         ChainMotifService,
         CrossMotifService,
         GridGeometryService,

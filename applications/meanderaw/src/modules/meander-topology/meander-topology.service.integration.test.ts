@@ -10,6 +10,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
@@ -114,12 +115,24 @@ interface CharterRelaxation {
  * every swept row count, so its ink has zero too, and every lattice point of
  * its canvas carries ink, so space-filling holds.
  *
+ * `branch` relaxes no-branching in every one of its modes, which is why its
+ * entry names no modifier either. It inks a spanning tree of the band's
+ * lattice — every lattice point painted, joined by exactly one fewer step
+ * than there are points — so it forks at most of its columns and closes a
+ * loop at none. Nothing else is declared for it: no lattice point in any of
+ * its modes carries four arms, so invariant 4 holds, and every lattice
+ * point carries ink, so space-filling holds. What separates it from
+ * `negative` is not the relaxation, which is the same one, but the loops:
+ * `negative` is one connected piece with 15 to 45 cycles in it, and
+ * `branch` has none. That is measured below, not asserted here.
+ *
  * Only the ink is declared here. Invariants 3 and 4 constrain positive space
  * — a family's negative may branch and cross freely, and no family is failed
  * for it.
  */
 const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
   boxes: [],
+  branch: [{ invariant: "no-branching" }],
   chain: [{ invariant: "no-branching", modifierNames: ["edge", "edge-flip"] }],
   cross: [{ exceptModifierNames: ["interrupted"], invariant: "no-crossing" }],
   mosaic: [],
@@ -175,15 +188,16 @@ const charterSweep: readonly CharterCase[] = new StartCombinationsService()
   });
 
 /**
- * How many documents `StartCommand` commits: 138 named patterns beside 3,179
+ * How many documents `StartCommand` commits: 159 named patterns beside 3,179
  * enumerated `mosaic` tiles. #340 measured this corpus at 114 named patterns;
  * the `cross` family added the six the sweep draws for it — three row counts
  * from its structural minimum of 6 through the sweep maximum, solid and
- * `interrupted` — and the `negative` family the eighteen it draws for its
- * own, six row counts from its structural minimum of 3 crossed with its two
- * modifiers plus none.
+ * `interrupted` — the `negative` family the eighteen it draws for its own,
+ * six row counts from its structural minimum of 3 crossed with its two
+ * modifiers plus none, and the `branch` family twenty-one, seven row counts
+ * from its structural minimum of 2 crossed with its two modifiers plus none.
  */
-const COMMITTED_CORPUS_SIZE = 138 + 3179;
+const COMMITTED_CORPUS_SIZE = 159 + 3179;
 
 /** Where `StartCommand` writes those documents, and where they are committed. */
 const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
@@ -317,6 +331,7 @@ describe(MeanderTopologyService, () => {
     const module = await Test.createTestingModule({
       providers: [
         BoxesMotifService,
+        BranchMotifService,
         ChainMotifService,
         CrossMotifService,
         GridGeometryService,
@@ -350,7 +365,7 @@ describe(MeanderTopologyService, () => {
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
     it("sweeps every named-type combination StartCommand writes", () => {
-      expect(charterSweep).toHaveLength(138);
+      expect(charterSweep).toHaveLength(159);
     });
 
     it.each(charterSweep)("$label holds it", ({ parameters }) => {
@@ -423,6 +438,50 @@ describe(MeanderTopologyService, () => {
       },
     );
 
+    // 🎯 The `branch` family's whole claim, taken over the corpus rather
+    // than over a family's own drawings: its twenty-one documents are trees
+    // and every other one of the 3,338 is not. Reading from disk is what
+    // makes the second half say anything — a family that started drawing
+    // loops, or one that stopped, fails here rather than in its own test.
+    //
+    // The two conditions are separated on purpose. Being a forest is what
+    // every family but three already is; being one connected piece is what
+    // `negative` already is. Only `branch` is both, and 3,317 documents
+    // predate it without a single one managing it.
+    it("draws a tree in exactly the branching family's documents", async () => {
+      const documents = await readCommittedCorpus();
+      const trees: string[] = [];
+      const looped: string[] = [];
+
+      for (const { document, name } of documents) {
+        const { components, edges, nodes } =
+          topologyService.connectivity(document);
+
+        if (edges !== nodes - components) {
+          looped.push(name);
+        }
+
+        if (components === 1 && edges === nodes - 1) {
+          trees.push(name);
+        }
+      }
+
+      expect(trees).toHaveLength(21);
+      expect(
+        [...new Set(trees.map((name) => name.split("-")[0]))].toSorted(),
+      ).toStrictEqual(["branch"]);
+
+      // 🎯 The loops are all somewhere else: `negative`'s eighteen corridor
+      // networks, `cross`'s three solid crossings, and the ten `snake`
+      // drawings whose `edge` pitch closes a loop against the band border.
+      // `branch` appears nowhere in this list, which is the half of the
+      // claim a tree test alone would not make.
+      expect(looped).toHaveLength(31);
+      expect(
+        [...new Set(looped.map((name) => name.split("-")[0]))].toSorted(),
+      ).toStrictEqual(["cross", "negative", "snake"]);
+    });
+
     it("holds across every committed document, measured from disk", async () => {
       const documents = await readCommittedCorpus();
 
@@ -440,7 +499,7 @@ describe(MeanderTopologyService, () => {
       ).toStrictEqual([]);
 
       // 🎯 Ink crosses in exactly the three documents that were committed to
-      // make it cross, and nowhere else in 3,317 files. The `interrupted`
+      // make it cross, and nowhere else in 3,338 files. The `interrupted`
       // renderings of the same three row counts are absent on purpose: the
       // break takes the junction out of the ink graph.
       expect(

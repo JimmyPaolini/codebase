@@ -3,8 +3,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import { MeanderLatticeService } from "./meander-lattice.service";
 
 import type {
+  InkConnectivity,
   JunctionCounts,
   LatticeGraph,
+  LatticePoint,
   MeanderTopology,
 } from "./meander-topology.types";
 
@@ -114,6 +116,40 @@ export class MeanderTopologyService {
     return corridors.filter(Boolean).length;
   }
 
+  /** The painted lattice points one step of ink away from `point`. */
+  private neighbors(graph: LatticeGraph, point: LatticePoint): LatticePoint[] {
+    const { column, row } = point;
+    const steps = [
+      {
+        column: column - 1,
+        joined: graph.horizontalEdges.has(this.key(column - 1, row)),
+        row,
+      },
+      {
+        column: column + 1,
+        joined: graph.horizontalEdges.has(this.key(column, row)),
+        row,
+      },
+      {
+        column,
+        joined: graph.verticalEdges.has(this.key(column, row - 1)),
+        row: row - 1,
+      },
+      {
+        column,
+        joined: graph.verticalEdges.has(this.key(column, row)),
+        row: row + 1,
+      },
+    ];
+
+    return steps
+      .filter(({ joined }) => joined)
+      .map(({ column: neighborColumn, row: neighborRow }) => ({
+        column: neighborColumn,
+        row: neighborRow,
+      }));
+  }
+
   /** Records one degree as a three-armed junction, a four-armed one, or neither. */
   private tally(counts: JunctionCounts, degree: number): void {
     if (degree === 3) {
@@ -125,7 +161,73 @@ export class MeanderTopologyService {
     }
   }
 
+  /** Marks every painted lattice point reachable from `start` along ink as visited. */
+  private walk(
+    graph: LatticeGraph,
+    start: LatticePoint,
+    visited: Set<string>,
+  ): void {
+    const pending: LatticePoint[] = [start];
+
+    visited.add(this.key(start.column, start.row));
+
+    while (pending.length > 0) {
+      const point = pending.pop();
+
+      if (point === undefined) {
+        break;
+      }
+
+      for (const neighbor of this.neighbors(graph, point)) {
+        const key = this.key(neighbor.column, neighbor.row);
+
+        if (!visited.has(key)) {
+          visited.add(key);
+          pending.push(neighbor);
+        }
+      }
+    }
+  }
+
   // 🌎 Public Methods
+
+  /**
+   * Counts one rendered meander's ink as a graph: its painted lattice
+   * points, the one-pitch steps joining them, and how many connected pieces
+   * those steps leave.
+   *
+   * It is a second reading of the same lattice {@link measure} reads, kept
+   * apart from it because it answers a different question. `measure`
+   * reports the three charter invariants a drawing can be checked against;
+   * these three numbers report the drawing's *shape as a graph*, which no
+   * charter invariant fixes — the six original families are forests of many
+   * components, `negative` is one component full of loops, and `branch` is
+   * a single loop-free tree. See {@link InkConnectivity} for the arithmetic
+   * that turns them into those words.
+   */
+  connectivity(document: string): InkConnectivity {
+    const graph = this.meanderLatticeService.build(document);
+    const visited = new Set<string>();
+    let components = 0;
+
+    for (let column = 0; column <= graph.columns; column += 1) {
+      for (let row = 0; row <= graph.rows; row += 1) {
+        if (
+          graph.nodes.has(this.key(column, row)) &&
+          !visited.has(this.key(column, row))
+        ) {
+          components += 1;
+          this.walk(graph, { column, row }, visited);
+        }
+      }
+    }
+
+    return {
+      components,
+      edges: graph.horizontalEdges.size + graph.verticalEdges.size,
+      nodes: graph.nodes.size,
+    };
+  }
 
   /** Measures one rendered meander's channel widths and its ink and negative junction counts. */
   measure(document: string): MeanderTopology {
