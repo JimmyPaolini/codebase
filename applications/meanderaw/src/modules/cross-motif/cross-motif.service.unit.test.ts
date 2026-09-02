@@ -8,6 +8,9 @@ import { MeanderGenerationService } from "../meander-generation/meander-generati
 import { MeanderLatticeService } from "../meander-topology/meander-lattice.service";
 import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
+import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
+import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
@@ -202,6 +205,9 @@ describe(CrossMotifService, () => {
         MeanderLatticeService,
         MeanderTopologyService,
         MosaicMotifService,
+        MosaicSubFamilyService,
+        MosaicTileGenerationService,
+        MosaicTileMotifService,
         MotifTransformsService,
         SnakeMotifService,
         SnakeSequenceService,

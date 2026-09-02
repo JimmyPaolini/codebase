@@ -117,6 +117,7 @@ export const SUPPORTED_TYPES: readonly string[] = [
 export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
   boxes: [],
   chain: [],
+  cross: [],
   mosaic: SUPPORTED_SUB_FAMILIES,
   snake: [],
   swirl: [],
