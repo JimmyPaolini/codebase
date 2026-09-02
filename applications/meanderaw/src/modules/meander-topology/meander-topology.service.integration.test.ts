@@ -39,6 +39,7 @@ import type {
   MeanderType,
   Modifier,
 } from "../meander-generation/meander-generation.types";
+import type { LatticeGraph } from "./meander-topology.types";
 
 // 🔧 Configuration
 
@@ -218,6 +219,22 @@ const charterSweep: readonly CharterCase[] = new StartCombinationsService()
  */
 const COMMITTED_CORPUS_SIZE = 174 + 3179;
 
+/**
+ * How many committed documents leave a gap at the band's termination — the
+ * one place invariant 2's `channelWidthCompliant` does not look, and the
+ * measurement its doc comment cites as the reason that carve-out is
+ * load-bearing rather than a formality.
+ *
+ * Published in seven places and computed in none until this assertion, at a
+ * value of 2,114 measured over the six original families' 3,293 documents.
+ * `cross` has since added six, and nothing would have caught the drift:
+ * `channelWidthCompliant` passes either way, because skipping those two
+ * columns is exactly what it does. `negative`, `branch`, and `parallel` add
+ * none — each covers its own first and last lattice column — so this number
+ * moving is a family changing how its band ends.
+ */
+const TERMINATION_GAP_DOCUMENTS = 2120;
+
 /** Where `StartCommand` writes those documents, and where they are committed. */
 const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
 
@@ -248,6 +265,23 @@ const readCommittedCorpus = async (): Promise<
   }
 
   return documents;
+};
+
+/**
+ * Whether a document leaves its band's termination open: a lattice point
+ * missing from the first or last column, which is the pair
+ * `MeanderTopologyService.isChannelWidthCompliant` steps over.
+ */
+const hasTerminationGap = (graph: LatticeGraph): boolean => {
+  for (const column of [0, graph.columns]) {
+    for (let row = 0; row <= graph.rows; row += 1) {
+      if (!graph.nodes.has(`${column},${row}`)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 };
 
 /**
@@ -344,6 +378,7 @@ const relaxes = (
 
 describe(MeanderTopologyService, () => {
   let generationService: MeanderGenerationService;
+  let latticeService: MeanderLatticeService;
   let topologyService: MeanderTopologyService;
 
   beforeAll(async () => {
@@ -375,6 +410,7 @@ describe(MeanderTopologyService, () => {
     }).compile();
 
     generationService = await module.resolve(MeanderGenerationService);
+    latticeService = await module.resolve(MeanderLatticeService);
     topologyService = await module.resolve(MeanderTopologyService);
   });
 
@@ -580,6 +616,23 @@ describe(MeanderTopologyService, () => {
         "cross-7-rows-6-repeats.svg 12",
         "cross-8-rows-6-repeats.svg 12",
       ]);
+    });
+
+    // 🎯 The one measurement `channelWidthCompliant`'s carve-out rests on,
+    // taken from the same lattice the carve-out steps over. Both halves
+    // matter: the count is what the doc comments cite, and the families
+    // absent from it are the four that cover their own band ends.
+    it("leaves a termination gap in exactly the documents the carve-out is for", async () => {
+      const documents = await readCommittedCorpus();
+      const withGap = documents.filter(({ document }) =>
+        hasTerminationGap(latticeService.build(document)),
+      );
+
+      expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
+      expect(withGap).toHaveLength(TERMINATION_GAP_DOCUMENTS);
+      expect(
+        [...new Set(withGap.map(({ name }) => name.split("-")[0]))].toSorted(),
+      ).toStrictEqual(["chain", "cross", "mosaic", "snake", "swirl", "whirl"]);
     });
 
     it.each([
