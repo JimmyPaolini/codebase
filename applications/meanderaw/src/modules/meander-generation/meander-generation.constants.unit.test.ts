@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   InvalidModifierError,
   InvalidPeriodError,
+  InvalidStrandCountError,
   InvalidSubFamilyError,
 } from "./meander-generation.constants";
 
@@ -35,6 +36,20 @@ describe("meander generation errors", () => {
 
       expect(error.name).toBe("InvalidPeriodError");
       expect(error.message).toBe("period must be between 1 and 12, received 0");
+    });
+  });
+
+  describe(InvalidStrandCountError, () => {
+    // 🎯 The maximum is named as the row count rather than as a bound the
+    // reader has to look up, because it is the row count: a bundle of N
+    // strands needs N rows.
+    it("names the minimum, the row count that bounds it, and the offending ply", () => {
+      const error = new InvalidStrandCountError(6, 2, 5);
+
+      expect(error.name).toBe("InvalidStrandCountError");
+      expect(error.message).toBe(
+        "strands must be between 2 and the row count 5, received 6",
+      );
     });
   });
 

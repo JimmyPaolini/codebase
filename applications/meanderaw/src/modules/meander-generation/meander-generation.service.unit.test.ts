@@ -32,6 +32,7 @@ import {
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
   InvalidRowsError,
+  InvalidStrandCountError,
   InvalidSubFamilyError,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
@@ -278,6 +279,35 @@ describe(MeanderGenerationService, () => {
           type: "mosaic",
         }),
       ).toThrow(InvalidPeriodError);
+    });
+
+    // 🎯 `plied`'s bound is the drawing's own row count rather than the
+    // shared maximum, so both edges of it are pinned against the same row
+    // count: one ply past it is refused and the ply that equals it is
+    // drawn. A bound read off `MAXIMUM_VALUE` instead would accept both.
+    it.each([{ strands: 1 }, { strands: 2.5 }, { strands: 6 }])(
+      "throws when plied's strand count is $strands at 5 rows",
+      ({ strands }) => {
+        expect(() =>
+          service.generate({
+            modifier: { name: "plied", strands },
+            repeatCount: 6,
+            rows: 5,
+            type: "parallel",
+          }),
+        ).toThrow(InvalidStrandCountError);
+      },
+    );
+
+    it("draws a ply exactly as deep as the row count", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "plied", strands: 5 },
+          repeatCount: 6,
+          rows: 5,
+          type: "parallel",
+        }),
+      ).not.toThrow();
     });
 
     it("does not require repeatCount to divide evenly by alternated's period, since each tile is self-contained", () => {
