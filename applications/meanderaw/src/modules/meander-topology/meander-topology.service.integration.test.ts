@@ -482,6 +482,36 @@ describe(MeanderTopologyService, () => {
       ).toStrictEqual(["cross", "negative", "snake"]);
     });
 
+    // 🎯 The two figures the charter's own "ink branches" bullet publishes,
+    // read off the named patterns the charter counts them over. Prose and
+    // measurement were authored at different moments and nothing else makes
+    // them agree, so the count is taken here rather than restated there.
+    it("branches in exactly the families the charter names, measured from disk", async () => {
+      const entries = await readdir(OUTPUT_DIRECTORY);
+      const names = entries.filter((name) => name.endsWith(".svg"));
+      const branching: string[] = [];
+      let tJunctions = 0;
+
+      for (const name of names) {
+        const measured = topologyService.measure(
+          await readFile(path.join(OUTPUT_DIRECTORY, name), "utf8"),
+        );
+
+        tJunctions += measured.inkTJunctions;
+
+        if (measured.inkTJunctions > 0) {
+          branching.push(name);
+        }
+      }
+
+      expect(names).toHaveLength(159);
+      expect(tJunctions).toBe(1360);
+      expect(branching).toHaveLength(59);
+      expect(
+        [...new Set(branching.map((name) => name.split("-")[0]))].toSorted(),
+      ).toStrictEqual(["branch", "chain", "negative", "snake"]);
+    });
+
     it("holds across every committed document, measured from disk", async () => {
       const documents = await readCommittedCorpus();
 
