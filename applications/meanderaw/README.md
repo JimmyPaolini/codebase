@@ -67,6 +67,83 @@ Note one deliberate divergence: the code says `MeanderType`, `SUPPORTED_TYPES`, 
 `--type` where the glossary says **family**. Renaming the flag would be a breaking CLI
 change and is not worth making for a vocabulary correction.
 
+## 🔤 Naming a Mosaic Sub-family
+
+<!-- cspell:ignore ddd lll hxhxhx vxvx ddddd — mosaic tile identifiers, one
+letter per cell of the tile, from MOSAIC_MARK_LETTERS in
+src/modules/mosaic-motif/mosaic-motif.constants.ts. -->
+
+`mosaic`'s unit space is materialized, so a region of it can be **recognized** rather
+than listed. Four regions have names, and all four are the same predicate over a tile's
+own pieces: every mark in the tile is the same kind.
+
+| Sub-family | Every mark is | Smallest tile | Reads as |
+| --- | --- | --- | --- |
+| `dots` | a dot | `ddd` | a field of square marks |
+| `lines` | the single-column continuous rule | `lll` | unbroken horizontal rules |
+| `dashes` | a horizontal dash | `hxhxhx` | broken horizontal rules |
+| `diamond` | a vertical dash | `vxvx` | a dashed vertical bar |
+
+Recognition lives in `MosaicSubFamilyService.classify`, which reads `MosaicTile.pieces`
+and never the canonical identifier. That is deliberate: the names keep working at row
+and column counts nobody has enumerated, and survive any change to the enumeration's
+bounds. A tile that mixes mark kinds — which is nearly all of them — belongs to no
+sub-family and is left **unnamed** rather than pushed into the nearest one.
+
+Across the 3,179 tiles the sweep enumerates, at 4–8 rows and 1–2 columns:
+
+| Sub-family | Tiles |
+| --- | --- |
+| `dashes` | 75 |
+| `dots` | 10 |
+| `lines` | 5 |
+| `diamond` | 4 |
+| unnamed | 3,085 |
+
+A region holds every tile its predicate accepts, not only the one it is named after,
+which is why `dashes` is much the largest: a horizontal dash may anchor in either column
+of a two-column tile, so staggered arrangements are `dashes` too. `diamond` is the
+smallest because its covers are forced rather than chosen — vertical dashes cover the
+bar's interior levels in pairs, so there is one arrangement per column span where the
+number of levels is even and none at all where it is odd. Asking for a `diamond` at an
+even row count is refused rather than approximated.
+
+Ask for a sub-family by name:
+
+```bash
+nx run meanderaw:generate --args="--type mosaic --sub-family dots --rows 6"
+```
+
+The name lands in the output filename — `mosaic-6-rows-6-repeats-dots.svg` — and in the
+sweep's own, where a tile with a name carries it after its identifier
+(`mosaic-6-rows-1-columns-ddddd-dots.svg`) and a tile without one carries the identifier
+alone.
+
+### `diamond` and `split` are one shape under two names
+
+The hand-drawn reference set held a `diamond` and a `split` that were byte-identical, and
+both names survive here because they play different roles — exactly the distinction the
+[CONTEXT.md](../../CONTEXT.md) glossary draws:
+
+- **`split` is a modifier**: a named _constructor_ into the unit space. `--modifier split`
+  breaks the bar into dashes, and nothing about it, its compatibility entry, or its
+  reference asset changes.
+- **`diamond` is a sub-family**: a named _predicate_ over the unit space. It recognizes
+  any tile built entirely of vertical dashes, whether or not `split` is what produced it.
+
+Two routes to one shape, which is what the glossary means by "some sub-families arise by
+applying a modifier, others by recognizing a structural property". The equality is tested
+rather than asserted: the `diamond` sub-family at 5 rows and 12 repeats is byte-identical
+to the committed `testing/assets/mosaic-5-rows-12-repeats-split.svg`.
+
+Two names, two files. `--sub-family diamond` writes `mosaic-5-rows-12-repeats-diamond.svg`
+and `--modifier split` still writes `mosaic-5-rows-12-repeats-split.svg`, so neither
+overwrites the other. Asking for both at once is refused, since either one alone already
+decides which repeat unit is drawn.
+
+One name worth reading twice: the **`dot` modifier** (singular, carrying a `bounce` or
+`up` shape) and the **`dots` sub-family** (plural) are different things one letter apart.
+
 ## 👔 Conformetry
 
 This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.

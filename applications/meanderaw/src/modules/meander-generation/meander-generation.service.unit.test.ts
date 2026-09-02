@@ -9,6 +9,9 @@ import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
+import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
+import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
@@ -18,14 +21,17 @@ import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
 import {
   COMPATIBLE_MODIFIERS,
+  ConflictingSubFamilyError,
   DEFAULT_REPEAT_COUNT,
   InvalidPeriodError,
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
   InvalidRowsError,
+  InvalidSubFamilyError,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
+  UnavailableSubFamilyError,
 } from "./meander-generation.constants";
 import { MeanderGenerationService } from "./meander-generation.service";
 
@@ -152,6 +158,9 @@ describe(MeanderGenerationService, () => {
         MeanderGenerationService,
         GridGeometryService,
         MosaicMotifService,
+        MosaicSubFamilyService,
+        MosaicTileGenerationService,
+        MosaicTileMotifService,
         BoxesMotifService,
         ChainMotifService,
         MotifTransformsService,
@@ -268,6 +277,110 @@ describe(MeanderGenerationService, () => {
       );
 
       expect(svg).toBe(golden);
+    });
+
+    it("draws the diamond sub-family exactly as the split modifier does, two routes to one shape", async () => {
+      const svg = service.generate({
+        repeatCount: 12,
+        rows: 5,
+        subFamily: "diamond",
+        type: "mosaic",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/assets/mosaic-5-rows-12-repeats-split.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("draws the dots sub-family as marks with no length at all, on the canvas its tile reaches", () => {
+      const svg = service.generate({
+        repeatCount: 6,
+        rows: 6,
+        subFamily: "dots",
+        type: "mosaic",
+      });
+
+      expect(svg).toContain('width="55"');
+      expect(svg).not.toMatch(/V\d/);
+    });
+
+    it("draws the lines sub-family a grid unit wider, since its rule reaches into the next tile", () => {
+      const svg = service.generate({
+        repeatCount: 6,
+        rows: 6,
+        subFamily: "lines",
+        type: "mosaic",
+      });
+
+      expect(svg).toContain('width="65"');
+    });
+
+    it("draws the dashes sub-family sideways only, and the diamond sub-family downward", () => {
+      const dashes = service.generate({
+        repeatCount: 6,
+        rows: 6,
+        subFamily: "dashes",
+        type: "mosaic",
+      });
+      const diamond = service.generate({
+        repeatCount: 6,
+        rows: 5,
+        subFamily: "diamond",
+        type: "mosaic",
+      });
+
+      expect(dashes).not.toMatch(/V\d/);
+      expect(diamond).toMatch(/V\d/);
+    });
+
+    it("throws when a sub-family is asked of a family whose unit space is latent", () => {
+      expect(() =>
+        service.generate({
+          repeatCount: 6,
+          rows: 5,
+          subFamily: "dots",
+          type: "boxes",
+        }),
+      ).toThrow(InvalidSubFamilyError);
+    });
+
+    it("throws when a sub-family and a modifier are asked for together, since both choose the unit", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "split" },
+          repeatCount: 6,
+          rows: 5,
+          subFamily: "dots",
+          type: "mosaic",
+        }),
+      ).toThrow(ConflictingSubFamilyError);
+    });
+
+    it("throws when the sub-family names no tile at the requested row count", () => {
+      expect(() =>
+        service.generate({
+          repeatCount: 6,
+          rows: 6,
+          subFamily: "diamond",
+          type: "mosaic",
+        }),
+      ).toThrow(UnavailableSubFamilyError);
+    });
+
+    it("throws below the row count a mosaic tile needs, even for a sub-family that exists there", () => {
+      expect(() =>
+        service.generate({
+          repeatCount: 6,
+          rows: 3,
+          subFamily: "dots",
+          type: "mosaic",
+        }),
+      ).toThrow(InvalidRowsError);
     });
 
     it("matches the committed golden fixture for 6 rows mosaic with 6 repeats and dot bounce", async () => {

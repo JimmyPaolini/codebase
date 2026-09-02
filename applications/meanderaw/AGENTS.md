@@ -33,12 +33,17 @@ The three that most often catch a change:
 - **Band, not field.** Canvas height is fixed and `rows` sets density, not size. These
   patterns are meant for borders.
 
-Two things that look like defects and are not:
+Three things that look like defects and are not:
 
 - **Gaps wider than one stroke where a band terminates** are expected, and owned by
   [#338](https://github.com/JimmyPaolini/codebase/issues/338). Do not chase them.
 - **`--type` disagreeing with the glossary's "family"** is a deliberate divergence, not a
   stale name. Renaming the flag is a breaking CLI change.
+- **`dot` and `dots`, and `diamond` and `split`,** are pairs of different things rather
+  than duplicates. `dot` is a `mosaic` modifier carrying a shape; `dots` is a `mosaic`
+  sub-family. `split` is a modifier that constructs a shape; `diamond` is the sub-family
+  that recognizes the same shape however it arose. Do not collapse either pair — see
+  "Naming a Mosaic Sub-family" in [README.md](./README.md).
 
 When adding a family, prefer extending an existing family's unit space over hand-writing a
 new motif service — see

@@ -137,6 +137,21 @@ describe(GenerateCommand, () => {
     });
   });
 
+  describe("parseSubFamily", () => {
+    it.each(["dashes", "diamond", "dots", "lines"])(
+      "passes the %s sub-family through unchanged",
+      (subFamily) => {
+        expect(command.parseSubFamily(subFamily)).toBe(subFamily);
+      },
+    );
+
+    it("rejects a name that is no sub-family, including the dot modifier it sounds like", () => {
+      expect(() => command.parseSubFamily("dot")).toThrow(
+        /unsupported sub-family/i,
+      );
+    });
+  });
+
   describe("parsePeriod", () => {
     it("parses a numeric string", () => {
       expect(command.parsePeriod("2")).toBe(2);
@@ -283,6 +298,31 @@ describe(GenerateCommand, () => {
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
         expect.stringContaining("mosaic-6-rows-6-repeats-dot-bounce.svg"),
+        "<svg>fixture</svg>\n",
+      );
+    });
+
+    it("forwards the sub-family to the generation service and encodes it in the filename", async () => {
+      vi.mocked(meanderGenerationService.generate).mockReturnValue(
+        "<svg>fixture</svg>\n",
+      );
+
+      await command.run([], {
+        outputDirectory: "output",
+        repeatCount: 6,
+        rows: 6,
+        subFamily: "dots",
+        type: "mosaic",
+      });
+
+      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
+        repeatCount: 6,
+        rows: 6,
+        subFamily: "dots",
+        type: "mosaic",
+      });
+      expect(mockWriteFile).toHaveBeenCalledWith(
+        expect.stringContaining("mosaic-6-rows-6-repeats-dots.svg"),
         "<svg>fixture</svg>\n",
       );
     });

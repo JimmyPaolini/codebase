@@ -4,6 +4,8 @@ import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
+import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
+import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
@@ -11,20 +13,25 @@ import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
 import {
   COMPATIBLE_MODIFIERS,
+  ConflictingSubFamilyError,
   InvalidModifierError,
   InvalidPeriodError,
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
   InvalidRowsError,
+  InvalidSubFamilyError,
   MAXIMUM_VALUE,
   MINIMUM_PERIOD,
   MINIMUM_REPEAT_COUNT,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
+  SUB_FAMILIES,
+  UnavailableSubFamilyError,
 } from "./meander-generation.constants";
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
+import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type {
   GenerationParameters,
   MeanderType,
@@ -47,6 +54,10 @@ export class MeanderGenerationService {
     private readonly gridGeometryService: GridGeometryService,
     @Inject(MosaicMotifService)
     private readonly mosaicMotifService: MosaicMotifService,
+    @Inject(MosaicSubFamilyService)
+    private readonly mosaicSubFamilyService: MosaicSubFamilyService,
+    @Inject(MosaicTileGenerationService)
+    private readonly mosaicTileGenerationService: MosaicTileGenerationService,
     @Inject(BoxesMotifService)
     private readonly boxesMotifService: BoxesMotifService,
     @Inject(ChainMotifService)
@@ -96,6 +107,50 @@ export class MeanderGenerationService {
         ...(parameters.modifier ? { modifier: parameters.modifier } : {}),
       }),
     ];
+  }
+
+  /**
+   * Renders the tile a sub-family names, rather than a motif service's own
+   * repeat unit. A sub-family is a predicate over a family's unit space, so
+   * asking for one is asking for a member of that space by name — which is
+   * what `MosaicTileGenerationService` already draws, and why nothing here
+   * needs a motif service at all.
+   *
+   * `rows` and `repeatCount` are validated by that service, against the row
+   * count a mosaic tile needs rather than the lower floor the unmodified bar
+   * gets by. A sub-family that names no tile at the requested row count is
+   * rejected before that, because `diamond` at an even row count is well
+   * inside those bounds and simply does not exist there — which a bounds
+   * error could not say.
+   */
+  private generateSubFamily(
+    parameters: GenerationParameters,
+    subFamily: MosaicSubFamily,
+  ): string {
+    const subFamilyNames = SUB_FAMILIES[parameters.type];
+
+    if (!subFamilyNames.includes(subFamily)) {
+      throw new InvalidSubFamilyError(
+        subFamily,
+        parameters.type,
+        subFamilyNames,
+      );
+    }
+
+    if (parameters.modifier) {
+      throw new ConflictingSubFamilyError(subFamily, parameters.modifier.name);
+    }
+
+    const tile = this.mosaicSubFamilyService.tile(subFamily, parameters.rows);
+
+    if (!tile) {
+      throw new UnavailableSubFamilyError(subFamily, parameters.rows);
+    }
+
+    return this.mosaicTileGenerationService.generate(
+      tile,
+      parameters.repeatCount,
+    );
   }
 
   /** Looks up the motif service that draws `type`'s repeat units. */
@@ -206,8 +261,17 @@ export class MeanderGenerationService {
 
   // 🌎 Public Methods
 
-  /** Validates the parameters, then renders the finished SVG document. */
+  /**
+   * Validates the parameters, then renders the finished SVG document. A
+   * `subFamily` names a member of the family's own unit space and takes a
+   * different route through {@link generateSubFamily}, since there is no
+   * motif service to dispatch to for it.
+   */
   generate(parameters: GenerationParameters): string {
+    if (parameters.subFamily) {
+      return this.generateSubFamily(parameters, parameters.subFamily);
+    }
+
     this.validateRows(parameters.type, parameters.rows);
     this.validateRepeatCount(parameters.repeatCount);
     this.validateModifier(parameters.type, parameters.modifier);
