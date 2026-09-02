@@ -198,9 +198,15 @@ export class NegativeMotifService implements MotifService {
    * unless the source anchors a vertical mark on the lattice column between
    * them — a vertical dash spans a cell and the one below it, so it walls the
    * pair of cells to its right off from the pair to its left. It sits one
-   * level above the row it walls, which is why row `0` is always open: no
-   * mark can sit above the band's first interior level, so the negative's top
-   * and bottom rows are unbroken rules and the drawing closes as a band.
+   * level above the row it walls.
+   *
+   * Both of the negative's outermost rows are therefore unbroken rules, and
+   * the drawing closes as a band without any border being drawn for it. The
+   * top row asks for a mark at level `-1`, which is above the band's first
+   * interior level and so cannot exist. The bottom row asks for one at level
+   * `rows - 2`, the tile's last interior level: a vertical dash claims its
+   * own level and the one below, so the deepest one a tile can anchor is at
+   * `rows - 3`, and that last level never carries one either.
    */
   private rowPath(
     geometry: GridGeometry,

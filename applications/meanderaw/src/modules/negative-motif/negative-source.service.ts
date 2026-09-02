@@ -3,14 +3,22 @@
 // MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
 import { Injectable } from "@nestjs/common";
 
-import { NEGATIVE_SOURCE_ROW_OFFSET } from "./negative-motif.constants";
+import {
+  DEFAULT_NEGATIVE_SOURCE,
+  NEGATIVE_SOURCE_ROW_OFFSET,
+  NEGATIVE_SOURCES_BY_MODIFIER_NAME,
+  UnknownNegativeSourceError,
+} from "./negative-motif.constants";
 
 import type { Modifier } from "../meander-generation/meander-generation.types";
 import type {
   MosaicPiece,
   MosaicTile,
 } from "../mosaic-motif/mosaic-motif.types";
-import type { NegativeSource } from "./negative-motif.types";
+import type {
+  NegativeModifierName,
+  NegativeSource,
+} from "./negative-motif.types";
 
 /**
  * Builds the `mosaic` tile whose negative the `negative` family draws.
@@ -54,6 +62,13 @@ export class NegativeSourceService {
       kind: "horizontal" as const,
       level,
     }));
+  }
+
+  /** Narrows a modifier name to one this family draws a source for, without an unchecked assertion. */
+  private isNegativeModifierName(
+    name: Modifier["name"],
+  ): name is NegativeModifierName {
+    return Object.hasOwn(NEGATIVE_SOURCES_BY_MODIFIER_NAME, name);
   }
 
   /**
@@ -100,17 +115,29 @@ export class NegativeSourceService {
 
   // 🌎 Public Methods
 
-  /** Which shortlisted source a drawing's modifier selects; no modifier draws the shortlist's first entry. */
+  /**
+   * Which shortlisted source a drawing's modifier selects; no modifier draws
+   * {@link DEFAULT_NEGATIVE_SOURCE}, the shortlist's first entry.
+   *
+   * The dispatch is total rather than defaulted: every name this family
+   * declares compatible has an entry in
+   * {@link NEGATIVE_SOURCES_BY_MODIFIER_NAME}, a missing one is a type error,
+   * and any name outside it is refused. Nothing can reach that refusal
+   * through `MeanderGenerationService.generate`, which validates
+   * compatibility first — but a family that answered "no modifier" to a
+   * modifier it did not recognize would draw the wrong source silently, and
+   * this one says so instead.
+   */
   source(modifier: Modifier | undefined): NegativeSource {
-    if (modifier?.name === "brick") {
-      return "brick";
+    if (modifier === undefined) {
+      return DEFAULT_NEGATIVE_SOURCE;
     }
 
-    if (modifier?.name === "ruled") {
-      return "ruled";
+    if (!this.isNegativeModifierName(modifier.name)) {
+      throw new UnknownNegativeSourceError(modifier.name);
     }
 
-    return "stair";
+    return NEGATIVE_SOURCES_BY_MODIFIER_NAME[modifier.name];
   }
 
   /**

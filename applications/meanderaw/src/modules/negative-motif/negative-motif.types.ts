@@ -10,6 +10,17 @@ export interface NegativeCell {
   readonly level: number;
 }
 
+/**
+ * The modifier names the `negative` family draws a source for.
+ *
+ * It is deliberately narrower than `Modifier["name"]`: this family knows its
+ * own two modifiers and nothing about anybody else's, so a family added later
+ * with a modifier of its own forces no edit here. What keeps it honest is
+ * `negative-source.service.unit.test.ts`, which asserts these are exactly the
+ * names `COMPATIBLE_MODIFIERS.negative` lists.
+ */
+export type NegativeModifierName = "brick" | "ruled";
+
 /** Which way a source mark runs, and therefore which pair of neighboring cells it walls apart. */
 export type NegativeOrientation = "horizontal" | "vertical";
 

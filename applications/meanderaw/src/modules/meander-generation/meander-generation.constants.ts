@@ -1,6 +1,10 @@
 // ♟️ Constants
 
-import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
+import {
+  MOSAIC_TILE_MINIMUM_ROWS,
+  SUPPORTED_SUB_FAMILIES,
+} from "../mosaic-motif/mosaic-motif.constants";
+import { NEGATIVE_SOURCE_ROW_OFFSET } from "../negative-motif/negative-motif.constants";
 
 import type {
   DotShape,
@@ -166,21 +170,21 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * family is the model here, so the family takes the stricter of its two
  * modes.
  *
- * `negative`'s minimum of 3 is its source's minimum of 4, moved down one.
- * It inks the corridors a `mosaic` tile leaves, and puts a lattice point on
- * each of that tile's cells — so its own band is one row shorter than the
- * tile it inverts (see `NEGATIVE_SOURCE_ROW_OFFSET`), and 3 rows is the
- * shallowest negative the shallowest enumerated tile can yield.
+ * `negative`'s minimum is its source's minimum moved down one, and it is
+ * written as that subtraction rather than as the 3 it evaluates to, so the
+ * two cannot drift. It inks the corridors a `mosaic` tile leaves and puts a
+ * lattice point on each of that tile's cells, so its own band is one row
+ * shorter than the tile it inverts (see `NEGATIVE_SOURCE_ROW_OFFSET`).
  * `MOSAIC_TILE_MINIMUM_ROWS` is 4 for its own reason — below it a tile's
- * interior is a single level and there is nothing to permute — so this
- * number is that one, and moves with it.
+ * interior is a single level and there is nothing to permute — so 3 rows is
+ * the shallowest negative the shallowest enumerable tile can yield.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
   chain: 4,
   cross: 6,
   mosaic: 3,
-  negative: 3,
+  negative: MOSAIC_TILE_MINIMUM_ROWS - NEGATIVE_SOURCE_ROW_OFFSET,
   snake: 4,
   swirl: 4,
   whirl: 4,

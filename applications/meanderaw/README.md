@@ -446,10 +446,10 @@ charter sweep like every other drawing instead.
 **Whether the output stays space-filling was measured, not assumed, and it does.** Every
 lattice point of every one of the 18 committed drawings carries ink — including the band's
 first and last lattice column, which invariant 7 would have excused. The family needs no
-termination carve-out at all, which none of the other seven can say. The reason is the
-survey's own finding that no cell of any of the 3,179 permutation tiles has corridor
-degree 0: a cell with at least one corridor becomes a lattice point with at least one arm
-of ink.
+termination carve-out at all, where 2,114 of the 3,293 documents that predate it do have a
+gap there. The reason is the survey's own finding that no cell of any of the 3,179
+permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
+lattice point with at least one arm of ink.
 
 The branching is the point, so it is counted rather than merely permitted. Ink T-junctions
 per document, at 3 through 8 rows:

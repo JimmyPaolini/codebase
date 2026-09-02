@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
+import { CANVAS_HEIGHT } from "../grid-geometry/grid-geometry.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MeanderLatticeService } from "../meander-topology/meander-lattice.service";
@@ -35,26 +36,47 @@ const REPEAT_COUNT = 6;
 /** Every row count the sweep draws this family at: its structural minimum through the sweep maximum. */
 const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6, 7, 8];
 
-/** Every mode the family draws: no modifier, and each of the two the family declares compatible. */
-const MODES: readonly (Modifier | undefined)[] = [
-  undefined,
-  { name: "brick" },
-  { name: "ruled" },
+/**
+ * Every mode the family draws — no modifier, and each of the two the family
+ * declares compatible — beside the ink T-junction count each one produces at
+ * every swept row count, in {@link SWEPT_ROWS} order.
+ *
+ * These eighteen numbers are the table `README.md` publishes under "The
+ * Negative Space Family", and this is the only thing making that table true.
+ * The corridor-identity test in
+ * `meander-topology.service.integration.test.ts` equates two computed values
+ * against each other, so it would still pass if both drifted together, and it
+ * covers only the fifteen drawings whose source the survey enumerated — the
+ * 8-row column has no committed source to be compared against at all. Written
+ * out here, every published figure is the output of an assertion rather than
+ * prose standing beside one.
+ */
+const MODES: readonly {
+  readonly modifier?: Modifier;
+  readonly tJunctions: readonly number[];
+}[] = [
+  { tJunctions: [38, 48, 58, 68, 78, 88] },
+  { modifier: { name: "brick" }, tJunctions: [30, 40, 50, 60, 70, 80] },
+  { modifier: { name: "ruled" }, tJunctions: [16, 16, 24, 24, 32, 32] },
 ];
 
-/** Every swept drawing, as the parameters that produce it and a label to read it back by. */
-const SWEEP: readonly { label: string; parameters: GenerationParameters }[] =
-  MODES.flatMap((modifier) =>
-    SWEPT_ROWS.map((rows) => ({
-      label: `${rows} rows${modifier ? ` with ${modifier.name}` : ""}`,
-      parameters: {
-        repeatCount: REPEAT_COUNT,
-        rows,
-        type: "negative" as const,
-        ...(modifier ? { modifier } : {}),
-      },
-    })),
-  );
+/** Every swept drawing, as the parameters that produce it, the branching it owes, and a label to read it back by. */
+const SWEEP: readonly {
+  label: string;
+  parameters: GenerationParameters;
+  tJunctions: number;
+}[] = MODES.flatMap(({ modifier, tJunctions }) =>
+  SWEPT_ROWS.map((rows, index) => ({
+    label: `${rows} rows${modifier ? ` with ${modifier.name}` : ""}`,
+    parameters: {
+      repeatCount: REPEAT_COUNT,
+      rows,
+      type: "negative" as const,
+      ...(modifier ? { modifier } : {}),
+    },
+    tJunctions: tJunctions[index] ?? 0,
+  })),
+);
 
 /**
  * Decimal places two declared widths are compared to. Coordinates are
@@ -64,13 +86,32 @@ const SWEEP: readonly { label: string; parameters: GenerationParameters }[] =
  */
 const TOLERANCE_DIGITS = 4;
 
+/**
+ * One of the root element's declared dimensions, as a number, refusing a
+ * document that declares none.
+ *
+ * The refusal is the point. Returning `NaN` on a miss would make
+ * `expect(height(a)).toBe(height(b))` pass while measuring nothing at all,
+ * since `NaN` is `Object.is`-equal to itself — a test that cannot fail, which
+ * is the exact defect this family's own assertions exist to catch.
+ */
+const dimension = (document: string, pattern: RegExp): number => {
+  const declared = Number(pattern.exec(document)?.[1]);
+
+  if (!Number.isFinite(declared)) {
+    throw new TypeError(`document declares no ${pattern.source} dimension`);
+  }
+
+  return declared;
+};
+
 /** The root element's declared height, as a number. */
 const height = (document: string): number =>
-  Number(/\sheight="([\d.]+)"/u.exec(document)?.[1]);
+  dimension(document, /\sheight="([\d.]+)"/u);
 
 /** The root element's declared width, as a number. */
 const width = (document: string): number =>
-  Number(/\swidth="([\d.]+)"/u.exec(document)?.[1]);
+  dimension(document, /\swidth="([\d.]+)"/u);
 
 // 🧪 Tests
 
@@ -140,12 +181,26 @@ describe(NegativeMotifService, () => {
   });
 
   describe("charter invariant 3, relaxed on purpose", () => {
-    it.each(SWEEP)("$label branches", ({ parameters }) => {
-      expect(
-        topologyService.measure(generationService.generate(parameters))
-          .inkTJunctions,
-      ).toBeGreaterThan(0);
+    // 🎯 The guard against the table above vacating: an entry gone missing
+    // would read back as a `?? 0` fallback, and zero asserted against a
+    // drawing that branches would fail loudly — but only if something checks
+    // the table is the length and shape it claims to be.
+    it("owes a published branching count for every drawing the sweep commits", () => {
+      expect(SWEEP).toHaveLength(18);
+      expect(SWEEP.filter(({ tJunctions }) => tJunctions <= 0)).toStrictEqual(
+        [],
+      );
     });
+
+    it.each(SWEEP)(
+      "$label branches at the $tJunctions ink T-junctions README publishes",
+      ({ parameters, tJunctions }) => {
+        expect(
+          topologyService.measure(generationService.generate(parameters))
+            .inkTJunctions,
+        ).toBe(tJunctions);
+      },
+    );
 
     it.each(SWEEP)("$label does not cross", ({ parameters }) => {
       expect(
@@ -194,7 +249,17 @@ describe(NegativeMotifService, () => {
     it.each(SWEEP)(
       "$label is as tall as a mosaic of the same rows",
       ({ parameters }) => {
-        expect(height(generationService.generate(parameters))).toBe(
+        const declared = height(generationService.generate(parameters));
+
+        // 🎯 Two independent statements of the same fact, so neither can pass
+        // by accident: the concrete number the shared geometry implies —
+        // `CANVAS_HEIGHT` plus half a grid unit of stroke margin — and the
+        // height a completely different family declares at the same rows.
+        expect(declared).toBeCloseTo(
+          CANVAS_HEIGHT + CANVAS_HEIGHT / parameters.rows / 2,
+          TOLERANCE_DIGITS,
+        );
+        expect(declared).toBe(
           height(
             generationService.generate({
               repeatCount: REPEAT_COUNT,

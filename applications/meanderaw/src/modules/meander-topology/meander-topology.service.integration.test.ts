@@ -438,7 +438,7 @@ describe(MeanderTopologyService, () => {
       ).toStrictEqual([]);
 
       // 🎯 Ink crosses in exactly the three documents that were committed to
-      // make it cross, and nowhere else in 3,299 files. The `interrupted`
+      // make it cross, and nowhere else in 3,317 files. The `interrupted`
       // renderings of the same three row counts are absent on purpose: the
       // break takes the junction out of the ink graph.
       expect(

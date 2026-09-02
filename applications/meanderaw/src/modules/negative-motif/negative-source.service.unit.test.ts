@@ -6,8 +6,13 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { COMPATIBLE_MODIFIERS } from "../meander-generation/meander-generation.constants";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 
+import {
+  NEGATIVE_SOURCES_BY_MODIFIER_NAME,
+  UnknownNegativeSourceError,
+} from "./negative-motif.constants";
 import { NegativeSourceService } from "./negative-source.service";
 
 import type { NegativeSource } from "./negative-motif.types";
@@ -137,6 +142,29 @@ describe(NegativeSourceService, () => {
       { expected: "ruled", modifier: { name: "ruled" } as const },
     ])("selects $expected", ({ expected, modifier }) => {
       expect(service.source(modifier)).toBe(expected);
+    });
+
+    // 🎯 `MeanderGenerationService` rejects an incompatible modifier before
+    // any motif service sees it, so this is unreachable through `generate`.
+    // It is asserted anyway because the alternative — answering "no modifier"
+    // to a modifier the family does not recognize — would draw the default
+    // source silently, and read as the family ignoring a flag.
+    it("refuses a modifier the family does not draw a source for", () => {
+      expect(() => service.source({ name: "flip" })).toThrow(
+        UnknownNegativeSourceError,
+      );
+    });
+
+    // 🎯 The dispatch is total over `NegativeModifierName`, which is a
+    // hand-written union rather than something derived from
+    // `COMPATIBLE_MODIFIERS`. Nothing but this assertion stops the two
+    // drifting: a modifier declared compatible but never mapped would be
+    // accepted by `generate` and then refused by the family it was declared
+    // for, and a name mapped here but never declared would be unreachable.
+    it("draws a source for exactly the modifiers the family declares compatible", () => {
+      expect(
+        Object.keys(NEGATIVE_SOURCES_BY_MODIFIER_NAME).toSorted(),
+      ).toStrictEqual([...COMPATIBLE_MODIFIERS.negative].toSorted());
     });
   });
 });
