@@ -48,7 +48,7 @@ import type { ParallelUnitPlacement } from "./parallel-motif.types";
  *   it is below, the crossbar of the strand whose turn row it is reaches it,
  *   because a point that deep is that far in from the unit's edge. Every
  *   lattice point of the band carries ink, including the first and last
- *   column, so unlike 2,114 documents in the corpus this family leaves no
+ *   column, so unlike 2,120 documents in the corpus this family leaves no
  *   gap even at the band's own termination.
  * - **It neither branches nor crosses.** The brackets of one unit are
  *   pairwise disjoint and no unit draws a run outside its own columns, so

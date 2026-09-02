@@ -295,7 +295,7 @@ describe(ParallelMotifService, () => {
     //
     // `nodes` is invariant 2 as a count rather than as a boolean, and it is
     // the stronger of the two: `channelWidthCompliant` exempts the first
-    // and last lattice column, where 2,114 documents in the corpus do leave
+    // and last lattice column, where 2,120 documents in the corpus do leave
     // a gap, and this number counts them. Every lattice column of this
     // family's band is inked, so it has no band-termination gap at all.
     it.each(

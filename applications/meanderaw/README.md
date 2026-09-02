@@ -372,7 +372,7 @@ property test, and by the disk-based gate over every committed document. **The l
 are not.** They are a reading of the six committed files and nothing fails if they change:
 invariants 3 and 4 constrain ink, and no family is failed for what its white space does.
 
-### What it declares
+### What it holds and what it relaxes
 
 | Invariant | Solid | `interrupted` |
 | --- | --- | --- |
@@ -431,7 +431,7 @@ else.
 
 | Mode | Source tile | Reads as |
 | --- | --- | --- |
-| no modifier | `dvvxxd` → `dvvxxvvxxvvxxd` | the shortlist's highest-branching entry: dots capping a staircase of vertical dashes |
+| `stair` (no modifier) | `dvvxxd` → `dvvxxvvxxvvxxd` | the shortlist's highest-branching entry: dots capping a staircase of vertical dashes |
 | `brick` | `hxxhhx` → `hxxhhxxhhxxhhx` | the shortlist's simplest entry: horizontal dashes in running bond |
 | `ruled` | `dld` → `dldldld` | the shortlist's columns-1 entry: dot levels alternating with the continuous rule |
 
@@ -460,7 +460,7 @@ charter sweep like every other drawing instead.
 **Whether the output stays space-filling was measured, not assumed, and it does.** Every
 lattice point of every one of the 18 committed drawings carries ink — including the band's
 first and last lattice column, which invariant 7 would have excused. The family needs no
-termination carve-out at all, where 2,114 of the 3,293 documents that predate it do have a
+termination carve-out at all, where 2,120 of the 3,353 committed documents do have a
 gap there. The reason is the survey's own finding that no cell of any of the 3,179
 permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
 lattice point with at least one arm of ink.
@@ -470,7 +470,7 @@ per document, at 3 through 8 rows:
 
 | Mode | 3 | 4 | 5 | 6 | 7 | 8 |
 | --- | --- | --- | --- | --- | --- | --- |
-| no modifier | 38 | 48 | 58 | 68 | 78 | 88 |
+| `stair` | 38 | 48 | 58 | 68 | 78 | 88 |
 | `brick` | 30 | 40 | 50 | 60 | 70 | 80 |
 | `ruled` | 16 | 16 | 24 | 24 | 32 | 32 |
 
@@ -661,7 +661,7 @@ property falls out of that rather than being checked for afterwards. Take any la
 of a unit: if it is at or above its own column's turn row it sits on that column's arm, and
 if it is below, it is that far in from the unit's edge, so the crossbar of the strand whose
 turn row it is reaches it. So every lattice point of the band carries ink — including the
-first and last lattice column, which `channelWidthCompliant` exempts and which 2,114
+first and last lattice column, which `channelWidthCompliant` exempts and which 2,120
 documents in the corpus do leave a gap at. The brackets of a unit are pairwise disjoint and
 no unit draws a run outside its own columns, so every lattice point carries one arm of ink
 or two: never three, never four.

@@ -102,7 +102,9 @@ export interface LatticeSpan {
  * `channelWidthCompliant` is invariant 2: every interior white channel is
  * exactly one stroke width. It excludes the band's first and last lattice
  * column, which is invariant 7 — a band's termination is allowed a wider
- * gap, and 2,114 of the 3,293 committed documents have one there.
+ * gap, and 2,120 of the 3,353 committed documents have one there — a count
+ * asserted in `meander-topology.service.integration.test.ts` rather than
+ * carried in prose.
  *
  * The junction counts are invariants 3 and 4, measured over both the ink and
  * the white space it leaves: a T-junction is a three-armed meeting, an

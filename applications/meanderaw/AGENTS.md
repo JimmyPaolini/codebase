@@ -16,7 +16,7 @@ nx run meanderaw:start
 ## 🏛️ Before You Change a Meander
 
 Meander geometry is governed by a charter of seven invariants, five of which are fixed.
-They were established by measuring all 3,293 committed SVGs, not by reading the code, so
+They are measured against all 3,353 committed SVGs, not read off the code, so
 they are facts about the output rather than intentions in the source. The full charter,
 with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
