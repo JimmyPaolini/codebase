@@ -743,6 +743,9 @@ graph LR
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_topology_meander_lattice_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
@@ -935,7 +938,7 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-11323-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-11329-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-6.63_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-19-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-101-3178c6?style=flat-square)
@@ -965,7 +968,7 @@ graph LR
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-760-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-74-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-720-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-426-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-429-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-127-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-482-64748b?style=flat-square)
 ![Comment Lines](https://img.shields.io/badge/Comment_Lines-1374-475569?style=flat-square)
