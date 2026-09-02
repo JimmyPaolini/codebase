@@ -231,6 +231,12 @@ describe(ParallelMotifService, () => {
     // ply, and no lattice point carries three arms or four. A ply of N puts
     // N strands in every repeat unit — that is the component count — and
     // every one of them is an open arc, which is the free-end count.
+    //
+    // `nodes` is invariant 2 as a count rather than as a boolean, and it is
+    // the stronger of the two: `channelWidthCompliant` exempts the first
+    // and last lattice column, where 2,114 documents in the corpus do leave
+    // a gap, and this number counts them. Every lattice column of this
+    // family's band is inked, so it has no band-termination gap at all.
     it.each(
       SWEPT_ROWS.flatMap((rows) =>
         PLIES.map((ply) => ({
@@ -258,6 +264,7 @@ describe(ParallelMotifService, () => {
         inkTJunctions,
         inkXJunctions,
         loops: edges - nodes + components,
+        nodes,
       }).toStrictEqual({
         channelWidthCompliant: true,
         components: strands * REPEAT_COUNT,
@@ -265,6 +272,7 @@ describe(ParallelMotifService, () => {
         inkTJunctions: 0,
         inkXJunctions: 0,
         loops: 0,
+        nodes: COLUMNS_PER_STRAND * strands * REPEAT_COUNT * (rows + 1),
       });
     });
 
