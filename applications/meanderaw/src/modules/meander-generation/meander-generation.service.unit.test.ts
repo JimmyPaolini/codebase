@@ -215,11 +215,9 @@ describe(MeanderGenerationService, () => {
     });
 
     // 🎯 `cross` stops at 6 rather than the 4 its solid mode alone would
-    // allow, because `interrupted` needs a whole grid level of bar either
-    // side of the rail. Pinned here so the minimum cannot be lowered back to
-    // a row count where the break stops painting a lattice point.
+    // allow. Why it does is pinned in `cross-motif.service.unit.test.ts`,
+    // against the geometry rather than against the constant.
     it("throws below the structural minimum rows for cross", () => {
-      expect(STRUCTURAL_MINIMUM_ROWS.cross).toBe(6);
       expect(() =>
         service.generate({ repeatCount: 6, rows: 5, type: "cross" }),
       ).toThrow(InvalidRowsError);

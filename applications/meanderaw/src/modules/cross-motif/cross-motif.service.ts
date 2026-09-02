@@ -26,14 +26,19 @@ import type { CrossLevelSpan } from "./cross-motif.types";
  * {@link crossingLevel}, crossing every bar of the warp at a four-armed
  * `+`. Two band borders close the top and bottom.
  *
- * The shape is not a free choice. Holding invariants 1, 2, 3, and 5 while
- * relaxing 4 leaves very little room: space-filling means every interior
- * lattice point carries ink, and a horizontal run may meet a vertical one
- * only by crossing it outright or by turning at its end — anything else is
- * a T-junction, which invariant 3 forbids. A horizontal fillet therefore
- * cannot turn anywhere a bar passes through, so the weft runs the full
- * width and only the warp meanders. `docs/adr/0004-draw-crossings-as-a-one-pitch-interlace-break.md`
- * records the measurements this was drawn from.
+ * The shape looks plain because it is heavily constrained, as far as anyone
+ * has been able to establish — not because a richer one was passed over.
+ * Holding invariants 1, 2, 3, and 5 while relaxing 4 leaves very little
+ * room: space-filling means every interior lattice point carries ink, and a
+ * horizontal run may meet a vertical one only by crossing it outright or by
+ * turning at its end — anything else is a T-junction, which invariant 3
+ * forbids. A horizontal fillet therefore cannot turn anywhere a bar passes
+ * through, so the weft runs the full width and only the warp meanders.
+ *
+ * That argument was arrived at by search, not by proof, and no test enforces
+ * it: a construction that space-fills without a bar in every interior column
+ * would overturn it. `docs/adr/0004-draw-crossings-as-a-one-pitch-interlace-break.md`
+ * records what was searched and is careful to claim no more than that.
  *
  * The geometry is **derived**, not attested: the complex Greek meander is a
  * real ornament, but no reference SVG exists for this application's
@@ -103,12 +108,18 @@ export class CrossMotifService implements MotifService {
   /**
    * The grid level the weft rail runs along: the band's middle.
    *
-   * It has to sit at least two levels inside the band. A rail on level `1`
+   * It has to sit at least two levels inside the band: a rail on level `1`
    * or `rows - 1` would meet the bars at their own ends rather than crossing
-   * them — a T-junction, which invariant 3 forbids — and `interrupted` needs
-   * a whole grid level of bar left above and below the break. Both hold from
-   * `STRUCTURAL_MINIMUM_ROWS.cross` upward, which is why that minimum is 6
-   * rather than the 4 solid mode alone would allow.
+   * them, and three arms of ink meeting is the T-junction invariant 3
+   * forbids. That much holds from 4 rows up, which is as low as solid mode
+   * would need to go.
+   *
+   * `STRUCTURAL_MINIMUM_ROWS.cross` is 6 rather than 4 for a different and
+   * weaker reason, and one no measurement enforces: below 6 rows
+   * {@link barSpans}'s upper span collapses to a zero-length run, so
+   * `interrupted` draws a dot where it means to draw a strand passing under.
+   * The drawing stays space-filling either way — see that constant's own
+   * note, and the tests that pin it.
    */
   private crossingLevel(rows: number): number {
     return Math.floor(rows / 2);

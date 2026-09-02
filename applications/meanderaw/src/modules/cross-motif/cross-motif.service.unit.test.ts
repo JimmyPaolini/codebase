@@ -188,6 +188,7 @@ describe(CrossMotifService, () => {
   let service: CrossMotifService;
   let generationService: MeanderGenerationService;
   let gridGeometryService: GridGeometryService;
+  let renderingService: SvgRenderingService;
   let topologyService: MeanderTopologyService;
 
   beforeAll(async () => {
@@ -213,6 +214,7 @@ describe(CrossMotifService, () => {
     service = await module.resolve(CrossMotifService);
     generationService = await module.resolve(MeanderGenerationService);
     gridGeometryService = await module.resolve(GridGeometryService);
+    renderingService = await module.resolve(SvgRenderingService);
     topologyService = await module.resolve(MeanderTopologyService);
   });
 
@@ -363,6 +365,99 @@ describe(CrossMotifService, () => {
       expect([...interrupted.nodes].toSorted()).toStrictEqual(
         [...solid.nodes].toSorted(),
       );
+    });
+  });
+
+  // 🎯 Why `STRUCTURAL_MINIMUM_ROWS.cross` is 6 rather than the 4 solid mode
+  // alone would allow — pinned against the geometry, not against the
+  // constant, so the number and its stated reason cannot drift apart.
+  //
+  // These row counts are below what `MeanderGenerationService.generate`
+  // accepts, which is the point: the drawings are reached through the motif
+  // service directly, because the whole question is what the constant is
+  // refusing on the family's behalf.
+  describe("below the structural minimum", () => {
+    /**
+     * One unit's interrupted path at a row count `generate` would reject,
+     * plus the whole document assembled the way the generation service
+     * assembles one, so the topology service can measure it.
+     */
+    const belowMinimum = (
+      rows: number,
+    ): { document: string; unitPath: string } => {
+      const geometry = gridGeometryService.compute(rows);
+      const unitPaths = Array.from({ length: REPEAT_COUNT }, (_value, index) =>
+        service.path(geometry, {
+          isLastUnit: index === REPEAT_COUNT - 1,
+          modifier: { name: "interrupted" },
+          rows,
+          unitIndex: index,
+        }),
+      );
+      const format = (value: number): string =>
+        gridGeometryService.formatCoordinate(value);
+
+      return {
+        document: renderingService.render({
+          height: format(
+            geometry.offset + geometry.height + geometry.strokeWidth / 2,
+          ),
+          paths: [
+            ...unitPaths,
+            service.border(geometry, { repeatCount: REPEAT_COUNT, rows }),
+          ],
+          strokeWidth: format(geometry.strokeWidth),
+          width: format(
+            service.rightEdge(geometry, { repeatCount: REPEAT_COUNT, rows }) +
+              geometry.strokeWidth / 2,
+          ),
+        }),
+        unitPath: unitPaths[0] ?? "",
+      };
+    };
+
+    /** Whether a bar's first run starts and ends on the same coordinate — a square cap and nothing else. */
+    const firstRunCollapses = (unitPath: string): boolean => {
+      const run = /M[\d.]+ ([\d.]+)V([\d.]+)/u.exec(unitPath);
+
+      expect(run).not.toBeNull();
+
+      return run?.[1] === run?.[2];
+    };
+
+    it.each([
+      { collapses: true, rows: 4 },
+      { collapses: true, rows: 5 },
+      { collapses: false, rows: 6 },
+    ])(
+      "collapses the bar's upper remnant to a dot at $rows rows: $collapses",
+      ({ collapses, rows }) => {
+        expect(firstRunCollapses(belowMinimum(rows).unitPath)).toBe(collapses);
+      },
+    );
+
+    it.each([4, 5])(
+      "still measures as space-filling at %i rows, so no gate would catch the collapse",
+      (rows) => {
+        expect(
+          topologyService.measure(belowMinimum(rows).document),
+        ).toMatchObject({
+          channelWidthCompliant: true,
+          inkTJunctions: 0,
+          inkXJunctions: 0,
+        });
+      },
+    );
+
+    it("is refused by the generation service all the same, at the family's own minimum", () => {
+      expect(() =>
+        generationService.generate({
+          modifier: { name: "interrupted" },
+          repeatCount: REPEAT_COUNT,
+          rows: 5,
+          type: "cross",
+        }),
+      ).toThrow(/rows must be between 6 and 12/u);
     });
   });
 

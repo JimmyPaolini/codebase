@@ -143,12 +143,22 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  *
  * `cross`'s minimum of 6 is set by its `interrupted` modifier rather than by
  * its solid shape, which would draw down to 4 rows. The break gives up the
- * grid level either side of the crossing, so the bar needs a whole level
- * left above and below it; below 6 rows one of the two remnants collapses to
- * a point and the bar stops painting a lattice point it is the only ink for
- * — a space-filling failure rather than a degenerate-but-legal shape. One
- * minimum per family is the model here, so the family takes the stricter of
- * the two.
+ * grid level either side of the crossing, and the crossing sits at
+ * `floor(rows / 2)`, so below 6 rows the *upper* remnant has no whole level
+ * left and collapses to a zero-length run — a square line cap and nothing
+ * else, a dot one stroke wide rather than a length of strand. At 4 rows both
+ * remnants collapse. The pair stops reading as one strand passing under
+ * another, which is the whole point of the mode.
+ *
+ * Nothing measures that, and the minimum is the only thing standing in its
+ * way: at 4 and 5 rows the drawing is still fully space-filling —
+ * `channelWidthCompliant` stays true, because a collapsed run still paints
+ * its own lattice point and the unit's top connector paints level 1 in any
+ * case. This is a legibility floor, not a topology one, and
+ * `cross-motif.service.unit.test.ts` pins both halves of that at 4, 5, and 6
+ * rows so the number and its reason cannot drift apart. One minimum per
+ * family is the model here, so the family takes the stricter of its two
+ * modes.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,

@@ -12,11 +12,12 @@ nx run meanderaw:vitest
 
 ## 🏛️ Meander Charter
 
-Six families of meander are implemented, and they share a set of properties that are
-load-bearing to how a meander looks. They were extracted by measuring every committed
-SVG rather than by reading the code, and each is marked fixed or negotiable. A new
-family that breaks a fixed invariant is not a new family — it is a different kind of
-drawing.
+Seven families of meander are implemented, and they share a set of properties that are
+load-bearing to how a meander looks. The invariants were extracted from the six families
+that predate them, by measuring every committed SVG rather than by reading the code, and
+each is marked fixed or negotiable. A new family that breaks a fixed invariant is not a
+new family — it is a different kind of drawing. The seventh, `cross`, breaks a negotiable
+one on purpose.
 
 | # | Invariant | Status |
 | --- | --- | --- |
@@ -28,10 +29,11 @@ drawing.
 | 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
 | 7 | Invariants hold within a band, not at its termination | See [#338](https://github.com/JimmyPaolini/codebase/issues/338) |
 
-What the measurements found, across 114 named patterns and 3,179 enumerated `mosaic`
-tiles:
+What the measurements found. They were taken across the 114 named patterns and 3,179
+enumerated `mosaic` tiles that existed before `cross`; every count below is restated
+against the corpus as it now stands, 120 named patterns beside the same 3,179 tiles:
 
-- **Every interior white channel is exactly one stroke width**, in all 3,293 files. The
+- **Every interior white channel is exactly one stroke width**, in all 3,299 files. The
   channel width equals the stroke width equals half a grid unit, which is why fitting
   `N` parallel strokes into one unit is exactly `strokeWidth = unit / (2N)`.
 - **Ink never crosses itself, except where a family was added to make it.** Zero
@@ -40,7 +42,7 @@ tiles:
   those six have in common. The `cross` family relaxes it deliberately: 12 X-junctions in
   each of the three solid documents it commits, and none anywhere else in the 3,299-file
   corpus. See "The Crossing Family" below.
-- **Ink branches in one place, and only there.** 200 T-junctions across 20 of the 114
+- **Ink branches in one place, and only there.** 200 T-junctions across 20 of the 120
   named patterns: `chain` and `snake` under `edge` and `edge-flip`, ten per document at
   every row count. The `edge` family widens the repeat unit past the zigzag it contains,
   so the zigzag's terminating vertical lands in the _interior_ of the band border rather
@@ -379,9 +381,16 @@ reference exists for `cross`, so its committed output is its own baseline — a 
 what the code does, not evidence of fidelity to anything.
 
 `cross` also cannot be drawn below **6 rows**, where a solid-only family could go down to
-4: the break needs a whole grid level of bar left above and below the rail, and below 6
-rows one remnant collapses to a point and stops painting a lattice point it is the only
-ink for.
+4. The crossing sits at `floor(rows / 2)` and the break gives up the level either side of
+it, so below 6 rows the upper remnant has no whole grid level left and collapses to a
+zero-length run — a square line cap and nothing else, a dot one stroke wide instead of a
+length of strand. At 4 rows both remnants collapse.
+
+That is a **legibility** floor, not a topology one, and nothing measures it: at 4 and 5
+rows the drawing is still fully space-filling, so the charter would happily pass a
+rendering in which `interrupted` means nothing. The constant is the only thing refusing
+it, and the family's unit tests pin both the collapse and the fact that measurement misses
+it.
 
 ## 👔 Conformetry
 

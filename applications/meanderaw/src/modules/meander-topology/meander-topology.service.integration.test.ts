@@ -197,6 +197,27 @@ const readCommittedCorpus = async (): Promise<
   return documents;
 };
 
+/**
+ * The six families #340 measured the negative space of, named so the
+ * assertion below can be an allow-list rather than a deny-list.
+ *
+ * That direction is load-bearing. Invariants 3 and 4 constrain ink; a
+ * meander's negative may branch and cross as it likes, and no family may be
+ * failed for what its white space does. A deny-list would put every family
+ * added later back inside that gate by default, and the only thing standing
+ * between it and a failure would be somebody remembering to add its name.
+ * Listing the surveyed six instead puts a new family outside by
+ * construction.
+ */
+const NEGATIVE_SPACE_SURVEYED_FAMILIES: ReadonlySet<MeanderType> = new Set([
+  "boxes",
+  "chain",
+  "mosaic",
+  "snake",
+  "swirl",
+  "whirl",
+]);
+
 /** Whether `parameters` name a drawing the charter declaration allows to break `invariant`. */
 const relaxes = (
   parameters: GenerationParameters,
@@ -272,15 +293,15 @@ describe(MeanderTopologyService, () => {
       });
     });
 
-    // 🎯 This pins the corpus #340 measured, and it is deliberately not
-    // extended to a family added since. Invariants 3 and 4 constrain ink; a
-    // meander's negative may branch and cross as it likes, and no family may
-    // be failed for what its white space does. `cross` is excluded for that
-    // reason rather than because of what it measures — it happens to have no
-    // negative crossings at all.
+    // 🎯 This pins the corpus #340 measured and nothing beyond it. It scopes
+    // itself by naming the six families that were surveyed, never by naming
+    // the families that were not — see
+    // `NEGATIVE_SPACE_SURVEYED_FAMILIES` for why the direction matters.
     it("crosses in the negative space only where the spec reported it, across the six families it measured", () => {
       const crossing = charterSweep
-        .filter(({ parameters }) => parameters.type !== "cross")
+        .filter(({ parameters }) =>
+          NEGATIVE_SPACE_SURVEYED_FAMILIES.has(parameters.type),
+        )
         .filter(
           ({ parameters }) =>
             topologyService.measure(generationService.generate(parameters))

@@ -73,11 +73,21 @@ a break of `n` pitches leaves `(2n - 1)` stroke widths of white.
   broken strand resumes in line on the far side. That is a weaker signal than
   ink of two weights would give, and it is the price of keeping invariant 6.
 - **`cross` cannot be drawn below 6 rows**, where a family that only ever drew
-  solid could go down to 4. The break needs a whole grid level of bar left above
-  and below the rail; below 6 rows one remnant collapses to a point and stops
-  painting a lattice point it is the only ink for. `STRUCTURAL_MINIMUM_ROWS`
-  holds one minimum per family, so the family takes the stricter of its two
-  modes.
+  solid could go down to 4. The crossing sits at `floor(rows / 2)` and the break
+  gives up the level either side of it, so below 6 rows the _upper_ remnant has
+  no whole grid level left and collapses to a zero-length run — a square line
+  cap and nothing else, a dot one stroke wide instead of a length of strand. At
+  4 rows both remnants collapse.
+
+  **This is a legibility floor, and no measurement enforces it.** At 4 and 5
+  rows the drawing is still fully space-filling: measured,
+  `channelWidthCompliant` is `true` at both, because a collapsed run still
+  paints its own lattice point and the unit's top connector paints level 1
+  regardless. So the charter would pass a rendering in which `interrupted`
+  means nothing, and the constant is the only thing that refuses it — which is
+  why `cross-motif.service.unit.test.ts` pins the collapse _and_ the fact that
+  topology misses it, at 4, 5, and 6 rows. `STRUCTURAL_MINIMUM_ROWS` holds one
+  minimum per family, so the family takes the stricter of its two modes.
 - **Relaxing invariant 4 while holding 1, 2, 3, and 5 leaves very little room,
   and the family's plainness is that constraint rather than a lack of
   ambition.** Space-filling puts ink at every interior lattice point; no
