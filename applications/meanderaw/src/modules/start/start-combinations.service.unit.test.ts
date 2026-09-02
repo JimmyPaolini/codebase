@@ -70,10 +70,12 @@ describe(StartCombinationsService, () => {
     // 🎯 Two numbers written in two files, made to agree here rather than
     // by anybody remembering. A `parallel` bundle of N strands needs N rows,
     // so the deepest ply the sweep draws is exactly the row count the family
-    // may start at. Deepening the sweep without raising the minimum would
-    // enumerate a combination `MeanderGenerationService.generate` refuses,
-    // and this fails before that does.
-    it("sweeps no ply deeper than the row count the parallel family starts at", () => {
+    // may start at. Equality rather than an upper bound is deliberate and it
+    // is what the name says: a shallower deepest ply would leave the minimum
+    // stricter than any drawing needs, and a deeper one would enumerate a
+    // combination `MeanderGenerationService.generate` refuses. This fails
+    // before either does.
+    it("pins the deepest swept ply to the row count the parallel family starts at", () => {
       expect(Math.max(...PLIED_SWEEP_STRAND_COUNTS)).toBe(
         STRUCTURAL_MINIMUM_ROWS.parallel,
       );
