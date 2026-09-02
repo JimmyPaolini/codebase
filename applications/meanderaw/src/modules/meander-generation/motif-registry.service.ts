@@ -36,26 +36,45 @@ export class MotifRegistryService {
 
   constructor(
     @Inject(BoxesMotifService)
-    private readonly boxesMotifService: BoxesMotifService,
+    boxesMotifService: BoxesMotifService,
     @Inject(BranchMotifService)
-    private readonly branchMotifService: BranchMotifService,
+    branchMotifService: BranchMotifService,
     @Inject(ChainMotifService)
-    private readonly chainMotifService: ChainMotifService,
+    chainMotifService: ChainMotifService,
     @Inject(CrossMotifService)
-    private readonly crossMotifService: CrossMotifService,
+    crossMotifService: CrossMotifService,
     @Inject(MosaicMotifService)
-    private readonly mosaicMotifService: MosaicMotifService,
+    mosaicMotifService: MosaicMotifService,
     @Inject(NegativeMotifService)
-    private readonly negativeMotifService: NegativeMotifService,
+    negativeMotifService: NegativeMotifService,
     @Inject(SnakeMotifService)
-    private readonly snakeMotifService: SnakeMotifService,
+    snakeMotifService: SnakeMotifService,
     @Inject(SwirlMotifService)
-    private readonly swirlMotifService: SwirlMotifService,
+    swirlMotifService: SwirlMotifService,
     @Inject(WhirlMotifService)
-    private readonly whirlMotifService: WhirlMotifService,
-  ) {}
+    whirlMotifService: WhirlMotifService,
+  ) {
+    this.motifServicesByType = {
+      boxes: boxesMotifService,
+      branch: branchMotifService,
+      chain: chainMotifService,
+      cross: crossMotifService,
+      mosaic: mosaicMotifService,
+      negative: negativeMotifService,
+      snake: snakeMotifService,
+      swirl: swirlMotifService,
+      whirl: whirlMotifService,
+    };
+  }
 
   // 🔐 Private Fields
+
+  /**
+   * Every family's motif service, keyed by the type that names it. Built
+   * once here rather than per call: `MeanderGenerationService.generate`
+   * resolves twice, and the map is the same object every time.
+   */
+  private readonly motifServicesByType: Record<MeanderType, MotifService>;
 
   // 🔑 Public Fields
 
@@ -65,18 +84,6 @@ export class MotifRegistryService {
 
   /** The motif service that draws `type`'s repeat units. */
   resolve(type: MeanderType): MotifService {
-    const motifServicesByType: Record<MeanderType, MotifService> = {
-      boxes: this.boxesMotifService,
-      branch: this.branchMotifService,
-      chain: this.chainMotifService,
-      cross: this.crossMotifService,
-      mosaic: this.mosaicMotifService,
-      negative: this.negativeMotifService,
-      snake: this.snakeMotifService,
-      swirl: this.swirlMotifService,
-      whirl: this.whirlMotifService,
-    };
-
-    return motifServicesByType[type];
+    return this.motifServicesByType[type];
   }
 }
