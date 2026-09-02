@@ -176,10 +176,14 @@ The verdict per family, with the rest of the section as its evidence:
 | Family | A rule of its own? | The shared charter rule? | Tiles it contributes | Tiles the shared rule generates at 5 rows |
 | --- | --- | --- | --- | --- |
 | `boxes` | none found | yes | 1 per row count and modifier | 12,082,896 |
-| `chain` | none found | yes | 1 per row count and modifier | 12,082,896 |
-| `snake` | none found | yes | 1 per row count and modifier | 12,082,896 |
+| `chain` | none found | yes, except under `edge` and `edge-flip` | 1 per row count and modifier | 12,082,896 |
+| `snake` | none found | yes, except under `edge` and `edge-flip` | 1 per row count and modifier | 12,082,896 |
 | `swirl` | none found | yes | 1 per row count and modifier | 2.46 × 10¹² |
 | `whirl` | none found | yes | 1 per row count and modifier | 710,761,599 |
+
+The two exceptions are measured below: `edge` and `edge-flip` put two degree-3 points per
+repeat unit on the border rule, so those tiles sit outside the maximum-degree-2 rule and
+inside a charter with invariant 3 relaxed.
 
 ### The band as a lattice
 
@@ -193,14 +197,18 @@ this way is what makes them countable rather than merely checkable:
 
 | Invariant | On the lattice |
 | --- | --- |
-| 2 — space-filling | every interior lattice point carries ink |
+| 2 — space-filling | every interior lattice point carries ink — as the end of an edge, or as a dot |
 | 3 — no branching | no lattice point has ink degree 3 |
 | 4 — no crossing | no lattice point has ink degree 4 |
 
-So **a charter-legal repeat tile is a spanning subgraph of the tile's lattice with maximum
-degree 2** — a disjoint union of arcs and loops leaving no point bare. That sentence is the
-generating rule the ticket went looking for. It did not have to be invented; it was already
-written down, as prose about pictures rather than as a rule about a graph.
+Invariant 2 costs the enumeration nothing, because a lattice point lying on no edge **is**
+an inked dot — exactly `mosaic`'s own `dot` piece, which is what keeps this model agreeing
+with the family whose 3,179 tiles it reproduces below. So **a charter-legal repeat tile is
+any subgraph of the tile's lattice with maximum degree 2**: every point either sits on an
+edge or is drawn as a dot, and invariants 3 and 4 are the only constraints the count sees.
+That sentence is the generating rule the ticket went looking for, and it is exactly what
+every "all charter-legal tiles" figure below counts. It did not have to be invented; it was
+already written down, as prose about pictures rather than as a rule about a graph.
 
 ### What the six families are, measured
 
@@ -223,7 +231,8 @@ enters — gives one uniform result:
 | `whirl` | `flip` | `2 rows` | 0 | 0 | 0 | two arcs |
 
 Every one of the 78, at every row count from each family's structural minimum through 8:
-**no bare lattice point, and no degree-4 point anywhere.** The only degree-3 points in the
+**no bare lattice point, and no degree-4 point anywhere** — stronger than the rule demands,
+since none of the five ever draws a dot. The only degree-3 points in the
 whole set are the two per repeat unit that `edge` and `edge-flip` create by joining the
 zigzag to the border rule — the same ink T-junctions
 [#410](https://github.com/JimmyPaolini/codebase/issues/410) reports, reached here
@@ -249,27 +258,34 @@ component as long as it can be. Both are regions of the one space:
 | Hamiltonian cycles | one component, every point of degree 2 | `snake` |
 | Hamiltonian paths | one component, two loose ends | `boxes`, `chain`, `swirl`, `whirl` |
 
-Sizes, counted exactly on the wrapped lattice each family's own pitch defines:
+The size of the whole space, counted exactly on the wrapped lattice each family's own pitch
+defines:
 
-| Lattice | Rows | Family | Hamiltonian cycles | Hamiltonian paths | Simple traversals | All charter-legal tiles |
-| --- | --- | --- | --- | --- | --- | --- |
-| 3 × 3 | 4 | `boxes`, `chain`, `snake` | 6 | 144 | 1,477 | 7,231 |
-| 4 × 4 | 5 | `boxes`, `chain`, `snake` | 82 | 4,016 | 113,023 | 12,082,896 |
-| 5 × 5 | 6 | `boxes`, `chain`, `snake` | 850 | 152,230 | 9,304,216 | 1.83 × 10¹¹ |
-| 6 × 6 | 7 | `boxes`, `chain`, `snake` | 63,674 | 14,557,092 | not counted | 2.58 × 10¹⁶ |
-| 7 × 7 | 8 | `boxes`, `chain`, `snake` | not counted | not counted | not counted | 3.36 × 10²² |
-| 4 × 3 | 4 | `whirl` | 22 | 584 | 6,280 | 141,421 |
-| 5 × 4 | 5 | `whirl` | 160 | 16,820 | 536,422 | 710,761,599 |
-| 6 × 5 | 6 | `whirl` | not counted | not counted | 45,883,535 | 3.29 × 10¹³ |
-| 5 × 3 | 4 | `swirl` | 30 | 1,660 | 18,559 | 2,738,193 |
-| 7 × 4 | 5 | `swirl` | 1,484 | 270,284 | 5,639,900 | 2.46 × 10¹² |
-| 9 × 5 | 6 | `swirl` | not counted | not counted | not counted | 1.88 × 10²⁰ |
+| Lattice | Rows | Family | All charter-legal tiles |
+| --- | --- | --- | --- |
+| 3 × 3 | 4 | `boxes`, `chain`, `snake` | 7,231 |
+| 4 × 4 | 5 | `boxes`, `chain`, `snake` | 12,082,896 |
+| 5 × 5 | 6 | `boxes`, `chain`, `snake` | 1.83 × 10¹¹ |
+| 6 × 6 | 7 | `boxes`, `chain`, `snake` | 2.58 × 10¹⁶ |
+| 7 × 7 | 8 | `boxes`, `chain`, `snake` | 3.36 × 10²² |
+| 4 × 3 | 4 | `whirl` | 141,421 |
+| 5 × 4 | 5 | `whirl` | 710,761,599 |
+| 6 × 5 | 6 | `whirl` | 3.29 × 10¹³ |
+| 5 × 3 | 4 | `swirl` | 2,738,193 |
+| 7 × 4 | 5 | `swirl` | 2.46 × 10¹² |
+| 9 × 5 | 6 | `swirl` | 1.88 × 10²⁰ |
 
-"Not counted" means the enumeration was not run to completion, not that the number is
-unknown in principle — the space is finite at every size. Counts are before folding by the
-tile's symmetry group (translations, horizontal mirror, level flip), which divides by at
-most `4 × pitch` and never moves the order of magnitude: the `mosaic` sweep's folded 2,013
-tiles at 8 rows and 2 columns come from 11,275 unfolded, a factor of 5.6.
+Counts are before folding by the tile's symmetry group (translations, horizontal mirror,
+level flip), which divides by at most `4 × pitch` and never moves the order of magnitude:
+the `mosaic` sweep's folded 2,013 tiles at 8 rows and 2 columns come from 11,275 unfolded,
+a factor of 5.6.
+
+The narrower regions are smaller and still far past looking through. On the same 4 × 4
+lattice at 5 rows, `snake` is one of **82** Hamiltonian cycles and `boxes` one of **4,016**
+Hamiltonian paths; at 6 rows the tightest of the four rules, simple traversals, still
+admits **9,304,216** tiles. Those three regions were enumerated only at the smaller
+lattices, which is why the table above reports the charter-legal count — exact at every
+size — and why the recommendation rests on that column alone.
 
 `swirl` is the family that escapes even the tightest of those rules. Its two arms put two
 horizontal runs on its outer levels, so it is not a simple traversal, and no rule narrower
@@ -376,9 +392,10 @@ with a number, computed exactly (the charter-legal counts by transfer matrix, cr
 against brute force at 3 × 3; the Hamiltonian and simple-traversal counts by enumeration,
 cross-checked against brute force at 3 × 3, 4 × 3, and 4 × 4).
 
-**Not measured**: the space sizes marked "not counted"; and the claim that no
-family-specific rule exists, which is an argument from the absence of a piece decomposition
-rather than a result.
+**Not measured**: the three narrower regions beyond the small lattices — their enumerations
+were run only at the sizes quoted, while the charter-legal column is exact at every size in
+the table; and the claim that no family-specific rule exists, which is an argument from the
+absence of a piece decomposition rather than a result.
 
 ## 👔 Conformetry
 
