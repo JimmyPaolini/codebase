@@ -127,7 +127,6 @@ const dimension = (document: string, pattern: RegExp): number =>
 describe(BranchMotifService, () => {
   let generationService: MeanderGenerationService;
   let gridGeometryService: GridGeometryService;
-  let latticeService: MeanderLatticeService;
   let renderingService: SvgRenderingService;
   let service: BranchMotifService;
   let topologyService: MeanderTopologyService;
@@ -161,7 +160,6 @@ describe(BranchMotifService, () => {
 
     generationService = await module.resolve(MeanderGenerationService);
     gridGeometryService = await module.resolve(GridGeometryService);
-    latticeService = await module.resolve(MeanderLatticeService);
     renderingService = await module.resolve(SvgRenderingService);
     service = await module.resolve(BranchMotifService);
     topologyService = await module.resolve(MeanderTopologyService);
@@ -200,53 +198,29 @@ describe(BranchMotifService, () => {
     // one short of it, over a single component, is exactly a tree: a
     // connected figure with a loop would need at least as many edges as
     // nodes.
-    it.each(BRANCH_CASES)("$label inks a spanning tree", (testCase) => {
-      const document = generationService.generate({
-        repeatCount: REPEAT_COUNT,
-        rows: testCase.rows,
-        type: "branch",
-        ...(testCase.modifier ? { modifier: testCase.modifier } : {}),
-      });
-
-      expect(topologyService.connectivity(document)).toStrictEqual({
-        components: 1,
-        edges: LATTICE_COLUMNS * (testCase.rows + 1) - 1,
-        nodes: LATTICE_COLUMNS * (testCase.rows + 1),
-      });
-    });
-
-    // 🎯 The free ends are what keep this family reading as a meander
-    // rather than as a grille, and they are the figure the README's
-    // unbounded-branching write-up compares against: both looped
-    // constructions it measured have zero. A free end is a lattice point
-    // with a single arm of ink — where a stroke stops rather than turning,
-    // forking, or closing.
-    it.each(BRANCH_CASES)("$label leaves $freeEnds free ends", (testCase) => {
-      const graph = latticeService.build(
-        generationService.generate({
+    //
+    // `freeEnds` is the fourth number and it is not structural. It is what
+    // keeps the figure reading as a meander rather than as a grille, and it
+    // is the column the README's unbounded-branching write-up compares
+    // against: both looped constructions measured there have none.
+    it.each(BRANCH_CASES)(
+      "$label inks a spanning tree with $freeEnds free ends",
+      (testCase) => {
+        const document = generationService.generate({
           repeatCount: REPEAT_COUNT,
           rows: testCase.rows,
           type: "branch",
           ...(testCase.modifier ? { modifier: testCase.modifier } : {}),
-        }),
-      );
-      let freeEnds = 0;
+        });
 
-      for (let column = 0; column <= graph.columns; column += 1) {
-        for (let row = 0; row <= graph.rows; row += 1) {
-          const arms = [
-            graph.horizontalEdges.has(`${column - 1},${row}`),
-            graph.horizontalEdges.has(`${column},${row}`),
-            graph.verticalEdges.has(`${column},${row - 1}`),
-            graph.verticalEdges.has(`${column},${row}`),
-          ].filter(Boolean).length;
-
-          freeEnds += arms === 1 ? 1 : 0;
-        }
-      }
-
-      expect(freeEnds).toBe(testCase.freeEnds);
-    });
+        expect(topologyService.connectivity(document)).toStrictEqual({
+          components: 1,
+          edges: LATTICE_COLUMNS * (testCase.rows + 1) - 1,
+          freeEnds: testCase.freeEnds,
+          nodes: LATTICE_COLUMNS * (testCase.rows + 1),
+        });
+      },
+    );
 
     it.each(BRANCH_CASES)(
       "$label forks $tJunctions times and crosses nowhere",
@@ -327,12 +301,13 @@ describe(BranchMotifService, () => {
 
   describe("the structural minimum", () => {
     /**
-     * A `rung` drawing rendered straight through the motif service, at row
-     * counts `MeanderGenerationService.generate` refuses. The bounds live on
-     * that service rather than here, which is what lets the reason for the
-     * minimum be measured at the row count it excludes.
+     * A drawing rendered straight through the motif service, at row counts
+     * `MeanderGenerationService.generate` refuses. The bounds live on that
+     * service rather than here, which is what lets the reason for the
+     * minimum be measured at the row count it excludes — for the mode the
+     * minimum is set by, and for the two it is not.
      */
-    const belowMinimum = (rows: number): string => {
+    const belowMinimum = (rows: number, modifier?: Modifier): string => {
       const geometry = gridGeometryService.compute(rows);
       const format = (value: number): string =>
         gridGeometryService.formatCoordinate(value);
@@ -344,9 +319,9 @@ describe(BranchMotifService, () => {
         paths: Array.from({ length: REPEAT_COUNT }, (_value, unitIndex) =>
           service.path(geometry, {
             isLastUnit: unitIndex === REPEAT_COUNT - 1,
-            modifier: { name: "rung" },
             rows,
             unitIndex,
+            ...(modifier ? { modifier } : {}),
           }),
         ),
         strokeWidth: format(geometry.strokeWidth),
@@ -358,7 +333,9 @@ describe(BranchMotifService, () => {
     };
 
     // 🎯 `rung`'s forks decompose into two terms: one per stile per interior
-    // lattice row, and one per rail arriving at a stile's head. At one row a
+    // lattice row, and `repeatCount - 1` where the rail arrives at a stile's
+    // head — one fewer than the stiles, since the first has no rail on its
+    // left, which is what `railForks` below spells out. At one row a
     // stile has no interior row, so the first term is zero and every fork
     // left is a rail junction — the mode draws a plain bracket per unit and
     // the junction it is named for is absent. That is the whole reason the
@@ -370,21 +347,52 @@ describe(BranchMotifService, () => {
     ])(
       "leaves rung with $stileForks stile forks at $rows rows",
       ({ railForks, rows, stileForks }) => {
-        expect(topologyService.measure(belowMinimum(rows)).inkTJunctions).toBe(
-          railForks + stileForks,
-        );
+        expect(
+          topologyService.measure(belowMinimum(rows, { name: "rung" }))
+            .inkTJunctions,
+        ).toBe(railForks + stileForks);
       },
     );
+
+    // 🎯 The other half of the minimum's reason, and the half that was
+    // asserted only in prose before: the family takes the stricter of its
+    // modes, which means the other two must actually be drawable at one
+    // row. They are — both fork there, at exactly the counts they hold at
+    // every other row count, because their forks sit on the rail and a
+    // rail's length does not depend on the band's height. So 2 is `rung`'s
+    // floor rather than the lattice's.
+    it.each([
+      { freeEnds: 12, label: "comb", tJunctions: 10 },
+      {
+        freeEnds: 7,
+        label: "stagger",
+        modifier: { name: "stagger" as const },
+        tJunctions: 5,
+      },
+    ])("still draws $label at one row", (testCase) => {
+      const document = belowMinimum(1, testCase.modifier);
+
+      expect(topologyService.connectivity(document)).toStrictEqual({
+        components: 1,
+        edges: LATTICE_COLUMNS * 2 - 1,
+        freeEnds: testCase.freeEnds,
+        nodes: LATTICE_COLUMNS * 2,
+      });
+      expect(topologyService.measure(document).inkTJunctions).toBe(
+        testCase.tJunctions,
+      );
+    });
 
     // 🎯 The drawing below the minimum is still a tree and still
     // space-filling, so no charter gate would have caught it. The minimum is
     // this family's own legibility floor, exactly as `cross`'s is.
     it("still measures as a space-filling tree at one row", () => {
-      const document = belowMinimum(1);
+      const document = belowMinimum(1, { name: "rung" });
 
       expect(topologyService.connectivity(document)).toStrictEqual({
         components: 1,
         edges: LATTICE_COLUMNS * 2 - 1,
+        freeEnds: 7,
         nodes: LATTICE_COLUMNS * 2,
       });
       expect(topologyService.measure(document).channelWidthCompliant).toBe(

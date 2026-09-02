@@ -209,13 +209,15 @@ export class MeanderTopologyService {
     const graph = this.meanderLatticeService.build(document);
     const visited = new Set<string>();
     let components = 0;
+    let freeEnds = 0;
 
     for (let column = 0; column <= graph.columns; column += 1) {
       for (let row = 0; row <= graph.rows; row += 1) {
-        if (
-          graph.nodes.has(this.key(column, row)) &&
-          !visited.has(this.key(column, row))
-        ) {
+        const key = this.key(column, row);
+
+        freeEnds += this.inkDegree(graph, column, row) === 1 ? 1 : 0;
+
+        if (graph.nodes.has(key) && !visited.has(key)) {
           components += 1;
           this.walk(graph, { column, row }, visited);
         }
@@ -225,6 +227,7 @@ export class MeanderTopologyService {
     return {
       components,
       edges: graph.horizontalEdges.size + graph.verticalEdges.size,
+      freeEnds,
       nodes: graph.nodes.size,
     };
   }

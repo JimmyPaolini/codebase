@@ -183,7 +183,7 @@ describe(MeanderTopologyService, () => {
     it.each([
       {
         document: buildDocument({ columns: 2, paths: ["M3 3H27"], rows: 1 }),
-        expected: { components: 1, edges: 2, nodes: 3 },
+        expected: { components: 1, edges: 2, freeEnds: 2, nodes: 3 },
         label: "one simple arc, a tree with no fork",
       },
       {
@@ -192,7 +192,7 @@ describe(MeanderTopologyService, () => {
           paths: ["M3 3H27", "M3 3V15", "M15 3V15", "M27 3V15"],
           rows: 1,
         }),
-        expected: { components: 1, edges: 5, nodes: 6 },
+        expected: { components: 1, edges: 5, freeEnds: 3, nodes: 6 },
         label: "a spine with a tooth per column, a tree that forks",
       },
       {
@@ -201,7 +201,7 @@ describe(MeanderTopologyService, () => {
           paths: ["M3 3H15", "M3 15H15", "M3 3V15", "M15 3V15"],
           rows: 1,
         }),
-        expected: { components: 1, edges: 4, nodes: 4 },
+        expected: { components: 1, edges: 4, freeEnds: 0, nodes: 4 },
         label: "a closed loop, connected but not a tree",
       },
       {
@@ -210,12 +210,12 @@ describe(MeanderTopologyService, () => {
           paths: ["M3 3H27", "M3 15H27"],
           rows: 1,
         }),
-        expected: { components: 2, edges: 4, nodes: 6 },
+        expected: { components: 2, edges: 4, freeEnds: 4, nodes: 6 },
         label: "two disjoint arcs, a forest that is not a tree",
       },
       {
         document: buildDocument({ columns: 2, paths: ["M15 15H15"], rows: 2 }),
-        expected: { components: 1, edges: 0, nodes: 1 },
+        expected: { components: 1, edges: 0, freeEnds: 0, nodes: 1 },
         label: "a square-cap dot, one node joined to nothing",
       },
     ])("counts $label", ({ document, expected }) => {

@@ -21,10 +21,20 @@
  * A lattice point painted by a zero-length stroke and joined to nothing is
  * a component of its own, which is why `edges` can be zero while `nodes`
  * and `components` are not.
+ *
+ * `freeEnds` counts the lattice points carrying exactly one arm of ink —
+ * where a stroke stops rather than turning, forking, or closing. It is not
+ * a charter quantity either, and it is reported here because it is what
+ * separates a figure the eye follows from one it does not: closing every
+ * loop in a drawing also closes every end, and a figure in which nothing
+ * terminates reads as a grille rather than as a running border. A
+ * zero-length stroke's lattice point has no arms at all, so it is not a
+ * free end.
  */
 export interface InkConnectivity {
   readonly components: number;
   readonly edges: number;
+  readonly freeEnds: number;
   readonly nodes: number;
 }
 
