@@ -20,6 +20,7 @@ import { NegativeSourceService } from "../negative-motif/negative-source.service
 import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
+import { PLIED_SWEEP_STRAND_COUNTS } from "../start/start.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
@@ -37,6 +38,7 @@ import {
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
+  SUPPORTED_TYPES,
   UnavailableSubFamilyError,
 } from "./meander-generation.constants";
 import { MeanderGenerationService } from "./meander-generation.service";
@@ -65,6 +67,9 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "alternated": {
       return [1, 2, 3].map((period) => ({ name: "alternated", period }));
     }
+    case "brick": {
+      return [{ name: "brick" }];
+    }
     case "dot": {
       return [
         { name: "dot", shape: "bounce" },
@@ -83,6 +88,18 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "interrupted": {
       return [{ name: "interrupted" }];
     }
+    case "plied": {
+      return PLIED_SWEEP_STRAND_COUNTS.map((strands) => ({
+        name: "plied",
+        strands,
+      }));
+    }
+    case "ruled": {
+      return [{ name: "ruled" }];
+    }
+    case "rung": {
+      return [{ name: "rung" }];
+    }
     case "spin": {
       return [{ name: "spin" }];
     }
@@ -92,6 +109,9 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "split": {
       return [{ name: "split" }];
     }
+    case "stagger": {
+      return [{ name: "stagger" }];
+    }
     default: {
       throw new Error(`Unknown modifier name: ${name}`);
     }
@@ -99,15 +119,35 @@ const modifiersNamed = (name: string): Modifier[] => {
 };
 
 /**
+ * Every family the sweep below draws. Kept as its own literal rather than
+ * derived from {@link SUPPORTED_TYPES}, which is widened to `string` for the
+ * CLI boundary — "every family is enrolled" is then a claim the suite can
+ * fail on instead of one the types quietly satisfy. The `border containment`
+ * block asserts this list against `SUPPORTED_TYPES`, so a family added there
+ * and not here fails rather than going unswept.
+ */
+const sweptTypes: readonly MeanderType[] = [
+  "boxes",
+  "branch",
+  "chain",
+  "cross",
+  "mosaic",
+  "negative",
+  "parallel",
+  "snake",
+  "swirl",
+  "whirl",
+];
+
+/**
  * Every type/modifier pairing `COMPATIBLE_MODIFIERS` allows, swept over the
  * row counts each type supports, at the repeat count its modifier's own
  * cycle admits — `SPIN_CYCLE_LENGTH` for the spin family, the shared
  * default otherwise. `alternated` is swept over the periods
- * `MosaicMotifService` documents rather than the whole allowed range.
+ * `MosaicMotifService` documents rather than the whole allowed range, and
+ * `plied` over `PLIED_SWEEP_STRAND_COUNTS` for the same reason.
  */
-const patternCases: readonly PatternCase[] = (
-  ["boxes", "chain", "cross", "mosaic", "snake", "swirl", "whirl"] as const
-).flatMap((type) => {
+const patternCases: readonly PatternCase[] = sweptTypes.flatMap((type) => {
   const modifiers: readonly (Modifier | undefined)[] = [
     undefined,
     ...COMPATIBLE_MODIFIERS[type].flatMap((name) => modifiersNamed(name)),
@@ -833,6 +873,14 @@ describe(MeanderGenerationService, () => {
   });
 
   describe("border containment", () => {
+    it("sweeps every supported family", () => {
+      const swept = [
+        ...new Set(patternCases.map((patternCase) => patternCase.type)),
+      ].toSorted();
+
+      expect(swept).toStrictEqual([...SUPPORTED_TYPES].toSorted());
+    });
+
     it.each(
       patternCases.map((patternCase) => [patternCase.label, patternCase]),
     )(
