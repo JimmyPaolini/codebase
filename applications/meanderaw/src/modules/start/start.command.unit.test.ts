@@ -122,21 +122,23 @@ describe(StartCommand, () => {
   });
 
   describe("run", () => {
-    it("writes the expected number of files across all six types, with no name collisions", async () => {
+    it("writes the expected number of files across all seven types, with no name collisions", async () => {
       await command.run([], { outputDirectory: "output" });
 
       expect(mockMkdir).toHaveBeenCalledWith("output", { recursive: true });
 
-      // 🎯 rows sweep is 3..8 (mosaic, boxes) or 4..8 (chain, snake, swirl,
-      // whirl), crossed with "no modifier" plus every compatible modifier
-      // (alternated and dot each expand to 2 representative values):
+      // 🎯 rows sweep is 3..8 (mosaic, boxes), 4..8 (chain, snake, swirl,
+      // whirl), or 6..8 (cross), crossed with "no modifier" plus every
+      // compatible modifier (alternated and dot each expand to 2
+      // representative values):
       // mosaic: 6 rows * (1 + 2 + 2 + 1) modifiers = 36
       // boxes: 6 rows * (1 + 1 + 1) modifiers = 18
       // chain: 5 rows * (1 + 1 + 1 + 1) modifiers = 20
       // snake: 5 rows * (1 + 1 + 1 + 1) modifiers = 20
       // swirl: 5 rows * (1 + 1) modifiers = 10
       // whirl: 5 rows * (1 + 1) modifiers = 10
-      const expectedNamedTypeCount = 36 + 18 + 20 + 20 + 10 + 10;
+      // cross: 3 rows * (1 + 1) modifiers = 6
+      const expectedNamedTypeCount = 36 + 18 + 20 + 20 + 10 + 10 + 6;
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
@@ -288,13 +290,13 @@ describe(StartCommand, () => {
         realCommand.run([], { outputDirectory: "output" }),
       ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 114 enumerated named-type combinations, and
+      // 🎯 every one of the 120 enumerated named-type combinations, and
       // every one of the 3,179 mosaic tiles, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
       // replace the generation services entirely. The five extra files are
       // the mosaic contact sheets, one per row count.
-      expect(mockWriteFile).toHaveBeenCalledTimes(114 + 3179 + 5);
+      expect(mockWriteFile).toHaveBeenCalledTimes(120 + 3179 + 5);
     });
   });
 });

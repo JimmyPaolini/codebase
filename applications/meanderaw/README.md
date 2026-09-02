@@ -23,7 +23,7 @@ drawing.
 | 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Fixed |
 | 2 | **Space-filling** — every interior white channel is exactly one stroke width | Fixed |
 | 3 | **No branching** — ink contains no T-junctions | Already relaxed by `chain` and `snake` under `edge` and `edge-flip` |
-| 4 | **No crossing** — ink contains no X-junctions | May be relaxed |
+| 4 | **No crossing** — ink contains no X-junctions | Relaxed by `cross`, except under `interrupted` |
 | 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Fixed |
 | 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
 | 7 | Invariants hold within a band, not at its termination | See [#338](https://github.com/JimmyPaolini/codebase/issues/338) |
@@ -34,9 +34,12 @@ tiles:
 - **Every interior white channel is exactly one stroke width**, in all 3,293 files. The
   channel width equals the stroke width equals half a grid unit, which is why fitting
   `N` parallel strokes into one unit is exactly `strokeWidth = unit / (2N)`.
-- **Ink never crosses itself.** Zero X-junctions, in all 3,293 files — a stronger
-  statement than "non-self-intersecting", and the sharpest single characterization of
-  what the six families have in common.
+- **Ink never crosses itself, except where a family was added to make it.** Zero
+  X-junctions across all 3,293 files the six original families produce — a stronger
+  statement than "non-self-intersecting", and the sharpest single characterization of what
+  those six have in common. The `cross` family relaxes it deliberately: 12 X-junctions in
+  each of the three solid documents it commits, and none anywhere else in the 3,299-file
+  corpus. See "The Crossing Family" below.
 - **Ink branches in one place, and only there.** 200 T-junctions across 20 of the 114
   named patterns: `chain` and `snake` under `edge` and `edge-flip`, ten per document at
   every row count. The `edge` family widens the repeat unit past the zigzag it contains,
@@ -289,6 +292,96 @@ A bounded-tree family cannot adopt one of these corridor graphs unmodified: it w
 to deliberately omit some corridors — every other "rung", for instance — to break the
 loops before the shape that inspired it can satisfy the tree test (`edges = vertices −
 1`) a bounded-tree charter relaxation needs.
+
+## ✚ The Crossing Family
+
+`cross` is the seventh family and the only one whose **ink crosses**. It draws the form
+Calder Loth calls the complex Greek meander — two strips of fillet crossing one another at
+continuous intervals — and its four-armed `+` junctions are the first degree-4 ink this
+project has ever drawn. Because movement is orthogonal, two crossing strands can only ever
+meet as a `+`, never an `X`.
+
+```bash
+nx run meanderaw:generate --args="--type cross --rows 6 --repeat-count 6"
+nx run meanderaw:generate --args="--type cross --rows 6 --repeat-count 6 --modifier interrupted"
+```
+
+### What it draws
+
+Two strips, plus the band's own two borders:
+
+- **The warp** — a crenellated fillet running the length of the band: a vertical bar in
+  every interior column, spanning grid levels `1` through `rows - 1`, with consecutive
+  bars linked alternately across the top and across the bottom so the whole run is one
+  continuous meandering line.
+- **The weft** — a straight fillet along the band's middle level, crossing every bar of
+  the warp.
+
+The shape is not a free choice, and its plainness is the constraint rather than a lack of
+ambition. Space-filling puts ink at every interior lattice point; no branching means a
+horizontal run and a vertical run may only cross outright or turn at each other's ends,
+never meet in a T. Together those force a bar into every interior column, which leaves a
+horizontal fillet nowhere to turn — so the weft runs the full width and only the warp
+meanders. This was found by search rather than proved: overlaying each existing family on
+a shifted or mirrored copy of itself, at every offset up to six columns and three rows,
+produced a T-junction every time and a legal crossing never.
+
+### Solid and interrupted
+
+Both modes are one family, selected per render. The bare family is **solid**: the bar runs
+straight through the rail, so four arms of ink meet and no white is added. The
+`interrupted` modifier gives up the grid level either side of each junction instead, so
+the rail reads as passing over the bar — path data only, no z-order, so the flat path
+model survives.
+
+One grid pitch is the smallest break this lattice admits, and it leaves a white gap of
+**exactly one stroke width**, since a square line cap gives back a quarter unit at each
+end. Invariant 2 is therefore not relaxed. The cost is stated in
+[ADR 0004](../../docs/adr/0004-draw-crossings-as-a-one-pitch-interlace-break.md), and it
+is not the cost the ticket anticipated: the gap is the same width as every other channel
+in the band, so nothing about its size says "under" — and breaking the bar adjacent to the
+junction takes the crossing out of the ink graph altogether.
+
+Measured across the six committed documents, at 6 repeats and every swept row count:
+
+| Mode | Ink X-junctions | Ink T-junctions | Space-filling | Negative T-junctions | Negative X-junctions |
+| --- | --- | --- | --- | --- | --- |
+| solid | 12 | 0 | ✅ | 11 | 0 |
+| `interrupted` | 0 | 0 | ✅ | 33 | 0 |
+
+The first three columns are asserted — by this family's own unit tests, by the charter
+property test, and by the disk-based gate over every committed document. **The last two
+are not.** They are a reading of the six committed files and nothing fails if they change:
+invariants 3 and 4 constrain ink, and no family is failed for what its white space does.
+
+### What it declares
+
+| Invariant | Solid | `interrupted` |
+| --- | --- | --- |
+| 1 Orthogonal only | Applies | Applies |
+| 2 Space-filling | Applies | Applies |
+| 3 No branching | Applies | Applies |
+| 4 No crossing | **Relaxed** | Applies |
+| 5 Band, not field | Applies | Applies |
+| 6 Flat path model | Applies | Applies |
+
+That declaration lives in `RELAXED_INVARIANTS` in
+[the charter property test](src/modules/meander-topology/meander-topology.service.integration.test.ts),
+which asserts a declared relaxation is _present_ as well as an undeclared one absent — so
+neither mode can quietly stop doing what this table says it does.
+
+### Provenance: derived, not attested
+
+The complex Greek meander is real ornament, and Fréart's right-angle rule is why its
+junctions are `+`. **This application's rendering of it was checked against nothing.** The
+six older families were verified byte-exact against hand-drawn references; no such
+reference exists for `cross`, so its committed output is its own baseline — a baseline for
+what the code does, not evidence of fidelity to anything.
+
+`cross` also cannot be drawn below **6 rows**, where a solid-only family could go down to
+4: the break needs a whole grid level of bar left above and below the rail, and below 6
+rows one remnant collapses to a point and stops painting a lattice point it is the only
+ink for.
 
 ## 👔 Conformetry
 

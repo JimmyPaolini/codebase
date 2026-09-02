@@ -16,6 +16,7 @@ import type {
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
   chain: ["edge", "flip", "edge-flip"],
+  cross: ["interrupted"],
   mosaic: ["alternated", "dot", "split"],
   snake: ["edge", "flip", "edge-flip"],
   swirl: ["flip"],
@@ -86,6 +87,7 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "alternated",
   "split",
   "dot",
+  "interrupted",
 ] satisfies readonly Modifier["name"][];
 
 /**
@@ -102,6 +104,7 @@ export const SUPPORTED_TYPES: readonly string[] = [
   "snake",
   "swirl",
   "whirl",
+  "cross",
 ] satisfies readonly MeanderType[];
 
 /**
@@ -137,10 +140,20 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * exactly 3 rows the bar spans a single grid unit, so the `split` modifier
  * degenerates to a no-op there — it has nothing left to split, and its
  * output is byte-identical to the unmodified bar.
+ *
+ * `cross`'s minimum of 6 is set by its `interrupted` modifier rather than by
+ * its solid shape, which would draw down to 4 rows. The break gives up the
+ * grid level either side of the crossing, so the bar needs a whole level
+ * left above and below it; below 6 rows one of the two remnants collapses to
+ * a point and the bar stops painting a lattice point it is the only ink for
+ * — a space-filling failure rather than a degenerate-but-legal shape. One
+ * minimum per family is the model here, so the family takes the stricter of
+ * the two.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
   chain: 4,
+  cross: 6,
   mosaic: 3,
   snake: 4,
   swirl: 4,

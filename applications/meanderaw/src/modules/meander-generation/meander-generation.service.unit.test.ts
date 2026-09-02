@@ -7,6 +7,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { COORDINATE_ROUNDING_TOLERANCE } from "../../../testing/path-data";
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
+import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
@@ -73,6 +74,9 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "flip": {
       return [{ name: "flip" }];
     }
+    case "interrupted": {
+      return [{ name: "interrupted" }];
+    }
     case "spin": {
       return [{ name: "spin" }];
     }
@@ -96,7 +100,7 @@ const modifiersNamed = (name: string): Modifier[] => {
  * `MosaicMotifService` documents rather than the whole allowed range.
  */
 const patternCases: readonly PatternCase[] = (
-  ["boxes", "chain", "mosaic", "snake", "swirl", "whirl"] as const
+  ["boxes", "chain", "cross", "mosaic", "snake", "swirl", "whirl"] as const
 ).flatMap((type) => {
   const modifiers: readonly (Modifier | undefined)[] = [
     undefined,
@@ -104,7 +108,13 @@ const patternCases: readonly PatternCase[] = (
   ];
 
   return modifiers.flatMap((modifier) =>
-    [STRUCTURAL_MINIMUM_ROWS[type], 5, 6, 7, 8].map((rows) => ({
+    [
+      ...new Set(
+        [STRUCTURAL_MINIMUM_ROWS[type], 5, 6, 7, 8].filter(
+          (rows) => rows >= STRUCTURAL_MINIMUM_ROWS[type],
+        ),
+      ),
+    ].map((rows) => ({
       label: `${type} at ${rows} rows${modifier ? ` with ${modifier.name}` : ""}`,
       repeatCount:
         modifier && SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name)
@@ -163,6 +173,7 @@ describe(MeanderGenerationService, () => {
         MosaicTileMotifService,
         BoxesMotifService,
         ChainMotifService,
+        CrossMotifService,
         MotifTransformsService,
         SnakeMotifService,
         SnakeSequenceService,
@@ -200,6 +211,17 @@ describe(MeanderGenerationService, () => {
     it("throws below the structural minimum rows for mosaic", () => {
       expect(() =>
         service.generate({ repeatCount: 1, rows: 2, type: "mosaic" }),
+      ).toThrow(InvalidRowsError);
+    });
+
+    // 🎯 `cross` stops at 6 rather than the 4 its solid mode alone would
+    // allow, because `interrupted` needs a whole grid level of bar either
+    // side of the rail. Pinned here so the minimum cannot be lowered back to
+    // a row count where the break stops painting a lattice point.
+    it("throws below the structural minimum rows for cross", () => {
+      expect(STRUCTURAL_MINIMUM_ROWS.cross).toBe(6);
+      expect(() =>
+        service.generate({ repeatCount: 6, rows: 5, type: "cross" }),
       ).toThrow(InvalidRowsError);
     });
 
