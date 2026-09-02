@@ -26,12 +26,13 @@ The three that most often catch a change:
   equals half a grid unit. `GridGeometryService` derives stroke width and offset from the
   grid unit for this reason; setting either independently breaks the invariant silently,
   because nothing currently fails when it does.
-- **No branching and no crossing.** Ink has zero T-junctions everywhere except `negative`,
-  the family added to branch, and `chain`/`snake` under `edge`/`edge-flip`, which branch
-  where their zigzag lands mid-border — 1,052 junctions across 38 of the 138 named
-  patterns, 852 of them `negative`'s. It has zero X-junctions everywhere except `cross`
-  drawn solid, which is the family added to cross: 12 per document, and none under its
-  `interrupted` modifier, where the break takes the junction out of the ink graph.
+- **No branching and no crossing.** Ink has zero T-junctions everywhere except `negative`
+  and `branch`, the two families added to branch, and `chain`/`snake` under
+  `edge`/`edge-flip`, which branch where their zigzag lands mid-border — 1,360 junctions
+  across 59 of the 159 named patterns, 852 of them `negative`'s and 308 `branch`'s. It has
+  zero X-junctions everywhere except `cross` drawn solid, which is the family added to
+  cross: 12 per document, and none under its `interrupted` modifier, where the break takes
+  the junction out of the ink graph.
   These two are the charter's negotiable invariants, so a family may break them — but only
   deliberately, and never as a side effect of a geometry fix. Both counts are measured by
   `MeanderTopologyService` and gated by the charter property test, which asserts a declared
@@ -51,6 +52,11 @@ Three things that look like defects and are not:
   sub-family. `split` is a modifier that constructs a shape; `diamond` is the sub-family
   that recognizes the same shape however it arose. Do not collapse either pair — see
   "Naming a Mosaic Sub-family" in [README.md](./README.md).
+- **`negative` and `branch` both branching** is not one family under two names. Both relax
+  invariant 3 and both come off the same survey shortlist; they differ in loops.
+  `negative` inks a whole corridor graph and carries 15–45 cycles per drawing, and
+  `branch` inks a loop-free spanning tree and carries none — the only trees in the corpus.
+  See "The Branching Family" in [README.md](./README.md).
 
 When adding a family, prefer extending an existing family's unit space over hand-writing a
 new motif service — see
