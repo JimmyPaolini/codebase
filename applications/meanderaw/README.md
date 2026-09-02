@@ -244,34 +244,38 @@ unchanged.
 
 ### Shortlist
 
-Four candidates scale cleanly across every row count the permutation sweep covers (4
-through 8), which is what makes each "a family" rather than one lucky tile. All four are
-_branches only_, so drawing them relaxes invariant 3 and nothing else — exactly what
-issues #415 and #416 need.
+Three candidates scale cleanly across every row count the permutation sweep covers (4
+through 8), which is what makes each "a family" rather than one lucky tile. All three
+are _branches only_ — **verified `negativeXJunctions === 0` at every one of their five
+row counts**, read from the same per-file measurement that produced the per-class counts
+above, not asserted separately — so drawing them relaxes invariant 3 and nothing else,
+exactly what issues #415 and #416 need. A fourth candidate was cut after review found it
+crosses; see below.
 
 1. **`dvvxxd` → `dvvxxvvxxvvxxd`** (`mosaic`, columns 2, rows 4–8: `dvvxxd`, `dvvxxvdx`,
-   `dvvxxvvxxd`, `dvvxxvvxxvdx`, `dvvxxvvxxvvxxd`). Negative T-junctions grow
-   38 → 48 → 58 → 68 → 78, almost exactly +10 per row. The highest-branching
-   non-crossing family found, at every row count.
+   `dvvxxvvxxd`, `dvvxxvvxxvdx`, `dvvxxvvxxvvxxd`). Negative T-junctions
+   38 / 48 / 58 / 68 / 78 (rows 4–8 respectively), X-junctions 0 / 0 / 0 / 0 / 0. The
+   highest-branching non-crossing family found, at every row count.
 2. **`hxxhhx` → `hxxhhxxhhxxhhx`** (`mosaic`, columns 2, rows 4–8: `hxxhhx`, `hxxhhxxh`,
-   `hxxhhxxhhx`, `hxxhhxxhhxxh`, `hxxhhxxhhxxhhx`). T-junctions grow
-   30 → 40 → 50 → 60 → 70, the same +10-per-row pace, and structurally the simplest
-   of the four — built from one mark kind, the horizontal dash, repeated.
+   `hxxhhxxhhx`, `hxxhhxxhhxxh`, `hxxhhxxhhxxhhx`). T-junctions 30 / 40 / 50 / 60 / 70,
+   X-junctions 0 / 0 / 0 / 0 / 0. Structurally the simplest of the three — built from
+   one mark kind, the horizontal dash, repeated.
 3. **`dld` → `dldldld`** (`mosaic`, columns 1, rows 4–8: `dld`, `dldl`, `dldld`,
-   `dldldl`, `dldldld`). T-junctions 16, 16, 24, 24, 32. One column of alternating
-   dots and lines, and the most-branching candidate at the cheaper-to-verify column 1
-   width.
-4. **All-dots at columns 1** (`mosaic`, rows 4–8: `ddd`, `dddd`, `ddddd`, `dddddd`,
-   `ddddddd`). T-junctions 10 → 18. Unlike the columns-2 version of the same pattern
-   (flagged below, and crossing), this one never crosses. The lowest-branching pick,
-   useful as a starting point to build up from.
+   `dldldl`, `dldldld`). T-junctions 16 / 16 / 24 / 24 / 32, X-junctions
+   0 / 0 / 0 / 0 / 0. One column of alternating dots and lines, and the
+   highest-branching candidate at the cheaper-to-verify column 1 width — checked
+   against every columns-1 branches-only tile in the corpus, not just this family.
 
-**Flagged, not shortlisted:** all-dots at columns 2 (`dddddd` at 4 rows through
-`dddddddddddddd` at 8 rows) is the single most-crossing tile in the whole corpus — 30
-T-junctions and 54 X-junctions at 8 rows — and scales as cleanly as the branching
-candidates above. Neither #415 nor #416 draws from the crossing class today (#417
-builds its own purpose-designed crossing family instead), so this is recorded for
-whoever revisits that boundary rather than added to the actionable list.
+**Cut after review, not shortlisted:** all-dots (`ddd`/`dddd`/`ddddd`/`dddddd`/`ddddddd`
+at columns 1, `dddddd`/`dddddddd`/`dddddddddd`/`dddddddddddd`/`dddddddddddddd` at
+columns 2) was drafted as a fourth, lowest-branching candidate on the mistaken belief
+that only its columns-2 form crosses. Re-measured against the same data: it crosses **at
+every row count and both column widths** — X-junctions 6 / 9 / 12 / 15 / 18 at columns 1
+and 18 / 27 / 36 / 45 / 54 at columns 2 (rows 4–8), the columns-2, 8-row tile being the
+single most-crossing tile in the whole corpus. All-dots belongs entirely to the
+_crosses_ class, not _branches only_, at either width. It is recorded here because it is
+still the cleanest-scaling crossing family found, in case whoever works on the crossing
+family (#417) wants a starting point — neither #415 nor #416 should draw from it.
 
 ### A note for the branching family
 
