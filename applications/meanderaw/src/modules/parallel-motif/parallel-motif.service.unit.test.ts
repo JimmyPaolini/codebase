@@ -151,6 +151,27 @@ describe(ParallelMotifService, () => {
       ).toBe("M63.75 63.75V3.75H108.75V63.75M78.75 63.75V18.75H93.75V63.75");
     });
 
+    // 🎯 The alternation again, at a ply the two strings above cannot see.
+    // They pin it at the default ply and one row count only, so a bundle
+    // that inverted its opening as it deepened — or stopped alternating at
+    // all past two strands — would pass every other assertion in this file
+    // and every case of the charter sweep, since an all-upward band is just
+    // as much an exact cover as an alternating one. Three strands, an odd
+    // unit: three crossbars stepping down from the band's top border, each
+    // one lattice row inside the last.
+    it("draws nested brackets opening downward in an odd unit at a deeper ply", () => {
+      expect(
+        service.path(geometryService.compute(4), {
+          isLastUnit: true,
+          modifier: { name: "plied", strands: 3 },
+          rows: 4,
+          unitIndex: 1,
+        }),
+      ).toBe(
+        "M93.75 63.75V3.75H168.75V63.75M108.75 63.75V18.75H153.75V63.75M123.75 63.75V33.75H138.75V63.75",
+      );
+    });
+
     // 🎯 Why `strands` is bounded above by `rows` rather than by the shared
     // maximum. The innermost strand's arms are `rows - strands + 1` lattice
     // steps long, so one ply past the row count leaves them nothing at all:
