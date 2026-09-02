@@ -6,31 +6,13 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import {
-  COMPATIBLE_MODIFIERS,
-  DEFAULT_OUTPUT_DIRECTORY,
-  DEFAULT_REPEAT_COUNT,
-  SPIN_CYCLE_LENGTH,
-  SPIN_FAMILY_MODIFIER_NAMES,
-  STRUCTURAL_MINIMUM_ROWS,
-  SUPPORTED_MODIFIER_NAMES,
-  SUPPORTED_TYPES,
-} from "../meander-generation/meander-generation.constants";
+import { DEFAULT_OUTPUT_DIRECTORY } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { OutputFilenameService } from "../svg-rendering/output-filename.service";
 
+import { StartCombinationsService } from "./start-combinations.service";
 import { StartPermutationsService } from "./start-permutations.service";
-import {
-  ALTERNATED_SWEEP_PERIODS,
-  DOT_SWEEP_SHAPES,
-  ROWS_SWEEP_MAXIMUM,
-} from "./start.constants";
 
-import type {
-  GenerationParameters,
-  MeanderType,
-  Modifier,
-} from "../meander-generation/meander-generation.types";
 import type { StartCommandOptions } from "./start.types";
 
 /**
@@ -39,16 +21,10 @@ import type { StartCommandOptions } from "./start.types";
  * arguments at all runs this.
  *
  * The sweep has two halves. The first is a bounded, representative sample
- * of the named types' parameter space. For every implemented type,
- * sweeps rows from that type's `STRUCTURAL_MINIMUM_ROWS` through
- * `ROWS_SWEEP_MAXIMUM` (8), and every modifier `COMPATIBLE_MODIFIERS` lists
- * for that type plus "no modifier" — `alternated` and `dot` each expand
- * into a couple of representative parameter values
- * (`ALTERNATED_SWEEP_PERIODS`, `DOT_SWEEP_SHAPES`) rather than their full
- * range. `repeatCount` is fixed at `DEFAULT_REPEAT_COUNT` (6) for every
- * combination, except the `spin`/`spin-flip` family, which is rounded up to
- * the nearest multiple of their required `SPIN_CYCLE_LENGTH` (4) — giving 8
- * — so the generation service doesn't reject a cut-off rotation. This produces
+ * of the named types' parameter space, enumerated by
+ * {@link StartCombinationsService} — which the meander charter's property
+ * test also sweeps, so the corpus this writes and the corpus that is gated
+ * are the same space by construction rather than by coincidence. It produces
  * roughly a hundred files rather than the many hundreds a full
  * rows-by-repeat-count-by-modifier-parameter cross product would.
  *
@@ -72,6 +48,8 @@ export class StartCommand extends CommandRunner {
     private readonly meanderGenerationService: MeanderGenerationService,
     @Inject(OutputFilenameService)
     private readonly outputFilenameService: OutputFilenameService,
+    @Inject(StartCombinationsService)
+    private readonly startCombinationsService: StartCombinationsService,
     @Inject(StartPermutationsService)
     private readonly startPermutationsService: StartPermutationsService,
   ) {
@@ -94,84 +72,6 @@ export class StartCommand extends CommandRunner {
     }
   }
 
-  /** Enumerates every `(type, modifier-or-none, rows, repeatCount)` combination the sweep covers. */
-  private buildCombinations(): GenerationParameters[] {
-    const types = SUPPORTED_TYPES.filter((value): value is MeanderType =>
-      this.isMeanderType(value),
-    );
-
-    return types.flatMap((type) => this.combinationsForType(type));
-  }
-
-  /** Enumerates every combination for a single type: every swept row count crossed with every swept modifier. */
-  private combinationsForType(type: MeanderType): GenerationParameters[] {
-    const rows = this.rowsSweep(type);
-    const modifiers = this.modifiersForType(type);
-
-    return rows.flatMap((rowCount) =>
-      modifiers.map((modifier) => ({
-        repeatCount: this.repeatCountFor(modifier),
-        rows: rowCount,
-        type,
-        ...(modifier ? { modifier } : {}),
-      })),
-    );
-  }
-
-  /** Expands one modifier name into every representative {@link Modifier} value the sweep covers. */
-  private expandModifierName(name: Modifier["name"]): Modifier[] {
-    if (name === "alternated") {
-      return ALTERNATED_SWEEP_PERIODS.map((period) => ({ name, period }));
-    }
-
-    if (name === "dot") {
-      return DOT_SWEEP_SHAPES.map((shape) => ({ name, shape }));
-    }
-
-    return [{ name }];
-  }
-
-  /** Narrows a raw string to a supported {@link MeanderType} without an unchecked assertion. */
-  private isMeanderType(value: string): value is MeanderType {
-    return SUPPORTED_TYPES.includes(value);
-  }
-
-  /** Narrows a raw string to a supported {@link Modifier} name without an unchecked assertion. */
-  private isModifierName(value: string): value is Modifier["name"] {
-    return SUPPORTED_MODIFIER_NAMES.includes(value);
-  }
-
-  /** Every modifier the sweep covers for `type`: `undefined` (no modifier) plus every representative value of each compatible modifier. */
-  private modifiersForType(type: MeanderType): (Modifier | undefined)[] {
-    const modifierNames = COMPATIBLE_MODIFIERS[type].filter(
-      (value): value is Modifier["name"] => this.isModifierName(value),
-    );
-
-    return [
-      undefined,
-      ...modifierNames.flatMap((name) => this.expandModifierName(name)),
-    ];
-  }
-
-  /** The `repeatCount` a combination uses: `DEFAULT_REPEAT_COUNT`, rounded up to the spin family's required cycle length when needed. */
-  private repeatCountFor(modifier: Modifier | undefined): number {
-    if (modifier && SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name)) {
-      return (
-        Math.ceil(DEFAULT_REPEAT_COUNT / SPIN_CYCLE_LENGTH) * SPIN_CYCLE_LENGTH
-      );
-    }
-
-    return DEFAULT_REPEAT_COUNT;
-  }
-
-  /** Every `rows` value the sweep covers for `type`: its own structural minimum through `ROWS_SWEEP_MAXIMUM`. */
-  private rowsSweep(type: MeanderType): number[] {
-    const minimum = STRUCTURAL_MINIMUM_ROWS[type];
-    const length = ROWS_SWEEP_MAXIMUM - minimum + 1;
-
-    return Array.from({ length }, (_value, index) => minimum + index);
-  }
-
   // 🌎 Public Methods
 
   /** Registers the `--output-directory` flag; nest-commander requires a parser method per option even when no transformation is needed. */
@@ -189,7 +89,7 @@ export class StartCommand extends CommandRunner {
     _passedParameters: string[],
     options: StartCommandOptions,
   ): Promise<void> {
-    const combinations = this.buildCombinations();
+    const combinations = this.startCombinationsService.enumerate();
     const files = combinations.map((parameters) => ({
       fileName: this.outputFilenameService.build(parameters),
       svg: this.meanderGenerationService.generate(parameters),

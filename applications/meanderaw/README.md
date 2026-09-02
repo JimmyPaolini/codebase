@@ -22,7 +22,7 @@ drawing.
 | --- | --- | --- |
 | 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Fixed |
 | 2 | **Space-filling** — every interior white channel is exactly one stroke width | Fixed |
-| 3 | **No branching** — ink contains no T-junctions | May be relaxed |
+| 3 | **No branching** — ink contains no T-junctions | Already relaxed by `chain` and `snake` under `edge` and `edge-flip` |
 | 4 | **No crossing** — ink contains no X-junctions | May be relaxed |
 | 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Fixed |
 | 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
@@ -34,12 +34,21 @@ tiles:
 - **Every interior white channel is exactly one stroke width**, in all 3,293 files. The
   channel width equals the stroke width equals half a grid unit, which is why fitting
   `N` parallel strokes into one unit is exactly `strokeWidth = unit / (2N)`.
-- **Ink is a disjoint union of simple arcs.** Zero T-junctions and zero X-junctions
-  across every family — a stronger statement than "non-self-intersecting", and the
-  sharpest single characterization of what the six families have in common.
-- **The negative space is not.** It branches in every family, and in `mosaic split` and
-  `mosaic alternated period-3` it genuinely crosses. Crossing patterns are already
-  generated here; they have only ever been white, never ink.
+- **Ink never crosses itself.** Zero X-junctions, in all 3,293 files — a stronger
+  statement than "non-self-intersecting", and the sharpest single characterization of
+  what the six families have in common.
+- **Ink branches in one place, and only there.** 200 T-junctions across 20 of the 114
+  named patterns: `chain` and `snake` under `edge` and `edge-flip`, ten per document at
+  every row count. The `edge` family widens the repeat unit past the zigzag it contains,
+  so the zigzag's terminating vertical lands in the _interior_ of the band border rather
+  than at its end, and the border runs on either side of it — five such junctions along
+  the top border, five along the bottom. Every other family, and every other modifier, has
+  none. An earlier reading of this measurement reported zero everywhere; the reference
+  assets are hand-verified ground truth for what these patterns should look like, so the
+  geometry is right and the count was wrong.
+- **The negative space branches and crosses freely.** It branches in every family, and in
+  `mosaic split` and `mosaic alternated period-3` it genuinely crosses. Crossing patterns
+  are already generated here; they have only ever been white, never ink.
 
 Invariant 1 is not merely local convention. Fréart's rule for the classical meander is
 that returns and intersections "do always fall into right angles", quoted in the

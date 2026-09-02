@@ -26,10 +26,13 @@ The three that most often catch a change:
   equals half a grid unit. `GridGeometryService` derives stroke width and offset from the
   grid unit for this reason; setting either independently breaks the invariant silently,
   because nothing currently fails when it does.
-- **No branching and no crossing.** Ink is a disjoint union of simple arcs: zero
-  T-junctions and zero X-junctions, across every family. These two are the charter's
-  negotiable invariants, so a family may break them — but only deliberately, and never as
-  a side effect of a geometry fix.
+- **No branching and no crossing.** Ink has zero X-junctions everywhere, and zero
+  T-junctions everywhere except `chain` and `snake` under `edge`/`edge-flip`, which branch
+  where their zigzag lands mid-border — 200 junctions across 20 of the 114 named patterns.
+  These two are the charter's negotiable invariants, so a family may break them — but only
+  deliberately, and never as a side effect of a geometry fix. Both counts are measured by
+  `MeanderTopologyService` and gated by the charter property test, which asserts a declared
+  relaxation is _present_ as well as an undeclared one absent.
 - **Band, not field.** Canvas height is fixed and `rows` sets density, not size. These
   patterns are meant for borders.
 

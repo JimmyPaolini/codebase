@@ -15,6 +15,7 @@ import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { OutputFilenameService } from "../svg-rendering/output-filename.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
+import { StartCombinationsService } from "./start-combinations.service";
 import { StartContactSheetService } from "./start-contact-sheet.service";
 import { StartPermutationsService } from "./start-permutations.service";
 import { StartCommand } from "./start.command";
@@ -58,6 +59,7 @@ describe(StartCommand, () => {
         MosaicTileMotifService,
         MosaicSymmetryService,
         MosaicTilesService,
+        StartCombinationsService,
         StartContactSheetService,
         StartPermutationsService,
         SvgRenderingService,
@@ -99,6 +101,7 @@ describe(StartCommand, () => {
         MosaicTileMotifService,
         MosaicSymmetryService,
         MosaicTilesService,
+        StartCombinationsService,
         StartContactSheetService,
         StartPermutationsService,
         SvgRenderingService,
@@ -246,6 +249,7 @@ describe(StartCommand, () => {
               build: () => collidingFileName,
             }),
           },
+          StartCombinationsService,
           {
             provide: StartPermutationsService,
             useValue: createMock<StartPermutationsService>(),
@@ -265,6 +269,7 @@ describe(StartCommand, () => {
       const module = await Test.createTestingModule({
         imports: [MeanderGenerationModule],
         providers: [
+          StartCombinationsService,
           StartCommand,
           StartContactSheetService,
           StartPermutationsService,
