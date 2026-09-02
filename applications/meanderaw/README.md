@@ -12,18 +12,18 @@ nx run meanderaw:vitest
 
 ## 🏛️ Meander Charter
 
-Seven families of meander are implemented, and they share a set of properties that are
+Eight families of meander are implemented, and they share a set of properties that are
 load-bearing to how a meander looks. The invariants were extracted from the six families
 that predate them, by measuring every committed SVG rather than by reading the code, and
 each is marked fixed or negotiable. A new family that breaks a fixed invariant is not a
-new family — it is a different kind of drawing. The seventh, `cross`, breaks a negotiable
-one on purpose.
+new family — it is a different kind of drawing. The two that came after break a negotiable
+one each, on purpose: `cross` crosses, and `negative` branches.
 
 | # | Invariant | Status |
 | --- | --- | --- |
 | 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Fixed |
 | 2 | **Space-filling** — every interior white channel is exactly one stroke width | Fixed |
-| 3 | **No branching** — ink contains no T-junctions | Already relaxed by `chain` and `snake` under `edge` and `edge-flip` |
+| 3 | **No branching** — ink contains no T-junctions | Relaxed by `negative` in every mode, and by `chain` and `snake` under `edge` and `edge-flip` |
 | 4 | **No crossing** — ink contains no X-junctions | Relaxed by `cross`, except under `interrupted` |
 | 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Fixed |
 | 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
@@ -31,26 +31,28 @@ one on purpose.
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
-against the corpus as it now stands, 120 named patterns beside the same 3,179 tiles:
+against the corpus as it now stands, 138 named patterns beside the same 3,179 tiles:
 
-- **Every interior white channel is exactly one stroke width**, in all 3,299 files. The
+- **Every interior white channel is exactly one stroke width**, in all 3,317 files. The
   channel width equals the stroke width equals half a grid unit, which is why fitting
   `N` parallel strokes into one unit is exactly `strokeWidth = unit / (2N)`.
 - **Ink never crosses itself, except where a family was added to make it.** Zero
   X-junctions across all 3,293 files the six original families produce — a stronger
   statement than "non-self-intersecting", and the sharpest single characterization of what
   those six have in common. The `cross` family relaxes it deliberately: 12 X-junctions in
-  each of the three solid documents it commits, and none anywhere else in the 3,299-file
+  each of the three solid documents it commits, and none anywhere else in the 3,317-file
   corpus. See "The Crossing Family" below.
-- **Ink branches in one place, and only there.** 200 T-junctions across 20 of the 120
-  named patterns: `chain` and `snake` under `edge` and `edge-flip`, ten per document at
-  every row count. The `edge` family widens the repeat unit past the zigzag it contains,
-  so the zigzag's terminating vertical lands in the _interior_ of the band border rather
-  than at its end, and the border runs on either side of it — five such junctions along
-  the top border, five along the bottom. Every other family, and every other modifier, has
-  none. An earlier reading of this measurement reported zero everywhere; the reference
-  assets are hand-verified ground truth for what these patterns should look like, so the
-  geometry is right and the count was wrong.
+- **Ink branches in two places, and only there.** 1,052 T-junctions across 38 of the 138
+  named patterns. 200 of them, across 20 patterns, are `chain` and `snake` under `edge`
+  and `edge-flip`, ten per document at every row count: the `edge` family widens the
+  repeat unit past the zigzag it contains, so the zigzag's terminating vertical lands in
+  the _interior_ of the band border rather than at its end, and the border runs on either
+  side of it — five such junctions along the top border, five along the bottom. An earlier
+  reading of this measurement reported zero everywhere; the reference assets are
+  hand-verified ground truth for what these patterns should look like, so the geometry is
+  right and the count was wrong. The other 852, across the `negative` family's 18
+  documents, are the point of that family rather than a side effect of it — see "The
+  Negative Space Family" below.
 - **The negative space branches and crosses freely.** It branches in every family, and in
   `mosaic split` and `mosaic alternated period-3` it genuinely crosses. Crossing patterns
   are already generated here; they have only ever been white, never ink.
@@ -391,6 +393,91 @@ rows the drawing is still fully space-filling, so the charter would happily pass
 rendering in which `interrupted` means nothing. The constant is the only thing refusing
 it, and the family's unit tests pin both the collapse and the fact that measurement misses
 it.
+
+## 🕳️ The Negative Space Family
+
+`negative` is the eighth family and the only one whose **ink is another family's white
+space**. The tool has been generating these patterns since the beginning without ever
+drawing one; this family draws them.
+
+Nothing here is invented. A `mosaic` drawing divides its band into cells, and the white
+between two neighboring cells is a **corridor** wherever the ink wall that would separate
+them is missing — which is exactly what `MeanderTopologyService` counts when it reports a
+document's negative junctions. `negative` puts one lattice point on every cell and one
+stroke along every corridor. The shapes were already produced, already orthogonal, and
+already on this grid; what is new is treating white as black.
+
+### The three it inverts
+
+Three sources, taken from the shortlist in "Negative Space Survey" above and not chosen
+here. Each is a `mosaic` tile that scales cleanly across every row count the permutation
+sweep covers, and each is _branches only_ — its negative branches at every one of those
+row counts and crosses at none, which is why drawing it relaxes invariant 3 and nothing
+else.
+
+| Mode | Source tile | Reads as |
+| --- | --- | --- |
+| no modifier | `dvvxxd` → `dvvxxvvxxvvxxd` | the shortlist's highest-branching entry: dots capping a staircase of vertical dashes |
+| `brick` | `hxxhhx` → `hxxhhxxhhxxhhx` | the shortlist's simplest entry: horizontal dashes in running bond |
+| `ruled` | `dld` → `dldldld` | the shortlist's columns-1 entry: dot levels alternating with the continuous rule |
+
+A `negative` of `rows` rows inverts a source of `rows + 1`, and that offset is arithmetic
+rather than taste: a source of `n` rows has `n` rows of cells, the negative puts a lattice
+point on each of them, and `n` lattice lines bound `n - 1` rows. Inverting a source drawn
+at the negative's own row count would leave the canvas's bottom lattice row with no ink on
+it — invariant 2 broken for a bookkeeping reason rather than a drawn one. It is also why
+the family's structural minimum is 3 where `MOSAIC_TILE_MINIMUM_ROWS` is 4.
+
+One consequence of the offset: the sweep draws `negative` at 3 through 8 rows, so its
+8-row drawings invert a 9-row source — one row past what the survey enumerated. Those
+three drawings have no committed source to be compared against, and are gated by the
+charter sweep like every other drawing instead.
+
+### What it holds and what it relaxes
+
+| Invariant | Holds? | How it is known |
+| --- | --- | --- |
+| 1 — orthogonal | Yes | every stroke is a one-pitch step along a lattice line; only `M`, `H`, and `V` are emitted, asserted per drawing |
+| 2 — space-filling | Yes | measured, and more strongly than the charter asks — see below |
+| 3 — no branching | **Relaxed** | declared in `RELAXED_INVARIANTS` with no modifier named, because every mode branches |
+| 4 — no crossing | Yes | all three sources have zero negative X-junctions at every swept row count, so the ink inherits zero |
+| 5 — band, not field | Yes | the canvas height is the shared geometry's, identical to a `mosaic` of the same rows; only width grows with `repeatCount` |
+
+**Whether the output stays space-filling was measured, not assumed, and it does.** Every
+lattice point of every one of the 18 committed drawings carries ink — including the band's
+first and last lattice column, which invariant 7 would have excused. The family needs no
+termination carve-out at all, which none of the other seven can say. The reason is the
+survey's own finding that no cell of any of the 3,179 permutation tiles has corridor
+degree 0: a cell with at least one corridor becomes a lattice point with at least one arm
+of ink.
+
+The branching is the point, so it is counted rather than merely permitted. Ink T-junctions
+per document, at 3 through 8 rows:
+
+| Mode | 3 | 4 | 5 | 6 | 7 | 8 |
+| --- | --- | --- | --- | --- | --- | --- |
+| no modifier | 38 | 48 | 58 | 68 | 78 | 88 |
+| `brick` | 30 | 40 | 50 | 60 | 70 | 80 |
+| `ruled` | 16 | 16 | 24 | 24 | 32 | 32 |
+
+Each of the fifteen numbers with a surveyed source is asserted, in
+`meander-topology.service.integration.test.ts`, to equal the negative T-junction count of
+the committed `output/permutations/` document it inverts — read off disk, from a file that
+existed before this family did. That assertion is what makes "the candidates come from the
+shortlist" a fact rather than a claim: if a drawing stopped being that document's
+complement, it would fail.
+
+Its own negative space, reported and not gated: zero T-junctions and zero X-junctions in
+every mode at every row count. Inverting a negative twice gets nowhere interesting, which
+is worth knowing before anyone tries.
+
+### Provenance: no reference exists, by nature
+
+The geometry is **derived**. The six oldest families have byte-exact reference SVGs in
+`testing/assets/` that were checked against hand-drawn originals; `negative` has none, and
+neither does `cross`. Its committed output in `output/` is its own baseline, pinned by
+measurement rather than by likeness — every count above is asserted, and the drawings
+themselves are compared to nothing.
 
 ## 👔 Conformetry
 
