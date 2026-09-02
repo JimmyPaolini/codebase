@@ -66,17 +66,24 @@ const SWEPT_ROWS: readonly number[] = [2, 3, 4, 5, 6, 7, 8];
  * also the reason for the family's minimum row count, pinned below.
  */
 const MODES: readonly {
+  readonly freeEnds: readonly number[];
   readonly label: string;
   readonly modifier?: Modifier;
   readonly tJunctions: readonly number[];
 }[] = [
-  { label: "comb", tJunctions: [10, 10, 10, 10, 10, 10, 10] },
   {
+    freeEnds: [12, 12, 12, 12, 12, 12, 12],
+    label: "comb",
+    tJunctions: [10, 10, 10, 10, 10, 10, 10],
+  },
+  {
+    freeEnds: [13, 19, 25, 31, 37, 43, 49],
     label: "rung",
     modifier: { name: "rung" },
     tJunctions: [11, 17, 23, 29, 35, 41, 47],
   },
   {
+    freeEnds: [7, 7, 7, 7, 7, 7, 7],
     label: "stagger",
     modifier: { name: "stagger" },
     tJunctions: [5, 5, 5, 5, 5, 5, 5],
@@ -94,12 +101,14 @@ const MODES: readonly {
  */
 const BRANCH_CASES = MODES.flatMap((mode) =>
   SWEPT_ROWS.flatMap((rows, index) => {
+    const freeEnds = mode.freeEnds[index];
     const tJunctions = mode.tJunctions[index];
 
-    return tJunctions === undefined
+    return freeEnds === undefined || tJunctions === undefined
       ? []
       : [
           {
+            freeEnds,
             label: `${mode.label} at ${rows} rows`,
             rows,
             tJunctions,
@@ -118,6 +127,7 @@ const dimension = (document: string, pattern: RegExp): number =>
 describe(BranchMotifService, () => {
   let generationService: MeanderGenerationService;
   let gridGeometryService: GridGeometryService;
+  let latticeService: MeanderLatticeService;
   let renderingService: SvgRenderingService;
   let service: BranchMotifService;
   let topologyService: MeanderTopologyService;
@@ -151,6 +161,7 @@ describe(BranchMotifService, () => {
 
     generationService = await module.resolve(MeanderGenerationService);
     gridGeometryService = await module.resolve(GridGeometryService);
+    latticeService = await module.resolve(MeanderLatticeService);
     renderingService = await module.resolve(SvgRenderingService);
     service = await module.resolve(BranchMotifService);
     topologyService = await module.resolve(MeanderTopologyService);
@@ -202,6 +213,39 @@ describe(BranchMotifService, () => {
         edges: LATTICE_COLUMNS * (testCase.rows + 1) - 1,
         nodes: LATTICE_COLUMNS * (testCase.rows + 1),
       });
+    });
+
+    // 🎯 The free ends are what keep this family reading as a meander
+    // rather than as a grille, and they are the figure the README's
+    // unbounded-branching write-up compares against: both looped
+    // constructions it measured have zero. A free end is a lattice point
+    // with a single arm of ink — where a stroke stops rather than turning,
+    // forking, or closing.
+    it.each(BRANCH_CASES)("$label leaves $freeEnds free ends", (testCase) => {
+      const graph = latticeService.build(
+        generationService.generate({
+          repeatCount: REPEAT_COUNT,
+          rows: testCase.rows,
+          type: "branch",
+          ...(testCase.modifier ? { modifier: testCase.modifier } : {}),
+        }),
+      );
+      let freeEnds = 0;
+
+      for (let column = 0; column <= graph.columns; column += 1) {
+        for (let row = 0; row <= graph.rows; row += 1) {
+          const arms = [
+            graph.horizontalEdges.has(`${column - 1},${row}`),
+            graph.horizontalEdges.has(`${column},${row}`),
+            graph.verticalEdges.has(`${column},${row - 1}`),
+            graph.verticalEdges.has(`${column},${row}`),
+          ].filter(Boolean).length;
+
+          freeEnds += arms === 1 ? 1 : 0;
+        }
+      }
+
+      expect(freeEnds).toBe(testCase.freeEnds);
     });
 
     it.each(BRANCH_CASES)(

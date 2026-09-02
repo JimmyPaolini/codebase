@@ -528,6 +528,12 @@ them, in every mode at every row count. Ink T-junctions, which is invariant 3's 
 | `stagger` | 5 | 5 | 5 | 5 | 5 | 5 | 5 |
 | `rung` | 11 | 17 | 23 | 29 | 35 | 41 | 47 |
 
+Every mode also leaves **free ends** — lattice points carrying a single arm of ink, where
+a stroke stops rather than turning, forking, or closing. At six repeats `comb` leaves 12
+and `stagger` 7 at every row count, and `rung` leaves `6 × rows + 1`, from 13 at 2 rows to
+49 at 8. They matter to the write-up below: both unbounded constructions measured there
+have none.
+
 Two of those rows are flat because their forks sit on the rail rather than on the teeth,
 and a rail's length does not depend on how tall the band is. `rung`'s forks sit on its
 stiles, so its row climbs by one per unit per row added — which is also why the family's
@@ -619,8 +625,9 @@ The geometry is **derived**. The six oldest families have byte-exact reference S
 `testing/assets/` that were checked against hand-drawn originals; `branch` has none, and
 neither does `negative` or `cross`. Its committed output in `output/` is its own baseline,
 pinned by measurement rather than by likeness — every count in this section is the output
-of an assertion, except the two unbounded constructions above, which were measured during
-the spike and are not gated by anything, because their code does not ship.
+of an assertion, `comb`'s own row of the exploration table included. The only exceptions
+are the two unbounded constructions' rows, which were measured during the spike and are
+gated by nothing, because their code does not ship.
 
 ## 👔 Conformetry
 
