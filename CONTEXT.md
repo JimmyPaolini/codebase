@@ -85,8 +85,8 @@ _Avoid_: Pattern, motif, key pattern
 
 **Family**:
 The top-level generative model a meander is drawn from — `boxes`, `branch`, `chain`,
-`cross`, `mosaic`, `negative`, `snake`, `swirl`, or `whirl`. Each family generates its own
-repeat units and accepts its own modifiers. The primary term; `type` survives only as the
+`cross`, `mosaic`, `negative`, `parallel`, `snake`, `swirl`, or `whirl`. Each family
+generates its own repeat units and accepts its own modifiers. The primary term; `type` survives only as the
 name of the command-line flag.
 _Avoid_: Style, kind, category
 
@@ -109,8 +109,8 @@ _Avoid_: Variant, subtype, group
 **Modifier**:
 A named transform applied to a family's units — rotation (`spin`), mirroring (`flip`),
 border-closing (`edge`), the `cross`-specific `interrupted`, the `negative`-specific
-`brick` and `ruled`, the `branch`-specific `rung` and `stagger`, or the `mosaic`-specific
-`alternated`, `split`, and `dot`.
+`brick` and `ruled`, the `branch`-specific `rung` and `stagger`, the `parallel`-specific
+`plied`, or the `mosaic`-specific `alternated`, `split`, and `dot`.
 One route by which a sub-family comes about, not a separate level of the model. Only
 certain modifiers are compatible with each family.
 _Avoid_: Variant, option, flag
