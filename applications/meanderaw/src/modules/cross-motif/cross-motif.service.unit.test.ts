@@ -5,6 +5,7 @@ import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
+import { MotifRegistryService } from "../meander-generation/motif-registry.service";
 import { MeanderLatticeService } from "../meander-topology/meander-lattice.service";
 import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
@@ -210,6 +211,7 @@ describe(CrossMotifService, () => {
         MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
+        MotifRegistryService,
         MotifTransformsService,
         NegativeMotifService,
         NegativeSourceService,

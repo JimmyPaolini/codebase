@@ -37,6 +37,7 @@ import {
   UnavailableSubFamilyError,
 } from "./meander-generation.constants";
 import { MeanderGenerationService } from "./meander-generation.service";
+import { MotifRegistryService } from "./motif-registry.service";
 
 import type { MeanderType, Modifier } from "./meander-generation.types";
 
@@ -176,6 +177,7 @@ describe(MeanderGenerationService, () => {
         BoxesMotifService,
         ChainMotifService,
         CrossMotifService,
+        MotifRegistryService,
         MotifTransformsService,
         NegativeMotifService,
         NegativeSourceService,
