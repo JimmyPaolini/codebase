@@ -122,7 +122,7 @@ describe(StartCommand, () => {
   });
 
   describe("run", () => {
-    it("writes the expected number of files across all eight types, with no name collisions", async () => {
+    it("writes the expected number of files across all nine types, with no name collisions", async () => {
       await command.run([], { outputDirectory: "output" });
 
       expect(mockMkdir).toHaveBeenCalledWith("output", { recursive: true });

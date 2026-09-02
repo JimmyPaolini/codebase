@@ -123,8 +123,8 @@ interface CharterRelaxation {
  * its modes carries four arms, so invariant 4 holds, and every lattice
  * point carries ink, so space-filling holds. What separates it from
  * `negative` is not the relaxation, which is the same one, but the loops:
- * `negative` is one connected piece with 15 to 45 cycles in it, and
- * `branch` has none. That is measured below, not asserted here.
+ * `negative` is one to five pieces with 10 to 45 cycles among them, and
+ * `branch` has none. Both are measured below, not asserted here.
  *
  * Only the ink is declared here. Invariants 3 and 4 constrain positive space
  * — a family's negative may branch and cross freely, and no family is failed
@@ -452,6 +452,8 @@ describe(MeanderTopologyService, () => {
       const documents = await readCommittedCorpus();
       const trees: string[] = [];
       const looped: string[] = [];
+      const negativeCycles: number[] = [];
+      const negativeComponents: number[] = [];
 
       for (const { document, name } of documents) {
         const { components, edges, nodes } =
@@ -464,7 +466,24 @@ describe(MeanderTopologyService, () => {
         if (components === 1 && edges === nodes - 1) {
           trees.push(name);
         }
+
+        if (name.startsWith("negative-")) {
+          negativeCycles.push(edges - nodes + components);
+          negativeComponents.push(components);
+        }
       }
+
+      // 🎯 The measurement `README.md`, `AGENTS.md`, and
+      // `BranchMotifService`'s own doc comment all cite as the reason
+      // `branch` and `negative` are two families rather than one name for
+      // one thing. Published in three places and computed in none until
+      // this assertion: the cycle count is `edges - nodes + components`,
+      // which this loop already had all three inputs for.
+      expect(negativeCycles).toHaveLength(18);
+      expect(Math.min(...negativeCycles)).toBe(10);
+      expect(Math.max(...negativeCycles)).toBe(45);
+      expect(Math.min(...negativeComponents)).toBe(1);
+      expect(Math.max(...negativeComponents)).toBe(5);
 
       expect(trees).toHaveLength(21);
       expect(
