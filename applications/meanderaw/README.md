@@ -570,9 +570,12 @@ space survey above, so the difference is worth stating rather than assuming. It 
 loops.
 
 `negative` inks a whole corridor graph, and a corridor graph closes a loop through each of
-its own repeats: its eighteen committed drawings carry 15 to 45 cycles each, on one or two
-components. `branch` inks a loop-free spanning subgraph of a lattice: 0 cycles, on one
-component, always. The survey anticipated exactly this — its "A note for the branching
+its own repeats: its eighteen committed drawings carry 10 to 45 cycles each, on one to
+five components. `branch` inks a loop-free spanning subgraph of a lattice: 0 cycles, on
+one component, always. Both ends of that range are asserted in
+`meander-topology.service.integration.test.ts`, from the same loop that counts the trees —
+the numbers were published in three places and computed in none until they were.
+The survey anticipated exactly this — its "A note for the branching
 family" found that every one of the 104 _branches only_ tiles has at least one cycle at
 the rendered scale, and that a bounded-tree family would have to **omit corridors** to
 break them. This family omits them by construction rather than by search: a spine and

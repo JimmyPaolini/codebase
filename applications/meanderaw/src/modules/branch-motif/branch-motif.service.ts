@@ -28,9 +28,10 @@ import type {
  *
  * Every other family's ink is a **forest** — a disjoint union of simple
  * arcs, `edges = nodes − components` with the component count in the
- * dozens. `negative`'s is one connected piece, but a piece full of loops:
- * 15 to 45 of them in the eighteen drawings it commits, because a corridor
- * network closes a loop through each of its own repeats. Not one of the
+ * dozens. `negative`'s is one to five pieces, every one of them full of
+ * loops: 10 to 45 of them in the eighteen drawings it commits, because a
+ * corridor network closes a loop through each of its own repeats. Not one of
+ * the
  * 3,317 documents this repository committed before this family is a
  * **tree**, and every one of this family's is. That is the whole of what
  * `branch` adds, and it is a measurement rather than a description —
@@ -121,9 +122,11 @@ export class BranchMotifService implements MotifService {
    * The rail and the top rung are drawn as one run rather than two, so the
    * unit emits one path per lattice row and one for the stile. Only the
    * stile's interior points fork: a rung meets it from the right while it
-   * runs on above and below, which is `rows - 1` forks per unit, plus one
-   * where the rail arrives at each stile's head. That count is what sets
-   * this family's minimum row count — see `STRUCTURAL_MINIMUM_ROWS`.
+   * runs on above and below, which is `rows - 1` forks per unit, plus
+   * `repeatCount - 1` where the rail arrives at a stile's head — the first
+   * stile has no rail on its left, so it is one fewer than the number of
+   * stiles rather than one per stile. That first term is what sets this
+   * family's minimum row count — see `STRUCTURAL_MINIMUM_ROWS`.
    */
   private rungUnit(
     geometry: GridGeometry,

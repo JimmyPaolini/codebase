@@ -54,9 +54,10 @@ Three things that look like defects and are not:
   "Naming a Mosaic Sub-family" in [README.md](./README.md).
 - **`negative` and `branch` both branching** is not one family under two names. Both relax
   invariant 3 and both come off the same survey shortlist; they differ in loops.
-  `negative` inks a whole corridor graph and carries 15–45 cycles per drawing, and
+  `negative` inks a whole corridor graph and carries 10–45 cycles per drawing, and
   `branch` inks a loop-free spanning tree and carries none — the only trees in the corpus.
-  See "The Branching Family" in [README.md](./README.md).
+  Those cycle counts are asserted in `meander-topology.service.integration.test.ts`, not
+  merely stated here. See "The Branching Family" in [README.md](./README.md).
 
 When adding a family, prefer extending an existing family's unit space over hand-writing a
 new motif service — see
