@@ -696,14 +696,26 @@ re-derived:
 - Squeezing them is **redundant**. A uniform lattice at `unit / (2N)` is the lattice
   `--rows rows × N` already produces, so the thinner drawing is a row count under another
   name rather than a new pattern.
-- Squeezing them is **unreachable** for over a third of the space. Drawing at
-  `unit / (2N)` is drawing at `rows × N` rows, and no row count may pass the shared
-  maximum of 12. The sweep covers **32** family/rows pairs across the six original
-  families — `boxes` and `mosaic` at 3 through 8 rows, `chain`, `snake`, `swirl` and
-  `whirl` at 4 through 8 — and at this family's own ply of two, the **12** of them drawn
-  at 7 or 8 rows have no doubled counterpart to be redundant with.
-  `start-combinations.service.unit.test.ts` asserts both counts against the enumeration
-  itself, so neither can drift from the sweep it describes.
+- Squeezing them is **unreachable** for a quarter of the space. Drawing at `unit / (2N)`
+  is drawing at `rows × N` rows, so at this family's own ply of two every pattern is
+  asked for at twice its row count. The space is the **32** family/rows pairs the sweep
+  covers across the six original families — `boxes` and `mosaic` at 3 through 8 rows,
+  `chain`, `snake`, `swirl` and `whirl` at 4 through 8, so 12 + 20 = 32. **8 of those 32
+  cannot be drawn**: `chain` and `snake` share one zigzag sequence, and above eight
+  effective rows it doubles back on itself, laying a second run of ink over one already
+  drawn. Their swept rows 4 through 8 double to 8, 10, 12, 14 and 16, so only rows 4
+  survives — four failures each, eight in total. That defect is
+  [#507](https://github.com/JimmyPaolini/codebase/issues/507) and predates this family.
+
+  **The count is 8, and the reason is degeneracy rather than a row-count ceiling** — the
+  two are easy to conflate and this passage once did. Asking instead which doubled row
+  counts simply exceed the shared maximum of 12 excludes a _different_ set of **12**
+  pairs, the ones at 7 and 8 rows in every family. That is the weaker criterion and it is
+  not what rules the proposal out: four of the eight that actually fail sit **inside** the
+  maximum, at 10 and 12 effective rows, so a bound on the row count alone would have waved
+  them through. `start-combinations.service.unit.test.ts` pins all three numbers against the
+  real enumeration, and `meander-generation.service.unit.test.ts` measures the retracing
+  itself off rendered path data rather than restating the row count.
 
 What makes strands read as a bundle here is not their thickness but the fact that they
 **turn together**. That is a property of the drawing, not of the stroke, and it costs the

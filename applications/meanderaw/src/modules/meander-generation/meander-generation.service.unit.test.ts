@@ -4,7 +4,10 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { COORDINATE_ROUNDING_TOLERANCE } from "../../../testing/path-data";
+import {
+  COORDINATE_ROUNDING_TOLERANCE,
+  retracesItself,
+} from "../../../testing/path-data";
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
 import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
@@ -35,6 +38,7 @@ import {
   InvalidRowsError,
   InvalidStrandCountError,
   InvalidSubFamilyError,
+  MAXIMUM_VALUE,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
@@ -870,6 +874,58 @@ describe(MeanderGenerationService, () => {
         ).toThrow(/not compatible/i);
       },
     );
+  });
+
+  // 🎯 Issue #507, measured rather than described, and the threshold the
+  // discarded density proposal runs into — see README.md, "Nothing gets
+  // thinner". `chain` and `snake` share one zigzag sequence, and above
+  // eight rows it doubles back: two consecutive runs along the same axis,
+  // a second stroke of ink laid over one already drawn. Every other
+  // original family stays clean to the shared maximum.
+  //
+  // This is deliberately a rendered measurement. A drawing that *emits*
+  // proves nothing here — all six emit at every row count through 12, and
+  // reading that as "it works" is exactly how the wrong cause reached the
+  // README. The defect is in what the path says, not in whether there is
+  // one.
+  describe("above eight rows", () => {
+    it("doubles back on itself in chain and snake, and in no other original family", () => {
+      const originalFamilies: readonly MeanderType[] = [
+        "boxes",
+        "chain",
+        "mosaic",
+        "snake",
+        "swirl",
+        "whirl",
+      ];
+      const retracing = originalFamilies.flatMap((type) =>
+        Array.from(
+          { length: MAXIMUM_VALUE - STRUCTURAL_MINIMUM_ROWS[type] + 1 },
+          (_, offset) => STRUCTURAL_MINIMUM_ROWS[type] + offset,
+        )
+          .filter((rows) =>
+            retracesItself(
+              service.generate({
+                repeatCount: DEFAULT_REPEAT_COUNT,
+                rows,
+                type,
+              }),
+            ),
+          )
+          .map((rows) => `${type} at ${rows} rows`),
+      );
+
+      expect(retracing).toStrictEqual([
+        "chain at 9 rows",
+        "chain at 10 rows",
+        "chain at 11 rows",
+        "chain at 12 rows",
+        "snake at 9 rows",
+        "snake at 10 rows",
+        "snake at 11 rows",
+        "snake at 12 rows",
+      ]);
+    });
   });
 
   describe("border containment", () => {
