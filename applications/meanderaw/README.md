@@ -640,14 +640,14 @@ gated by nothing, because their code does not ship.
 ## 🧵 The Parallel Family
 
 `parallel` draws meanders in which `N` strands run alongside one another, turning
-together, one channel apart. It is the tenth family and the only one that relaxes no
-invariant at all — it is space-filling, orthogonal, non-branching, non-crossing, and a
-single band, strictly, at every ply.
+together, one channel apart. It is the tenth family, and the only one of the four added
+since the charter was written that relaxes no invariant at all — it is space-filling,
+orthogonal, non-branching, non-crossing, and a single band, strictly, at every ply.
 
 Its 15 committed drawings are five row counts, 4 through 8, crossed with its unmodified
 two-strand default and the two plies `PLIED_SWEEP_STRAND_COUNTS` names, 3 and 4.
 
-### A bundle of nested brackets
+### What it draws
 
 One repeat unit is a **bundle**: `strands` brackets nested inside one another, spanning
 `2 × strands` lattice columns. Strand `i` runs down the unit's `i`-th lattice column from
@@ -666,12 +666,22 @@ documents in the corpus do leave a gap at. The brackets of a unit are pairwise d
 no unit draws a run outside its own columns, so every lattice point carries one arm of ink
 or two: never three, never four.
 
-`parallel-motif.service.unit.test.ts` measures all of that at every swept ply and row
-count, as a lattice point count rather than as a boolean, beside the component count
-(`strands` per repeat unit), the free-end count (two per strand), and the cycle count
-(zero). The charter sweep then measures the same fifteen drawings again through
-`MeanderGenerationService.generate`, against the family's declaration in
-`RELAXED_INVARIANTS` — which is empty, and asserted empty in both directions.
+### What it holds and what it relaxes
+
+It relaxes **nothing**. Among the four families added since the charter was written that
+makes it the exception — `cross`, `negative`, and `branch` were each added to break one —
+and its empty row in `RELAXED_INVARIANTS` is the point of the family rather than an
+omission.
+
+`parallel-motif.service.unit.test.ts` measures that at every swept ply and row count, as a
+lattice point count rather than as a boolean — which is the stronger reading, since it
+counts the first and last lattice column that `channelWidthCompliant` exempts — beside the
+component count (`strands` per repeat unit), the free-end count (two per strand), and the
+cycle count (zero). The charter sweep then measures the same fifteen drawings again through
+`MeanderGenerationService.generate`, against that declaration, in both directions: an
+invariant a family does not relax must hold, and one it does relax must actually break. So
+the empty row is a claim that can fail, and declaring a relaxation this family does not have
+fails exactly its own fifteen cases and nothing else.
 
 ### Nothing gets thinner
 
@@ -711,10 +721,12 @@ lattice unit deep; widening the motif's logical grid repairs those, but is then
 space-filling for no combination of scale and count, since coverage needs `count ≥ scale`
 while non-degeneracy needs `count < scale / 2 + 1`.
 
-So the patterns `parallel` draws are **new** rather than existing patterns redrawn with
-double lines, and that is the feature rather than a side effect. Nothing lists `parallel`
-in `COMPATIBLE_MODIFIERS`; the ply is chosen by `plied`, which is a modifier of this
-family and of no other.
+So `parallel` cannot be an existing family redrawn with double lines: there is no existing
+repeat unit for it to double. What is recorded here is that construction, not a claim about
+novelty — nothing measures the corpus for a drawing that coincides with one of these, and
+the section says so rather than asserting otherwise. Nothing lists `parallel` in
+`COMPATIBLE_MODIFIERS`; the ply is chosen by `plied`, which is a modifier of this family and
+of no other.
 
 ### The ply, and why `strands` is bounded by `rows`
 
