@@ -696,8 +696,14 @@ re-derived:
 - Squeezing them is **redundant**. A uniform lattice at `unit / (2N)` is the lattice
   `--rows rows × N` already produces, so the thinner drawing is a row count under another
   name rather than a new pattern.
-- Squeezing them is **unreachable** for much of the space. `rows × N` has to stay inside
-  the shared maximum of 12, which excludes 8 of the 32 combinations the sweep would want.
+- Squeezing them is **unreachable** for over a third of the space. Drawing at
+  `unit / (2N)` is drawing at `rows × N` rows, and no row count may pass the shared
+  maximum of 12. The sweep covers **32** family/rows pairs across the six original
+  families — `boxes` and `mosaic` at 3 through 8 rows, `chain`, `snake`, `swirl` and
+  `whirl` at 4 through 8 — and at this family's own ply of two, the **12** of them drawn
+  at 7 or 8 rows have no doubled counterpart to be redundant with.
+  `start-combinations.service.unit.test.ts` asserts both counts against the enumeration
+  itself, so neither can drift from the sweep it describes.
 
 What makes strands read as a bundle here is not their thickness but the fact that they
 **turn together**. That is a property of the drawing, not of the stroke, and it costs the

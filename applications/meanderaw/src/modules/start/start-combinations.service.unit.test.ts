@@ -1,7 +1,10 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { STRUCTURAL_MINIMUM_ROWS } from "../meander-generation/meander-generation.constants";
+import {
+  MAXIMUM_VALUE,
+  STRUCTURAL_MINIMUM_ROWS,
+} from "../meander-generation/meander-generation.constants";
 
 import { StartCombinationsService } from "./start-combinations.service";
 import { PLIED_SWEEP_STRAND_COUNTS } from "./start.constants";
@@ -79,6 +82,42 @@ describe(StartCombinationsService, () => {
       expect(Math.max(...PLIED_SWEEP_STRAND_COUNTS)).toBe(
         STRUCTURAL_MINIMUM_ROWS.parallel,
       );
+    });
+
+    // 🎯 The two figures README.md's discarded-density argument rests on,
+    // pinned to the sweep they describe instead of being counted by hand.
+    // "The 32 combinations the sweep would want" are the six original
+    // families' distinct family/rows pairs — the space a
+    // `strokeWidth = unit / (2N)` proposal would have had to cover. That
+    // proposal redraws a pattern at `rows × N` rows, so at the `parallel`
+    // family's own ply of two it needs `rows × 2` to stay inside the shared
+    // `MAXIMUM_VALUE`, and the pairs at 7 and 8 rows have no doubled
+    // counterpart to be redundant with. Both counts are arithmetic over the
+    // real enumeration, so a family or row count added to the sweep moves
+    // them here before the prose can drift.
+    it("pins the density proposal's reach over the six original families", () => {
+      const originalFamilies = new Set([
+        "boxes",
+        "chain",
+        "mosaic",
+        "snake",
+        "swirl",
+        "whirl",
+      ]);
+      const sweptPairs = new Map<string, number>(
+        combinations
+          .filter((parameters) => originalFamilies.has(parameters.type))
+          .map((parameters) => [
+            `${parameters.type}-${parameters.rows}`,
+            parameters.rows,
+          ]),
+      );
+      const beyondMaximum = [...sweptPairs.values()].filter(
+        (rows) => rows * 2 > MAXIMUM_VALUE,
+      );
+
+      expect(sweptPairs.size).toBe(32);
+      expect(beyondMaximum).toHaveLength(12);
     });
 
     it("sweeps each type from its own structural minimum through the sweep maximum", () => {
