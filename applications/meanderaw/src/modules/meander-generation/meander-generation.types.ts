@@ -29,6 +29,7 @@ export interface GenerationParameters {
 export type MeanderType =
   | "boxes"
   | "chain"
+  | "cross"
   | "mosaic"
   | "snake"
   | "swirl"
@@ -45,6 +46,7 @@ export type Modifier =
   | { readonly name: "edge" }
   | { readonly name: "edge-flip" }
   | { readonly name: "flip" }
+  | { readonly name: "interrupted" }
   | { readonly name: "spin" }
   | { readonly name: "spin-flip" }
   | { readonly name: "split" };

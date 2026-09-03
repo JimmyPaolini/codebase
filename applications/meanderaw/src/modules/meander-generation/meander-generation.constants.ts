@@ -16,6 +16,7 @@ import type {
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
   chain: ["edge", "flip", "edge-flip"],
+  cross: ["interrupted"],
   mosaic: ["alternated", "dot", "split"],
   snake: ["edge", "flip", "edge-flip"],
   swirl: ["flip"],
@@ -86,6 +87,7 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "alternated",
   "split",
   "dot",
+  "interrupted",
 ] satisfies readonly Modifier["name"][];
 
 /**
@@ -102,6 +104,7 @@ export const SUPPORTED_TYPES: readonly string[] = [
   "snake",
   "swirl",
   "whirl",
+  "cross",
 ] satisfies readonly MeanderType[];
 
 /**
@@ -114,6 +117,7 @@ export const SUPPORTED_TYPES: readonly string[] = [
 export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
   boxes: [],
   chain: [],
+  cross: [],
   mosaic: SUPPORTED_SUB_FAMILIES,
   snake: [],
   swirl: [],
@@ -137,10 +141,30 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * exactly 3 rows the bar spans a single grid unit, so the `split` modifier
  * degenerates to a no-op there — it has nothing left to split, and its
  * output is byte-identical to the unmodified bar.
+ *
+ * `cross`'s minimum of 6 is set by its `interrupted` modifier rather than by
+ * its solid shape, which would draw down to 4 rows. The break gives up the
+ * grid level either side of the crossing, and the crossing sits at
+ * `floor(rows / 2)`, so below 6 rows the *upper* remnant has no whole level
+ * left and collapses to a zero-length run — a square line cap and nothing
+ * else, a dot one stroke wide rather than a length of strand. At 4 rows both
+ * remnants collapse. The pair stops reading as one strand passing under
+ * another, which is the whole point of the mode.
+ *
+ * Nothing measures that, and the minimum is the only thing standing in its
+ * way: at 4 and 5 rows the drawing is still fully space-filling —
+ * `channelWidthCompliant` stays true, because a collapsed run still paints
+ * its own lattice point and the unit's top connector paints level 1 in any
+ * case. This is a legibility floor, not a topology one, and
+ * `cross-motif.service.unit.test.ts` pins both halves of that at 4, 5, and 6
+ * rows so the number and its reason cannot drift apart. One minimum per
+ * family is the model here, so the family takes the stricter of its two
+ * modes.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
   chain: 4,
+  cross: 6,
   mosaic: 3,
   snake: 4,
   swirl: 4,

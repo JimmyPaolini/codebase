@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
+import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
@@ -62,6 +63,8 @@ export class MeanderGenerationService {
     private readonly boxesMotifService: BoxesMotifService,
     @Inject(ChainMotifService)
     private readonly chainMotifService: ChainMotifService,
+    @Inject(CrossMotifService)
+    private readonly crossMotifService: CrossMotifService,
     @Inject(SnakeMotifService)
     private readonly snakeMotifService: SnakeMotifService,
     @Inject(SvgRenderingService)
@@ -158,6 +161,7 @@ export class MeanderGenerationService {
     const motifServicesByType: Record<MeanderType, MotifService> = {
       boxes: this.boxesMotifService,
       chain: this.chainMotifService,
+      cross: this.crossMotifService,
       mosaic: this.mosaicMotifService,
       snake: this.snakeMotifService,
       swirl: this.swirlMotifService,

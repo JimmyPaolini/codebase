@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 
 import { BoxesMotifModule } from "../boxes-motif/boxes-motif.module";
 import { ChainMotifModule } from "../chain-motif/chain-motif.module";
+import { CrossMotifModule } from "../cross-motif/cross-motif.module";
 import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
 import { MosaicMotifModule } from "../mosaic-motif/mosaic-motif.module";
 import { SnakeMotifModule } from "../snake-motif/snake-motif.module";
@@ -26,6 +27,7 @@ import { MeanderGenerationService } from "./meander-generation.service";
   imports: [
     BoxesMotifModule,
     ChainMotifModule,
+    CrossMotifModule,
     GridGeometryModule,
     MosaicMotifModule,
     SnakeMotifModule,

@@ -40,6 +40,8 @@ describe(StartCombinationsService, () => {
       // rows 4..8 × (none + flip)
       { expected: 10, type: "swirl" },
       { expected: 10, type: "whirl" },
+      // rows 6..8 × (none + interrupted)
+      { expected: 6, type: "cross" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
       expect(
         combinations.filter((parameters) => parameters.type === type),
@@ -47,7 +49,7 @@ describe(StartCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(114);
+      expect(combinations).toHaveLength(120);
     });
 
     it("names every combination distinctly", () => {
