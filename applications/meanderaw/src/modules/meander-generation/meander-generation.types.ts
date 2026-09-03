@@ -28,6 +28,7 @@ export interface GenerationParameters {
 /** A meander's base repeating motif shape. */
 export type MeanderType =
   | "boxes"
+  | "branch"
   | "chain"
   | "cross"
   | "mosaic"
@@ -50,9 +51,11 @@ export type Modifier =
   | { readonly name: "flip" }
   | { readonly name: "interrupted" }
   | { readonly name: "ruled" }
+  | { readonly name: "rung" }
   | { readonly name: "spin" }
   | { readonly name: "spin-flip" }
-  | { readonly name: "split" };
+  | { readonly name: "split" }
+  | { readonly name: "stagger" };
 
 /**
  * The per-type contract `MeanderGenerationService` dispatches through:

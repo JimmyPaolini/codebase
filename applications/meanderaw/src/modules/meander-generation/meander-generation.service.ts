@@ -1,17 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
-import { ChainMotifService } from "../chain-motif/chain-motif.service";
-import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
-import { NegativeMotifService } from "../negative-motif/negative-motif.service";
-import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
-import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
-import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
 import {
   COMPATIBLE_MODIFIERS,
@@ -31,6 +23,7 @@ import {
   SUB_FAMILIES,
   UnavailableSubFamilyError,
 } from "./meander-generation.constants";
+import { MotifRegistryService } from "./motif-registry.service";
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
 import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
@@ -38,7 +31,6 @@ import type {
   GenerationParameters,
   MeanderType,
   Modifier,
-  MotifService,
 } from "./meander-generation.types";
 
 /**
@@ -54,28 +46,14 @@ export class MeanderGenerationService {
   constructor(
     @Inject(GridGeometryService)
     private readonly gridGeometryService: GridGeometryService,
-    @Inject(MosaicMotifService)
-    private readonly mosaicMotifService: MosaicMotifService,
     @Inject(MosaicSubFamilyService)
     private readonly mosaicSubFamilyService: MosaicSubFamilyService,
     @Inject(MosaicTileGenerationService)
     private readonly mosaicTileGenerationService: MosaicTileGenerationService,
-    @Inject(BoxesMotifService)
-    private readonly boxesMotifService: BoxesMotifService,
-    @Inject(ChainMotifService)
-    private readonly chainMotifService: ChainMotifService,
-    @Inject(CrossMotifService)
-    private readonly crossMotifService: CrossMotifService,
-    @Inject(NegativeMotifService)
-    private readonly negativeMotifService: NegativeMotifService,
-    @Inject(SnakeMotifService)
-    private readonly snakeMotifService: SnakeMotifService,
+    @Inject(MotifRegistryService)
+    private readonly motifRegistryService: MotifRegistryService,
     @Inject(SvgRenderingService)
     private readonly svgRenderingService: SvgRenderingService,
-    @Inject(SwirlMotifService)
-    private readonly swirlMotifService: SwirlMotifService,
-    @Inject(WhirlMotifService)
-    private readonly whirlMotifService: WhirlMotifService,
   ) {}
 
   // 🔐 Private Fields
@@ -89,7 +67,7 @@ export class MeanderGenerationService {
     geometry: GridGeometry,
     parameters: GenerationParameters,
   ): string[] {
-    const motifService = this.motifService(parameters.type);
+    const motifService = this.motifRegistryService.resolve(parameters.type);
     const unitPaths = Array.from(
       { length: parameters.repeatCount },
       (_value, unitIndex) =>
@@ -157,22 +135,6 @@ export class MeanderGenerationService {
       tile,
       parameters.repeatCount,
     );
-  }
-
-  /** Looks up the motif service that draws `type`'s repeat units. */
-  private motifService(type: MeanderType): MotifService {
-    const motifServicesByType: Record<MeanderType, MotifService> = {
-      boxes: this.boxesMotifService,
-      chain: this.chainMotifService,
-      cross: this.crossMotifService,
-      mosaic: this.mosaicMotifService,
-      negative: this.negativeMotifService,
-      snake: this.snakeMotifService,
-      swirl: this.swirlMotifService,
-      whirl: this.whirlMotifService,
-    };
-
-    return motifServicesByType[type];
   }
 
   /** Throws {@link InvalidModifierError} when the modifier's `name` isn't compatible with `type`. */
@@ -288,11 +250,13 @@ export class MeanderGenerationService {
 
     const geometry = this.gridGeometryService.compute(parameters.rows);
     const paths = this.buildPaths(geometry, parameters);
-    const rightEdge = this.motifService(parameters.type).rightEdge(geometry, {
-      repeatCount: parameters.repeatCount,
-      rows: parameters.rows,
-      ...(parameters.modifier ? { modifier: parameters.modifier } : {}),
-    });
+    const rightEdge = this.motifRegistryService
+      .resolve(parameters.type)
+      .rightEdge(geometry, {
+        repeatCount: parameters.repeatCount,
+        rows: parameters.rows,
+        ...(parameters.modifier ? { modifier: parameters.modifier } : {}),
+      });
     const format = (value: number): string =>
       this.gridGeometryService.formatCoordinate(value);
 

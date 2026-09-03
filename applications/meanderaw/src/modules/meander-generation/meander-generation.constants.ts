@@ -19,6 +19,7 @@ import type {
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
+  branch: ["rung", "stagger"],
   chain: ["edge", "flip", "edge-flip"],
   cross: ["interrupted"],
   mosaic: ["alternated", "dot", "split"],
@@ -95,6 +96,8 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "interrupted",
   "brick",
   "ruled",
+  "rung",
+  "stagger",
 ] satisfies readonly Modifier["name"][];
 
 /**
@@ -113,6 +116,7 @@ export const SUPPORTED_TYPES: readonly string[] = [
   "whirl",
   "cross",
   "negative",
+  "branch",
 ] satisfies readonly MeanderType[];
 
 /**
@@ -124,6 +128,7 @@ export const SUPPORTED_TYPES: readonly string[] = [
  */
 export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
   boxes: [],
+  branch: [],
   chain: [],
   cross: [],
   mosaic: SUPPORTED_SUB_FAMILIES,
@@ -178,9 +183,24 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * `MOSAIC_TILE_MINIMUM_ROWS` is 4 for its own reason — below it a tile's
  * interior is a single level and there is nothing to permute — so 3 rows is
  * the shallowest negative the shallowest enumerable tile can yield.
+ *
+ * `branch`'s minimum of 2 is its `rung` mode's, and the family takes the
+ * stricter of its modes the same way `cross` does. `comb` and `stagger` do
+ * draw at one row — a rail with a one-step tooth under every column still
+ * forks at every interior column, 10 times and 5 times respectively, which
+ * is what they fork at every other row count too. `rung` does not. Its fork
+ * is a rung meeting the middle of a stile, so it needs the stile to have a
+ * middle — at least one lattice point strictly between the band's two
+ * border rows — and a one-row band has none, leaving each unit a plain
+ * bracket with the mode's characteristic junction absent entirely. The
+ * `rows - 1` stile forks per unit that the mode is named for appear first
+ * at 2 rows. `branch-motif.service.unit.test.ts` renders all three modes
+ * below the minimum and measures every claim in this paragraph there, so
+ * the number and its reason cannot drift apart.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
+  branch: 2,
   chain: 4,
   cross: 6,
   mosaic: 3,

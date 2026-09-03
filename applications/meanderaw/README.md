@@ -12,18 +12,19 @@ nx run meanderaw:vitest
 
 ## 🏛️ Meander Charter
 
-Eight families of meander are implemented, and they share a set of properties that are
+Nine families of meander are implemented, and they share a set of properties that are
 load-bearing to how a meander looks. The invariants were extracted from the six families
 that predate them, by measuring every committed SVG rather than by reading the code, and
 each is marked fixed or negotiable. A new family that breaks a fixed invariant is not a
-new family — it is a different kind of drawing. The two that came after break a negotiable
-one each, on purpose: `cross` crosses, and `negative` branches.
+new family — it is a different kind of drawing. The three that came after break a
+negotiable one each, on purpose: `cross` crosses, and `negative` and `branch` both branch
+— in different shapes, which "The Branching Family" below is about.
 
 | # | Invariant | Status |
 | --- | --- | --- |
 | 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Fixed |
 | 2 | **Space-filling** — every interior white channel is exactly one stroke width | Fixed |
-| 3 | **No branching** — ink contains no T-junctions | Relaxed by `negative` in every mode, and by `chain` and `snake` under `edge` and `edge-flip` |
+| 3 | **No branching** — ink contains no T-junctions | Relaxed by `branch` and `negative` in every mode, and by `chain` and `snake` under `edge` and `edge-flip` |
 | 4 | **No crossing** — ink contains no X-junctions | Relaxed by `cross`, except under `interrupted` |
 | 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Fixed |
 | 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
@@ -31,18 +32,18 @@ one each, on purpose: `cross` crosses, and `negative` branches.
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
-against the corpus as it now stands, 138 named patterns beside the same 3,179 tiles:
+against the corpus as it now stands, 159 named patterns beside the same 3,179 tiles:
 
-- **Every interior white channel is exactly one stroke width**, in all 3,317 files. The
+- **Every interior white channel is exactly one stroke width**, in all 3,338 files. The
   channel width equals the stroke width equals half a grid unit, which is why fitting
   `N` parallel strokes into one unit is exactly `strokeWidth = unit / (2N)`.
 - **Ink never crosses itself, except where a family was added to make it.** Zero
   X-junctions across all 3,293 files the six original families produce — a stronger
   statement than "non-self-intersecting", and the sharpest single characterization of what
   those six have in common. The `cross` family relaxes it deliberately: 12 X-junctions in
-  each of the three solid documents it commits, and none anywhere else in the 3,317-file
+  each of the three solid documents it commits, and none anywhere else in the 3,338-file
   corpus. See "The Crossing Family" below.
-- **Ink branches in two places, and only there.** 1,052 T-junctions across 38 of the 138
+- **Ink branches in three places, and only there.** 1,360 T-junctions across 59 of the 159
   named patterns. 200 of them, across 20 patterns, are `chain` and `snake` under `edge`
   and `edge-flip`, ten per document at every row count: the `edge` family widens the
   repeat unit past the zigzag it contains, so the zigzag's terminating vertical lands in
@@ -50,9 +51,17 @@ against the corpus as it now stands, 138 named patterns beside the same 3,179 ti
   side of it — five such junctions along the top border, five along the bottom. An earlier
   reading of this measurement reported zero everywhere; the reference assets are
   hand-verified ground truth for what these patterns should look like, so the geometry is
-  right and the count was wrong. The other 852, across the `negative` family's 18
-  documents, are the point of that family rather than a side effect of it — see "The
-  Negative Space Family" below.
+  right and the count was wrong. The other 1,160 are the point of two families rather than
+  a side effect of anything: 852 across the `negative` family's 18 documents and 308
+  across the `branch` family's 21 — see "The Negative Space Family" and "The Branching
+  Family" below.
+- **Ink was a forest everywhere until it was a tree in one place.** Read as a graph, a
+  document's ink is lattice points joined by one-pitch steps. All 3,317 documents that
+  predate `branch` are one of two things and neither is a tree: 3,286 are forests of many
+  components — a disjoint union of simple arcs — and 31 carry loops, being `negative`'s
+  18, `cross`'s 3 solid drawings, and 10 `snake` drawings under `edge`/`edge-flip`.
+  `branch`'s 21 are the only trees in the corpus: one connected piece, `edges = nodes − 1`,
+  no loop anywhere. See "The Branching Family" below.
 - **The negative space branches and crosses freely.** It branches in every family, and in
   `mosaic split` and `mosaic alternated period-3` it genuinely crosses. Crossing patterns
   are already generated here; they have only ever been white, never ink.
@@ -75,7 +84,7 @@ named constructor into that space; a **sub-family** is a named predicate over it
 are views on one underlying space, which is why `mosaic` is the only family with
 sub-families today: [#365](https://github.com/JimmyPaolini/codebase/pull/365)
 materialized its unit space as 3,179 enumerable tiles, so its regions —
-`lines`, `dashes`, `dots`, `diamond` — became recognizable. The other five families
+`lines`, `dashes`, `dots`, `diamond` — became recognizable. The other eight families
 have latent unit spaces and therefore only modifiers.
 
 The glossary for these terms lives in the repository [CONTEXT.md](../../CONTEXT.md).
@@ -722,6 +731,150 @@ The geometry is **derived**. The six oldest families have byte-exact reference S
 neither does `cross`. Its committed output in `output/` is its own baseline, pinned by
 measurement rather than by likeness — every count above is asserted, and the drawings
 themselves are compared to nothing.
+
+## 🌿 The Branching Family
+
+`branch` inks a **spanning tree** of the band's lattice. Every lattice point of the band
+carries ink, and the one-pitch steps joining them number exactly one fewer than the points
+themselves, over a single connected piece — which is the definition of a tree, so the ink
+forks everywhere and closes a loop nowhere.
+
+That is the first tree this repository has drawn, and the claim is a count rather than a
+description. Read as a graph, all 3,317 documents that predate this family fall into two
+groups: **3,286 are forests** of many components — a family's ink is a disjoint union of
+simple arcs, so `edges = nodes − components` with the component count in the dozens — and
+**31 carry loops**: `negative`'s eighteen, `cross`'s three solid drawings, and the ten
+`snake` drawings whose `edge` pitch closes a loop against the band border. Not one is a
+tree. All 21 of `branch`'s are, and
+`meander-topology.service.integration.test.ts` reads every committed document off disk and
+asserts both halves of that.
+
+### What it draws
+
+Three modes, each a different spanning tree of the same lattice. A repeat unit is two
+lattice columns wide, so six repeats span twelve columns.
+
+- **`comb`** (no modifier) — a rail along the band's top lattice row, with a full tooth
+  hanging from every lattice column.
+- **`stagger`** — the same teeth, with the rail changing side once per repeat unit: along
+  the top for one unit, along the bottom for the next. The band reads as a crenellation
+  rather than a fringe.
+- **`rung`** — the construction turned on its side: one vertical stile per repeat unit, a
+  horizontal rung off it at every lattice row, and a rail along the top joining each unit
+  to the next. Each unit reads as an `E`.
+
+At six repeats the figure has 12 × (`rows` + 1) lattice points and one fewer step joining
+them, in every mode at every row count. Ink T-junctions, which is invariant 3's own count:
+
+| Mode | 2 rows | 3 | 4 | 5 | 6 | 7 | 8 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `comb` | 10 | 10 | 10 | 10 | 10 | 10 | 10 |
+| `stagger` | 5 | 5 | 5 | 5 | 5 | 5 | 5 |
+| `rung` | 11 | 17 | 23 | 29 | 35 | 41 | 47 |
+
+Every mode also leaves **free ends** — lattice points carrying a single arm of ink, where
+a stroke stops rather than turning, forking, or closing. At six repeats `comb` leaves 12
+and `stagger` 7 at every row count, and `rung` leaves `6 × rows + 1`, from 13 at 2 rows to
+49 at 8. They matter to the write-up below: both unbounded constructions measured there
+have none.
+
+Two of those rows are flat because their forks sit on the rail rather than on the teeth,
+and a rail's length does not depend on how tall the band is. `rung`'s forks sit on its
+stiles, so its row climbs by one per unit per row added — which is also why the family's
+minimum is 2 rows rather than 1: at one row a stile has no interior lattice point, the
+rung-into-stile junction the mode is named for does not exist, and each unit degenerates
+to a plain bracket. `branch-motif.service.unit.test.ts` measures that count at one row as
+well as at the minimum, so the number and its reason cannot drift apart.
+
+### What it holds and what it relaxes
+
+- **Invariant 1, orthogonal** — every stroke is a run along a lattice line, so only `M`,
+  `H`, and `V` are ever emitted. Asserted per mode per row count.
+- **Invariant 2, space-filling** — every lattice point carries ink. This family's node
+  count is asserted as an absolute number rather than as a boolean, which is stricter
+  than `channelWidthCompliant`: that check exempts the band's first and last lattice
+  column, and this family inks those too, so it has no band-termination gap at all — one
+  of the few in the corpus that does not.
+- **Invariant 3, no branching — relaxed, in every mode.** Declared in the charter property
+  test's `RELAXED_INVARIANTS`, which asserts the relaxation is _present_ rather than
+  merely permitted: a mode that stopped forking would fail.
+- **Invariant 4, no crossing** — held. A rail meets a tooth at the tooth's end, never
+  through its middle, so no lattice point in any mode carries four arms. Zero X-junctions
+  at every row count in every mode.
+- **Invariant 5, band** — held. The band is `CANVAS_HEIGHT` tall whatever the row count,
+  and tiles horizontally; row count is density, not size.
+
+Its own negative space is reported and not gated, per the ruling that invariants 3 and 4
+constrain ink only.
+
+### How it differs from the negative space family
+
+Both relax the same invariant, and both trace back to the same shortlist in the negative
+space survey above, so the difference is worth stating rather than assuming. It is the
+loops.
+
+`negative` inks a whole corridor graph, and a corridor graph closes a loop through each of
+its own repeats: its eighteen committed drawings carry 10 to 45 cycles each, on one to
+five components. `branch` inks a loop-free spanning subgraph of a lattice: 0 cycles, on
+one component, always. Both ends of that range are asserted in
+`meander-topology.service.integration.test.ts`, from the same loop that counts the trees —
+the numbers were published in three places and computed in none until they were.
+The survey anticipated exactly this — its "A note for the branching
+family" found that every one of the 104 _branches only_ tiles has at least one cycle at
+the rendered scale, and that a bounded-tree family would have to **omit corridors** to
+break them. This family omits them by construction rather than by search: a spine and
+teeth have `nodes − 1` steps by counting, so there is no room left for a cycle and none
+has to be looked for.
+
+Put plainly: `negative` is what the white space of an existing pattern already looks
+like, and `branch` is what is left of a lattice once every loop has been cut out of it.
+Same relaxation, opposite ends of the same measurement.
+
+### Unbounded branching: explored, not implemented
+
+Issue [#416](https://github.com/JimmyPaolini/codebase/issues/416) asks for unbounded
+branching — forks plus loops — to be explored and written up rather than built, including
+whether the output still reads as a meander. It was, on two constructions, both at six
+repeats. **No code for either ships**; both are one added rail away from the shipped
+`comb` and are described here precisely enough to rebuild.
+
+| Construction | Cycles | T-junctions | X-junctions | Free ends | Space-filling |
+| --- | --- | --- | --- | --- | --- |
+| `comb`, as shipped | 0 | 10 | 0 | 12 | yes |
+| Two rails — `comb` plus a second rail along the bottom row | 11 | 20 | 0 | 0 | yes |
+| Full lattice — every lattice edge inked | 11 × (`rows` − 1) | 2 × `rows` + 18 | 10 × (`rows` − 1) | 0 | yes |
+
+Three findings, in order of how much they cost:
+
+1. **Unbounded branching is legal.** The two-rail figure holds invariants 1, 2, 4, and 5
+   exactly as the tree does, and relaxes only invariant 3. Nothing in the charter forced
+   the tree; the tree was chosen.
+2. **It stops reading as a meander, and the reason is countable.** Closing the loops
+   closes the ends: `comb` has twelve free ends — one lattice point per column with a
+   single arm of ink — and both unbounded constructions have zero. A meander reads as a
+   line that runs somewhere; a figure in which every stroke is enclosed and nothing
+   terminates reads as a grille or a fence. The two-rail figure is a ladder: twelve
+   identical rectangles, no rhythm, no direction, nothing the eye follows. This is a
+   judgement, but it is a judgement about a number that was measured rather than about an
+   impression.
+3. **Pushed to its limit it collides with a different invariant.** #416's premise is that
+   forks plus loops admit any orthogonal drawing. They do — but only once invariant 4 goes
+   too: the full lattice acquires 10 X-junctions per interior row. Crossing is `cross`'s
+   relaxation, not this family's, so "any orthogonal drawing" is not reachable from
+   invariant 3 alone. Unbounded branching that keeps invariant 4 is a narrow band between
+   the tree and the ladder, and the ladder end of it is where the meander reading fails.
+
+The tree mode ships because it is the one that keeps free ends while forking.
+
+### Provenance: derived, not attested
+
+The geometry is **derived**. The six oldest families have byte-exact reference SVGs in
+`testing/assets/` that were checked against hand-drawn originals; `branch` has none, and
+neither does `negative` or `cross`. Its committed output in `output/` is its own baseline,
+pinned by measurement rather than by likeness — every count in this section is the output
+of an assertion, `comb`'s own row of the exploration table included. The only exceptions
+are the two unbounded constructions' rows, which were measured during the spike and are
+gated by nothing, because their code does not ship.
 
 ## 👔 Conformetry
 

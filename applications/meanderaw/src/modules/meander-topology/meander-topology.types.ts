@@ -1,5 +1,43 @@
 // 🏷️ Types
 
+/**
+ * One rendered meander's ink graph counted as a graph: how many lattice
+ * points carry ink, how many one-pitch steps join them, and how many
+ * connected pieces the result falls into.
+ *
+ * These three numbers are what "the ink is a tree" is defined by, and they
+ * are reported rather than judged, the same way the junction counts are.
+ * Two predicates follow from them by arithmetic and nothing else:
+ *
+ * - **A forest** — no loops anywhere — is exactly
+ *   `edges === nodes - components`. Every one of the six original families
+ *   is one: their ink is a disjoint union of simple arcs, so they hold at
+ *   many components.
+ * - **A tree** — one connected figure with no loops — is exactly
+ *   `components === 1 && edges === nodes - 1`. That is the `branch`
+ *   family's own claim, and the only thing separating a tree from a forest
+ *   is the component count.
+ *
+ * A lattice point painted by a zero-length stroke and joined to nothing is
+ * a component of its own, which is why `edges` can be zero while `nodes`
+ * and `components` are not.
+ *
+ * `freeEnds` counts the lattice points carrying exactly one arm of ink —
+ * where a stroke stops rather than turning, forking, or closing. It is not
+ * a charter quantity either, and it is reported here because it is what
+ * separates a figure the eye follows from one it does not: closing every
+ * loop in a drawing also closes every end, and a figure in which nothing
+ * terminates reads as a grille rather than as a running border. A
+ * zero-length stroke's lattice point has no arms at all, so it is not a
+ * free end.
+ */
+export interface InkConnectivity {
+  readonly components: number;
+  readonly edges: number;
+  readonly freeEnds: number;
+  readonly nodes: number;
+}
+
 /** A running count of three-armed and four-armed junctions, over either the ink or the white space it leaves. */
 export interface JunctionCounts {
   tJunctions: number;
@@ -37,6 +75,12 @@ export interface LatticeGraph {
   readonly nodes: ReadonlySet<string>;
   readonly rows: number;
   readonly verticalEdges: ReadonlySet<string>;
+}
+
+/** One lattice point, by the lattice column and row it sits at. */
+export interface LatticePoint {
+  readonly column: number;
+  readonly row: number;
 }
 
 /** The lattice a document's coordinates are read against: the first lattice line's offset from the canvas edge, and the distance between lattice lines. */

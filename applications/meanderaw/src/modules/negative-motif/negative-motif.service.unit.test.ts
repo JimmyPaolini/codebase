@@ -2,11 +2,13 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { CANVAS_HEIGHT } from "../grid-geometry/grid-geometry.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
+import { MotifRegistryService } from "../meander-generation/motif-registry.service";
 import { MeanderLatticeService } from "../meander-topology/meander-lattice.service";
 import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
@@ -125,6 +127,7 @@ describe(NegativeMotifService, () => {
     const module = await Test.createTestingModule({
       providers: [
         BoxesMotifService,
+        BranchMotifService,
         ChainMotifService,
         CrossMotifService,
         GridGeometryService,
@@ -135,6 +138,7 @@ describe(NegativeMotifService, () => {
         MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
+        MotifRegistryService,
         MotifTransformsService,
         NegativeMotifService,
         NegativeSourceService,
