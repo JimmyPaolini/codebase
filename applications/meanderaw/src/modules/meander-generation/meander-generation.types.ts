@@ -33,6 +33,7 @@ export type MeanderType =
   | "cross"
   | "mosaic"
   | "negative"
+  | "parallel"
   | "snake"
   | "swirl"
   | "whirl";
@@ -50,6 +51,7 @@ export type Modifier =
   | { readonly name: "edge-flip" }
   | { readonly name: "flip" }
   | { readonly name: "interrupted" }
+  | { readonly name: "plied"; readonly strands: number }
   | { readonly name: "ruled" }
   | { readonly name: "rung" }
   | { readonly name: "spin" }

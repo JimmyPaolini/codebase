@@ -12,13 +12,14 @@ nx run meanderaw:vitest
 
 ## 🏛️ Meander Charter
 
-Nine families of meander are implemented, and they share a set of properties that are
+Ten families of meander are implemented, and they share a set of properties that are
 load-bearing to how a meander looks. The invariants were extracted from the six families
 that predate them, by measuring every committed SVG rather than by reading the code, and
 each is marked fixed or negotiable. A new family that breaks a fixed invariant is not a
-new family — it is a different kind of drawing. The three that came after break a
+new family — it is a different kind of drawing. Three of the four that came after break a
 negotiable one each, on purpose: `cross` crosses, and `negative` and `branch` both branch
-— in different shapes, which "The Branching Family" below is about.
+— in different shapes, which "The Branching Family" below is about. The fourth, `parallel`,
+breaks none of them, and that is the point of it.
 
 | # | Invariant | Status |
 | --- | --- | --- |
@@ -32,18 +33,22 @@ negotiable one each, on purpose: `cross` crosses, and `negative` and `branch` bo
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
-against the corpus as it now stands, 159 named patterns beside the same 3,179 tiles:
+against the corpus as it now stands, 174 named patterns beside the same 3,179 tiles:
 
-- **Every interior white channel is exactly one stroke width**, in all 3,338 files. The
-  channel width equals the stroke width equals half a grid unit, which is why fitting
-  `N` parallel strokes into one unit is exactly `strokeWidth = unit / (2N)`.
+- **Every interior white channel is exactly one stroke width**, in all 3,353 files. The
+  channel width equals the stroke width equals half a grid unit, and that single number
+  is the same in every document the project has ever written — the stroke is `unit / 2`
+  at every row count, in every family, at every ply of `parallel`. #340 and #413 both
+  inferred from this that drawing `N` strands would mean `strokeWidth = unit / (2N)`;
+  that inference is wrong and is discarded, for the reasons under "The Parallel Family"
+  below.
 - **Ink never crosses itself, except where a family was added to make it.** Zero
   X-junctions across all 3,293 files the six original families produce — a stronger
   statement than "non-self-intersecting", and the sharpest single characterization of what
   those six have in common. The `cross` family relaxes it deliberately: 12 X-junctions in
-  each of the three solid documents it commits, and none anywhere else in the 3,338-file
+  each of the three solid documents it commits, and none anywhere else in the 3,353-file
   corpus. See "The Crossing Family" below.
-- **Ink branches in three places, and only there.** 1,360 T-junctions across 59 of the 159
+- **Ink branches in three places, and only there.** 1,360 T-junctions across 59 of the 174
   named patterns. 200 of them, across 20 patterns, are `chain` and `snake` under `edge`
   and `edge-flip`, ten per document at every row count: the `edge` family widens the
   repeat unit past the zigzag it contains, so the zigzag's terminating vertical lands in
@@ -84,7 +89,7 @@ named constructor into that space; a **sub-family** is a named predicate over it
 are views on one underlying space, which is why `mosaic` is the only family with
 sub-families today: [#365](https://github.com/JimmyPaolini/codebase/pull/365)
 materialized its unit space as 3,179 enumerable tiles, so its regions —
-`lines`, `dashes`, `dots`, `diamond` — became recognizable. The other eight families
+`lines`, `dashes`, `dots`, `diamond` — became recognizable. The other nine families
 have latent unit spaces and therefore only modifiers.
 
 The glossary for these terms lives in the repository [CONTEXT.md](../../CONTEXT.md).
@@ -611,7 +616,7 @@ property test, and by the disk-based gate over every committed document. **The l
 are not.** They are a reading of the six committed files and nothing fails if they change:
 invariants 3 and 4 constrain ink, and no family is failed for what its white space does.
 
-### What it declares
+### What it holds and what it relaxes
 
 | Invariant | Solid | `interrupted` |
 | --- | --- | --- |
@@ -670,7 +675,7 @@ else.
 
 | Mode | Source tile | Reads as |
 | --- | --- | --- |
-| no modifier | `dvvxxd` → `dvvxxvvxxvvxxd` | the shortlist's highest-branching entry: dots capping a staircase of vertical dashes |
+| `stair` (no modifier) | `dvvxxd` → `dvvxxvvxxvvxxd` | the shortlist's highest-branching entry: dots capping a staircase of vertical dashes |
 | `brick` | `hxxhhx` → `hxxhhxxhhxxhhx` | the shortlist's simplest entry: horizontal dashes in running bond |
 | `ruled` | `dld` → `dldldld` | the shortlist's columns-1 entry: dot levels alternating with the continuous rule |
 
@@ -699,7 +704,7 @@ charter sweep like every other drawing instead.
 **Whether the output stays space-filling was measured, not assumed, and it does.** Every
 lattice point of every one of the 18 committed drawings carries ink — including the band's
 first and last lattice column, which invariant 7 would have excused. The family needs no
-termination carve-out at all, where 2,114 of the 3,293 documents that predate it do have a
+termination carve-out at all, where 2,120 of the 3,353 committed documents do have a
 gap there. The reason is the survey's own finding that no cell of any of the 3,179
 permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
 lattice point with at least one arm of ink.
@@ -709,7 +714,7 @@ per document, at 3 through 8 rows:
 
 | Mode | 3 | 4 | 5 | 6 | 7 | 8 |
 | --- | --- | --- | --- | --- | --- | --- |
-| no modifier | 38 | 48 | 58 | 68 | 78 | 88 |
+| `stair` | 38 | 48 | 58 | 68 | 78 | 88 |
 | `brick` | 30 | 40 | 50 | 60 | 70 | 80 |
 | `ruled` | 16 | 16 | 24 | 24 | 32 | 32 |
 
@@ -875,6 +880,140 @@ pinned by measurement rather than by likeness — every count in this section is
 of an assertion, `comb`'s own row of the exploration table included. The only exceptions
 are the two unbounded constructions' rows, which were measured during the spike and are
 gated by nothing, because their code does not ship.
+
+## 🧵 The Parallel Family
+
+`parallel` draws meanders in which `N` strands run alongside one another, turning
+together, one channel apart. It is the tenth family, and the only one of the four added
+since the charter was written that relaxes no invariant at all — it is space-filling,
+orthogonal, non-branching, non-crossing, and a single band, strictly, at every ply.
+
+Its 15 committed drawings are five row counts, 4 through 8, crossed with its unmodified
+two-strand default and the two plies `PLIED_SWEEP_STRAND_COUNTS` names, 3 and 4.
+
+### What it draws
+
+One repeat unit is a **bundle**: `strands` brackets nested inside one another, spanning
+`2 × strands` lattice columns. Strand `i` runs down the unit's `i`-th lattice column from
+the outside, crosses to the mirror column, and runs back — turning exactly one lattice row
+inside strand `i − 1`'s turn, which is what makes the bundle read as strands moving
+together rather than as unrelated arcs. Even units open upward and odd units downward, so
+the band reads as ⊔⊓⊔⊓ at whatever ply is asked for.
+
+Nested brackets are an **exact cover** of the rectangle they span, and every charter
+property falls out of that rather than being checked for afterwards. Take any lattice point
+of a unit: if it is at or above its own column's turn row it sits on that column's arm, and
+if it is below, it is that far in from the unit's edge, so the crossbar of the strand whose
+turn row it is reaches it. So every lattice point of the band carries ink — including the
+first and last lattice column, which `channelWidthCompliant` exempts and which 2,120
+documents in the corpus do leave a gap at. The brackets of a unit are pairwise disjoint and
+no unit draws a run outside its own columns, so every lattice point carries one arm of ink
+or two: never three, never four.
+
+### What it holds and what it relaxes
+
+It relaxes **nothing**. Among the four families added since the charter was written that
+makes it the exception — `cross`, `negative`, and `branch` were each added to break one —
+and its empty row in `RELAXED_INVARIANTS` is the point of the family rather than an
+omission.
+
+`parallel-motif.service.unit.test.ts` measures that at every swept ply and row count, as a
+lattice point count rather than as a boolean — which is the stronger reading, since it
+counts the first and last lattice column that `channelWidthCompliant` exempts — beside the
+component count (`strands` per repeat unit), the free-end count (two per strand), and the
+cycle count (zero). The charter sweep then measures the same fifteen drawings again through
+`MeanderGenerationService.generate`, against that declaration, in both directions: an
+invariant a family does not relax must hold, and one it does relax must actually break. So
+the empty row is a claim that can fail, and declaring a relaxation this family does not have
+fails exactly its own fifteen cases and nothing else.
+
+### Nothing gets thinner
+
+**The stroke is `unit / 2`, unchanged from every other family, at every ply.** #413 states
+`strokeWidth = unit / (2N)` and #340's candidate table repeats it. That arithmetic is
+**discarded**, and the reasoning that produced it is worth recording so it is not
+re-derived:
+
+- It assumes `N` strands must be squeezed into the footprint one strand occupied. They must
+  not be. Invariant 2 fixes the ratio of ink to channel, not the number of strands a band
+  may hold.
+- Squeezing them is **redundant**. A uniform lattice at `unit / (2N)` is the lattice
+  `--rows rows × N` already produces, so the thinner drawing is a row count under another
+  name rather than a new pattern.
+- Squeezing them is **unreachable** for a quarter of the space. Drawing at `unit / (2N)`
+  is drawing at `rows × N` rows, so at this family's own ply of two every pattern is
+  asked for at twice its row count. The space is the **32** family/rows pairs the sweep
+  covers across the six original families — `boxes` and `mosaic` at 3 through 8 rows,
+  `chain`, `snake`, `swirl` and `whirl` at 4 through 8, so 12 + 20 = 32. **8 of those 32
+  cannot be drawn**: `chain` and `snake` share one zigzag sequence, and above eight
+  effective rows it doubles back on itself, laying a second run of ink over one already
+  drawn. Their swept rows 4 through 8 double to 8, 10, 12, 14 and 16, so only rows 4
+  survives — four failures each, eight in total. That defect is
+  [#507](https://github.com/JimmyPaolini/codebase/issues/507) and predates this family.
+
+  **The count is 8, and the reason is degeneracy rather than a row-count ceiling** — the
+  two are easy to conflate and this passage once did. Asking instead which doubled row
+  counts simply exceed the shared maximum of 12 excludes a _different_ set of **12**
+  pairs, the ones at 7 and 8 rows in every family. That is the weaker criterion and it is
+  not what rules the proposal out: four of the eight that actually fail sit **inside** the
+  maximum, at 10 and 12 effective rows, so a bound on the row count alone would have waved
+  them through. `start-combinations.service.unit.test.ts` pins all three numbers against the
+  real enumeration, and `meander-generation.service.unit.test.ts` measures the retracing
+  itself off rendered path data rather than restating the row count.
+
+What makes strands read as a bundle here is not their thickness but the fact that they
+**turn together**. That is a property of the drawing, not of the stroke, and it costs the
+charter nothing.
+
+### A family, not a modifier
+
+The spec in [#340](https://github.com/JimmyPaolini/codebase/issues/340) models `parallel`
+as "a modifier compatible with every family", and reads that universal compatibility as
+"the first concrete evidence for the universal abstraction this spec proposes". **That is
+corrected here: `parallel` is a family.**
+
+The reason is not organizational. A modifier is a named constructor into a family's own
+unit space — it re-draws that family's repeat unit. `N` strands cannot trace the path one
+strand traces: a bundle covers its rectangle by nesting, which is a different construction
+from every existing family's, so there is no existing repeat unit for it to construct. Four
+attempts at building it as a transform of finished path data all failed on the same wall.
+Offsetting an existing family's stroke centres by one lattice pitch breaks invariant 3 in all
+six original families and invariant 4 in two of them, because their features are one
+lattice unit deep; widening the motif's logical grid repairs those, but is then
+space-filling for no combination of scale and count, since coverage needs `count ≥ scale`
+while non-degeneracy needs `count < scale / 2 + 1`.
+
+So `parallel` cannot be an existing family redrawn with double lines: there is no existing
+repeat unit for it to double. What is recorded here is that construction, not a claim about
+novelty — nothing measures the corpus for a drawing that coincides with one of these, and
+the section says so rather than asserting otherwise. Nothing lists `parallel` in
+`COMPATIBLE_MODIFIERS`; the ply is chosen by `plied`, which is a modifier of this family and
+of no other.
+
+### The ply, and why `strands` is bounded by `rows`
+
+`plied` carries `strands`, and the command line takes it as `--modifier plied --strands N`.
+With no modifier the family draws its default ply of two, and `plied` naming two is
+byte-identical to that — asserted, and the reason the sweep leaves it out rather than
+committing the same drawing under a second filename.
+
+`strands` is bounded above by the drawing's own `rows`, not by the shared maximum of 12,
+because the bound is the geometry's: the innermost strand's arms are `rows − strands + 1`
+lattice steps long, so one ply further collapses them onto its own crossbar and leaves a
+bare segment running alongside nothing. `STRUCTURAL_MINIMUM_ROWS` cannot state that — it is
+one number per family and this one moves with the modifier — so `InvalidStrandCountError`
+does, and the family's minimum of 4 is its deepest swept ply's rather than its default's,
+the same way `cross` takes the stricter of its two modes. The default two-strand ply draws
+perfectly well at 2 and 3 rows, which its unit test measures below the minimum.
+
+### Provenance: attested in ornament, derived in geometry
+
+Double-lined key patterns are real Greek ornament, which is why #340 marks this candidate
+`attested`. The drawings here are not one of them redrawn, for the reason above, so the
+**geometry is derived**: there is no hand-drawn reference to check it against, and no
+byte-exact reference asset exists for it as one does for the six oldest families. Its
+committed output in `output/` is its own baseline, pinned by measurement rather than by
+likeness. Every figure in this section is the expected value of an assertion.
 
 ## 👔 Conformetry
 

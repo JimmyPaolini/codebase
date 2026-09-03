@@ -16,13 +16,17 @@ import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.servic
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
+import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
-import { CROSS_UNIT_COLUMNS } from "./cross-motif.constants";
+import {
+  CROSS_UNIT_COLUMNS,
+  UnknownCrossModifierError,
+} from "./cross-motif.constants";
 import { CrossMotifService } from "./cross-motif.service";
 
 import type { GenerationParameters } from "../meander-generation/meander-generation.types";
@@ -217,6 +221,7 @@ describe(CrossMotifService, () => {
         MotifTransformsService,
         NegativeMotifService,
         NegativeSourceService,
+        ParallelMotifService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,
@@ -234,6 +239,27 @@ describe(CrossMotifService, () => {
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  // 🎯 Nothing reaches this through `generate`, which checks compatibility
+  // first. A family that answered "the solid bar" to a modifier it did not
+  // recognize would silently ink the wrong drawing — the one mode this
+  // family exists to distinguish itself from. `negative`, `branch`, and
+  // `parallel` all refuse instead, and this is the assertion that makes
+  // `cross` the fourth rather than the exception.
+  describe("an unrecognized modifier", () => {
+    it("is refused rather than drawn solid", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(() =>
+        service.path(geometry, {
+          isLastUnit: false,
+          modifier: { name: "flip" },
+          rows: 6,
+          unitIndex: 0,
+        }),
+      ).toThrow(UnknownCrossModifierError);
+    });
   });
 
   describe("rightEdge", () => {

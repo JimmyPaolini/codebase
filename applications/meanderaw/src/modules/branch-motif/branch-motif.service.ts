@@ -58,7 +58,7 @@ import type {
  *   lattice line, so only `M`, `H`, and `V` are emitted (invariant 1), and
  *   the canvas height comes from the shared geometry like every other
  *   family's (invariant 5). Every lattice column is inked including the
- *   first and last, so unlike 2,114 documents in the corpus this family
+ *   first and last, so unlike 2,120 documents in the corpus this family
  *   leaves no gap even at the band's own termination.
  *
  * The geometry is **derived**, not attested. There is no hand-drawn

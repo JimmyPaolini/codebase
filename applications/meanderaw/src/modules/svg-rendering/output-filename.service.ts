@@ -53,6 +53,10 @@ export class OutputFilenameService {
       return `${baseName}-dot-${modifier.shape}.svg`;
     }
 
+    if (modifier.name === "plied") {
+      return `${baseName}-plied-strands-${modifier.strands}.svg`;
+    }
+
     return `${baseName}-${modifier.name}.svg`;
   }
 }

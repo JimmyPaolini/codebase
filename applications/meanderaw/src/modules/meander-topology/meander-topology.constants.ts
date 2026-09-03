@@ -15,8 +15,9 @@ export const GRID_PITCH_IN_STROKE_WIDTHS = 2;
  *
  * `GridGeometryService.formatCoordinate` rounds to five decimal places, and
  * at a row count whose grid unit does not divide the canvas evenly (7, 9,
- * 11) that rounding accumulates: the worst case across all 3,293 committed
- * documents is 0.00023 of a pitch. One percent leaves that forty times over
+ * 11) that rounding accumulates: the worst case is 0.00023 of a pitch — a
+ * hand-derived measurement, taken over the six original families' 3,293
+ * documents and not re-taken since. One percent leaves that forty times over
  * while staying fifty times tighter than the half pitch at which a
  * coordinate would round onto the wrong lattice line.
  */

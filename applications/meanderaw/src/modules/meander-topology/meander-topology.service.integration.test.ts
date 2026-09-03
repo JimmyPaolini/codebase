@@ -23,6 +23,7 @@ import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.servic
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
+import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { StartCombinationsService } from "../start/start-combinations.service";
@@ -38,6 +39,7 @@ import type {
   MeanderType,
   Modifier,
 } from "../meander-generation/meander-generation.types";
+import type { LatticeGraph } from "./meander-topology.types";
 
 // 🔧 Configuration
 
@@ -126,6 +128,16 @@ interface CharterRelaxation {
  * `negative` is one to five pieces with 10 to 45 cycles among them, and
  * `branch` has none. Both are measured below, not asserted here.
  *
+ * `parallel` declares nothing at all, and that empty row is the whole point
+ * of the family rather than an omission. Its ink is `N` strands running
+ * alongside one another at the same `unit / 2` stroke every other family
+ * draws at, nested so that the strands and the channels between them tile
+ * the band at one thickness: space-filling holds strictly, no lattice point
+ * carries three arms, and none carries four. #340's candidate table and
+ * #413 both said `parallel` would relax nothing; unlike most such
+ * predictions this one is asserted here rather than restated, in both
+ * directions, so a drawing that started branching would fail this sweep.
+ *
  * Only the ink is declared here. Invariants 3 and 4 constrain positive space
  * — a family's negative may branch and cross freely, and no family is failed
  * for it.
@@ -137,6 +149,7 @@ const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
   cross: [{ exceptModifierNames: ["interrupted"], invariant: "no-crossing" }],
   mosaic: [],
   negative: [{ invariant: "no-branching" }],
+  parallel: [],
   snake: [{ invariant: "no-branching", modifierNames: ["edge", "edge-flip"] }],
   swirl: [],
   whirl: [],
@@ -150,6 +163,10 @@ const modifierLabel = (modifier: Modifier): string => {
 
   if (modifier.name === "dot") {
     return `dot ${modifier.shape}`;
+  }
+
+  if (modifier.name === "plied") {
+    return `plied ${modifier.strands}`;
   }
 
   return modifier.name;
@@ -188,16 +205,35 @@ const charterSweep: readonly CharterCase[] = new StartCombinationsService()
   });
 
 /**
- * How many documents `StartCommand` commits: 159 named patterns beside 3,179
+ * How many documents `StartCommand` commits: 174 named patterns beside 3,179
  * enumerated `mosaic` tiles. #340 measured this corpus at 114 named patterns;
  * the `cross` family added the six the sweep draws for it — three row counts
  * from its structural minimum of 6 through the sweep maximum, solid and
  * `interrupted` — the `negative` family the eighteen it draws for its own,
  * six row counts from its structural minimum of 3 crossed with its two
- * modifiers plus none, and the `branch` family twenty-one, seven row counts
- * from its structural minimum of 2 crossed with its two modifiers plus none.
+ * modifiers plus none, the `branch` family twenty-one, seven row counts
+ * from its structural minimum of 2 crossed with its two modifiers plus none,
+ * and the `parallel` family fifteen, five row counts from its structural
+ * minimum of 4 crossed with the two plies `PLIED_SWEEP_STRAND_COUNTS` names
+ * plus its unmodified default.
  */
-const COMMITTED_CORPUS_SIZE = 159 + 3179;
+const COMMITTED_CORPUS_SIZE = 174 + 3179;
+
+/**
+ * How many committed documents leave a gap at the band's termination — the
+ * one place invariant 2's `channelWidthCompliant` does not look, and the
+ * measurement its doc comment cites as the reason that carve-out is
+ * load-bearing rather than a formality.
+ *
+ * Published in seven places and computed in none until this assertion, at a
+ * value of 2,114 measured over the six original families' 3,293 documents.
+ * `cross` has since added six, and nothing would have caught the drift:
+ * `channelWidthCompliant` passes either way, because skipping those two
+ * columns is exactly what it does. `negative`, `branch`, and `parallel` add
+ * none — each covers its own first and last lattice column — so this number
+ * moving is a family changing how its band ends.
+ */
+const TERMINATION_GAP_DOCUMENTS = 2120;
 
 /** Where `StartCommand` writes those documents, and where they are committed. */
 const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
@@ -229,6 +265,23 @@ const readCommittedCorpus = async (): Promise<
   }
 
   return documents;
+};
+
+/**
+ * Whether a document leaves its band's termination open: a lattice point
+ * missing from the first or last column, which is the pair
+ * `MeanderTopologyService.isChannelWidthCompliant` steps over.
+ */
+const hasTerminationGap = (graph: LatticeGraph): boolean => {
+  for (const column of [0, graph.columns]) {
+    for (let row = 0; row <= graph.rows; row += 1) {
+      if (!graph.nodes.has(`${column},${row}`)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 };
 
 /**
@@ -325,6 +378,7 @@ const relaxes = (
 
 describe(MeanderTopologyService, () => {
   let generationService: MeanderGenerationService;
+  let latticeService: MeanderLatticeService;
   let topologyService: MeanderTopologyService;
 
   beforeAll(async () => {
@@ -346,6 +400,7 @@ describe(MeanderTopologyService, () => {
         MotifTransformsService,
         NegativeMotifService,
         NegativeSourceService,
+        ParallelMotifService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,
@@ -355,6 +410,7 @@ describe(MeanderTopologyService, () => {
     }).compile();
 
     generationService = await module.resolve(MeanderGenerationService);
+    latticeService = await module.resolve(MeanderLatticeService);
     topologyService = await module.resolve(MeanderTopologyService);
   });
 
@@ -365,7 +421,7 @@ describe(MeanderTopologyService, () => {
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
     it("sweeps every named-type combination StartCommand writes", () => {
-      expect(charterSweep).toHaveLength(159);
+      expect(charterSweep).toHaveLength(174);
     });
 
     it.each(charterSweep)("$label holds it", ({ parameters }) => {
@@ -440,7 +496,7 @@ describe(MeanderTopologyService, () => {
 
     // 🎯 The `branch` family's whole claim, taken over the corpus rather
     // than over a family's own drawings: its twenty-one documents are trees
-    // and every other one of the 3,338 is not. Reading from disk is what
+    // and every other one of the 3,353 is not. Reading from disk is what
     // makes the second half say anything — a family that started drawing
     // loops, or one that stopped, fails here rather than in its own test.
     //
@@ -523,7 +579,7 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(names).toHaveLength(159);
+      expect(names).toHaveLength(174);
       expect(tJunctions).toBe(1360);
       expect(branching).toHaveLength(59);
       expect(
@@ -548,7 +604,7 @@ describe(MeanderTopologyService, () => {
       ).toStrictEqual([]);
 
       // 🎯 Ink crosses in exactly the three documents that were committed to
-      // make it cross, and nowhere else in 3,338 files. The `interrupted`
+      // make it cross, and nowhere else in 3,353 files. The `interrupted`
       // renderings of the same three row counts are absent on purpose: the
       // break takes the junction out of the ink graph.
       expect(
@@ -560,6 +616,23 @@ describe(MeanderTopologyService, () => {
         "cross-7-rows-6-repeats.svg 12",
         "cross-8-rows-6-repeats.svg 12",
       ]);
+    });
+
+    // 🎯 The one measurement `channelWidthCompliant`'s carve-out rests on,
+    // taken from the same lattice the carve-out steps over. Both halves
+    // matter: the count is what the doc comments cite, and the families
+    // absent from it are the four that cover their own band ends.
+    it("leaves a termination gap in exactly the documents the carve-out is for", async () => {
+      const documents = await readCommittedCorpus();
+      const withGap = documents.filter(({ document }) =>
+        hasTerminationGap(latticeService.build(document)),
+      );
+
+      expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
+      expect(withGap).toHaveLength(TERMINATION_GAP_DOCUMENTS);
+      expect(
+        [...new Set(withGap.map(({ name }) => name.split("-")[0]))].toSorted(),
+      ).toStrictEqual(["chain", "cross", "mosaic", "snake", "swirl", "whirl"]);
     });
 
     it.each([

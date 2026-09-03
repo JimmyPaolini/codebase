@@ -11,6 +11,7 @@ import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.servic
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
+import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
@@ -40,6 +41,7 @@ const EXPECTED_MOTIF_SERVICES = [
   { expected: CrossMotifService, type: "cross" },
   { expected: MosaicMotifService, type: "mosaic" },
   { expected: NegativeMotifService, type: "negative" },
+  { expected: ParallelMotifService, type: "parallel" },
   { expected: SnakeMotifService, type: "snake" },
   { expected: SwirlMotifService, type: "swirl" },
   { expected: WhirlMotifService, type: "whirl" },
@@ -64,6 +66,7 @@ describe(MotifRegistryService, () => {
         MotifTransformsService,
         NegativeMotifService,
         NegativeSourceService,
+        ParallelMotifService,
         SnakeMotifService,
         SnakeSequenceService,
         SwirlMotifService,

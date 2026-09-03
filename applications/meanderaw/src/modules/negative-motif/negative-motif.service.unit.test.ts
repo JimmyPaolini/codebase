@@ -16,6 +16,7 @@ import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.servic
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
+import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
@@ -142,6 +143,7 @@ describe(NegativeMotifService, () => {
         MotifTransformsService,
         NegativeMotifService,
         NegativeSourceService,
+        ParallelMotifService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,

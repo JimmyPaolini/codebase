@@ -6,6 +6,7 @@ import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
+import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
@@ -47,6 +48,8 @@ export class MotifRegistryService {
     mosaicMotifService: MosaicMotifService,
     @Inject(NegativeMotifService)
     negativeMotifService: NegativeMotifService,
+    @Inject(ParallelMotifService)
+    parallelMotifService: ParallelMotifService,
     @Inject(SnakeMotifService)
     snakeMotifService: SnakeMotifService,
     @Inject(SwirlMotifService)
@@ -61,6 +64,7 @@ export class MotifRegistryService {
       cross: crossMotifService,
       mosaic: mosaicMotifService,
       negative: negativeMotifService,
+      parallel: parallelMotifService,
       snake: snakeMotifService,
       swirl: swirlMotifService,
       whirl: whirlMotifService,

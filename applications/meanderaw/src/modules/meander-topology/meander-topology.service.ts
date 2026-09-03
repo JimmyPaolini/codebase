@@ -70,9 +70,10 @@ export class MeanderTopologyService {
    *
    * The first and last lattice column are skipped: that is where a band
    * terminates, and a gap there is invariant 7's, not invariant 2's. The
-   * carve-out is load-bearing rather than a formality — 2,114 of the 3,293
+   * carve-out is load-bearing rather than a formality — 2,120 of the 3,353
    * committed documents have a termination gap, and not one of them has a
-   * gap anywhere else.
+   * gap anywhere else. That count is asserted in
+   * `meander-topology.service.integration.test.ts`, from this same lattice.
    */
   private isChannelWidthCompliant(graph: LatticeGraph): boolean {
     for (let column = 1; column < graph.columns; column += 1) {
@@ -201,9 +202,11 @@ export class MeanderTopologyService {
    * reports the three charter invariants a drawing can be checked against;
    * these three numbers report the drawing's *shape as a graph*, which no
    * charter invariant fixes — the six original families are forests of many
-   * components, `negative` is one component full of loops, and `branch` is
-   * a single loop-free tree. See {@link InkConnectivity} for the arithmetic
-   * that turns them into those words.
+   * components, `negative` is one to five components full of loops, and
+   * `branch` is a single loop-free tree. See {@link InkConnectivity} for
+   * the arithmetic that turns them into those words, and
+   * `meander-topology.service.integration.test.ts` for the assertion that
+   * fixes both ends of `negative`'s range.
    */
   connectivity(document: string): InkConnectivity {
     const graph = this.meanderLatticeService.build(document);
