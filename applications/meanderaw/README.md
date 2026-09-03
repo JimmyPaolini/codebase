@@ -297,6 +297,250 @@ to deliberately omit some corridors — every other "rung", for instance — to 
 loops before the shape that inspired it can satisfy the tree test (`edges = vertices −
 1`) a bounded-tree charter relaxation needs.
 
+## 🔬 Unit Spaces Beyond Mosaic
+
+`mosaic` is the only family with sub-families, and
+[#414](https://github.com/JimmyPaolini/codebase/issues/414) asked whether that asymmetry
+can be removed: is there, for `boxes`, `chain`, `snake`, `swirl`, and `whirl`, a generating
+rule producing a finite enumerable unit space the way `mosaic`'s exact-cover rule does?
+
+**A rule exists, it is the same rule for all five, and that is exactly the problem.** The
+charter's own invariants already define one. It is family-agnostic, and at the pitch these
+five families actually use it generates twelve million tiles at five rows and 3 × 10²² at
+eight — of which each family contributes exactly one. Materializing it would not give
+`boxes` a unit space; it would dissolve `boxes` into a single point of a space nobody can
+look through. The recommendation is to **leave the asymmetry**, and this section records
+the measurements behind that.
+
+This was a spike. It changed no code, and everything below is measurement on the sweep
+`nx run meanderaw:start` already writes.
+
+The verdict per family, with the rest of the section as its evidence:
+
+| Family | A rule of its own? | The shared charter rule? | Tiles it contributes | Tiles the shared rule generates at 5 rows |
+| --- | --- | --- | --- | --- |
+| `boxes` | none found | yes | 1 per row count and modifier | 12,082,896 |
+| `chain` | none found | yes, except under `edge` and `edge-flip` | 1 per row count and modifier | 12,082,896 |
+| `snake` | none found | yes, except under `edge` and `edge-flip` | 1 per row count and modifier | 12,082,896 |
+| `swirl` | none found | yes | 1 per row count and modifier | 2.46 × 10¹² |
+| `whirl` | none found | yes | 1 per row count and modifier | 710,761,599 |
+
+The two exceptions are measured below: `edge` and `edge-flip` put two degree-3 points per
+repeat unit on the border rule, so those tiles sit outside the maximum-degree-2 rule and
+inside a charter with invariant 3 relaxed.
+
+### The band as a lattice
+
+One model carries every claim here. A meander's ink runs along the edges of a lattice:
+`rows + 1` horizontal grid levels one grid unit apart, tiling horizontally at the family's
+own **pitch**. A repeat tile is the wrapped `pitch` × `rows - 1` lattice of interior points,
+with the two border rules at levels `0` and `rows` above and below it.
+
+Three of the seven charter invariants are properties of that lattice, and restating them
+this way is what makes them countable rather than merely checkable:
+
+| Invariant | On the lattice |
+| --- | --- |
+| 2 — space-filling | every interior lattice point carries ink — as the end of an edge, or as a dot |
+| 3 — no branching | no lattice point has ink degree 3 |
+| 4 — no crossing | no lattice point has ink degree 4 |
+
+Invariant 2 costs the enumeration nothing, because a lattice point lying on no edge **is**
+an inked dot — exactly `mosaic`'s own `dot` piece, which is what keeps this model agreeing
+with the family whose 3,179 tiles it reproduces below. So **a charter-legal repeat tile is
+any subgraph of the tile's lattice with maximum degree 2**: every point either sits on an
+edge or is drawn as a dot, and invariants 3 and 4 are the only constraints the count sees.
+That sentence is the generating rule the ticket went looking for, and it is exactly what
+every "all charter-legal tiles" figure below counts. It did not have to be invented; it was
+already written down, as prose about pictures rather than as a rule about a graph.
+
+### What the six families are, measured
+
+Parsing all 78 non-`mosaic` documents the sweep writes back into that lattice — one
+interior repeat unit each, wrapped at its own family's pitch, so band termination never
+enters — gives one uniform result:
+
+| Family | Modifier | Pitch | Bare points | Degree 3 | Degree 4 | The tile's ink is |
+| --- | --- | --- | --- | --- | --- | --- |
+| `boxes` | none, `spin`, `spin-flip` | `rows - 1` | 0 | 0 | 0 | one arc through every point |
+| `chain` | none | `rows - 1` | 0 | 0 | 0 | one arc through every point |
+| `chain` | `edge`, `edge-flip` | `rows` | 0 | 2 | 0 | two arcs, each meeting a border rule |
+| `chain` | `flip` | `2(rows - 2)` | 0 | 0 | 0 | two arcs |
+| `snake` | none | `rows - 1` | 0 | 0 | 0 | one closed loop through every point |
+| `snake` | `edge`, `edge-flip` | `rows` | 0 | 2 | 0 | one arc, both ends meeting a border rule |
+| `snake` | `flip` | `2(rows - 2)` | 0 | 0 | 0 | one closed loop |
+| `swirl` | none | `2 rows - 3` | 0 | 0 | 0 | one arc through every point |
+| `swirl` | `flip` | `2(2 rows - 3)` | 0 | 0 | 0 | two arcs |
+| `whirl` | none | `rows` | 0 | 0 | 0 | one arc through every point |
+| `whirl` | `flip` | `2 rows` | 0 | 0 | 0 | two arcs |
+
+Every one of the 78, at every row count from each family's structural minimum through 8:
+**no bare lattice point, and no degree-4 point anywhere** — stronger than the rule demands,
+since none of the five ever draws a dot. The only degree-3 points in the
+whole set are the two per repeat unit that `edge` and `edge-flip` create by joining the
+zigzag to the border rule — the same ink T-junctions
+[#410](https://github.com/JimmyPaolini/codebase/issues/410) reports, reached here
+independently and from the other direction.
+
+`mosaic` is the same model with one extra bound. A `mosaic` tile is an exact cover of its
+cells by dots and one-unit dashes, and a cell **is** a lattice point: a dot is an isolated
+point, a dash is a single lattice edge. So a `mosaic` tile is exactly a **matching** of the
+tile's lattice, every unmatched point drawn as a dot. Re-deriving the enumeration from that
+one-line description reproduces the committed sweep tile for tile — 8, 15, 18, 50, 40, 159,
+93, 567, 216, and 2,013 per row count and column span, 3,179 in all — so the two
+descriptions are the same description.
+
+### The five sit at the far end of one axis
+
+`mosaic` bounds every component of the tile to a single edge. The five make the tile one
+component as long as it can be. Both are regions of the one space:
+
+| Region | Rule | Who lives there |
+| --- | --- | --- |
+| matchings | every component has at most one edge | `mosaic` |
+| simple traversals | at most one horizontal run per level and one vertical run per column | `boxes`, `chain`, `snake`, `whirl` |
+| Hamiltonian cycles | one component, every point of degree 2 | `snake` |
+| Hamiltonian paths | one component, two loose ends | `boxes`, `chain`, `swirl`, `whirl` |
+
+The size of the whole space, counted exactly on the wrapped lattice each family's own pitch
+defines:
+
+| Lattice | Rows | Family | All charter-legal tiles |
+| --- | --- | --- | --- |
+| 3 × 3 | 4 | `boxes`, `chain`, `snake` | 7,231 |
+| 4 × 4 | 5 | `boxes`, `chain`, `snake` | 12,082,896 |
+| 5 × 5 | 6 | `boxes`, `chain`, `snake` | 1.83 × 10¹¹ |
+| 6 × 6 | 7 | `boxes`, `chain`, `snake` | 2.58 × 10¹⁶ |
+| 7 × 7 | 8 | `boxes`, `chain`, `snake` | 3.36 × 10²² |
+| 4 × 3 | 4 | `whirl` | 141,421 |
+| 5 × 4 | 5 | `whirl` | 710,761,599 |
+| 6 × 5 | 6 | `whirl` | 3.29 × 10¹³ |
+| 5 × 3 | 4 | `swirl` | 2,738,193 |
+| 7 × 4 | 5 | `swirl` | 2.46 × 10¹² |
+| 9 × 5 | 6 | `swirl` | 1.88 × 10²⁰ |
+
+Counts are before folding by the tile's symmetry group (translations, horizontal mirror,
+level flip), which divides by at most `4 × pitch` and never moves the order of magnitude:
+the `mosaic` sweep's folded 2,013 tiles at 8 rows and 2 columns come from 11,275 unfolded,
+a factor of 5.6.
+
+The narrower regions are smaller and still far past looking through. On the same 4 × 4
+lattice at 5 rows, `snake` is one of **82** Hamiltonian cycles and `boxes` one of **4,016**
+Hamiltonian paths; at 6 rows the tightest of the four rules, simple traversals, still
+admits **9,304,216** tiles. Those three regions were enumerated only at the smaller
+lattices, which is why the table above reports the charter-legal count — exact at every
+size — and why the recommendation rests on that column alone.
+
+`swirl` is the family that escapes even the tightest of those rules. Its two arms put two
+horizontal runs on its outer levels, so it is not a simple traversal, and no rule narrower
+than "Hamiltonian path" covers all five.
+
+### Why `mosaic`'s space is small, and the five cannot borrow it
+
+Two independent bounds keep `mosaic` enumerable, and only one of them is the rule:
+
+- **The rule caps a mark at one grid unit**, which is what turns a tile into a matching.
+- **The enumeration caps the tile at `MOSAIC_TILE_MAXIMUM_COLUMNS`, which is 2.**
+
+Both are load-bearing. `mosaic`'s own matching rule, applied at the pitch `boxes`, `chain`,
+and `snake` use, gives 21,497 tiles at 5 rows and 4.10 × 10¹³ at 8 rows. The five have no
+equivalent cap available: their pitch is not a free parameter, it is the width of their own
+motif — `rows - 1`, `rows`, or `2 rows - 3` — and capping it below that deletes the family.
+
+And a materialized space only earns sub-families when it holds more tiles than it has
+names. Each of the five produces **exactly one tile per row count and modifier**: 78
+documents for 78 combinations, with no free parameter anywhere in the five motif services
+beyond `rows`. A predicate over a one-element set names nothing. That, rather than the
+absence of a rule, is why they have no sub-families.
+
+### The property `mosaic` has that the five lack
+
+`mosaic`'s constraint is **local and decomposable**. A tile is an unordered set of
+independent marks, each occupying one cell or two adjacent ones, and legality is settled
+per cell — is it claimed exactly once? Nothing about one mark depends on a mark elsewhere.
+That is what makes the backtracking enumeration possible, and what makes the space's
+members similar enough to fall into classes worth naming.
+
+The five have **no piece decomposition at all**. The tile is one traversal of the whole
+lattice, and "is a spiral" or "is a zigzag" is a property of the traversal entire, not of
+any cell: every segment of a spiral is fixed by every other segment. There is no alphabet
+of local pieces whose exact cover is the set of spirals, so the only rules available are
+the global ones above — which admit all five families at once, and a great deal else.
+
+This is an argument, not a proof. No search can establish that a family-specific rule does
+not exist; what it can establish is that the shape `mosaic` has is absent, and that every
+rule constructible from the measured tiles is either satisfied by one tile (useless as a
+space) or by all five and millions of strangers (useless as a family).
+
+### Would the modifiers become recognizable regions?
+
+Yes — each has a distinct structural signature on the lattice, so each is expressible as a
+predicate rather than as a transform:
+
+| Modifier | Measured effect on the tile | As a predicate |
+| --- | --- | --- |
+| `flip` | doubles the pitch, fusing a mirrored twin into one tile | the tile is mirror-symmetric about its own center |
+| `spin`, `spin-flip` | leave the pitch alone, but the true repeat is `SPIN_CYCLE_LENGTH` units | over a tile four times as wide: the four quarters are one quarter-turn rotational orbit |
+| `edge`, `edge-flip` | widen the pitch by one level and add exactly two degree-3 points | the tile's ink touches a border rule |
+
+Two caveats. Each of these changes the pitch or the true repeat, so "the family's unit
+space" would be one space per pitch rather than one space — which is the situation `mosaic`
+is already in, with its 1- and 2-column tiles. And `edge` and `edge-flip` sit outside the
+maximum-degree-2 rule entirely, since degree 3 is precisely what invariant 3 forbids.
+
+### Recommendation: leave the asymmetry
+
+Three findings, none of them close:
+
+1. **No family-specific generating rule was found**, and the structural reason is named
+   above.
+2. **The family-agnostic rule generates a space too large to materialize** at these
+   pitches — 12 million tiles at 5 rows against `mosaic`'s 3,179 for every row count and
+   column span combined, and 3.36 × 10²² at 8 rows.
+3. **Materializing it would produce no sub-families anyway**, because each family
+   contributes one tile, and a predicate over one tile names nothing.
+
+What is worth keeping from the spike is the lattice model itself rather than any code. It
+makes space-filling a local, checkable property of a point rather than a global property of
+a picture, and it is the frame in which relaxing invariants 3 and 4 has an exact meaning —
+a branching family admits degree 3, a crossing family admits degree 4.
+
+If the decision is ever revisited, a follow-up implementation ticket would have to:
+
+- introduce a lattice tile type and a family-agnostic enumerator over it, plus whatever
+  bound keeps the result small enough to be worth looking at — and the `mosaic` column cap
+  has no counterpart here;
+- re-express all six motif services as producers of a lattice tile, moving path emission to
+  one shared renderer, while every one of them keeps producing byte-identical output —
+  including border segments, the `isLastUnit` clipping, the `rightEdge` arithmetic, and
+  `edge`'s deliberate degree-3 points;
+- re-express the modifiers as constructors over lattice tiles, deriving `unitWidth` and
+  `rightEdge` from the tile instead of from per-family arithmetic;
+- give the space a canonical identifier and a symmetry folding, as
+  `MosaicSymmetryService` already does for its own much smaller alphabet.
+
+**It would be a wide refactor and would need expand–contract sequencing.** It touches
+`MotifService`, all six motif services, `MeanderGenerationService`'s dispatch,
+`COMPATIBLE_MODIFIERS`, `SUB_FAMILIES`, the command-line surface, and the output filename
+scheme, and the only safety net is 23 byte-exact reference assets concentrated at 5 rows.
+The expand phase would add the tile type and a tile-driven renderer alongside the existing
+services and prove byte-equality family by family across the whole 114-file sweep; only
+then could the contract phase delete the per-family path emission.
+
+### Measured, and not measured
+
+**Measured**: every pitch, degree histogram, bare-point count, and junction count in the
+tables above, over all 78 non-`mosaic` documents; the `mosaic` tile counts, re-derived from
+the matching description and checked against the committed sweep; every space size marked
+with a number, computed exactly (the charter-legal counts by transfer matrix, cross-checked
+against brute force at 3 × 3; the Hamiltonian and simple-traversal counts by enumeration,
+cross-checked against brute force at 3 × 3, 4 × 3, and 4 × 4).
+
+**Not measured**: the three narrower regions beyond the small lattices — their enumerations
+were run only at the sizes quoted, while the charter-legal column is exact at every size in
+the table; and the claim that no family-specific rule exists, which is an argument from the
+absence of a piece decomposition rather than a result.
+
 ## ✚ The Crossing Family
 
 `cross` is the seventh family and the only one whose **ink crosses**. It draws the form
@@ -1069,6 +1313,9 @@ graph LR
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_topology_meander_lattice_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
@@ -1261,7 +1508,7 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-11323-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-11329-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-6.63_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-19-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-101-3178c6?style=flat-square)
@@ -1291,7 +1538,7 @@ graph LR
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-760-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-74-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-720-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-426-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-429-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-127-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-482-64748b?style=flat-square)
 ![Comment Lines](https://img.shields.io/badge/Comment_Lines-1374-475569?style=flat-square)
