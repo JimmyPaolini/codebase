@@ -957,6 +957,7 @@ flowchart LR
   BoxesMotifModule
   ChainMotifModule
   ConfigModule([ConfigModule])
+  CrossMotifModule
   DiscoveryModule
   GenerateModule
   GridGeometryModule
@@ -976,6 +977,7 @@ flowchart LR
   ChainMotifModule --> GridGeometryModule
   ChainMotifModule --> MotifTransformsModule
   ChainMotifModule --> SnakeMotifModule
+  CrossMotifModule --> GridGeometryModule
   GenerateModule --> MeanderGenerationModule
   MainModule --> DiscoveryModule
   MainModule --> GenerateModule
@@ -983,6 +985,7 @@ flowchart LR
   MainModule --> StartModule
   MeanderGenerationModule --> BoxesMotifModule
   MeanderGenerationModule --> ChainMotifModule
+  MeanderGenerationModule --> CrossMotifModule
   MeanderGenerationModule --> GridGeometryModule
   MeanderGenerationModule --> MosaicMotifModule
   MeanderGenerationModule --> SnakeMotifModule
@@ -1026,6 +1029,11 @@ graph LR
   file_src_modules_chain_motif_chain_motif_service_ts["src/modules/chain-motif/chain-motif.service.ts"]
   file_src_modules_chain_motif_chain_motif_service_unit_test_ts["src/modules/chain-motif/chain-motif.service.unit.test.ts"]
   file_src_modules_chain_motif_chain_motif_types_ts["src/modules/chain-motif/chain-motif.types.ts"]
+  file_src_modules_cross_motif_cross_motif_constants_ts["src/modules/cross-motif/cross-motif.constants.ts"]
+  file_src_modules_cross_motif_cross_motif_module_ts["src/modules/cross-motif/cross-motif.module.ts"]
+  file_src_modules_cross_motif_cross_motif_service_ts["src/modules/cross-motif/cross-motif.service.ts"]
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts["src/modules/cross-motif/cross-motif.service.unit.test.ts"]
+  file_src_modules_cross_motif_cross_motif_types_ts["src/modules/cross-motif/cross-motif.types.ts"]
   file_src_modules_generate_generate_command_ts["src/modules/generate/generate.command.ts"]
   file_src_modules_generate_generate_command_unit_test_ts["src/modules/generate/generate.command.unit.test.ts"]
   file_src_modules_generate_generate_constants_ts["src/modules/generate/generate.constants.ts"]
@@ -1149,6 +1157,32 @@ graph LR
   file_src_modules_chain_motif_chain_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
   file_src_modules_chain_motif_chain_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
   file_src_modules_chain_motif_chain_motif_service_unit_test_ts --> file_testing_path_data_ts
+  file_src_modules_cross_motif_cross_motif_module_ts --> file_src_modules_cross_motif_cross_motif_service_ts
+  file_src_modules_cross_motif_cross_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
+  file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_cross_motif_cross_motif_constants_ts
+  file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_cross_motif_cross_motif_types_ts
+  file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
+  file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_constants_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_lattice_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
   file_src_modules_generate_generate_command_ts --> file_src_modules_generate_generate_types_ts
   file_src_modules_generate_generate_command_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_generate_generate_command_ts --> file_src_modules_meander_generation_meander_generation_service_ts
@@ -1172,6 +1206,7 @@ graph LR
   file_src_modules_meander_generation_meander_generation_constants_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_boxes_motif_boxes_motif_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_chain_motif_chain_motif_module_ts
+  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_cross_motif_cross_motif_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_meander_generation_meander_generation_service_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_mosaic_motif_mosaic_motif_module_ts
@@ -1181,6 +1216,7 @@ graph LR
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_whirl_motif_whirl_motif_module_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_chain_motif_chain_motif_service_ts
+  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_cross_motif_cross_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
@@ -1195,6 +1231,7 @@ graph LR
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
+  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
@@ -1220,6 +1257,7 @@ graph LR
   file_src_modules_meander_topology_meander_topology_module_ts --> file_src_modules_meander_topology_meander_topology_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
@@ -1421,40 +1459,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-11329-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-6.63_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-19-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-101-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-12217-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-6.68_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-20-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-106-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-65.10_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-69.88_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-101-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-32-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-106-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-36-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-92-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-235-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-96-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-255-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-28-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-29-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-12-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-49-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-620-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-214-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-760-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-74-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-720-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-429-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-127-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-482-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1374-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-51-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-670-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-225-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-820-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-75-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-778-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-463-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-131-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-512-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1534-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -1565,14 +1603,14 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-14-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-22-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-15-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-23-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-2-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-13-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-13-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-14-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-14-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-26-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-27-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 
@@ -1602,7 +1640,7 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-299-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-302-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
@@ -1618,7 +1656,7 @@ graph LR
 ![Links](https://img.shields.io/badge/Links-16-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-14-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-97-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-100-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
