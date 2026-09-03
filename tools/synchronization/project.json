@@ -92,7 +92,7 @@
     },
     "issue-labels": {
       "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts issue-labels",
-      "description": "Adds the type and scope labels a submitted `issue.yml` body implies. Its destination is GitHub itself rather than a file, so reaching it needs a token that neither a fork nor a developer's `lint-codebase` run has: the 🧑‍⚖️ Validate Conventions workflow runs it directly through node rather than through this Nx target on an issue's `opened` event, and nothing else names it. This target exists for a human running it locally with their own credentials.",
+      "description": "Adds the type and scope labels a submitted `issue.yml` body implies. Its destination is GitHub itself rather than a file, so reaching it needs a token that neither a fork nor a developer's `lint-codebase` run has: the 👮 Audit Issues workflow runs it directly through node rather than through this Nx target on an issue's `opened` event, and nothing else names it. This target exists for a human running it locally with their own credentials.",
       "options": {
         "cwd": "{workspaceRoot}"
       }
