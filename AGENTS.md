@@ -1034,7 +1034,7 @@ start over.
 
 | Concern       | Setting                                                                                                                          | Reference                                                      |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Issue tracker | GitHub Issues in `JimmyPaolini/codebase`, via the `gh` CLI — one parent issue per pull request, one sub-issue per planned commit | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
+| Issue tracker | GitHub Issues in `JimmyPaolini/codebase`, via the `gh` CLI — a spec, then one issue per pull request, then one per commit        | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
 | Triage labels | The five canonical roles mapped onto this repository's `status:` label family                                                    | [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md) |
 | Domain docs   | Single-context — one root `CONTEXT.md` plus root `docs/adr/`                                                                     | [`docs/agents/domain.md`](docs/agents/domain.md)               |
 

@@ -23,11 +23,18 @@ The `gh` token in use carries `gist`, `read:org`, `repo`, and `workflow` — but
 gh auth refresh --scopes read:project,read:org
 ```
 
-## Planning shape: one parent issue per pull request
+## Planning shape: a spec, its pull requests, and their commits
 
 When planning work — `/to-tickets`, `/to-spec`, or any breakdown that lands in
 this tracker — file **one parent issue per pull request**, and **one sub-issue
-per commit** that pull request is expected to contain.
+per commit** that pull request is expected to contain. Where the breakdown came
+from a spec, that spec is the third layer above both:
+
+```text
+spec issue                  the output of /to-spec
+└── parent issue            one per pull request
+    └── sub-issue           one per planned commit
+```
 
 - **The parent issue is the pull request.** Its title is the title that pull
   request will carry, in the commit convention above, and its scope is one
@@ -46,6 +53,15 @@ per commit** that pull request is expected to contain.
   sub-issues is where that is cheapest to get right: a `feat` sub-issue under a
   `chore` parent is a retitle now, or a failed check later. See
   [Release Significance](../../AGENTS.md#release-significance).
+- **The spec issue is the parent of every parent issue.** When a grilling
+  session produced a spec, link each pull request issue to it with the same
+  native sub-issue relationship, so the spec carries a progress bar over the
+  work and each pull request shows what it implements. The spec is never the
+  parent of a commit sub-issue — those hang off the pull request they belong to,
+  and an issue has exactly one parent.
+- **The handoff document is a comment on the spec issue**, headed `# Handoff`,
+  not a file. A fresh session should need only the spec URL to pick the work up.
+  Keep it free of local filesystem paths — this repository is public.
 
 **Approximate, deliberately.** The sub-issues are a plan for the commits, not a
 contract. Implementation turns up work nobody could see from the outside — a
@@ -70,6 +86,18 @@ gh api repos/JimmyPaolini/codebase/issues/<parent>/sub_issues \
 not its `#number` — the same distinction the dependency edges below draw. Where
 sub-issues are unavailable, fall back to a task list in the parent body with
 `Part of #<parent>` at the top of each child.
+
+**Sequencing is a separate relationship, and it composes.** An issue has one
+parent but any number of blockers, so use native dependencies — described under
+[Wayfinder operations](#wayfinder-operations) — between parent issues wherever
+one genuinely gates another, and along a parent's sub-issues so they chain in
+landing order. Publish blockers first, so each edge can reference an identifier
+that already exists.
+
+**Do not look for a "relates to" endpoint.** The GitHub web UI offers one under
+Relationships (shortcut `B R`), but it is exposed through **no public API** —
+not REST, not GraphQL. Sub-issues and dependencies are the only relationships
+that can be created programmatically.
 
 ## Conventions
 
