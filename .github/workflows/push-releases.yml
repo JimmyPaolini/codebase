@@ -21,7 +21,24 @@ jobs:
   push-releases:
     name: 🦸 Push Releases
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Two populations of run hide behind one average, and only the larger one
+    # sets this number. Most pushes to main release nothing — semantic-release
+    # decides there is no bump to make and returns in about 3 seconds, so the
+    # job finishes in 6–7 minutes. A push that does release spends 8–10 minutes
+    # in that same step, because `@semantic-release/git` makes the version
+    # commit with a plain `git commit`, and the pre-commit hook runs the whole
+    # `lint-codebase` gate over it. Measured end to end with a warm setup,
+    # releasing runs have taken 14m24s, 15m46s, 15m55s and 16m18s.
+    #
+    # So 12 minutes is not available, however comfortably the common run fits
+    # inside it: it would pass every no-op and kill every actual release, and
+    # kill it inside the publish step — precisely the interruption the
+    # concurrency note above exists to prevent. 18 leaves roughly 10% over the
+    # slowest release yet seen. What made this worth revisiting was never the
+    # release itself but `📦 Setup pnpm`, which fetched pnpm from the npm
+    # registry on every run and ranged from 5 seconds to 7 minutes; it is
+    # cached now, so the figures above are the whole of the variance left.
+    timeout-minutes: 18
 
     steps:
       - name: 📥 Checkout Repository
