@@ -30,6 +30,12 @@ ignorePaths:
   - "**/applications/lexico-ingestion/src/modules/literature/literature.constants.ts"
   - "**/applications/lexico-ingestion/src/modules/library/library.constants.ts"
   - "**/documentation/planning/**"
+  # 🌀 Every meander the `draw` command writes. The SVGs are already covered by
+  # the `*.svg` entry above; the index page listing them is markup, and its link
+  # text is three thousand mosaic tile identifiers — `ddddd-dots` and its
+  # siblings — which are coordinates in a parameter space rather than words.
+  # `.codometerignore` and `.prettierignore` exclude the same directory.
+  - "**/applications/meanderaw/output/**"
   # 🧩 Installed agent skills, one entry per skill in skills-lock.json. Owned
   # upstream rather than authored here, so their prose stays spelled the way
   # their sources spelled it. Listed individually rather than as

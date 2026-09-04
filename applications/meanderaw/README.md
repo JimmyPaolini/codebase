@@ -64,11 +64,14 @@ single drawing lands beside its siblings rather than loose at the top:
 nx run meanderaw:start --args="--type chain --rows 7 --modifier edge-flip"
 ```
 
-The SVGs are committed; `output/index.html` is not. It links each drawing rather than
-inlining it, so it duplicates nothing — it is left out of git because it is a megabyte of
-generated markup, and regenerating it takes under a second. It sits at the root of the
-tree it indexes rather than beside it, so every link it writes is a path down from its
-own directory and the two move together.
+The SVGs are committed, and so is `output/index.html`. It links each drawing rather than
+inlining it, so it duplicates nothing, and it sits at the root of the tree it indexes
+rather than beside it — every link it writes is a path down from its own directory, and
+the two move together. Committed, it opens straight from a checkout with nothing run
+first, and a regeneration that changes the drawings shows the index changing with them.
+`.gitattributes` marks the whole of `output/` as generated, so neither the drawings nor
+the index page counts toward this repository's language bar, and `.codometerignore`,
+`.prettierignore`, and `cspell` all leave the directory alone.
 
 ## 🏛️ Meander Charter
 
