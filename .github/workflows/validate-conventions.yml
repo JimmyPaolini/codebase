@@ -13,10 +13,21 @@ name: 🧑‍⚖️ Validate Conventions
 # "skipped" on every pull request event and left one badge standing for two
 # unrelated signals.
 #
-# The job is thin: checkout, install, run a `tools/validation` check. The
-# README's Validate Conventions badge is this workflow's own status badge. On
+# The job is thin: checkout, install, run a `tools/validation` check. On
 # `merge_group` the job skips, which is the whole point of that trigger; see
 # the note on it below.
+#
+# The README's Validate Conventions badge is this workflow's own status badge,
+# and it must be filtered `?event=pull_request` rather than `?branch=main`.
+# A badge with no filter reports the newest run whose head branch is the
+# default one, and nothing this workflow runs on qualifies: a `pull_request`
+# run carries the pull request's own head ref, and a `merge_group` run carries
+# `gh-readonly-queue/...`. Only the `issues` trigger ever did, because issue
+# events carry the default branch — and that trigger moved to 👮 Audit Issues.
+# So `?branch=main` pinned the badge to the last issue run this workflow will
+# ever have, from before that move, which happened to be `cancelled`: red
+# forever, with no future run able to clear it. 👮 Audit Issues keeps
+# `?branch=main` for the same reason this one cannot use it.
 #
 # On a pull request's `opened`/`reopened`, the conventional label vocabulary
 # is reconciled against the repository first, so a freshly opened pull
@@ -105,7 +116,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v6
+        uses: ./.github/actions/setup-pnpm
 
       - name: 🟢 Setup node
         uses: actions/setup-node@v7
