@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import {
   COMPATIBLE_MODIFIERS,
   DEFAULT_REPEAT_COUNT,
+  MAXIMUM_VALUE,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
@@ -14,7 +15,6 @@ import {
   ALTERNATED_SWEEP_PERIODS,
   DOT_SWEEP_SHAPES,
   PLIED_SWEEP_STRAND_COUNTS,
-  ROWS_SWEEP_MAXIMUM,
 } from "./draw.constants";
 
 import type {
@@ -27,7 +27,7 @@ import type {
  * Enumerates the named-type half of the sweep: every implemented type,
  * crossed with every modifier `COMPATIBLE_MODIFIERS` lists for it plus "no
  * modifier", crossed with every row count from that type's own
- * `STRUCTURAL_MINIMUM_ROWS` through whichever maximum the caller asks for.
+ * `STRUCTURAL_MINIMUM_ROWS` through the shared `MAXIMUM_VALUE`.
  * `alternated` and `dot` each expand to the representative values
  * `draw.constants.ts` names rather than their full range, and `repeatCount` is
  * `DEFAULT_REPEAT_COUNT` except for the spin family, which is rounded up to
@@ -41,10 +41,6 @@ import type {
  * test sweeps it. Sharing the constants is not enough — the composition is
  * what decides which documents exist, and both must agree on all of it for
  * the charter to gate the corpus the repository actually commits.
- *
- * The one thing the two callers do not share is how far up the row counts
- * go, which is the `rowsMaximum` argument {@link enumerate} takes and the
- * reason it takes one — see its own comment.
  *
  * Adding a family therefore widens both at once, and adds nothing here: the
  * enumeration is driven entirely by `SUPPORTED_TYPES`,
@@ -63,11 +59,8 @@ export class DrawCombinationsService {
   // 🔏 Private Methods
 
   /** Enumerates every combination for a single type: every swept row count crossed with every swept modifier. */
-  private combinationsForType(
-    type: MeanderType,
-    rowsMaximum: number,
-  ): GenerationParameters[] {
-    const rows = this.rowsSweep(type, rowsMaximum);
+  private combinationsForType(type: MeanderType): GenerationParameters[] {
+    const rows = this.rowsSweep(type);
     const modifiers = this.modifiersForType(type);
 
     return rows.flatMap((rowCount) =>
@@ -130,10 +123,10 @@ export class DrawCombinationsService {
     return DEFAULT_REPEAT_COUNT;
   }
 
-  /** Every `rows` value the sweep covers for `type`: its own structural minimum through `rowsMaximum`. */
-  private rowsSweep(type: MeanderType, rowsMaximum: number): number[] {
+  /** Every `rows` value the sweep covers for `type`: its own structural minimum through `MAXIMUM_VALUE`. */
+  private rowsSweep(type: MeanderType): number[] {
     const minimum = STRUCTURAL_MINIMUM_ROWS[type];
-    const length = rowsMaximum - minimum + 1;
+    const length = MAXIMUM_VALUE - minimum + 1;
 
     return Array.from({ length }, (_value, index) => minimum + index);
   }
@@ -143,25 +136,27 @@ export class DrawCombinationsService {
   /**
    * Enumerates every `(type, modifier-or-none, rows, repeatCount)`
    * combination the named-type sweep covers, from each type's own
-   * `STRUCTURAL_MINIMUM_ROWS` through `rowsMaximum`.
+   * `STRUCTURAL_MINIMUM_ROWS` through the shared `MAXIMUM_VALUE`.
    *
-   * `rowsMaximum` defaults to `ROWS_SWEEP_MAXIMUM`, which is the extent
-   * `DrawCommand` commits to `output/` and nothing else. It is a parameter
-   * because the charter's property test needs the same composition over a
-   * wider extent: it passes `MAXIMUM_VALUE`, so the invariants are asserted
-   * across every row count the command line accepts rather than only the
-   * ones a document happens to have been committed for.
+   * Running to `MAXIMUM_VALUE` rather than to a sweep maximum of its own is
+   * what makes "every drawing the command line can be asked for is a
+   * drawing this repository commits, and a drawing the charter gates" true
+   * by construction. It was not always: the sweep stopped at 8 while the
+   * command line accepted 12, and issue #507 lived in the four row counts
+   * between them — `chain` and `snake` drew self-retracing ink at every one
+   * of them, reachable by any user and covered by nothing. Closing the gap
+   * here closes it for both callers at once, which is why neither of them
+   * passes a range of its own.
    *
-   * That gap is not hypothetical: issue #507 lived in it. Widening the row
-   * range rather than committing more documents is what closes it — the
-   * charter's assertions measure a document generated in the test, so none
-   * of them needs one on disk.
+   * The `mosaic` permutation half of the sweep does keep a cap, for a reason
+   * that does not apply to this half — see
+   * `PERMUTATION_ROWS_SWEEP_MAXIMUM`.
    */
-  enumerate(rowsMaximum: number = ROWS_SWEEP_MAXIMUM): GenerationParameters[] {
+  enumerate(): GenerationParameters[] {
     const types = SUPPORTED_TYPES.filter((value): value is MeanderType =>
       this.isMeanderType(value),
     );
 
-    return types.flatMap((type) => this.combinationsForType(type, rowsMaximum));
+    return types.flatMap((type) => this.combinationsForType(type));
   }
 }

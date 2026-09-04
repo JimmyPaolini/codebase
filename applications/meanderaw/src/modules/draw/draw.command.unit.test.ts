@@ -124,23 +124,24 @@ describe(DrawCommand, () => {
         recursive: true,
       });
 
-      // 🎯 rows sweep is 2..8 (branch), 3..8 (mosaic, boxes, negative),
-      // 4..8 (chain, snake, swirl, whirl, parallel), or 6..8 (cross),
+      // 🎯 rows sweep runs from each type's own structural minimum to
+      // `MAXIMUM_VALUE`: 2..12 (branch), 3..12 (mosaic, boxes, negative),
+      // 4..12 (chain, snake, swirl, whirl, parallel), or 6..12 (cross),
       // crossed with "no modifier" plus every compatible modifier
       // (alternated, dot, and plied each expand to 2 representative
       // values):
-      // mosaic: 6 rows * (1 + 2 + 2 + 1) modifiers = 36
-      // boxes: 6 rows * (1 + 1 + 1) modifiers = 18
-      // chain: 5 rows * (1 + 1 + 1 + 1) modifiers = 20
-      // snake: 5 rows * (1 + 1 + 1 + 1) modifiers = 20
-      // swirl: 5 rows * (1 + 1) modifiers = 10
-      // whirl: 5 rows * (1 + 1) modifiers = 10
-      // cross: 3 rows * (1 + 1) modifiers = 6
-      // negative: 6 rows * (1 + 1 + 1) modifiers = 18
-      // branch: 7 rows * (1 + 1 + 1) modifiers = 21
-      // parallel: 5 rows * (1 + 2) modifiers = 15
+      // mosaic: 10 rows * (1 + 2 + 2 + 1) modifiers = 60
+      // boxes: 10 rows * (1 + 1 + 1) modifiers = 30
+      // chain: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
+      // snake: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
+      // swirl: 9 rows * (1 + 1) modifiers = 18
+      // whirl: 9 rows * (1 + 1) modifiers = 18
+      // cross: 7 rows * (1 + 1) modifiers = 14
+      // negative: 10 rows * (1 + 1 + 1) modifiers = 30
+      // branch: 11 rows * (1 + 1 + 1) modifiers = 33
+      // parallel: 9 rows * (1 + 2) modifiers = 27
       const expectedNamedTypeCount =
-        36 + 18 + 20 + 20 + 10 + 10 + 6 + 18 + 21 + 15;
+        60 + 30 + 36 + 36 + 18 + 18 + 14 + 30 + 33 + 27;
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
@@ -167,7 +168,10 @@ describe(DrawCommand, () => {
         "output/mosaic/4-rows/permutations/1-columns",
         { recursive: true },
       );
-      // Every distinct tile at 4 through 8 rows, and nothing else.
+      // Every distinct tile at 4 through 8 rows, and nothing else: this
+      // half keeps a cap of its own where the named-type half runs to
+      // `MAXIMUM_VALUE`, because it enumerates exhaustively — see
+      // `PERMUTATION_ROWS_SWEEP_MAXIMUM`.
       expect(permutations).toHaveLength(3179);
       expect(permutations).toContain(
         "output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg",
@@ -183,7 +187,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("3353 drawings");
+      expect(index?.[1]).toContain("3481 drawings");
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
       );
@@ -551,13 +555,13 @@ describe(DrawCommand, () => {
         realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
       ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 174 enumerated named-type combinations, and
+      // 🎯 every one of the 302 enumerated named-type combinations, and
       // every one of the 3,179 mosaic tiles, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
       // replace the generation services entirely. The extra file is the
       // single index page listing all of them.
-      expect(mockWriteFile).toHaveBeenCalledTimes(174 + 3179 + 1);
+      expect(mockWriteFile).toHaveBeenCalledTimes(302 + 3179 + 1);
     });
   });
 });

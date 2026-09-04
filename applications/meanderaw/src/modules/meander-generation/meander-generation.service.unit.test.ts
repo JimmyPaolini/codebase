@@ -879,12 +879,10 @@ describe(MeanderGenerationService, () => {
   // 🎯 Issue #507, measured rather than described. `chain` and `snake`
   // share one zigzag sequence, and it used to double back above eight rows:
   // two consecutive runs along the same axis, a second stroke of ink laid
-  // over one already drawn. The gap that hid it was between two numbers —
-  // `ROWS_SWEEP_MAXIMUM` (8), the deepest row count the committed corpus
-  // holds, and `MAXIMUM_VALUE` (12), the deepest the command line accepts —
-  // so this sweeps to the second of those rather than the first, and over
-  // every family rather than the six that existed when the defect was
-  // found.
+  // over one already drawn. The gap that hid it was between two numbers: the
+  // sweep stopped at 8 row counts while `MAXIMUM_VALUE` let the command line
+  // ask for 12. Both are 12 now, and this sweeps every family rather than
+  // the six that existed when the defect was found.
   //
   // This is deliberately a rendered measurement. A drawing that *emits*
   // proves nothing here — every family emitted at every row count through

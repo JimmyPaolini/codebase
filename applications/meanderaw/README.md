@@ -93,9 +93,12 @@ breaks none of them, and that is the point of it.
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
-against the corpus as it now stands, 174 named patterns beside the same 3,179 tiles:
+against the corpus as it now stands, 302 named patterns beside the same 3,179 tiles. The
+named half was 174 until the sweep's row range was raised to `MAXIMUM_VALUE`, so most of
+these counts have moved once for that reason alone — see the note under "Meander Charter"
+above:
 
-- **Every interior white channel is exactly one stroke width**, in all 3,353 files. The
+- **Every interior white channel is exactly one stroke width**, in all 3,481 files. The
   channel width equals the stroke width equals half a grid unit, and that single number
   is the same in every document the project has ever written — the stroke is `unit / 2`
   at every row count, in every family, at every ply of `parallel`. #340 and #413 both
@@ -103,29 +106,30 @@ against the corpus as it now stands, 174 named patterns beside the same 3,179 ti
   that inference is wrong and is discarded, for the reasons under "The Parallel Family"
   below.
 - **Ink never crosses itself, except where a family was added to make it.** Zero
-  X-junctions across all 3,293 files the six original families produce — a stronger
+  X-junctions across all 3,377 files the six original families produce — a stronger
   statement than "non-self-intersecting", and the sharpest single characterization of what
   those six have in common. The `cross` family relaxes it deliberately: 12 X-junctions in
-  each of the three solid documents it commits, and none anywhere else in the 3,353-file
-  corpus. See "The Crossing Family" below.
-- **Ink branches in three places, and only there.** 1,360 T-junctions across 59 of the 174
-  named patterns. 200 of them, across 20 patterns, are `chain` and `snake` under `edge`
+  each of the seven solid documents it commits, and none anywhere else in the 3,481-file
+  corpus. Twelve at every one of its row counts, 6 through 12, so the count is a property
+  of the repeat count rather than of `rows`. See "The Crossing Family" below.
+- **Ink branches in three places, and only there.** 2,876 T-junctions across 99 of the 302
+  named patterns. 360 of them, across 36 patterns, are `chain` and `snake` under `edge`
   and `edge-flip`, ten per document at every row count: the `edge` family widens the
   repeat unit past the zigzag it contains, so the zigzag's terminating vertical lands in
   the _interior_ of the band border rather than at its end, and the border runs on either
   side of it — five such junctions along the top border, five along the bottom. An earlier
   reading of this measurement reported zero everywhere; the reference assets are
   hand-verified ground truth for what these patterns should look like, so the geometry is
-  right and the count was wrong. The other 1,160 are the point of two families rather than
-  a side effect of anything: 852 across the `negative` family's 18 documents and 308
-  across the `branch` family's 21 — see "The Negative Space Family" and "The Branching
+  right and the count was wrong. The other 2,516 are the point of two families rather than
+  a side effect of anything: 1,900 across the `negative` family's 30 documents and 616
+  across the `branch` family's 33 — see "The Negative Space Family" and "The Branching
   Family" below.
 - **Ink was a forest everywhere until it was a tree in one place.** Read as a graph, a
-  document's ink is lattice points joined by one-pitch steps. All 3,317 documents that
-  predate `branch` are one of two things and neither is a tree: 3,286 are forests of many
-  components — a disjoint union of simple arcs — and 31 carry loops, being `negative`'s
-  18, `cross`'s 3 solid drawings, and 10 `snake` drawings under `edge`/`edge-flip`.
-  `branch`'s 21 are the only trees in the corpus: one connected piece, `edges = nodes − 1`,
+  document's ink is lattice points joined by one-pitch steps. All 3,421 documents that
+  predate `branch` are one of two things and neither is a tree: 3,366 are forests of many
+  components — a disjoint union of simple arcs — and 55 carry loops, being `negative`'s
+  30, `cross`'s 7 solid drawings, and 18 `snake` drawings under `edge`/`edge-flip`.
+  `branch`'s 33 are the only trees in the corpus: one connected piece, `edges = nodes − 1`,
   no loop anywhere. See "The Branching Family" below.
 - **The negative space branches and crosses freely.** It branches in every family, and in
   `mosaic split` and `mosaic alternated period-3` it genuinely crosses. Crossing patterns
@@ -142,20 +146,25 @@ Wider-than-one-stroke gaps occur only where a band terminates, which is
 [#338](https://github.com/JimmyPaolini/codebase/issues/338) and is not a family
 property.
 
-Those measurements are of the committed corpus, which stops at 8 rows. **The charter
-property test does not.** It sweeps the same enumeration `DrawCommand` writes from — one
-composition, so a family added widens both — but out to `MAXIMUM_VALUE`, every row count
-the command line accepts: 302 combinations rather than 174. The charter is a claim about
-what this tool draws, not about what happens to be on disk, and the four extra row counts
-cost no committed bytes at all, because every assertion measures a document generated in
-the test rather than read from `output/`.
+**The named half of the sweep runs to `MAXIMUM_VALUE`**, so every drawing the command line
+can be asked for is also a drawing this repository commits and the charter gates: 302
+combinations, each family from its own structural minimum through 12 rows.
 
-That gap was not hypothetical. [#507](https://github.com/JimmyPaolini/codebase/issues/507)
-lived in it: `chain` and `snake` drew self-retracing ink at 9 through 12 rows — reachable
-from the command line by anybody, covered by nothing, because the corpus stopped at 8 and
-the charter swept the corpus. Both halves are now pinned, so neither can drift: restricted
-to the row counts `DrawCommand` commits, the sweep must be exactly what `DrawCommand`
-writes, and unrestricted it must reach `MAXIMUM_VALUE`.
+It stopped at 8 until [#507](https://github.com/JimmyPaolini/codebase/issues/507), and that
+issue lived in the four row counts between — `chain` and `snake` drew self-retracing ink at
+9 through 12 rows, reachable from the command line by anybody and covered by nothing,
+because the corpus stopped at 8 and the charter swept the corpus. Raising the sweep's range
+to the command line's own closed the gap for both at once, which is why neither has a
+maximum of its own any more. Most of the counts below moved by that change and nothing else.
+
+**The `mosaic` permutation half kept its cap of 8**, at 3,179 tiles. It enumerates its space
+exhaustively rather than sampling it, and the count grows about 3.4× per row — 23, 68, 199,
+660 and 2,229 at rows 4 through 8, then 7,977, 29,002, 108,089 and 406,934 — so following
+the named half would mean committing 552,002 more files. The row counts that leaves
+uncovered are not a charter blind spot, which is the one thing that would make the cap a
+liability: those tiles were never in the property sweep at all, being reachable only through
+a motif service and gated from disk instead, while `mosaic` as a named family with its
+modifiers sits in the half that does reach 12.
 
 ## 🧬 Families, Sub-families, and Tiles
 
@@ -317,7 +326,8 @@ exists at all.
 
 Every one of the 3,179 tiles still has zero ink T-junctions, zero ink X-junctions, and
 full channel-width compliance — unchanged from what the base branch's own disk-based gate
-already reports for the whole 3,293-file corpus. This survey adds the negative-space
+already reports for the whole corpus of the six original families, now 3,377 files. This
+survey adds the negative-space
 breakdown; it does not revisit the ink side.
 
 ### Is the negative itself space-filling?
@@ -680,7 +690,7 @@ is not the cost the ticket anticipated: the gap is the same width as every other
 in the band, so nothing about its size says "under" — and breaking the bar adjacent to the
 junction takes the crossing out of the ink graph altogether.
 
-Measured across the six committed documents, at 6 repeats and every swept row count:
+Measured across the fourteen committed documents, at 6 repeats and every swept row count:
 
 | Mode | Ink X-junctions | Ink T-junctions | Space-filling | Negative T-junctions | Negative X-junctions |
 | --- | --- | --- | --- | --- | --- |
@@ -689,7 +699,8 @@ Measured across the six committed documents, at 6 repeats and every swept row co
 
 The first three columns are asserted — by this family's own unit tests, by the charter
 property test, and by the disk-based gate over every committed document. **The last two
-are not.** They are a reading of the six committed files and nothing fails if they change:
+are not.** They are a reading of the fourteen committed files and nothing fails if they
+change:
 invariants 3 and 4 constrain ink, and no family is failed for what its white space does.
 
 ### What it holds and what it relaxes
@@ -762,10 +773,11 @@ at the negative's own row count would leave the canvas's bottom lattice row with
 it — invariant 2 broken for a bookkeeping reason rather than a drawn one. It is also why
 the family's structural minimum is 3 where `MOSAIC_TILE_MINIMUM_ROWS` is 4.
 
-One consequence of the offset: the sweep draws `negative` at 3 through 8 rows, so its
-8-row drawings invert a 9-row source — one row past what the survey enumerated. Those
-three drawings have no committed source to be compared against, and are gated by the
-charter sweep like every other drawing instead.
+One consequence of the offset: the sweep draws `negative` at 3 through 12 rows, so
+everything from its 8-row drawings up inverts a source of 9 rows or more — past what the
+survey enumerated, and past where the `mosaic` permutation half stops committing tiles.
+Those fifteen drawings have no committed source to be compared against, and are gated by
+the charter sweep like every other drawing instead.
 
 ### What it holds and what it relaxes
 
@@ -778,28 +790,34 @@ charter sweep like every other drawing instead.
 | 5 — band, not field | Yes | the canvas height is the shared geometry's, identical to a `mosaic` of the same rows; only width grows with `repeatCount` |
 
 **Whether the output stays space-filling was measured, not assumed, and it does.** Every
-lattice point of every one of the 18 committed drawings carries ink — including the band's
+lattice point of every one of the 30 committed drawings carries ink — including the band's
 first and last lattice column, which invariant 7 would have excused. The family needs no
-termination carve-out at all, where 2,120 of the 3,353 committed documents do have a
+termination carve-out at all, where 2,176 of the 3,481 committed documents do have a
 gap there. The reason is the survey's own finding that no cell of any of the 3,179
 permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
 lattice point with at least one arm of ink.
 
 The branching is the point, so it is counted rather than merely permitted. Ink T-junctions
-per document, at 3 through 8 rows:
+per document, at 3 through 12 rows:
 
-| Mode | 3 | 4 | 5 | 6 | 7 | 8 |
-| --- | --- | --- | --- | --- | --- | --- |
-| `stair` | 38 | 48 | 58 | 68 | 78 | 88 |
-| `brick` | 30 | 40 | 50 | 60 | 70 | 80 |
-| `ruled` | 16 | 16 | 24 | 24 | 32 | 32 |
+| Mode | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `stair` | 38 | 48 | 58 | 68 | 78 | 88 | 98 | 108 | 118 | 128 |
+| `brick` | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100 | 110 | 120 |
+| `ruled` | 16 | 16 | 24 | 24 | 32 | 32 | 40 | 40 | 48 | 48 |
 
-Each of the fifteen numbers with a surveyed source is asserted, in
-`meander-topology.service.integration.test.ts`, to equal the negative T-junction count of
+Ten per row for `stair` and `brick`, eight every second row for `ruled`, all the way out —
+1,900 T-junctions over the thirty documents.
+
+Fifteen of those thirty numbers have a surveyed source: the ones at 3 through 7 rows, whose
+`mosaic` sources are among the committed permutation tiles. Each of the fifteen is asserted,
+in `meander-topology.service.integration.test.ts`, to equal the negative T-junction count of
 the committed `output/mosaic/<rows>-rows/permutations/` document it inverts — read off disk, from a file that
 existed before this family did. That assertion is what makes "the candidates come from the
 shortlist" a fact rather than a claim: if a drawing stopped being that document's
-complement, it would fail.
+complement, it would fail. The other fifteen invert a source past the permutation half's
+own cap, so there is no committed file to compare them with; the charter sweep gates them
+like anything else.
 
 Its own negative space, reported and not gated: zero T-junctions and zero X-junctions in
 every mode at every row count. Inverting a negative twice gets nowhere interesting, which
@@ -821,12 +839,12 @@ themselves, over a single connected piece — which is the definition of a tree,
 forks everywhere and closes a loop nowhere.
 
 That is the first tree this repository has drawn, and the claim is a count rather than a
-description. Read as a graph, all 3,317 documents that predate this family fall into two
-groups: **3,286 are forests** of many components — a family's ink is a disjoint union of
+description. Read as a graph, all 3,421 documents that predate this family fall into two
+groups: **3,366 are forests** of many components — a family's ink is a disjoint union of
 simple arcs, so `edges = nodes − components` with the component count in the dozens — and
-**31 carry loops**: `negative`'s eighteen, `cross`'s three solid drawings, and the ten
+**55 carry loops**: `negative`'s thirty, `cross`'s seven solid drawings, and the eighteen
 `snake` drawings whose `edge` pitch closes a loop against the band border. Not one is a
-tree. All 21 of `branch`'s are, and
+tree. All 33 of `branch`'s are, and
 `meander-topology.service.integration.test.ts` reads every committed document off disk and
 asserts both halves of that.
 
@@ -895,8 +913,8 @@ space survey above, so the difference is worth stating rather than assuming. It 
 loops.
 
 `negative` inks a whole corridor graph, and a corridor graph closes a loop through each of
-its own repeats: its eighteen committed drawings carry 10 to 45 cycles each, on one to
-five components. `branch` inks a loop-free spanning subgraph of a lattice: 0 cycles, on
+its own repeats: its thirty committed drawings carry 10 to 65 cycles each, on one to
+seven components. `branch` inks a loop-free spanning subgraph of a lattice: 0 cycles, on
 one component, always. Both ends of that range are asserted in
 `meander-topology.service.integration.test.ts`, from the same loop that counts the trees —
 the numbers were published in three places and computed in none until they were.
@@ -981,7 +999,7 @@ property falls out of that rather than being checked for afterwards. Take any la
 of a unit: if it is at or above its own column's turn row it sits on that column's arm, and
 if it is below, it is that far in from the unit's edge, so the crossbar of the strand whose
 turn row it is reaches it. So every lattice point of the band carries ink — including the
-first and last lattice column, which `channelWidthCompliant` exempts and which 2,120
+first and last lattice column, which `channelWidthCompliant` exempts and which 2,176
 documents in the corpus do leave a gap at. The brackets of a unit are pairwise disjoint and
 no unit draws a run outside its own columns, so every lattice point carries one arm of ink
 or two: never three, never four.
@@ -997,11 +1015,12 @@ omission.
 lattice point count rather than as a boolean — which is the stronger reading, since it
 counts the first and last lattice column that `channelWidthCompliant` exempts — beside the
 component count (`strands` per repeat unit), the free-end count (two per strand), and the
-cycle count (zero). The charter sweep then measures the same fifteen drawings again through
+cycle count (zero). The charter sweep then measures the same twenty-seven drawings again
+through
 `MeanderGenerationService.generate`, against that declaration, in both directions: an
 invariant a family does not relax must hold, and one it does relax must actually break. So
 the empty row is a claim that can fail, and declaring a relaxation this family does not have
-fails exactly its own fifteen cases and nothing else.
+fails exactly its own twenty-seven cases and nothing else.
 
 ### Nothing gets thinner
 
@@ -1016,27 +1035,28 @@ re-derived:
 - Squeezing them is **redundant**. A uniform lattice at `unit / (2N)` is the lattice
   `--rows rows × N` already produces, so the thinner drawing is a row count under another
   name rather than a new pattern.
-- Squeezing them is **unreachable** for over a third of the space. Drawing at
-  `unit / (2N)` is drawing at `rows × N` rows, so at this family's own ply of two every
-  pattern is asked for at twice its row count. The space is the **32** family/rows pairs
-  the sweep covers across the six original families — `boxes` and `mosaic` at 3 through 8
-  rows, `chain`, `snake`, `swirl` and `whirl` at 4 through 8, so 12 + 20 = 32. **12 of
-  those 32 cannot be drawn**: their doubled row count runs past the shared `MAXIMUM_VALUE`
-  of 12, which is every pair at 7 and 8 rows in all six families.
+- Squeezing them is **unreachable** for most of the space. Drawing at `unit / (2N)` is
+  drawing at `rows × N` rows, so at this family's own ply of two every pattern is asked
+  for at twice its row count. The space is the **56** family/rows pairs the sweep covers
+  across the six original families — `boxes` and `mosaic` at 3 through 12 rows, `chain`,
+  `snake`, `swirl` and `whirl` at 4 through 12, so 20 + 36 = 56. **36 of those 56 cannot
+  be drawn**: their doubled row count runs past the shared `MAXIMUM_VALUE` of 12, which is
+  every pair from 7 rows up in all six families.
 
-  **That count was 8 until recently, on a stricter criterion, and the history is worth
-  keeping** — the two are easy to conflate and this passage once did. `chain` and `snake`
-  share one zigzag sequence, and it used to double back on itself above eight effective
-  rows, laying a second run of ink over one already drawn. Eight of the 32 pairs doubled
-  into that range, and four of those eight sat **inside** the row-count maximum, so what
-  ruled the proposal out was degeneracy rather than the ceiling. That defect was
+  **That count has been 32-and-8 and 56-and-12 on the way here, and the history is worth
+  keeping**, because the two criteria are easy to conflate and this passage once did. The
+  stricter one was degeneracy: `chain` and `snake` share one zigzag sequence, and it used
+  to double back on itself above eight effective rows, laying a second run of ink over one
+  already drawn. Under the old 32-pair space, eight pairs doubled into that range and four
+  of the eight sat **inside** the row-count maximum — so degeneracy ruled the proposal out
+  where the ceiling alone would not have. That defect was
   [#507](https://github.com/JimmyPaolini/codebase/issues/507), and it is **fixed**: the
   zigzag turns at every step at every row count the command line accepts.
   `meander-generation.service.unit.test.ts` measures that off rendered path data, across
-  every family rather than the six this passage counts, so the claim fails rather than
-  goes stale. What is left is the ceiling on its own, and
-  `draw-combinations.service.unit.test.ts` pins both 32 and 12 against the real
-  enumeration.
+  every family rather than the six this passage counts, so the claim fails rather than goes
+  stale. What is left is the ceiling on its own — and fixing #507 also took the sweep out to
+  12 rows, which is why the space is 56 rather than 32.
+  `draw-combinations.service.unit.test.ts` pins both 56 and 36 against the real enumeration.
 
 What makes strands read as a bundle here is not their thickness but the fact that they
 **turn together**. That is a property of the drawing, not of the stroke, and it costs the
