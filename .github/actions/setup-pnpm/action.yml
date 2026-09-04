@@ -1,30 +1,39 @@
 name: 📦 Setup pnpm
 description: |
   Install the pnpm version `package.json`'s `packageManager` field pins,
-  restoring it from cache rather than fetching it from the npm registry on
-  every run (requires checkout first).
+  restoring the install from cache rather than refetching it every run
+  (requires checkout first).
 
-  `pnpm/action-setup` is not cheap and its cost is not predictable.  It
-  deletes its `dest` directory, writes a `package.json` and a
-  `package-lock.json` naming the pnpm version bundled with the action, runs
-  `npm ci` against them, and only then runs `pnpm self-update` to the version
-  this repository actually pins.  That `npm ci` is a registry round trip on
-  every job of every workflow, and it took between 4.7 seconds and 7 minutes
-  across a single evening's runs on `main` — the same evening npm's advisory
-  endpoint was timing out and failing `pnpm audit`.  Two jobs died of it:
-  🧑‍🔬 Test Coverage was killed at its 12-minute limit with every step already
-  green, and 🦸 Push Releases at its 20-minute limit part way through
+  This still uses `pnpm/action-setup`; it only stops paying for it twice. That
+  action writes a `package.json` and `package-lock.json` naming the pnpm
+  version bundled with the action — 11.19.0, hardcoded in its own bundle —
+  runs `npm ci` against them, and only then runs `pnpm self-update` to the
+  version this repository pins. The `npm ci` is an uncached registry round
+  trip on every job of every workflow, and it ranged from 4.7 seconds to 7
+  minutes across one evening's runs on `main`. Two jobs died of it: 🧑‍🔬 Test
+  Coverage was killed at its 12-minute limit with every step already green,
+  and 🦸 Push Releases at its 20-minute limit part way through
   `semantic-release`.
 
-  So the whole install is cached and the action is skipped on a hit, the same
-  arrangement `setup-codebase` already uses for Homebrew.  Skipping it is not
-  an optimization here but a requirement: the action's first act is to delete
-  `dest`, so a restored cache handed to it is erased before it is read.
+  The action's own `cache` input does not help, and neither does `version` or
+  `standalone`. `cache` caches the pnpm *store* — dependency tarballs, keyed
+  on `pnpm-lock.yaml` — which `actions/setup-node` already caches here, and it
+  works by running `pnpm store path`, so it can only run after the install it
+  would need to skip. `version` changes which version `self-update` moves to
+  but not the `npm ci`, which installs from that bundled lockfile either way.
+  Upstream
+  has no setting for this: pnpm/action-setup#141 asks for exactly this
+  configurability and has sat open since 2024.
 
-  The key names the pinned version and nothing else.  A version bump is the
-  only thing that should invalidate this, and unlike the Homebrew key there is
-  no weekly rotation, because `packageManager` is the whole point — a pin that
-  drifted to whatever the registry served last week would be no pin at all.
+  Skipping the action on a cache hit is a requirement rather than an
+  optimization: its first act is to delete its `dest`, so a restored cache
+  handed to it is erased before it is read.
+
+  The key names the pinned version and nothing else. A version bump is the
+  only thing that should invalidate this, and unlike `setup-codebase`'s
+  Homebrew key there is deliberately no weekly rotation — `packageManager` is
+  the whole point, and a pin that drifted to whatever the registry served last
+  week would be no pin at all.
 outputs:
   version:
     description: The pnpm version resolved from `packageManager`
@@ -33,11 +42,10 @@ outputs:
 runs:
   using: composite
   steps:
-    # Read with `sed` rather than `node -p`, because this action runs before
-    # `actions/setup-node` and must not depend on whatever node the runner
-    # image happens to ship. The `+` guard drops the optional integrity hash
-    # in `pnpm@1.2.3+sha512.abc`, which is part of the pin but not of the
-    # version.
+    # Read with `grep`/`sed` rather than `node -p`, because this action runs
+    # before `actions/setup-node` and must not depend on whichever node the
+    # runner image happens to ship. Stopping at `+` drops the optional
+    # integrity hash in `pnpm@1.2.3+sha512.abc`.
     - name: 🧮 Resolve pnpm Version
       id: pnpm-version
       run: |
@@ -63,12 +71,11 @@ runs:
       if: steps.pnpm-cache.outputs.cache-hit != 'true'
       uses: pnpm/action-setup@v6
 
-    # `pnpm/action-setup` puts pnpm on PATH itself; on a cache hit it never
-    # runs, so the same three environment changes have to be made by hand.
-    # They mirror what the action does on Linux with a bundled node: PNPM_HOME
-    # is `dest/node_modules/.bin`, and both it and its `bin` subdirectory go on
-    # PATH, since pnpm v10 and v11 disagree about which of the two holds the
-    # shims.
+    # `pnpm/action-setup` puts pnpm on PATH itself, so on a cache hit the same
+    # three environment changes have to be made by hand. These mirror what it
+    # does on Linux with a bundled node: PNPM_HOME is `dest/node_modules/.bin`,
+    # and both it and its `bin` subdirectory go on PATH, because pnpm v10 and
+    # v11 disagree about which of the two holds the shims.
     - name: 🛤️ Restore Cached pnpm PATH
       if: steps.pnpm-cache.outputs.cache-hit == 'true'
       run: |
@@ -78,12 +85,12 @@ runs:
         echo "${pnpm_home}/bin" >>"$GITHUB_PATH"
       shell: bash
 
+    # Two jobs in one, both about the step above rather than about the cache.
     # A cache entry is immutable, so a damaged one would otherwise break every
-    # job until the pinned version changed. Rather than trust the restore,
-    # confirm the pnpm now on PATH reports the pinned version and reinstall if
-    # it does not. This step is also what proves the hand-rolled PATH above
-    # still matches what the action does, so an upgrade that moves the shims
-    # fails loudly on the next run instead of silently reinstalling forever.
+    # job until the pinned version changed — hence the reinstall. And this is
+    # the only thing tying the hand-rolled PATH to the action's real behavior,
+    # so an upgrade that moves the shims surfaces here, as a warning naming
+    # both versions, instead of as `pnpm: command not found` three steps later.
     - name: 🔎 Verify Cached pnpm
       if: steps.pnpm-cache.outputs.cache-hit == 'true'
       id: pnpm-verify
