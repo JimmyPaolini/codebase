@@ -645,10 +645,16 @@ Folder and file placement is a lint error, not a style preference. It is enforce
 - **Files inside `src/modules/<module-name>/` must be `<kebab-name>.<suffix>.<extension>`** where suffix is one of `command`, `constants`, `module`, `service`, `types`, or `utilities`, optionally with `.unit.test`, `.integration.test`, or `.end-to-end.test` before the extension. A bare `<name>.ts` inside a module folder is invalid — pick a suffix. There is deliberately no `errors` suffix: an error class lives in the `*.constants.ts` file beside the code that throws it, which the **Constant File Shape** rule permits by whitelisting `class X extends Error`.
 - Scaffold with a conformetry generator rather than hand-building the tree; the generators already produce this layout.
 
-Two limits on how far this rule reaches, both worth knowing before trusting it:
+Structure is judged by **two** ESLint passes, and the split is not cosmetic. `project-structure/folder-structure` listens only on `Program`, so it fires only on a file ESLint parsed into a JavaScript syntax tree:
 
-- **Markdown and HTML escape it entirely.** `.md` files are parsed with `@eslint/markdown`'s `markdown/gfm` language, whose syntax tree has no `Program` node for the rule's visitor to fire on, so an undeclared `.md` file — or a whole directory of them — passes lint. `.html` escapes for a different reason: no config block lints that extension at all, so a `src/index.html` still passes and no rule here can stop it. Every extension ESLint parses as a whole file is checked, which is wider than it looks: `.ts`, `.tsx`, `.js`, `.cjs`, `.mjs`, `.json`, and `.yaml` all report.
-- **`projectStructure.cache.json` masks edits.** Delete it, and `.eslintcache/` beside it, before testing a change to `configuration/codebase-structure.json` — otherwise the edit appears to have no effect and the test proves nothing.
+- **The main pass** (`eslint`, `configuration/eslint.config.ts`) covers every extension that gets one — `.ts`, `.tsx`, `.js`, `.cjs`, `.mjs`, `.json`, `.yaml` — which is wider than it looks.
+- **A second pass** (`eslint-structure`, `configuration/eslint-structure.config.ts`) covers `.md` and `.html`, which never get one. Markdown is parsed with `@eslint/markdown`'s `markdown/gfm` language, whose tree is mdast and carries no `Program`; HTML is matched by no block in the main config at all. ESLint resolves exactly one `language` per file, so the markdown rules and the structure rule cannot read the same file in one pass — the second pass parses those files into an empty `Program` and judges the path alone. It reads the same `codebase-structure.json`, takes no `write` configuration (there is nothing to fix automatically, only a path to move), and joins `lint-codebase` beside `eslint`.
+
+Without that second pass an undeclared markdown file — or a whole directory of them — passed lint silently, which is how `openwiki/` stayed undeclared and how a generated `src/index.html` would have gone unnoticed.
+
+One trap when changing any of this: **`projectStructure.cache.json` masks edits.** Delete it, and `.eslintcache/` beside it, before testing a change to `configuration/codebase-structure.json` — otherwise the edit appears to have no effect and the test proves nothing.
+
+A second trap when editing `codebase-structure.json` itself: a rule `name` is **not** a plain regex. The plugin rewrites `.` to `\.` before compiling, so dots are written unescaped — a hand-escaped `\.` becomes "literal backslash, any character" and silently stops matching — `*` is a path wildcard rather than a quantifier, and `/\{([^}]+)\}/` is read as a regex-parameter reference, so **no brace may appear in a `name`**. A literal `{{placeholder}}`, as conformetry's template folders use, has to be declared in the top-level `regexParameters` map and referenced by name.
 
 ### Project Tags
 

@@ -13,6 +13,9 @@
     "output",
     "tmp"
   ],
+  "regexParameters": {
+    "templatePlaceholder": "\\{\\{[A-Za-z]+\\}\\}"
+  },
   "rules": {
     "any-file": {
       "name": "*"
@@ -271,6 +274,9 @@
           "ruleId": "kebab-case-folder"
         },
         {
+          "ruleId": "template-placeholder-folder"
+        },
+        {
           "ruleId": "any-file"
         }
       ],
@@ -298,6 +304,20 @@
     },
     "source-python-file": {
       "name": "^(py.typed|[a-z0-9_]+.(ipynb|py))$"
+    },
+    "template-placeholder-folder": {
+      "children": [
+        {
+          "ruleId": "kebab-case-folder"
+        },
+        {
+          "ruleId": "template-placeholder-folder"
+        },
+        {
+          "ruleId": "any-file"
+        }
+      ],
+      "name": "^{templatePlaceholder}$"
     }
   },
   "structure": {
@@ -523,6 +543,17 @@
         "name": "nx.json"
       },
       {
+        "children": [
+          {
+            "ruleId": "kebab-case-folder"
+          },
+          {
+            "ruleId": "any-file"
+          }
+        ],
+        "name": "openwiki"
+      },
+      {
         "name": "package.json"
       },
       {
@@ -566,6 +597,9 @@
         "children": [
           {
             "ruleId": "codebase-project"
+          },
+          {
+            "ruleId": "any-file"
           }
         ],
         "name": "tools"
