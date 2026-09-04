@@ -7,10 +7,7 @@ import {
 } from "../meander-generation/meander-generation.constants";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
-import {
-  PLIED_SWEEP_STRAND_COUNTS,
-  ROWS_SWEEP_MAXIMUM,
-} from "./draw.constants";
+import { PLIED_SWEEP_STRAND_COUNTS } from "./draw.constants";
 
 import type { GenerationParameters } from "../meander-generation/meander-generation.types";
 
@@ -58,24 +55,24 @@ describe(DrawCombinationsService, () => {
     // matching — would leave both quietly covering less, so it is pinned
     // here rather than inferred at either call site.
     it.each([
-      // rows 3..8 × (none + alternated ×2 + dot ×2 + split)
-      { expected: 36, type: "mosaic" },
-      // rows 3..8 × (none + spin + spin-flip)
-      { expected: 18, type: "boxes" },
-      // rows 4..8 × (none + edge + flip + edge-flip)
-      { expected: 20, type: "chain" },
-      { expected: 20, type: "snake" },
-      // rows 4..8 × (none + flip)
-      { expected: 10, type: "swirl" },
-      { expected: 10, type: "whirl" },
-      // rows 6..8 × (none + interrupted)
-      { expected: 6, type: "cross" },
-      // rows 3..8 × (none + brick + ruled)
-      { expected: 18, type: "negative" },
-      // rows 2..8 × (none + rung + stagger)
-      { expected: 21, type: "branch" },
-      // rows 4..8 × (none + plied ×2)
-      { expected: 15, type: "parallel" },
+      // rows 3..12 × (none + alternated ×2 + dot ×2 + split)
+      { expected: 60, type: "mosaic" },
+      // rows 3..12 × (none + spin + spin-flip)
+      { expected: 30, type: "boxes" },
+      // rows 4..12 × (none + edge + flip + edge-flip)
+      { expected: 36, type: "chain" },
+      { expected: 36, type: "snake" },
+      // rows 4..12 × (none + flip)
+      { expected: 18, type: "swirl" },
+      { expected: 18, type: "whirl" },
+      // rows 6..12 × (none + interrupted)
+      { expected: 14, type: "cross" },
+      // rows 3..12 × (none + brick + ruled)
+      { expected: 30, type: "negative" },
+      // rows 2..12 × (none + rung + stagger)
+      { expected: 33, type: "branch" },
+      // rows 4..12 × (none + plied ×2)
+      { expected: 27, type: "parallel" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
       expect(
         combinations.filter((parameters) => parameters.type === type),
@@ -83,7 +80,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(174);
+      expect(combinations).toHaveLength(302);
     });
 
     it("names every combination distinctly", () => {
@@ -109,14 +106,14 @@ describe(DrawCombinationsService, () => {
     // 🎯 The two figures README.md's discarded-density argument rests on,
     // pinned to the sweep they describe instead of counted by hand.
     //
-    // "The 32 combinations the sweep would want" are the six original
+    // "The 56 combinations the sweep would want" are the six original
     // families' distinct family/rows pairs — the space a
     // `strokeWidth = unit / (2N)` proposal would have had to cover. That
     // proposal redraws a pattern at `rows × N` rows, so at the `parallel`
     // family's own ply of two every pair is asked for at `rows × 2`, and
     // `beyondMaximum` is the pairs whose doubled row count no longer fits
-    // inside the shared `MAXIMUM_VALUE` — 12 of them, at 7 and 8 rows in
-    // every family.
+    // inside the shared `MAXIMUM_VALUE` — 36 of them, every pair from 7
+    // rows up in every family.
     //
     // That count was 8 until issue #507 was fixed, on a stricter criterion
     // that no longer applies: four of those eight sat *inside* the maximum,
@@ -138,44 +135,37 @@ describe(DrawCombinationsService, () => {
         ({ rows }) => rows * DISCARDED_DENSITY_PLY > MAXIMUM_VALUE,
       );
 
-      expect(sweptPairs).toHaveLength(32);
-      expect(beyondMaximum).toHaveLength(12);
+      expect(sweptPairs).toHaveLength(56);
+      expect(beyondMaximum).toHaveLength(36);
     });
 
-    // 🎯 The argument itself, rather than the default it falls back to. The
-    // charter's property test is the only caller that passes one, and what
-    // it buys is the four row counts between the corpus `DrawCommand`
-    // commits and the deepest drawing the command line will make — the gap
-    // issue #507 lived in. Both halves are asserted, because each can break
-    // on its own: widening must reach `MAXIMUM_VALUE`, and the widened
-    // space must still contain the committed one unchanged, so a wider
-    // sweep can never quietly stop covering a committed document.
-    it("widens the row range on request without disturbing the committed one", () => {
-      const widened = service.enumerate(MAXIMUM_VALUE);
-      const sweptRows = [
+    // 🎯 The two ends of the row range, on two types with different
+    // structural minima: each starts at its own, and both stop at the one
+    // number the command line stops at. The upper bound is read from
+    // `MAXIMUM_VALUE` rather than written out, because the whole point of
+    // the range is that it is not a figure of the sweep's own choosing —
+    // issue #507 was reachable precisely because it once was.
+    it("sweeps each type from its own structural minimum through the row count the command line stops at", () => {
+      const rowsFor = (type: string): number[] => [
         ...new Set(
-          widened
-            .filter((parameters) => parameters.type === "swirl")
+          combinations
+            .filter((parameters) => parameters.type === type)
             .map((parameters) => parameters.rows),
         ),
       ];
+      const throughMaximum = (minimum: number): number[] =>
+        Array.from(
+          { length: MAXIMUM_VALUE - minimum + 1 },
+          (_value, index) => minimum + index,
+        );
 
-      expect(sweptRows).toStrictEqual([4, 5, 6, 7, 8, 9, 10, 11, 12]);
-      expect(
-        widened.filter((parameters) => parameters.rows <= ROWS_SWEEP_MAXIMUM),
-      ).toStrictEqual(combinations);
-    });
-
-    it("sweeps each type from its own structural minimum through the sweep maximum", () => {
-      const mosaicRows = combinations
-        .filter((parameters) => parameters.type === "mosaic")
-        .map((parameters) => parameters.rows);
-      const swirlRows = combinations
-        .filter((parameters) => parameters.type === "swirl")
-        .map((parameters) => parameters.rows);
-
-      expect([...new Set(mosaicRows)]).toStrictEqual([3, 4, 5, 6, 7, 8]);
-      expect([...new Set(swirlRows)]).toStrictEqual([4, 5, 6, 7, 8]);
+      expect(rowsFor("mosaic")).toStrictEqual(
+        throughMaximum(STRUCTURAL_MINIMUM_ROWS.mosaic),
+      );
+      expect(rowsFor("swirl")).toStrictEqual(
+        throughMaximum(STRUCTURAL_MINIMUM_ROWS.swirl),
+      );
+      expect(rowsFor("swirl").at(-1)).toBe(MAXIMUM_VALUE);
     });
 
     it.each([

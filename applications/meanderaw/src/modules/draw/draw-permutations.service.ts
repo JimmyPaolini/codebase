@@ -12,8 +12,8 @@ import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import {
   PERMUTATION_REPEAT_COUNT,
+  PERMUTATION_ROWS_SWEEP_MAXIMUM,
   PERMUTATIONS_SUBDIRECTORY,
-  ROWS_SWEEP_MAXIMUM,
 } from "./draw.constants";
 
 import type { RenderedDocument } from "./draw.types";
@@ -106,7 +106,7 @@ export class DrawPermutationsService {
   /** Every row count the mosaic sweep covers. */
   rowsSweep(): number[] {
     return Array.from(
-      { length: ROWS_SWEEP_MAXIMUM - MOSAIC_TILE_MINIMUM_ROWS + 1 },
+      { length: PERMUTATION_ROWS_SWEEP_MAXIMUM - MOSAIC_TILE_MINIMUM_ROWS + 1 },
       (_value, index) => MOSAIC_TILE_MINIMUM_ROWS + index,
     );
   }

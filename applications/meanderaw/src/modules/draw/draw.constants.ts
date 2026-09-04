@@ -65,14 +65,31 @@ export const PERMUTATIONS_SUBDIRECTORY = "permutations";
 export const PERMUTATION_REPEAT_COUNT = 6;
 
 /**
- * Highest `rows` value swept per type, starting from that type's own
- * `STRUCTURAL_MINIMUM_ROWS`. Chosen well below the shared `MAXIMUM_VALUE`
- * (12) so the sweep stays a bounded sample of the space — enough rows to
- * show a motif at a few different densities — rather than the full
- * structural-minimum-through-12 range, which would multiply the file count
- * for no additional coverage of new geometry.
+ * Highest `rows` value the `mosaic` permutation half of the sweep enumerates,
+ * starting from `MOSAIC_TILE_MINIMUM_ROWS`.
+ *
+ * The named-type half has no such cap — it runs to the shared
+ * `MAXIMUM_VALUE`, so every drawing the command line can be asked for is
+ * also a drawing this repository commits. This half cannot follow it,
+ * because it enumerates its space exhaustively rather than sampling it, and
+ * the count grows about 3.4× per row. Counted off
+ * `MosaicTilesService.enumerate` across both column spans:
+ *
+ * | rows  |  4 |  5 |   6 |   7 |    8 |    9 |    10 |     11 |      12 |
+ * | ----- | -- | -- | --- | --- | ---- | ---- | ----- | ------ | ------- |
+ * | tiles | 23 | 68 | 199 | 660 | 2229 | 7977 | 29002 | 108089 |  406934 |
+ *
+ * Rows 4 through 8 are the 3,179 tiles committed today. Carrying this half
+ * to 12 would add 552,002 more, for a corpus of over half a million SVGs.
+ *
+ * The row counts it therefore leaves uncovered are not a charter blind spot,
+ * which is the one thing that would make this cap a liability rather than a
+ * budget: the charter property test never swept these tiles at all — they
+ * are reachable only through a motif service, and are gated from disk
+ * instead — while `mosaic` as a named family, with its modifiers, sits in
+ * the half that does run to `MAXIMUM_VALUE`.
  */
-export const ROWS_SWEEP_MAXIMUM = 8;
+export const PERMUTATION_ROWS_SWEEP_MAXIMUM = 8;
 
 // 🚨 Errors
 
