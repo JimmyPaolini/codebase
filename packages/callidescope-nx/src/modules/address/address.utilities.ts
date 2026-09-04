@@ -3,7 +3,7 @@
 import {
   resolveAddressService,
   resolveOptionsService,
-} from "../../plugin-context.utilities";
+} from "../plugin/plugin-context.utilities";
 import { resolveExecutorScope } from "../plugin/plugin.utilities";
 
 import type { AddressExecutorOptions } from "../../executors/address.types";

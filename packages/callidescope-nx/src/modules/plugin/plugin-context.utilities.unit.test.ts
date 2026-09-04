@@ -1,15 +1,16 @@
 import { describe, expect, it } from "vitest";
 
-import { AddressService } from "./modules/address/address.service";
-import { OptionsService } from "./modules/options/options.service";
-import { PluginService } from "./modules/plugin/plugin.service";
-import { ProjectsService } from "./modules/projects/projects.service";
+import { AddressService } from "../address/address.service";
+import { OptionsService } from "../options/options.service";
+import { ProjectsService } from "../projects/projects.service";
+
 import {
   resolveAddressService,
   resolveOptionsService,
   resolvePluginService,
   resolveProjectsService,
 } from "./plugin-context.utilities";
+import { PluginService } from "./plugin.service";
 
 describe("plugin context", () => {
   it("resolves every service the plugin entry points reach for", async () => {

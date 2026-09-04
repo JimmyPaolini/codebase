@@ -297,10 +297,10 @@
       "name": "^(?!(dir|err|req|res|utils|ctx|app)$)[a-z0-9-]+$"
     },
     "source-entry-file": {
-      "name": "^(bootstrap|client|constants|index|main|repl|router|routeTree.gen)(.(unit|integration|end-to-end).test)?.(ts|tsx|mts|cts|js|jsx|mjs|cjs)$"
+      "name": "^(constants|index|main|repl|router)(.(unit|integration|end-to-end).test)?.(ts|tsx|mts|cts|js|jsx|mjs|cjs)$"
     },
     "source-entry-support-file": {
-      "name": "^(bootstrap|index|languages|main|plugin-context|repl|router).(constants|module|utilities)(.(unit|integration|end-to-end).test)?.(ts|tsx|mts|cts|js|jsx|mjs|cjs)$"
+      "name": "^main.(module|utilities)(.(unit|integration|end-to-end).test)?.(ts|tsx|mts|cts|js|jsx|mjs|cjs)$"
     },
     "source-python-file": {
       "name": "^(py.typed|[a-z0-9_]+.(ipynb|py))$"

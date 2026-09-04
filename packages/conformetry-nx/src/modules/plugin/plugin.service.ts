@@ -12,7 +12,6 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import { LANGUAGE_MODULE_LOADER } from "../../languages.constants";
 import { AdapterService } from "../adapter/adapter.service";
 import {
   DEFAULT_OUTPUT_PATH,
@@ -28,6 +27,7 @@ import { OptionsService } from "../options/options.service";
 import { PathsService } from "../paths/paths.service";
 import { ProjectsService } from "../projects/projects.service";
 
+import { LANGUAGE_MODULE_LOADER } from "./languages.constants";
 import {
   PROJECT_CONFIGURATION_FILENAME,
   WORKSPACE_PROJECT_ROOT,

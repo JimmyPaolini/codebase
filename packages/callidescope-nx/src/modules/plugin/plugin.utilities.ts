@@ -3,7 +3,7 @@
 import {
   resolveOptionsService,
   resolvePluginService,
-} from "../../plugin-context.utilities";
+} from "./plugin-context.utilities";
 
 import type { ExecutorScopeOptions, ResolvedTraceScope } from "./plugin.types";
 import type { ExecutorContext } from "@nx/devkit";
