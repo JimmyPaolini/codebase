@@ -1,3 +1,8 @@
+// cspell:ignore dvvxxd dvvxxvdx dvvxxvvxxd dvvxxvvxxvdx dvvxxvvxxvvxxd
+// cspell:ignore hxxhhx hxxhhxxh hxxhhxxhhx hxxhhxxhhxxh hxxhhxxhhxxhhx
+// cspell:ignore dld dldl dldld dldldl dldldld
+// — mosaic tile identifiers, one letter per cell of the tile, from
+// MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -5,15 +10,20 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
+import { MotifRegistryService } from "../meander-generation/motif-registry.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
+import { NegativeMotifService } from "../negative-motif/negative-motif.service";
+import { NegativeSourceService } from "../negative-motif/negative-source.service";
+import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { StartCombinationsService } from "../start/start-combinations.service";
@@ -29,6 +39,7 @@ import type {
   MeanderType,
   Modifier,
 } from "../meander-generation/meander-generation.types";
+import type { LatticeGraph } from "./meander-topology.types";
 
 // 🔧 Configuration
 
@@ -97,15 +108,48 @@ interface CharterRelaxation {
  * else is declared for it: the break keeps every lattice point painted, so
  * space-filling holds in both modes, and neither mode branches.
  *
+ * `negative` relaxes no-branching in every one of its modes, which is why
+ * its entry names no modifier at all: it inks the corridors a `mosaic` tile
+ * leaves, a cell where three corridors meet becomes a lattice point where
+ * three arms of ink meet, and all three of its sources were chosen off the
+ * survey's _branches only_ shortlist precisely because they branch. Nothing
+ * else is declared for it — its sources have zero negative X-junctions at
+ * every swept row count, so its ink has zero too, and every lattice point of
+ * its canvas carries ink, so space-filling holds.
+ *
+ * `branch` relaxes no-branching in every one of its modes, which is why its
+ * entry names no modifier either. It inks a spanning tree of the band's
+ * lattice — every lattice point painted, joined by exactly one fewer step
+ * than there are points — so it forks at most of its columns and closes a
+ * loop at none. Nothing else is declared for it: no lattice point in any of
+ * its modes carries four arms, so invariant 4 holds, and every lattice
+ * point carries ink, so space-filling holds. What separates it from
+ * `negative` is not the relaxation, which is the same one, but the loops:
+ * `negative` is one to five pieces with 10 to 45 cycles among them, and
+ * `branch` has none. Both are measured below, not asserted here.
+ *
+ * `parallel` declares nothing at all, and that empty row is the whole point
+ * of the family rather than an omission. Its ink is `N` strands running
+ * alongside one another at the same `unit / 2` stroke every other family
+ * draws at, nested so that the strands and the channels between them tile
+ * the band at one thickness: space-filling holds strictly, no lattice point
+ * carries three arms, and none carries four. #340's candidate table and
+ * #413 both said `parallel` would relax nothing; unlike most such
+ * predictions this one is asserted here rather than restated, in both
+ * directions, so a drawing that started branching would fail this sweep.
+ *
  * Only the ink is declared here. Invariants 3 and 4 constrain positive space
  * — a family's negative may branch and cross freely, and no family is failed
  * for it.
  */
 const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
   boxes: [],
+  branch: [{ invariant: "no-branching" }],
   chain: [{ invariant: "no-branching", modifierNames: ["edge", "edge-flip"] }],
   cross: [{ exceptModifierNames: ["interrupted"], invariant: "no-crossing" }],
   mosaic: [],
+  negative: [{ invariant: "no-branching" }],
+  parallel: [],
   snake: [{ invariant: "no-branching", modifierNames: ["edge", "edge-flip"] }],
   swirl: [],
   whirl: [],
@@ -119,6 +163,10 @@ const modifierLabel = (modifier: Modifier): string => {
 
   if (modifier.name === "dot") {
     return `dot ${modifier.shape}`;
+  }
+
+  if (modifier.name === "plied") {
+    return `plied ${modifier.strands}`;
   }
 
   return modifier.name;
@@ -157,13 +205,45 @@ const charterSweep: readonly CharterCase[] = new StartCombinationsService()
   });
 
 /**
- * How many documents `StartCommand` commits: 120 named patterns beside 3,179
+ * How many documents `StartCommand` commits: 174 named patterns beside 3,179
  * enumerated `mosaic` tiles. #340 measured this corpus at 114 named patterns;
  * the `cross` family added the six the sweep draws for it — three row counts
  * from its structural minimum of 6 through the sweep maximum, solid and
- * `interrupted`.
+ * `interrupted` — the `negative` family the eighteen it draws for its own,
+ * six row counts from its structural minimum of 3 crossed with its two
+ * modifiers plus none, the `branch` family twenty-one, seven row counts
+ * from its structural minimum of 2 crossed with its two modifiers plus none,
+ * and the `parallel` family fifteen, five row counts from its structural
+ * minimum of 4 crossed with the two plies `PLIED_SWEEP_STRAND_COUNTS` names
+ * plus its unmodified default.
  */
-const COMMITTED_CORPUS_SIZE = 120 + 3179;
+/**
+ * How long a corpus-wide measurement may take. Each of the three tests that
+ * use it reads all 3,353 committed documents from disk and measures every
+ * one, which takes roughly two seconds locally but several times that on a
+ * shared CI runner — past vitest's five-second default, which is what failed
+ * there while passing everywhere else. Bounded rather than removed, so a
+ * genuine hang still fails instead of running forever.
+ */
+const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
+
+const COMMITTED_CORPUS_SIZE = 174 + 3179;
+
+/**
+ * How many committed documents leave a gap at the band's termination — the
+ * one place invariant 2's `channelWidthCompliant` does not look, and the
+ * measurement its doc comment cites as the reason that carve-out is
+ * load-bearing rather than a formality.
+ *
+ * Published in seven places and computed in none until this assertion, at a
+ * value of 2,114 measured over the six original families' 3,293 documents.
+ * `cross` has since added six, and nothing would have caught the drift:
+ * `channelWidthCompliant` passes either way, because skipping those two
+ * columns is exactly what it does. `negative`, `branch`, and `parallel` add
+ * none — each covers its own first and last lattice column — so this number
+ * moving is a family changing how its band ends.
+ */
+const TERMINATION_GAP_DOCUMENTS = 2120;
 
 /** Where `StartCommand` writes those documents, and where they are committed. */
 const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
@@ -198,6 +278,23 @@ const readCommittedCorpus = async (): Promise<
 };
 
 /**
+ * Whether a document leaves its band's termination open: a lattice point
+ * missing from the first or last column, which is the pair
+ * `MeanderTopologyService.isChannelWidthCompliant` steps over.
+ */
+const hasTerminationGap = (graph: LatticeGraph): boolean => {
+  for (const column of [0, graph.columns]) {
+    for (let row = 0; row <= graph.rows; row += 1) {
+      if (!graph.nodes.has(`${column},${row}`)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};
+
+/**
  * The six families #340 measured the negative space of, named so the
  * assertion below can be an allow-list rather than a deny-list.
  *
@@ -217,6 +314,59 @@ const NEGATIVE_SPACE_SURVEYED_FAMILIES: ReadonlySet<MeanderType> = new Set([
   "swirl",
   "whirl",
 ]);
+
+/**
+ * Every `negative` drawing the sweep commits, beside the committed `mosaic`
+ * permutation whose white space it inks.
+ *
+ * This is what makes "the candidates drawn come from the survey's shortlist"
+ * — #415's second acceptance criterion — a fact rather than a comment. The
+ * right-hand column names files that were on disk before this family
+ * existed, measured by the survey and committed by the permutation sweep, and
+ * the assertion below reads both and compares them. The `rows` on the left is
+ * one lower than the `rows` in the filename on the right, which is the whole
+ * of `NEGATIVE_SOURCE_ROW_OFFSET`.
+ *
+ * The sweep also draws `negative` at 8 rows, one row past the survey's own
+ * range, so those three drawings have no committed source to compare against
+ * and are absent here. They are still gated by the sweep above, which
+ * measures them like every other drawing.
+ */
+const NEGATIVE_SOURCE_DOCUMENTS: readonly {
+  readonly parameters: GenerationParameters;
+  readonly sourceName: string;
+}[] = [
+  ["dvvxxd", "dvvxxvdx", "dvvxxvvxxd", "dvvxxvvxxvdx", "dvvxxvvxxvvxxd"].map(
+    (identifier, index) => ({
+      parameters: {
+        repeatCount: 6,
+        rows: index + 3,
+        type: "negative" as const,
+      },
+      sourceName: `mosaic-${index + 4}-rows-2-columns-${identifier}.svg`,
+    }),
+  ),
+  ["hxxhhx", "hxxhhxxh", "hxxhhxxhhx", "hxxhhxxhhxxh", "hxxhhxxhhxxhhx"].map(
+    (identifier, index) => ({
+      parameters: {
+        modifier: { name: "brick" as const },
+        repeatCount: 6,
+        rows: index + 3,
+        type: "negative" as const,
+      },
+      sourceName: `mosaic-${index + 4}-rows-2-columns-${identifier}-dashes.svg`,
+    }),
+  ),
+  ["dld", "dldl", "dldld", "dldldl", "dldldld"].map((identifier, index) => ({
+    parameters: {
+      modifier: { name: "ruled" as const },
+      repeatCount: 6,
+      rows: index + 3,
+      type: "negative" as const,
+    },
+    sourceName: `mosaic-${index + 4}-rows-1-columns-${identifier}.svg`,
+  })),
+].flat();
 
 /** Whether `parameters` name a drawing the charter declaration allows to break `invariant`. */
 const relaxes = (
@@ -238,12 +388,14 @@ const relaxes = (
 
 describe(MeanderTopologyService, () => {
   let generationService: MeanderGenerationService;
+  let latticeService: MeanderLatticeService;
   let topologyService: MeanderTopologyService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         BoxesMotifService,
+        BranchMotifService,
         ChainMotifService,
         CrossMotifService,
         GridGeometryService,
@@ -254,7 +406,11 @@ describe(MeanderTopologyService, () => {
         MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
+        MotifRegistryService,
         MotifTransformsService,
+        NegativeMotifService,
+        NegativeSourceService,
+        ParallelMotifService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,
@@ -264,6 +420,7 @@ describe(MeanderTopologyService, () => {
     }).compile();
 
     generationService = await module.resolve(MeanderGenerationService);
+    latticeService = await module.resolve(MeanderLatticeService);
     topologyService = await module.resolve(MeanderTopologyService);
   });
 
@@ -274,7 +431,7 @@ describe(MeanderTopologyService, () => {
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
     it("sweeps every named-type combination StartCommand writes", () => {
-      expect(charterSweep).toHaveLength(120);
+      expect(charterSweep).toHaveLength(174);
     });
 
     it.each(charterSweep)("$label holds it", ({ parameters }) => {
@@ -316,36 +473,198 @@ describe(MeanderTopologyService, () => {
       ]);
     });
 
-    it("holds across every committed document, measured from disk", async () => {
-      const documents = await readCommittedCorpus();
+    // 🎯 The `negative` family's whole claim, in one assertion: its ink is
+    // the white space of a document this repository already committed. The
+    // two counts are read from two different files by two different routes —
+    // one generated here, one measured off disk — so a change to either side
+    // that stopped them being complements would fail. The `toBeGreaterThan`
+    // is the guard against the assertion passing vacuously on a source with
+    // nothing in its negative to ink.
+    it.each(NEGATIVE_SOURCE_DOCUMENTS)(
+      "inks exactly the corridors $sourceName leaves",
+      async ({ parameters, sourceName }) => {
+        const source = topologyService.measure(
+          await readFile(
+            path.join(OUTPUT_DIRECTORY, "permutations", sourceName),
+            "utf8",
+          ),
+        );
+        const negative = topologyService.measure(
+          generationService.generate(parameters),
+        );
 
-      expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
+        expect(source.negativeTJunctions).toBeGreaterThan(0);
+        expect({
+          branches: negative.inkTJunctions,
+          crosses: negative.inkXJunctions,
+        }).toStrictEqual({
+          branches: source.negativeTJunctions,
+          crosses: source.negativeXJunctions,
+        });
+      },
+    );
 
-      const measured = documents.map(({ document, name }) => ({
-        name,
-        ...topologyService.measure(document),
-      }));
+    // 🎯 The `branch` family's whole claim, taken over the corpus rather
+    // than over a family's own drawings: its twenty-one documents are trees
+    // and every other one of the 3,353 is not. Reading from disk is what
+    // makes the second half say anything — a family that started drawing
+    // loops, or one that stopped, fails here rather than in its own test.
+    //
+    // The two conditions are separated on purpose. Being a forest is what
+    // every family but three already is; being one connected piece is what
+    // `negative` already is. Only `branch` is both, and 3,317 documents
+    // predate it without a single one managing it.
+    it(
+      "draws a tree in exactly the branching family's documents",
+      async () => {
+        const documents = await readCommittedCorpus();
+        const trees: string[] = [];
+        const looped: string[] = [];
+        const negativeCycles: number[] = [];
+        const negativeComponents: number[] = [];
 
+        for (const { document, name } of documents) {
+          const { components, edges, nodes } =
+            topologyService.connectivity(document);
+
+          if (edges !== nodes - components) {
+            looped.push(name);
+          }
+
+          if (components === 1 && edges === nodes - 1) {
+            trees.push(name);
+          }
+
+          if (name.startsWith("negative-")) {
+            negativeCycles.push(edges - nodes + components);
+            negativeComponents.push(components);
+          }
+        }
+
+        // 🎯 The measurement `README.md`, `AGENTS.md`, and
+        // `BranchMotifService`'s own doc comment all cite as the reason
+        // `branch` and `negative` are two families rather than one name for
+        // one thing. Published in three places and computed in none until
+        // this assertion: the cycle count is `edges - nodes + components`,
+        // which this loop already had all three inputs for.
+        expect(negativeCycles).toHaveLength(18);
+        expect(Math.min(...negativeCycles)).toBe(10);
+        expect(Math.max(...negativeCycles)).toBe(45);
+        expect(Math.min(...negativeComponents)).toBe(1);
+        expect(Math.max(...negativeComponents)).toBe(5);
+
+        expect(trees).toHaveLength(21);
+        expect(
+          [...new Set(trees.map((name) => name.split("-")[0]))].toSorted(),
+        ).toStrictEqual(["branch"]);
+
+        // 🎯 The loops are all somewhere else: `negative`'s eighteen corridor
+        // networks, `cross`'s three solid crossings, and the ten `snake`
+        // drawings whose `edge` pitch closes a loop against the band border.
+        // `branch` appears nowhere in this list, which is the half of the
+        // claim a tree test alone would not make.
+        expect(looped).toHaveLength(31);
+        expect(
+          [...new Set(looped.map((name) => name.split("-")[0]))].toSorted(),
+        ).toStrictEqual(["cross", "negative", "snake"]);
+      },
+      CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
+    );
+
+    // 🎯 The two figures the charter's own "ink branches" bullet publishes,
+    // read off the named patterns the charter counts them over. Prose and
+    // measurement were authored at different moments and nothing else makes
+    // them agree, so the count is taken here rather than restated there.
+    it("branches in exactly the families the charter names, measured from disk", async () => {
+      const entries = await readdir(OUTPUT_DIRECTORY);
+      const names = entries.filter((name) => name.endsWith(".svg"));
+      const branching: string[] = [];
+      let tJunctions = 0;
+
+      for (const name of names) {
+        const measured = topologyService.measure(
+          await readFile(path.join(OUTPUT_DIRECTORY, name), "utf8"),
+        );
+
+        tJunctions += measured.inkTJunctions;
+
+        if (measured.inkTJunctions > 0) {
+          branching.push(name);
+        }
+      }
+
+      expect(names).toHaveLength(174);
+      expect(tJunctions).toBe(1360);
+      expect(branching).toHaveLength(59);
       expect(
-        measured
-          .filter((topology) => !topology.channelWidthCompliant)
-          .map(({ name }) => name),
-      ).toStrictEqual([]);
-
-      // 🎯 Ink crosses in exactly the three documents that were committed to
-      // make it cross, and nowhere else in 3,299 files. The `interrupted`
-      // renderings of the same three row counts are absent on purpose: the
-      // break takes the junction out of the ink graph.
-      expect(
-        measured
-          .filter((topology) => topology.inkXJunctions > 0)
-          .map(({ inkXJunctions, name }) => `${name} ${inkXJunctions}`),
-      ).toStrictEqual([
-        "cross-6-rows-6-repeats.svg 12",
-        "cross-7-rows-6-repeats.svg 12",
-        "cross-8-rows-6-repeats.svg 12",
-      ]);
+        [...new Set(branching.map((name) => name.split("-")[0]))].toSorted(),
+      ).toStrictEqual(["branch", "chain", "negative", "snake"]);
     });
+
+    it(
+      "holds across every committed document, measured from disk",
+      async () => {
+        const documents = await readCommittedCorpus();
+
+        expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
+
+        const measured = documents.map(({ document, name }) => ({
+          name,
+          ...topologyService.measure(document),
+        }));
+
+        expect(
+          measured
+            .filter((topology) => !topology.channelWidthCompliant)
+            .map(({ name }) => name),
+        ).toStrictEqual([]);
+
+        // 🎯 Ink crosses in exactly the three documents that were committed to
+        // make it cross, and nowhere else in 3,353 files. The `interrupted`
+        // renderings of the same three row counts are absent on purpose: the
+        // break takes the junction out of the ink graph.
+        expect(
+          measured
+            .filter((topology) => topology.inkXJunctions > 0)
+            .map(({ inkXJunctions, name }) => `${name} ${inkXJunctions}`),
+        ).toStrictEqual([
+          "cross-6-rows-6-repeats.svg 12",
+          "cross-7-rows-6-repeats.svg 12",
+          "cross-8-rows-6-repeats.svg 12",
+        ]);
+      },
+      CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
+    );
+
+    // 🎯 The one measurement `channelWidthCompliant`'s carve-out rests on,
+    // taken from the same lattice the carve-out steps over. Both halves
+    // matter: the count is what the doc comments cite, and the families
+    // absent from it are the four that cover their own band ends.
+    it(
+      "leaves a termination gap in exactly the documents the carve-out is for",
+      async () => {
+        const documents = await readCommittedCorpus();
+        const withGap = documents.filter(({ document }) =>
+          hasTerminationGap(latticeService.build(document)),
+        );
+
+        expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
+        expect(withGap).toHaveLength(TERMINATION_GAP_DOCUMENTS);
+        expect(
+          [
+            ...new Set(withGap.map(({ name }) => name.split("-")[0])),
+          ].toSorted(),
+        ).toStrictEqual([
+          "chain",
+          "cross",
+          "mosaic",
+          "snake",
+          "swirl",
+          "whirl",
+        ]);
+      },
+      CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
+    );
 
     it.each([
       {

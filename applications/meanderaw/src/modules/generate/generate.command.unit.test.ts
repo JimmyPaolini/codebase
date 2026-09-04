@@ -158,6 +158,12 @@ describe(GenerateCommand, () => {
     });
   });
 
+  describe("parseStrands", () => {
+    it("parses the strand count as an integer", () => {
+      expect(command.parseStrands("3")).toBe(3);
+    });
+  });
+
   describe("parseShape", () => {
     it("passes a supported shape through unchanged", () => {
       expect(command.parseShape("bounce")).toBe("bounce");
@@ -337,6 +343,46 @@ describe(GenerateCommand, () => {
           type: "mosaic",
         }),
       ).rejects.toThrow(/requires --shape/);
+    });
+
+    it("forwards the parallel ply to the generation service and encodes it in the filename", async () => {
+      vi.mocked(meanderGenerationService.generate).mockReturnValue(
+        "<svg>fixture</svg>\n",
+      );
+
+      await command.run([], {
+        modifier: "plied",
+        outputDirectory: "output",
+        repeatCount: 6,
+        rows: 6,
+        strands: 3,
+        type: "parallel",
+      });
+
+      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
+        modifier: { name: "plied", strands: 3 },
+        repeatCount: 6,
+        rows: 6,
+        type: "parallel",
+      });
+      expect(mockWriteFile).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "parallel-6-rows-6-repeats-plied-strands-3.svg",
+        ),
+        "<svg>fixture</svg>\n",
+      );
+    });
+
+    it("throws when plied is requested without a strand count", async () => {
+      await expect(
+        command.run([], {
+          modifier: "plied",
+          outputDirectory: "output",
+          repeatCount: 6,
+          rows: 6,
+          type: "parallel",
+        }),
+      ).rejects.toThrow(/requires --strands/);
     });
   });
 });

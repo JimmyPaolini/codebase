@@ -13,6 +13,7 @@ import {
 import {
   ALTERNATED_SWEEP_PERIODS,
   DOT_SWEEP_SHAPES,
+  PLIED_SWEEP_STRAND_COUNTS,
   ROWS_SWEEP_MAXIMUM,
 } from "./start.constants";
 
@@ -80,6 +81,10 @@ export class StartCombinationsService {
 
     if (name === "dot") {
       return DOT_SWEEP_SHAPES.map((shape) => ({ name, shape }));
+    }
+
+    if (name === "plied") {
+      return PLIED_SWEEP_STRAND_COUNTS.map((strands) => ({ name, strands }));
     }
 
     return [{ name }];

@@ -1,6 +1,10 @@
 // ♟️ Constants
 
-import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
+import {
+  MOSAIC_TILE_MINIMUM_ROWS,
+  SUPPORTED_SUB_FAMILIES,
+} from "../mosaic-motif/mosaic-motif.constants";
+import { NEGATIVE_SOURCE_ROW_OFFSET } from "../negative-motif/negative-motif.constants";
 
 import type {
   DotShape,
@@ -15,9 +19,12 @@ import type {
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
+  branch: ["rung", "stagger"],
   chain: ["edge", "flip", "edge-flip"],
   cross: ["interrupted"],
   mosaic: ["alternated", "dot", "split"],
+  negative: ["brick", "ruled"],
+  parallel: ["plied"],
   snake: ["edge", "flip", "edge-flip"],
   swirl: ["flip"],
   whirl: ["flip"],
@@ -51,6 +58,16 @@ export const MINIMUM_PERIOD = 1;
 
 /** Lowest `repeatCount` value the CLI accepts: at least one unit must be drawn. */
 export const MINIMUM_REPEAT_COUNT = 1;
+
+/**
+ * Lowest `strands` value `plied` accepts. Two, because a family named for
+ * strands running alongside one another needs two of them to have one; see
+ * {@link DEFAULT_PARALLEL_STRANDS}, which is the same number for the same
+ * reason. The upper bound is not a constant: it is the drawing's own `rows`,
+ * because the innermost strand's arms are `rows - strands + 1` lattice steps
+ * long and vanish beyond it.
+ */
+export const MINIMUM_STRANDS = 2;
 
 /**
  * How many repeat units `spin` and `spin-flip` need before their 90° rotation
@@ -88,6 +105,11 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "split",
   "dot",
   "interrupted",
+  "brick",
+  "ruled",
+  "rung",
+  "stagger",
+  "plied",
 ] satisfies readonly Modifier["name"][];
 
 /**
@@ -105,6 +127,9 @@ export const SUPPORTED_TYPES: readonly string[] = [
   "swirl",
   "whirl",
   "cross",
+  "negative",
+  "branch",
+  "parallel",
 ] satisfies readonly MeanderType[];
 
 /**
@@ -116,9 +141,12 @@ export const SUPPORTED_TYPES: readonly string[] = [
  */
 export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
   boxes: [],
+  branch: [],
   chain: [],
   cross: [],
   mosaic: SUPPORTED_SUB_FAMILIES,
+  negative: [],
+  parallel: [],
   snake: [],
   swirl: [],
   whirl: [],
@@ -160,12 +188,52 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * rows so the number and its reason cannot drift apart. One minimum per
  * family is the model here, so the family takes the stricter of its two
  * modes.
+ *
+ * `negative`'s minimum is its source's minimum moved down one, and it is
+ * written as that subtraction rather than as the 3 it evaluates to, so the
+ * two cannot drift. It inks the corridors a `mosaic` tile leaves and puts a
+ * lattice point on each of that tile's cells, so its own band is one row
+ * shorter than the tile it inverts (see `NEGATIVE_SOURCE_ROW_OFFSET`).
+ * `MOSAIC_TILE_MINIMUM_ROWS` is 4 for its own reason — below it a tile's
+ * interior is a single level and there is nothing to permute — so 3 rows is
+ * the shallowest negative the shallowest enumerable tile can yield.
+ *
+ * `branch`'s minimum of 2 is its `rung` mode's, and the family takes the
+ * stricter of its modes the same way `cross` does. `comb` and `stagger` do
+ * draw at one row — a rail with a one-step tooth under every column still
+ * forks at every interior column, 10 times and 5 times respectively, which
+ * is what they fork at every other row count too. `rung` does not. Its fork
+ * is a rung meeting the middle of a stile, so it needs the stile to have a
+ * middle — at least one lattice point strictly between the band's two
+ * border rows — and a one-row band has none, leaving each unit a plain
+ * bracket with the mode's characteristic junction absent entirely. The
+ * `rows - 1` stile forks per unit that the mode is named for appear first
+ * at 2 rows. `branch-motif.service.unit.test.ts` renders all three modes
+ * below the minimum and measures every claim in this paragraph there, so
+ * the number and its reason cannot drift apart.
+ *
+ * `parallel`'s minimum of 4 is its deepest ply's rather than its default's,
+ * and the family takes the stricter of its modes the same way `cross` and
+ * `branch` do. A bundle of `strands` nested brackets needs `strands` rows:
+ * the innermost bracket's arms are `rows - strands + 1` lattice steps long,
+ * so one ply further collapses them onto its own crossbar and leaves a bare
+ * segment running alongside nothing. Four is the deepest ply the sweep
+ * draws — `PLIED_SWEEP_STRAND_COUNTS` names them, and
+ * `start-combinations.service.unit.test.ts` asserts the two numbers agree.
+ * The default two-strand ply draws perfectly well at 2 and 3 rows, which
+ * `parallel-motif.service.unit.test.ts` measures below the minimum the same
+ * way `branch` does; a deeper ply is admitted at a deeper row count by
+ * {@link InvalidStrandCountError} rather than by this number, which is why
+ * the bound on `strands` is `rows` and not a constant.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
+  branch: 2,
   chain: 4,
   cross: 6,
   mosaic: 3,
+  negative: MOSAIC_TILE_MINIMUM_ROWS - NEGATIVE_SOURCE_ROW_OFFSET,
+  parallel: 4,
   snake: 4,
   swirl: 4,
   whirl: 4,
@@ -241,6 +309,25 @@ export class InvalidRowsError extends Error {
   constructor(rows: number, minimum: number, maximum: number) {
     super(`rows must be between ${minimum} and ${maximum}, received ${rows}`);
     this.name = "InvalidRowsError";
+  }
+}
+
+/**
+ * Thrown when `plied`'s `strands` falls outside {@link MINIMUM_STRANDS} and
+ * the drawing's own row count.
+ *
+ * The maximum is `rows` rather than {@link MAXIMUM_VALUE} because the bound
+ * is the geometry's, not the CLI's: a bundle's innermost strand has
+ * `rows - strands + 1` lattice steps of arm, and at one ply further it has
+ * none. That is also why the message names the row count it was measured
+ * against rather than a constant.
+ */
+export class InvalidStrandCountError extends Error {
+  constructor(strands: number, minimum: number, rows: number) {
+    super(
+      `strands must be between ${minimum} and the row count ${rows}, received ${strands}`,
+    );
+    this.name = "InvalidStrandCountError";
   }
 }
 

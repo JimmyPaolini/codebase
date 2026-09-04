@@ -2,7 +2,10 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 
-import { CROSS_UNIT_COLUMNS } from "./cross-motif.constants";
+import {
+  CROSS_UNIT_COLUMNS,
+  UnknownCrossModifierError,
+} from "./cross-motif.constants";
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
 import type {
@@ -84,10 +87,22 @@ export class CrossMotifService implements MotifService {
    * gives back a quarter unit at each end. The bar's two remaining ends
    * still paint levels `crossing - 1` and `crossing + 1`, so no lattice
    * point loses its ink and invariant 2 holds unchanged.
+   *
+   * A modifier this family draws no bar for is refused rather than drawn
+   * solid. `COMPATIBLE_MODIFIERS` already rejects one before it reaches
+   * here, so this only fires if that seam is widened — but falling through
+   * to the solid bar would answer a request for one mode with another, the
+   * way `negative`, `branch`, and `parallel` all refuse to.
    */
   private barSpans(unit: MotifUnit): readonly CrossLevelSpan[] {
-    if (unit.modifier?.name !== "interrupted") {
+    const modifierName = unit.modifier?.name;
+
+    if (modifierName === undefined) {
       return [{ fromLevel: 1, toLevel: unit.rows - 1 }];
+    }
+
+    if (modifierName !== "interrupted") {
+      throw new UnknownCrossModifierError(modifierName);
     }
 
     const crossing = this.crossingLevel(unit.rows);
