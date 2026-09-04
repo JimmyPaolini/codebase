@@ -27,9 +27,9 @@ import type {
  * Enumerates the named-type half of the sweep: every implemented type,
  * crossed with every modifier `COMPATIBLE_MODIFIERS` lists for it plus "no
  * modifier", crossed with every row count from that type's own
- * `STRUCTURAL_MINIMUM_ROWS` through `ROWS_SWEEP_MAXIMUM`. `alternated` and
- * `dot` each expand to the representative values `start.constants.ts` names
- * rather than their full range, and `repeatCount` is
+ * `STRUCTURAL_MINIMUM_ROWS` through whichever maximum the caller asks for.
+ * `alternated` and `dot` each expand to the representative values
+ * `draw.constants.ts` names rather than their full range, and `repeatCount` is
  * `DEFAULT_REPEAT_COUNT` except for the spin family, which is rounded up to
  * the nearest multiple of `SPIN_CYCLE_LENGTH` so the generation service
  * never rejects a cut-off rotation.
@@ -41,6 +41,10 @@ import type {
  * test sweeps it. Sharing the constants is not enough — the composition is
  * what decides which documents exist, and both must agree on all of it for
  * the charter to gate the corpus the repository actually commits.
+ *
+ * The one thing the two callers do not share is how far up the row counts
+ * go, which is the `rowsMaximum` argument {@link enumerate} takes and the
+ * reason it takes one — see its own comment.
  *
  * Adding a family therefore widens both at once, and adds nothing here: the
  * enumeration is driven entirely by `SUPPORTED_TYPES`,
@@ -59,8 +63,11 @@ export class DrawCombinationsService {
   // 🔏 Private Methods
 
   /** Enumerates every combination for a single type: every swept row count crossed with every swept modifier. */
-  private combinationsForType(type: MeanderType): GenerationParameters[] {
-    const rows = this.rowsSweep(type);
+  private combinationsForType(
+    type: MeanderType,
+    rowsMaximum: number,
+  ): GenerationParameters[] {
+    const rows = this.rowsSweep(type, rowsMaximum);
     const modifiers = this.modifiersForType(type);
 
     return rows.flatMap((rowCount) =>
@@ -123,22 +130,38 @@ export class DrawCombinationsService {
     return DEFAULT_REPEAT_COUNT;
   }
 
-  /** Every `rows` value the sweep covers for `type`: its own structural minimum through `ROWS_SWEEP_MAXIMUM`. */
-  private rowsSweep(type: MeanderType): number[] {
+  /** Every `rows` value the sweep covers for `type`: its own structural minimum through `rowsMaximum`. */
+  private rowsSweep(type: MeanderType, rowsMaximum: number): number[] {
     const minimum = STRUCTURAL_MINIMUM_ROWS[type];
-    const length = ROWS_SWEEP_MAXIMUM - minimum + 1;
+    const length = rowsMaximum - minimum + 1;
 
     return Array.from({ length }, (_value, index) => minimum + index);
   }
 
   // 🌎 Public Methods
 
-  /** Enumerates every `(type, modifier-or-none, rows, repeatCount)` combination the named-type sweep covers. */
-  enumerate(): GenerationParameters[] {
+  /**
+   * Enumerates every `(type, modifier-or-none, rows, repeatCount)`
+   * combination the named-type sweep covers, from each type's own
+   * `STRUCTURAL_MINIMUM_ROWS` through `rowsMaximum`.
+   *
+   * `rowsMaximum` defaults to `ROWS_SWEEP_MAXIMUM`, which is the extent
+   * `DrawCommand` commits to `output/` and nothing else. It is a parameter
+   * because the charter's property test needs the same composition over a
+   * wider extent: it passes `MAXIMUM_VALUE`, so the invariants are asserted
+   * across every row count the command line accepts rather than only the
+   * ones a document happens to have been committed for.
+   *
+   * That gap is not hypothetical: issue #507 lived in it. Widening the row
+   * range rather than committing more documents is what closes it — the
+   * charter's assertions measure a document generated in the test, so none
+   * of them needs one on disk.
+   */
+  enumerate(rowsMaximum: number = ROWS_SWEEP_MAXIMUM): GenerationParameters[] {
     const types = SUPPORTED_TYPES.filter((value): value is MeanderType =>
       this.isMeanderType(value),
     );
 
-    return types.flatMap((type) => this.combinationsForType(type));
+    return types.flatMap((type) => this.combinationsForType(type, rowsMaximum));
   }
 }
