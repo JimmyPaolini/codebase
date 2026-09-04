@@ -169,7 +169,7 @@ nx run meanderaw:oxfmt           # Formatting
 This application has **one command, `draw`**, and it is the default — so `start` runs it.
 With no arguments it writes every drawing under `output/<family>/<rows>-rows/`, nests the
 enumerated `mosaic` tiles a `permutations/<columns>-columns/` deeper, and writes one
-gitignored `output/index.html` listing them all. With `--type` and `--rows` it draws that
+`output/index.html` listing them all. With `--type` and `--rows` it draws that
 one into the same tree:
 
 ```bash

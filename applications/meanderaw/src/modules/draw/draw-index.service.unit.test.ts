@@ -68,6 +68,35 @@ describe(DrawIndexService, () => {
       );
     });
 
+    it("lays the families out in the order they are declared rather than alphabetically", () => {
+      const page = service.render([
+        {
+          directory: "mosaic/6-rows/permutations/1-columns",
+          fileName: "ddddd-dots.svg",
+        },
+        { directory: "boxes/3-rows", fileName: "plain-6-repeats.svg" },
+        { directory: "snake/4-rows", fileName: "plain-6-repeats.svg" },
+      ]);
+
+      expect(page.indexOf("<h2>snake/4-rows</h2>")).toBeLessThan(
+        page.indexOf("<h2>boxes/3-rows</h2>"),
+      );
+      expect(page.indexOf("<h2>boxes/3-rows</h2>")).toBeLessThan(
+        page.indexOf("<h2>mosaic/6-rows/permutations/1-columns</h2>"),
+      );
+    });
+
+    it("sorts a directory no family names after every family, rather than by its initial letter", () => {
+      const page = service.render([
+        { directory: "attic", fileName: "plain-6-repeats.svg" },
+        { directory: "mosaic/6-rows", fileName: "ddddd-dots.svg" },
+      ]);
+
+      expect(page.indexOf("<h2>mosaic/6-rows</h2>")).toBeLessThan(
+        page.indexOf("<h2>attic</h2>"),
+      );
+    });
+
     it("links each directory from a jump list, so a section far down the page is one click away", () => {
       const page = service.render(documents);
 
