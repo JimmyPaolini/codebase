@@ -217,6 +217,16 @@ const charterSweep: readonly CharterCase[] = new StartCombinationsService()
  * minimum of 4 crossed with the two plies `PLIED_SWEEP_STRAND_COUNTS` names
  * plus its unmodified default.
  */
+/**
+ * How long a corpus-wide measurement may take. Each of the three tests that
+ * use it reads all 3,353 committed documents from disk and measures every
+ * one, which takes roughly two seconds locally but several times that on a
+ * shared CI runner — past vitest's five-second default, which is what failed
+ * there while passing everywhere else. Bounded rather than removed, so a
+ * genuine hang still fails instead of running forever.
+ */
+const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
+
 const COMMITTED_CORPUS_SIZE = 174 + 3179;
 
 /**
@@ -504,58 +514,62 @@ describe(MeanderTopologyService, () => {
     // every family but three already is; being one connected piece is what
     // `negative` already is. Only `branch` is both, and 3,317 documents
     // predate it without a single one managing it.
-    it("draws a tree in exactly the branching family's documents", async () => {
-      const documents = await readCommittedCorpus();
-      const trees: string[] = [];
-      const looped: string[] = [];
-      const negativeCycles: number[] = [];
-      const negativeComponents: number[] = [];
+    it(
+      "draws a tree in exactly the branching family's documents",
+      async () => {
+        const documents = await readCommittedCorpus();
+        const trees: string[] = [];
+        const looped: string[] = [];
+        const negativeCycles: number[] = [];
+        const negativeComponents: number[] = [];
 
-      for (const { document, name } of documents) {
-        const { components, edges, nodes } =
-          topologyService.connectivity(document);
+        for (const { document, name } of documents) {
+          const { components, edges, nodes } =
+            topologyService.connectivity(document);
 
-        if (edges !== nodes - components) {
-          looped.push(name);
+          if (edges !== nodes - components) {
+            looped.push(name);
+          }
+
+          if (components === 1 && edges === nodes - 1) {
+            trees.push(name);
+          }
+
+          if (name.startsWith("negative-")) {
+            negativeCycles.push(edges - nodes + components);
+            negativeComponents.push(components);
+          }
         }
 
-        if (components === 1 && edges === nodes - 1) {
-          trees.push(name);
-        }
+        // 🎯 The measurement `README.md`, `AGENTS.md`, and
+        // `BranchMotifService`'s own doc comment all cite as the reason
+        // `branch` and `negative` are two families rather than one name for
+        // one thing. Published in three places and computed in none until
+        // this assertion: the cycle count is `edges - nodes + components`,
+        // which this loop already had all three inputs for.
+        expect(negativeCycles).toHaveLength(18);
+        expect(Math.min(...negativeCycles)).toBe(10);
+        expect(Math.max(...negativeCycles)).toBe(45);
+        expect(Math.min(...negativeComponents)).toBe(1);
+        expect(Math.max(...negativeComponents)).toBe(5);
 
-        if (name.startsWith("negative-")) {
-          negativeCycles.push(edges - nodes + components);
-          negativeComponents.push(components);
-        }
-      }
+        expect(trees).toHaveLength(21);
+        expect(
+          [...new Set(trees.map((name) => name.split("-")[0]))].toSorted(),
+        ).toStrictEqual(["branch"]);
 
-      // 🎯 The measurement `README.md`, `AGENTS.md`, and
-      // `BranchMotifService`'s own doc comment all cite as the reason
-      // `branch` and `negative` are two families rather than one name for
-      // one thing. Published in three places and computed in none until
-      // this assertion: the cycle count is `edges - nodes + components`,
-      // which this loop already had all three inputs for.
-      expect(negativeCycles).toHaveLength(18);
-      expect(Math.min(...negativeCycles)).toBe(10);
-      expect(Math.max(...negativeCycles)).toBe(45);
-      expect(Math.min(...negativeComponents)).toBe(1);
-      expect(Math.max(...negativeComponents)).toBe(5);
-
-      expect(trees).toHaveLength(21);
-      expect(
-        [...new Set(trees.map((name) => name.split("-")[0]))].toSorted(),
-      ).toStrictEqual(["branch"]);
-
-      // 🎯 The loops are all somewhere else: `negative`'s eighteen corridor
-      // networks, `cross`'s three solid crossings, and the ten `snake`
-      // drawings whose `edge` pitch closes a loop against the band border.
-      // `branch` appears nowhere in this list, which is the half of the
-      // claim a tree test alone would not make.
-      expect(looped).toHaveLength(31);
-      expect(
-        [...new Set(looped.map((name) => name.split("-")[0]))].toSorted(),
-      ).toStrictEqual(["cross", "negative", "snake"]);
-    });
+        // 🎯 The loops are all somewhere else: `negative`'s eighteen corridor
+        // networks, `cross`'s three solid crossings, and the ten `snake`
+        // drawings whose `edge` pitch closes a loop against the band border.
+        // `branch` appears nowhere in this list, which is the half of the
+        // claim a tree test alone would not make.
+        expect(looped).toHaveLength(31);
+        expect(
+          [...new Set(looped.map((name) => name.split("-")[0]))].toSorted(),
+        ).toStrictEqual(["cross", "negative", "snake"]);
+      },
+      CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
+    );
 
     // 🎯 The two figures the charter's own "ink branches" bullet publishes,
     // read off the named patterns the charter counts them over. Prose and
@@ -587,53 +601,70 @@ describe(MeanderTopologyService, () => {
       ).toStrictEqual(["branch", "chain", "negative", "snake"]);
     });
 
-    it("holds across every committed document, measured from disk", async () => {
-      const documents = await readCommittedCorpus();
+    it(
+      "holds across every committed document, measured from disk",
+      async () => {
+        const documents = await readCommittedCorpus();
 
-      expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
+        expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
 
-      const measured = documents.map(({ document, name }) => ({
-        name,
-        ...topologyService.measure(document),
-      }));
+        const measured = documents.map(({ document, name }) => ({
+          name,
+          ...topologyService.measure(document),
+        }));
 
-      expect(
-        measured
-          .filter((topology) => !topology.channelWidthCompliant)
-          .map(({ name }) => name),
-      ).toStrictEqual([]);
+        expect(
+          measured
+            .filter((topology) => !topology.channelWidthCompliant)
+            .map(({ name }) => name),
+        ).toStrictEqual([]);
 
-      // 🎯 Ink crosses in exactly the three documents that were committed to
-      // make it cross, and nowhere else in 3,353 files. The `interrupted`
-      // renderings of the same three row counts are absent on purpose: the
-      // break takes the junction out of the ink graph.
-      expect(
-        measured
-          .filter((topology) => topology.inkXJunctions > 0)
-          .map(({ inkXJunctions, name }) => `${name} ${inkXJunctions}`),
-      ).toStrictEqual([
-        "cross-6-rows-6-repeats.svg 12",
-        "cross-7-rows-6-repeats.svg 12",
-        "cross-8-rows-6-repeats.svg 12",
-      ]);
-    });
+        // 🎯 Ink crosses in exactly the three documents that were committed to
+        // make it cross, and nowhere else in 3,353 files. The `interrupted`
+        // renderings of the same three row counts are absent on purpose: the
+        // break takes the junction out of the ink graph.
+        expect(
+          measured
+            .filter((topology) => topology.inkXJunctions > 0)
+            .map(({ inkXJunctions, name }) => `${name} ${inkXJunctions}`),
+        ).toStrictEqual([
+          "cross-6-rows-6-repeats.svg 12",
+          "cross-7-rows-6-repeats.svg 12",
+          "cross-8-rows-6-repeats.svg 12",
+        ]);
+      },
+      CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
+    );
 
     // 🎯 The one measurement `channelWidthCompliant`'s carve-out rests on,
     // taken from the same lattice the carve-out steps over. Both halves
     // matter: the count is what the doc comments cite, and the families
     // absent from it are the four that cover their own band ends.
-    it("leaves a termination gap in exactly the documents the carve-out is for", async () => {
-      const documents = await readCommittedCorpus();
-      const withGap = documents.filter(({ document }) =>
-        hasTerminationGap(latticeService.build(document)),
-      );
+    it(
+      "leaves a termination gap in exactly the documents the carve-out is for",
+      async () => {
+        const documents = await readCommittedCorpus();
+        const withGap = documents.filter(({ document }) =>
+          hasTerminationGap(latticeService.build(document)),
+        );
 
-      expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
-      expect(withGap).toHaveLength(TERMINATION_GAP_DOCUMENTS);
-      expect(
-        [...new Set(withGap.map(({ name }) => name.split("-")[0]))].toSorted(),
-      ).toStrictEqual(["chain", "cross", "mosaic", "snake", "swirl", "whirl"]);
-    });
+        expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
+        expect(withGap).toHaveLength(TERMINATION_GAP_DOCUMENTS);
+        expect(
+          [
+            ...new Set(withGap.map(({ name }) => name.split("-")[0])),
+          ].toSorted(),
+        ).toStrictEqual([
+          "chain",
+          "cross",
+          "mosaic",
+          "snake",
+          "swirl",
+          "whirl",
+        ]);
+      },
+      CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
+    );
 
     it.each([
       {
