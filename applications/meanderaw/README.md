@@ -1043,20 +1043,21 @@ re-derived:
   be drawn**: their doubled row count runs past the shared `MAXIMUM_VALUE` of 12, which is
   every pair from 7 rows up in all six families.
 
-  **That count has been 32-and-8 and 56-and-12 on the way here, and the history is worth
-  keeping**, because the two criteria are easy to conflate and this passage once did. The
-  stricter one was degeneracy: `chain` and `snake` share one zigzag sequence, and it used
-  to double back on itself above eight effective rows, laying a second run of ink over one
-  already drawn. Under the old 32-pair space, eight pairs doubled into that range and four
-  of the eight sat **inside** the row-count maximum — so degeneracy ruled the proposal out
-  where the ceiling alone would not have. That defect was
-  [#507](https://github.com/JimmyPaolini/codebase/issues/507), and it is **fixed**: the
-  zigzag turns at every step at every row count the command line accepts.
+  **The space and the count have been 32-and-8, then 32-and-12, and are now 56-and-36, and
+  the history is worth keeping**, because the two criteria are easy to conflate and this
+  passage once did. The stricter one was degeneracy: `chain` and `snake` share one zigzag
+  sequence, and it used to double back on itself above eight effective rows, laying a
+  second run of ink over one already drawn. Under the old 32-pair space, eight pairs
+  doubled into that range and four of the eight sat **inside** the row-count maximum — so
+  degeneracy ruled the proposal out where the ceiling alone would not have. That defect
+  was [#507](https://github.com/JimmyPaolini/codebase/issues/507), and it is **fixed**:
+  the zigzag turns at every step at every row count the command line accepts.
   `meander-generation.service.unit.test.ts` measures that off rendered path data, across
-  every family rather than the six this passage counts, so the claim fails rather than goes
-  stale. What is left is the ceiling on its own — and fixing #507 also took the sweep out to
-  12 rows, which is why the space is 56 rather than 32.
-  `draw-combinations.service.unit.test.ts` pins both 56 and 36 against the real enumeration.
+  every family rather than the six this passage counts, so the claim fails rather than
+  goes stale. What is left is the ceiling on its own — and fixing #507 also took the sweep
+  out to 12 rows, which is why the space is 56 rather than 32.
+  `draw-combinations.service.unit.test.ts` pins both 56 and 36 against the real
+  enumeration.
 
 What makes strands read as a bundle here is not their thickness but the fact that they
 **turn together**. That is a property of the drawing, not of the stroke, and it costs the
