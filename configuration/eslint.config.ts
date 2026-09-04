@@ -23,6 +23,37 @@ import { conventionalLogMessagePlugin } from "@codebase/logger/eslint";
 
 import type { ConfigWithExtends } from "typescript-eslint";
 
+import type { AST, Linter } from "eslint";
+
+const EMPTY_LOCATION = { column: 0, line: 1 };
+
+/**
+ * Parses any file into an empty `Program`, so a rule that judges only a file's
+ * path fires on a file type ESLint has no real parser for.
+ *
+ * `project-structure/folder-structure` listens on `Program` and reads nothing
+ * but `context.filename`, so an empty tree is all it needs. Exported for
+ * `eslint-structure.config.ts`, which needs the same parser for markdown in a
+ * pass of its own.
+ */
+export const pathOnlyParser: Linter.Parser = {
+  // ESLint serializes the parser into `.eslintcache`, and refuses a custom one
+  // that cannot name itself — without this the main pass fails outright under
+  // `--cache`, which the second pass does not use and so never revealed.
+  meta: { name: "path-only-parser", version: "1.0.0" },
+  parseForESLint: () => ({
+    ast: {
+      body: [],
+      comments: [],
+      loc: { end: EMPTY_LOCATION, start: EMPTY_LOCATION },
+      range: [0, 0],
+      sourceType: "module",
+      tokens: [],
+      type: "Program",
+    } as AST.Program,
+  }),
+};
+
 const tsconfigRootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
@@ -83,6 +114,31 @@ export default [
     settings: {
       "project-structure/folder-structure-config-path":
         "configuration/codebase-structure.json",
+    },
+  },
+
+  // 📄 HTML Placement
+  // `.html` is matched by no other block, so ESLint never visits it and the
+  // structure rule above never judges an HTML path — which is how a generated
+  // `index.html` could have landed in a `src/` root unnoticed. Giving it a
+  // parser that yields an empty `Program` is enough: the structure rule reads
+  // only the path, so nothing here parses HTML or pretends to.
+  //
+  // Markdown cannot be folded in the same way. It resolves to
+  // `@eslint/markdown`'s `markdown/gfm` language, ESLint allows exactly one
+  // language per file, and overriding it rejects that block's `frontmatter`
+  // option outright — so `configuration/eslint-structure.config.ts` judges
+  // markdown paths in a pass of its own.
+  {
+    files: ["**/*.html"],
+    languageOptions: {
+      parser: pathOnlyParser,
+    },
+    plugins: {
+      "project-structure": projectStructurePlugin,
+    },
+    rules: {
+      "project-structure/folder-structure": "error",
     },
   },
 

@@ -1,45 +1,30 @@
 /**
- * A second ESLint pass that exists for exactly one rule.
+ * Judges markdown paths, which the main pass structurally cannot.
  *
- * `project-structure/folder-structure` listens on `Program`, so it only fires
- * on a file ESLint parsed into a JavaScript syntax tree. Two file types in this
- * workspace never get one. `.md` is parsed with `@eslint/markdown`'s
- * `markdown/gfm` language, whose tree is mdast and carries no `Program` node.
- * `.html` is matched by no config block at all, so ESLint never visits it.
+ * `project-structure/folder-structure` listens on `Program`, so it fires only
+ * on a file ESLint parsed into a JavaScript syntax tree. `.md` never gets one:
+ * it resolves to `@eslint/markdown`'s `markdown/gfm` language, whose tree is
+ * mdast. ESLint allows exactly one language per file, and the two cannot be
+ * reconciled in a single pass — verified both ways:
  *
- * Neither can be fixed by adding a block to `eslint.config.ts`: ESLint resolves
- * exactly one `language` per file, so the markdown rules and the structure rule
- * cannot both read the same file in one pass. This config runs the same rule
- * against the same `codebase-structure.json` in a pass of its own, parsing
- * those files into an empty `Program`. Only the path is judged — nothing here
- * reads a file's contents, which is why a stub parser is sufficient and why
- * this pass costs a fraction of the main one.
+ * - Giving `.md` this parser without overriding `language` leaves the markdown
+ *   rules working and the structure rule silently never firing, which is the
+ *   bug this pass exists to fix.
+ * - Overriding `language` to `"@/js"` so the rule does fire rejects the
+ *   markdown block's own options: `Key "languageOptions": Unexpected key
+ *   "frontmatter" found.`
+ *
+ * Folding markdown into `eslint.config.ts` therefore means dropping its
+ * `@eslint/markdown` block — around fifteen rules, `no-html` among them, which
+ * this repository enables precisely because `markdownlint`'s MD033 is off. A
+ * second pass is the cheaper of the two. `.html` needs none of this and is
+ * judged in the main config, which owns the parser both share.
  */
+import { pathOnlyParser } from "./eslint.config";
+
 import projectStructurePlugin from "eslint-plugin-project-structure";
 
 import type { ConfigWithExtends } from "typescript-eslint";
-
-import type { AST, Linter } from "eslint";
-
-const EMPTY_LOCATION = { column: 0, line: 1 };
-
-/**
- * Parses any file into an empty `Program` so that path-only rules fire without
- * the file's real syntax ever being read.
- */
-const pathOnlyParser: Linter.Parser = {
-  parseForESLint: () => ({
-    ast: {
-      body: [],
-      comments: [],
-      loc: { end: EMPTY_LOCATION, start: EMPTY_LOCATION },
-      range: [0, 0],
-      sourceType: "module",
-      tokens: [],
-      type: "Program",
-    } as AST.Program,
-  }),
-};
 
 export default [
   {
@@ -60,7 +45,7 @@ export default [
     ],
   },
   {
-    files: ["**/*.html", "**/*.md", "**/*.mdx"],
+    files: ["**/*.md"],
     languageOptions: {
       parser: pathOnlyParser,
     },

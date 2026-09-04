@@ -205,12 +205,12 @@
     },
     "eslint-structure": {
       "cache": true,
-      "description": "Judge folder structure for the file types the main ESLint pass cannot. `project-structure/folder-structure` only fires on a file ESLint parsed into a `Program`, which markdown never gets (`@eslint/markdown` parses it as mdast) and HTML never gets (no config block lints it). ESLint resolves one `language` per file, so the markdown rules and the structure rule cannot share a pass \u2014 hence a second one, reading the same configuration/codebase-structure.json. Take no `write` configuration: there is nothing to fix automatically, only a path to move. This is what keeps an undeclared markdown directory from passing lint, which is how openwiki/ went undeclared for as long as it did. The inputs are {workspaceRoot} globs rather than {projectRoot} ones on purpose: this target is owned by the root project but judges every project's files, and a {projectRoot} glob only ever sees the files Nx assigns to the root project \u2014 so a markdown file added inside a project replayed a cached pass and the violation went unreported.",
+      "description": "Judge markdown folder structure, which the main ESLint pass structurally cannot. `project-structure/folder-structure` fires only on a file ESLint parsed into a `Program`, and `.md` resolves to `@eslint/markdown`'s `markdown/gfm` language instead; ESLint allows one language per file, so the markdown rules and the structure rule cannot share a pass. `.html` needs no second pass and is judged in `eslint.config.ts`. Takes no `write` configuration: there is nothing to fix automatically, only a path to move. This is what keeps an undeclared markdown directory from passing lint, which is how openwiki/ went undeclared for as long as it did. The inputs are {workspaceRoot} globs rather than {projectRoot} ones because this target is owned by the root project but judges every project's files \u2014 a {projectRoot} glob only sees the root project's own, so a markdown file added inside a project replayed a cached pass and the violation went unreported.",
       "executor": "nx:run-commands",
       "inputs": [
-        "{workspaceRoot}/**/*.html",
         "{workspaceRoot}/**/*.md",
         "{workspaceRoot}/configuration/codebase-structure.json",
+        "{workspaceRoot}/configuration/eslint.config.ts",
         "{workspaceRoot}/configuration/eslint-structure.config.ts",
         {
           "externalDependencies": ["eslint", "eslint-plugin-project-structure"]
