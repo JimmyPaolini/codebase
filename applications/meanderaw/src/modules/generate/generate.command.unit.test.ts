@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { LoggerService } from "@codebase/logger";
 
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { OutputFilenameService } from "../svg-rendering/output-filename.service";
+import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import { GenerateCommand } from "./generate.command";
 
@@ -41,7 +41,7 @@ describe(GenerateCommand, () => {
           provide: MeanderGenerationService,
           useValue: createMock<MeanderGenerationService>(),
         },
-        OutputFilenameService,
+        OutputPathService,
       ],
     }).compile();
 
@@ -70,7 +70,7 @@ describe(GenerateCommand, () => {
           provide: MeanderGenerationService,
           useValue: createMock<MeanderGenerationService>(),
         },
-        OutputFilenameService,
+        OutputPathService,
       ],
     }).compile();
 
@@ -193,7 +193,7 @@ describe(GenerateCommand, () => {
   });
 
   describe("run", () => {
-    it("generates the SVG and writes it to a kebab-case file in the output directory", async () => {
+    it("generates the SVG and writes it to a kebab-case path beneath the output directory", async () => {
       vi.mocked(meanderGenerationService.generate).mockReturnValue(
         "<svg>fixture</svg>\n",
       );
@@ -210,14 +210,16 @@ describe(GenerateCommand, () => {
         rows: 5,
         type: "boxes",
       });
-      expect(mockMkdir).toHaveBeenCalledWith("output", { recursive: true });
+      expect(mockMkdir).toHaveBeenCalledWith("output/boxes/5-rows", {
+        recursive: true,
+      });
       expect(mockWriteFile).toHaveBeenCalledWith(
-        expect.stringContaining("boxes-5-rows-8-repeats.svg"),
+        expect.stringContaining("output/boxes/5-rows/plain-8-repeats.svg"),
         "<svg>fixture</svg>\n",
       );
     });
 
-    it("encodes the modifier in the filename and forwards it to the generation service", async () => {
+    it("names the file after the modifier and forwards it to the generation service", async () => {
       vi.mocked(meanderGenerationService.generate).mockReturnValue(
         "<svg>fixture</svg>\n",
       );
@@ -237,7 +239,7 @@ describe(GenerateCommand, () => {
         type: "boxes",
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
-        expect.stringContaining("boxes-5-rows-4-repeats-spin.svg"),
+        expect.stringContaining("output/boxes/5-rows/spin-4-repeats.svg"),
         "<svg>fixture</svg>\n",
       );
     });
@@ -264,7 +266,7 @@ describe(GenerateCommand, () => {
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
         expect.stringContaining(
-          "mosaic-5-rows-6-repeats-alternated-period-2.svg",
+          "output/mosaic/5-rows/alternated-period-2-6-repeats.svg",
         ),
         "<svg>fixture</svg>\n",
       );
@@ -303,7 +305,9 @@ describe(GenerateCommand, () => {
         type: "mosaic",
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
-        expect.stringContaining("mosaic-6-rows-6-repeats-dot-bounce.svg"),
+        expect.stringContaining(
+          "output/mosaic/6-rows/dot-bounce-6-repeats.svg",
+        ),
         "<svg>fixture</svg>\n",
       );
     });
@@ -328,7 +332,7 @@ describe(GenerateCommand, () => {
         type: "mosaic",
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
-        expect.stringContaining("mosaic-6-rows-6-repeats-dots.svg"),
+        expect.stringContaining("output/mosaic/6-rows/dots-6-repeats.svg"),
         "<svg>fixture</svg>\n",
       );
     });
@@ -367,7 +371,7 @@ describe(GenerateCommand, () => {
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
         expect.stringContaining(
-          "parallel-6-rows-6-repeats-plied-strands-3.svg",
+          "output/parallel/6-rows/plied-strands-3-6-repeats.svg",
         ),
         "<svg>fixture</svg>\n",
       );

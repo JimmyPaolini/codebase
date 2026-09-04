@@ -12,11 +12,11 @@ import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
-import { OutputFilenameService } from "../svg-rendering/output-filename.service";
+import { OutputPathService } from "../svg-rendering/output-path.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { StartCombinationsService } from "./start-combinations.service";
-import { StartContactSheetService } from "./start-contact-sheet.service";
+import { StartIndexService } from "./start-index.service";
 import { StartPermutationsService } from "./start-permutations.service";
 import { StartCommand } from "./start.command";
 
@@ -52,7 +52,7 @@ describe(StartCommand, () => {
           provide: MeanderGenerationService,
           useValue: createMock<MeanderGenerationService>(),
         },
-        OutputFilenameService,
+        OutputPathService,
         GridGeometryService,
         MosaicSubFamilyService,
         MosaicTileGenerationService,
@@ -60,7 +60,7 @@ describe(StartCommand, () => {
         MosaicSymmetryService,
         MosaicTilesService,
         StartCombinationsService,
-        StartContactSheetService,
+        StartIndexService,
         StartPermutationsService,
         SvgRenderingService,
       ],
@@ -94,7 +94,7 @@ describe(StartCommand, () => {
           provide: MeanderGenerationService,
           useValue: createMock<MeanderGenerationService>(),
         },
-        OutputFilenameService,
+        OutputPathService,
         GridGeometryService,
         MosaicSubFamilyService,
         MosaicTileGenerationService,
@@ -102,7 +102,7 @@ describe(StartCommand, () => {
         MosaicSymmetryService,
         MosaicTilesService,
         StartCombinationsService,
-        StartContactSheetService,
+        StartIndexService,
         StartPermutationsService,
         SvgRenderingService,
       ],
@@ -122,10 +122,12 @@ describe(StartCommand, () => {
   });
 
   describe("run", () => {
-    it("writes the expected number of files across all ten types, with no name collisions", async () => {
+    it("writes the expected number of files across all ten types, with no path collisions", async () => {
       await command.run([], { outputDirectory: "output" });
 
-      expect(mockMkdir).toHaveBeenCalledWith("output", { recursive: true });
+      expect(mockMkdir).toHaveBeenCalledWith("output/boxes/3-rows", {
+        recursive: true,
+      });
 
       // 🎯 rows sweep is 2..8 (branch), 3..8 (mosaic, boxes, negative),
       // 4..8 (chain, snake, swirl, whirl, parallel), or 6..8 (cross),
@@ -148,14 +150,15 @@ describe(StartCommand, () => {
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
       const namedTypeFiles = writtenFileNames.filter(
-        (filePath) => !filePath.includes("permutations"),
+        (filePath) =>
+          filePath.endsWith(".svg") && !filePath.includes("permutations"),
       );
 
       expect(namedTypeFiles).toHaveLength(expectedNamedTypeCount);
       expect(new Set(writtenFileNames).size).toBe(writtenFileNames.length);
     });
 
-    it("writes the mosaic half into a subdirectory of its own, with a contact sheet per row count", async () => {
+    it("nests the mosaic half under the row count and column span that produced it", async () => {
       await command.run([], { outputDirectory: "output" });
 
       const writtenFileNames = vi
@@ -164,18 +167,33 @@ describe(StartCommand, () => {
       const permutations = writtenFileNames.filter((filePath) =>
         filePath.includes("permutations"),
       );
-      const contactSheets = permutations.filter((filePath) =>
-        filePath.includes("index-"),
-      );
 
-      expect(mockMkdir).toHaveBeenCalledWith("output/permutations", {
-        recursive: true,
-      });
-      // Every distinct tile at 4 through 8 rows, plus one sheet per row count.
-      expect(permutations).toHaveLength(3179 + 5);
-      expect(contactSheets).toHaveLength(5);
+      expect(mockMkdir).toHaveBeenCalledWith(
+        "output/mosaic/4-rows/permutations/1-columns",
+        { recursive: true },
+      );
+      // Every distinct tile at 4 through 8 rows, and nothing else.
+      expect(permutations).toHaveLength(3179);
       expect(permutations).toContain(
-        "output/permutations/mosaic-6-rows-1-columns-ddddd-dots.svg",
+        "output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg",
+      );
+    });
+
+    it("writes one index page beside the output directory, listing every drawing", async () => {
+      await command.run([], { outputDirectory: "output" });
+
+      const index = vi
+        .mocked(mockWriteFile)
+        .mock.calls.find(([filePath]) => filePath === "index.html");
+
+      expect(index).toBeDefined();
+      expect(index?.[1]).toContain("<title>Meanderaw</title>");
+      expect(index?.[1]).toContain("3353 drawings");
+      expect(index?.[1]).toContain(
+        'src="output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
+      );
+      expect(index?.[1]).toContain(
+        'src="output/boxes/3-rows/spin-8-repeats.svg"',
       );
     });
 
@@ -222,7 +240,7 @@ describe(StartCommand, () => {
       ]);
     });
 
-    it("writes each combination's filename under the requested output directory", async () => {
+    it("writes each combination's path under the requested output directory", async () => {
       await command.run([], { outputDirectory: "custom-batch-output" });
 
       const writtenFilePaths = vi
@@ -230,15 +248,15 @@ describe(StartCommand, () => {
         .mock.calls.map(([filePath]) => filePath);
 
       expect(writtenFilePaths).toContainEqual(
-        "custom-batch-output/mosaic-3-rows-6-repeats.svg",
+        "custom-batch-output/mosaic/3-rows/plain-6-repeats.svg",
       );
       expect(writtenFilePaths).toContainEqual(
-        "custom-batch-output/boxes-3-rows-8-repeats-spin.svg",
+        "custom-batch-output/boxes/3-rows/spin-8-repeats.svg",
       );
     });
 
-    it("throws when two combinations would collide on filename", async () => {
-      const collidingFileName = "boxes-3-rows-6-repeats.svg";
+    it("throws when two combinations would collide on path", async () => {
+      const collidingPath = "boxes/3-rows/plain-6-repeats.svg";
       const module = await Test.createTestingModule({
         providers: [
           StartCommand,
@@ -251,12 +269,16 @@ describe(StartCommand, () => {
             useValue: createMock<MeanderGenerationService>(),
           },
           {
-            provide: OutputFilenameService,
-            useValue: createMock<OutputFilenameService>({
-              build: () => collidingFileName,
+            provide: OutputPathService,
+            useValue: createMock<OutputPathService>({
+              build: () => collidingPath,
             }),
           },
           StartCombinationsService,
+          {
+            provide: StartIndexService,
+            useValue: createMock<StartIndexService>(),
+          },
           {
             provide: StartPermutationsService,
             useValue: createMock<StartPermutationsService>(),
@@ -267,7 +289,7 @@ describe(StartCommand, () => {
 
       await expect(
         collidingCommand.run([], { outputDirectory: "output" }),
-      ).rejects.toThrow(/colliding output filenames/);
+      ).rejects.toThrow(/colliding output paths/);
     });
   });
 
@@ -278,7 +300,7 @@ describe(StartCommand, () => {
         providers: [
           StartCombinationsService,
           StartCommand,
-          StartContactSheetService,
+          StartIndexService,
           StartPermutationsService,
           {
             provide: LoggerService,
@@ -299,9 +321,9 @@ describe(StartCommand, () => {
       // every one of the 3,179 mosaic tiles, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
-      // replace the generation services entirely. The five extra files are
-      // the mosaic contact sheets, one per row count.
-      expect(mockWriteFile).toHaveBeenCalledTimes(174 + 3179 + 5);
+      // replace the generation services entirely. The extra file is the
+      // single index page listing all of them.
+      expect(mockWriteFile).toHaveBeenCalledTimes(174 + 3179 + 1);
     });
   });
 });

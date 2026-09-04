@@ -27,6 +27,7 @@ import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { StartCombinationsService } from "../start/start-combinations.service";
+import { PERMUTATIONS_SUBDIRECTORY } from "../start/start.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
@@ -251,25 +252,38 @@ const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
 /**
  * Every committed document, read off disk.
  *
+ * The corpus is a tree rather than two flat directories — `StartCommand`
+ * files each drawing under the family, row count, and column span that
+ * produced it — so this walks it rather than listing it, and reports each
+ * document by its path relative to `output/`. That path is the document's
+ * identity now: two drawings can share a filename where their directories
+ * already say which family and row count they belong to.
+ *
  * Read one at a time rather than through `Promise.all`: three thousand
  * concurrent opens is enough to exhaust the descriptor limit on a developer
  * machine, and the whole read costs a fraction of a second sequentially.
+ * Each directory's entries are sorted before they are walked, so the order
+ * the corpus is reported in is the tree's own rather than the filesystem's.
  */
-const readCommittedCorpus = async (): Promise<
-  { document: string; name: string }[]
-> => {
+const readCommittedCorpus = async (
+  directory: string = OUTPUT_DIRECTORY,
+): Promise<{ document: string; name: string }[]> => {
   const documents: { document: string; name: string }[] = [];
 
-  for (const directory of [
-    OUTPUT_DIRECTORY,
-    path.join(OUTPUT_DIRECTORY, "permutations"),
-  ]) {
-    const names = await readdir(directory);
+  const listing = await readdir(directory, { withFileTypes: true });
+  const entries = listing.toSorted((left, right) =>
+    left.name.localeCompare(right.name),
+  );
 
-    for (const name of names.filter((entry) => entry.endsWith(".svg"))) {
+  for (const entry of entries) {
+    const entryPath = path.join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      documents.push(...(await readCommittedCorpus(entryPath)));
+    } else if (entry.name.endsWith(".svg")) {
       documents.push({
-        document: await readFile(path.join(directory, name), "utf8"),
-        name,
+        document: await readFile(entryPath, "utf8"),
+        name: path.relative(OUTPUT_DIRECTORY, entryPath),
       });
     }
   }
@@ -343,7 +357,7 @@ const NEGATIVE_SOURCE_DOCUMENTS: readonly {
         rows: index + 3,
         type: "negative" as const,
       },
-      sourceName: `mosaic-${index + 4}-rows-2-columns-${identifier}.svg`,
+      sourceName: `mosaic/${index + 4}-rows/permutations/2-columns/${identifier}.svg`,
     }),
   ),
   ["hxxhhx", "hxxhhxxh", "hxxhhxxhhx", "hxxhhxxhhxxh", "hxxhhxxhhxxhhx"].map(
@@ -354,7 +368,7 @@ const NEGATIVE_SOURCE_DOCUMENTS: readonly {
         rows: index + 3,
         type: "negative" as const,
       },
-      sourceName: `mosaic-${index + 4}-rows-2-columns-${identifier}-dashes.svg`,
+      sourceName: `mosaic/${index + 4}-rows/permutations/2-columns/${identifier}-dashes.svg`,
     }),
   ),
   ["dld", "dldl", "dldld", "dldldl", "dldldld"].map((identifier, index) => ({
@@ -364,9 +378,16 @@ const NEGATIVE_SOURCE_DOCUMENTS: readonly {
       rows: index + 3,
       type: "negative" as const,
     },
-    sourceName: `mosaic-${index + 4}-rows-1-columns-${identifier}.svg`,
+    sourceName: `mosaic/${index + 4}-rows/permutations/1-columns/${identifier}.svg`,
   })),
 ].flat();
+
+/**
+ * The family a committed document belongs to, read off the directory it is
+ * filed under rather than off its filename: `StartCommand` puts every
+ * attribute but the variant and the repeat count into the path.
+ */
+const familyOf = (name: string): string => name.split("/")[0] ?? name;
 
 /** Whether `parameters` name a drawing the charter declaration allows to break `invariant`. */
 const relaxes = (
@@ -484,10 +505,7 @@ describe(MeanderTopologyService, () => {
       "inks exactly the corridors $sourceName leaves",
       async ({ parameters, sourceName }) => {
         const source = topologyService.measure(
-          await readFile(
-            path.join(OUTPUT_DIRECTORY, "permutations", sourceName),
-            "utf8",
-          ),
+          await readFile(path.join(OUTPUT_DIRECTORY, sourceName), "utf8"),
         );
         const negative = topologyService.measure(
           generationService.generate(parameters),
@@ -535,7 +553,7 @@ describe(MeanderTopologyService, () => {
             trees.push(name);
           }
 
-          if (name.startsWith("negative-")) {
+          if (familyOf(name) === "negative") {
             negativeCycles.push(edges - nodes + components);
             negativeComponents.push(components);
           }
@@ -555,7 +573,7 @@ describe(MeanderTopologyService, () => {
 
         expect(trees).toHaveLength(21);
         expect(
-          [...new Set(trees.map((name) => name.split("-")[0]))].toSorted(),
+          [...new Set(trees.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual(["branch"]);
 
         // 🎯 The loops are all somewhere else: `negative`'s eighteen corridor
@@ -565,7 +583,7 @@ describe(MeanderTopologyService, () => {
         // claim a tree test alone would not make.
         expect(looped).toHaveLength(31);
         expect(
-          [...new Set(looped.map((name) => name.split("-")[0]))].toSorted(),
+          [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual(["cross", "negative", "snake"]);
       },
       CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
@@ -576,15 +594,15 @@ describe(MeanderTopologyService, () => {
     // measurement were authored at different moments and nothing else makes
     // them agree, so the count is taken here rather than restated there.
     it("branches in exactly the families the charter names, measured from disk", async () => {
-      const entries = await readdir(OUTPUT_DIRECTORY);
-      const names = entries.filter((name) => name.endsWith(".svg"));
+      const corpus = await readCommittedCorpus();
+      const documents = corpus.filter(
+        ({ name }) => !name.includes(`/${PERMUTATIONS_SUBDIRECTORY}/`),
+      );
       const branching: string[] = [];
       let tJunctions = 0;
 
-      for (const name of names) {
-        const measured = topologyService.measure(
-          await readFile(path.join(OUTPUT_DIRECTORY, name), "utf8"),
-        );
+      for (const { document, name } of documents) {
+        const measured = topologyService.measure(document);
 
         tJunctions += measured.inkTJunctions;
 
@@ -593,11 +611,11 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(names).toHaveLength(174);
+      expect(documents).toHaveLength(174);
       expect(tJunctions).toBe(1360);
       expect(branching).toHaveLength(59);
       expect(
-        [...new Set(branching.map((name) => name.split("-")[0]))].toSorted(),
+        [...new Set(branching.map((name) => familyOf(name)))].toSorted(),
       ).toStrictEqual(["branch", "chain", "negative", "snake"]);
     });
 
@@ -628,9 +646,9 @@ describe(MeanderTopologyService, () => {
             .filter((topology) => topology.inkXJunctions > 0)
             .map(({ inkXJunctions, name }) => `${name} ${inkXJunctions}`),
         ).toStrictEqual([
-          "cross-6-rows-6-repeats.svg 12",
-          "cross-7-rows-6-repeats.svg 12",
-          "cross-8-rows-6-repeats.svg 12",
+          "cross/6-rows/plain-6-repeats.svg 12",
+          "cross/7-rows/plain-6-repeats.svg 12",
+          "cross/8-rows/plain-6-repeats.svg 12",
         ]);
       },
       CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
@@ -651,9 +669,7 @@ describe(MeanderTopologyService, () => {
         expect(documents).toHaveLength(COMMITTED_CORPUS_SIZE);
         expect(withGap).toHaveLength(TERMINATION_GAP_DOCUMENTS);
         expect(
-          [
-            ...new Set(withGap.map(({ name }) => name.split("-")[0])),
-          ].toSorted(),
+          [...new Set(withGap.map(({ name }) => familyOf(name)))].toSorted(),
         ).toStrictEqual([
           "chain",
           "cross",

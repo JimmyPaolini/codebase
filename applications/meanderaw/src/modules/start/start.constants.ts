@@ -38,14 +38,27 @@ export const DOT_SWEEP_SHAPES: readonly DotShape[] = ["bounce", "up"];
 export const PLIED_SWEEP_STRAND_COUNTS: readonly number[] = [3, 4];
 
 /**
- * Subdirectory of the output directory the mosaic permutations are written
- * to. They are kept out of the main sweep's own directory, and out of git,
- * because the enumeration runs to thousands of files — the named-type sweep
- * beside them is a reviewable hundred.
+ * The gallery page `StartCommand` writes beside the output directory,
+ * listing every document the sweep produced under the directory it landed
+ * in. One page rather than one per row count: the tiles are now separated by
+ * directory on disk, so the page's only remaining job is to show them all in
+ * one place.
+ *
+ * It links each drawing rather than inlining it, which is what lets a single
+ * page carry the whole corpus without duplicating a byte of it.
+ */
+export const INDEX_FILE_NAME = "index.html";
+
+/**
+ * Subdirectory of a row count's own directory that the mosaic permutations
+ * are written under, one column-span directory deep. They are nested rather
+ * than left beside the named-type sweep because the enumeration runs to
+ * thousands of files — the named-type sweep beside them is a reviewable
+ * hundred.
  */
 export const PERMUTATIONS_SUBDIRECTORY = "permutations";
 
-/** `repeatCount` every swept mosaic is drawn at, wide enough to read the tile's rhythm without dominating a contact sheet. */
+/** `repeatCount` every swept mosaic is drawn at, wide enough to read the tile's rhythm without dominating the index page. */
 export const PERMUTATION_REPEAT_COUNT = 6;
 
 /**

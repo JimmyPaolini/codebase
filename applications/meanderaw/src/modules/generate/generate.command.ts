@@ -15,7 +15,7 @@ import {
 } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
-import { OutputFilenameService } from "../svg-rendering/output-filename.service";
+import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import type {
   DotShape,
@@ -27,7 +27,10 @@ import type { GenerateCommandOptions } from "./generate.types";
 
 /**
  * Generates one meander SVG from a type, row count, and repeat count, and
- * writes it to disk under a kebab-case filename that encodes all three.
+ * writes it to disk under the kebab-case path {@link OutputPathService}
+ * builds from them — the same path the full sweep would write it to, so a
+ * single drawing lands beside its siblings rather than loose in the output
+ * directory.
  */
 @Command({
   description: "Generate a single meander SVG and write it to disk",
@@ -41,8 +44,8 @@ export class GenerateCommand extends CommandRunner {
     private readonly logger: LoggerService,
     @Inject(MeanderGenerationService)
     private readonly meanderGenerationService: MeanderGenerationService,
-    @Inject(OutputFilenameService)
-    private readonly outputFilenameService: OutputFilenameService,
+    @Inject(OutputPathService)
+    private readonly outputPathService: OutputPathService,
   ) {
     super();
     this.logger.setContext(GenerateCommand.name);
@@ -241,13 +244,12 @@ export class GenerateCommand extends CommandRunner {
       ...(options.subFamily ? { subFamily: options.subFamily } : {}),
     };
     const svg = this.meanderGenerationService.generate(generationParameters);
-
-    await mkdir(options.outputDirectory, { recursive: true });
-
     const filePath = path.join(
       options.outputDirectory,
-      this.outputFilenameService.build(generationParameters),
+      this.outputPathService.build(generationParameters),
     );
+
+    await mkdir(path.dirname(filePath), { recursive: true });
     await writeFile(filePath, svg);
 
     this.logger.log("✨ Generated a meander", undefined, { filePath });

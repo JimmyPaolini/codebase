@@ -1,17 +1,17 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { OutputFilenameService } from "./output-filename.service";
+import { OutputPathService } from "./output-path.service";
 
-describe(OutputFilenameService, () => {
-  let service: OutputFilenameService;
+describe(OutputPathService, () => {
+  let service: OutputPathService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [OutputFilenameService],
+      providers: [OutputPathService],
     }).compile();
 
-    service = await module.resolve(OutputFilenameService);
+    service = await module.resolve(OutputPathService);
   });
 
   it("is defined", () => {
@@ -19,13 +19,13 @@ describe(OutputFilenameService, () => {
   });
 
   describe("build", () => {
-    it("encodes type, rows, and repeat count with no modifier", () => {
+    it("files an unmodified drawing under its family and row count, named for the repeat count it was drawn at", () => {
       expect(service.build({ repeatCount: 8, rows: 5, type: "boxes" })).toBe(
-        "boxes-5-rows-8-repeats.svg",
+        "boxes/5-rows/plain-8-repeats.svg",
       );
     });
 
-    it("appends a modifier's name when it has no extra parameters", () => {
+    it("names the file after a modifier that has no extra parameters", () => {
       expect(
         service.build({
           modifier: { name: "spin" },
@@ -33,10 +33,10 @@ describe(OutputFilenameService, () => {
           rows: 5,
           type: "boxes",
         }),
-      ).toBe("boxes-5-rows-4-repeats-spin.svg");
+      ).toBe("boxes/5-rows/spin-4-repeats.svg");
     });
 
-    it("appends edge-flip's name unchanged", () => {
+    it("uses edge-flip's name unchanged", () => {
       expect(
         service.build({
           modifier: { name: "edge-flip" },
@@ -44,10 +44,10 @@ describe(OutputFilenameService, () => {
           rows: 4,
           type: "chain",
         }),
-      ).toBe("chain-4-rows-6-repeats-edge-flip.svg");
+      ).toBe("chain/4-rows/edge-flip-6-repeats.svg");
     });
 
-    it("appends alternated's name and period", () => {
+    it("carries alternated's period into the filename", () => {
       expect(
         service.build({
           modifier: { name: "alternated", period: 2 },
@@ -55,10 +55,10 @@ describe(OutputFilenameService, () => {
           rows: 5,
           type: "mosaic",
         }),
-      ).toBe("mosaic-5-rows-6-repeats-alternated-period-2.svg");
+      ).toBe("mosaic/5-rows/alternated-period-2-6-repeats.svg");
     });
 
-    it("appends the sub-family, so a named region of the unit space is legible in the filename", () => {
+    it("names the file after the sub-family, so a named region of the unit space is legible in it", () => {
       expect(
         service.build({
           repeatCount: 6,
@@ -66,7 +66,7 @@ describe(OutputFilenameService, () => {
           subFamily: "dots",
           type: "mosaic",
         }),
-      ).toBe("mosaic-6-rows-6-repeats-dots.svg");
+      ).toBe("mosaic/6-rows/dots-6-repeats.svg");
     });
 
     it("names diamond and split apart even though they draw the same shape, so neither overwrites the other", () => {
@@ -77,7 +77,7 @@ describe(OutputFilenameService, () => {
           subFamily: "diamond",
           type: "mosaic",
         }),
-      ).toBe("mosaic-5-rows-12-repeats-diamond.svg");
+      ).toBe("mosaic/5-rows/diamond-12-repeats.svg");
       expect(
         service.build({
           modifier: { name: "split" },
@@ -85,10 +85,10 @@ describe(OutputFilenameService, () => {
           rows: 5,
           type: "mosaic",
         }),
-      ).toBe("mosaic-5-rows-12-repeats-split.svg");
+      ).toBe("mosaic/5-rows/split-12-repeats.svg");
     });
 
-    it("appends dot's name and shape", () => {
+    it("carries dot's shape into the filename", () => {
       expect(
         service.build({
           modifier: { name: "dot", shape: "bounce" },
@@ -96,7 +96,13 @@ describe(OutputFilenameService, () => {
           rows: 6,
           type: "mosaic",
         }),
-      ).toBe("mosaic-6-rows-6-repeats-dot-bounce.svg");
+      ).toBe("mosaic/6-rows/dot-bounce-6-repeats.svg");
+    });
+  });
+
+  describe("familyDirectory", () => {
+    it("indexes a family's drawings by the row count they were drawn at", () => {
+      expect(service.familyDirectory("mosaic", 7)).toBe("mosaic/7-rows");
     });
   });
 });

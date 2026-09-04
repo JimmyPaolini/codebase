@@ -10,6 +10,39 @@ nx run meanderaw:start
 nx run meanderaw:vitest
 ```
 
+## 🗂️ Output Layout
+
+`nx run meanderaw:start` writes every drawing it can under `output/`, and one
+`index.html` beside it listing them all.
+
+Every attribute a drawing was generated from is a directory, and only what is left
+over is its filename:
+
+```text
+index.html                                          every drawing, linked and captioned
+output/
+  <family>/
+    <rows>-rows/
+      <variant>-<repeatCount>-repeats.svg           `plain` where there is no modifier
+      permutations/                                 `mosaic` only
+        <columns>-columns/
+          <identifier>[-<sub-family>].svg
+```
+
+So `output/chain/7-rows/edge-flip-6-repeats.svg`, and
+`output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg`. A directory listing is
+then the parameter space it enumerates, and the 3,179 enumerated `mosaic` tiles — which
+would be unreadable as one flat directory — sit a few hundred at a time under the row
+count and column span that produced them, named by nothing but what distinguishes them.
+
+`nx run meanderaw:generate` writes to the same tree, through the same
+`OutputPathService`, so a single drawing lands beside its siblings rather than loose at
+the top.
+
+The SVGs are committed; `index.html` is not. It links each drawing rather than inlining
+it, so it duplicates nothing — it is left out of git because it is a megabyte of
+generated markup, and regenerating it takes under a second.
+
 ## 🏛️ Meander Charter
 
 Ten families of meander are implemented, and they share a set of properties that are
@@ -144,10 +177,10 @@ Ask for a sub-family by name:
 nx run meanderaw:generate --args="--type mosaic --sub-family dots --rows 6"
 ```
 
-The name lands in the output filename — `mosaic-6-rows-6-repeats-dots.svg` — and in the
-sweep's own, where a tile with a name carries it after its identifier
-(`mosaic-6-rows-1-columns-ddddd-dots.svg`) and a tile without one carries the identifier
-alone.
+The name lands in the output path — `output/mosaic/6-rows/dots-6-repeats.svg` — and in
+the sweep's own, where a tile with a name carries it after its identifier
+(`output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg`) and a tile without one
+carries the identifier alone.
 
 ### `diamond` and `split` are one shape under two names
 
@@ -166,8 +199,8 @@ applying a modifier, others by recognizing a structural property". The equality 
 rather than asserted: the `diamond` sub-family at 5 rows and 12 repeats is byte-identical
 to the committed `testing/assets/mosaic-5-rows-12-repeats-split.svg`.
 
-Two names, two files. `--sub-family diamond` writes `mosaic-5-rows-12-repeats-diamond.svg`
-and `--modifier split` still writes `mosaic-5-rows-12-repeats-split.svg`, so neither
+Two names, two files. `--sub-family diamond` writes `mosaic/5-rows/diamond-12-repeats.svg`
+and `--modifier split` still writes `mosaic/5-rows/split-12-repeats.svg`, so neither
 overwrites the other. Asking for both at once is refused, since either one alone already
 decides which repeat unit is drawn.
 
@@ -183,12 +216,13 @@ crossings in the negative space of `mosaic split` and `mosaic alternated period-
 branching in every family's negative — but only across the 114 named patterns.
 [#412](https://github.com/JimmyPaolini/codebase/issues/412) runs the same measurement
 across all 3,179 tiles of the `mosaic` permutation set committed under
-`output/permutations/` — the only family with an enumerated unit space, so the only one
-this measurement can run over every tile rather than a handful of named modifiers.
+`output/mosaic/<rows>-rows/permutations/` — the only family with an enumerated unit
+space, so the only one this measurement can run over every tile rather than a handful of
+named modifiers.
 
 ### Method
 
-Every `output/permutations/*.svg` file was read from disk — no generation, no motif
+Every `output/mosaic/<rows>-rows/permutations/<columns>-columns/*.svg` file was read from disk — no generation, no motif
 service, the same approach the charter test already uses to gate the corpus — and passed
 to the existing
 [`MeanderTopologyService.measure`](src/modules/meander-topology/meander-topology.service.ts).
@@ -720,7 +754,7 @@ per document, at 3 through 8 rows:
 
 Each of the fifteen numbers with a surveyed source is asserted, in
 `meander-topology.service.integration.test.ts`, to equal the negative T-junction count of
-the committed `output/permutations/` document it inverts — read off disk, from a file that
+the committed `output/mosaic/<rows>-rows/permutations/` document it inverts — read off disk, from a file that
 existed before this family did. That assertion is what makes "the candidates come from the
 shortlist" a fact rather than a claim: if a drawing stopped being that document's
 complement, it would fail.

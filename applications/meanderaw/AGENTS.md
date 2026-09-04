@@ -155,6 +155,11 @@ nx run meanderaw:typecheck       # tsc --noEmit
 nx run meanderaw:oxfmt           # Formatting
 ```
 
+`start` writes every drawing under `output/<family>/<rows>-rows/`, nests the enumerated
+`mosaic` tiles a `permutations/<columns>-columns/` deeper, and writes one gitignored
+`index.html` beside `output/` listing them all — see "Output Layout" in
+[README.md](./README.md).
+
 ### Testing
 
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.

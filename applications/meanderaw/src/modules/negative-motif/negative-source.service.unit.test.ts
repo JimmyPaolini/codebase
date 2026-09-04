@@ -98,9 +98,10 @@ describe(NegativeSourceService, () => {
 
     // 🎯 `identify` names the tile as built; `canonicalIdentifier` names its
     // whole symmetry class. Asserting they agree is what makes the tile above
-    // the very one `output/permutations/` committed under that name, rather
-    // than a mirror or a re-phasing of it that would draw the same wallpaper
-    // but terminate its band differently.
+    // the very one the permutation sweep committed under that name in
+    // `output/mosaic/<rows>-rows/permutations/`, rather than a mirror or a
+    // re-phasing of it that would draw the same wallpaper but terminate its
+    // band differently.
     it.each(SHORTLIST_CASES)(
       "builds $identifier as its own symmetry class's canonical representative",
       ({ identifier, rows, source }) => {

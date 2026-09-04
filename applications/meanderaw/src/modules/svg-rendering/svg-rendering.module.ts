@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { OutputFilenameService } from "./output-filename.service";
+import { OutputPathService } from "./output-path.service";
 import { SvgRenderingService } from "./svg-rendering.service";
 
 /**
@@ -10,8 +10,8 @@ import { SvgRenderingService } from "./svg-rendering.service";
  */
 @Module({
   controllers: [],
-  exports: [OutputFilenameService, SvgRenderingService],
+  exports: [OutputPathService, SvgRenderingService],
   imports: [],
-  providers: [OutputFilenameService, SvgRenderingService],
+  providers: [OutputPathService, SvgRenderingService],
 })
 export class SvgRenderingModule {}
