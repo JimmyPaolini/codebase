@@ -14,7 +14,7 @@ This skill teaches how to write commit messages for this codebase. All commits *
 <type>(<scope>): <gitmoji> <subject>
 ```
 
-**Note:** Footer sections are **forbidden** by commitlint configuration. Body is forbidden unless every line is a `Co-authored-by:` trailer added by GitHub Copilot agents.
+**Note:** Footer sections are **forbidden** by commitlint configuration. Body is forbidden unless every line is a `Co-authored-by:` trailer added by a coding agent. The casing is not checked — `Co-authored-by:` and `Co-Authored-By:` are the same trailer to git and to GitHub.
 
 ### Structure Rules
 
@@ -22,7 +22,7 @@ This skill teaches how to write commit messages for this codebase. All commits *
    - Must start with gitmoji emoji (`gitmoji-required`, error level 2)
    - Max 128 characters (`header-max-length: 128`)
    - Subject must not be empty (`subject-empty: never`)
-2. **Body**: Forbidden unless every line is a `Co-authored-by:` trailer (`body-co-authored-only`, error level 2)
+2. **Body**: Forbidden unless every line is a `Co-authored-by:` trailer, in any casing (`body-co-authored-only`, error level 2)
 3. **Footer**: Forbidden (`footer-empty: always`, error level 2)
 
 ## Type
@@ -82,14 +82,12 @@ Keeping a branch scoped to one project or module (see the root [AGENTS.md](../..
 | `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
 | `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
 | `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
-| `entities` | Shared TypeORM and GraphQL base entities, naming strategy, and database module factory |
 | `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |
 | `JimmyPaolini` | Static GitHub profile README project (markdown and assets) |
 | `lexico` | TanStack Start SSR Latin dictionary web app with Supabase backend |
 | `lexico-components` | Shared React/shadcn component library |
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
-| `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
 | `meanderaw` | Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads |
 | `sempientor` | Lexical gap discovery CLI that surveys English for morphological, phonotactic, and semantic gaps and coins words to fill them |
 | `callidescope` | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph |
@@ -202,7 +200,7 @@ See [gitmoji.dev](https://gitmoji.dev) for the complete emoji list.
 
 **Footer**: Forbidden. Footer sections are not allowed in commit messages in this repository.
 
-**Body**: Forbidden unless every line is a `Co-authored-by:` trailer, which are added automatically by GitHub Copilot agents. Human contributors must not add a body.
+**Body**: Forbidden unless every line is a `Co-authored-by:` trailer, in any casing, which coding agents add automatically. Human contributors must not add a body.
 
 If you need to provide:
 
@@ -234,7 +232,7 @@ feat(lexico): 💥 migrate to new auth API
 
 ### Committing from the Command Line
 
-Since footer sections are forbidden, commits should not include footers. Body must be omitted unless it consists entirely of `Co-authored-by` trailers.
+Since footer sections are forbidden, commits should not include footers. Body must be omitted unless it consists entirely of `Co-authored-by` trailers, whose casing is not checked.
 
 Commits must also be GPG-signed and verified:
 

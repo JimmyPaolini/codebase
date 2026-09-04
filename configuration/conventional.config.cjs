@@ -133,11 +133,6 @@ const scopes = [
     name: "documentation",
   },
   {
-    description:
-      "Shared TypeORM and GraphQL base entities, naming strategy, and database module factory",
-    name: "entities",
-  },
-  {
     description: "Helm charts, Terraform configs, and Kubernetes resources",
     name: "infrastructure",
   },
@@ -161,11 +156,6 @@ const scopes = [
   {
     description: "Data ingestion scripts for Lexico",
     name: "lexico-ingestion",
-  },
-  {
-    description:
-      "Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention",
-    name: "logger",
   },
   {
     description:

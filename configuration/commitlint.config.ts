@@ -4,8 +4,8 @@
  * Commit format: `<type>(<scope>): <gitmoji> <subject>`
  *
  * - Header max: 128 characters (aim for &lt;72 for readability)
- * - Body: forbidden unless every line is a `Co-authored-by:` trailer
- * - Footer: forbidden unless every line is a `Co-authored-by:` trailer
+ * - Body: forbidden unless every line is a `Co-authored-by:` trailer, in any casing
+ * - Footer: forbidden unless every line is a `Co-authored-by:` trailer, in any casing
  * - Subject: lowercase, imperative mood, no trailing period
  * - Gitmoji required at start of subject
  *
@@ -16,13 +16,21 @@ import { scopes, types } from "./conventional.config.cjs";
 
 import type { Plugin, Rule, RuleOutcome, UserConfig } from "@commitlint/types";
 
-/** Every non-empty body line must be a `Co-authored-by:` trailer. */
+/**
+ * Every non-empty body line must be a `Co-authored-by:` trailer.
+ *
+ * Matched case-insensitively. Git trailer keys are case-insensitive, and the
+ * tools that write this one disagree on casing — GitHub Copilot emits
+ * `Co-authored-by:` and Claude Code emits `Co-Authored-By:`. Both are the same
+ * trailer to git and to GitHub, so rejecting either would fail a valid commit
+ * over a detail no downstream consumer distinguishes.
+ */
 const bodyCoAuthoredOnly: Rule = (parsed): RuleOutcome => {
   const body: null | string = parsed.body;
   if (!body) return [true];
   const lines = body.split("\n").filter((line: string) => line.trim() !== "");
   const allCoAuthored = lines.every((line: string) =>
-    /^Co-authored-by: \S+/.test(line),
+    /^Co-authored-by: \S+/i.test(line),
   );
   return [
     allCoAuthored,
@@ -30,13 +38,17 @@ const bodyCoAuthoredOnly: Rule = (parsed): RuleOutcome => {
   ];
 };
 
-/** Every non-empty footer line must be a `Co-authored-by:` trailer. */
+/**
+ * Every non-empty footer line must be a `Co-authored-by:` trailer.
+ *
+ * Matched case-insensitively, for the reason given on the body rule above.
+ */
 const footerCoAuthoredOnly: Rule = (parsed): RuleOutcome => {
   const footer: null | string = parsed.footer;
   if (!footer) return [true];
   const lines = footer.split("\n").filter((line: string) => line.trim() !== "");
   const allCoAuthored = lines.every((line: string) =>
-    /^Co-authored-by: \S+/.test(line),
+    /^Co-authored-by: \S+/i.test(line),
   );
   return [
     allCoAuthored,
