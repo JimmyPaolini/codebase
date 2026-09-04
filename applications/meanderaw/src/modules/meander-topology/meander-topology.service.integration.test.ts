@@ -13,6 +13,8 @@ import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
 import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
+import { DrawCombinationsService } from "../draw/draw-combinations.service";
+import { PERMUTATIONS_SUBDIRECTORY } from "../draw/draw.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MotifRegistryService } from "../meander-generation/motif-registry.service";
@@ -26,8 +28,6 @@ import { NegativeSourceService } from "../negative-motif/negative-source.service
 import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
-import { StartCombinationsService } from "../start/start-combinations.service";
-import { PERMUTATIONS_SUBDIRECTORY } from "../start/start.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
@@ -174,8 +174,8 @@ const modifierLabel = (modifier: Modifier): string => {
 };
 
 /**
- * The swept space, read from the same {@link StartCombinationsService} that
- * `StartCommand` writes `output/` from. Sweeping the shared enumeration
+ * The swept space, read from the same {@link DrawCombinationsService} that
+ * `DrawCommand` writes `output/` from. Sweeping the shared enumeration
  * rather than a second copy of it is what makes "the charter gates the
  * corpus this repository commits" a fact rather than a comment: there is one
  * composition, and a family added to it widens both at once.
@@ -191,7 +191,7 @@ const modifierLabel = (modifier: Modifier): string => {
  * family, modifier, and validation rule already passes through. Those tiles
  * are gated from disk instead — see the committed-corpus test below.
  */
-const charterSweep: readonly CharterCase[] = new StartCombinationsService()
+const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
   .enumerate()
   .map((parameters) => {
     const modifier = parameters.modifier
@@ -206,7 +206,7 @@ const charterSweep: readonly CharterCase[] = new StartCombinationsService()
   });
 
 /**
- * How many documents `StartCommand` commits: 174 named patterns beside 3,179
+ * How many documents `DrawCommand` commits: 174 named patterns beside 3,179
  * enumerated `mosaic` tiles. #340 measured this corpus at 114 named patterns;
  * the `cross` family added the six the sweep draws for it — three row counts
  * from its structural minimum of 6 through the sweep maximum, solid and
@@ -246,13 +246,13 @@ const COMMITTED_CORPUS_SIZE = 174 + 3179;
  */
 const TERMINATION_GAP_DOCUMENTS = 2120;
 
-/** Where `StartCommand` writes those documents, and where they are committed. */
+/** Where `DrawCommand` writes those documents, and where they are committed. */
 const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
 
 /**
  * Every committed document, read off disk.
  *
- * The corpus is a tree rather than two flat directories — `StartCommand`
+ * The corpus is a tree rather than two flat directories — `DrawCommand`
  * files each drawing under the family, row count, and column span that
  * produced it — so this walks it rather than listing it, and reports each
  * document by its path relative to `output/`. That path is the document's
@@ -384,7 +384,7 @@ const NEGATIVE_SOURCE_DOCUMENTS: readonly {
 
 /**
  * The family a committed document belongs to, read off the directory it is
- * filed under rather than off its filename: `StartCommand` puts every
+ * filed under rather than off its filename: `DrawCommand` puts every
  * attribute but the variant and the repeat count into the path.
  */
 const familyOf = (name: string): string => name.split("/")[0] ?? name;
@@ -451,7 +451,7 @@ describe(MeanderTopologyService, () => {
     // guard that stops matching — every `it.each` below would quietly cover
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
-    it("sweeps every named-type combination StartCommand writes", () => {
+    it("sweeps every named-type combination DrawCommand writes", () => {
       expect(charterSweep).toHaveLength(174);
     });
 

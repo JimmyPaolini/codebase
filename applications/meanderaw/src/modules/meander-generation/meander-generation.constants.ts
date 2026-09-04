@@ -40,13 +40,13 @@ export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
  */
 export const DOT_MINIMUM_ROWS = 4;
 
-/** Directory a generated meander is written to when the caller doesn't override it, shared by both `generate` and `generate-batch`. */
+/** Directory a drawing is written to when the caller doesn't override it, shared by `draw`'s sweep and its single-drawing mode alike. */
 export const DEFAULT_OUTPUT_DIRECTORY = "output";
 
 /**
  * `repeatCount` a generated meander uses when the caller doesn't override it,
- * shared by both `generate` and `generate-batch` so a single-pattern file and
- * a batch-swept file for the same type/rows/modifier are identical.
+ * shared by `draw`'s single-drawing mode and its sweep so a hand-named file
+ * and a swept file for the same type/rows/modifier are identical.
  */
 export const DEFAULT_REPEAT_COUNT = 6;
 

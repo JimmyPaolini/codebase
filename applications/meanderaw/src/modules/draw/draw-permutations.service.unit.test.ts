@@ -10,10 +10,10 @@ import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
-import { StartPermutationsService } from "./start-permutations.service";
+import { DrawPermutationsService } from "./draw-permutations.service";
 
-describe(StartPermutationsService, () => {
-  let service: StartPermutationsService;
+describe(DrawPermutationsService, () => {
+  let service: DrawPermutationsService;
 
   /** Every path the whole sweep renders, as one flat list to assert against. */
   const sweepPaths = (): string[] =>
@@ -32,12 +32,12 @@ describe(StartPermutationsService, () => {
         MosaicSymmetryService,
         MosaicTilesService,
         OutputPathService,
-        StartPermutationsService,
+        DrawPermutationsService,
         SvgRenderingService,
       ],
     }).compile();
 
-    service = await module.resolve(StartPermutationsService);
+    service = await module.resolve(DrawPermutationsService);
   });
 
   it("is defined", () => {

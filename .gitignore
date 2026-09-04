@@ -72,13 +72,13 @@ dist
 last-lint-staged-output.log
 applications/caelundas/output
 
-# The `start` command's mosaic tiles are committed alongside the rest of
+# The `draw` command's mosaic tiles are committed alongside the rest of
 # `output/`, but the index page listing them is not. It links every drawing
 # rather than inlining it, so it duplicates nothing — it is left out because
 # it is a megabyte of generated markup whose every tile identifier would then
 # be spell-checked, and because it is rebuilt in under a second by
 # `nx run meanderaw:start` whenever it is wanted.
-applications/meanderaw/index.html
+applications/meanderaw/output/index.html
 vite.config.*.timestamp*
 data/**
 .fallow

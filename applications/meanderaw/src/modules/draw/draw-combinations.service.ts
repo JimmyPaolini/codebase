@@ -15,7 +15,7 @@ import {
   DOT_SWEEP_SHAPES,
   PLIED_SWEEP_STRAND_COUNTS,
   ROWS_SWEEP_MAXIMUM,
-} from "./start.constants";
+} from "./draw.constants";
 
 import type {
   GenerationParameters,
@@ -35,9 +35,9 @@ import type {
  * never rejects a cut-off rotation.
  *
  * It is a service of its own, rather than private methods on
- * {@link StartCommand}, because two callers need the same space and a
+ * {@link DrawCommand}, because two callers need the same space and a
  * second copy of this composition would be a guarantee nothing enforces:
- * `StartCommand` writes it to `output/`, and the meander charter's property
+ * `DrawCommand` writes it to `output/`, and the meander charter's property
  * test sweeps it. Sharing the constants is not enough — the composition is
  * what decides which documents exist, and both must agree on all of it for
  * the charter to gate the corpus the repository actually commits.
@@ -47,7 +47,7 @@ import type {
  * `COMPATIBLE_MODIFIERS`, and `STRUCTURAL_MINIMUM_ROWS`.
  */
 @Injectable()
-export class StartCombinationsService {
+export class DrawCombinationsService {
   // 🏗 Dependency Injection
 
   constructor() {}

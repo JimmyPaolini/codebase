@@ -6,8 +6,8 @@ import {
   STRUCTURAL_MINIMUM_ROWS,
 } from "../meander-generation/meander-generation.constants";
 
-import { StartCombinationsService } from "./start-combinations.service";
-import { PLIED_SWEEP_STRAND_COUNTS } from "./start.constants";
+import { DrawCombinationsService } from "./draw-combinations.service";
+import { PLIED_SWEEP_STRAND_COUNTS } from "./draw.constants";
 
 import type { GenerationParameters } from "../meander-generation/meander-generation.types";
 
@@ -41,16 +41,16 @@ const RETRACING_FAMILIES = new Set(["chain", "snake"]);
  */
 const RETRACING_ROWS_THRESHOLD = 8;
 
-describe(StartCombinationsService, () => {
-  let service: StartCombinationsService;
+describe(DrawCombinationsService, () => {
+  let service: DrawCombinationsService;
   let combinations: GenerationParameters[];
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [StartCombinationsService],
+      providers: [DrawCombinationsService],
     }).compile();
 
-    service = await module.resolve(StartCombinationsService);
+    service = await module.resolve(DrawCombinationsService);
     combinations = service.enumerate();
   });
 
@@ -60,7 +60,7 @@ describe(StartCombinationsService, () => {
 
   describe("enumerate", () => {
     // 🎯 The size of the enumerated space, stated once. Both callers depend
-    // on it: `StartCommand` writes one file per combination, and the meander
+    // on it: `DrawCommand` writes one file per combination, and the meander
     // charter's property test asserts the charter of each. A sweep that
     // silently shrank — a renamed constant, a type guard that stopped
     // matching — would leave both quietly covering less, so it is pinned

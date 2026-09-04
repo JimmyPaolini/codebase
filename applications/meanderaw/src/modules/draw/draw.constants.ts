@@ -38,14 +38,17 @@ export const DOT_SWEEP_SHAPES: readonly DotShape[] = ["bounce", "up"];
 export const PLIED_SWEEP_STRAND_COUNTS: readonly number[] = [3, 4];
 
 /**
- * The gallery page `StartCommand` writes beside the output directory,
+ * The gallery page `DrawCommand` writes at the root of the output directory,
  * listing every document the sweep produced under the directory it landed
  * in. One page rather than one per row count: the tiles are now separated by
  * directory on disk, so the page's only remaining job is to show them all in
  * one place.
  *
  * It links each drawing rather than inlining it, which is what lets a single
- * page carry the whole corpus without duplicating a byte of it.
+ * page carry the whole corpus without duplicating a byte of it — and it sits
+ * inside the tree it indexes rather than beside it, so every one of those
+ * links is a path down from the page's own directory and the pair moves as a
+ * unit.
  */
 export const INDEX_FILE_NAME = "index.html";
 
@@ -70,3 +73,52 @@ export const PERMUTATION_REPEAT_COUNT = 6;
  * for no additional coverage of new geometry.
  */
 export const ROWS_SWEEP_MAXIMUM = 8;
+
+// 🚨 Errors
+
+/**
+ * Thrown when two combinations in the sweep would write the same path.
+ *
+ * The sweep is a cross product, so a naming convention that stopped
+ * distinguishing two of its points would silently drop one drawing rather
+ * than fail. This is what makes that a failure.
+ */
+export class CollidingPathsError extends Error {
+  constructor() {
+    super("Sweep produced colliding output paths");
+    this.name = "CollidingPathsError";
+  }
+}
+
+/**
+ * Thrown when only one of `--type` and `--rows` is given.
+ *
+ * Neither flag can be `required`, because passing neither is how the whole
+ * sweep is asked for — so the pair has to be checked rather than declared.
+ */
+export class IncompleteDrawingError extends Error {
+  constructor() {
+    super(
+      "drawing one meander needs both --type and --rows; pass neither to sweep every meander instead",
+    );
+    this.name = "IncompleteDrawingError";
+  }
+}
+
+/** Thrown when a modifier that carries a parameter is asked for without it. */
+export class MissingModifierParameterError extends Error {
+  constructor(modifierName: string, flag: string) {
+    super(`Modifier "${modifierName}" requires ${flag}`);
+    this.name = "MissingModifierParameterError";
+  }
+}
+
+/** Thrown when an option's value falls outside the set that option accepts. */
+export class UnsupportedOptionError extends Error {
+  constructor(option: string, value: string, supported: readonly string[]) {
+    super(
+      `Unsupported ${option} "${value}"; supported: ${supported.join(", ")}`,
+    );
+    this.name = "UnsupportedOptionError";
+  }
+}

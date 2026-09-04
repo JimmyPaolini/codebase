@@ -4,6 +4,27 @@
 nx run meanderaw:start
 ```
 
+## 🖌️ One Command
+
+Meanderaw has one command, `draw`, and it is the default — so the target above runs it
+with no arguments. What it draws is decided by whether a drawing was named, not by which
+sub-command was picked:
+
+| Invocation | What it draws |
+| ---------- | ------------- |
+| `nx run meanderaw:start` | Every meander the application can draw, beneath an index page listing them all |
+| `nx run meanderaw:start --args="--type <family> --rows <n>"` | That one, into the same tree |
+
+`--type` and `--rows` go together: one without the other is refused rather than treated
+as a sweep, since neither flag can be declared `required` when passing neither is how the
+sweep is asked for. Every other flag — `--modifier` and the parameter it needs
+(`--period`, `--shape`, `--strands`), `--sub-family`, `--repeat-count`,
+`--output-directory` — narrows the one drawing.
+
+This used to be two commands, `start` and `generate`. They are one because the option set
+is one: every flag either names a drawing or says where drawings go, and the sub-command
+boundary between them only decided which half of that set was legal.
+
 ## Test
 
 ```bash
@@ -12,15 +33,16 @@ nx run meanderaw:vitest
 
 ## 🗂️ Output Layout
 
-`nx run meanderaw:start` writes every drawing it can under `output/`, and one
-`index.html` beside it listing them all.
+`nx run meanderaw:start` runs the one command this application has — `draw` — which
+with no arguments writes every drawing it can under `output/`, beneath one `index.html`
+listing them all.
 
 Every attribute a drawing was generated from is a directory, and only what is left
 over is its filename:
 
 ```text
-index.html                                          every drawing, linked and captioned
 output/
+  index.html                                        every drawing, linked and captioned
   <family>/
     <rows>-rows/
       <variant>-<repeatCount>-repeats.svg           `plain` where there is no modifier
@@ -35,13 +57,18 @@ then the parameter space it enumerates, and the 3,179 enumerated `mosaic` tiles 
 would be unreadable as one flat directory — sit a few hundred at a time under the row
 count and column span that produced them, named by nothing but what distinguishes them.
 
-`nx run meanderaw:generate` writes to the same tree, through the same
-`OutputPathService`, so a single drawing lands beside its siblings rather than loose at
-the top.
+Naming one drawing writes into the same tree, through the same `OutputPathService`, so a
+single drawing lands beside its siblings rather than loose at the top:
 
-The SVGs are committed; `index.html` is not. It links each drawing rather than inlining
-it, so it duplicates nothing — it is left out of git because it is a megabyte of
-generated markup, and regenerating it takes under a second.
+```bash
+nx run meanderaw:start --args="--type chain --rows 7 --modifier edge-flip"
+```
+
+The SVGs are committed; `output/index.html` is not. It links each drawing rather than
+inlining it, so it duplicates nothing — it is left out of git because it is a megabyte of
+generated markup, and regenerating it takes under a second. It sits at the root of the
+tree it indexes rather than beside it, so every link it writes is a path down from its
+own directory and the two move together.
 
 ## 🏛️ Meander Charter
 
@@ -174,7 +201,7 @@ even row count is refused rather than approximated.
 Ask for a sub-family by name:
 
 ```bash
-nx run meanderaw:generate --args="--type mosaic --sub-family dots --rows 6"
+nx run meanderaw:start --args="--type mosaic --sub-family dots --rows 6"
 ```
 
 The name lands in the output path — `output/mosaic/6-rows/dots-6-repeats.svg` — and in
@@ -598,8 +625,8 @@ project has ever drawn. Because movement is orthogonal, two crossing strands can
 meet as a `+`, never an `X`.
 
 ```bash
-nx run meanderaw:generate --args="--type cross --rows 6 --repeat-count 6"
-nx run meanderaw:generate --args="--type cross --rows 6 --repeat-count 6 --modifier interrupted"
+nx run meanderaw:start --args="--type cross --rows 6 --repeat-count 6"
+nx run meanderaw:start --args="--type cross --rows 6 --repeat-count 6 --modifier interrupted"
 ```
 
 ### What it draws

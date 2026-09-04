@@ -155,9 +155,17 @@ nx run meanderaw:typecheck       # tsc --noEmit
 nx run meanderaw:oxfmt           # Formatting
 ```
 
-`start` writes every drawing under `output/<family>/<rows>-rows/`, nests the enumerated
-`mosaic` tiles a `permutations/<columns>-columns/` deeper, and writes one gitignored
-`index.html` beside `output/` listing them all — see "Output Layout" in
+This application has **one command, `draw`**, and it is the default — so `start` runs it.
+With no arguments it writes every drawing under `output/<family>/<rows>-rows/`, nests the
+enumerated `mosaic` tiles a `permutations/<columns>-columns/` deeper, and writes one
+gitignored `output/index.html` listing them all. With `--type` and `--rows` it draws that
+one into the same tree:
+
+```bash
+nx run meanderaw:start --args="--type chain --rows 7 --modifier edge-flip"
+```
+
+There is deliberately no second command — see "One Command" and "Output Layout" in
 [README.md](./README.md).
 
 ### Testing

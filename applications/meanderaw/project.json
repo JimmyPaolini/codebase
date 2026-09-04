@@ -31,15 +31,6 @@
     },
     "codometer": {},
     "dependency-cruiser": {},
-    "generate": {
-      "cache": false,
-      "description": "Generate one meander SVG into output/. `build` compiles this project rather than drawing anything, so writing SVGs is this target's job and the full sweep stays on `start`.",
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node --import @swc-node/register/esm-register src/main.ts generate {args}",
-        "cwd": "{projectRoot}"
-      }
-    },
     "knip": {},
     "lint-codebase": {},
     "make-projects": {},
@@ -59,7 +50,7 @@
     "spell-check": {},
     "start": {
       "cache": false,
-      "description": "Start the Meanderaw application, which with no arguments runs the start command's full sweep",
+      "description": "Run the Meanderaw application. With no arguments it draws every meander into output/ beneath an index page listing them all; with --args=\"--type <family> --rows <n>\" it draws that one into the same tree. `build` compiles this project rather than drawing anything, so writing SVGs is this target's job.",
       "executor": "nx:run-commands",
       "options": {
         "command": "node --import @swc-node/register/esm-register src/main.ts {args}",

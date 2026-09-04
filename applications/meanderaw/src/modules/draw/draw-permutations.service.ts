@@ -14,9 +14,9 @@ import {
   PERMUTATION_REPEAT_COUNT,
   PERMUTATIONS_SUBDIRECTORY,
   ROWS_SWEEP_MAXIMUM,
-} from "./start.constants";
+} from "./draw.constants";
 
-import type { RenderedDocument } from "./start.types";
+import type { RenderedDocument } from "./draw.types";
 
 /**
  * Renders the `mosaic` half of the sweep: every distinct tile the family
@@ -38,7 +38,7 @@ import type { RenderedDocument } from "./start.types";
  * path instead of repeated in every name.
  */
 @Injectable()
-export class StartPermutationsService {
+export class DrawPermutationsService {
   // 🏗 Dependency Injection
 
   constructor(

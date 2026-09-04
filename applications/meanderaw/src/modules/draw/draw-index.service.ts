@@ -4,7 +4,7 @@
 
 import { Injectable } from "@nestjs/common";
 
-import type { OutputDocument } from "./start.types";
+import type { OutputDocument } from "./draw.types";
 
 /**
  * Renders the one page the whole corpus is looked through: every drawing the
@@ -17,9 +17,13 @@ import type { OutputDocument } from "./start.types";
  * never cover the whole corpus and could never be committed, while a page of
  * hyperlinks carries three thousand drawings in a few hundred kilobytes and
  * leaves each one the single file on disk it already was.
+ *
+ * The page is written at the root of the output directory, so every link it
+ * writes points downward into that directory and the page and the tree move
+ * together.
  */
 @Injectable()
-export class StartIndexService {
+export class DrawIndexService {
   // 🏗 Dependency Injection
 
   constructor() {}
@@ -77,13 +81,12 @@ export class StartIndexService {
 
   /** Renders one directory's own section: its heading, and every drawing in it at its own size. */
   private renderSection(
-    prefix: string,
     directory: string,
     fileNames: readonly string[],
   ): string {
     const figures = fileNames
       .map((fileName) => {
-        const href = this.escape(`${prefix}/${directory}/${fileName}`);
+        const href = this.escape(`${directory}/${fileName}`);
         const label = this.escape(fileName);
 
         return `<figure><a class="art" href="${href}"><img alt="${label}" loading="lazy" src="${href}"></a><figcaption>${label}</figcaption></figure>`;
@@ -107,17 +110,17 @@ ${figures}
   // 🌎 Public Methods
 
   /**
-   * Builds the whole page as a complete HTML document. `prefix` is the
-   * output directory as seen from the page's own location, so every
-   * hyperlink it writes is relative to the page rather than to a working
-   * directory.
+   * Builds the whole page as a complete HTML document.
+   *
+   * Every hyperlink is a path down from the page's own directory, which is
+   * what lets the page live at the root of the tree it indexes and travel
+   * with it: nothing here is relative to a working directory, or to where
+   * the sweep happened to be run from.
    */
-  render(prefix: string, documents: readonly OutputDocument[]): string {
+  render(documents: readonly OutputDocument[]): string {
     const groups = this.groupByDirectory(documents);
     const sections = groups
-      .map(([directory, fileNames]) =>
-        this.renderSection(prefix, directory, fileNames),
-      )
+      .map(([directory, fileNames]) => this.renderSection(directory, fileNames))
       .join("\n");
 
     return `<!doctype html>

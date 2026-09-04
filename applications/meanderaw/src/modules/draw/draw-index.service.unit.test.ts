@@ -1,12 +1,12 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { StartIndexService } from "./start-index.service";
+import { DrawIndexService } from "./draw-index.service";
 
-import type { OutputDocument } from "./start.types";
+import type { OutputDocument } from "./draw.types";
 
-describe(StartIndexService, () => {
-  let service: StartIndexService;
+describe(DrawIndexService, () => {
+  let service: DrawIndexService;
 
   const documents: OutputDocument[] = [
     { directory: "boxes/3-rows", fileName: "spin-8-repeats.svg" },
@@ -20,10 +20,10 @@ describe(StartIndexService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [StartIndexService],
+      providers: [DrawIndexService],
     }).compile();
 
-    service = await module.resolve(StartIndexService);
+    service = await module.resolve(DrawIndexService);
   });
 
   it("is defined", () => {
@@ -32,23 +32,23 @@ describe(StartIndexService, () => {
 
   describe("render", () => {
     it("links every drawing relative to the page rather than inlining it", () => {
-      const page = service.render("output", documents);
+      const page = service.render(documents);
 
       expect(page).toContain(
-        'src="output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
+        'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
       );
-      expect(page).toContain('src="output/boxes/3-rows/spin-8-repeats.svg"');
+      expect(page).toContain('src="boxes/3-rows/spin-8-repeats.svg"');
       expect(page).not.toContain("<path");
     });
 
     it("captions every drawing with its own filename", () => {
-      const page = service.render("output", documents);
+      const page = service.render(documents);
 
       expect(page).toContain("<figcaption>spin-8-repeats.svg</figcaption>");
     });
 
     it("groups the drawings into the directories they landed in, and counts them", () => {
-      const page = service.render("output", documents);
+      const page = service.render(documents);
 
       expect(page).toContain('<section id="boxes-3-rows">');
       expect(page).toContain("<h2>boxes/3-rows</h2>");
@@ -58,7 +58,7 @@ describe(StartIndexService, () => {
     });
 
     it("orders directories and filenames the way a reader reads them", () => {
-      const page = service.render("output", documents);
+      const page = service.render(documents);
 
       expect(page.indexOf("<h2>boxes/3-rows</h2>")).toBeLessThan(
         page.indexOf("<h2>boxes/10-rows</h2>"),
@@ -69,13 +69,13 @@ describe(StartIndexService, () => {
     });
 
     it("links each directory from a jump list, so a section far down the page is one click away", () => {
-      const page = service.render("output", documents);
+      const page = service.render(documents);
 
       expect(page).toContain('<a href="#boxes-3-rows">boxes/3-rows</a>');
     });
 
     it("escapes anything in a path that would otherwise close a tag", () => {
-      const page = service.render("output", [
+      const page = service.render([
         { directory: '<script>&"', fileName: "plain-6-repeats.svg" },
       ]);
 

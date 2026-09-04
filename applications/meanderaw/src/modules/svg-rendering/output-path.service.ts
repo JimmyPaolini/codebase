@@ -18,9 +18,10 @@ import type {
  * therefore reads as the parameter space it enumerates, and no two distinct
  * parameter sets can still share a path.
  *
- * Shared by `GenerateCommand` and `StartCommand` so the convention lives in
- * exactly one place, and `StartPermutationsService` composes its own tile
- * directories on top of {@link familyDirectory} for the same reason.
+ * Both of `DrawCommand`'s modes build their paths here — the sweep and the
+ * single drawing alike — so a hand-named drawing lands exactly where the
+ * sweep would have put it, and `DrawPermutationsService` composes its own
+ * tile directories on top of {@link familyDirectory} for the same reason.
  */
 @Injectable()
 export class OutputPathService {
@@ -85,7 +86,7 @@ export class OutputPathService {
 
   /**
    * The directory every document of one family at one row count is written
-   * to, relative to the output directory. `StartPermutationsService` nests
+   * to, relative to the output directory. `DrawPermutationsService` nests
    * its enumerated tiles beneath this rather than beside it, so a row
    * count's named drawings and its thousands of tiles stay in one place.
    */

@@ -22,7 +22,6 @@ yarn.lock
 **/out
 **/affirmations/output
 **/meanderaw/output
-**/meanderaw/index.html
 **/data/wiktionary
 **/data/wikipedia
 **/applications/lexico-ingestion/data
