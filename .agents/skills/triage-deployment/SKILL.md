@@ -1,6 +1,6 @@
 ---
 name: triage-deployment
-description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, eslint, oxlint, oxfmt, spell-check, knip, markdown-lint, yaml-lint, conformetry-validate, synchronization targets), test-coverage, validate-conventions (branch name, PR title/body, config sync), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image)."
+description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, eslint, oxlint, oxfmt, spell-check, knip, markdown-lint, yaml-lint, conformetry-validate, synchronization targets), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-issues (issue labels and metadata), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image)."
 argument-hint: "Optional: paste failure logs, or specify a workflow name / run URL to fetch"
 ---
 
@@ -59,6 +59,7 @@ Match the log header against the known workflows:
 | `🧑‍💻 Lint Codebase`        | `lint-codebase`        | push / PR / manual                     |
 | `🧑‍🔬 Test Coverage`        | `test-coverage`        | push / PR / manual                     |
 | `🧑‍⚖️ Validate Conventions` | `validate-conventions` | PR (opened/sync/edited) / push to main |
+| `👮 Audit Issues`         | `audit-issues`         | issue opened/edited/labeled/unlabeled  |
 | `🕵️ Scan Security`        | `scan-security`        | push / PR / weekly schedule            |
 
 Identify which **step** within the job failed (visible in the log as `##[error]` or step exit code `!= 0`).
@@ -272,7 +273,34 @@ NODE_OPTIONS='' node --import @swc-node/register/esm-register \
 
 ---
 
-### 🕵️ Audit Security
+### 👮 Audit Issues
+
+Not a pull request check. It fires on `issues` events, so it never appears among a pull request's checks and never blocks a merge — the issue already exists by the time it runs. It surfaces as the README's Audit Issues badge going red, or as a failed run on the workflow's own page.
+
+#### 🏷️ Reconcile Issue Labels
+
+Command: `synchronization issue-labels`, the [issue-labels](../../../tools/synchronization/src/modules/issue-labels/issue-labels.command.ts) writer
+
+Runs only on `opened`, and always exits 0 — a label it could not add is a fact about the environment rather than a defect — so this step never fails the job. A missing label shows up as the metadata check below failing instead.
+
+#### 🧾 Audit Issue Metadata
+
+Command: `validation issue-metadata`, the [issue-metadata](../../../tools/validation/src/modules/issue-metadata/issue-metadata.command.ts) check
+
+Fails when an issue does not carry exactly one `type:*` label, at least one `scope:*` label, and exactly one `source:*` label — or when those labels disagree with the Type and Scope answers in its own `issue.yml` body. An issue filed through `gh issue create` has no form markers, so only the presence rules apply to it.
+
+Every failure is reported with the `gh issue edit` command that fixes it. Fix the labels on the issue itself; no branch change can clear this, and a re-run replays the same issue.
+
+Reproduce it locally against a real issue, reading only:
+
+```bash
+NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+  tools/validation/src/main.ts issue-metadata <number>
+```
+
+---
+
+### 🕵️ Scan Security
 
 Each step runs independently:
 
