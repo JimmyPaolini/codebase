@@ -133,6 +133,11 @@ const scopes = [
     name: "documentation",
   },
   {
+    description:
+      "Shared TypeORM and GraphQL base entities, naming strategy, and database module factory",
+    name: "entities",
+  },
+  {
     description: "Helm charts, Terraform configs, and Kubernetes resources",
     name: "infrastructure",
   },
@@ -166,6 +171,11 @@ const scopes = [
     description:
       "Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads",
     name: "meanderaw",
+  },
+  {
+    description:
+      "Lexical gap discovery CLI that surveys English for morphological, phonotactic, and semantic gaps and coins words to fill them",
+    name: "sempientor",
   },
   {
     description:

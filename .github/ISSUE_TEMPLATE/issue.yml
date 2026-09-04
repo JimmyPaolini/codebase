@@ -49,6 +49,7 @@ body:
         - deps
         - deployments
         - documentation
+        - entities
         - infrastructure
         - JimmyPaolini
         - lexico
@@ -57,6 +58,7 @@ body:
         - lexico-ingestion
         - logger
         - meanderaw
+        - sempientor
         - callidescope
         - codependix
         - codometer

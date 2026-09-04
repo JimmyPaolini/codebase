@@ -264,3 +264,72 @@ number, never by recording what a run happened to measure — an exact figure
 reads as a target and invites being edited to whatever the next run produced.
 Nothing enforces this; every limit in the workspace follows it.
 _Avoid_: Budget, rounded limit, nice number
+
+## Sempientor
+
+**Semantic gap**:
+A meaning English has no word for, though its neighbors are lexicalized. Found
+by enumerating concepts and subtracting the lexicon. The most interesting of the
+three gap kinds and the hardest to detect.
+_Avoid_: Lexical gap, conceptual hole, missing word
+
+**Formal gap**:
+A form English permits but attaches no meaning to. Found by enumerating legal
+forms and subtracting the lexicon — the opposite direction of travel from a
+semantic gap. Morphological and phonotactic gaps are both formal gaps.
+_Avoid_: Nonword, pseudoword, unattested form
+
+**Morphological gap**:
+A word English's productive word-formation rules generate but that no attested
+word occupies. `describal` is one; `description` exists and `describal` does not.
+_Avoid_: Potential word, derivational hole, unattested derivation
+
+**Phonotactic gap**:
+A segment sequence English phonology permits that no word uses — `/sprɪk/`. Named
+a morpheme gap in the literature; this codebase says phonotactic, because the
+sequence is what is missing rather than a meaningful unit.
+_Avoid_: Morpheme gap, phonological gap, illegal word
+
+**Systematic gap**:
+A form English's rules forbid outright, such as a word with no vowel. Never a
+finding — a systematic gap is what separates a gap worth reporting from noise.
+_Avoid_: Impossible word, invalid form, rejected candidate
+
+**Blocking**:
+An existing word standing in the place a generated form would occupy, which is
+what makes that form a gap rather than merely an unused string. `describal` is
+blocked by `description`; `stratifiability` is unused and blocked by nothing.
+Blocking has two halves and both are recorded: form blocking, where the string
+already exists, and meaning blocking, where a different string already carries
+the meaning.
+_Avoid_: Collision, conflict, duplicate
+
+**Occupant**:
+The attested word that blocks a candidate, recorded alongside it rather than in
+place of it. A gap and its occupant are two facts about the same cell of the
+paradigm, and both are kept.
+_Avoid_: Winner, real word, existing form
+
+**Survey**:
+One complete pass over the lexicon hunting one kind of gap, with the parameters
+it ran under. Three exist — morphological, phonotactic, and semantic — and they
+share candidates and assays but nothing else.
+_Avoid_: Target, run, scan, job
+
+**Candidate**:
+A generated form under evaluation, kept permanently whether or not it survives.
+Nothing generated is ever discarded — a candidate that fails carries the record
+of what it failed and why.
+_Avoid_: Proposal, suggestion, output, result
+
+**Assay**:
+One test a candidate is put through, yielding a verdict without consuming the
+candidate. Deterministic assays are recorded as columns because they can always
+be recomputed; probabilistic ones are recorded as rows carrying the model and
+version that produced them, because they cannot.
+_Avoid_: Gate, check, filter, validation
+
+**Coinage**:
+A candidate that has passed every assay and been approved by a person. The only
+thing this project asserts is a word; everything else is a candidate.
+_Avoid_: Neologism, invention, new word, accepted candidate
