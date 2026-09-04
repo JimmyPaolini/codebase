@@ -13,7 +13,7 @@ that the crossing disappears from the ink graph.
 
 This was written after the family drew something. Every number below is
 `MeanderTopologyService.measure` reading the six documents committed under
-`applications/meanderaw/output/cross-*.svg`.
+`applications/meanderaw/output/cross/*/*.svg`.
 
 ## Considered options
 
@@ -26,7 +26,7 @@ a break of `n` pitches leaves `(2n - 1)` stroke widths of white.
 
 - **Break by one pitch.** Chosen. White gap `= 1 × strokeWidth`, exactly the
   channel invariant 2 already permits everywhere else. Measured on
-  `cross-6-rows-6-repeats-interrupted.svg`: `channelWidthCompliant: true`,
+  `cross/6-rows/interrupted-6-repeats.svg`: `channelWidthCompliant: true`,
   `inkTJunctions: 0`, `inkXJunctions: 0`. Its unit test measures the four white
   gaps down one bar in pixels — two where the bar meets the band borders, two
   either side of the rail — and asserts all four equal the stroke width.

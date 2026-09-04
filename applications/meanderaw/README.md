@@ -4,11 +4,71 @@
 nx run meanderaw:start
 ```
 
+## 🖌️ One Command
+
+Meanderaw has one command, `draw`, and it is the default — so the target above runs it
+with no arguments. What it draws is decided by whether a drawing was named, not by which
+sub-command was picked:
+
+| Invocation | What it draws |
+| ---------- | ------------- |
+| `nx run meanderaw:start` | Every meander the application can draw, beneath an index page listing them all |
+| `nx run meanderaw:start --args="--type <family> --rows <n>"` | That one, into the same tree |
+
+`--type` and `--rows` go together: one without the other is refused rather than treated
+as a sweep, since neither flag can be declared `required` when passing neither is how the
+sweep is asked for. Every other flag — `--modifier` and the parameter it needs
+(`--period`, `--shape`, `--strands`), `--sub-family`, `--repeat-count`,
+`--output-directory` — narrows the one drawing.
+
+This used to be two commands, `start` and `generate`. They are one because the option set
+is one: every flag either names a drawing or says where drawings go, and the sub-command
+boundary between them only decided which half of that set was legal.
+
 ## Test
 
 ```bash
 nx run meanderaw:vitest
 ```
+
+## 🗂️ Output Layout
+
+`nx run meanderaw:start` runs the one command this application has — `draw` — which
+with no arguments writes every drawing it can under `output/`, beneath one `index.html`
+listing them all.
+
+Every attribute a drawing was generated from is a directory, and only what is left
+over is its filename:
+
+```text
+output/
+  index.html                                        every drawing, linked and captioned
+  <family>/
+    <rows>-rows/
+      <variant>-<repeatCount>-repeats.svg           `plain` where there is no modifier
+      permutations/                                 `mosaic` only
+        <columns>-columns/
+          <identifier>[-<sub-family>].svg
+```
+
+So `output/chain/7-rows/edge-flip-6-repeats.svg`, and
+`output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg`. A directory listing is
+then the parameter space it enumerates, and the 3,179 enumerated `mosaic` tiles — which
+would be unreadable as one flat directory — sit a few hundred at a time under the row
+count and column span that produced them, named by nothing but what distinguishes them.
+
+Naming one drawing writes into the same tree, through the same `OutputPathService`, so a
+single drawing lands beside its siblings rather than loose at the top:
+
+```bash
+nx run meanderaw:start --args="--type chain --rows 7 --modifier edge-flip"
+```
+
+The SVGs are committed; `output/index.html` is not. It links each drawing rather than
+inlining it, so it duplicates nothing — it is left out of git because it is a megabyte of
+generated markup, and regenerating it takes under a second. It sits at the root of the
+tree it indexes rather than beside it, so every link it writes is a path down from its
+own directory and the two move together.
 
 ## 🏛️ Meander Charter
 
@@ -141,13 +201,13 @@ even row count is refused rather than approximated.
 Ask for a sub-family by name:
 
 ```bash
-nx run meanderaw:generate --args="--type mosaic --sub-family dots --rows 6"
+nx run meanderaw:start --args="--type mosaic --sub-family dots --rows 6"
 ```
 
-The name lands in the output filename — `mosaic-6-rows-6-repeats-dots.svg` — and in the
-sweep's own, where a tile with a name carries it after its identifier
-(`mosaic-6-rows-1-columns-ddddd-dots.svg`) and a tile without one carries the identifier
-alone.
+The name lands in the output path — `output/mosaic/6-rows/dots-6-repeats.svg` — and in
+the sweep's own, where a tile with a name carries it after its identifier
+(`output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg`) and a tile without one
+carries the identifier alone.
 
 ### `diamond` and `split` are one shape under two names
 
@@ -166,8 +226,8 @@ applying a modifier, others by recognizing a structural property". The equality 
 rather than asserted: the `diamond` sub-family at 5 rows and 12 repeats is byte-identical
 to the committed `testing/assets/mosaic-5-rows-12-repeats-split.svg`.
 
-Two names, two files. `--sub-family diamond` writes `mosaic-5-rows-12-repeats-diamond.svg`
-and `--modifier split` still writes `mosaic-5-rows-12-repeats-split.svg`, so neither
+Two names, two files. `--sub-family diamond` writes `mosaic/5-rows/diamond-12-repeats.svg`
+and `--modifier split` still writes `mosaic/5-rows/split-12-repeats.svg`, so neither
 overwrites the other. Asking for both at once is refused, since either one alone already
 decides which repeat unit is drawn.
 
@@ -183,12 +243,13 @@ crossings in the negative space of `mosaic split` and `mosaic alternated period-
 branching in every family's negative — but only across the 114 named patterns.
 [#412](https://github.com/JimmyPaolini/codebase/issues/412) runs the same measurement
 across all 3,179 tiles of the `mosaic` permutation set committed under
-`output/permutations/` — the only family with an enumerated unit space, so the only one
-this measurement can run over every tile rather than a handful of named modifiers.
+`output/mosaic/<rows>-rows/permutations/` — the only family with an enumerated unit
+space, so the only one this measurement can run over every tile rather than a handful of
+named modifiers.
 
 ### Method
 
-Every `output/permutations/*.svg` file was read from disk — no generation, no motif
+Every `output/mosaic/<rows>-rows/permutations/<columns>-columns/*.svg` file was read from disk — no generation, no motif
 service, the same approach the charter test already uses to gate the corpus — and passed
 to the existing
 [`MeanderTopologyService.measure`](src/modules/meander-topology/meander-topology.service.ts).
@@ -564,8 +625,8 @@ project has ever drawn. Because movement is orthogonal, two crossing strands can
 meet as a `+`, never an `X`.
 
 ```bash
-nx run meanderaw:generate --args="--type cross --rows 6 --repeat-count 6"
-nx run meanderaw:generate --args="--type cross --rows 6 --repeat-count 6 --modifier interrupted"
+nx run meanderaw:start --args="--type cross --rows 6 --repeat-count 6"
+nx run meanderaw:start --args="--type cross --rows 6 --repeat-count 6 --modifier interrupted"
 ```
 
 ### What it draws
@@ -720,7 +781,7 @@ per document, at 3 through 8 rows:
 
 Each of the fifteen numbers with a surveyed source is asserted, in
 `meander-topology.service.integration.test.ts`, to equal the negative T-junction count of
-the committed `output/permutations/` document it inverts — read off disk, from a file that
+the committed `output/mosaic/<rows>-rows/permutations/` document it inverts — read off disk, from a file that
 existed before this family did. That assertion is what makes "the candidates come from the
 shortlist" a fact rather than a claim: if a drawing stopped being that document's
 complement, it would fail.

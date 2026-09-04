@@ -33,9 +33,9 @@ import type {
  * every row count the survey covered, `negative-source.service.unit.test.ts`
  * asserts {@link MosaicSymmetryService.identify} of the built tile against
  * the identifier `README.md` publishes, and asserts that identifier is the
- * tile's canonical one — so the tile built here is the very tile
- * `output/permutations/` committed and the survey measured, not a mirror or
- * a re-phasing of it.
+ * tile's canonical one — so the tile built here is the very tile the
+ * permutation sweep committed under `output/mosaic/<rows>-rows/permutations/`
+ * and the survey measured, not a mirror or a re-phasing of it.
  */
 @Injectable()
 export class NegativeSourceService {

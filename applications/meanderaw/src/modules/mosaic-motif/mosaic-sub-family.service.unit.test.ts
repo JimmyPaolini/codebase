@@ -19,7 +19,7 @@ import type {
 // 🔧 Configuration
 
 /**
- * The row counts `StartPermutationsService.rowsSweep` enumerates, which is
+ * The row counts `DrawPermutationsService.rowsSweep` enumerates, which is
  * the whole of the unit space this repository has materialized. Every
  * classification claim below is checked against all of it rather than
  * against a sample.

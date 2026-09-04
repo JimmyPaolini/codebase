@@ -5,9 +5,8 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
-import { GenerateModule } from "./modules/generate/generate.module";
+import { DrawModule } from "./modules/draw/draw.module";
 import { MeanderTopologyModule } from "./modules/meander-topology/meander-topology.module";
-import { StartModule } from "./modules/start/start.module";
 
 /**
  * Root NestJS application module.
@@ -22,11 +21,10 @@ import { StartModule } from "./modules/start/start.module";
     }),
     DiscoveryModule,
     LoggerModule,
-    GenerateModule,
+    DrawModule,
     // 🏛️ Carries no command of its own; registered so the charter measurement
     // is resolvable in `nx run meanderaw:repl`.
     MeanderTopologyModule,
-    StartModule,
   ],
 })
 export class MainModule {}
