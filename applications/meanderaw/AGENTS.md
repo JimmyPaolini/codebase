@@ -20,6 +20,13 @@ They are measured against all 3,353 committed SVGs, not read off the code, so
 they are facts about the output rather than intentions in the source. The full charter,
 with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
+The charter property test reaches past that corpus. It sweeps every combination out to
+`MAXIMUM_VALUE` — every row count the command line accepts, not the 8 the corpus stops at
+— and measures documents it generates rather than files on disk, so a row count nobody has
+committed a drawing for is still gated. That gap is where
+[#507](https://github.com/JimmyPaolini/codebase/issues/507) hid, so do not narrow the sweep
+back to the committed extent to make a new family pass.
+
 The three that most often catch a change:
 
 - **Space-filling.** Every interior white channel is exactly one stroke width — which

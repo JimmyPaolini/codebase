@@ -7,7 +7,10 @@ import {
 } from "../meander-generation/meander-generation.constants";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
-import { PLIED_SWEEP_STRAND_COUNTS } from "./draw.constants";
+import {
+  PLIED_SWEEP_STRAND_COUNTS,
+  ROWS_SWEEP_MAXIMUM,
+} from "./draw.constants";
 
 import type { GenerationParameters } from "../meander-generation/meander-generation.types";
 
@@ -29,17 +32,6 @@ const ORIGINAL_FAMILIES = new Set([
   "swirl",
   "whirl",
 ]);
-
-/** The families whose shared zigzag doubles back on itself above {@link RETRACING_ROWS_THRESHOLD} rows — issue #507. */
-const RETRACING_FAMILIES = new Set(["chain", "snake"]);
-
-/**
- * The highest row count at which `chain` and `snake` still render without
- * retracing. Measured in `meander-generation.service.unit.test.ts` against
- * real path data rather than remembered here; this constant only carries it
- * to the arithmetic below.
- */
-const RETRACING_ROWS_THRESHOLD = 8;
 
 describe(DrawCombinationsService, () => {
   let service: DrawCombinationsService;
@@ -114,29 +106,23 @@ describe(DrawCombinationsService, () => {
       );
     });
 
-    // 🎯 The three figures README.md's discarded-density argument rests on,
+    // 🎯 The two figures README.md's discarded-density argument rests on,
     // pinned to the sweep they describe instead of counted by hand.
     //
     // "The 32 combinations the sweep would want" are the six original
     // families' distinct family/rows pairs — the space a
     // `strokeWidth = unit / (2N)` proposal would have had to cover. That
     // proposal redraws a pattern at `rows × N` rows, so at the `parallel`
-    // family's own ply of two every pair is asked for at `rows × 2`.
+    // family's own ply of two every pair is asked for at `rows × 2`, and
+    // `beyondMaximum` is the pairs whose doubled row count no longer fits
+    // inside the shared `MAXIMUM_VALUE` — 12 of them, at 7 and 8 rows in
+    // every family.
     //
-    // Two different criteria fall out of that, and conflating them is what
-    // sent the prose wrong once already. `beyondMaximum` is the row-count
-    // ceiling: the pairs whose doubled row count no longer fits inside the
-    // shared `MAXIMUM_VALUE` — 12 of them, at 7 and 8 rows in every family.
-    // `degenerate` is legality: the pairs whose doubled row count renders
-    // ink that doubles back on itself, which is `chain` and `snake` alone
-    // above eight effective rows — 8 of them, four in each. They are not
-    // the same set and not the same number, and it is the 8 that says the
-    // proposal cannot work: four of those eight are inside the maximum, so
-    // a bound on the row count alone would have let them through.
-    //
-    // The threshold behind `degenerate` is measured rather than remembered
-    // — `meander-generation.service.unit.test.ts` renders it — and the
-    // underlying defect is issue #507, which predates this family.
+    // That count was 8 until issue #507 was fixed, on a stricter criterion
+    // that no longer applies: four of those eight sat *inside* the maximum,
+    // so degeneracy rather than the ceiling was what ruled the proposal out.
+    // README.md, "Nothing gets thinner", keeps that history. The ceiling is
+    // the whole of the argument now, and 12 is the number it rests on.
     it("pins the density proposal's reach over the six original families", () => {
       const sweptPairs = [
         ...new Map(
@@ -151,15 +137,33 @@ describe(DrawCombinationsService, () => {
       const beyondMaximum = sweptPairs.filter(
         ({ rows }) => rows * DISCARDED_DENSITY_PLY > MAXIMUM_VALUE,
       );
-      const degenerate = sweptPairs.filter(
-        ({ rows, type }) =>
-          RETRACING_FAMILIES.has(type) &&
-          rows * DISCARDED_DENSITY_PLY > RETRACING_ROWS_THRESHOLD,
-      );
 
       expect(sweptPairs).toHaveLength(32);
       expect(beyondMaximum).toHaveLength(12);
-      expect(degenerate).toHaveLength(8);
+    });
+
+    // 🎯 The argument itself, rather than the default it falls back to. The
+    // charter's property test is the only caller that passes one, and what
+    // it buys is the four row counts between the corpus `DrawCommand`
+    // commits and the deepest drawing the command line will make — the gap
+    // issue #507 lived in. Both halves are asserted, because each can break
+    // on its own: widening must reach `MAXIMUM_VALUE`, and the widened
+    // space must still contain the committed one unchanged, so a wider
+    // sweep can never quietly stop covering a committed document.
+    it("widens the row range on request without disturbing the committed one", () => {
+      const widened = service.enumerate(MAXIMUM_VALUE);
+      const sweptRows = [
+        ...new Set(
+          widened
+            .filter((parameters) => parameters.type === "swirl")
+            .map((parameters) => parameters.rows),
+        ),
+      ];
+
+      expect(sweptRows).toStrictEqual([4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      expect(
+        widened.filter((parameters) => parameters.rows <= ROWS_SWEEP_MAXIMUM),
+      ).toStrictEqual(combinations);
     });
 
     it("sweeps each type from its own structural minimum through the sweep maximum", () => {

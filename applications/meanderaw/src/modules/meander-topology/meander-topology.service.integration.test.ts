@@ -14,8 +14,12 @@ import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { DrawCombinationsService } from "../draw/draw-combinations.service";
-import { PERMUTATIONS_SUBDIRECTORY } from "../draw/draw.constants";
+import {
+  PERMUTATIONS_SUBDIRECTORY,
+  ROWS_SWEEP_MAXIMUM,
+} from "../draw/draw.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { MAXIMUM_VALUE } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MotifRegistryService } from "../meander-generation/motif-registry.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
@@ -190,9 +194,17 @@ const modifierLabel = (modifier: Modifier): string => {
  * tested through `MeanderGenerationService.generate`, the single seam every
  * family, modifier, and validation rule already passes through. Those tiles
  * are gated from disk instead — see the committed-corpus test below.
+ *
+ * It runs to `MAXIMUM_VALUE` rather than to the `ROWS_SWEEP_MAXIMUM` the
+ * corpus is written at, which is the one place the two callers of that
+ * enumeration deliberately differ. The charter is a claim about what the
+ * command line will draw, not about what happens to be committed, and until
+ * #507 the two were quietly taken to be the same thing. The wider sweep
+ * costs no committed bytes at all: nothing below reads a swept document off
+ * disk.
  */
 const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
-  .enumerate()
+  .enumerate(MAXIMUM_VALUE)
   .map((parameters) => {
     const modifier = parameters.modifier
       ? ` with ${modifierLabel(parameters.modifier)}`
@@ -451,8 +463,23 @@ describe(MeanderTopologyService, () => {
     // guard that stops matching — every `it.each` below would quietly cover
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
-    it("sweeps every named-type combination DrawCommand writes", () => {
-      expect(charterSweep).toHaveLength(174);
+    //
+    // Both halves of the relationship are pinned, because the sweep is
+    // deliberately wider than the corpus and each half can break on its own.
+    // Restricted to the row counts `DrawCommand` commits, it must be exactly
+    // the enumeration `DrawCommand` writes — that is "the charter gates the
+    // corpus this repository commits". Unrestricted, it must reach every row
+    // count the command line accepts, which is the gap #507 lived in.
+    it("sweeps every named-type combination DrawCommand writes, and every deeper row count the command line accepts", () => {
+      const committed = new DrawCombinationsService().enumerate();
+
+      expect(committed).toHaveLength(174);
+      expect(charterSweep).toHaveLength(302);
+      expect(
+        charterSweep
+          .filter(({ parameters }) => parameters.rows <= ROWS_SWEEP_MAXIMUM)
+          .map(({ parameters }) => parameters),
+      ).toStrictEqual(committed);
     });
 
     it.each(charterSweep)("$label holds it", ({ parameters }) => {
