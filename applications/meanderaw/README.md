@@ -148,6 +148,21 @@ Wider-than-one-stroke gaps occur only where a band terminates, which is
 [#338](https://github.com/JimmyPaolini/codebase/issues/338) and is not a family
 property.
 
+Those measurements are of the committed corpus, which stops at 8 rows. **The charter
+property test does not.** It sweeps the same enumeration `DrawCommand` writes from — one
+composition, so a family added widens both — but out to `MAXIMUM_VALUE`, every row count
+the command line accepts: 302 combinations rather than 174. The charter is a claim about
+what this tool draws, not about what happens to be on disk, and the four extra row counts
+cost no committed bytes at all, because every assertion measures a document generated in
+the test rather than read from `output/`.
+
+That gap was not hypothetical. [#507](https://github.com/JimmyPaolini/codebase/issues/507)
+lived in it: `chain` and `snake` drew self-retracing ink at 9 through 12 rows — reachable
+from the command line by anybody, covered by nothing, because the corpus stopped at 8 and
+the charter swept the corpus. Both halves are now pinned, so neither can drift: restricted
+to the row counts `DrawCommand` commits, the sweep must be exactly what `DrawCommand`
+writes, and unrestricted it must reach `MAXIMUM_VALUE`.
+
 ## 🧬 Families, Sub-families, and Tiles
 
 A **family** is a generator of repeat units — its **unit space**. A **modifier** is a
@@ -1007,26 +1022,27 @@ re-derived:
 - Squeezing them is **redundant**. A uniform lattice at `unit / (2N)` is the lattice
   `--rows rows × N` already produces, so the thinner drawing is a row count under another
   name rather than a new pattern.
-- Squeezing them is **unreachable** for a quarter of the space. Drawing at `unit / (2N)`
-  is drawing at `rows × N` rows, so at this family's own ply of two every pattern is
-  asked for at twice its row count. The space is the **32** family/rows pairs the sweep
-  covers across the six original families — `boxes` and `mosaic` at 3 through 8 rows,
-  `chain`, `snake`, `swirl` and `whirl` at 4 through 8, so 12 + 20 = 32. **8 of those 32
-  cannot be drawn**: `chain` and `snake` share one zigzag sequence, and above eight
-  effective rows it doubles back on itself, laying a second run of ink over one already
-  drawn. Their swept rows 4 through 8 double to 8, 10, 12, 14 and 16, so only rows 4
-  survives — four failures each, eight in total. That defect is
-  [#507](https://github.com/JimmyPaolini/codebase/issues/507) and predates this family.
+- Squeezing them is **unreachable** for over a third of the space. Drawing at
+  `unit / (2N)` is drawing at `rows × N` rows, so at this family's own ply of two every
+  pattern is asked for at twice its row count. The space is the **32** family/rows pairs
+  the sweep covers across the six original families — `boxes` and `mosaic` at 3 through 8
+  rows, `chain`, `snake`, `swirl` and `whirl` at 4 through 8, so 12 + 20 = 32. **12 of
+  those 32 cannot be drawn**: their doubled row count runs past the shared `MAXIMUM_VALUE`
+  of 12, which is every pair at 7 and 8 rows in all six families.
 
-  **The count is 8, and the reason is degeneracy rather than a row-count ceiling** — the
-  two are easy to conflate and this passage once did. Asking instead which doubled row
-  counts simply exceed the shared maximum of 12 excludes a _different_ set of **12**
-  pairs, the ones at 7 and 8 rows in every family. That is the weaker criterion and it is
-  not what rules the proposal out: four of the eight that actually fail sit **inside** the
-  maximum, at 10 and 12 effective rows, so a bound on the row count alone would have waved
-  them through. `start-combinations.service.unit.test.ts` pins all three numbers against the
-  real enumeration, and `meander-generation.service.unit.test.ts` measures the retracing
-  itself off rendered path data rather than restating the row count.
+  **That count was 8 until recently, on a stricter criterion, and the history is worth
+  keeping** — the two are easy to conflate and this passage once did. `chain` and `snake`
+  share one zigzag sequence, and it used to double back on itself above eight effective
+  rows, laying a second run of ink over one already drawn. Eight of the 32 pairs doubled
+  into that range, and four of those eight sat **inside** the row-count maximum, so what
+  ruled the proposal out was degeneracy rather than the ceiling. That defect was
+  [#507](https://github.com/JimmyPaolini/codebase/issues/507), and it is **fixed**: the
+  zigzag turns at every step at every row count the command line accepts.
+  `meander-generation.service.unit.test.ts` measures that off rendered path data, across
+  every family rather than the six this passage counts, so the claim fails rather than
+  goes stale. What is left is the ceiling on its own, and
+  `draw-combinations.service.unit.test.ts` pins both 32 and 12 against the real
+  enumeration.
 
 What makes strands read as a bundle here is not their thickness but the fact that they
 **turn together**. That is a property of the drawing, not of the stroke, and it costs the

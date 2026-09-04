@@ -876,29 +876,24 @@ describe(MeanderGenerationService, () => {
     );
   });
 
-  // 🎯 Issue #507, measured rather than described, and the threshold the
-  // discarded density proposal runs into — see README.md, "Nothing gets
-  // thinner". `chain` and `snake` share one zigzag sequence, and above
-  // eight rows it doubles back: two consecutive runs along the same axis,
-  // a second stroke of ink laid over one already drawn. Every other
-  // original family stays clean to the shared maximum.
+  // 🎯 Issue #507, measured rather than described. `chain` and `snake`
+  // share one zigzag sequence, and it used to double back above eight rows:
+  // two consecutive runs along the same axis, a second stroke of ink laid
+  // over one already drawn. The gap that hid it was between two numbers —
+  // `ROWS_SWEEP_MAXIMUM` (8), the deepest row count the committed corpus
+  // holds, and `MAXIMUM_VALUE` (12), the deepest the command line accepts —
+  // so this sweeps to the second of those rather than the first, and over
+  // every family rather than the six that existed when the defect was
+  // found.
   //
   // This is deliberately a rendered measurement. A drawing that *emits*
-  // proves nothing here — all six emit at every row count through 12, and
-  // reading that as "it works" is exactly how the wrong cause reached the
-  // README. The defect is in what the path says, not in whether there is
-  // one.
-  describe("above eight rows", () => {
-    it("doubles back on itself in chain and snake, and in no other original family", () => {
-      const originalFamilies: readonly MeanderType[] = [
-        "boxes",
-        "chain",
-        "mosaic",
-        "snake",
-        "swirl",
-        "whirl",
-      ];
-      const retracing = originalFamilies.flatMap((type) =>
+  // proves nothing here — every family emitted at every row count through
+  // 12 while the defect was live, and reading that as "it works" is exactly
+  // how the wrong cause reached the README. The defect was in what the path
+  // said, not in whether there was one.
+  describe("every row count the command line accepts", () => {
+    it("lays no ink back over ink, in any family", () => {
+      const retracing = sweptTypes.flatMap((type) =>
         Array.from(
           { length: MAXIMUM_VALUE - STRUCTURAL_MINIMUM_ROWS[type] + 1 },
           (_, offset) => STRUCTURAL_MINIMUM_ROWS[type] + offset,
@@ -915,16 +910,7 @@ describe(MeanderGenerationService, () => {
           .map((rows) => `${type} at ${rows} rows`),
       );
 
-      expect(retracing).toStrictEqual([
-        "chain at 9 rows",
-        "chain at 10 rows",
-        "chain at 11 rows",
-        "chain at 12 rows",
-        "snake at 9 rows",
-        "snake at 10 rows",
-        "snake at 11 rows",
-        "snake at 12 rows",
-      ]);
+      expect(retracing).toStrictEqual([]);
     });
   });
 

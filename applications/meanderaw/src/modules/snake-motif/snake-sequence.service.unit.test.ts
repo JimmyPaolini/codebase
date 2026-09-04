@@ -1,6 +1,10 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import {
+  MAXIMUM_VALUE,
+  STRUCTURAL_MINIMUM_ROWS,
+} from "../meander-generation/meander-generation.constants";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 
 import { SnakeSequenceService } from "./snake-sequence.service";
@@ -81,6 +85,32 @@ describe(SnakeSequenceService, () => {
       ]);
     });
 
+    // 🎯 Nine rows is the shallowest row count whose geometry issue #507's
+    // itinerary got wrong, so it is the one worth a fixture of its own
+    // beside the four above it — the divergence pinned rather than
+    // described.
+    it("matches the reference geometry at 9 rows, the first row count past the sweep the corpus commits", () => {
+      expect(service.points(9)).toStrictEqual([
+        [0, 1],
+        [7, 1],
+        [7, 7],
+        [2, 7],
+        [2, 3],
+        [5, 3],
+        [5, 5],
+        [4, 5],
+        [4, 4],
+        [3, 4],
+        [3, 6],
+        [6, 6],
+        [6, 2],
+        [1, 2],
+        [1, 8],
+        [8, 8],
+        [8, 1],
+      ]);
+    });
+
     it("visits every grid level from 1 to rows minus one exactly once", () => {
       const points = service.points(8);
       const visitedLevels = points.slice(1, -1).map(([, yLevel]) => yLevel);
@@ -88,6 +118,29 @@ describe(SnakeSequenceService, () => {
       expect(new Set(visitedLevels).size).toBe(7);
       expect(Math.max(...visitedLevels)).toBe(7);
       expect(Math.min(...visitedLevels)).toBe(1);
+    });
+
+    // 🎯 Issue #507 in one property, over every row count the command line
+    // accepts rather than only the ones the corpus commits. A step that
+    // changes both coordinates or neither is a run that failed to meet the
+    // one before it, which is what `pointsToPathData` renders as two
+    // consecutive commands on the same axis.
+    it.each(
+      Array.from(
+        { length: MAXIMUM_VALUE - STRUCTURAL_MINIMUM_ROWS.snake + 1 },
+        (_value, offset) => STRUCTURAL_MINIMUM_ROWS.snake + offset,
+      ),
+    )("turns at every step, never doubling back, at %i rows", (rows) => {
+      const points = service.points(rows);
+      const steps = points.slice(1).map((point, index) => {
+        const previous = points[index] ?? [0, 0];
+
+        return [point[0] !== previous[0], point[1] !== previous[1]] as const;
+      });
+
+      expect(
+        steps.filter(([movedX, movedY]) => movedX === movedY),
+      ).toStrictEqual([]);
     });
   });
 
