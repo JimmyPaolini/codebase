@@ -13,10 +13,24 @@ name: 🧑‍⚖️ Validate Conventions
 # "skipped" on every pull request event and left one badge standing for two
 # unrelated signals.
 #
-# The job is thin: checkout, install, run a `tools/validation` check. The
-# README's Validate Conventions badge is this workflow's own status badge. On
+# The job is thin: checkout, install, run a `tools/validation` check. On
 # `merge_group` the job skips, which is the whole point of that trigger; see
 # the note on it below.
+#
+# The README's Validate Conventions badge is this workflow's own status badge,
+# and it asks for `?event=pull_request` rather than the `?branch=main` every
+# other badge there uses. A badge with no query — or with a `branch` — reports
+# the newest run whose `head_branch` matches, and no run this workflow can
+# produce any longer has `head_branch: main`: a `pull_request` run carries the
+# head ref, and a `merge_group` run carries the queue's own
+# `gh-readonly-queue/main/...` ref. While the issue-metadata job still lived
+# here, the `issues` trigger did produce `main` runs, so `?branch=main` worked;
+# the moment that job left for 👮 Audit Issues the badge froze on the last of
+# them and reported a September 2026 verdict forever. Filtering on the event
+# instead follows the runs that actually exist. A dependabot or renovate pull
+# request is the one wrinkle — the job's `if` skips those, and a skipped run
+# reports no status — but the next real pull request clears it, which a frozen
+# `branch` filter never does.
 #
 # On a pull request's `opened`/`reopened`, the conventional label vocabulary
 # is reconciled against the repository first, so a freshly opened pull
