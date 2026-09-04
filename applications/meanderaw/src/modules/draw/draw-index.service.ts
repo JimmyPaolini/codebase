@@ -4,6 +4,8 @@
 
 import { Injectable } from "@nestjs/common";
 
+import { SUPPORTED_TYPES } from "../meander-generation/meander-generation.constants";
+
 import type { OutputDocument } from "./draw.types";
 
 /**
@@ -33,6 +35,21 @@ export class DrawIndexService {
   /** Orders directories and filenames the way a reader reads them, so `10-rows` follows `9-rows` rather than `1-columns`. */
   private readonly collator = new Intl.Collator("en", { numeric: true });
 
+  /**
+   * Where each family sits on the page, read off the order `SUPPORTED_TYPES`
+   * declares them in.
+   *
+   * The page is grouped by directory and every directory begins with its
+   * family, so sorting the groups by name alone would lay the corpus out
+   * alphabetically — `boxes` first because of its initial letter, and the
+   * three thousand `mosaic` tiles in the middle of the page rather than at the
+   * end of it. Ranking by declaration order instead makes the one list that
+   * already names every family decide the order they are read in.
+   */
+  private readonly familyRanks = new Map<string, number>(
+    SUPPORTED_TYPES.map((type, index) => [type, index]),
+  );
+
   // 🔑 Public Fields
 
   // 🔏 Private Methods
@@ -46,7 +63,14 @@ export class DrawIndexService {
       .replaceAll('"', "&quot;");
   }
 
-  /** Collects the documents into their directories, both the directories and the filenames within each in reading order. */
+  /** Ranks a directory by the family it begins with, so anything the families do not name sorts after all of them. */
+  private familyRank(directory: string): number {
+    const [family] = directory.split("/");
+
+    return this.familyRanks.get(family ?? "") ?? SUPPORTED_TYPES.length;
+  }
+
+  /** Collects the documents into their directories, the directories in family order and the filenames within each in reading order. */
   private groupByDirectory(
     documents: readonly OutputDocument[],
   ): [string, string[]][] {
@@ -64,7 +88,11 @@ export class DrawIndexService {
         directory,
         fileNames.toSorted((left, right) => this.collator.compare(left, right)),
       ])
-      .toSorted(([left], [right]) => this.collator.compare(left, right));
+      .toSorted(
+        ([left], [right]) =>
+          this.familyRank(left) - this.familyRank(right) ||
+          this.collator.compare(left, right),
+      );
   }
 
   /** Renders the jump list, so a directory two thousand drawings down the page is one click away. */
