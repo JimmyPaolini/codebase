@@ -178,13 +178,20 @@ repository can publish both. They answer different questions: the tree says
 what each frame takes, returns, and documents; the diagram says what shape they
 make together.
 
+Both anchored destinations render the same report, so a diagram draws exactly
+what the markdown one prints: the run's call stacks over the depth limit. The
+committed example of one is
+[`packages/callidescope-examples/output/diagram.md`](../callidescope-examples/output/diagram.md),
+where five stacks over that package's limit are drawn as 38 callables and 34
+arrows. This repository publishes no diagram at all — its deepest stack sits
+exactly at the limit, so there is nothing over it to draw, and a `--format
+mermaid` run here prints `None.` under that heading.
+
 All the stacks are drawn as **one** flowchart, not one apiece. A single stack is
 a straight line, and a straight line is a list with extra steps. Drawn together
 the shared tails converge — every command reaching the same repository, every
 resolver ending in the same service — and that convergence is the thing a
-picture shows and an indented tree cannot. In this workspace's widest project,
-`caelundas`, 96 stacks collapse to 263 callables, 27 of them called from more
-than one place.
+picture shows and an indented tree cannot.
 
 Entry points are drawn as stadiums and everything below them as boxes. Shape
 rather than color, because the diagram is read in whichever theme the reader
@@ -193,10 +200,15 @@ callable's name alone: a diagram trying to also carry signatures is unreadable
 at any size, and the tree already has room for them.
 
 A diagram stops at 300 callables — GitHub refuses a mermaid block past 50,000
-characters, and that widest project's 263 is the closest anything here comes to
-the cap. Whole stacks are dropped rather than trimmed, so the diagram never
+characters. Whole stacks are dropped rather than trimmed, so the diagram never
 contains an edge into something it did not draw, and it says how many it left
-out.
+out. The cap is generous against one project's worth of stacks and tight against
+a workspace's: this repository's widest project, `caelundas`, has 96 call stacks
+spanning 263 distinct callables, 27 of them called from more than one place, so
+a set that size fits whole; the 554 stacks its 53 projects hold between them
+would reach the 300 and leave 451 out. Neither set is drawn here — nothing in
+this workspace is over the depth limit — but they are the scale the cap is set
+against.
 
 `projectReadmes` is what puts a `## 🔭 Callidescope` section at the bottom of
 every package in this repository — every package, because the run that writes
