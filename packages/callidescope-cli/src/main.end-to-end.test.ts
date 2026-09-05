@@ -59,6 +59,9 @@ function runCallidescope(workspaceRoot: string): {
       cwd: workspaceRoot,
       encoding: "utf8",
       env: { ...process.env, SWC_NODE_PROJECT: LOADER_PROJECT },
+      // A kill budget for the child, well under the suite's own timeout, so a
+      // run that hangs fails on what it was doing rather than on the clock.
+      timeout: 20_000,
     },
   );
 
