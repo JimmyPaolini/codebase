@@ -37,6 +37,7 @@ import type {
   ProjectReport,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
+import type { SkippedProject } from "@callidescope/graph";
 
 /** Builds a resolved configuration with no destinations configured. */
 function buildConfiguration(
@@ -74,6 +75,20 @@ function buildConfiguration(
       rootModuleSegment: "src",
     },
     ...overrides,
+  };
+}
+
+/** Builds the summary of a run that collected nothing at all. */
+function buildEmptySummary(): CallGraphResult["summary"] {
+  return {
+    callableCount: 0,
+    cyclicComponentCount: 0,
+    edgeCount: 0,
+    entryPointCount: 0,
+    fileCount: 0,
+    maximumDepth: 0,
+    projectCount: 0,
+    unresolvedCallCount: 0,
   };
 }
 
@@ -166,11 +181,15 @@ describe(CallidescopeCommand, () => {
   }
 
   /** Points the trace at a prepared result. */
-  function stubTrace(result: CallGraphResult = buildCallGraphResult()): void {
+  function stubTrace(
+    result: CallGraphResult = buildCallGraphResult(),
+    skippedProjects: SkippedProject[] = [],
+  ): void {
     callidescopeService.trace.mockReturnValue({
       projectNames: ["example"],
       projectRoots: new Map([["example", "packages/example"]]),
       result,
+      skippedProjects,
     });
   }
 
@@ -363,7 +382,12 @@ describe(CallidescopeCommand, () => {
     expect(logger.info).toHaveBeenCalledWith(
       "🔭 Finished a call-stack trace",
       undefined,
-      { deepStackCount: 1, staleReportCount: 0, wideCallableCount: 0 },
+      {
+        deepStackCount: 1,
+        skippedProjectCount: 0,
+        staleReportCount: 0,
+        wideCallableCount: 0,
+      },
     );
   });
 
@@ -739,6 +763,70 @@ describe(CallidescopeCommand, () => {
 
     expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
     expect(process.exitCode).toBeUndefined();
+  });
+
+  // 🕳️ A run that traced nothing
+
+  it("fails a run that collected no callables at all", async () => {
+    // What an aborted trace looks like from here, and what used to exit 0:
+    // the whole workspace produced nothing, so every gate above passed for
+    // having nothing to judge.
+    stubTrace(buildCallGraphResult({ summary: buildEmptySummary() }));
+
+    await command.run([], { check: "depth" });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("names an empty trace as its own finding", async () => {
+    stubTrace(buildCallGraphResult({ summary: buildEmptySummary() }));
+
+    await command.run([], { check: "depth" });
+
+    expect(logger.error).toHaveBeenCalledWith("🔭 Traced nothing", undefined, {
+      projectCount: 0,
+      skippedProjectCount: 0,
+    });
+  });
+
+  it("fails a run that traced nothing even when no check was asked for", async () => {
+    // Not something `--check` turns on: a bare `--write` that traced nothing
+    // would otherwise publish an empty report over a real one.
+    stubTrace(buildCallGraphResult({ summary: buildEmptySummary() }));
+
+    await command.run([], {});
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  // 🚧 Projects that could not be read
+
+  it("fails a run that skipped a project it could not read", async () => {
+    stubTrace(buildCallGraphResult(), [
+      { projectName: "packages/broken", reason: "Could not read tsconfig" },
+    ]);
+
+    await command.run([], { check: "depth" });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("names the projects it could not read", async () => {
+    stubTrace(buildCallGraphResult(), [
+      { projectName: "packages/broken", reason: "Could not read tsconfig" },
+    ]);
+
+    await command.run([], {});
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Skipped projects it could not read",
+      undefined,
+      {
+        count: 1,
+        projects: ["packages/broken"],
+        reasons: ["Could not read tsconfig"],
+      },
+    );
   });
 
   it("reads no destination when only depth is checked", async () => {

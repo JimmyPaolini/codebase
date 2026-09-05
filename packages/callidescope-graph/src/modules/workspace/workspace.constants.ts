@@ -20,6 +20,16 @@ export const EXCLUDED_SCAN_DIRECTORY_NAMES = [
 ] as const;
 
 /**
+ * The file whose presence in a directory makes it a project.
+ *
+ * Named once rather than spelled at each site, so the file a whole-workspace
+ * scan looks for and the file an exclusion is judged against can never drift
+ * apart — a project excluded by a path that is not the one discovery reads
+ * would be excluded from nothing.
+ */
+export const PROJECT_CONFIGURATION_NAME = "tsconfig.json";
+
+/**
  * The subdirectory a module identifier is derived from, used until
  * `configure` is called with a workspace's own layout.
  *

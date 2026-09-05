@@ -1,6 +1,6 @@
 ---
 name: callidescope-triage
-description: Act on a callidescope run that failed — a depth gate that reported a stack over the limit, a breadth gate, a stale committed report, a module-spread or possibly-misplaced finding, a rejected command line, or a configuration refused before anything was traced. Use when callidescope exits non-zero, when a call stack got deeper in a change, when a committed report or diagram disagrees with a fresh run, when a depth is printed as a floor rather than a number, or before reaching for maximumDepth to make a failing check pass.
+description: Act on a callidescope run that failed — a depth gate that reported a stack over the limit, a breadth gate, a stale committed report, a module-spread or possibly-misplaced finding, a project whose tsconfig could not be read, a run that traced nothing, a rejected command line, or a configuration refused before anything was traced. Use when callidescope exits non-zero, when a call stack got deeper in a change, when a committed report or diagram disagrees with a fresh run, when a depth is printed as a floor rather than a number, or before reaching for maximumDepth to make a failing check pass.
 license: MIT
 ---
 
@@ -14,11 +14,14 @@ occurred is most of the work. Separate them first:
 | `🚨 [DEPTH n > limit]` | A **finding** about the code. Fix the layering |
 | A breadth row over the limit | A **finding**. Split the callable |
 | `A configured destination is stale` | **Drift**. Re-run `--write` |
+| `🔭 Skipped projects it could not read` | A **project was left out**. Its `tsconfig.json` did not parse |
+| `🔭 Traced nothing` | The run **saw no code at all**. Nothing below it means anything |
 | `🔭 Rejected the command line` | A **mistake** in the flags. Nothing was traced |
 | `🔭 Rejected the configuration` | The run **cannot do what was asked**. Nothing was traced |
 
 The two rejections happen before any tracing, so they never say anything about
-the code.
+the code. The two above them say the run is incomplete, so read them before
+believing any finding — or any absence of one.
 
 ## A depth gate that failed
 
@@ -179,20 +182,47 @@ The command line was fine but the configuration cannot support what was asked:
   unbounded limit would look like. Add
   `limits: { maximumBreadth: <number> }` and re-run.
 
-## A run that reported nothing at all
+## A project it could not read
 
-Not a failure, and usually not a bug. Work down this list:
+One project's `tsconfig.json` did not parse. The run stepped over it, traced
+everything else, and then failed — the message names each project and the
+parsing error behind it.
 
-1. **Did it trace anything?** The summary carries callable, file, and edge
-   counts. Zero callables means the directories held no `tsconfig.json`, or
-   everything matched an exclusion.
+This fails whatever `--check` was asked for, because it is not a finding about
+the code: a project missing from the graph makes every depth measured through
+it wrong, and quietly wrong is the outcome the gate exists to prevent.
+
+Two ways out, and which one is right depends on why the file does not parse:
+
+- **The configuration is broken by accident.** Fix it. The message carries the
+  compiler's own diagnostic, which usually names the option.
+- **The configuration is broken on purpose.** Some repositories commit a
+  broken `tsconfig.json` as a fixture — this workspace has one in
+  `codependix-examples`, and repairing it would delete the only place that
+  failure is demonstrated. Exclude the project instead, by adding its directory
+  to an `excludeFrom` ignore file or an `exclude` glob. Exclusions are applied
+  to the `tsconfig.json` before it is opened, so this really does keep the run
+  away from it.
+
+## A run that traced nothing
+
+Every gate above passed for having nothing to judge, so the run fails on its
+own emptiness. It is never a clean result. Work down this list:
+
+1. **Did a project get skipped?** `🔭 Skipped projects it could not read`
+   appears above it when the emptiness came from a configuration that did not
+   parse. Read that section first.
 2. **Is the code excluded?** `exclude` globs are additive to the built-in
-   defaults, and `excludeFrom` files are easy to forget. A fixture package
-   deliberately listed there is meant to be silent.
+   defaults, and `excludeFrom` files are easy to forget. An exclusion broad
+   enough to cover every project empties the run.
 3. **Is `--directories` pointed where you think?** It takes paths holding their
    own `tsconfig.json`, not project names.
-4. **Is `maximumDepth` simply not exceeded?** A clean run is the normal
-   outcome, and a repository under its limits reports no stacks.
+
+## A run that found no stacks
+
+Not a failure. A run that traced real code and reported no findings is the
+normal outcome: the summary carries the callable, file, and edge counts that
+say it looked, and a repository under its limits has no stacks to name.
 
 ## Whose problem a finding is
 

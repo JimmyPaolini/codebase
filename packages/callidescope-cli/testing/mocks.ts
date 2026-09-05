@@ -41,10 +41,15 @@ export function buildCallableNode(
 }
 
 /**
- * Builds an empty result, for tests that only pass one through.
+ * Builds a finding-free result, for tests that only pass one through.
  *
  * Every collection the pipeline produces is present, so a test asserting on the
  * whole result keeps working when a new finding kind is added.
+ *
+ * The summary counts one callable in one file rather than none. A result with
+ * nothing in it is not the neutral value it looks like: the command fails a run
+ * that traced nothing, so a zero here would make every test that passes this
+ * through assert the wrong exit code for the wrong reason.
  */
 export function buildCallGraphResult(
   overrides: Partial<CallGraphResult> = {},
@@ -55,13 +60,13 @@ export function buildCallGraphResult(
     moduleSpreads: [],
     projects: [],
     summary: {
-      callableCount: 0,
+      callableCount: 1,
       cyclicComponentCount: 0,
       edgeCount: 0,
       entryPointCount: 0,
-      fileCount: 0,
+      fileCount: 1,
       maximumDepth: 0,
-      projectCount: 0,
+      projectCount: 1,
       unresolvedCallCount: 0,
     },
     typeDepths: [],
