@@ -111,6 +111,7 @@ export function buildFixtureServices(args: {
   const programService = new ProgramService(
     new CompilerHostService(),
     createMock<LoggerService>(),
+    workspace,
   );
   const external = new ExternalService();
   const hierarchy = new ClassesService(external);

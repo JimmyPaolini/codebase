@@ -5,6 +5,8 @@ import ts from "typescript";
 
 import { LoggerService } from "@codebase/logger";
 
+import { WorkspaceService } from "../workspace/workspace.service";
+
 import { CompilerHostService } from "./compiler-host.service";
 import { ProgramConfigurationError } from "./program.constants";
 
@@ -32,6 +34,7 @@ export class ProgramService {
   constructor(
     private readonly compilerHostService: CompilerHostService,
     private readonly logger: LoggerService,
+    private readonly workspaceService: WorkspaceService,
   ) {
     this.logger.setContext(ProgramService.name);
   }
@@ -43,24 +46,63 @@ export class ProgramService {
   // 🔏 Private Methods
 
   /**
-   * Assigns each file to exactly one owning program.
+   * Assigns each file to the program whose project root contains it.
    *
-   * Projects overlap: a shared package appears in the file list of everything
-   * that imports it. Whichever program is asked first keeps it, and because the
-   * project list arrives sorted by name, that choice is the same on every run —
-   * which is what stops a reported depth from moving between runs.
+   * Projects overlap: a project that nests a second `tsconfig.json` beneath
+   * it can list the same file as its parent, when the parent's own `include`
+   * is broad enough to reach it too. Containment settles that overlap by the
+   * file's location on disk rather than by which program asked first, which
+   * is what keeps a reported depth the same however a run is scoped — a
+   * closure that starts programs in a different order reaches the same
+   * answer. A file none of `programs`' projects contains is left out of the
+   * map rather than guessed at; `readOwnedPath` in `CallablesService` then
+   * walks it through no program at all.
    */
-  private assignOwnership(
-    programs: readonly ProjectProgram[],
-  ): Map<string, ProjectProgram> {
+  private assignOwnership(args: {
+    programs: readonly ProjectProgram[];
+    workspaceRoot: string;
+  }): Map<string, ProjectProgram> {
+    // Resolved through `toRealPath` too, so it lines up with `filePath`
+    // below, which every owned path already went through to reach — a
+    // workspace reached through a symlink would otherwise turn every
+    // relative path into a string of `../` that contains nothing.
+    const workspaceRoot = this.toRealPath(args.workspaceRoot);
+    const projects = args.programs.map(
+      (projectProgram) => projectProgram.project,
+    );
+    const filePaths = new Set<string>();
+
+    for (const projectProgram of args.programs) {
+      for (const filePath of projectProgram.ownedFilePaths) {
+        filePaths.add(filePath);
+      }
+    }
+
     const ownerByFilePath = new Map<string, ProjectProgram>();
 
-    for (const projectProgram of programs) {
-      for (const filePath of projectProgram.ownedFilePaths) {
-        if (!ownerByFilePath.has(filePath)) {
-          ownerByFilePath.set(filePath, projectProgram);
-        }
+    for (const filePath of filePaths) {
+      const workspaceRelativePath = this.workspaceService.toWorkspaceRelative({
+        absolutePath: filePath,
+        workspaceRoot,
+      });
+      const owningProject = this.workspaceService.resolveOwningProject({
+        projects,
+        workspaceRelativePath,
+      });
+      const projectProgram = args.programs.find(
+        (candidate) => candidate.project === owningProject,
+      );
+
+      if (projectProgram === undefined) {
+        this.logger.warn(
+          "🔭 Skipped a file no traced project contains",
+          undefined,
+          { workspaceRelativePath },
+        );
+        continue;
       }
+
+      ownerByFilePath.set(filePath, projectProgram);
     }
 
     return ownerByFilePath;
@@ -153,7 +195,13 @@ export class ProgramService {
       );
     }
 
-    return { ownerByFilePath: this.assignOwnership(programs), programs };
+    return {
+      ownerByFilePath: this.assignOwnership({
+        programs,
+        workspaceRoot: args.workspaceRoot,
+      }),
+      programs,
+    };
   }
 
   /** Resolves a path through symlinks, which is how pnpm workspaces link. */

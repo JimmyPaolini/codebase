@@ -102,6 +102,24 @@ export class WorkspaceService {
   }
 
   /**
+   * True when a project's root is a path-segment prefix of a file's path.
+   *
+   * A plain `startsWith` on the raw strings would let `packages/callidescope`
+   * falsely contain `packages/callidescope-graph/...` — the empty root is the
+   * one exception, since the workspace root itself contains every file.
+   */
+  private isContainedByRoot(args: {
+    root: string;
+    workspaceRelativePath: string;
+  }): boolean {
+    return (
+      args.root === "" ||
+      args.workspaceRelativePath === args.root ||
+      args.workspaceRelativePath.startsWith(`${args.root}/`)
+    );
+  }
+
+  /**
    * True for a directory a whole-workspace scan should never descend into.
    *
    * A name holding `{{`/`}}` is a scaffolding template's own placeholder
@@ -279,8 +297,9 @@ export class WorkspaceService {
       projects.push({ configurationPath, name: root, root });
     }
 
-    // Sorted so that the file-ownership tie-break, and therefore every depth
-    // the run reports, does not depend on directory iteration order.
+    // Sorted so that a report's per-project rows — and anything else keyed
+    // off this order — read the same on every run, rather than however the
+    // filesystem happened to enumerate directories this time.
     return projects.toSorted((first, second) =>
       first.name.localeCompare(second.name),
     );
@@ -324,6 +343,46 @@ export class WorkspaceService {
     }
 
     return `${args.project.name}:${first ?? this.rootModuleSegment}`;
+  }
+
+  /**
+   * Names the traced project whose root most narrowly contains a file.
+   *
+   * "Contains" means the deepest of `args.projects` whose root is a
+   * path-segment prefix of `args.workspaceRelativePath` — never a shallower
+   * ancestor, and never a sibling that merely shares a string prefix. This is
+   * what settles a project that nests a second `tsconfig.json` beneath it (a
+   * `testing/tsconfig.json`, a generated subpackage): the nested root is more
+   * specific than the parent's, so a file under it belongs to the nested
+   * project even when the parent's own configuration also lists that file.
+   *
+   * Returns `undefined` when none of `args.projects` contains the file at
+   * all — impossible for a whole-workspace run, since the workspace root
+   * itself is always a traced project, but reachable when a run is scoped to
+   * a handful of directories that do not include it.
+   */
+  public resolveOwningProject(args: {
+    projects: readonly WorkspaceProject[];
+    workspaceRelativePath: string;
+  }): undefined | WorkspaceProject {
+    let owner: undefined | WorkspaceProject;
+
+    for (const project of args.projects) {
+      if (
+        !this.isContainedByRoot({
+          root: project.root,
+          workspaceRelativePath: args.workspaceRelativePath,
+        })
+      ) {
+        continue;
+      }
+
+      if (owner === undefined || project.root.length > owner.root.length) {
+        owner = project;
+      }
+    }
+
+    return owner;
   }
 
   /** Rewrites an absolute path as workspace-relative with POSIX separators. */

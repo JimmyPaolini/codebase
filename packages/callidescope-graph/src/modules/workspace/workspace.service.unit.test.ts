@@ -114,8 +114,8 @@ describe(WorkspaceService, () => {
   });
 
   it("returns projects in a stable order regardless of the filesystem", async () => {
-    // Ownership ties break on this order, so an unstable one would make depth
-    // numbers differ between runs.
+    // A report's per-project rows read off this order, so an unstable one
+    // would make output differ between runs even when nothing changed.
     const root = await buildWorkspace(["packages/zebra", "packages/alpha"]);
 
     expect(
@@ -242,6 +242,81 @@ describe(WorkspaceService, () => {
         workspaceRelativePath: "packages/example/scripts/build.ts",
       }),
     ).toBe("example:src");
+  });
+
+  // 🎯 Ownership
+
+  it("gives a file to the project whose root contains it", () => {
+    expect(
+      subject.resolveOwningProject({
+        projects: [
+          { configurationPath: "", name: "other", root: "packages/other" },
+          PROJECT,
+        ],
+        workspaceRelativePath: "packages/example/src/main.ts",
+      }),
+    ).toStrictEqual(PROJECT);
+  });
+
+  it("gives a file to the nearest containing root, not any ancestor", () => {
+    const nested: WorkspaceProject = {
+      configurationPath: "",
+      name: "example/testing",
+      root: "packages/example/testing",
+    };
+
+    expect(
+      subject.resolveOwningProject({
+        projects: [PROJECT, nested],
+        workspaceRelativePath: "packages/example/testing/mock.ts",
+      }),
+    ).toStrictEqual(nested);
+    // Order in the list must not matter — the deepest root still wins.
+    expect(
+      subject.resolveOwningProject({
+        projects: [nested, PROJECT],
+        workspaceRelativePath: "packages/example/testing/mock.ts",
+      }),
+    ).toStrictEqual(nested);
+  });
+
+  it("does not let a sibling with a shared string prefix claim a file", () => {
+    const sibling: WorkspaceProject = {
+      configurationPath: "",
+      name: "example",
+      root: "packages/example",
+    };
+
+    expect(
+      subject.resolveOwningProject({
+        projects: [sibling],
+        workspaceRelativePath: "packages/example-extra/src/main.ts",
+      }),
+    ).toBeUndefined();
+  });
+
+  it("falls back to the workspace root project for an otherwise unowned file", () => {
+    const root: WorkspaceProject = {
+      configurationPath: "",
+      name: "",
+      root: "",
+    };
+
+    expect(
+      subject.resolveOwningProject({
+        projects: [PROJECT, root],
+        workspaceRelativePath: "scripts/build.ts",
+      }),
+    ).toStrictEqual(root);
+  });
+
+  it("names no owner when no traced project contains the file", () => {
+    expect(
+      subject.resolveOwningProject({
+        projects: [PROJECT],
+        workspaceRelativePath: "packages/other/src/main.ts",
+      }),
+    ).toBeUndefined();
   });
 
   // ⚙️ Configuration

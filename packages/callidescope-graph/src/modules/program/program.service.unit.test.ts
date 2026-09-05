@@ -8,6 +8,7 @@ import ts from "typescript";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { ANALYSIS_MODULES } from "../../../testing/modules";
+import { WorkspaceService } from "../workspace/workspace.service";
 
 import { CompilerHostService } from "./compiler-host.service";
 import { ProgramConfigurationError } from "./program.constants";
@@ -28,7 +29,7 @@ async function buildProject(args: {
   );
   const root = path.join(workspaceRoot, "packages", args.name);
 
-  await mkdir(path.join(root, "src"), { recursive: true });
+  await mkdir(root, { recursive: true });
   await writeFile(
     path.join(root, "tsconfig.json"),
     args.configuration ??
@@ -42,6 +43,7 @@ async function buildProject(args: {
   for (const [name, text] of Object.entries(
     args.sources ?? { "src/index.ts": "export function entry(): void {}\n" },
   )) {
+    await mkdir(path.dirname(path.join(root, name)), { recursive: true });
     await writeFile(path.join(root, name), text, "utf8");
   }
 
@@ -76,7 +78,11 @@ describe(ProgramService, () => {
   const buildSubject = (): ProgramService => {
     subjectLogger = createMock<LoggerService>();
 
-    return new ProgramService(new CompilerHostService(), subjectLogger);
+    return new ProgramService(
+      new CompilerHostService(),
+      subjectLogger,
+      new WorkspaceService(createMock<LoggerService>()),
+    );
   };
 
   it("logs which project it is reading", async () => {
@@ -131,19 +137,92 @@ describe(ProgramService, () => {
     expect(programSet.ownerByFilePath.size).toBe(1);
   });
 
-  it("gives a shared file to the first project that claims it", async () => {
-    // The claim order comes from the sorted project list, which is what stops
-    // a reported depth from moving between runs.
-    const { project, workspaceRoot } = await buildProject({ name: "example" });
-    const second: WorkspaceProject = { ...project, name: "duplicate" };
+  it("gives a file nested inside a second project to that nested project", async () => {
+    // A parent project can list the same file its nested project owns when
+    // the parent's own `include` is broad enough to reach it too —
+    // containment settles that overlap by the file's location on disk,
+    // regardless of which program was built first.
+    const { project: parent, workspaceRoot } = await buildProject({
+      configuration: JSON.stringify({
+        compilerOptions: { noLib: true, target: "es2022" },
+        include: ["src/**/*.ts", "testing/**/*.ts"],
+      }),
+      name: "example",
+      sources: {
+        "src/index.ts": "export function entry(): void {}\n",
+        "testing/mock.ts": "export function mock(): void {}\n",
+      },
+    });
+    const nestedRoot = path.join(workspaceRoot, "packages/example/testing");
 
-    const programSet = buildSubject().buildPrograms({
-      projects: [project, second],
+    await mkdir(nestedRoot, { recursive: true });
+    await writeFile(
+      path.join(nestedRoot, "tsconfig.json"),
+      JSON.stringify({
+        compilerOptions: { noLib: true, target: "es2022" },
+        include: ["**/*.ts"],
+      }),
+      "utf8",
+    );
+
+    const nested: WorkspaceProject = {
+      configurationPath: path.join(nestedRoot, "tsconfig.json"),
+      name: "example-testing",
+      root: "packages/example/testing",
+    };
+
+    const subject = buildSubject();
+    const programSet = subject.buildPrograms({
+      projects: [parent, nested],
       workspaceRoot,
     });
 
-    expect([...programSet.ownerByFilePath.values()][0]?.project.name).toBe(
+    const nestedFilePath = subject.toRealPath(path.join(nestedRoot, "mock.ts"));
+    const parentFilePath = subject.toRealPath(
+      path.join(workspaceRoot, "packages/example/src/index.ts"),
+    );
+
+    expect(programSet.ownerByFilePath.get(nestedFilePath)?.project.name).toBe(
+      "example-testing",
+    );
+    expect(programSet.ownerByFilePath.get(parentFilePath)?.project.name).toBe(
       "example",
+    );
+  });
+
+  it("skips a file no traced project contains, and warns why", async () => {
+    // A project's own `include` can reach outside its own root — here into a
+    // sibling directory no project in this run traces — so containment finds
+    // nowhere to put the file rather than guessing.
+    const { project, workspaceRoot } = await buildProject({
+      configuration: JSON.stringify({
+        compilerOptions: { noLib: true, target: "es2022" },
+        include: ["../shared/**/*.ts"],
+      }),
+      name: "example",
+      sources: {},
+    });
+
+    await mkdir(path.join(workspaceRoot, "packages/shared"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspaceRoot, "packages/shared/helper.ts"),
+      "export function helper(): void {}\n",
+      "utf8",
+    );
+
+    const subject = buildSubject();
+    const programSet = subject.buildPrograms({
+      projects: [project],
+      workspaceRoot,
+    });
+
+    expect(programSet.ownerByFilePath.size).toBe(0);
+    expect(subjectLogger.warn).toHaveBeenCalledWith(
+      "🔭 Skipped a file no traced project contains",
+      undefined,
+      { workspaceRelativePath: "packages/shared/helper.ts" },
     );
   });
 
