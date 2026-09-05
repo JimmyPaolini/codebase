@@ -6,7 +6,11 @@ import type {
   CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
-import type { CallGraph, DiscoveredCallable } from "@callidescope/graph";
+import type {
+  CallGraph,
+  DiscoveredCallable,
+  SkippedProject,
+} from "@callidescope/graph";
 
 /** Options the CLI accepts. */
 export interface CallidescopeCommandOptions {
@@ -56,4 +60,6 @@ export interface TraceOutcome {
   /** Workspace-relative root of each project traced, keyed by name. */
   readonly projectRoots: ReadonlyMap<string, string>;
   readonly result: CallGraphResult;
+  /** Projects the run could not read, and therefore never traced. */
+  readonly skippedProjects: readonly SkippedProject[];
 }

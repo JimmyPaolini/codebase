@@ -18,6 +18,33 @@ import type {
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 
+/**
+ * Adds a second project whose `tsconfig.json` names a compiler target
+ * TypeScript rejects.
+ *
+ * The shape of the one already committed in `codependix-examples`: a fixture
+ * that exists to be unreadable and must stay that way, sitting in the same
+ * workspace as every project a run is meant to trace.
+ */
+async function addUnreadableProject(workspaceRoot: string): Promise<void> {
+  const root = path.join(workspaceRoot, "packages", "broken");
+
+  await mkdir(path.join(root, "src"), { recursive: true });
+  await writeFile(
+    path.join(root, "tsconfig.json"),
+    JSON.stringify({
+      compilerOptions: { target: "not-a-real-target" },
+      include: ["src/**/*.ts"],
+    }),
+    "utf8",
+  );
+  await writeFile(
+    path.join(root, "src", "index.ts"),
+    "export function broken(): void {}\n",
+    "utf8",
+  );
+}
+
 /** Builds a resolved configuration for the fixture workspace. */
 function buildConfiguration(): ResolvedCallidescopeConfiguration {
   return {
@@ -227,6 +254,73 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     const projectRoot = path.join("packages", "example");
 
     expect(located.projectRoots.get(projectRoot)).toBe(projectRoot);
+  });
+
+  // 🚧 A project that cannot be read
+
+  it("traces the rest of the workspace past an unreadable project", async () => {
+    // The regression this exists for. One deliberately broken `tsconfig.json`
+    // used to abort the whole trace, which the host then reported as a
+    // workspace with no findings in it — a green depth gate that had judged
+    // nothing at all.
+    const workspaceRoot = await buildWorkspace();
+
+    await addUnreadableProject(workspaceRoot);
+
+    const outcome = service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(outcome.result.summary.projectCount).toBe(1);
+    expect(
+      outcome.result.deepStacks[0]?.frames.map((frame) => frame.displayName),
+    ).toStrictEqual([
+      "ExampleCommand.run",
+      "ExampleService.load",
+      "Repository.find",
+      "Repository.open",
+    ]);
+  });
+
+  it("carries the project it could not read out of the trace", async () => {
+    const workspaceRoot = await buildWorkspace();
+
+    await addUnreadableProject(workspaceRoot);
+
+    const outcome = service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(
+      outcome.skippedProjects.map((skipped) => skipped.projectName),
+    ).toStrictEqual([path.join("packages", "broken")]);
+  });
+
+  it("never opens a tsconfig an exclusion already names", async () => {
+    // What `.callidescopeignore` promises. Excluding the same project only
+    // from the collected files would come too late — opening its
+    // configuration is the step that fails.
+    const workspaceRoot = await buildWorkspace();
+
+    await addUnreadableProject(workspaceRoot);
+
+    const outcome = service.trace({
+      configuration: {
+        ...buildConfiguration(),
+        exclude: ["packages/broken/**"],
+      },
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(outcome.skippedProjects).toStrictEqual([]);
+    expect(outcome.projectNames).toStrictEqual([
+      path.join("packages", "example"),
+    ]);
   });
 
   it("builds the same graph a full trace would, without any analysis", () => {

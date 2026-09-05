@@ -113,6 +113,29 @@ so it runs on every commit. Depth reads source and needs no build, which is
 what keeps it in the commit path where codometer's limits — read from compiled
 output — cannot go.
 
+### Two failures no flag turns off
+
+`--check` chooses which findings about the code fail the run. Two failures are
+not findings about the code at all, and neither waits to be asked:
+
+| Failure | What it means |
+| ------- | ------------- |
+| `🔭 Skipped projects it could not read` | A project's `tsconfig.json` could not be parsed, so that project was left out of the graph |
+| `🔭 Traced nothing` | The run collected no callables at all |
+
+Both exist because the alternative is a green gate over a workspace nobody
+looked at. A run reports what it found, so a run that found nothing reports
+nothing — which reads exactly like a clean workspace. An unreadable
+`tsconfig.json` used to end the whole trace, and the run printed the parsing
+failure, wrote no report, and exited 0.
+
+A project is read only if no exclusion names it, and exclusions are applied to
+the `tsconfig.json` itself, before it is opened. That is the way to keep a
+project out of a run: excluding its files is too late, because opening its
+configuration is the step that fails. This repository's own
+[`.callidescopeignore`](../../configuration/.callidescopeignore) names one such
+project — a fixture in `codependix-examples` written not to parse.
+
 ### Where the report goes
 
 Printing and writing are separate. `--format` decides what reaches the terminal;

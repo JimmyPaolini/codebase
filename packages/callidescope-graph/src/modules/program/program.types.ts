@@ -14,6 +14,8 @@ export interface ProgramSet {
   /** Absolute real path to the program that owns it. */
   readonly ownerByFilePath: ReadonlyMap<string, ProjectProgram>;
   readonly programs: readonly ProjectProgram[];
+  /** Projects left out of the graph because they could not be read. */
+  readonly skippedProjects: readonly SkippedProject[];
 }
 
 /**
@@ -29,4 +31,18 @@ export interface ProjectProgram {
   readonly ownedFilePaths: ReadonlySet<string>;
   readonly program: ts.Program;
   readonly project: WorkspaceProject;
+}
+
+/**
+ * A project left out of the graph because its `tsconfig.json` could not be
+ * read.
+ *
+ * Named and carried rather than thrown, so one unreadable configuration costs
+ * the run that project instead of every project — and so a host still has
+ * something to print and something to fail on.
+ */
+export interface SkippedProject {
+  readonly projectName: string;
+  /** The parsing failure, already flattened into a sentence. */
+  readonly reason: string;
 }

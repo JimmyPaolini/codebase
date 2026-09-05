@@ -30,6 +30,7 @@ import type {
   CallableCollection,
   DepthMeasurement,
   DiscoveredCallable,
+  SkippedProject,
 } from "@callidescope/graph";
 
 /**
@@ -72,11 +73,21 @@ export class CallidescopeService {
     collection: CallableCollection;
     projectNames: string[];
     projectRoots: ReadonlyMap<string, string>;
+    skippedProjects: readonly SkippedProject[];
   } {
     this.workspaceService.configure(args.configuration.workspaceStructure);
 
+    // Built before discovery rather than beside the collection it filters: a
+    // project the exclusions name has to be dropped before its
+    // `tsconfig.json` is opened, since opening it is what fails.
+    const fileFilter = this.workspaceService.buildFileFilter({
+      exclude: args.configuration.exclude,
+      excludeFrom: args.configuration.excludeFrom,
+      workspaceRoot: args.workspaceRoot,
+    });
     const projects = this.workspaceService.discoverProjects({
       directories: args.directories,
+      fileFilter,
       workspaceRoot: args.workspaceRoot,
     });
     const programSet = this.programService.buildPrograms({
@@ -95,22 +106,25 @@ export class CallidescopeService {
     });
 
     const collection = this.callablesService.collect({
-      fileFilter: this.workspaceService.buildFileFilter({
-        exclude: args.configuration.exclude,
-        excludeFrom: args.configuration.excludeFrom,
-        workspaceRoot: args.workspaceRoot,
-      }),
+      fileFilter,
       includeTests: args.configuration.entryPoints.includeTests,
       ownerByFilePath: programSet.ownerByFilePath,
       workspaceRoot: args.workspaceRoot,
     });
 
+    // The projects that really got a program, not every project discovered. A
+    // project skipped for being unreadable has no callables, no stacks, and no
+    // report — naming it here would put an empty section in a project README
+    // and count it toward a project total the run never looked at.
+    const traced = programSet.programs.map((program) => program.project);
+
     return {
       collection,
-      projectNames: projects.map((project) => project.name),
+      projectNames: traced.map((project) => project.name),
       projectRoots: new Map(
-        projects.map((project) => [project.name, project.root]),
+        traced.map((project) => [project.name, project.root]),
       ),
+      skippedProjects: programSet.skippedProjects,
     };
   }
 
@@ -248,7 +262,7 @@ export class CallidescopeService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    const { collection, projectNames, projectRoots } =
+    const { collection, projectNames, projectRoots, skippedProjects } =
       this.discoverCallables(args);
 
     return {
@@ -263,6 +277,7 @@ export class CallidescopeService {
         projectNames,
         workspaceRoot: args.workspaceRoot,
       }),
+      skippedProjects,
     };
   }
 }

@@ -172,22 +172,69 @@ export class CallidescopeCommand extends CommandRunner {
   }
 
   /**
+   * Fails a run that traced nothing at all.
+   *
+   * Unconditional, and not something `--check` turns on. Every other finding
+   * is a verdict on code that was read; this one says no code was read, and a
+   * gate that passes because it never looked is worse than one that fails —
+   * it reports the workspace as clean and there is nothing in the output to
+   * say otherwise.
+   */
+  private reportEmptyTrace(args: ReportFindingsArguments): boolean {
+    if (args.result.summary.callableCount > 0) {
+      return false;
+    }
+
+    this.logger.error("🔭 Traced nothing", undefined, {
+      projectCount: args.result.summary.projectCount,
+      skippedProjectCount: args.skippedProjects.length,
+    });
+
+    return true;
+  }
+
+  /**
    * Weighs every finding a run can produce, and fails on any of them.
    *
    * They are weighed separately and announced separately. A stack that is too
    * deep is something the code does; a callable calling too many things is
    * something else the code does; a stale report is something the checkout
-   * has not caught up with. Reading one as another sends the author to fix
-   * the wrong thing.
+   * has not caught up with; a project that could not be read is something the
+   * run never saw at all. Reading one as another sends the author to fix the
+   * wrong thing.
    */
   private reportFindings(args: ReportFindingsArguments): void {
     const stale = this.reportStaleness(args);
     const deep = this.reportDeepStacks(args);
     const wide = this.reportWideCallables(args);
+    const skipped = this.reportSkippedProjects(args);
+    const empty = this.reportEmptyTrace(args);
 
-    if (deep || wide || stale) {
+    if (deep || empty || skipped || stale || wide) {
       process.exitCode = 1;
     }
+  }
+
+  /**
+   * Names the projects the run could not read.
+   *
+   * Also unconditional. An exclusion is how a workspace says a project is not
+   * its business; anything left is a project this run was meant to trace and
+   * did not, so every depth measured through it is missing frames nobody was
+   * told about.
+   */
+  private reportSkippedProjects(args: ReportFindingsArguments): boolean {
+    if (args.skippedProjects.length === 0) {
+      return false;
+    }
+
+    this.logger.error("🔭 Skipped projects it could not read", undefined, {
+      count: args.skippedProjects.length,
+      projects: args.skippedProjects.map((skipped) => skipped.projectName),
+      reasons: args.skippedProjects.map((skipped) => skipped.reason),
+    });
+
+    return true;
   }
 
   /** Names the destinations that no longer hold what a fresh run would write. */
@@ -323,11 +370,17 @@ export class CallidescopeCommand extends CommandRunner {
 
     this.logger.info("🔭 Finished a call-stack trace", undefined, {
       deepStackCount: outcome.result.deepStacks.length,
+      skippedProjectCount: outcome.skippedProjects.length,
       staleReportCount: stalePaths.length,
       wideCallableCount: outcome.result.wideCallables.length,
     });
 
-    this.reportFindings({ mode, result: outcome.result, stalePaths });
+    this.reportFindings({
+      mode,
+      result: outcome.result,
+      skippedProjects: outcome.skippedProjects,
+      stalePaths,
+    });
   }
 
   // 🌎 Public Methods

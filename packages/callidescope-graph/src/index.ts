@@ -107,6 +107,7 @@ export type {
   BuildProgramsArguments,
   ProgramSet,
   ProjectProgram,
+  SkippedProject,
 } from "./modules/program/program.types";
 export { SIGNATURE_FORMAT_FLAGS } from "./modules/signatures/signatures.constants";
 export { SignaturesModule } from "./modules/signatures/signatures.module";
@@ -116,6 +117,7 @@ export {
   DEFAULT_MODULES_DIRECTORY,
   DEFAULT_ROOT_MODULE_SEGMENT,
   EXCLUDED_SCAN_DIRECTORY_NAMES,
+  PROJECT_CONFIGURATION_NAME,
   TEST_DIRECTORY_SEGMENT,
   TEST_FILE_PATTERN,
 } from "./modules/workspace/workspace.constants";
