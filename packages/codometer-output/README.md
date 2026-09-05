@@ -25,20 +25,20 @@ Call stacks traced through `packages/codometer-output`, deepest first. Each fram
 **1. `MarkdownService.syncAnchoredBlock`** — depth ≥ 4 · orphan-root
 
 ```text
-🚀 MarkdownService.syncAnchoredBlock(…): boolean [packages/codometer-output/src/modules/markdown/markdown.service.ts:72]
-  └─> MarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-output/src/modules/markdown/markdown.service.ts:189]
+🚀 MarkdownService.syncAnchoredBlock(…): boolean [packages/codometer-output/src/modules/markdown/markdown.service.ts:79]
+  └─> MarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-output/src/modules/markdown/markdown.service.ts:202]
      ↳ Splice the anchored block into a file, or report whether it is current.
-    └─> MarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-output/src/modules/markdown/markdown.service.ts:127]
+    └─> MarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-output/src/modules/markdown/markdown.service.ts:134]
        ↳ Build the matcher for a block delimited by the configured markers.
-      └─> MarkdownService.escapeRegex(input: string): string [packages/codometer-output/src/modules/markdown/markdown.service.ts:139]
+      └─> MarkdownService.escapeRegex(input: string): string [packages/codometer-output/src/modules/markdown/markdown.service.ts:146]
          ↳ Escape a configured marker so it can be searched for literally.
 ```
 
 **2. `MarkdownService.wrapInAnchors`** — depth 2 · orphan-root
 
 ```text
-🚀 MarkdownService.wrapInAnchors(content?: string | undefined): string [packages/codometer-output/src/modules/markdown/markdown.service.ts:79]
-  └─> MarkdownService.wrapInAnchors(args: WrapInAnchorsArguments): string [packages/codometer-output/src/modules/markdown/markdown.service.ts:231]
+🚀 MarkdownService.wrapInAnchors(content?: string | undefined): string [packages/codometer-output/src/modules/markdown/markdown.service.ts:86]
+  └─> MarkdownService.wrapInAnchors(args: WrapInAnchorsArguments): string [packages/codometer-output/src/modules/markdown/markdown.service.ts:244]
      ↳ Wrap rendered markdown in the configured anchor markers.
 ```
 
@@ -50,8 +50,8 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MarkdownService.buildBadgeGroups` | 16 | `MarkdownService.filter(…)`, `buildRepositoryGroup`, `buildTargetsGroup`, `buildTypescriptGroup`, `buildJavascriptGroup`, `buildPythonGroup`, `buildJsonGroup`, `buildYamlGroup`, `buildTomlGroup`, `buildShellGroup`, `buildSqlGroup`, `buildHclGroup`, `buildCssGroup`, `buildCustomGroup`, `buildJupyterGroup`, `buildMarkdownGroup` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:100` |
-| `MarkdownService.syncAnchoredBlock` | 6 | `MissingMarkdownPathError.constructor`, `MarkdownService.readExisting`, `MarkdownService.wrapInAnchors`, `MarkdownService.buildBlockRegex`, `MarkdownService.writeMarkdownFile`, `MarkdownService.replace(…)` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:189` |
+| `MarkdownService.buildBadgeGroups` | 16 | `MarkdownService.filter(…)`, `buildRepositoryGroup`, `buildTargetsGroup`, `buildTypescriptGroup`, `buildJavascriptGroup`, `buildPythonGroup`, `buildJsonGroup`, `buildYamlGroup`, `buildTomlGroup`, `buildShellGroup`, `buildSqlGroup`, `buildHclGroup`, `buildCssGroup`, `buildCustomGroup`, `buildJupyterGroup`, `buildMarkdownGroup` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:107` |
+| `MarkdownService.syncAnchoredBlock` | 6 | `MissingMarkdownPathError.constructor`, `MarkdownService.readExisting`, `MarkdownService.wrapInAnchors`, `MarkdownService.buildBlockRegex`, `MarkdownService.writeMarkdownFile`, `MarkdownService.replace(…)` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:202` |
 | `RenderService.renderSection` | 6 | `RenderService.groupByProject(…)`, `RenderService.groupByProject`, `RenderService.groupByProject(…)`, `RenderService.flatMap(…)`, `RenderService.readProjects`, `RenderService.renderComparison` | `packages/codometer-output/src/modules/render/render.service.ts:154` |
 
 <details>
@@ -81,22 +81,22 @@ None.
 | `buildJavascriptGroup` | 2 | `buildGroup`, `buildBadge` | `packages/codometer-output/src/modules/markdown/markdown.utilities.ts:107` |
 | `buildTargetsGroup` | 2 | `buildGroup`, `map(…)` | `packages/codometer-output/src/modules/markdown/markdown.utilities.ts:307` |
 | `map(…)` | 2 | `buildBadge`, `formatTargetSize` | `packages/codometer-output/src/modules/markdown/markdown.utilities.ts:318` |
-| `MarkdownService.renderBlock` | 2 | `MarkdownService.wrapInAnchors`, `MarkdownService.renderContent` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:279` |
-| `MarkdownService.sync` | 2 | `MarkdownService.renderContent`, `MarkdownService.buildAnchorHelpers` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:344` |
+| `MarkdownService.renderBlock` | 2 | `MarkdownService.wrapInAnchors`, `MarkdownService.renderContent` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:292` |
+| `MarkdownService.sync` | 2 | `MarkdownService.renderContent`, `MarkdownService.buildAnchorHelpers` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:357` |
 | `RenderService.readProjects` | 2 | `RenderService.map(…)`, `RenderService.map(…)` | `packages/codometer-output/src/modules/render/render.service.ts:55` |
 | `DocumentsService.splice` | 1 | `DocumentsService.filter(…)` | `packages/codometer-output/src/modules/documents/documents.service.ts:88` |
 | `formatDelta` | 1 | `formatValue` | `packages/codometer-output/src/modules/render/render.utilities.ts:23` |
 | `buildBadge` | 1 | `encodeValue` | `packages/codometer-output/src/modules/markdown/markdown.utilities.ts:14` |
 | `map(…)` | 1 | `buildBadge` | `packages/codometer-output/src/modules/markdown/markdown.utilities.ts:53` |
 | `formatTargetSize` | 1 | `formatBytes` | `packages/codometer-output/src/modules/markdown/markdown.utilities.ts:393` |
-| `MarkdownService.syncAnchoredBlock` | 1 | `MarkdownService.syncAnchoredBlock` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:72` |
-| `MarkdownService.wrapInAnchors` | 1 | `MarkdownService.wrapInAnchors` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:79` |
-| `MarkdownService.buildBlockRegex` | 1 | `MarkdownService.escapeRegex` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:127` |
-| `MarkdownService.renderContent` | 1 | `MarkdownService.renderBadges` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:161` |
-| `MarkdownService.renderBadges` | 1 | `MarkdownService.renderBadges` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:163` |
-| `MarkdownService.renderBadges` | 1 | `MarkdownService.renderDocument` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:264` |
-| `MarkdownService.renderDocument` | 1 | `MarkdownService.buildBadgeGroups` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:298` |
-| `MarkdownService.renderDocumentationSection` | 1 | `MarkdownService.map(…)` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:318` |
+| `MarkdownService.syncAnchoredBlock` | 1 | `MarkdownService.syncAnchoredBlock` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:79` |
+| `MarkdownService.wrapInAnchors` | 1 | `MarkdownService.wrapInAnchors` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:86` |
+| `MarkdownService.buildBlockRegex` | 1 | `MarkdownService.escapeRegex` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:134` |
+| `MarkdownService.renderContent` | 1 | `MarkdownService.renderDefaultBadges` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:174` |
+| `MarkdownService.renderDefaultBadges` | 1 | `MarkdownService.renderBadges` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:176` |
+| `MarkdownService.renderBadges` | 1 | `MarkdownService.renderDocument` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:277` |
+| `MarkdownService.renderDocument` | 1 | `MarkdownService.buildBadgeGroups` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:311` |
+| `MarkdownService.renderDocumentationSection` | 1 | `MarkdownService.map(…)` | `packages/codometer-output/src/modules/markdown/markdown.service.ts:331` |
 | `RenderService.readIsOpen` | 1 | `RenderService.some(…)` | `packages/codometer-output/src/modules/render/render.service.ts:47` |
 | `RenderService.renderFailures` | 1 | `RenderService.map(…)` | `packages/codometer-output/src/modules/render/render.service.ts:89` |
 | `RenderService.filter(…)` | 1 | `hasChanged` | `packages/codometer-output/src/modules/render/render.service.ts:111` |
@@ -226,14 +226,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3606-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-123.47_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3619-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-124.32_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-34-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.20_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.50_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -259,7 +259,7 @@ graph LR
 ![Imports](https://img.shields.io/badge/Imports-101-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-58-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-128-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-257-475569?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-264-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-1-ca8a04?style=flat-square)
 
 ### Python
