@@ -504,3 +504,67 @@ _This project has no internal file imports._
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-2-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `packages/conformetry-examples`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 2 |
+| Files | 15 |
+| Calls traced | 7 |
+| Call stacks | 1 |
+| Deepest stack | 13 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 0 |
+
+### Call stacks (depth)
+
+**1. `main`** — depth ≥ 13 · orphan-root
+
+```text
+🚀 main(): Promise<void> [packages/conformetry-examples/examples/embedding/embed.ts:44]
+   ↳ Generates one instance, then measures the committed ones, using nothing but the runtime packages.
+  └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:132]
+     ↳ Validates every instance and returns the differences found.
+    └─> InstanceDiscoveryService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:95]
+       ↳ Resolves every instance to the template, or templates, that explain it.
+      └─> InstanceDiscoveryMatchingService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:93]
+         ↳ Resolves every instance to the template — or templates — that explain it.
+        └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
+           ↳ Weighs every template that shares at least one file with the instance, best-first.
+          └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
+            └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
+               ↳ Counts how many of a template's files the instance path already has.
+              └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
+                └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+                   ↳ Maps a template file path to the instance file path it governs.
+                  └─> RenderingService.renderPath(…): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:142]
+                     ↳ Renders a template path with mustache, the same way contents are rendered.
+                    └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:35]
+                       ↳ Refuses to render a template asking for a value nobody supplied.
+                      └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:61]
+                         ↳ Every placeholder a template interpolates, deduplicated.
+                        └─> RenderingService.walk(spans: TemplateSpans): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:63]
+```
+
+### Module spread
+
+| Callable | Spread | Calls directly | Location |
+| --- | --- | --- | --- |
+| `main` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-configuration:modules/template-discovery`, `packages/conformetry-core:modules/reporting`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-examples/examples/embedding/embed.ts:44` |
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `main` | 6 | `ConfigurationService.loadConformetryConfiguration`, `GenerationService.runGenerator`, `ValidationService.validate`, `flatMap(…)`, `TemplateDiscoveryService.collectTemplates`, `ReportingService.formatReport` | `packages/conformetry-examples/examples/embedding/embed.ts:44` |
+| `flatMap(…)` | 1 | `InstanceDiscoveryService.findInstances` | `packages/conformetry-examples/examples/embedding/embed.ts:81` |
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

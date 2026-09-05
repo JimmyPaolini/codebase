@@ -444,7 +444,7 @@ Call stacks traced through `packages/lexico-components`, deepest first. Each fra
 | Measure | Value |
 | --- | --- |
 | Callables | 278 |
-| Files | 59 |
+| Files | 60 |
 | Calls traced | 304 |
 | Call stacks | 219 |
 | Deepest stack | 3 |

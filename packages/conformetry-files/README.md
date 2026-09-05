@@ -56,7 +56,7 @@ Call stacks traced through `packages/conformetry-files`, deepest first. Each fra
 | Measure | Value |
 | --- | --- |
 | Callables | 5 |
-| Files | 7 |
+| Files | 8 |
 | Calls traced | 6 |
 | Call stacks | 0 |
 | Deepest stack | 0 |

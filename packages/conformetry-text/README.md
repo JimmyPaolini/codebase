@@ -52,7 +52,7 @@ Call stacks traced through `packages/conformetry-text`, deepest first. Each fram
 | Measure | Value |
 | --- | --- |
 | Callables | 5 |
-| Files | 7 |
+| Files | 8 |
 | Calls traced | 3 |
 | Call stacks | 1 |
 | Deepest stack | 3 |

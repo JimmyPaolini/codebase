@@ -96,13 +96,13 @@ Call stacks traced through `packages/conformetry-generation`, deepest first. Eac
 
 | Measure | Value |
 | --- | --- |
-| Callables | 17 |
-| Files | 11 |
-| Calls traced | 10 |
+| Callables | 23 |
+| Files | 12 |
+| Calls traced | 18 |
 | Call stacks | 1 |
 | Deepest stack | 2 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 2 |
+| Unfollowable calls | 3 |
 
 ### Call stacks (depth)
 
@@ -121,17 +121,22 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `GenerationService.runGenerator` | 4 | `GenerationService.resolveAdapters`, `GenerationService.normalizeInputs`, `GenerationService.buildSubstitutions`, `GenerationService.renderDirectory` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:189` |
+| `GenerationService.runGenerator` | 4 | `GenerationService.resolveAdapters`, `GenerationService.normalizeInputs`, `GenerationService.buildSubstitutions`, `GenerationService.renderDirectory` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:191` |
+| `RenderingService.assertEverySubstitutionSupplied` | 3 | `RenderingService.filter(…)`, `RenderingService.collectInterpolatedNames`, `MissingSubstitutionError.constructor` | `packages/conformetry-generation/src/modules/rendering/rendering.service.ts:35` |
 | `GenerationService.renderDirectory` | 2 | `RenderingService.renderPath`, `GenerationService.renderFile` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:105` |
-| `GenerationService.listDirectory` | 1 | `GenerationService.map(…)` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:39` |
 
 <details>
-<summary>2 more callables</summary>
+<summary>7 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `MissingSubstitutionError.constructor` | 1 | `MissingSubstitutionError.map(…)` | `packages/conformetry-generation/src/modules/rendering/rendering.constants.ts:31` |
+| `RenderingService.collectInterpolatedNames` | 1 | `RenderingService.walk` | `packages/conformetry-generation/src/modules/rendering/rendering.service.ts:61` |
+| `RenderingService.renderContent` | 1 | `RenderingService.assertEverySubstitutionSupplied` | `packages/conformetry-generation/src/modules/rendering/rendering.service.ts:115` |
+| `RenderingService.renderPath` | 1 | `RenderingService.assertEverySubstitutionSupplied` | `packages/conformetry-generation/src/modules/rendering/rendering.service.ts:142` |
+| `GenerationService.listDirectory` | 1 | `GenerationService.map(…)` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:39` |
 | `GenerationService.buildSubstitutions` | 1 | `RenderingService.buildNameSubstitutions` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:75` |
-| `GenerationService.renderFile` | 1 | `RenderingService.renderContent` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:153` |
+| `GenerationService.renderFile` | 1 | `RenderingService.renderContent` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:154` |
 
 </details>
 

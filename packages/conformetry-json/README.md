@@ -51,7 +51,7 @@ Call stacks traced through `packages/conformetry-json`, deepest first. Each fram
 | Measure | Value |
 | --- | --- |
 | Callables | 23 |
-| Files | 8 |
+| Files | 9 |
 | Calls traced | 37 |
 | Call stacks | 1 |
 | Deepest stack | 12 |

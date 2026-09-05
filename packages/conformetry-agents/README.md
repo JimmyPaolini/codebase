@@ -62,7 +62,7 @@ Call stacks traced through `packages/conformetry-agents`, deepest first. Each fr
 | Measure | Value |
 | --- | --- |
 | Callables | 0 |
-| Files | 2 |
+| Files | 3 |
 | Calls traced | 0 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
