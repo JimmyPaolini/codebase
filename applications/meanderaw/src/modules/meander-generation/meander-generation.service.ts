@@ -19,6 +19,7 @@ import {
   MINIMUM_PERIOD,
   MINIMUM_REPEAT_COUNT,
   MINIMUM_STRANDS,
+  PLY_MODIFIER_NAMES,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
@@ -232,9 +233,9 @@ export class MeanderGenerationService {
   }
 
   /**
-   * Throws {@link InvalidStrandCountError} when `plied`'s `strands` isn't a
-   * whole number between {@link MINIMUM_STRANDS} and the drawing's own row
-   * count.
+   * Throws {@link InvalidStrandCountError} when a ply-carrying modifier's
+   * `strands` isn't a whole number between {@link MINIMUM_STRANDS} and the
+   * drawing's own row count.
    *
    * The upper bound is `rows` rather than {@link MAXIMUM_VALUE} because it
    * is the geometry's bound rather than the CLI's: a `parallel` bundle's
@@ -244,7 +245,11 @@ export class MeanderGenerationService {
    * number per family and this one moves with the modifier.
    */
   private validateStrands(modifier: Modifier | undefined, rows: number): void {
-    if (modifier?.name !== "plied") {
+    if (!modifier || !PLY_MODIFIER_NAMES.includes(modifier.name)) {
+      return;
+    }
+
+    if (!("strands" in modifier)) {
       return;
     }
 

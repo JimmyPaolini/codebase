@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import {
+  PLY_MODIFIER_NAMES,
   SUPPORTED_DOT_SHAPES,
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
@@ -18,6 +19,7 @@ import type {
   GenerationParameters,
   MeanderType,
   Modifier,
+  PlyModifierName,
 } from "../meander-generation/meander-generation.types";
 import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type { DrawCommandOptions } from "./draw.types";
@@ -57,9 +59,14 @@ export class DrawParametersService {
     return SUPPORTED_TYPES.includes(value);
   }
 
-  /** Narrows a raw string to a supported {@link Modifier} name without an unchecked assertion. */
+  /** Narrows a raw string to a supported {@link Modifier} name, so the option parser can reject an unknown one by name. */
   private isModifierName(value: string): value is Modifier["name"] {
     return SUPPORTED_MODIFIER_NAMES.includes(value);
+  }
+
+  /** Narrows a modifier name to one of the ply-carrying ones, so `--strands` is demanded for exactly those. */
+  private isPlyModifierName(value: Modifier["name"]): value is PlyModifierName {
+    return PLY_MODIFIER_NAMES.includes(value);
   }
 
   /** Narrows a raw string to a {@link MosaicSubFamily} without an unchecked assertion. */
@@ -108,7 +115,7 @@ export class DrawParametersService {
       return { name: modifier, shape };
     }
 
-    if (modifier === "plied") {
+    if (this.isPlyModifierName(modifier)) {
       if (strands === undefined) {
         throw new MissingModifierParameterError(modifier, "--strands");
       }

@@ -68,8 +68,8 @@ export class OutputPathService {
       return `dot-${modifier.shape}-${suffix}`;
     }
 
-    if (modifier.name === "plied") {
-      return `plied-strands-${modifier.strands}-${suffix}`;
+    if ("strands" in modifier) {
+      return `${modifier.name}-strands-${modifier.strands}-${suffix}`;
     }
 
     return `${modifier.name}-${suffix}`;

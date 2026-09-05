@@ -125,11 +125,10 @@ describe(DrawCommand, () => {
       });
 
       // 🎯 rows sweep runs from each type's own structural minimum to
-      // `MAXIMUM_VALUE`: 2..12 (branch), 3..12 (mosaic, boxes, negative),
-      // 4..12 (chain, snake, swirl, whirl, parallel), or 6..12 (cross),
+      // `MAXIMUM_VALUE`: 2..12 (branch, parallel), 3..12 (mosaic, boxes,
+      // negative), 4..12 (chain, snake, swirl, whirl), or 6..12 (cross),
       // crossed with "no modifier" plus every compatible modifier
-      // (alternated, dot, and plied each expand to 2 representative
-      // values):
+      // (alternated and dot each expand to 2 representative values):
       // mosaic: 10 rows * (1 + 2 + 2 + 1) modifiers = 60
       // boxes: 10 rows * (1 + 1 + 1) modifiers = 30
       // chain: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
@@ -139,9 +138,21 @@ describe(DrawCommand, () => {
       // cross: 7 rows * (1 + 1) modifiers = 14
       // negative: 10 rows * (1 + 1 + 1) modifiers = 30
       // branch: 11 rows * (1 + 1 + 1) modifiers = 33
-      // parallel: 9 rows * (1 + 2) modifiers = 27
+      //
+      // `parallel` is the one family whose modifiers do not expand to a
+      // fixed number of values, so it is the one row here that is not a
+      // multiplication. Its three ply-carrying modifiers each sweep their
+      // whole range at each row count, and that range is the row count —
+      // `plied` over 1..rows less the default that would duplicate the
+      // unmodified drawing, `aligned` and `serpentine` over 1..rows whole:
+      // 1 + (rows - 1) + rows + rows = 3 * rows at each row count, which
+      // over rows 2..12 is 3 * (2 + 3 + ... + 12) = 231.
+      const expectedParallelCount = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].reduce(
+        (total, rows) => total + 3 * rows,
+        0,
+      );
       const expectedNamedTypeCount =
-        60 + 30 + 36 + 36 + 18 + 18 + 14 + 30 + 33 + 27;
+        60 + 30 + 36 + 36 + 18 + 18 + 14 + 30 + 33 + expectedParallelCount;
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
@@ -187,7 +198,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("3481 drawings");
+      expect(index?.[1]).toContain("3685 drawings");
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
       );
@@ -555,13 +566,13 @@ describe(DrawCommand, () => {
         realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
       ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 302 enumerated named-type combinations, and
+      // 🎯 every one of the 506 enumerated named-type combinations, and
       // every one of the 3,179 mosaic tiles, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
       // replace the generation services entirely. The extra file is the
       // single index page listing all of them.
-      expect(mockWriteFile).toHaveBeenCalledTimes(302 + 3179 + 1);
+      expect(mockWriteFile).toHaveBeenCalledTimes(506 + 3179 + 1);
     });
   });
 });

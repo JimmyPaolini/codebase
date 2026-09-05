@@ -15,3 +15,23 @@ export interface ParallelUnitPlacement {
   readonly rows: number;
   readonly strands: number;
 }
+
+/** One horizontal strip of the band, as the inclusive lattice rows a single `serpentine` ribbon waves between. A one-row strip has `topRow === bottomRow` and flattens to a straight rule. */
+export interface SerpentineStrip {
+  readonly bottomRow: number;
+  readonly topRow: number;
+}
+
+/**
+ * Where one `serpentine` repeat unit starts, and whether it is the one that
+ * has to stop.
+ *
+ * Unlike {@link ParallelUnitPlacement} this carries no row count and no
+ * strand count: a serpentine unit's columns are the same
+ * `COLUMNS_PER_SERPENTINE_UNIT` at every ply, and the rows belong to the
+ * strips rather than to the unit.
+ */
+export interface SerpentineUnitPlacement {
+  readonly firstColumn: number;
+  readonly isLastUnit: boolean;
+}

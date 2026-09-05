@@ -44,6 +44,7 @@ export type MeanderType =
  * member would be dead code no `COMPATIBLE_MODIFIERS` entry could point to.
  */
 export type Modifier =
+  | { readonly name: "aligned"; readonly strands: number }
   | { readonly name: "alternated"; readonly period: number }
   | { readonly name: "brick" }
   | { readonly name: "dot"; readonly shape: DotShape }
@@ -54,6 +55,7 @@ export type Modifier =
   | { readonly name: "plied"; readonly strands: number }
   | { readonly name: "ruled" }
   | { readonly name: "rung" }
+  | { readonly name: "serpentine"; readonly strands: number }
   | { readonly name: "spin" }
   | { readonly name: "spin-flip" }
   | { readonly name: "split" }
@@ -88,6 +90,19 @@ export interface MotifUnit {
   readonly rows: number;
   readonly unitIndex: number;
 }
+
+/**
+ * The name of a modifier that carries a `strands` count.
+ *
+ * Derived from {@link Modifier} rather than written out, so a ply-carrying
+ * member added to that union is a member of this the same day. The three it
+ * names today all belong to `parallel` — see `PLY_MODIFIER_NAMES`, which is
+ * this type's runtime half.
+ */
+export type PlyModifierName = Extract<
+  Modifier,
+  { readonly strands: number }
+>["name"];
 
 /** The row count, repeat count, and optional modifier a whole pattern's shared geometry (right edge, border) is computed from. */
 export interface RepeatPatternOptions {

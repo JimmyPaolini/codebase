@@ -5,9 +5,9 @@ import {
   MAXIMUM_VALUE,
   STRUCTURAL_MINIMUM_ROWS,
 } from "../meander-generation/meander-generation.constants";
+import { DEFAULT_PARALLEL_STRANDS } from "../parallel-motif/parallel-motif.constants";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
-import { PLIED_SWEEP_STRAND_COUNTS } from "./draw.constants";
 
 import type { GenerationParameters } from "../meander-generation/meander-generation.types";
 
@@ -71,8 +71,10 @@ describe(DrawCombinationsService, () => {
       { expected: 30, type: "negative" },
       // rows 2..12 × (none + rung + stagger)
       { expected: 33, type: "branch" },
-      // rows 4..12 × (none + plied ×2)
-      { expected: 27, type: "parallel" },
+      // rows 2..12 × (none + plied over every ply 1..rows less the
+      // skipped default + aligned over 1..rows + serpentine over 1..rows),
+      // which is 1 + (rows - 1) + rows + rows = 3 × rows at each row count
+      { expected: 231, type: "parallel" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
       expect(
         combinations.filter((parameters) => parameters.type === type),
@@ -80,7 +82,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(302);
+      expect(combinations).toHaveLength(506);
     });
 
     it("names every combination distinctly", () => {
@@ -89,18 +91,61 @@ describe(DrawCombinationsService, () => {
       expect(new Set(keys).size).toBe(combinations.length);
     });
 
-    // 🎯 Two numbers written in two files, made to agree here rather than
-    // by anybody remembering. A `parallel` bundle of N strands needs N rows,
-    // so the deepest ply the sweep draws is exactly the row count the family
-    // may start at. Equality rather than an upper bound is deliberate and it
-    // is what the name says: a shallower deepest ply would leave the minimum
-    // stricter than any drawing needs, and a deeper one would enumerate a
-    // combination `MeanderGenerationService.generate` refuses. This fails
-    // before either does.
-    it("pins the deepest swept ply to the row count the parallel family starts at", () => {
-      expect(Math.max(...PLIED_SWEEP_STRAND_COUNTS)).toBe(
-        STRUCTURAL_MINIMUM_ROWS.parallel,
+    // 🎯 The sweep's `plied` range is the row count's, so this asserts the
+    // property the old pinned-constants test stood in for, and asserts it of
+    // every combination rather than of one number. A bundle of N strands
+    // needs N rows, and `MeanderGenerationService.generate` refuses one that
+    // does not have them — so a sweep that enumerated such a combination
+    // would fail the charter sweep downstream with a thrown error rather
+    // than a measurement. This fails first, and says why.
+    it("never sweeps a ply deeper than the row count it is drawn at", () => {
+      const plied = combinations.filter(
+        (parameters) => parameters.modifier?.name === "plied",
       );
+
+      expect(plied.length).toBeGreaterThan(0);
+
+      for (const parameters of plied) {
+        const { modifier, rows } = parameters;
+
+        if (modifier?.name !== "plied") {
+          continue;
+        }
+
+        expect(modifier.strands).toBeLessThanOrEqual(rows);
+        expect(modifier.strands).toBeGreaterThanOrEqual(1);
+      }
+    });
+
+    // 🎯 The one hole in that range, asserted rather than described. `plied`
+    // naming the family's own default ply renders a document byte-identical
+    // to the unmodified drawing beside it, so sweeping it would commit the
+    // same bytes twice under two filenames.
+    it("skips the ply that would duplicate the unmodified drawing", () => {
+      const strandCounts = combinations.flatMap((parameters) =>
+        parameters.modifier?.name === "plied"
+          ? [parameters.modifier.strands]
+          : [],
+      );
+
+      expect(strandCounts).not.toContain(DEFAULT_PARALLEL_STRANDS);
+    });
+
+    // 🎯 The deepest ply the sweep reaches is the deepest the command line
+    // accepts, which is what "every drawing the command line can be asked
+    // for is a drawing this repository commits" means for this family's
+    // second axis. A flat list could not say this.
+    it("sweeps the family's whole ply range, up to the deepest row count", () => {
+      const strandCounts = new Set(
+        combinations.flatMap((parameters) =>
+          parameters.modifier?.name === "plied"
+            ? [parameters.modifier.strands]
+            : [],
+        ),
+      );
+
+      expect(Math.max(...strandCounts)).toBe(MAXIMUM_VALUE);
+      expect(Math.min(...strandCounts)).toBe(1);
     });
 
     // 🎯 The two figures README.md's discarded-density argument rests on,

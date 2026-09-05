@@ -22,22 +22,6 @@ export const ALTERNATED_SWEEP_PERIODS: readonly number[] = [1, 3];
 export const DOT_SWEEP_SHAPES: readonly DotShape[] = ["bounce", "up"];
 
 /**
- * `strands` values swept for the `plied` modifier's batch combinations.
- *
- * Deliberately two points rather than a range, and deliberately not the
- * `parallel` family's own default of two: the unmodified sweep already
- * draws that ply, and `plied` naming it produces a byte-identical document
- * under a second filename — `parallel-motif.service.unit.test.ts` asserts
- * that identity. Three and four are one odd ply and one even one, which is
- * what shows the innermost strand's turn moving with the count. Nothing
- * deeper is swept because every further ply widens each repeat unit by two
- * more lattice columns and introduces no new kind of junction; the highest
- * value here is also `parallel`'s `STRUCTURAL_MINIMUM_ROWS`, since a bundle
- * of N strands needs N rows.
- */
-export const PLIED_SWEEP_STRAND_COUNTS: readonly number[] = [3, 4];
-
-/**
  * The gallery page `DrawCommand` writes at the root of the output directory,
  * listing every document the sweep produced under the directory it landed
  * in. One page rather than one per row count: the tiles are now separated by
