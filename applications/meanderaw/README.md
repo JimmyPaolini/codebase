@@ -46,16 +46,29 @@ output/
   <family>/
     <rows>-rows/
       <variant>-<repeatCount>-repeats.svg           `plain` where there is no modifier
-      permutations/                                 `mosaic` only
+      permutations/                                 `mosaic` and `negative` only
         <columns>-columns/
-          <identifier>[-<sub-family>].svg
+          <identifier>[-<name>].svg
 ```
 
-So `output/chain/7-rows/edge-flip-6-repeats.svg`, and
-`output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg`. A directory listing is
-then the parameter space it enumerates, and the 3,179 enumerated `mosaic` tiles — which
-would be unreadable as one flat directory — sit a few hundred at a time under the row
-count and column span that produced them, named by nothing but what distinguishes them.
+So `output/chain/7-rows/edge-flip-6-repeats.svg`,
+`output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg`, and
+`output/negative/6-rows/permutations/1-columns/dldldl-ruled.svg`. A directory listing is
+then the parameter space it enumerates, and the 3,554 enumerated tiles — which would be
+unreadable as one flat directory — sit a few hundred at a time under the row count and
+column span that produced them, named by nothing but what distinguishes them, with the
+handful that a family already has a word for carrying that word after the identifier.
+
+**Two families have a permutation half, and they enumerate different things.**
+`mosaic`'s is its whole unit space at one and two columns, 3,179 tiles across 4 through 8
+rows. `negative`'s is its **one-column source space** — the `ruled` domain, since a
+one-column source has no vertical mark for a second column to stagger against — 375
+sources across 3 through 7 rows. That range is derived rather than chosen: it stops one
+row below `mosaic`'s because a negative is one row shorter than the source it inverts, so
+every drawing in it inverts a tile the other half has already committed. The absent
+`negative/<rows>-rows/permutations/2-columns/` is a statement too — the two-column source
+space is a different shape of pattern rather than a deeper cut of this one, and the three
+members of it this repository draws are named in the sweep's other half.
 
 Naming one drawing writes into the same tree, through the same `OutputPathService`, so a
 single drawing lands beside its siblings rather than loose at the top:
@@ -103,12 +116,12 @@ it.
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
-against the corpus as it now stands, 372 named patterns beside the same 3,179 tiles. The
+against the corpus as it now stands, 372 named patterns beside 3,554 enumerated tiles. The
 named half was 174 until the sweep's row range was raised to `MAXIMUM_VALUE`, so most of
 these counts have moved once for that reason alone — see the note under "Meander Charter"
 above:
 
-- **Every interior white channel is exactly one stroke width**, in all 3,551 files. The
+- **Every interior white channel is exactly one stroke width**, in all 3,926 files. The
   channel width equals the stroke width equals half a grid unit, and that single number
   is the same in every document the project has ever written — the stroke is `unit / 2`
   at every row count, in every family, at every ply of `parallel`. #340 and #413 both
@@ -122,8 +135,9 @@ above:
   each of the seven solid documents it commits. `negative` relaxes it too, in three of its
   ten modes and 30 of its 100 documents — `brick-straight` is stack bond, whose mortar runs
   unbroken both ways where running bond's does not, `grid` inverts the `dots` sub-family,
-  and `brick-upright` inverts `diamond` — for 705 X-junctions between them. Nowhere else in
-  the 3,551-file corpus. `cross` carries twelve at every one of its row counts, 6 through
+  and `brick-upright` inverts `diamond` — for 705 X-junctions between them. Its permutation
+  half crosses in 276 of its 375 drawings, which is the same finding at the scale of a
+  whole space rather than of three named modes. Nowhere else in the 3,926-file corpus. `cross` carries twelve at every one of its row counts, 6 through
   12, so its count is a property of the repeat count rather than of `rows`. See "The
   Crossing Family" and "The Negative Space Family" below.
 - **Ink branches in three places, and only there.** 4,030 T-junctions across 159 of the 372
@@ -171,14 +185,22 @@ because the corpus stopped at 8 and the charter swept the corpus. Raising the sw
 to the command line's own closed the gap for both at once, which is why neither has a
 maximum of its own any more. Most of the counts below moved by that change and nothing else.
 
-**The `mosaic` permutation half kept its cap of 8**, at 3,179 tiles. It enumerates its space
-exhaustively rather than sampling it, and the count grows about 3.4× per row — 23, 68, 199,
-660 and 2,229 at rows 4 through 8, then 7,977, 29,002, 108,089 and 406,934 — so following
-the named half would mean committing 552,002 more files. The row counts that leaves
-uncovered are not a charter blind spot, which is the one thing that would make the cap a
-liability: those tiles were never in the property sweep at all, being reachable only through
-a motif service and gated from disk instead, while `mosaic` as a named family with its
-modifiers sits in the half that does reach 12.
+**Neither permutation half followed.** `mosaic`'s kept its cap of 8, at 3,179 tiles. It
+enumerates its space exhaustively rather than sampling it, and the count grows about 3.4×
+per row — 23, 68, 199, 660 and 2,229 at rows 4 through 8, then 7,977, 29,002, 108,089 and
+406,934 — so following the named half would mean committing 552,002 more files.
+
+`negative`'s stops one row earlier still, at 375 one-column sources across 3 through 7
+rows, and that bound is derived rather than budgeted: a negative is one row shorter than
+the source it inverts, so stopping one below `mosaic`'s cap is exactly the condition that
+every drawing in it has a committed tile to be compared against. Its own growth is about
+2.4× per row — 8, 18, 40, 93 and 216, then 513, 1,218, 2,920, 7,000 and 16,850 — so
+carrying it to 12 would add 28,501 files for drawings nothing could check.
+
+The row counts the two caps leave uncovered are not a charter blind spot, which is the one
+thing that would make them a liability: those tiles were never in the property sweep at
+all, being reachable only through a motif service and gated from disk instead, while both
+families as named families with their modifiers sit in the half that does reach 12.
 
 ## 🧬 Families, Sub-families, and Tiles
 
@@ -850,6 +872,48 @@ only re-phases the same symmetry class — the drawing differs, the class does n
 one the two carry different numbers of openings outright, and their branching counts
 diverge. Both halves of that are asserted rather than described.
 
+### The domain, enumerated
+
+Six names is a sample of that space, not the space. **It is enumerated in full** under
+`output/negative/<rows>-rows/permutations/1-columns/`, one drawing per symmetry class, the
+same way `mosaic` enumerates its own tiles — because it is the same enumeration:
+`MosaicTilesService.enumerate(rows + 1, 1)` is every one-column tile there is, and every
+one of them is a source this family can invert.
+
+| Negative rows | Sources | Branches only | Crosses | Neither |
+| --- | --- | --- | --- | --- |
+| 3 | 8 | 4 | 3 | 1 |
+| 4 | 18 | 7 | 10 | 1 |
+| 5 | 40 | 14 | 25 | 1 |
+| 6 | 93 | 24 | 68 | 1 |
+| 7 | 216 | 45 | 170 | 1 |
+| **Total** | **375** | **94** | **276** | **5** |
+
+Three things that table says, none of which the six named modes could have.
+
+- **Crossing is the norm here too.** 276 of 375, which is the same finding the negative
+  space survey made across the whole `mosaic` unit space at a different scale. Naming more
+  modes by hand would not have turned up many more non-crossing ones to name.
+- **The _neither_ column is 1 at every row count, and it is always the same source.** All
+  rules and no opening — the `lines` sub-family, which `ruled-closed` draws by name. It is
+  the floor of the family, and the survey's own "neither" class is exactly it.
+- **94 of them branch without crossing**, against the six this repository names. That is
+  the number worth knowing before naming a seventh: they are there to be found by looking
+  at the directory rather than by reasoning about motifs.
+
+A source the family has a name for carries that name after its identifier, so
+`dldldl-ruled.svg` sits among the anonymous ones — the same courtesy `mosaic` extends to a
+tile belonging to a sub-family. A name marks a **symmetry class**, and one class carries
+two names: at an even row count `ruled` and `ruled-raised` is the same class re-phased,
+so those drawings are filed under `ruled`. That is the only collision at any swept row
+count, and it is asserted rather than trusted.
+
+The half stops at 7 rows because `mosaic`'s stops at 8, and a negative is one row shorter
+than the source it inverts. That is not a budget copied across: it is the exact condition
+under which every drawing here inverts a tile the repository has already committed, which
+is what makes the corridor-identity gate below cover this half completely rather than
+sample it.
+
 ### What it holds and what it relaxes
 
 | Invariant | Holds? | How it is known |
@@ -861,10 +925,10 @@ diverge. Both halves of that are asserted rather than described.
 | 5 — band, not field | Yes | the canvas height is the shared geometry's, identical to a `mosaic` of the same rows; only width grows with `repeatCount` |
 
 **Whether the output stays space-filling was measured, not assumed, and it does.** Every
-lattice point of every one of the 100 committed drawings carries ink — including the band's
-first and last lattice column, which invariant 7 would have excused. The family needs no
-termination carve-out at all, where 2,176 of the 3,551 committed documents do have a
-gap there. The reason is the survey's own finding that no cell of any of the 3,179
+lattice point of every one of the 475 committed drawings carries ink — the 100 named and
+the 375 enumerated alike — including the band's first and last lattice column, which
+invariant 7 would have excused. The family needs no termination carve-out at all, where
+2,176 of the 3,926 committed documents do have a gap there. The reason is the survey's own finding that no cell of any of the 3,179
 permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
 lattice point with at least one arm of ink.
 
@@ -905,7 +969,9 @@ asserted, in `meander-topology.service.integration.test.ts`, to equal the negati
 X-junction counts of the committed `output/mosaic/<rows>-rows/permutations/` document it
 inverts — read off disk, from a file that existed before this family did. That assertion is
 what makes "the candidates come from the mosaic space" a fact rather than a claim: if a
-drawing stopped being that document's complement, it would fail.
+drawing stopped being that document's complement, it would fail. The permutation half is
+the same claim taken over a whole space rather than ten modes, and it is why that half's
+row range is derived from `mosaic`'s rather than chosen.
 
 Two of the fifty rows compare against a source drawn at five repeats rather than six, and
 the reason is invariant 7 rather than a fudge. A `mosaic` canvas ends at its rightmost

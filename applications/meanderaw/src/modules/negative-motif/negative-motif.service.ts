@@ -16,6 +16,7 @@ import type {
   NegativeOrientation,
   NegativeRowSpan,
   NegativeSpan,
+  NegativeTileUnit,
 } from "./negative-motif.types";
 
 /**
@@ -260,6 +261,35 @@ export class NegativeMotifService implements MotifService {
   // 🌎 Public Methods
 
   /**
+   * Draws one repeat unit's corridors for a drawing named by type, rows, and
+   * modifier — the `MotifService` contract every family implements. It
+   * resolves the modifier to a source tile and hands the drawing itself to
+   * {@link tilePath}, which is the same code the permutation half runs.
+   */
+  path(geometry: GridGeometry, unit: MotifUnit): string {
+    return this.tilePath(
+      geometry,
+      this.negativeSourceService.tile(
+        this.negativeSourceService.source(unit.modifier),
+        unit.rows,
+      ),
+      unit,
+    );
+  }
+
+  /** The x-coordinate of the drawing's last lattice column, before the stroke-width margin. */
+  rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
+    return this.tileRightEdge(
+      geometry,
+      this.negativeSourceService.tile(
+        this.negativeSourceService.source(pattern.modifier),
+        pattern.rows,
+      ),
+      pattern.repeatCount,
+    );
+  }
+
+  /**
    * Draws one repeat unit's corridors: every vertical corridor down the
    * lattice columns this unit owns, and every horizontal corridor along them.
    *
@@ -268,12 +298,18 @@ export class NegativeMotifService implements MotifService {
    * draws none past its own end and owns however many columns the source's
    * last tile actually reaches, which for a tile ending in dots is fewer than
    * the tile's full column span.
+   *
+   * It takes the tile rather than resolving one, because the source of a
+   * drawing is not always a modifier: the permutation half enumerates tiles
+   * no modifier names, and it inks them through this same method rather than
+   * through a second copy of the geometry. That is what makes an enumerated
+   * drawing and a named one the same drawing wherever they coincide.
    */
-  path(geometry: GridGeometry, unit: MotifUnit): string {
-    const tile = this.negativeSourceService.tile(
-      this.negativeSourceService.source(unit.modifier),
-      unit.rows,
-    );
+  tilePath(
+    geometry: GridGeometry,
+    tile: MosaicTile,
+    unit: NegativeTileUnit,
+  ): string {
     const from = unit.unitIndex * tile.columns;
     const to = from + (unit.isLastUnit ? this.reach(tile) : tile.columns) - 1;
     const columns = Array.from(
@@ -294,16 +330,12 @@ export class NegativeMotifService implements MotifService {
     ].join("");
   }
 
-  /** The x-coordinate of the drawing's last lattice column, before the stroke-width margin. */
-  rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
-    const tile = this.negativeSourceService.tile(
-      this.negativeSourceService.source(pattern.modifier),
-      pattern.rows,
-    );
-
-    return (
-      geometry.offset +
-      this.lastColumn(tile, pattern.repeatCount) * geometry.unit
-    );
+  /** The x-coordinate the drawing of one tile ends at, before the stroke-width margin. */
+  tileRightEdge(
+    geometry: GridGeometry,
+    tile: MosaicTile,
+    repeatCount: number,
+  ): number {
+    return geometry.offset + this.lastColumn(tile, repeatCount) * geometry.unit;
   }
 }

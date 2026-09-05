@@ -53,6 +53,19 @@ export const PLIED_SWEEP_STRAND_COUNTS: readonly number[] = [3, 4];
 export const INDEX_FILE_NAME = "index.html";
 
 /**
+ * How many columns the `negative` permutation half's source tiles span.
+ *
+ * One, and it is a definition rather than a budget. A one-column source has
+ * no vertical mark for a second column to stagger against, so its negative
+ * is rules broken only where the source opens a window — which is what the
+ * `ruled` name means, and what makes this half that domain enumerated rather
+ * than sampled. The two-column space is a different shape of pattern, not a
+ * deeper cut of this one, and the three members of it this repository draws
+ * are named in the sweep's other half.
+ */
+export const NEGATIVE_PERMUTATION_COLUMNS = 1;
+
+/**
  * Subdirectory of a row count's own directory that the mosaic permutations
  * are written under, one column-span directory deep. They are nested rather
  * than left beside the named-type sweep because the enumeration runs to

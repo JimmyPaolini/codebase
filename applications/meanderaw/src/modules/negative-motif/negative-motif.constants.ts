@@ -77,6 +77,33 @@ export const NEGATIVE_COLUMN_MOTIFS: Record<
 export const NEGATIVE_SOURCE_ROW_OFFSET = 1;
 
 /**
+ * Every source this family names, in the order
+ * `DrawNegativePermutationsService` tries them when labelling an enumerated
+ * tile.
+ *
+ * **The order is load-bearing for one pair, and only that pair.** The
+ * permutation half files a tile under its symmetry class, so a label names a
+ * class rather than a tile — and at an even row count `ruled` and
+ * `ruled-raised` are one class re-phased, so both answer to it. `ruled`
+ * comes first, so those drawings are filed under `ruled`, and
+ * `draw-negative-permutations.service.unit.test.ts` asserts that this is the
+ * only collision at any swept row count rather than leaving the order to be
+ * trusted. Every other name has a class to itself.
+ */
+export const NEGATIVE_SOURCE_NAMES: readonly NegativeSource[] = [
+  "stair",
+  "brick-staggered",
+  "brick-straight",
+  "brick-upright",
+  "grid",
+  "ruled",
+  "ruled-closed",
+  "ruled-raised",
+  "ruled-spaced",
+  "ruled-tall",
+];
+
+/**
  * Which source each of this family's modifiers selects.
  *
  * `Record<NegativeModifierName, …>` is what makes the dispatch total: a

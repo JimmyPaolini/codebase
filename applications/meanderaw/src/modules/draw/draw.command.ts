@@ -19,6 +19,7 @@ import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawIndexService } from "./draw-index.service";
+import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
 import { CollidingPathsError, INDEX_FILE_NAME } from "./draw.constants";
@@ -46,10 +47,11 @@ import type {
  *   named families' parameter space, enumerated by
  *   {@link DrawCombinationsService} — which the meander charter's property
  *   test also sweeps, so the corpus this writes and the corpus that is gated
- *   are the same space by construction rather than by coincidence — beside an
- *   exhaustive enumeration of the `mosaic` family, which runs to thousands of
- *   files and so is written one row count at a time. An index page listing
- *   every drawing is written at the root of the output directory.
+ *   are the same space by construction rather than by coincidence — beside
+ *   two exhaustive enumerations, of the `mosaic` family's tiles and of the
+ *   `negative` family's one-column sources. Those run to thousands of files
+ *   and so are written one row count at a time. An index page listing every
+ *   drawing is written at the root of the output directory.
  * - **`draw --type <family> --rows <n>`** draws that one, to the same path
  *   the sweep would have written it to.
  *
@@ -81,6 +83,8 @@ export class DrawCommand extends CommandRunner {
     private readonly drawIndexService: DrawIndexService,
     @Inject(DrawParametersService)
     private readonly drawParametersService: DrawParametersService,
+    @Inject(DrawNegativePermutationsService)
+    private readonly drawNegativePermutationsService: DrawNegativePermutationsService,
     @Inject(DrawPermutationsService)
     private readonly drawPermutationsService: DrawPermutationsService,
     @Inject(MeanderGenerationService)
@@ -145,6 +149,15 @@ export class DrawCommand extends CommandRunner {
         ...(await this.writeDocuments(
           outputDirectory,
           this.drawPermutationsService.render(rows),
+        )),
+      );
+    }
+
+    for (const rows of this.drawNegativePermutationsService.rowsSweep()) {
+      documents.push(
+        ...(await this.writeDocuments(
+          outputDirectory,
+          this.drawNegativePermutationsService.render(rows),
         )),
       );
     }

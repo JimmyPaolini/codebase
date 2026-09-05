@@ -16,7 +16,7 @@ nx run meanderaw:start
 ## 🏛️ Before You Change a Meander
 
 Meander geometry is governed by a charter of seven invariants, five of which are fixed.
-They are measured against all 3,551 committed SVGs, not read off the code, so
+They are measured against all 3,926 committed SVGs, not read off the code, so
 they are facts about the output rather than intentions in the source. The full charter,
 with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
@@ -27,6 +27,13 @@ each family from its own structural minimum through 12 rows. It stopped at 8 unt
 counts between, so do not give that half a sweep maximum of its own again. The `mosaic`
 permutation half does keep one, at 8, because it enumerates exhaustively — following the
 named half would commit 552,002 more tiles. See `PERMUTATION_ROWS_SWEEP_MAXIMUM`.
+
+**`negative` has a permutation half too,** and it enumerates its one-column source space —
+the `ruled` domain — at 375 sources across 3 through 7 rows. Its range is derived from
+`PERMUTATION_ROWS_SWEEP_MAXIMUM` minus `NEGATIVE_SOURCE_ROW_OFFSET` rather than chosen, so
+every drawing in it inverts a `mosaic` tile this repository has already committed. Do not
+give it a maximum of its own: that condition is what lets the corridor-identity gate cover
+the half completely, and it is the only thing standing between 375 files and 28,876.
 
 Adding four row counts per family moved most of the published counts, so a figure below
 that disagrees with a measurement is more likely stale than wrong.

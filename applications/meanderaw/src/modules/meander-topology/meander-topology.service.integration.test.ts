@@ -239,7 +239,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
 
 /**
  * How long a corpus-wide measurement may take. Each of the three tests that
- * use it reads all 3,551 committed documents from disk and measures every
+ * use it reads all 3,926 committed documents from disk and measures every
  * one, which takes roughly two seconds locally but several times that on a
  * shared CI runner — past vitest's five-second default, which is what failed
  * there while passing everywhere else. Bounded rather than removed, so a
@@ -248,8 +248,9 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
 
 /**
- * How many documents `DrawCommand` commits: 372 named patterns beside 3,179
- * enumerated `mosaic` tiles.
+ * How many documents `DrawCommand` commits: 372 named patterns beside two
+ * exhaustive halves — 3,179 enumerated `mosaic` tiles and 375 enumerated
+ * one-column `negative` sources.
  *
  * The named half was 174 until issue #507. It sampled row counts up to 8
  * while the command line accepted 12, and the four row counts in between
@@ -260,13 +261,16 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
  * `negative` grew from three modes to ten — seven new sources at ten row
  * counts apiece.
  *
- * The `mosaic` half did not follow, and stays at 3,179. It enumerates its
- * space exhaustively rather than sampling it, so the same four row counts
- * would add 552,002 tiles — see `PERMUTATION_ROWS_SWEEP_MAXIMUM`, which
- * carries the count per row and the reason the cap is not a charter blind
- * spot.
+ * Neither exhaustive half followed, and they stay at 3,179 and 375. Both
+ * enumerate their space rather than sampling it, so the same four row counts
+ * would add 552,002 `mosaic` tiles — see `PERMUTATION_ROWS_SWEEP_MAXIMUM`,
+ * which carries the count per row and the reason the cap is not a charter
+ * blind spot. The `negative` half stops one row earlier still, and for a
+ * reason of its own rather than a budget: every drawing in it inverts a tile
+ * the `mosaic` half has already committed, which is what lets the
+ * corridor-identity gate cover it completely.
  */
-const COMMITTED_CORPUS_SIZE = 372 + 3179;
+const COMMITTED_CORPUS_SIZE = 372 + 3179 + 375;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -676,7 +680,7 @@ describe(MeanderTopologyService, () => {
 
     // 🎯 The `branch` family's whole claim, taken over the corpus rather
     // than over a family's own drawings: its thirty-three documents are
-    // trees and every other one of the 3,551 is not. Reading from disk is
+    // trees and every other one of the 3,926 is not. Reading from disk is
     // what makes the second half say anything — a family that started
     // drawing loops, or one that stopped, fails here rather than in its own
     // test.
@@ -718,7 +722,7 @@ describe(MeanderTopologyService, () => {
         // one thing. Published in three places and computed in none until
         // this assertion: the cycle count is `edges - nodes + components`,
         // which this loop already had all three inputs for.
-        expect(negativeCycles).toHaveLength(100);
+        expect(negativeCycles).toHaveLength(475);
         expect(Math.min(...negativeCycles)).toBe(0);
         expect(Math.max(...negativeCycles)).toBe(65);
         expect(Math.min(...negativeComponents)).toBe(1);
@@ -729,19 +733,21 @@ describe(MeanderTopologyService, () => {
           [...new Set(trees.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual(["branch"]);
 
-        // 🎯 The loops are all somewhere else: ninety of `negative`'s hundred
+        // 🎯 The loops are all somewhere else: 460 of `negative`'s 475
         // corridor networks, `cross`'s seven solid crossings, and the eighteen
         // `snake` drawings whose `edge` pitch closes a loop against the band
         // border. `branch` appears nowhere in this list, which is the half of
         // the claim a tree test alone would not make.
         //
-        // The ten `negative` documents missing from it are `ruled-closed`'s,
-        // and they are why the cycle floor above is zero and the component
-        // ceiling thirteen: that mode inverts the `lines` sub-family, so its
-        // ink is the band's own rules and nothing joining them — one
-        // component per lattice row, no loop anywhere, and the one corner of
-        // this family that is a forest like the six oldest.
-        expect(looped).toHaveLength(115);
+        // The fifteen `negative` documents missing from it are the `lines`
+        // sub-family's negative — `ruled-closed` at each of the family's ten
+        // row counts, and the same class enumerated at each of the five its
+        // permutation half covers. They are why the cycle floor above is zero
+        // and the component ceiling thirteen: that source's negative is the
+        // band's own rules and nothing joining them, so it is one component
+        // per lattice row with no loop anywhere, and the one corner of this
+        // family that is a forest like the six oldest.
+        expect(looped).toHaveLength(485);
         expect(
           [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual(["cross", "negative", "snake"]);
@@ -829,29 +835,44 @@ describe(MeanderTopologyService, () => {
           "cross/9-rows/plain-6-repeats.svg 12",
         ]);
 
-        // 🎯 `negative`'s thirty: exactly the three modes `RELAXED_INVARIANTS`
-        // names, at every one of the family's ten row counts and at no other
-        // mode. How many junctions each carries is pinned mode by mode in
-        // `negative-motif.service.unit.test.ts`; what this adds is that the
-        // set of crossing modes on disk is the set the charter declares, so a
-        // fourth mode that started crossing fails here even if somebody
-        // updated that table to match it.
+        // 🎯 `negative`'s named thirty: exactly the three modes
+        // `RELAXED_INVARIANTS` names, at every one of the family's ten row
+        // counts and at no other mode. How many junctions each carries is
+        // pinned mode by mode in `negative-motif.service.unit.test.ts`; what
+        // this adds is that the set of crossing modes on disk is the set the
+        // charter declares, so a fourth mode that started crossing fails here
+        // even if somebody updated that table to match it.
+        const namedCrossing = crossing.filter(
+          ({ name }) =>
+            familyOf(name) === "negative" &&
+            !name.includes(`/${PERMUTATIONS_SUBDIRECTORY}/`),
+        );
+
         expect(
           [
-            ...new Set(
-              crossing
-                .filter(({ name }) => familyOf(name) === "negative")
-                .map(({ name }) => name.split("/").at(-1)),
-            ),
+            ...new Set(namedCrossing.map(({ name }) => name.split("/").at(-1))),
           ].toSorted(),
         ).toStrictEqual([
           "brick-straight-6-repeats.svg",
           "brick-upright-6-repeats.svg",
           "grid-6-repeats.svg",
         ]);
+        expect(namedCrossing).toHaveLength(30);
+
+        // 🎯 And the permutation half's 276, which is a different kind of
+        // statement: not a charter declaration but a measurement of the space
+        // itself. 276 of its 375 one-column sources cross, 94 branch without
+        // crossing, and 5 do neither — the `lines` class at each swept row
+        // count. The named half draws six members of this space, and the
+        // proportions here are why naming more of them would not have found
+        // many more non-crossing ones to name.
         expect(
-          crossing.filter(({ name }) => familyOf(name) === "negative"),
-        ).toHaveLength(30);
+          crossing.filter(
+            ({ name }) =>
+              familyOf(name) === "negative" &&
+              name.includes(`/${PERMUTATIONS_SUBDIRECTORY}/`),
+          ),
+        ).toHaveLength(276);
       },
       CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
     );

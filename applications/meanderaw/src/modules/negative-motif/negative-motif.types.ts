@@ -132,3 +132,16 @@ export interface NegativeSpan {
  * crosses.
  */
 export type NegativeTileSource = "brick-staggered" | "brick-straight" | "stair";
+
+/**
+ * Which repeat unit of a source tile {@link NegativeMotifService.tilePath}
+ * draws. Grouped into one object rather than passed alongside the tile so
+ * the method stays inside the workspace's parameter limit, and so
+ * `isLastUnit` reads the same here as it does in `MotifUnit` — which is the
+ * other thing that method is called with, since a named drawing and an
+ * enumerated one differ only in how their tile was arrived at.
+ */
+export interface NegativeTileUnit {
+  readonly isLastUnit: boolean;
+  readonly unitIndex: number;
+}
