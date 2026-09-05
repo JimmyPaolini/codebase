@@ -30,17 +30,6 @@ const ORIGINAL_FAMILIES = new Set([
   "whirl",
 ]);
 
-/** The families whose shared zigzag doubles back on itself above {@link RETRACING_ROWS_THRESHOLD} rows — issue #507. */
-const RETRACING_FAMILIES = new Set(["chain", "snake"]);
-
-/**
- * The highest row count at which `chain` and `snake` still render without
- * retracing. Measured in `meander-generation.service.unit.test.ts` against
- * real path data rather than remembered here; this constant only carries it
- * to the arithmetic below.
- */
-const RETRACING_ROWS_THRESHOLD = 8;
-
 describe(DrawCombinationsService, () => {
   let service: DrawCombinationsService;
   let combinations: GenerationParameters[];
@@ -66,24 +55,24 @@ describe(DrawCombinationsService, () => {
     // matching — would leave both quietly covering less, so it is pinned
     // here rather than inferred at either call site.
     it.each([
-      // rows 3..8 × (none + alternated ×2 + dot ×2 + split)
-      { expected: 36, type: "mosaic" },
-      // rows 3..8 × (none + spin + spin-flip)
-      { expected: 18, type: "boxes" },
-      // rows 4..8 × (none + edge + flip + edge-flip)
-      { expected: 20, type: "chain" },
-      { expected: 20, type: "snake" },
-      // rows 4..8 × (none + flip)
-      { expected: 10, type: "swirl" },
-      { expected: 10, type: "whirl" },
-      // rows 6..8 × (none + interrupted)
-      { expected: 6, type: "cross" },
-      // rows 3..8 × (none + brick + ruled)
-      { expected: 18, type: "negative" },
-      // rows 2..8 × (none + rung + stagger)
-      { expected: 21, type: "branch" },
-      // rows 4..8 × (none + plied ×2)
-      { expected: 15, type: "parallel" },
+      // rows 3..12 × (none + alternated ×2 + dot ×2 + split)
+      { expected: 60, type: "mosaic" },
+      // rows 3..12 × (none + spin + spin-flip)
+      { expected: 30, type: "boxes" },
+      // rows 4..12 × (none + edge + flip + edge-flip)
+      { expected: 36, type: "chain" },
+      { expected: 36, type: "snake" },
+      // rows 4..12 × (none + flip)
+      { expected: 18, type: "swirl" },
+      { expected: 18, type: "whirl" },
+      // rows 6..12 × (none + interrupted)
+      { expected: 14, type: "cross" },
+      // rows 3..12 × (none + brick + ruled)
+      { expected: 30, type: "negative" },
+      // rows 2..12 × (none + rung + stagger)
+      { expected: 33, type: "branch" },
+      // rows 4..12 × (none + plied ×2)
+      { expected: 27, type: "parallel" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
       expect(
         combinations.filter((parameters) => parameters.type === type),
@@ -91,7 +80,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(174);
+      expect(combinations).toHaveLength(302);
     });
 
     it("names every combination distinctly", () => {
@@ -114,29 +103,23 @@ describe(DrawCombinationsService, () => {
       );
     });
 
-    // 🎯 The three figures README.md's discarded-density argument rests on,
+    // 🎯 The two figures README.md's discarded-density argument rests on,
     // pinned to the sweep they describe instead of counted by hand.
     //
-    // "The 32 combinations the sweep would want" are the six original
+    // "The 56 combinations the sweep would want" are the six original
     // families' distinct family/rows pairs — the space a
     // `strokeWidth = unit / (2N)` proposal would have had to cover. That
     // proposal redraws a pattern at `rows × N` rows, so at the `parallel`
-    // family's own ply of two every pair is asked for at `rows × 2`.
+    // family's own ply of two every pair is asked for at `rows × 2`, and
+    // `beyondMaximum` is the pairs whose doubled row count no longer fits
+    // inside the shared `MAXIMUM_VALUE` — 36 of them, every pair from 7
+    // rows up in every family.
     //
-    // Two different criteria fall out of that, and conflating them is what
-    // sent the prose wrong once already. `beyondMaximum` is the row-count
-    // ceiling: the pairs whose doubled row count no longer fits inside the
-    // shared `MAXIMUM_VALUE` — 12 of them, at 7 and 8 rows in every family.
-    // `degenerate` is legality: the pairs whose doubled row count renders
-    // ink that doubles back on itself, which is `chain` and `snake` alone
-    // above eight effective rows — 8 of them, four in each. They are not
-    // the same set and not the same number, and it is the 8 that says the
-    // proposal cannot work: four of those eight are inside the maximum, so
-    // a bound on the row count alone would have let them through.
-    //
-    // The threshold behind `degenerate` is measured rather than remembered
-    // — `meander-generation.service.unit.test.ts` renders it — and the
-    // underlying defect is issue #507, which predates this family.
+    // That count was 8 until issue #507 was fixed, on a stricter criterion
+    // that no longer applies: four of those eight sat *inside* the maximum,
+    // so degeneracy rather than the ceiling was what ruled the proposal out.
+    // README.md, "Nothing gets thinner", keeps that history. The ceiling is
+    // the whole of the argument now, and 12 is the number it rests on.
     it("pins the density proposal's reach over the six original families", () => {
       const sweptPairs = [
         ...new Map(
@@ -151,27 +134,38 @@ describe(DrawCombinationsService, () => {
       const beyondMaximum = sweptPairs.filter(
         ({ rows }) => rows * DISCARDED_DENSITY_PLY > MAXIMUM_VALUE,
       );
-      const degenerate = sweptPairs.filter(
-        ({ rows, type }) =>
-          RETRACING_FAMILIES.has(type) &&
-          rows * DISCARDED_DENSITY_PLY > RETRACING_ROWS_THRESHOLD,
-      );
 
-      expect(sweptPairs).toHaveLength(32);
-      expect(beyondMaximum).toHaveLength(12);
-      expect(degenerate).toHaveLength(8);
+      expect(sweptPairs).toHaveLength(56);
+      expect(beyondMaximum).toHaveLength(36);
     });
 
-    it("sweeps each type from its own structural minimum through the sweep maximum", () => {
-      const mosaicRows = combinations
-        .filter((parameters) => parameters.type === "mosaic")
-        .map((parameters) => parameters.rows);
-      const swirlRows = combinations
-        .filter((parameters) => parameters.type === "swirl")
-        .map((parameters) => parameters.rows);
+    // 🎯 The two ends of the row range, on two types with different
+    // structural minima: each starts at its own, and both stop at the one
+    // number the command line stops at. The upper bound is read from
+    // `MAXIMUM_VALUE` rather than written out, because the whole point of
+    // the range is that it is not a figure of the sweep's own choosing —
+    // issue #507 was reachable precisely because it once was.
+    it("sweeps each type from its own structural minimum through the row count the command line stops at", () => {
+      const rowsFor = (type: string): number[] => [
+        ...new Set(
+          combinations
+            .filter((parameters) => parameters.type === type)
+            .map((parameters) => parameters.rows),
+        ),
+      ];
+      const throughMaximum = (minimum: number): number[] =>
+        Array.from(
+          { length: MAXIMUM_VALUE - minimum + 1 },
+          (_value, index) => minimum + index,
+        );
 
-      expect([...new Set(mosaicRows)]).toStrictEqual([3, 4, 5, 6, 7, 8]);
-      expect([...new Set(swirlRows)]).toStrictEqual([4, 5, 6, 7, 8]);
+      expect(rowsFor("mosaic")).toStrictEqual(
+        throughMaximum(STRUCTURAL_MINIMUM_ROWS.mosaic),
+      );
+      expect(rowsFor("swirl")).toStrictEqual(
+        throughMaximum(STRUCTURAL_MINIMUM_ROWS.swirl),
+      );
+      expect(rowsFor("swirl").at(-1)).toBe(MAXIMUM_VALUE);
     });
 
     it.each([

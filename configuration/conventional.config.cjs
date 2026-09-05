@@ -159,13 +159,13 @@ const scopes = [
   },
   {
     description:
-      "Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention",
-    name: "logger",
+      "Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads",
+    name: "meanderaw",
   },
   {
     description:
-      "Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads",
-    name: "meanderaw",
+      "Lexical gap discovery CLI that surveys English for morphological, phonotactic, and semantic gaps and coins words to fill them",
+    name: "sempientor",
   },
   {
     description:

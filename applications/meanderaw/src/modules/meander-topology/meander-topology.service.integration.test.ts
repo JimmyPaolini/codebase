@@ -190,6 +190,12 @@ const modifierLabel = (modifier: Modifier): string => {
  * tested through `MeanderGenerationService.generate`, the single seam every
  * family, modifier, and validation rule already passes through. Those tiles
  * are gated from disk instead — see the committed-corpus test below.
+ *
+ * That enumeration runs to the shared `MAXIMUM_VALUE`, so the charter is
+ * gated across every row count the command line accepts. It used to stop at
+ * 8 while the command line accepted 12, and issue #507 lived in the four row
+ * counts between — the reason `DrawCombinationsService` no longer has a
+ * sweep maximum of its own.
  */
 const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
   .enumerate()
@@ -206,21 +212,8 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
   });
 
 /**
- * How many documents `DrawCommand` commits: 174 named patterns beside 3,179
- * enumerated `mosaic` tiles. #340 measured this corpus at 114 named patterns;
- * the `cross` family added the six the sweep draws for it — three row counts
- * from its structural minimum of 6 through the sweep maximum, solid and
- * `interrupted` — the `negative` family the eighteen it draws for its own,
- * six row counts from its structural minimum of 3 crossed with its two
- * modifiers plus none, the `branch` family twenty-one, seven row counts
- * from its structural minimum of 2 crossed with its two modifiers plus none,
- * and the `parallel` family fifteen, five row counts from its structural
- * minimum of 4 crossed with the two plies `PLIED_SWEEP_STRAND_COUNTS` names
- * plus its unmodified default.
- */
-/**
  * How long a corpus-wide measurement may take. Each of the three tests that
- * use it reads all 3,353 committed documents from disk and measures every
+ * use it reads all 3,481 committed documents from disk and measures every
  * one, which takes roughly two seconds locally but several times that on a
  * shared CI runner — past vitest's five-second default, which is what failed
  * there while passing everywhere else. Bounded rather than removed, so a
@@ -228,7 +221,24 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
  */
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
 
-const COMMITTED_CORPUS_SIZE = 174 + 3179;
+/**
+ * How many documents `DrawCommand` commits: 302 named patterns beside 3,179
+ * enumerated `mosaic` tiles.
+ *
+ * The named half was 174 until issue #507. It sampled row counts up to 8
+ * while the command line accepted 12, and the four row counts in between
+ * were where `chain` and `snake` drew self-retracing ink that no test could
+ * see. That half now runs to `MAXIMUM_VALUE`, which is where the extra 128
+ * come from — every family gained its own four row counts, `branch` and the
+ * families with a lower structural minimum included.
+ *
+ * The `mosaic` half did not follow, and stays at 3,179. It enumerates its
+ * space exhaustively rather than sampling it, so the same four row counts
+ * would add 552,002 tiles — see `PERMUTATION_ROWS_SWEEP_MAXIMUM`, which
+ * carries the count per row and the reason the cap is not a charter blind
+ * spot.
+ */
+const COMMITTED_CORPUS_SIZE = 302 + 3179;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -238,13 +248,16 @@ const COMMITTED_CORPUS_SIZE = 174 + 3179;
  *
  * Published in seven places and computed in none until this assertion, at a
  * value of 2,114 measured over the six original families' 3,293 documents.
- * `cross` has since added six, and nothing would have caught the drift:
+ * It reached 2,120 when `cross` added six, and 2,176 when the named half of
+ * the sweep grew to `MAXIMUM_VALUE` — 56 of the 128 documents that added
+ * leave such a gap. Nothing would have caught either drift:
  * `channelWidthCompliant` passes either way, because skipping those two
  * columns is exactly what it does. `negative`, `branch`, and `parallel` add
- * none — each covers its own first and last lattice column — so this number
- * moving is a family changing how its band ends.
+ * none at any row count — each covers its own first and last lattice column
+ * — so this number moving by anything other than a change of row range is a
+ * family changing how its band ends.
  */
-const TERMINATION_GAP_DOCUMENTS = 2120;
+const TERMINATION_GAP_DOCUMENTS = 2176;
 
 /** Where `DrawCommand` writes those documents, and where they are committed. */
 const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
@@ -451,8 +464,17 @@ describe(MeanderTopologyService, () => {
     // guard that stops matching — every `it.each` below would quietly cover
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
-    it("sweeps every named-type combination DrawCommand writes", () => {
-      expect(charterSweep).toHaveLength(174);
+    //
+    // The count also pins where the sweep stops. 302 is every combination up
+    // to `MAXIMUM_VALUE`; 174 was every combination up to 8, and the 128
+    // between them are the row counts issue #507 was reachable at and
+    // untested at. Reverting the sweep to a maximum of its own would fail
+    // here rather than quietly narrow the gate.
+    it("sweeps every named-type combination DrawCommand writes, out to the deepest row count the command line accepts", () => {
+      expect(charterSweep).toHaveLength(302);
+      expect(
+        Math.max(...charterSweep.map(({ parameters }) => parameters.rows)),
+      ).toBe(12);
     });
 
     it.each(charterSweep)("$label holds it", ({ parameters }) => {
@@ -523,15 +545,16 @@ describe(MeanderTopologyService, () => {
     );
 
     // 🎯 The `branch` family's whole claim, taken over the corpus rather
-    // than over a family's own drawings: its twenty-one documents are trees
-    // and every other one of the 3,353 is not. Reading from disk is what
-    // makes the second half say anything — a family that started drawing
-    // loops, or one that stopped, fails here rather than in its own test.
+    // than over a family's own drawings: its thirty-three documents are
+    // trees and every other one of the 3,481 is not. Reading from disk is
+    // what makes the second half say anything — a family that started
+    // drawing loops, or one that stopped, fails here rather than in its own
+    // test.
     //
     // The two conditions are separated on purpose. Being a forest is what
     // every family but three already is; being one connected piece is what
-    // `negative` already is. Only `branch` is both, and 3,317 documents
-    // predate it without a single one managing it.
+    // `negative` already is. Only `branch` is both, and the 3,421 documents
+    // that predate it manage it in not a single case.
     it(
       "draws a tree in exactly the branching family's documents",
       async () => {
@@ -565,23 +588,23 @@ describe(MeanderTopologyService, () => {
         // one thing. Published in three places and computed in none until
         // this assertion: the cycle count is `edges - nodes + components`,
         // which this loop already had all three inputs for.
-        expect(negativeCycles).toHaveLength(18);
+        expect(negativeCycles).toHaveLength(30);
         expect(Math.min(...negativeCycles)).toBe(10);
-        expect(Math.max(...negativeCycles)).toBe(45);
+        expect(Math.max(...negativeCycles)).toBe(65);
         expect(Math.min(...negativeComponents)).toBe(1);
-        expect(Math.max(...negativeComponents)).toBe(5);
+        expect(Math.max(...negativeComponents)).toBe(7);
 
-        expect(trees).toHaveLength(21);
+        expect(trees).toHaveLength(33);
         expect(
           [...new Set(trees.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual(["branch"]);
 
-        // 🎯 The loops are all somewhere else: `negative`'s eighteen corridor
-        // networks, `cross`'s three solid crossings, and the ten `snake`
+        // 🎯 The loops are all somewhere else: `negative`'s thirty corridor
+        // networks, `cross`'s seven solid crossings, and the eighteen `snake`
         // drawings whose `edge` pitch closes a loop against the band border.
         // `branch` appears nowhere in this list, which is the half of the
         // claim a tree test alone would not make.
-        expect(looped).toHaveLength(31);
+        expect(looped).toHaveLength(55);
         expect(
           [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual(["cross", "negative", "snake"]);
@@ -611,9 +634,9 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(documents).toHaveLength(174);
-      expect(tJunctions).toBe(1360);
-      expect(branching).toHaveLength(59);
+      expect(documents).toHaveLength(302);
+      expect(tJunctions).toBe(2876);
+      expect(branching).toHaveLength(99);
       expect(
         [...new Set(branching.map((name) => familyOf(name)))].toSorted(),
       ).toStrictEqual(["branch", "chain", "negative", "snake"]);
@@ -637,18 +660,27 @@ describe(MeanderTopologyService, () => {
             .map(({ name }) => name),
         ).toStrictEqual([]);
 
-        // 🎯 Ink crosses in exactly the three documents that were committed to
-        // make it cross, and nowhere else in 3,353 files. The `interrupted`
-        // renderings of the same three row counts are absent on purpose: the
-        // break takes the junction out of the ink graph.
+        // 🎯 Ink crosses in exactly the seven documents that were committed
+        // to make it cross, and nowhere else in 3,481 files. The
+        // `interrupted` renderings of the same seven row counts are absent on
+        // purpose: the break takes the junction out of the ink graph.
+        //
+        // Twelve junctions per document at every one of the seven row counts,
+        // 6 through 12 — the count is a property of the repeat count rather
+        // than of `rows`, which is what the four row counts added with the
+        // widened sweep confirm rather than merely illustrate.
         expect(
           measured
             .filter((topology) => topology.inkXJunctions > 0)
             .map(({ inkXJunctions, name }) => `${name} ${inkXJunctions}`),
         ).toStrictEqual([
+          "cross/10-rows/plain-6-repeats.svg 12",
+          "cross/11-rows/plain-6-repeats.svg 12",
+          "cross/12-rows/plain-6-repeats.svg 12",
           "cross/6-rows/plain-6-repeats.svg 12",
           "cross/7-rows/plain-6-repeats.svg 12",
           "cross/8-rows/plain-6-repeats.svg 12",
+          "cross/9-rows/plain-6-repeats.svg 12",
         ]);
       },
       CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,

@@ -64,11 +64,17 @@ single drawing lands beside its siblings rather than loose at the top:
 nx run meanderaw:start --args="--type chain --rows 7 --modifier edge-flip"
 ```
 
-The SVGs are committed; `output/index.html` is not. It links each drawing rather than
-inlining it, so it duplicates nothing — it is left out of git because it is a megabyte of
-generated markup, and regenerating it takes under a second. It sits at the root of the
-tree it indexes rather than beside it, so every link it writes is a path down from its
-own directory and the two move together.
+The SVGs are committed, and so is `output/index.html`. It lays the families out in the
+order `SUPPORTED_TYPES` declares them — a reading order rather than an alphabetical one,
+running from the single-line motifs through the four that break a negotiable invariant
+and ending at `mosaic`, whose enumerated tiles outnumber every other family together. It
+links each drawing rather than inlining it, so it duplicates nothing, and it sits at the
+root of the tree it indexes rather than beside it — every link it writes is a path down
+from its own directory, and the two move together. Committed, it opens straight from a
+checkout with nothing run first, and a regeneration that changes the drawings shows the
+index changing with them. `.gitattributes` marks the whole of `output/` as generated, so
+neither the drawings nor the index page counts toward this repository's language bar, and
+`.codometerignore`, `.prettierignore`, and `cspell` all leave the directory alone.
 
 ## 🏛️ Meander Charter
 
@@ -93,9 +99,12 @@ breaks none of them, and that is the point of it.
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
-against the corpus as it now stands, 174 named patterns beside the same 3,179 tiles:
+against the corpus as it now stands, 302 named patterns beside the same 3,179 tiles. The
+named half was 174 until the sweep's row range was raised to `MAXIMUM_VALUE`, so most of
+these counts have moved once for that reason alone — see the note under "Meander Charter"
+above:
 
-- **Every interior white channel is exactly one stroke width**, in all 3,353 files. The
+- **Every interior white channel is exactly one stroke width**, in all 3,481 files. The
   channel width equals the stroke width equals half a grid unit, and that single number
   is the same in every document the project has ever written — the stroke is `unit / 2`
   at every row count, in every family, at every ply of `parallel`. #340 and #413 both
@@ -103,29 +112,30 @@ against the corpus as it now stands, 174 named patterns beside the same 3,179 ti
   that inference is wrong and is discarded, for the reasons under "The Parallel Family"
   below.
 - **Ink never crosses itself, except where a family was added to make it.** Zero
-  X-junctions across all 3,293 files the six original families produce — a stronger
+  X-junctions across all 3,377 files the six original families produce — a stronger
   statement than "non-self-intersecting", and the sharpest single characterization of what
   those six have in common. The `cross` family relaxes it deliberately: 12 X-junctions in
-  each of the three solid documents it commits, and none anywhere else in the 3,353-file
-  corpus. See "The Crossing Family" below.
-- **Ink branches in three places, and only there.** 1,360 T-junctions across 59 of the 174
-  named patterns. 200 of them, across 20 patterns, are `chain` and `snake` under `edge`
+  each of the seven solid documents it commits, and none anywhere else in the 3,481-file
+  corpus. Twelve at every one of its row counts, 6 through 12, so the count is a property
+  of the repeat count rather than of `rows`. See "The Crossing Family" below.
+- **Ink branches in three places, and only there.** 2,876 T-junctions across 99 of the 302
+  named patterns. 360 of them, across 36 patterns, are `chain` and `snake` under `edge`
   and `edge-flip`, ten per document at every row count: the `edge` family widens the
   repeat unit past the zigzag it contains, so the zigzag's terminating vertical lands in
   the _interior_ of the band border rather than at its end, and the border runs on either
   side of it — five such junctions along the top border, five along the bottom. An earlier
   reading of this measurement reported zero everywhere; the reference assets are
   hand-verified ground truth for what these patterns should look like, so the geometry is
-  right and the count was wrong. The other 1,160 are the point of two families rather than
-  a side effect of anything: 852 across the `negative` family's 18 documents and 308
-  across the `branch` family's 21 — see "The Negative Space Family" and "The Branching
+  right and the count was wrong. The other 2,516 are the point of two families rather than
+  a side effect of anything: 1,900 across the `negative` family's 30 documents and 616
+  across the `branch` family's 33 — see "The Negative Space Family" and "The Branching
   Family" below.
 - **Ink was a forest everywhere until it was a tree in one place.** Read as a graph, a
-  document's ink is lattice points joined by one-pitch steps. All 3,317 documents that
-  predate `branch` are one of two things and neither is a tree: 3,286 are forests of many
-  components — a disjoint union of simple arcs — and 31 carry loops, being `negative`'s
-  18, `cross`'s 3 solid drawings, and 10 `snake` drawings under `edge`/`edge-flip`.
-  `branch`'s 21 are the only trees in the corpus: one connected piece, `edges = nodes − 1`,
+  document's ink is lattice points joined by one-pitch steps. All 3,421 documents that
+  predate `branch` are one of two things and neither is a tree: 3,366 are forests of many
+  components — a disjoint union of simple arcs — and 55 carry loops, being `negative`'s
+  30, `cross`'s 7 solid drawings, and 18 `snake` drawings under `edge`/`edge-flip`.
+  `branch`'s 33 are the only trees in the corpus: one connected piece, `edges = nodes − 1`,
   no loop anywhere. See "The Branching Family" below.
 - **The negative space branches and crosses freely.** It branches in every family, and in
   `mosaic split` and `mosaic alternated period-3` it genuinely crosses. Crossing patterns
@@ -141,6 +151,26 @@ ornament is excluded for that reason, not because it is uninteresting.
 Wider-than-one-stroke gaps occur only where a band terminates, which is
 [#338](https://github.com/JimmyPaolini/codebase/issues/338) and is not a family
 property.
+
+**The named half of the sweep runs to `MAXIMUM_VALUE`**, so every drawing the command line
+can be asked for is also a drawing this repository commits and the charter gates: 302
+combinations, each family from its own structural minimum through 12 rows.
+
+It stopped at 8 until [#507](https://github.com/JimmyPaolini/codebase/issues/507), and that
+issue lived in the four row counts between — `chain` and `snake` drew self-retracing ink at
+9 through 12 rows, reachable from the command line by anybody and covered by nothing,
+because the corpus stopped at 8 and the charter swept the corpus. Raising the sweep's range
+to the command line's own closed the gap for both at once, which is why neither has a
+maximum of its own any more. Most of the counts below moved by that change and nothing else.
+
+**The `mosaic` permutation half kept its cap of 8**, at 3,179 tiles. It enumerates its space
+exhaustively rather than sampling it, and the count grows about 3.4× per row — 23, 68, 199,
+660 and 2,229 at rows 4 through 8, then 7,977, 29,002, 108,089 and 406,934 — so following
+the named half would mean committing 552,002 more files. The row counts that leaves
+uncovered are not a charter blind spot, which is the one thing that would make the cap a
+liability: those tiles were never in the property sweep at all, being reachable only through
+a motif service and gated from disk instead, while `mosaic` as a named family with its
+modifiers sits in the half that does reach 12.
 
 ## 🧬 Families, Sub-families, and Tiles
 
@@ -302,7 +332,8 @@ exists at all.
 
 Every one of the 3,179 tiles still has zero ink T-junctions, zero ink X-junctions, and
 full channel-width compliance — unchanged from what the base branch's own disk-based gate
-already reports for the whole 3,293-file corpus. This survey adds the negative-space
+already reports for the whole corpus of the six original families, now 3,377 files. This
+survey adds the negative-space
 breakdown; it does not revisit the ink side.
 
 ### Is the negative itself space-filling?
@@ -665,7 +696,7 @@ is not the cost the ticket anticipated: the gap is the same width as every other
 in the band, so nothing about its size says "under" — and breaking the bar adjacent to the
 junction takes the crossing out of the ink graph altogether.
 
-Measured across the six committed documents, at 6 repeats and every swept row count:
+Measured across the fourteen committed documents, at 6 repeats and every swept row count:
 
 | Mode | Ink X-junctions | Ink T-junctions | Space-filling | Negative T-junctions | Negative X-junctions |
 | --- | --- | --- | --- | --- | --- |
@@ -674,7 +705,8 @@ Measured across the six committed documents, at 6 repeats and every swept row co
 
 The first three columns are asserted — by this family's own unit tests, by the charter
 property test, and by the disk-based gate over every committed document. **The last two
-are not.** They are a reading of the six committed files and nothing fails if they change:
+are not.** They are a reading of the fourteen committed files and nothing fails if they
+change:
 invariants 3 and 4 constrain ink, and no family is failed for what its white space does.
 
 ### What it holds and what it relaxes
@@ -747,10 +779,11 @@ at the negative's own row count would leave the canvas's bottom lattice row with
 it — invariant 2 broken for a bookkeeping reason rather than a drawn one. It is also why
 the family's structural minimum is 3 where `MOSAIC_TILE_MINIMUM_ROWS` is 4.
 
-One consequence of the offset: the sweep draws `negative` at 3 through 8 rows, so its
-8-row drawings invert a 9-row source — one row past what the survey enumerated. Those
-three drawings have no committed source to be compared against, and are gated by the
-charter sweep like every other drawing instead.
+One consequence of the offset: the sweep draws `negative` at 3 through 12 rows, so
+everything from its 8-row drawings up inverts a source of 9 rows or more — past what the
+survey enumerated, and past where the `mosaic` permutation half stops committing tiles.
+Those fifteen drawings have no committed source to be compared against, and are gated by
+the charter sweep like every other drawing instead.
 
 ### What it holds and what it relaxes
 
@@ -763,28 +796,34 @@ charter sweep like every other drawing instead.
 | 5 — band, not field | Yes | the canvas height is the shared geometry's, identical to a `mosaic` of the same rows; only width grows with `repeatCount` |
 
 **Whether the output stays space-filling was measured, not assumed, and it does.** Every
-lattice point of every one of the 18 committed drawings carries ink — including the band's
+lattice point of every one of the 30 committed drawings carries ink — including the band's
 first and last lattice column, which invariant 7 would have excused. The family needs no
-termination carve-out at all, where 2,120 of the 3,353 committed documents do have a
+termination carve-out at all, where 2,176 of the 3,481 committed documents do have a
 gap there. The reason is the survey's own finding that no cell of any of the 3,179
 permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
 lattice point with at least one arm of ink.
 
 The branching is the point, so it is counted rather than merely permitted. Ink T-junctions
-per document, at 3 through 8 rows:
+per document, at 3 through 12 rows:
 
-| Mode | 3 | 4 | 5 | 6 | 7 | 8 |
-| --- | --- | --- | --- | --- | --- | --- |
-| `stair` | 38 | 48 | 58 | 68 | 78 | 88 |
-| `brick` | 30 | 40 | 50 | 60 | 70 | 80 |
-| `ruled` | 16 | 16 | 24 | 24 | 32 | 32 |
+| Mode | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `stair` | 38 | 48 | 58 | 68 | 78 | 88 | 98 | 108 | 118 | 128 |
+| `brick` | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100 | 110 | 120 |
+| `ruled` | 16 | 16 | 24 | 24 | 32 | 32 | 40 | 40 | 48 | 48 |
 
-Each of the fifteen numbers with a surveyed source is asserted, in
-`meander-topology.service.integration.test.ts`, to equal the negative T-junction count of
+Ten per row for `stair` and `brick`, eight every second row for `ruled`, all the way out —
+1,900 T-junctions over the thirty documents.
+
+Fifteen of those thirty numbers have a surveyed source: the ones at 3 through 7 rows, whose
+`mosaic` sources are among the committed permutation tiles. Each of the fifteen is asserted,
+in `meander-topology.service.integration.test.ts`, to equal the negative T-junction count of
 the committed `output/mosaic/<rows>-rows/permutations/` document it inverts — read off disk, from a file that
 existed before this family did. That assertion is what makes "the candidates come from the
 shortlist" a fact rather than a claim: if a drawing stopped being that document's
-complement, it would fail.
+complement, it would fail. The other fifteen invert a source past the permutation half's
+own cap, so there is no committed file to compare them with; the charter sweep gates them
+like anything else.
 
 Its own negative space, reported and not gated: zero T-junctions and zero X-junctions in
 every mode at every row count. Inverting a negative twice gets nowhere interesting, which
@@ -806,12 +845,12 @@ themselves, over a single connected piece — which is the definition of a tree,
 forks everywhere and closes a loop nowhere.
 
 That is the first tree this repository has drawn, and the claim is a count rather than a
-description. Read as a graph, all 3,317 documents that predate this family fall into two
-groups: **3,286 are forests** of many components — a family's ink is a disjoint union of
+description. Read as a graph, all 3,421 documents that predate this family fall into two
+groups: **3,366 are forests** of many components — a family's ink is a disjoint union of
 simple arcs, so `edges = nodes − components` with the component count in the dozens — and
-**31 carry loops**: `negative`'s eighteen, `cross`'s three solid drawings, and the ten
+**55 carry loops**: `negative`'s thirty, `cross`'s seven solid drawings, and the eighteen
 `snake` drawings whose `edge` pitch closes a loop against the band border. Not one is a
-tree. All 21 of `branch`'s are, and
+tree. All 33 of `branch`'s are, and
 `meander-topology.service.integration.test.ts` reads every committed document off disk and
 asserts both halves of that.
 
@@ -880,8 +919,8 @@ space survey above, so the difference is worth stating rather than assuming. It 
 loops.
 
 `negative` inks a whole corridor graph, and a corridor graph closes a loop through each of
-its own repeats: its eighteen committed drawings carry 10 to 45 cycles each, on one to
-five components. `branch` inks a loop-free spanning subgraph of a lattice: 0 cycles, on
+its own repeats: its thirty committed drawings carry 10 to 65 cycles each, on one to
+seven components. `branch` inks a loop-free spanning subgraph of a lattice: 0 cycles, on
 one component, always. Both ends of that range are asserted in
 `meander-topology.service.integration.test.ts`, from the same loop that counts the trees —
 the numbers were published in three places and computed in none until they were.
@@ -966,7 +1005,7 @@ property falls out of that rather than being checked for afterwards. Take any la
 of a unit: if it is at or above its own column's turn row it sits on that column's arm, and
 if it is below, it is that far in from the unit's edge, so the crossbar of the strand whose
 turn row it is reaches it. So every lattice point of the band carries ink — including the
-first and last lattice column, which `channelWidthCompliant` exempts and which 2,120
+first and last lattice column, which `channelWidthCompliant` exempts and which 2,176
 documents in the corpus do leave a gap at. The brackets of a unit are pairwise disjoint and
 no unit draws a run outside its own columns, so every lattice point carries one arm of ink
 or two: never three, never four.
@@ -982,11 +1021,12 @@ omission.
 lattice point count rather than as a boolean — which is the stronger reading, since it
 counts the first and last lattice column that `channelWidthCompliant` exempts — beside the
 component count (`strands` per repeat unit), the free-end count (two per strand), and the
-cycle count (zero). The charter sweep then measures the same fifteen drawings again through
+cycle count (zero). The charter sweep then measures the same twenty-seven drawings again
+through
 `MeanderGenerationService.generate`, against that declaration, in both directions: an
 invariant a family does not relax must hold, and one it does relax must actually break. So
 the empty row is a claim that can fail, and declaring a relaxation this family does not have
-fails exactly its own fifteen cases and nothing else.
+fails exactly its own twenty-seven cases and nothing else.
 
 ### Nothing gets thinner
 
@@ -1001,26 +1041,29 @@ re-derived:
 - Squeezing them is **redundant**. A uniform lattice at `unit / (2N)` is the lattice
   `--rows rows × N` already produces, so the thinner drawing is a row count under another
   name rather than a new pattern.
-- Squeezing them is **unreachable** for a quarter of the space. Drawing at `unit / (2N)`
-  is drawing at `rows × N` rows, so at this family's own ply of two every pattern is
-  asked for at twice its row count. The space is the **32** family/rows pairs the sweep
-  covers across the six original families — `boxes` and `mosaic` at 3 through 8 rows,
-  `chain`, `snake`, `swirl` and `whirl` at 4 through 8, so 12 + 20 = 32. **8 of those 32
-  cannot be drawn**: `chain` and `snake` share one zigzag sequence, and above eight
-  effective rows it doubles back on itself, laying a second run of ink over one already
-  drawn. Their swept rows 4 through 8 double to 8, 10, 12, 14 and 16, so only rows 4
-  survives — four failures each, eight in total. That defect is
-  [#507](https://github.com/JimmyPaolini/codebase/issues/507) and predates this family.
+- Squeezing them is **unreachable** for most of the space. Drawing at `unit / (2N)` is
+  drawing at `rows × N` rows, so at this family's own ply of two every pattern is asked
+  for at twice its row count. The space is the **56** family/rows pairs the sweep covers
+  across the six original families — `boxes` and `mosaic` at 3 through 12 rows, `chain`,
+  `snake`, `swirl` and `whirl` at 4 through 12, so 20 + 36 = 56. **36 of those 56 cannot
+  be drawn**: their doubled row count runs past the shared `MAXIMUM_VALUE` of 12, which is
+  every pair from 7 rows up in all six families.
 
-  **The count is 8, and the reason is degeneracy rather than a row-count ceiling** — the
-  two are easy to conflate and this passage once did. Asking instead which doubled row
-  counts simply exceed the shared maximum of 12 excludes a _different_ set of **12**
-  pairs, the ones at 7 and 8 rows in every family. That is the weaker criterion and it is
-  not what rules the proposal out: four of the eight that actually fail sit **inside** the
-  maximum, at 10 and 12 effective rows, so a bound on the row count alone would have waved
-  them through. `start-combinations.service.unit.test.ts` pins all three numbers against the
-  real enumeration, and `meander-generation.service.unit.test.ts` measures the retracing
-  itself off rendered path data rather than restating the row count.
+  **The space and the count have been 32-and-8, then 32-and-12, and are now 56-and-36, and
+  the history is worth keeping**, because the two criteria are easy to conflate and this
+  passage once did. The stricter one was degeneracy: `chain` and `snake` share one zigzag
+  sequence, and it used to double back on itself above eight effective rows, laying a
+  second run of ink over one already drawn. Under the old 32-pair space, eight pairs
+  doubled into that range and four of the eight sat **inside** the row-count maximum — so
+  degeneracy ruled the proposal out where the ceiling alone would not have. That defect
+  was [#507](https://github.com/JimmyPaolini/codebase/issues/507), and it is **fixed**:
+  the zigzag turns at every step at every row count the command line accepts.
+  `meander-generation.service.unit.test.ts` measures that off rendered path data, across
+  every family rather than the six this passage counts, so the claim fails rather than
+  goes stale. What is left is the ceiling on its own — and fixing #507 also took the sweep
+  out to 12 rows, which is why the space is 56 rather than 32.
+  `draw-combinations.service.unit.test.ts` pins both 56 and 36 against the real
+  enumeration.
 
 What makes strands read as a bundle here is not their thickness but the fact that they
 **turn together**. That is a property of the drawing, not of the stroke, and it costs the
@@ -1395,11 +1438,12 @@ graph LR
 ```mermaid
 flowchart LR
   BoxesMotifModule
+  BranchMotifModule
   ChainMotifModule
   ConfigModule([ConfigModule])
   CrossMotifModule
   DiscoveryModule
-  GenerateModule
+  DrawModule
   GridGeometryModule
   LoggerModule([LoggerModule])
   MainModule
@@ -1407,27 +1451,31 @@ flowchart LR
   MeanderTopologyModule
   MosaicMotifModule
   MotifTransformsModule
+  NegativeMotifModule
+  ParallelMotifModule
   SnakeMotifModule
-  StartModule
   SvgRenderingModule
   SwirlMotifModule
   WhirlMotifModule
   BoxesMotifModule --> GridGeometryModule
   BoxesMotifModule --> MotifTransformsModule
+  BranchMotifModule --> GridGeometryModule
   ChainMotifModule --> GridGeometryModule
   ChainMotifModule --> MotifTransformsModule
   ChainMotifModule --> SnakeMotifModule
   CrossMotifModule --> GridGeometryModule
-  GenerateModule --> MeanderGenerationModule
+  DrawModule --> MeanderGenerationModule
   MainModule --> DiscoveryModule
-  MainModule --> GenerateModule
+  MainModule --> DrawModule
   MainModule --> MeanderTopologyModule
-  MainModule --> StartModule
   MeanderGenerationModule --> BoxesMotifModule
+  MeanderGenerationModule --> BranchMotifModule
   MeanderGenerationModule --> ChainMotifModule
   MeanderGenerationModule --> CrossMotifModule
   MeanderGenerationModule --> GridGeometryModule
   MeanderGenerationModule --> MosaicMotifModule
+  MeanderGenerationModule --> NegativeMotifModule
+  MeanderGenerationModule --> ParallelMotifModule
   MeanderGenerationModule --> SnakeMotifModule
   MeanderGenerationModule --> SvgRenderingModule
   MeanderGenerationModule --> SwirlMotifModule
@@ -1435,9 +1483,10 @@ flowchart LR
   MosaicMotifModule --> GridGeometryModule
   MosaicMotifModule --> MotifTransformsModule
   MosaicMotifModule --> SvgRenderingModule
+  NegativeMotifModule --> GridGeometryModule
+  ParallelMotifModule --> GridGeometryModule
   SnakeMotifModule --> GridGeometryModule
   SnakeMotifModule --> MotifTransformsModule
-  StartModule --> MeanderGenerationModule
   SwirlMotifModule --> GridGeometryModule
   SwirlMotifModule --> MotifTransformsModule
   WhirlMotifModule --> GridGeometryModule
@@ -1464,6 +1513,11 @@ graph LR
   file_src_modules_boxes_motif_boxes_motif_service_ts["src/modules/boxes-motif/boxes-motif.service.ts"]
   file_src_modules_boxes_motif_boxes_motif_service_unit_test_ts["src/modules/boxes-motif/boxes-motif.service.unit.test.ts"]
   file_src_modules_boxes_motif_boxes_motif_types_ts["src/modules/boxes-motif/boxes-motif.types.ts"]
+  file_src_modules_branch_motif_branch_motif_constants_ts["src/modules/branch-motif/branch-motif.constants.ts"]
+  file_src_modules_branch_motif_branch_motif_module_ts["src/modules/branch-motif/branch-motif.module.ts"]
+  file_src_modules_branch_motif_branch_motif_service_ts["src/modules/branch-motif/branch-motif.service.ts"]
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts["src/modules/branch-motif/branch-motif.service.unit.test.ts"]
+  file_src_modules_branch_motif_branch_motif_types_ts["src/modules/branch-motif/branch-motif.types.ts"]
   file_src_modules_chain_motif_chain_motif_constants_ts["src/modules/chain-motif/chain-motif.constants.ts"]
   file_src_modules_chain_motif_chain_motif_module_ts["src/modules/chain-motif/chain-motif.module.ts"]
   file_src_modules_chain_motif_chain_motif_service_ts["src/modules/chain-motif/chain-motif.service.ts"]
@@ -1474,11 +1528,19 @@ graph LR
   file_src_modules_cross_motif_cross_motif_service_ts["src/modules/cross-motif/cross-motif.service.ts"]
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts["src/modules/cross-motif/cross-motif.service.unit.test.ts"]
   file_src_modules_cross_motif_cross_motif_types_ts["src/modules/cross-motif/cross-motif.types.ts"]
-  file_src_modules_generate_generate_command_ts["src/modules/generate/generate.command.ts"]
-  file_src_modules_generate_generate_command_unit_test_ts["src/modules/generate/generate.command.unit.test.ts"]
-  file_src_modules_generate_generate_constants_ts["src/modules/generate/generate.constants.ts"]
-  file_src_modules_generate_generate_module_ts["src/modules/generate/generate.module.ts"]
-  file_src_modules_generate_generate_types_ts["src/modules/generate/generate.types.ts"]
+  file_src_modules_draw_draw_combinations_service_ts["src/modules/draw/draw-combinations.service.ts"]
+  file_src_modules_draw_draw_combinations_service_unit_test_ts["src/modules/draw/draw-combinations.service.unit.test.ts"]
+  file_src_modules_draw_draw_index_service_ts["src/modules/draw/draw-index.service.ts"]
+  file_src_modules_draw_draw_index_service_unit_test_ts["src/modules/draw/draw-index.service.unit.test.ts"]
+  file_src_modules_draw_draw_parameters_service_ts["src/modules/draw/draw-parameters.service.ts"]
+  file_src_modules_draw_draw_parameters_service_unit_test_ts["src/modules/draw/draw-parameters.service.unit.test.ts"]
+  file_src_modules_draw_draw_permutations_service_ts["src/modules/draw/draw-permutations.service.ts"]
+  file_src_modules_draw_draw_permutations_service_unit_test_ts["src/modules/draw/draw-permutations.service.unit.test.ts"]
+  file_src_modules_draw_draw_command_ts["src/modules/draw/draw.command.ts"]
+  file_src_modules_draw_draw_command_unit_test_ts["src/modules/draw/draw.command.unit.test.ts"]
+  file_src_modules_draw_draw_constants_ts["src/modules/draw/draw.constants.ts"]
+  file_src_modules_draw_draw_module_ts["src/modules/draw/draw.module.ts"]
+  file_src_modules_draw_draw_types_ts["src/modules/draw/draw.types.ts"]
   file_src_modules_grid_geometry_grid_geometry_constants_ts["src/modules/grid-geometry/grid-geometry.constants.ts"]
   file_src_modules_grid_geometry_grid_geometry_module_ts["src/modules/grid-geometry/grid-geometry.module.ts"]
   file_src_modules_grid_geometry_grid_geometry_service_ts["src/modules/grid-geometry/grid-geometry.service.ts"]
@@ -1490,6 +1552,8 @@ graph LR
   file_src_modules_meander_generation_meander_generation_service_ts["src/modules/meander-generation/meander-generation.service.ts"]
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts["src/modules/meander-generation/meander-generation.service.unit.test.ts"]
   file_src_modules_meander_generation_meander_generation_types_ts["src/modules/meander-generation/meander-generation.types.ts"]
+  file_src_modules_meander_generation_motif_registry_service_ts["src/modules/meander-generation/motif-registry.service.ts"]
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts["src/modules/meander-generation/motif-registry.service.unit.test.ts"]
   file_src_modules_meander_topology_meander_lattice_service_ts["src/modules/meander-topology/meander-lattice.service.ts"]
   file_src_modules_meander_topology_meander_lattice_service_unit_test_ts["src/modules/meander-topology/meander-lattice.service.unit.test.ts"]
   file_src_modules_meander_topology_meander_topology_constants_ts["src/modules/meander-topology/meander-topology.constants.ts"]
@@ -1518,6 +1582,18 @@ graph LR
   file_src_modules_motif_transforms_motif_transforms_service_ts["src/modules/motif-transforms/motif-transforms.service.ts"]
   file_src_modules_motif_transforms_motif_transforms_service_unit_test_ts["src/modules/motif-transforms/motif-transforms.service.unit.test.ts"]
   file_src_modules_motif_transforms_motif_transforms_types_ts["src/modules/motif-transforms/motif-transforms.types.ts"]
+  file_src_modules_negative_motif_negative_motif_constants_ts["src/modules/negative-motif/negative-motif.constants.ts"]
+  file_src_modules_negative_motif_negative_motif_module_ts["src/modules/negative-motif/negative-motif.module.ts"]
+  file_src_modules_negative_motif_negative_motif_service_ts["src/modules/negative-motif/negative-motif.service.ts"]
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts["src/modules/negative-motif/negative-motif.service.unit.test.ts"]
+  file_src_modules_negative_motif_negative_motif_types_ts["src/modules/negative-motif/negative-motif.types.ts"]
+  file_src_modules_negative_motif_negative_source_service_ts["src/modules/negative-motif/negative-source.service.ts"]
+  file_src_modules_negative_motif_negative_source_service_unit_test_ts["src/modules/negative-motif/negative-source.service.unit.test.ts"]
+  file_src_modules_parallel_motif_parallel_motif_constants_ts["src/modules/parallel-motif/parallel-motif.constants.ts"]
+  file_src_modules_parallel_motif_parallel_motif_module_ts["src/modules/parallel-motif/parallel-motif.module.ts"]
+  file_src_modules_parallel_motif_parallel_motif_service_ts["src/modules/parallel-motif/parallel-motif.service.ts"]
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts["src/modules/parallel-motif/parallel-motif.service.unit.test.ts"]
+  file_src_modules_parallel_motif_parallel_motif_types_ts["src/modules/parallel-motif/parallel-motif.types.ts"]
   file_src_modules_snake_motif_snake_motif_constants_ts["src/modules/snake-motif/snake-motif.constants.ts"]
   file_src_modules_snake_motif_snake_motif_module_ts["src/modules/snake-motif/snake-motif.module.ts"]
   file_src_modules_snake_motif_snake_motif_service_ts["src/modules/snake-motif/snake-motif.service.ts"]
@@ -1525,19 +1601,8 @@ graph LR
   file_src_modules_snake_motif_snake_motif_types_ts["src/modules/snake-motif/snake-motif.types.ts"]
   file_src_modules_snake_motif_snake_sequence_service_ts["src/modules/snake-motif/snake-sequence.service.ts"]
   file_src_modules_snake_motif_snake_sequence_service_unit_test_ts["src/modules/snake-motif/snake-sequence.service.unit.test.ts"]
-  file_src_modules_start_start_combinations_service_ts["src/modules/start/start-combinations.service.ts"]
-  file_src_modules_start_start_combinations_service_unit_test_ts["src/modules/start/start-combinations.service.unit.test.ts"]
-  file_src_modules_start_start_contact_sheet_service_ts["src/modules/start/start-contact-sheet.service.ts"]
-  file_src_modules_start_start_contact_sheet_service_unit_test_ts["src/modules/start/start-contact-sheet.service.unit.test.ts"]
-  file_src_modules_start_start_permutations_service_ts["src/modules/start/start-permutations.service.ts"]
-  file_src_modules_start_start_permutations_service_unit_test_ts["src/modules/start/start-permutations.service.unit.test.ts"]
-  file_src_modules_start_start_command_ts["src/modules/start/start.command.ts"]
-  file_src_modules_start_start_command_unit_test_ts["src/modules/start/start.command.unit.test.ts"]
-  file_src_modules_start_start_constants_ts["src/modules/start/start.constants.ts"]
-  file_src_modules_start_start_module_ts["src/modules/start/start.module.ts"]
-  file_src_modules_start_start_types_ts["src/modules/start/start.types.ts"]
-  file_src_modules_svg_rendering_output_filename_service_ts["src/modules/svg-rendering/output-filename.service.ts"]
-  file_src_modules_svg_rendering_output_filename_service_unit_test_ts["src/modules/svg-rendering/output-filename.service.unit.test.ts"]
+  file_src_modules_svg_rendering_output_path_service_ts["src/modules/svg-rendering/output-path.service.ts"]
+  file_src_modules_svg_rendering_output_path_service_unit_test_ts["src/modules/svg-rendering/output-path.service.unit.test.ts"]
   file_src_modules_svg_rendering_svg_rendering_constants_ts["src/modules/svg-rendering/svg-rendering.constants.ts"]
   file_src_modules_svg_rendering_svg_rendering_module_ts["src/modules/svg-rendering/svg-rendering.module.ts"]
   file_src_modules_svg_rendering_svg_rendering_service_ts["src/modules/svg-rendering/svg-rendering.service.ts"]
@@ -1560,9 +1625,8 @@ graph LR
   file_vitest_config_ts["vitest.config.ts"]
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_constants_ts
-  file_src_main_module_ts --> file_src_modules_generate_generate_module_ts
+  file_src_main_module_ts --> file_src_modules_draw_draw_module_ts
   file_src_main_module_ts --> file_src_modules_meander_topology_meander_topology_module_ts
-  file_src_main_module_ts --> file_src_modules_start_start_module_ts
   file_src_main_ts --> file_src_main_module_ts
   file_src_main_unit_test_ts --> file_src_main_module_ts
   file_src_modules_boxes_motif_boxes_motif_module_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
@@ -1579,6 +1643,40 @@ graph LR
   file_src_modules_boxes_motif_boxes_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_boxes_motif_boxes_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
   file_src_modules_boxes_motif_boxes_motif_service_unit_test_ts --> file_testing_path_data_ts
+  file_src_modules_branch_motif_branch_motif_constants_ts --> file_src_modules_branch_motif_branch_motif_types_ts
+  file_src_modules_branch_motif_branch_motif_module_ts --> file_src_modules_branch_motif_branch_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
+  file_src_modules_branch_motif_branch_motif_service_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
+  file_src_modules_branch_motif_branch_motif_service_ts --> file_src_modules_branch_motif_branch_motif_types_ts
+  file_src_modules_branch_motif_branch_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_branch_motif_branch_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
+  file_src_modules_branch_motif_branch_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_constants_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_lattice_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
+  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
   file_src_modules_chain_motif_chain_motif_module_ts --> file_src_modules_chain_motif_chain_motif_service_ts
   file_src_modules_chain_motif_chain_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
   file_src_modules_chain_motif_chain_motif_module_ts --> file_src_modules_motif_transforms_motif_transforms_module_ts
@@ -1605,12 +1703,14 @@ graph LR
   file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
   file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_constants_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_lattice_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
@@ -1618,69 +1718,135 @@ graph LR
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
   file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
-  file_src_modules_generate_generate_command_ts --> file_src_modules_generate_generate_types_ts
-  file_src_modules_generate_generate_command_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_generate_generate_command_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_generate_generate_command_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_generate_generate_command_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
-  file_src_modules_generate_generate_command_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
-  file_src_modules_generate_generate_command_ts --> file_src_modules_svg_rendering_output_filename_service_ts
-  file_src_modules_generate_generate_command_unit_test_ts --> file_src_modules_generate_generate_command_ts
-  file_src_modules_generate_generate_command_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_generate_generate_command_unit_test_ts --> file_src_modules_svg_rendering_output_filename_service_ts
-  file_src_modules_generate_generate_module_ts --> file_src_modules_generate_generate_command_ts
-  file_src_modules_generate_generate_module_ts --> file_src_modules_meander_generation_meander_generation_module_ts
-  file_src_modules_generate_generate_types_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_generate_generate_types_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
+  file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_draw_draw_constants_ts
+  file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_draw_draw_combinations_service_ts
+  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_draw_draw_constants_ts
+  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_draw_draw_types_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_draw_draw_index_service_ts
+  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_draw_draw_types_ts
+  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_draw_draw_constants_ts
+  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_draw_draw_types_ts
+  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
+  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
+  file_src_modules_draw_draw_parameters_service_unit_test_ts --> file_src_modules_draw_draw_parameters_service_ts
+  file_src_modules_draw_draw_parameters_service_unit_test_ts --> file_src_modules_draw_draw_types_ts
+  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_draw_draw_constants_ts
+  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_draw_draw_types_ts
+  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
+  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
+  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_symmetry_service_ts
+  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
+  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_tiles_service_ts
+  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_svg_rendering_output_path_service_ts
+  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_draw_draw_permutations_service_ts
+  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
+  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_symmetry_service_ts
+  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
+  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
+  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tiles_service_ts
+  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
+  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_combinations_service_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_index_service_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_parameters_service_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_permutations_service_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_constants_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_types_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_meander_generation_meander_generation_service_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_svg_rendering_output_path_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_combinations_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_index_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_parameters_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_permutations_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_command_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_generation_meander_generation_module_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_symmetry_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tiles_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_draw_draw_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_combinations_service_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_index_service_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_parameters_service_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_permutations_service_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_command_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_meander_generation_meander_generation_module_ts
+  file_src_modules_draw_draw_types_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_draw_draw_types_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
   file_src_modules_grid_geometry_grid_geometry_module_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_grid_geometry_grid_geometry_service_ts --> file_src_modules_grid_geometry_grid_geometry_constants_ts
   file_src_modules_grid_geometry_grid_geometry_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
   file_src_modules_grid_geometry_grid_geometry_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_meander_generation_meander_generation_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_generation_meander_generation_constants_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
+  file_src_modules_meander_generation_meander_generation_constants_ts --> file_src_modules_negative_motif_negative_motif_constants_ts
   file_src_modules_meander_generation_meander_generation_constants_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_boxes_motif_boxes_motif_module_ts
+  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_branch_motif_branch_motif_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_chain_motif_chain_motif_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_cross_motif_cross_motif_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_meander_generation_meander_generation_service_ts
+  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_meander_generation_motif_registry_service_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_mosaic_motif_mosaic_motif_module_ts
+  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_negative_motif_negative_motif_module_ts
+  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_parallel_motif_parallel_motif_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_snake_motif_snake_motif_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_svg_rendering_svg_rendering_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_swirl_motif_swirl_motif_module_ts
   file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_whirl_motif_whirl_motif_module_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_cross_motif_cross_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
+  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_meander_generation_motif_registry_service_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_snake_motif_snake_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
+  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
+  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
+  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
+  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
@@ -1689,6 +1855,35 @@ graph LR
   file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_testing_path_data_ts
   file_src_modules_meander_generation_meander_generation_types_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
   file_src_modules_meander_generation_meander_generation_types_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_branch_motif_branch_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_chain_motif_chain_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_cross_motif_cross_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_negative_motif_negative_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_snake_motif_snake_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
+  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
   file_src_modules_meander_topology_meander_lattice_service_ts --> file_src_modules_meander_topology_meander_topology_constants_ts
   file_src_modules_meander_topology_meander_lattice_service_ts --> file_src_modules_meander_topology_meander_topology_types_ts
   file_src_modules_meander_topology_meander_lattice_service_unit_test_ts --> file_src_modules_meander_topology_meander_lattice_service_ts
@@ -1696,21 +1891,28 @@ graph LR
   file_src_modules_meander_topology_meander_topology_module_ts --> file_src_modules_meander_topology_meander_lattice_service_ts
   file_src_modules_meander_topology_meander_topology_module_ts --> file_src_modules_meander_topology_meander_topology_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_draw_draw_combinations_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_topology_meander_lattice_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_topology_meander_topology_types_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_start_start_combinations_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
@@ -1782,6 +1984,80 @@ graph LR
   file_src_modules_motif_transforms_motif_transforms_service_ts --> file_src_modules_motif_transforms_motif_transforms_types_ts
   file_src_modules_motif_transforms_motif_transforms_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
   file_src_modules_motif_transforms_motif_transforms_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_types_ts
+  file_src_modules_negative_motif_negative_motif_constants_ts --> file_src_modules_negative_motif_negative_motif_types_ts
+  file_src_modules_negative_motif_negative_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
+  file_src_modules_negative_motif_negative_motif_module_ts --> file_src_modules_negative_motif_negative_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_module_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
+  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
+  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_negative_motif_negative_motif_types_ts
+  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_constants_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_lattice_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
+  file_src_modules_negative_motif_negative_source_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_negative_motif_negative_source_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
+  file_src_modules_negative_motif_negative_source_service_ts --> file_src_modules_negative_motif_negative_motif_constants_ts
+  file_src_modules_negative_motif_negative_source_service_ts --> file_src_modules_negative_motif_negative_motif_types_ts
+  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_symmetry_service_ts
+  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_constants_ts
+  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_types_ts
+  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_parallel_motif_parallel_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
+  file_src_modules_parallel_motif_parallel_motif_module_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
+  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
+  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_parallel_motif_parallel_motif_types_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_lattice_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
   file_src_modules_snake_motif_snake_motif_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_snake_motif_snake_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
   file_src_modules_snake_motif_snake_motif_module_ts --> file_src_modules_motif_transforms_motif_transforms_module_ts
@@ -1801,62 +2077,13 @@ graph LR
   file_src_modules_snake_motif_snake_sequence_service_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
   file_src_modules_snake_motif_snake_sequence_service_ts --> file_src_modules_motif_transforms_motif_transforms_types_ts
   file_src_modules_snake_motif_snake_sequence_service_ts --> file_src_modules_snake_motif_snake_motif_constants_ts
+  file_src_modules_snake_motif_snake_sequence_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_snake_motif_snake_sequence_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
   file_src_modules_snake_motif_snake_sequence_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_start_start_combinations_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_start_start_combinations_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_start_start_combinations_service_ts --> file_src_modules_start_start_constants_ts
-  file_src_modules_start_start_combinations_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_start_start_combinations_service_unit_test_ts --> file_src_modules_start_start_combinations_service_ts
-  file_src_modules_start_start_contact_sheet_service_ts --> file_src_modules_start_start_types_ts
-  file_src_modules_start_start_contact_sheet_service_unit_test_ts --> file_src_modules_start_start_contact_sheet_service_ts
-  file_src_modules_start_start_contact_sheet_service_unit_test_ts --> file_src_modules_start_start_types_ts
-  file_src_modules_start_start_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
-  file_src_modules_start_start_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
-  file_src_modules_start_start_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_symmetry_service_ts
-  file_src_modules_start_start_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
-  file_src_modules_start_start_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_tiles_service_ts
-  file_src_modules_start_start_permutations_service_ts --> file_src_modules_start_start_contact_sheet_service_ts
-  file_src_modules_start_start_permutations_service_ts --> file_src_modules_start_start_constants_ts
-  file_src_modules_start_start_permutations_service_ts --> file_src_modules_start_start_types_ts
-  file_src_modules_start_start_permutations_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_start_start_permutations_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
-  file_src_modules_start_start_permutations_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_symmetry_service_ts
-  file_src_modules_start_start_permutations_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
-  file_src_modules_start_start_permutations_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
-  file_src_modules_start_start_permutations_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tiles_service_ts
-  file_src_modules_start_start_permutations_service_unit_test_ts --> file_src_modules_start_start_contact_sheet_service_ts
-  file_src_modules_start_start_permutations_service_unit_test_ts --> file_src_modules_start_start_permutations_service_ts
-  file_src_modules_start_start_permutations_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_start_start_command_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_start_start_command_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_start_start_command_ts --> file_src_modules_start_start_combinations_service_ts
-  file_src_modules_start_start_command_ts --> file_src_modules_start_start_permutations_service_ts
-  file_src_modules_start_start_command_ts --> file_src_modules_start_start_types_ts
-  file_src_modules_start_start_command_ts --> file_src_modules_svg_rendering_output_filename_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_meander_generation_meander_generation_module_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_sub_family_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_symmetry_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tiles_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_start_start_combinations_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_start_start_contact_sheet_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_start_start_permutations_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_start_start_command_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_svg_rendering_output_filename_service_ts
-  file_src_modules_start_start_command_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_start_start_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_start_start_module_ts --> file_src_modules_meander_generation_meander_generation_module_ts
-  file_src_modules_start_start_module_ts --> file_src_modules_start_start_combinations_service_ts
-  file_src_modules_start_start_module_ts --> file_src_modules_start_start_contact_sheet_service_ts
-  file_src_modules_start_start_module_ts --> file_src_modules_start_start_permutations_service_ts
-  file_src_modules_start_start_module_ts --> file_src_modules_start_start_command_ts
-  file_src_modules_svg_rendering_output_filename_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_svg_rendering_output_filename_service_unit_test_ts --> file_src_modules_svg_rendering_output_filename_service_ts
-  file_src_modules_svg_rendering_svg_rendering_module_ts --> file_src_modules_svg_rendering_output_filename_service_ts
+  file_src_modules_svg_rendering_output_path_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_svg_rendering_output_path_service_ts --> file_src_modules_svg_rendering_svg_rendering_constants_ts
+  file_src_modules_svg_rendering_output_path_service_unit_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
+  file_src_modules_svg_rendering_svg_rendering_module_ts --> file_src_modules_svg_rendering_output_path_service_ts
   file_src_modules_svg_rendering_svg_rendering_module_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
   file_src_modules_svg_rendering_svg_rendering_service_ts --> file_src_modules_svg_rendering_svg_rendering_constants_ts
   file_src_modules_svg_rendering_svg_rendering_service_ts --> file_src_modules_svg_rendering_svg_rendering_types_ts
@@ -1899,40 +2126,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-12217-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-6.68_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-20-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-106-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16687-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-7.99_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-139-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-122-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-69.88_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-96.89_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-106-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-36-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-122-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-45-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-96-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-255-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-110-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-342-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-29-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-34-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-12-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-51-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-670-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-225-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-820-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-75-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-778-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-463-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-131-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-512-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1534-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-67-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-850-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-305-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-1073-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-82-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-942-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-634-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-173-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-763-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-2533-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -1953,16 +2180,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-151-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-34-7c3aed?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-142-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-32-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-99-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-78-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-92-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-74-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-10-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-9-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-32-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-135-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-128-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
@@ -2043,14 +2270,14 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-15-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-23-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-2-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-14-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-14-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-17-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-29-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-1-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-16-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-16-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-27-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-32-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 
@@ -2080,23 +2307,23 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-302-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-343-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-60-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-66-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-8-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-34-22c55e?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-36-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-2-0284c7?style=flat-square)
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-16-059669?style=flat-square)
+![Links](https://img.shields.io/badge/Links-22-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-14-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-100-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-15-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-128-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

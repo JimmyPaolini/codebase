@@ -30,6 +30,12 @@ ignorePaths:
   - "**/applications/lexico-ingestion/src/modules/literature/literature.constants.ts"
   - "**/applications/lexico-ingestion/src/modules/library/library.constants.ts"
   - "**/documentation/planning/**"
+  # 🌀 Every meander the `draw` command writes. The SVGs are already covered by
+  # the `*.svg` entry above; the index page listing them is markup, and its link
+  # text is three thousand mosaic tile identifiers — `ddddd-dots` and its
+  # siblings — which are coordinates in a parameter space rather than words.
+  # `.codometerignore` and `.prettierignore` exclude the same directory.
+  - "**/applications/meanderaw/output/**"
   # 🧩 Installed agent skills, one entry per skill in skills-lock.json. Owned
   # upstream rather than authored here, so their prose stays spelled the way
   # their sources spelled it. Listed individually rather than as
@@ -109,6 +115,8 @@ dictionaryDefinitions:
     path: .cspell/ics.txt
   - name: lexico
     path: .cspell/lexico.txt
+  - name: linguistics
+    path: .cspell/linguistics.txt
   - name: affirmations
     path: .cspell/affirmations.txt
   - name: ai
@@ -195,6 +203,7 @@ dictionaries:
   - tooling
   - editor
   - meanders
+  - linguistics
 patterns:
   - name: notebook-outputs
     pattern: /"outputs"\s*:\s*\[(?:[^\[\]]*|\[(?:[^\[\]]*|\[(?:[^\[\]]*|\[[^\[\]]*\])*[^\[\]]*\])*[^\[\]]*\])*[^\[\]]*\]/g
@@ -249,6 +258,12 @@ patterns:
   # config files in `overrides` — plain strings in those files stay checked.
   - name: editor-configuration-identifier
     pattern: /"[a-z\d][\w-]*(?:\.[\w-]+)+"/gi
+  # A phonetic transcription written between slashes, whose spelling comes from the
+  # International Phonetic Alphabet rather than from English. At least one character
+  # must be one the IPA uses and English orthography does not, so an ordinary
+  # slash-delimited path is still spell-checked.
+  - name: ipa-transcription
+    pattern: /\/[^\/\s]*[ɪʊəɜɑɔæʌθðʃʒŋɹˈˌː][^\/\s]*\//gu
 # cspell:enable
 ignoreRegExpList:
   - postcss-declaration-property
@@ -262,6 +277,7 @@ ignoreRegExpList:
   - lint-rule-name
   - external-identifier
   - react-intrinsic-element
+  - ipa-transcription
 overrides:
   - filename: "**/*.ipynb"
     ignoreRegExpList:
