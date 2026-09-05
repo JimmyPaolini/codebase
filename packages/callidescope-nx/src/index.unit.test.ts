@@ -9,7 +9,7 @@ import type { CreateNodesContext } from "@nx/devkit";
 
 const pluginService = createMock<PluginService>();
 
-vi.mock("./plugin-context.utilities", () => ({
+vi.mock("./modules/plugin/plugin-context.utilities", () => ({
   resolveOptionsService: vi.fn<() => void>(),
   resolvePluginService: async (): Promise<PluginService> =>
     await Promise.resolve(pluginService),

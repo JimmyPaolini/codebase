@@ -23,7 +23,29 @@ export default defineConfig({
   },
   plugins: [
     tailwindcss(),
-    tanstackStart(),
+    // The client entry and the generated route tree both live under `lib/`
+    // rather than at the `src/` root, which `codebase-structure.json` restricts
+    // to entry-point names — the route tree is a build artifact and the client
+    // entry is framework boilerplate, and neither is this app's own entry
+    // point. `router.tsx` still sits at the root because TanStack resolves that
+    // one with `required: true`.
+    //
+    // The client entry is kept rather than deleted even though TanStack would
+    // supply an identical virtual one: it holds the only static
+    // `react-dom/client` import in the workspace, and without it every
+    // dependency check strips `react-dom` from this project's manifest and from
+    // the catalog, leaving the app to resolve it by hoisting alone.
+    //
+    // Both paths resolve relative to `srcDirectory`, not to the project root —
+    // a leading `src/` here writes to `src/src/`.
+    tanstackStart({
+      client: {
+        entry: "lib/client.tsx",
+      },
+      router: {
+        generatedRouteTree: "lib/routeTree.gen.ts",
+      },
+    }),
     // React plugin must come after TanStack Start plugin
     react(),
   ],

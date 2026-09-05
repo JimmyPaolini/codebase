@@ -328,6 +328,8 @@ graph LR
   file_src_modules_options_options_service_ts["src/modules/options/options.service.ts"]
   file_src_modules_options_options_service_unit_test_ts["src/modules/options/options.service.unit.test.ts"]
   file_src_modules_options_options_types_ts["src/modules/options/options.types.ts"]
+  file_src_modules_plugin_plugin_context_utilities_ts["src/modules/plugin/plugin-context.utilities.ts"]
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts["src/modules/plugin/plugin-context.utilities.unit.test.ts"]
   file_src_modules_plugin_plugin_constants_ts["src/modules/plugin/plugin.constants.ts"]
   file_src_modules_plugin_plugin_module_ts["src/modules/plugin/plugin.module.ts"]
   file_src_modules_plugin_plugin_service_ts["src/modules/plugin/plugin.service.ts"]
@@ -339,8 +341,6 @@ graph LR
   file_src_modules_projects_projects_service_ts["src/modules/projects/projects.service.ts"]
   file_src_modules_projects_projects_service_unit_test_ts["src/modules/projects/projects.service.unit.test.ts"]
   file_src_modules_projects_projects_types_ts["src/modules/projects/projects.types.ts"]
-  file_src_plugin_context_utilities_ts["src/plugin-context.utilities.ts"]
-  file_src_plugin_context_utilities_unit_test_ts["src/plugin-context.utilities.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
@@ -353,14 +353,14 @@ graph LR
   file_src_executors_depth_executor_unit_test_ts --> file_src_executors_depth_executor_ts
   file_src_executors_depth_executor_unit_test_ts --> file_src_modules_address_address_utilities_ts
   file_src_executors_trace_executor_ts --> file_src_executors_trace_executor_types_ts
+  file_src_executors_trace_executor_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_executors_trace_executor_ts --> file_src_modules_plugin_plugin_utilities_ts
-  file_src_executors_trace_executor_ts --> file_src_plugin_context_utilities_ts
   file_src_executors_trace_executor_unit_test_ts --> file_src_executors_trace_executor_ts
   file_src_executors_trace_executor_unit_test_ts --> file_src_modules_options_options_service_ts
   file_src_executors_trace_executor_unit_test_ts --> file_src_modules_plugin_plugin_service_ts
   file_src_executors_trace_executor_unit_test_ts --> file_src_modules_plugin_plugin_types_ts
+  file_src_index_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_index_ts --> file_src_modules_plugin_plugin_constants_ts
-  file_src_index_ts --> file_src_plugin_context_utilities_ts
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_index_unit_test_ts --> file_src_modules_plugin_plugin_service_ts
   file_src_index_unit_test_ts --> file_src_modules_plugin_plugin_types_ts
@@ -370,8 +370,8 @@ graph LR
   file_src_modules_address_address_service_ts --> file_src_modules_address_address_types_ts
   file_src_modules_address_address_service_unit_test_ts --> file_src_modules_address_address_service_ts
   file_src_modules_address_address_utilities_ts --> file_src_executors_address_types_ts
+  file_src_modules_address_address_utilities_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_modules_address_address_utilities_ts --> file_src_modules_plugin_plugin_utilities_ts
-  file_src_modules_address_address_utilities_ts --> file_src_plugin_context_utilities_ts
   file_src_modules_address_address_utilities_unit_test_ts --> file_src_modules_address_address_service_ts
   file_src_modules_address_address_utilities_unit_test_ts --> file_src_modules_address_address_utilities_ts
   file_src_modules_address_address_utilities_unit_test_ts --> file_src_modules_options_options_service_ts
@@ -381,6 +381,18 @@ graph LR
   file_src_modules_options_options_service_ts --> file_src_modules_options_options_constants_ts
   file_src_modules_options_options_service_ts --> file_src_modules_options_options_types_ts
   file_src_modules_options_options_service_unit_test_ts --> file_src_modules_options_options_service_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_main_module_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_address_address_service_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_options_options_service_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_constants_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_service_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_types_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_projects_projects_service_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_address_address_service_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_options_options_service_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_plugin_plugin_context_utilities_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_plugin_plugin_service_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_projects_projects_service_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_options_options_module_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_plugin_plugin_service_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_projects_projects_module_ts
@@ -394,23 +406,11 @@ graph LR
   file_src_modules_plugin_plugin_service_unit_test_ts --> file_src_modules_plugin_plugin_types_ts
   file_src_modules_plugin_plugin_service_unit_test_ts --> file_src_modules_projects_projects_service_ts
   file_src_modules_plugin_plugin_types_ts --> file_src_modules_plugin_plugin_constants_ts
+  file_src_modules_plugin_plugin_utilities_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_modules_plugin_plugin_utilities_ts --> file_src_modules_plugin_plugin_types_ts
-  file_src_modules_plugin_plugin_utilities_ts --> file_src_plugin_context_utilities_ts
   file_src_modules_projects_projects_module_ts --> file_src_modules_projects_projects_service_ts
   file_src_modules_projects_projects_service_ts --> file_src_modules_projects_projects_types_ts
   file_src_modules_projects_projects_service_unit_test_ts --> file_src_modules_projects_projects_service_ts
-  file_src_plugin_context_utilities_ts --> file_src_main_module_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_address_address_service_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_options_options_service_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_constants_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_service_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_types_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_projects_projects_service_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_address_address_service_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_options_options_service_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_plugin_plugin_service_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_projects_projects_service_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_plugin_context_utilities_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 

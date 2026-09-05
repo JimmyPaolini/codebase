@@ -13,7 +13,7 @@ import type { ExecutorContext } from "@nx/devkit";
 const addressService = createMock<AddressService>();
 const pluginService = createMock<PluginService>();
 
-vi.mock("../../plugin-context.utilities", () => ({
+vi.mock("../plugin/plugin-context.utilities", () => ({
   resolveAddressService: async (): Promise<AddressService> =>
     await Promise.resolve(addressService),
   resolveOptionsService: async (): Promise<OptionsService> =>

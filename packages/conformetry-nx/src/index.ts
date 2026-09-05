@@ -1,8 +1,8 @@
 // 📤 Exports
 import path from "node:path";
 
+import { resolvePluginService } from "./modules/plugin/plugin-context.utilities";
 import { PROJECT_CONFIGURATION_GLOB } from "./modules/plugin/plugin.constants";
-import { resolvePluginService } from "./plugin-context.utilities";
 
 import type {
   CreateNodes,
@@ -11,16 +11,20 @@ import type {
   Tree,
 } from "@nx/devkit";
 
-export { bootstrapPlugin, runBootstrapCli } from "./bootstrap.utilities";
 export { MainModule } from "./main.module";
 export { AdapterModule } from "./modules/adapter/adapter.module";
 export { AdapterService } from "./modules/adapter/adapter.service";
+export {
+  bootstrapPlugin,
+  runBootstrapCli,
+} from "./modules/generator/bootstrap.utilities";
 export { InstancesModule } from "./modules/instances/instances.module";
 export { InstancesService } from "./modules/instances/instances.service";
 export type { ProjectScope } from "./modules/instances/instances.types";
 export { OptionsModule } from "./modules/options/options.module";
 export { OptionsService } from "./modules/options/options.service";
 export type { ConformetryPluginOptions } from "./modules/options/options.types";
+export { resolvePluginService } from "./modules/plugin/plugin-context.utilities";
 export { PluginModule } from "./modules/plugin/plugin.module";
 export { PluginService } from "./modules/plugin/plugin.service";
 export { ScopeModule } from "./modules/scope/scope.module";
@@ -32,7 +36,6 @@ export type {
   ConformetryNxProjectInstanceGroup,
   ConformetryNxWorkspaceInstanceGroup,
 } from "./modules/scope/scope.types";
-export { resolvePluginService } from "./plugin-context.utilities";
 
 /**
  * Infers a `conformetry-validate` target onto every project holding instances.

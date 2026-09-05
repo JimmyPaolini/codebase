@@ -507,7 +507,6 @@ graph LR
 graph LR
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
-  file_src_client_tsx["src/client.tsx"]
   file_src_components_entry_adjective_forms_table_tsx["src/components/entry/adjective-forms-table.tsx"]
   file_src_components_entry_entry_card_tsx["src/components/entry/entry-card.tsx"]
   file_src_components_entry_form_cell_tsx["src/components/entry/form-cell.tsx"]
@@ -524,9 +523,11 @@ graph LR
   file_src_components_PronunciationButton_tsx["src/components/PronunciationButton.tsx"]
   file_src_lib_auth_ts["src/lib/auth.ts"]
   file_src_lib_bookmarks_ts["src/lib/bookmarks.ts"]
+  file_src_lib_client_tsx["src/lib/client.tsx"]
   file_src_lib_forms_ts["src/lib/forms.ts"]
   file_src_lib_library_ts["src/lib/library.ts"]
   file_src_lib_pronunciation_ts["src/lib/pronunciation.ts"]
+  file_src_lib_routeTree_gen_ts["src/lib/routeTree.gen.ts"]
   file_src_lib_search_ts["src/lib/search.ts"]
   file_src_lib_types_ts["src/lib/types.ts"]
   file_src_router_tsx["src/router.tsx"]
@@ -539,7 +540,6 @@ graph LR
   file_src_routes_settings_tsx["src/routes/settings.tsx"]
   file_src_routes_tools_tsx["src/routes/tools.tsx"]
   file_src_routes_word__id_tsx["src/routes/word.$id.tsx"]
-  file_src_routeTree_gen_ts["src/routeTree.gen.ts"]
   file_vite_config_mts["vite.config.mts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_components_entry_adjective_forms_table_tsx --> file_src_components_entry_form_cell_tsx
@@ -568,8 +568,17 @@ graph LR
   file_src_lib_forms_ts --> file_src_components_entry_noun_forms_table_tsx
   file_src_lib_forms_ts --> file_src_components_entry_verb_forms_table_tsx
   file_src_lib_forms_ts --> file_src_lib_types_ts
+  file_src_lib_routeTree_gen_ts --> file_src_router_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes___root_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_bookmarks_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_index_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_library_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_search_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_settings_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_tools_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_word__id_tsx
   file_src_lib_search_ts --> file_src_lib_types_ts
-  file_src_router_tsx --> file_src_routeTree_gen_ts
+  file_src_router_tsx --> file_src_lib_routeTree_gen_ts
   file_src_routes___root_tsx --> file_src_components_layout_index_ts
   file_src_routes___root_tsx --> file_src_lib_auth_ts
   file_src_routes_bookmarks_tsx --> file_src_components_entry_entry_card_tsx
@@ -591,15 +600,6 @@ graph LR
   file_src_routes_word__id_tsx --> file_src_lib_forms_ts
   file_src_routes_word__id_tsx --> file_src_lib_search_ts
   file_src_routes_word__id_tsx --> file_src_lib_types_ts
-  file_src_routeTree_gen_ts --> file_src_router_tsx
-  file_src_routeTree_gen_ts --> file_src_routes___root_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_bookmarks_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_index_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_library_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_search_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_settings_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_tools_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_word__id_tsx
   file_vitest_config_ts --> file_vite_config_mts
 ```
 <!-- codependix:end name="codependix-imports" -->

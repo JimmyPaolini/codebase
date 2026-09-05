@@ -13,6 +13,9 @@
     "output",
     "tmp"
   ],
+  "regexParameters": {
+    "templatePlaceholder": "\\{\\{[A-Za-z]+\\}\\}"
+  },
   "rules": {
     "any-file": {
       "name": "*"
@@ -126,22 +129,25 @@
               "name": "generators"
             },
             {
-              "children": [
-                {
-                  "ruleId": "kebab-case-folder"
-                },
-                {
-                  "ruleId": "any-file"
-                }
-              ],
-              "name": "validators"
-            },
-            {
               "enforceExistence": "__plugin_entrypoints_are_forbidden__",
               "name": "plugin.ts"
             },
             {
-              "ruleId": "any-file"
+              "children": [
+                {
+                  "ruleId": "source-python-file"
+                }
+              ],
+              "name": "python"
+            },
+            {
+              "ruleId": "source-entry-file"
+            },
+            {
+              "ruleId": "source-entry-support-file"
+            },
+            {
+              "ruleId": "source-python-file"
             }
           ],
           "name": "src"
@@ -210,17 +216,6 @@
               "ruleId": "any-file"
             }
           ],
-          "name": "assets"
-        },
-        {
-          "children": [
-            {
-              "ruleId": "kebab-case-folder"
-            },
-            {
-              "ruleId": "any-file"
-            }
-          ],
           "name": "coverage"
         },
         {
@@ -257,6 +252,9 @@
           "ruleId": "kebab-case-folder"
         },
         {
+          "ruleId": "template-placeholder-folder"
+        },
+        {
           "ruleId": "any-file"
         }
       ],
@@ -275,6 +273,29 @@
         }
       ],
       "name": "^(?!(dir|err|req|res|utils|ctx|app)$)[a-z0-9-]+$"
+    },
+    "source-entry-file": {
+      "name": "^(constants|index|main|repl|router)(.(unit|integration|end-to-end).test)?.(ts|tsx|mts|cts|js|jsx|mjs|cjs)$"
+    },
+    "source-entry-support-file": {
+      "name": "^main.(module|utilities)(.(unit|integration|end-to-end).test)?.(ts|tsx|mts|cts|js|jsx|mjs|cjs)$"
+    },
+    "source-python-file": {
+      "name": "^(py.typed|[a-z0-9_]+.(ipynb|py))$"
+    },
+    "template-placeholder-folder": {
+      "children": [
+        {
+          "ruleId": "kebab-case-folder"
+        },
+        {
+          "ruleId": "template-placeholder-folder"
+        },
+        {
+          "ruleId": "any-file"
+        }
+      ],
+      "name": "^{templatePlaceholder}$"
     }
   },
   "structure": {
@@ -498,6 +519,17 @@
       },
       {
         "name": "nx.json"
+      },
+      {
+        "children": [
+          {
+            "ruleId": "kebab-case-folder"
+          },
+          {
+            "ruleId": "any-file"
+          }
+        ],
+        "name": "openwiki"
       },
       {
         "name": "package.json"

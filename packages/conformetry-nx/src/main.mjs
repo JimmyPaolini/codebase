@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 // The `conformetry-nx-bootstrap` command, wired into a consumer's postinstall.
 //
+// Named `main.mjs` rather than for what it does because a `src/` root only
+// admits entry-point names, and this is the package's one command entry point.
+// The work it runs lives in `modules/generator/bootstrap.utilities.ts`.
+//
 // This is the one entry point in the workspace that still runs TypeScript
 // sources through a loader, and deliberately so. Every other command-line
 // package points its `bin` at emitted JavaScript, but this one cannot: it runs
@@ -17,6 +21,7 @@ import { register } from "node:module";
 
 register("@swc-node/register/esm", import.meta.url);
 
-const { runBootstrapCli } = await import("./bootstrap.utilities.ts");
+const { runBootstrapCli } =
+  await import("./modules/generator/bootstrap.utilities.ts");
 
 await runBootstrapCli(process.cwd());

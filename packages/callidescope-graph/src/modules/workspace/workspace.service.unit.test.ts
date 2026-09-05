@@ -348,9 +348,9 @@ describe(WorkspaceService, () => {
 
     // Git only reports paths it tracks, so the assertion names one that
     // exists rather than one the pattern would merely have matched.
-    expect(filter.isExcluded("applications/lexico/src/routeTree.gen.ts")).toBe(
-      true,
-    );
+    expect(
+      filter.isExcluded("applications/lexico/src/lib/routeTree.gen.ts"),
+    ).toBe(true);
     expect(filter.isExcluded("packages/callidescope-cli/src/main.ts")).toBe(
       false,
     );

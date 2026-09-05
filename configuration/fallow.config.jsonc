@@ -52,6 +52,15 @@
     // import stays in the module graph instead of reading as unreachable too.
     "packages/callidescope-examples/examples/**/*.ts",
     "packages/callidescope-examples/src/**/*.ts",
+    // lexico names its client entry and generated route tree in
+    // vite.config.mts rather than importing them, and both sit under
+    // src/lib/ because a src/ root only admits entry-point names. The
+    // vite plugin detects a client entry by convention at src/client.tsx,
+    // so a relocated one has to be declared. knip names the same paths in
+    // its own entry list for the same reason.
+    "applications/lexico/src/lib/client.tsx",
+    "applications/lexico/src/lib/routeTree.gen.ts",
+    "applications/lexico/src/router.tsx",
     "packages/lexico-entities/src/modules/database/migrations/**/*.ts",
     "release.config.cjs",
     "validate-branch-name.config.cjs",
@@ -66,7 +75,7 @@
       "**/coverage/**",
       "**/dist/**",
       "**/src/lib/database.types.ts",
-      "**/src/routeTree.gen.ts",
+      "**/routeTree.gen.ts",
     ],
     "maxCognitive": 12,
     "maxCrap": 16,
@@ -147,7 +156,7 @@
   "ignoreExports": [
     {
       "exports": ["*"],
-      "file": "**/src/routeTree.gen.ts",
+      "file": "**/routeTree.gen.ts",
     },
     {
       "exports": ["*"],
@@ -209,7 +218,7 @@
     "**/packages/conformetry-examples/examples/*/templates/**",
     "**/pnpm-lock.yaml",
     "**/src/lib/database.types.ts",
-    "**/src/routeTree.gen.ts",
+    "**/routeTree.gen.ts",
     "**/tmp/**",
     "**/vite.config.*.timestamp*",
     "**/vitest.config.*.timestamp*",
