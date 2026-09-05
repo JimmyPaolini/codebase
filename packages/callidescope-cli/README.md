@@ -52,7 +52,7 @@ Two questions this answers that reading code does not:
 | Flag | Meaning |
 | ---- | ------- |
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |
-| `-d, --directories` | Comma-separated project directories to trace, each holding its own `tsconfig.json`. Every such directory under the working directory when omitted |
+| `-d, --directories` | Comma-separated project directories to trace, each holding its own `tsconfig.json`. The projects their imports reach are traced too. Every such directory under the working directory when omitted |
 | `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default |
 | `--json` | Path to write the machine-readable report to |
 | `-m, --markdown` | Path to splice the markdown block into |
@@ -120,7 +120,7 @@ not findings about the code at all, and neither waits to be asked:
 
 | Failure | What it means |
 | ------- | ------------- |
-| `🔭 Rejected a project it could not read` | A project's `tsconfig.json` could not be parsed |
+| `🔭 Rejected a project it could not read` | A project's `tsconfig.json` could not be parsed, or a named directory holds none |
 | `🔭 Traced nothing` | The run collected no callables at all |
 
 Both exist because the alternative is a green gate over a workspace nobody
@@ -135,6 +135,14 @@ depths measured through a workspace that was missing a project, and only then
 fail. On the default branch that means committing wrong numbers into every
 project README, which exiting non-zero afterwards does not take back. Ending
 the trace leaves the checkout exactly as the run found it.
+
+A directory named on `--directories` that holds no `tsconfig.json` at all ends
+the run the same way, and for the same reason. Naming a directory is the caller
+saying it should be traced, so quietly tracing one fewer project than was asked
+for reports depths for a workspace nobody described — and a typo in the list
+passes every gate for having looked at less. The whole-workspace walk cannot
+reach this, since it only ever yields directories a `tsconfig.json` was found
+in.
 
 A project that should not be read at all is a different question, and
 exclusions answer it. They are applied to the `tsconfig.json` itself, before it
@@ -161,7 +169,7 @@ Four destinations, each independent:
 | `json` | The whole run as JSON, at one path |
 | `markdown` | The whole run, spliced between anchors in one file |
 | `mermaid` | The same report with its stacks drawn instead of printed |
-| `projectReadmes` | One section per traced project, in that project's own `README.md` |
+| `projectReadmes` | One section per project the run was scoped to, in that project's own `README.md` |
 
 ### The diagram
 
@@ -190,9 +198,11 @@ rather than trimmed, so the diagram never contains an edge into something it
 did not draw, and it says how many it left out.
 
 `projectReadmes` is what puts a `## 🔭 Callidescope` section at the bottom of
-every package in this repository. Each section carries that project's stacks and
-findings rather than the workspace's, the first three stacks openly and the rest
-behind a disclosure. Setting it to `{}` accepts every default:
+every package in this repository — every package, because the run that writes
+them names no directory, so every project is one the run was scoped to. Each
+section carries that project's stacks and findings rather than the workspace's,
+the first three stacks openly and the rest behind a disclosure. Setting it to
+`{}` accepts every default:
 
 ```ts
 output: { projectReadmes: {} }
@@ -204,8 +214,9 @@ request: `nx run codebase:callidescope:write` writes the sections on the
 default branch, and the release commits them.
 
 Narrowing with `--directories` is the difference between a whole-workspace
-analysis and a one-second check, because each project needs its own TypeScript
-program.
+analysis and a check that finishes in seconds, because each project needs its
+own TypeScript program. What such a run measures — and what it deliberately
+leaves out — is [its own section below](#what-a-scoped-run-measures).
 
 ## Depth and breadth for named callables
 
@@ -264,6 +275,86 @@ a capped run says so.
 side — what it calls, and what calls it — the two questions a refactor or a
 rename needs answered together before either one is safe.
 
+## What a scoped run measures
+
+`--directories` narrows a run to the project directories it names. The trace
+still follows calls out of them: a scoped run builds a TypeScript program for
+each named project **and for every project those projects' imports transitively
+reach** — the named projects' **dependency closure**.
+
+That closure is what makes a scoped depth a measurement rather than an
+approximation. A project's own `tsconfig.json` never lists the packages it
+imports, so without it a call leaving the named directory landed in code no
+traced project owned — and a call into unowned code is treated as external, a
+leaf, exactly like a call into an installed package. The stack ended at the
+package boundary and reported a plain number, with nothing in the report saying
+it had stopped early.
+
+Scoped to `packages/codometer-changes`, this repository traces 3 projects, 33
+files, and 102 callables, in about 1.7 seconds. The same command before the
+closure traced 1 project, 8 files, and 31 callables.
+
+A closure is derived from what the compiler really read — every file in a
+project's program — rather than from the dependency list a `package.json`
+declares. A manifest says what a package may import; the program says what it
+did. So a type-only import widens a closure, and a declared dependency nothing
+imports does not.
+
+### What a closure does not reach
+
+**Dependents, deliberately.** The walk runs downward only: a project that
+imports a scoped one is not built, and its stacks do not appear. A call stack
+runs downward too, so a dependent contributes no frames below anything the run
+measures — and leaving it out is what stops an edit in a dependent from moving
+the scoped project's numbers.
+
+**A project root holding no `package.json`.** A manifest is what makes a
+directory something another project can depend _on_. A root holding only a
+`tsconfig.json` is where a repository keeps shared settings, and shared settings
+are read by every project rather than depended on by any. Without this rule one
+such directory drags the whole workspace in: each package's `tsconfig.json`
+includes its own tooling configuration files, each of those imports out of the
+shared directory, and that directory's program then reaches every toolchain the
+repository configures.
+
+**The workspace root.** A project whose root contains every other project cannot
+be a meaningful dependency of any of them, whatever else it holds.
+
+Both rules refuse a _destination_ only. Naming a directory is the caller saying
+it should be traced, and a run naming no directory names every project — so
+either kind is still traced in full when asked for directly, and a
+whole-workspace run's findings are exactly what they were. What the rules cost
+is that a call into a refused directory resolves to no frame, the way every call
+out of a package did before closures existed.
+
+### Numbers that do not move with the scope
+
+A file is owned by the **deepest project root containing it**, whichever program
+pulled it in — not by whichever program happened to read it first. That is what
+makes two runs agree: the same callable sits in the same module and measures the
+same depth whether the run was scoped to its own project, scoped to something
+that depends on it, or scoped to nothing at all.
+
+Both cross-project findings survive a downward-only scope, which is worth saying
+because it is not obvious:
+
+- **Module spread** folds over a callable's transitive **callees**, which run
+  downward — precisely what a closure holds in full.
+- **Possibly misplaced** compares a callable's callers **within its own
+  project**, which a run always has whole whatever its scope.
+
+Neither needs the dependents a scoped run leaves out.
+
+**Publishing does not widen with measurement.** `projectReadmes` writes a
+section only for the projects a run was scoped to, so a scoped run never
+rewrites a section in a dependency it merely measured — and a whole-workspace
+run still publishes every project's, because a run naming no directory has every
+project as a scoped one.
+
+[`dependency-closure`](../callidescope-examples/examples/dependency-closure/README.md)
+works all of this through on a real call that leaves its package, with the
+projects it reaches and why listed one by one.
+
 ## Scoping by Nx project name
 
 `--directories` takes paths, because callidescope has no idea what workspace
@@ -283,9 +374,12 @@ nx run callidescope-graph:depth --addresses="src/foo.service.ts#FooService.bar"
 It infers a `trace`, a `depth`, and a `breadth` target onto every project, so
 `callidescope`, `depth`, and `breadth` all become tasks — with Nx's own project
 selection, caching, and affected-detection for free, none of which a flag here
-could offer. It also traces each project **with its
-Nx dependencies**, so a stack is not truncated the moment it crosses a package
-boundary — the graph knowledge that makes the plugin worth having.
+could offer. It also resolves each project's **Nx dependencies** into
+directories of their own, which makes them projects the run is _scoped_ to
+rather than ones it merely measures — so their sections are published too, and
+the selection comes from the declared graph rather than from whatever the
+compiler happened to read. A stack is not truncated at a package boundary either
+way: the dependency closure above is what stops that, and it needs no Nx graph.
 
 It is a separate package rather than a flag here on purpose: this CLI depends
 on nothing Nx-shaped, and a flag that only worked when an optional package
@@ -309,6 +403,9 @@ other module of the same project. The output is a concrete move.
 A depth printed as `≥ 10` is a floor rather than a measurement: something on
 that path could not be followed — a callback invoked through a parameter, a
 computed member name — and the run says so rather than quietly under-reporting.
+Narrowing a run is never what causes one: a scoped run builds its dependencies'
+programs too, so a stack leaving the named package keeps going and reports a
+plain number like any other.
 
 ## What a frame carries
 
@@ -346,7 +443,7 @@ comment in full, because a machine reading it has no line width to respect —
 the longest in the workspace runs 288 characters.
 
 Annotations are read only for the frames a report actually prints, not for all
-3,264 callables. Rendering a type is the one genuinely costly thing the checker
+4,728 callables. Rendering a type is the one genuinely costly thing the checker
 does, and reports touch a few hundred frames.
 
 ## How it follows a call
@@ -365,9 +462,12 @@ carries the service's type, and the checker follows it.
 | `list.map(callback)` | The callback, as its own frame — `map` itself is external |
 | `target[key]()` | Nothing. Recorded as unfollowable rather than guessed |
 
-Calls into dependencies are leaves. Whether `Array.prototype.map` is deeply
-implemented says nothing about whether _your_ layering is too deep, and counting
-it would make every number move on an unrelated upgrade.
+Calls into **installed** dependencies are leaves. Whether `Array.prototype.map`
+is deeply implemented says nothing about whether _your_ layering is too deep,
+and counting it would make every number move on an unrelated upgrade. A call
+into another project of the same workspace is not one of these: it resolves to a
+real frame, because a scoped run builds that project's program too — see
+[what a scoped run measures](#what-a-scoped-run-measures).
 
 Structural matching is not optional: classes here routinely satisfy an interface
 without writing `implements`, and its members are usually arrow-typed properties

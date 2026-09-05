@@ -1,6 +1,6 @@
 ---
 name: callidescope-trace
-description: Run callidescope and read what it printed — a whole-workspace trace, or the depth and breadth commands against one or more callables, each addressed as file#qualified-name. Use when running callidescope or npx callidescope, when reading a call stack, a module-spread row, a breadth row, or a possibly-misplaced row, when a depth printed as "≥ n" needs interpreting, when reading a committed markdown report, mermaid diagram, or JSON report, or when asking who calls this, what does it call, what would this rename touch, and where should this callable be split before a refactor starts.
+description: Run callidescope and read what it printed — a whole-workspace trace, or the depth and breadth commands against one or more callables, each addressed as file#qualified-name. Use when running callidescope or npx callidescope, when reading a call stack, a module-spread row, a breadth row, or a possibly-misplaced row, when a depth printed as "≥ n" needs interpreting, when reading a committed markdown report, mermaid diagram, or JSON report, when a run narrowed with --directories reports a frame, a stack, or a project the run was never pointed at, when a depth moved without an edit that explains it, or when asking who calls this, what does it call, what would this rename touch, and where should this callable be split before a refactor starts.
 license: MIT
 ---
 
@@ -168,6 +168,64 @@ the way one deepest path is.
 | What is this callable actually part of? | `depth` |
 | Does this belong in this file? | `depth` |
 
+## What a scoped run measures
+
+`--directories` narrows a run to the project directories it names, and the trace
+still follows calls out of them: a scoped run builds a program for each named
+project **and for every project those projects' imports transitively reach** —
+their **dependency closure**. So a call into another workspace package lands on
+a real frame, and the run reports frames, stacks, and per-project rows for
+packages it was never pointed at. That is the closure, not a leak.
+
+**How to read a depth that moved.** A project's own `tsconfig.json` never lists
+the packages it imports, so a scoped run used to leave every call out of the
+named directory in code no traced project owned — and a call into unowned code
+is treated as external, a leaf, exactly like a call into an installed package.
+The stack ended at the package boundary and printed a plain number, with nothing
+in the report saying it had stopped early. A number that went up without an edit
+to explain it is that under-measurement being corrected.
+
+Three things follow, and they are what a moved number should be checked against:
+
+- **A scoped depth is a measurement, not a floor.** `≥` still means only an
+  unfollowable call. Scope never printed one, which is exactly why a scoped
+  under-measurement was invisible.
+- **The number does not depend on which run took it.** A file is owned by the
+  deepest project root containing it, whichever program pulled it in, so two
+  scoped runs and the whole-workspace run agree about the same callable.
+- **A whole-workspace run's closure changes nothing.** It names no directory,
+  so every project is already a starting project and its closure is the
+  workspace. A number that moved there moved for some other reason.
+
+**What a closure does not reach**, and why each one is left out:
+
+- **Dependents, deliberately.** The walk runs downward only. A project that
+  imports the scoped one is not built and its stacks do not appear — which is
+  what stops an edit in a dependent from moving the scoped project's numbers.
+- **A project root holding no `package.json`.** A manifest is what makes a
+  directory something another project can depend _on_; a root holding only a
+  `tsconfig.json` is shared settings, read by every project rather than depended
+  on by any. Without the rule, one such directory drags the whole workspace in.
+- **The workspace root.** A project whose root contains every other project
+  cannot be a meaningful dependency of any of them.
+
+Both refusals apply to a _destination_ only, so either kind is still traced in
+full when named directly or by a run that names no directory. What they cost is
+that a call into a refused directory resolves to no frame.
+
+**Both cross-project findings survive a downward-only scope**, which is worth
+saying because it is not obvious. Module spread folds over a callable's
+transitive _callees_, which run downward — precisely what a closure holds in
+full. Possibly-misplaced compares a callable's callers _within its own project_,
+which a run always has whole whatever its scope. Neither needs a dependent.
+
+**Publishing does not widen with measurement.** A `## 🔭 Callidescope` section
+is written only for the projects a run was scoped to, so a scoped run never
+rewrites a section in a dependency it merely measured.
+
+A worked example — the projects one real scoped run reaches, and why each — is
+`examples/dependency-closure` in the `@callidescope/examples` package.
+
 ## What the graph does and does not contain
 
 The same resolution rules govern all three commands, and they decide what any
@@ -192,9 +250,11 @@ Four consequences worth holding on to:
 - **A computed member call resolves to nothing.** A caller reaching the
   callable that way will not appear, so `breadth` does not fully cover a rename
   in a codebase that dispatches through computed names.
-- **Calls into dependencies are leaves.** Whether `Array.prototype.map` is
-  deeply implemented says nothing about whether _your_ layering is too deep,
-  and counting it would move every number on an unrelated upgrade.
+- **Calls into _installed_ dependencies are leaves.** Whether
+  `Array.prototype.map` is deeply implemented says nothing about whether _your_
+  layering is too deep, and counting it would move every number on an unrelated
+  upgrade. A call into another project of the same workspace is not one of
+  these — it resolves to a real frame, however the run was scoped.
 - **`ignoreCallees` globs are dropped from the graph entirely**, so a callable
   the configuration ignores — typically a logger — appears in no list and
   counts toward nobody's depth or breadth.
