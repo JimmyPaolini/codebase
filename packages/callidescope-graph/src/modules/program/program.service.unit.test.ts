@@ -18,10 +18,16 @@ import type { WorkspaceProject } from "../workspace/workspace.types";
 import type { LoggerService } from "@codebase/logger";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
-/** Writes a project into an existing workspace, and describes it. */
+/**
+ * Writes a project into an existing workspace, and describes it.
+ *
+ * A `package.json` comes with it unless `omitManifest` says otherwise, which
+ * is what makes the project something another one's closure may reach.
+ */
 async function addProject(args: {
   configuration?: string;
   name: string;
+  omitManifest?: boolean;
   sources?: Record<string, string>;
   workspaceRoot: string;
 }): Promise<WorkspaceProject> {
@@ -37,6 +43,10 @@ async function addProject(args: {
       }),
     "utf8",
   );
+
+  if (args.omitManifest !== true) {
+    await writeFile(path.join(root, "package.json"), "{}", "utf8");
+  }
 
   for (const [name, text] of Object.entries(
     args.sources ?? { "src/index.ts": "export function entry(): void {}\n" },
@@ -56,6 +66,7 @@ async function addProject(args: {
 async function buildProject(args: {
   configuration?: string;
   name: string;
+  omitManifest?: boolean;
   sources?: Record<string, string>;
 }): Promise<{ project: WorkspaceProject; workspaceRoot: string }> {
   const workspaceRoot = await mkdtemp(
@@ -410,6 +421,10 @@ describe(ProgramService, () => {
       "export function library(): void {}\n",
       "utf8",
     );
+    // A real manifest, so the workspace root is a project a closure is
+    // allowed to reach — otherwise the destination rule would pass this test
+    // on its own and the guard under test would go unexercised.
+    await writeFile(path.join(workspaceRoot, "package.json"), "{}", "utf8");
 
     const programSet = buildSubject().buildPrograms({
       startingProjects: [project],
@@ -432,6 +447,10 @@ describe(ProgramService, () => {
       "export function helper(): void {}\n",
       "utf8",
     );
+    await mkdir(workspaceRoot, { recursive: true });
+    // As above: the workspace root has to be a legitimate destination for
+    // this to be testing the `..` guard rather than the manifest rule.
+    await writeFile(path.join(workspaceRoot, "package.json"), "{}", "utf8");
 
     const project = await addProject({
       name: "example",
@@ -457,6 +476,57 @@ describe(ProgramService, () => {
     });
 
     expect(readProjectNames(programSet)).toStrictEqual(["example"]);
+  });
+
+  it("builds no program for a project root holding no package.json", async () => {
+    // A directory of shared settings that every project's `tsconfig.json`
+    // reaches into is not a dependency any of them has — see
+    // `WorkspaceService.isClosureDestination`.
+    const { project: settings, workspaceRoot } = await buildProject({
+      name: "settings",
+      omitManifest: true,
+      sources: { "src/index.ts": "export const SETTINGS = { name: 'x' };\n" },
+    });
+    const dependent = await addProject({
+      name: "dependent",
+      sources: {
+        "src/index.ts": `
+          import { SETTINGS } from "../../settings/src/index";
+
+          export function entry(): string { return SETTINGS.name; }
+        `,
+      },
+      workspaceRoot,
+    });
+
+    const programSet = buildSubject().buildPrograms({
+      startingProjects: [dependent],
+      workspaceProjects: [dependent, settings],
+      workspaceRoot,
+    });
+
+    expect(readProjectNames(programSet)).toStrictEqual(["dependent"]);
+  });
+
+  it("still builds a program for a starting project root holding no package.json", async () => {
+    // Only a closure destination is refused, so an unscoped run — which names
+    // every project as a starting one — traces it exactly as it always did.
+    const { project: settings, workspaceRoot } = await buildProject({
+      name: "settings",
+      omitManifest: true,
+    });
+    const dependent = await addProject({ name: "dependent", workspaceRoot });
+
+    const programSet = buildSubject().buildPrograms({
+      startingProjects: [dependent, settings],
+      workspaceProjects: [dependent, settings],
+      workspaceRoot,
+    });
+
+    expect(readProjectNames(programSet)).toStrictEqual([
+      "dependent",
+      "settings",
+    ]);
   });
 
   it("resolves a path that is not a symlink to itself", () => {

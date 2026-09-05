@@ -109,17 +109,29 @@ async function buildLayeredWorkspace(): Promise<string> {
     },
     workspaceRoot,
   });
+  // No manifest: a directory of shared settings, which every project reaches
+  // into and none depends on.
+  await writeProject({
+    name: "settings",
+    omitManifest: true,
+    sources: {
+      "src/index.ts": "export const SETTINGS = { label: 'fixture' };\n",
+    },
+    workspaceRoot,
+  });
   await writeProject({
     name: "application",
     sources: {
       "src/main.ts": `
         import { Repository } from "../../library/src/index";
+        import { SETTINGS } from "../../settings/src/index";
 
         function Command(): ClassDecorator { return () => undefined; }
 
         @Command()
         export class ApplicationCommand {
           constructor(private readonly repository: Repository) {}
+          public label(): string { return SETTINGS.label; }
           public run(): void { this.repository.find(); }
         }
       `,
@@ -219,9 +231,16 @@ function readTypeDepth(args: {
     ?.maximumDepth;
 }
 
-/** Writes one project into a workspace, with the fixture compiler options. */
+/**
+ * Writes one project into a workspace, with the fixture compiler options.
+ *
+ * A `package.json` comes with it unless `omitManifest` says otherwise — a
+ * project root without one is a directory of shared settings rather than
+ * something another project depends on, and no closure reaches it.
+ */
 async function writeProject(args: {
   name: string;
+  omitManifest?: boolean;
   sources: Record<string, string>;
   workspaceRoot: string;
 }): Promise<void> {
@@ -240,6 +259,10 @@ async function writeProject(args: {
     }),
     "utf8",
   );
+
+  if (args.omitManifest !== true) {
+    await writeFile(path.join(root, "package.json"), "{}", "utf8");
+  }
 
   for (const [name, text] of Object.entries(args.sources)) {
     await mkdir(path.dirname(path.join(root, name)), { recursive: true });
@@ -504,6 +527,23 @@ describe(`${CallidescopeService.name} (integration)`, () => {
       ).not.toContain(path.join("packages", "unrelated"));
     });
 
+    it("leaves a project root holding no package.json out of the closure", () => {
+      // The scoped project really does import it and the compiler really does
+      // read it — but a directory of shared settings is not a dependency, and
+      // admitting one is how a scoped run ends up compiling the workspace.
+      expect(scoped.projectNames).not.toContain(
+        path.join("packages", "settings"),
+      );
+    });
+
+    it("still traces a project root holding no package.json when unscoped", () => {
+      // The asymmetry the rule turns on: refused as a destination, traced as
+      // a starting project, so a whole-workspace run still reports on it.
+      expect(unscoped.projectNames).toContain(
+        path.join("packages", "settings"),
+      );
+    });
+
     it("measures the same depth as the run that traced everything", () => {
       const arguments_ = {
         projectName: path.join("packages", "application"),
@@ -520,6 +560,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
         path.join("packages", "application"),
         path.join("packages", "consumer"),
         path.join("packages", "library"),
+        path.join("packages", "settings"),
         path.join("packages", "unrelated"),
       ]);
     });

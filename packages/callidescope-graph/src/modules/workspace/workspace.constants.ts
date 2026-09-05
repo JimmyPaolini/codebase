@@ -20,6 +20,18 @@ export const EXCLUDED_SCAN_DIRECTORY_NAMES = [
 ] as const;
 
 /**
+ * The file whose presence in a project root makes it something another
+ * project can depend on.
+ *
+ * Read only to decide whether a project may be a dependency-closure
+ * destination — see `WorkspaceService.isClosureDestination`. Its contents are
+ * never parsed: whether a directory is a package is the whole question, and a
+ * declared dependency list would be the wrong answer to it anyway, since the
+ * closure is derived from what the compiler really read.
+ */
+export const PACKAGE_MANIFEST_NAME = "package.json";
+
+/**
  * The file whose presence in a directory makes it a project.
  *
  * Named once rather than spelled at each site, so the file a whole-workspace

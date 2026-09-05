@@ -21,8 +21,15 @@ const PROJECT: WorkspaceProject = {
   root: "packages/example",
 };
 
-/** Writes a workspace holding a `tsconfig.json` at each relative path. */
-async function buildWorkspace(projectRoots: string[]): Promise<string> {
+/**
+ * Writes a workspace holding a `tsconfig.json` at each relative path, and a
+ * `package.json` beside it unless the root is named in `rootsWithoutManifest` —
+ * which is what makes that root a project no closure may reach.
+ */
+async function buildWorkspace(
+  projectRoots: readonly string[],
+  rootsWithoutManifest: readonly string[] = [],
+): Promise<string> {
   const root = await mkdtemp(path.join(tmpdir(), "callidescope-workspace-"));
 
   for (const projectRoot of projectRoots) {
@@ -30,6 +37,10 @@ async function buildWorkspace(projectRoots: string[]): Promise<string> {
 
     await mkdir(directory, { recursive: true });
     await writeFile(path.join(directory, "tsconfig.json"), "{}", "utf8");
+
+    if (!rootsWithoutManifest.includes(projectRoot)) {
+      await writeFile(path.join(directory, "package.json"), "{}", "utf8");
+    }
   }
 
   return root;
@@ -53,11 +64,26 @@ const STARTING_PROJECT: WorkspaceProject = {
   root: "packages/starting",
 };
 
+const SHARED_PROJECT: WorkspaceProject = {
+  configurationPath: "",
+  name: "packages/shared",
+  root: "packages/shared",
+};
+
 const TRANSITIVE_PROJECT: WorkspaceProject = {
   configurationPath: "",
   name: "packages/transitive",
   root: "packages/transitive",
 };
+
+/** Every project the closure tests resolve paths against. */
+const CLOSURE_PROJECTS: readonly WorkspaceProject[] = [
+  DEPENDENCY_PROJECT,
+  DEPENDENT_PROJECT,
+  SHARED_PROJECT,
+  STARTING_PROJECT,
+  TRANSITIVE_PROJECT,
+];
 
 /**
  * Builds a fake `resolveProjectFiles` callback from a fixed project graph —
@@ -72,9 +98,17 @@ function fakeProjectFiles(
 }
 
 describe(WorkspaceService, () => {
+  let closureRoot: string;
   let service: WorkspaceService;
 
   beforeAll(async () => {
+    // Every closure project is a real directory, because whether a project
+    // may be a closure destination is read off disk.
+    closureRoot = await buildWorkspace(
+      CLOSURE_PROJECTS.map((project) => project.root),
+      [SHARED_PROJECT.root],
+    );
+
     const module = await Test.createTestingModule({
       imports: [...ANALYSIS_MODULES],
       providers: [WorkspaceService],
@@ -380,12 +414,8 @@ describe(WorkspaceService, () => {
         .resolveDependencyClosure({
           resolveProjectFiles,
           startingProjects: [STARTING_PROJECT],
-          workspaceProjects: [
-            DEPENDENCY_PROJECT,
-            DEPENDENT_PROJECT,
-            STARTING_PROJECT,
-            TRANSITIVE_PROJECT,
-          ],
+          workspaceProjects: CLOSURE_PROJECTS,
+          workspaceRoot: closureRoot,
         })
         .map((project) => project.name),
     ).toStrictEqual([
@@ -405,7 +435,8 @@ describe(WorkspaceService, () => {
         .resolveDependencyClosure({
           resolveProjectFiles,
           startingProjects: [STARTING_PROJECT],
-          workspaceProjects: [DEPENDENT_PROJECT, STARTING_PROJECT],
+          workspaceProjects: CLOSURE_PROJECTS,
+          workspaceRoot: closureRoot,
         })
         .map((project) => project.name),
     ).toStrictEqual(["packages/starting"]);
@@ -424,7 +455,8 @@ describe(WorkspaceService, () => {
     const result = subject.resolveDependencyClosure({
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT],
-      workspaceProjects: [DEPENDENCY_PROJECT, STARTING_PROJECT],
+      workspaceProjects: CLOSURE_PROJECTS,
+      workspaceRoot: closureRoot,
     });
 
     expect(result.map((project) => project.name)).toStrictEqual([
@@ -450,6 +482,7 @@ describe(WorkspaceService, () => {
           resolveProjectFiles,
           startingProjects: [STARTING_PROJECT],
           workspaceProjects: [STARTING_PROJECT],
+          workspaceRoot: closureRoot,
         })
         .map((project) => project.name),
     ).toStrictEqual(["packages/starting"]);
@@ -460,24 +493,58 @@ describe(WorkspaceService, () => {
       "packages/dependent": ["packages/starting/src/index.ts"],
       "packages/starting": ["packages/dependency/src/index.ts"],
     });
-    const workspaceProjects = [
-      DEPENDENCY_PROJECT,
-      DEPENDENT_PROJECT,
-      STARTING_PROJECT,
-    ];
 
     const forward = subject.resolveDependencyClosure({
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT, DEPENDENT_PROJECT],
-      workspaceProjects,
+      workspaceProjects: CLOSURE_PROJECTS,
+      workspaceRoot: closureRoot,
     });
     const reversed = subject.resolveDependencyClosure({
       resolveProjectFiles,
       startingProjects: [DEPENDENT_PROJECT, STARTING_PROJECT],
-      workspaceProjects,
+      workspaceProjects: CLOSURE_PROJECTS,
+      workspaceRoot: closureRoot,
     });
 
     expect(reversed).toStrictEqual(forward);
+  });
+
+  it("does not resolve a pulled-in file into a project root holding no package.json", () => {
+    // A directory of shared settings is read by everything and depended on by
+    // nothing — see `isClosureDestination` for what it would otherwise drag in.
+    const resolveProjectFiles = fakeProjectFiles({
+      "packages/starting": [
+        "packages/shared/eslint.config.ts",
+        "packages/transitive/src/index.ts",
+      ],
+    });
+
+    expect(
+      subject
+        .resolveDependencyClosure({
+          resolveProjectFiles,
+          startingProjects: [STARTING_PROJECT],
+          workspaceProjects: CLOSURE_PROJECTS,
+          workspaceRoot: closureRoot,
+        })
+        .map((project) => project.name),
+    ).toStrictEqual(["packages/starting", "packages/transitive"]);
+  });
+
+  it("still resolves a starting project root holding no package.json", () => {
+    // Only a destination is refused. Naming a project — which is what an
+    // unscoped run does to every one of them — still traces it.
+    expect(
+      subject
+        .resolveDependencyClosure({
+          resolveProjectFiles: fakeProjectFiles({}),
+          startingProjects: [SHARED_PROJECT, STARTING_PROJECT],
+          workspaceProjects: CLOSURE_PROJECTS,
+          workspaceRoot: closureRoot,
+        })
+        .map((project) => project.name),
+    ).toStrictEqual(["packages/shared", "packages/starting"]);
   });
 
   // ⚙️ Configuration

@@ -236,8 +236,11 @@ export class ProgramService {
    *
    * A project nothing reaches is never asked about and so never built, which
    * is what keeps a run scoped to one package from compiling the workspace.
-   * An unscoped run passes every project as a starting project, so its closure
-   * is every project and nothing about it changes.
+   * Neither is a project reached only as a directory of shared settings —
+   * `WorkspaceService.resolveDependencyClosure` refuses those as destinations,
+   * and holds the reasoning. An unscoped run passes every project as a
+   * starting project, so its closure is every project, both rules are moot,
+   * and nothing about it changes.
    *
    * A project whose configuration cannot be parsed ends the run rather than
    * being stepped over — see `ProgramConfigurationError` for why a partial
@@ -270,6 +273,7 @@ export class ProgramService {
       },
       startingProjects: args.startingProjects,
       workspaceProjects: args.workspaceProjects,
+      workspaceRoot: args.workspaceRoot,
     });
 
     this.logger.debug("🔭 Resolved a dependency closure", undefined, {

@@ -46,6 +46,12 @@ export interface ResolveDependencyClosureArguments {
    * not visited yet.
    */
   readonly workspaceProjects: readonly WorkspaceProject[];
+  /**
+   * Where the projects sit on disk, read only to tell a project another one
+   * may depend on from a directory of shared settings — see
+   * `WorkspaceService.resolveDependencyClosure`.
+   */
+  readonly workspaceRoot: string;
 }
 
 /**
