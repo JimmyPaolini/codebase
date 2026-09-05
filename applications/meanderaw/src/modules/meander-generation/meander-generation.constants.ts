@@ -118,18 +118,27 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
  * keeps `Array.prototype.includes` usable with a plain `string` at the CLI
  * boundary, with the `satisfies` check below as the only place a typo could
  * surface.
+ *
+ * **The order is load-bearing, and it is a reading order rather than an
+ * alphabetical or a historical one.** It runs from the families whose motif is
+ * a single line — `snake` through `boxes` — into the four that break one of
+ * the charter's negotiable invariants, and ends at `mosaic`, whose enumerated
+ * tiles outnumber every other family put together. It is the order the `--type`
+ * help text lists, the order the sweep generates in, and the order
+ * `DrawIndexService` lays the index page out in, so a family moved here moves
+ * in all three at once.
  */
 export const SUPPORTED_TYPES: readonly string[] = [
-  "mosaic",
-  "boxes",
-  "chain",
   "snake",
+  "chain",
   "swirl",
   "whirl",
-  "cross",
-  "negative",
+  "boxes",
   "branch",
+  "cross",
   "parallel",
+  "negative",
+  "mosaic",
 ] satisfies readonly MeanderType[];
 
 /**

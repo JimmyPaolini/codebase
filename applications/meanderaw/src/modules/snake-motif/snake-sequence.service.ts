@@ -65,24 +65,42 @@ export class SnakeSequenceService {
   }
 
   /**
-   * The order rows are visited in, as an inward-then-outward zigzag: the
-   * top edge, then the bottom edge, then ascending from the third row up to
-   * the second-to-last, then the second row, then the bottom edge.
-   * `maximumLevel === 3` is handled directly since the general construction
-   * would otherwise place row 2 twice (both as `maximumLevel - 1` and as
-   * the fixed landmark).
+   * The order rows are visited in: the spiral's own itinerary, winding
+   * inward from the top edge and unwinding back out to the bottom one.
+   *
+   * Every row's horizontal run is a fixed span (see {@link rowSpan}), and
+   * every interior grid level is an endpoint of exactly two of those spans
+   * — levels `0` and `maximumLevel` of exactly one each. So the spans chain
+   * into a single path with two ends, and this is that path's order, in
+   * closed form rather than searched for. Each row is entered at the level
+   * the row before it left off, which is what makes consecutive runs turn
+   * instead of doubling back.
+   *
+   * The inward half alternates an ascending odd row with a descending one —
+   * `1`, `maximumLevel - 1`, `3`, `maximumLevel - 3`, and so on. The
+   * outward half is that same half read backwards and reflected through
+   * `maximumLevel + 1`, which is the symmetry the spans themselves have. At
+   * an odd `maximumLevel` the inward half is one longer and ends on the
+   * center row, which is visited once and has no reflection.
+   *
+   * Reading the itinerary off the chain rather than writing it out is what
+   * fixes issue #507. The obvious-looking `1, maximumLevel - 1, 3, 4, 5, …`
+   * agrees with the chain through eight rows and parts from it at nine, and
+   * `maximumLevel === 3` needed a case of its own to stop it placing row 2
+   * twice — both are symptoms of an itinerary that was never derived from
+   * the spans it has to join up.
    */
   private rowOrder(maximumLevel: number): number[] {
-    if (maximumLevel === 3) {
-      return [1, 2, 3];
-    }
-
-    const ascendingMiddleRows = Array.from(
-      { length: Math.max(0, maximumLevel - 4) },
-      (_value, index) => index + 3,
+    const inwardLength = Math.ceil(maximumLevel / 2);
+    const inward = Array.from({ length: inwardLength }, (_value, index) =>
+      index % 2 === 0 ? index + 1 : maximumLevel - index,
     );
+    const outward = inward
+      .slice(0, maximumLevel - inwardLength)
+      .toReversed()
+      .map((row) => maximumLevel + 1 - row);
 
-    return [1, maximumLevel - 1, ...ascendingMiddleRows, 2, maximumLevel];
+    return [...inward, ...outward];
   }
 
   /**

@@ -1,0 +1,7 @@
+describal
+lexicalized
+nonword
+phonotactic
+pseudoword
+sempientor
+stratifiability
