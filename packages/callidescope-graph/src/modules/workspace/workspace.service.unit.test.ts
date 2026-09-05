@@ -462,7 +462,7 @@ describe(WorkspaceService, () => {
       "packages/starting": ["packages/dependency/src/index.ts"],
     });
 
-    subject.resolveDependencyClosure({
+    subject.walkImportedProjectClosure({
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
@@ -480,7 +480,7 @@ describe(WorkspaceService, () => {
       "packages/dependent": ["packages/starting/src/index.ts"],
     });
 
-    subject.resolveDependencyClosure({
+    subject.walkImportedProjectClosure({
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
@@ -495,7 +495,7 @@ describe(WorkspaceService, () => {
       "packages/starting": ["packages/dependency/src/index.ts"],
     });
 
-    subject.resolveDependencyClosure({
+    subject.walkImportedProjectClosure({
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
@@ -514,7 +514,7 @@ describe(WorkspaceService, () => {
       ],
     });
 
-    subject.resolveDependencyClosure({
+    subject.walkImportedProjectClosure({
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT],
       workspaceProjects: [STARTING_PROJECT],
@@ -531,12 +531,12 @@ describe(WorkspaceService, () => {
     const forward = fakeProjectFiles(files);
     const reversed = fakeProjectFiles(files);
 
-    subject.resolveDependencyClosure({
+    subject.walkImportedProjectClosure({
       resolveProjectFiles: forward.resolveProjectFiles,
       startingProjects: [STARTING_PROJECT, DEPENDENT_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
     });
-    subject.resolveDependencyClosure({
+    subject.walkImportedProjectClosure({
       resolveProjectFiles: reversed.resolveProjectFiles,
       startingProjects: [DEPENDENT_PROJECT, STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
@@ -562,7 +562,7 @@ describe(WorkspaceService, () => {
       ],
     });
 
-    subject.resolveDependencyClosure({
+    subject.walkImportedProjectClosure({
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
@@ -579,7 +579,7 @@ describe(WorkspaceService, () => {
     // unscoped run does to every one of them — still traces it.
     const { reached, resolveProjectFiles } = fakeProjectFiles({});
 
-    subject.resolveDependencyClosure({
+    subject.walkImportedProjectClosure({
       resolveProjectFiles,
       startingProjects: [SHARED_PROJECT, STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
@@ -601,7 +601,7 @@ describe(WorkspaceService, () => {
       "packages/starting": ["codometer.config.ts"],
     });
 
-    subject.resolveDependencyClosure({
+    subject.walkImportedProjectClosure({
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
@@ -613,7 +613,7 @@ describe(WorkspaceService, () => {
   it("still reaches the workspace root as a starting project", () => {
     const { reached, resolveProjectFiles } = fakeProjectFiles({});
 
-    subject.resolveDependencyClosure({
+    subject.walkImportedProjectClosure({
       resolveProjectFiles,
       startingProjects: [WORKSPACE_ROOT_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,

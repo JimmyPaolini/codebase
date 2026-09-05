@@ -258,7 +258,7 @@ export class ProgramService {
     // exactly the ones it asked for files, so `built` is the only
     // representation of the closure there is and the count logged below
     // cannot describe anything other than what was really built.
-    this.workspaceService.resolveDependencyClosure({
+    this.workspaceService.walkImportedProjectClosure({
       resolveProjectFiles: (project): readonly string[] => {
         this.logger.debug("🔭 Reading a project", undefined, {
           projectName: project.name,

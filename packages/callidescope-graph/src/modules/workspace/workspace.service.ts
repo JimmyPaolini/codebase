@@ -25,7 +25,7 @@ import type {
   BuildExclusionsArguments,
   DiscoverProjectsArguments,
   FileFilter,
-  ResolveDependencyClosureArguments,
+  WalkImportedProjectClosureArguments,
   WorkspaceProject,
   WorkspaceStructure,
 } from "./workspace.types";
@@ -353,72 +353,6 @@ export class WorkspaceService {
   }
 
   /**
-   * Resolves the projects a set of starting roots' imports transitively
-   * reach — a starting project's dependency closure.
-   *
-   * `args.resolveProjectFiles` reports the workspace-relative paths one
-   * project's program pulled in; this method owns only the fixed-point walk
-   * over those reports, never how a program comes to exist. Each reported
-   * path is walked back to its owning project through `resolveOwningProject`
-   * against `args.workspaceProjects`, so a path `node_modules` holds, or one
-   * no traced project's root contains, resolves to `undefined` and never
-   * manufactures a project that is not there. A project already reached is
-   * never asked again, which is what makes a cycle between two projects
-   * terminate instead of looping forever. A resolved owner that is not a
-   * closure *destination* is dropped as though nothing owned the path —
-   * `isClosureDestination` says which projects those are, and why.
-   *
-   * Every starting project is asked about, even one whose program pulls in
-   * nothing outside itself and even one no closure could have reached, and a
-   * project's dependents never are — nothing here walks from a file to
-   * whoever imports it, only from a project to what its own program reaches.
-   *
-   * The callback's invocations are the whole result, which is why nothing is
-   * returned: the closure is exactly the set of projects the callback was
-   * asked about, and handing that set back as well would be a second
-   * representation of it, free to drift from whatever the caller collected
-   * while it answered. Ordering belongs to the caller for the same reason —
-   * `ProgramService.buildPrograms` sorts the programs it collected, so the
-   * order a report reads in is decided once, over the things a report is
-   * really made of.
-   */
-  public resolveDependencyClosure(
-    args: ResolveDependencyClosureArguments,
-  ): void {
-    const reached = new Set<string>();
-    let pending = args.startingProjects;
-
-    while (pending.length > 0) {
-      const next: WorkspaceProject[] = [];
-
-      for (const project of pending) {
-        if (reached.has(project.name)) {
-          continue;
-        }
-
-        reached.add(project.name);
-
-        for (const workspaceRelativePath of args.resolveProjectFiles(project)) {
-          const owner = this.resolveOwningProject({
-            projects: args.workspaceProjects,
-            workspaceRelativePath,
-          });
-
-          if (
-            owner !== undefined &&
-            !reached.has(owner.name) &&
-            this.isClosureDestination(owner)
-          ) {
-            next.push(owner);
-          }
-        }
-      }
-
-      pending = next;
-    }
-  }
-
-  /**
    * Names the module a file belongs to: `<project>:<subtree>`.
    *
    * A file under `<root>/<modules>/<name>/` is identified by that module.
@@ -499,5 +433,77 @@ export class WorkspaceService {
       .relative(args.workspaceRoot, args.absolutePath)
       .split(path.sep)
       .join("/");
+  }
+
+  /**
+   * Walks the projects a set of starting roots' imports transitively reach —
+   * a starting project's dependency closure — asking
+   * `args.resolveProjectFiles` about each one exactly once.
+   *
+   * Named for the imports it follows rather than for dependency in general,
+   * because `ProjectsService.resolveDependencyClosure` in `@callidescope/nx`
+   * resolves a closure too, from the edges the Nx graph declares. Both are
+   * real closures over different edges, and the two sets are not the same.
+   *
+   * `args.resolveProjectFiles` reports the workspace-relative paths one
+   * project's program pulled in; this method owns only the fixed-point walk
+   * over those reports, never how a program comes to exist. Each reported
+   * path is walked back to its owning project through `resolveOwningProject`
+   * against `args.workspaceProjects`, so a path `node_modules` holds, or one
+   * no traced project's root contains, resolves to `undefined` and never
+   * manufactures a project that is not there. A project already reached is
+   * never asked again, which is what makes a cycle between two projects
+   * terminate instead of looping forever. A resolved owner that is not a
+   * closure *destination* is dropped as though nothing owned the path —
+   * `isClosureDestination` says which projects those are, and why.
+   *
+   * Every starting project is asked about, even one whose program pulls in
+   * nothing outside itself and even one no closure could have reached, and a
+   * project's dependents never are — nothing here walks from a file to
+   * whoever imports it, only from a project to what its own program reaches.
+   *
+   * The callback's invocations are the whole result, which is why nothing is
+   * returned: the closure is exactly the set of projects the callback was
+   * asked about, and handing that set back as well would be a second
+   * representation of it, free to drift from whatever the caller collected
+   * while it answered. Ordering belongs to the caller for the same reason —
+   * `ProgramService.buildPrograms` sorts the programs it collected, so the
+   * order a report reads in is decided once, over the things a report is
+   * really made of.
+   */
+  public walkImportedProjectClosure(
+    args: WalkImportedProjectClosureArguments,
+  ): void {
+    const reached = new Set<string>();
+    let pending = args.startingProjects;
+
+    while (pending.length > 0) {
+      const next: WorkspaceProject[] = [];
+
+      for (const project of pending) {
+        if (reached.has(project.name)) {
+          continue;
+        }
+
+        reached.add(project.name);
+
+        for (const workspaceRelativePath of args.resolveProjectFiles(project)) {
+          const owner = this.resolveOwningProject({
+            projects: args.workspaceProjects,
+            workspaceRelativePath,
+          });
+
+          if (
+            owner !== undefined &&
+            !reached.has(owner.name) &&
+            this.isClosureDestination(owner)
+          ) {
+            next.push(owner);
+          }
+        }
+      }
+
+      pending = next;
+    }
   }
 }

@@ -34,8 +34,19 @@ export interface FileFilter {
   readonly isExcluded: (workspaceRelativePath: string) => boolean;
 }
 
-/** Arguments for resolving the projects a set of starting roots' imports reach. */
-export interface ResolveDependencyClosureArguments {
+/**
+ * Reports the workspace-relative paths one project's program pulled in.
+ *
+ * How that project came to have a program at all — built fresh for this
+ * traversal, reused from an earlier one — is entirely the implementation's
+ * concern. `walkImportedProjectClosure` reads only the paths that come back.
+ */
+export type ResolveProjectFilesFunction = (
+  project: WorkspaceProject,
+) => readonly string[];
+
+/** Arguments for walking the projects a set of starting roots' imports reach. */
+export interface WalkImportedProjectClosureArguments {
   /** Reports the workspace-relative paths one project's program pulled in. */
   readonly resolveProjectFiles: ResolveProjectFilesFunction;
   /** Project roots the traversal begins from. Always present in the result. */
@@ -47,17 +58,6 @@ export interface ResolveDependencyClosureArguments {
    */
   readonly workspaceProjects: readonly WorkspaceProject[];
 }
-
-/**
- * Reports the workspace-relative paths one project's program pulled in.
- *
- * How that project came to have a program at all — built fresh for this
- * traversal, reused from an earlier one — is entirely the implementation's
- * concern. `resolveDependencyClosure` reads only the paths that come back.
- */
-export type ResolveProjectFilesFunction = (
-  project: WorkspaceProject,
-) => readonly string[];
 
 /** One project discovered from a directory holding its own `tsconfig.json`. */
 export interface WorkspaceProject {
