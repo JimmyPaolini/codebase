@@ -32,6 +32,7 @@ import {
   COMPATIBLE_MODIFIERS,
   ConflictingSubFamilyError,
   DEFAULT_REPEAT_COUNT,
+  InvalidOffsetError,
   InvalidPeriodError,
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
@@ -433,6 +434,40 @@ describe(MeanderGenerationService, () => {
         expect(() =>
           service.generate({
             modifier,
+            repeatCount: 6,
+            rows: 5,
+            type: "parallel",
+          }),
+        ).not.toThrow();
+      },
+    );
+
+    // 🎯 The offset rotates a cyclic sequence of `strands` places, so
+    // rotating `strands` is rotating none. Every value outside
+    // `0 … strands - 1` therefore names a drawing already reachable from
+    // inside it, and is refused rather than folded — a caller that meant
+    // something else finds out instead of silently getting the drawing they
+    // did not ask for.
+    it.each([{ offset: -1 }, { offset: 1.5 }, { offset: 3 }])(
+      "throws when serpentine's offset is $offset at 3 strands",
+      ({ offset }) => {
+        expect(() =>
+          service.generate({
+            modifier: { name: "serpentine", offset, strands: 3 },
+            repeatCount: 6,
+            rows: 5,
+            type: "parallel",
+          }),
+        ).toThrow(InvalidOffsetError);
+      },
+    );
+
+    it.each([{ offset: 0 }, { offset: 2 }])(
+      "draws a serpentine at an offset of $offset, both edges of the bound",
+      ({ offset }) => {
+        expect(() =>
+          service.generate({
+            modifier: { name: "serpentine", offset, strands: 3 },
             repeatCount: 6,
             rows: 5,
             type: "parallel",

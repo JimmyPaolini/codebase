@@ -13,7 +13,7 @@ import { ParallelSerpentineService } from "./parallel-serpentine.service";
  */
 @Module({
   controllers: [],
-  exports: [ParallelMotifService],
+  exports: [ParallelMotifService, ParallelSerpentineService],
   imports: [GridGeometryModule],
   providers: [ParallelMotifService, ParallelSerpentineService],
 })

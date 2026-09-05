@@ -104,7 +104,7 @@ named half was 174 until the sweep's row range was raised to `MAXIMUM_VALUE`, so
 these counts have moved once for that reason alone — see the note under "Meander Charter"
 above:
 
-- **Every interior white channel is exactly one stroke width**, in all 3,685 files. The
+- **Every interior white channel is exactly one stroke width**, in all 4,273 files. The
   channel width equals the stroke width equals half a grid unit, and that single number
   is the same in every document the project has ever written — the stroke is `unit / 2`
   at every row count, in every family, at every ply of `parallel`. #340 and #413 both
@@ -115,7 +115,7 @@ above:
   X-junctions across all 3,377 files the six original families produce — a stronger
   statement than "non-self-intersecting", and the sharpest single characterization of what
   those six have in common. The `cross` family relaxes it deliberately: 12 X-junctions in
-  each of the seven solid documents it commits, and none anywhere else in the 3,685-file
+  each of the seven solid documents it commits, and none anywhere else in the 4,273-file
   corpus. Twelve at every one of its row counts, 6 through 12, so the count is a property
   of the repeat count rather than of `rows`. See "The Crossing Family" below.
 - **Ink branches in three places, and only there.** 2,876 T-junctions across 99 of the 302
@@ -798,7 +798,7 @@ the charter sweep like every other drawing instead.
 **Whether the output stays space-filling was measured, not assumed, and it does.** Every
 lattice point of every one of the 30 committed drawings carries ink — including the band's
 first and last lattice column, which invariant 7 would have excused. The family needs no
-termination carve-out at all, where 2,176 of the 3,685 committed documents do have a
+termination carve-out at all, where 2,176 of the 4,273 committed documents do have a
 gap there. The reason is the survey's own finding that no cell of any of the 3,179
 permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
 lattice point with at least one arm of ink.
@@ -988,12 +988,18 @@ together, one channel apart. It is the tenth family, and the only one of the fou
 since the charter was written that relaxes no invariant at all — it is space-filling,
 orthogonal, non-branching, non-crossing, and a single band, strictly, at every ply.
 
-Its 231 committed drawings are eleven row counts, 2 through 12, crossed with its unmodified
-two-strand default and its three ply-carrying modifiers — `plied`, `aligned`, and
-`serpentine` — each swept over its whole range at each row count. That range is the row
-count itself: a bundle of `N` strands needs `N` rows, so twelve rows admit a twelve-ply
-bundle and two rows admit a two-ply one. `plied` skips one value of it, the family's own
-default of two, which would duplicate the unmodified drawing.
+Its 819 committed drawings are eleven row counts, 2 through 12, crossed with its three
+ply-carrying modifiers — `plied`, `aligned`, and `serpentine` — each swept over its whole
+range at each row count. That range is the row count itself: a bundle of `N` strands needs
+`N` rows, so twelve rows admit a twelve-ply bundle and two rows admit a two-ply one.
+
+**The family commits no unmodified drawing, and that is deliberate.** Drawn with no
+modifier it is a two-strand `plied` bundle, so the sweep used to write those same bytes as
+`plain-…svg` while every sibling was named for its ply — one filename in the family that
+could not be read as a ply. `TYPES_WITH_MODIFIER_NAMED_DEFAULT` drops the unmodified entry
+for this type and lets `plied` carry the drawing under `plied-strands-2-…svg` instead.
+Nothing left the corpus by it; the two documents were always identical, and the command
+line still accepts `--type parallel` with no modifier.
 
 ### The three shapes
 
@@ -1005,6 +1011,9 @@ those strands can trace. All three take `--strands`.
 | none, and `plied` | brackets, across the band | ⊔⊓⊔⊓ — units alternate which way they open |
 | `aligned` | brackets, across the band | ⊔⊔⊔⊔ — every unit opens the same way |
 | `serpentine` | ribbons, down the band | continuous square waves, one per strand |
+
+`serpentine` carries two further axes of its own, `--flip` and `--offset`, described under
+"Turning a ribbon over, and moving the flat one" below.
 
 `aligned` is the bundle with the alternation taken away, and nothing else. A bundle's
 exact cover is an argument about the inside of one repeat unit, so it holds whichever way
@@ -1027,6 +1036,39 @@ more, shallower ribbons. Its `rows + 1` lattice rows are cut into `strands` stri
 division, so no two strips differ in depth by more than a single row, and a ribbon puts a
 full-height vertical run in every column of its own strip — which is what makes the stack an
 exact cover for the same reason a bundle is one.
+
+### Turning a ribbon over, and moving the flat one
+
+Two things about a stack of ribbons were fixed and are now swept, and neither can cost the
+family a charter invariant — a ribbon's exact cover is an argument about its own strip, and
+both of these change only the order it visits that strip in, or which strip it is.
+
+**`--flip` turns ribbons upside down.** Every ribbon used to wave in phase, all turning at
+the bottom out of an even column. `alternating` flips every other one, so the stack
+interlocks; `one` flips only the deepest however many there are. The two agree at one and
+two strands and part company at three, which is why both are swept rather than one standing
+in for the other.
+
+**`--offset` rotates the strip depths.** Floor division puts the deeper strips last, so the
+shallow ones — including any strip with no room to wave at all, which draws as a straight
+rule — were pinned to the top of every drawing. Rotating that sequence unpins them: at the
+row and strand counts where exactly one strip is flat, the `strands` rotations are exactly
+the `strands` positions that rule can sit at.
+
+Rotation rather than an arbitrary rearrangement of the depths, because the depths are a
+cyclic sequence and their rotations are a bounded family — `strands` of them. Every
+arrangement of the multiset would be a combinatorial explosion: a ten-strand bundle over
+twelve rows has 120 of them against ten rotations, and the corpus would have run to five
+figures for this one shape.
+
+**The two axes are not a cross product, and `ParallelSerpentineService.variants` is what
+says so.** Three collapses hide in `strands × 3`, no two in the same place: rotating a
+partition whose depths are all equal changes nothing; `alternating` and `one` name the same
+ribbon below three strands; and flipping a flat strip is a no-op, since it turns at the top
+and the bottom of the same row. So the sweep asks the geometry which variants are distinct
+rather than enumerating the product and committing the same drawing several times over —
+`819` rather than the `1,032` a naive cross product would have written, with the difference
+being duplicates rather than drawings.
 
 ### What a bundle draws
 
@@ -1075,11 +1117,11 @@ that can manage it, since a two-ply serpentine is two ribbons and so a forest.
 lattice point count rather than as a boolean — which is the stronger reading, since it
 counts the first and last lattice column that `channelWidthCompliant` exempts — beside the
 component count (`strands` per repeat unit), the free-end count (two per strand), and the
-cycle count (zero). The charter sweep then measures the same 231 drawings again through
+cycle count (zero). The charter sweep then measures the same 819 drawings again through
 `MeanderGenerationService.generate`, against that declaration, in both directions: an
 invariant a family does not relax must hold, and one it does relax must actually break. So
 the empty row is a claim that can fail, and declaring a relaxation this family does not have
-fails exactly its own 231 cases and nothing else.
+fails exactly its own 819 cases and nothing else.
 
 ### Nothing gets thinner
 
@@ -1540,6 +1582,7 @@ flowchart LR
   ChainMotifModule --> SnakeMotifModule
   CrossMotifModule --> GridGeometryModule
   DrawModule --> MeanderGenerationModule
+  DrawModule --> ParallelMotifModule
   MainModule --> DiscoveryModule
   MainModule --> DrawModule
   MainModule --> MeanderTopologyModule
@@ -1808,11 +1851,13 @@ graph LR
   file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
+  file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
   file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_draw_draw_combinations_service_ts
+  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
+  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_draw_draw_types_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_draw_draw_index_service_ts
@@ -1823,6 +1868,7 @@ graph LR
   file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
   file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
+  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
   file_src_modules_draw_draw_parameters_service_unit_test_ts --> file_src_modules_draw_draw_parameters_service_ts
   file_src_modules_draw_draw_parameters_service_unit_test_ts --> file_src_modules_draw_draw_types_ts
   file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_draw_draw_constants_ts
@@ -1853,6 +1899,7 @@ graph LR
   file_src_modules_draw_draw_command_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_svg_rendering_output_path_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_combinations_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_index_service_ts
@@ -1867,6 +1914,7 @@ graph LR
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_motif_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tiles_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
   file_src_modules_draw_draw_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
@@ -1876,6 +1924,7 @@ graph LR
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_permutations_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_generation_meander_generation_module_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_parallel_motif_parallel_motif_module_ts
   file_src_modules_draw_draw_types_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_draw_draw_types_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
   file_src_modules_grid_geometry_grid_geometry_module_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
@@ -2110,6 +2159,7 @@ graph LR
   file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_constants_ts
   file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_types_ts
   file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
+  file_src_modules_parallel_motif_parallel_motif_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_parallel_motif_parallel_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
   file_src_modules_parallel_motif_parallel_motif_module_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
   file_src_modules_parallel_motif_parallel_motif_module_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
@@ -2145,6 +2195,7 @@ graph LR
   file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
   file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
   file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
+  file_src_modules_parallel_motif_parallel_motif_types_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_parallel_motif_parallel_serpentine_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_parallel_motif_parallel_serpentine_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
   file_src_modules_parallel_motif_parallel_serpentine_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts

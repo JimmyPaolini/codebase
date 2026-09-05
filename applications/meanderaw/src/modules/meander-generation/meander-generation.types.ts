@@ -44,6 +44,12 @@ export type MeanderType =
  * member would be dead code no `COMPATIBLE_MODIFIERS` entry could point to.
  */
 export type Modifier =
+  | {
+      readonly flip?: SerpentineFlip;
+      readonly name: "serpentine";
+      readonly offset?: number;
+      readonly strands: number;
+    }
   | { readonly name: "aligned"; readonly strands: number }
   | { readonly name: "alternated"; readonly period: number }
   | { readonly name: "brick" }
@@ -55,7 +61,6 @@ export type Modifier =
   | { readonly name: "plied"; readonly strands: number }
   | { readonly name: "ruled" }
   | { readonly name: "rung" }
-  | { readonly name: "serpentine"; readonly strands: number }
   | { readonly name: "spin" }
   | { readonly name: "spin-flip" }
   | { readonly name: "split" }
@@ -110,6 +115,17 @@ export interface RepeatPatternOptions {
   readonly repeatCount: number;
   readonly rows: number;
 }
+
+/**
+ * Which ribbons a `serpentine` drawing turns upside down.
+ *
+ * `"alternating"` flips every other ribbon, so the stack interlocks;
+ * `"one"` flips only the deepest ribbon however many there are. The two
+ * agree at one and two strands and part company at three, which is why both
+ * are swept rather than one standing in for the other. A drawing with no
+ * `flip` at all leaves every ribbon waving in phase.
+ */
+export type SerpentineFlip = "alternating" | "one";
 
 /**
  * The row count, optional modifier, and horizontal offset one repeat unit's

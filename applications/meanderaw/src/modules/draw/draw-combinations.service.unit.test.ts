@@ -1,11 +1,14 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import {
   MAXIMUM_VALUE,
   STRUCTURAL_MINIMUM_ROWS,
+  SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
 import { DEFAULT_PARALLEL_STRANDS } from "../parallel-motif/parallel-motif.constants";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
 
@@ -36,7 +39,11 @@ describe(DrawCombinationsService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [DrawCombinationsService],
+      providers: [
+        DrawCombinationsService,
+        GridGeometryService,
+        ParallelSerpentineService,
+      ],
     }).compile();
 
     service = await module.resolve(DrawCombinationsService);
@@ -71,10 +78,12 @@ describe(DrawCombinationsService, () => {
       { expected: 30, type: "negative" },
       // rows 2..12 × (none + rung + stagger)
       { expected: 33, type: "branch" },
-      // rows 2..12 × (none + plied over every ply 1..rows less the
-      // skipped default + aligned over 1..rows + serpentine over 1..rows),
-      // which is 1 + (rows - 1) + rows + rows = 3 × rows at each row count
-      { expected: 231, type: "parallel" },
+      // rows 2..12 × (plied over every ply 1..rows + aligned over the same
+      // + serpentine over every distinct rotation and flip of each). The
+      // family has no unmodified entry — `plied` names that drawing — and
+      // serpentine's variant count is not a multiplication, since rotations
+      // of an even partition and flips that name the same ribbon collapse.
+      { expected: 819, type: "parallel" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
       expect(
         combinations.filter((parameters) => parameters.type === type),
@@ -82,7 +91,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(506);
+      expect(combinations).toHaveLength(1094);
     });
 
     it("names every combination distinctly", () => {
@@ -117,18 +126,40 @@ describe(DrawCombinationsService, () => {
       }
     });
 
-    // 🎯 The one hole in that range, asserted rather than described. `plied`
-    // naming the family's own default ply renders a document byte-identical
-    // to the unmodified drawing beside it, so sweeping it would commit the
-    // same bytes twice under two filenames.
-    it("skips the ply that would duplicate the unmodified drawing", () => {
-      const strandCounts = combinations.flatMap((parameters) =>
+    // 🎯 The range has no hole in it, and the family has no unmodified
+    // entry — the two facts are one change. `parallel` drawn with no
+    // modifier is a two-strand `plied` bundle, so the sweep used to commit
+    // it as `plain-…svg` and skip the ply that would have duplicated it.
+    // Dropping the unmodified entry instead lets `plied` carry that drawing
+    // under a name its siblings share, which is what makes every parallel
+    // filename readable as a ply.
+    it("names every parallel drawing for its ply rather than committing an unmodified one", () => {
+      const parallel = combinations.filter(({ type }) => type === "parallel");
+      const strandCounts = parallel.flatMap((parameters) =>
         parameters.modifier?.name === "plied"
           ? [parameters.modifier.strands]
           : [],
       );
 
-      expect(strandCounts).not.toContain(DEFAULT_PARALLEL_STRANDS);
+      expect(parallel).not.toHaveLength(0);
+      expect(parallel.every(({ modifier }) => modifier !== undefined)).toBe(
+        true,
+      );
+      expect(strandCounts).toContain(DEFAULT_PARALLEL_STRANDS);
+    });
+
+    // 🎯 Every other family keeps its unmodified entry, so dropping one is
+    // a decision about `parallel` rather than a change to the sweep.
+    it("still sweeps an unmodified drawing for every other family", () => {
+      const unmodified = new Set(
+        combinations
+          .filter(({ modifier }) => modifier === undefined)
+          .map(({ type }) => type),
+      );
+
+      expect([...unmodified].toSorted()).toStrictEqual(
+        SUPPORTED_TYPES.filter((type) => type !== "parallel").toSorted(),
+      );
     });
 
     // 🎯 The deepest ply the sweep reaches is the deepest the command line

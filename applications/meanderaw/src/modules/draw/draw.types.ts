@@ -4,6 +4,7 @@ import type {
   DotShape,
   MeanderType,
   Modifier,
+  SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
 import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
 
@@ -23,7 +24,9 @@ import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
  * the generation service enforces.
  */
 export interface DrawCommandOptions {
+  flip?: SerpentineFlip;
   modifier?: Modifier["name"];
+  offset?: number;
   outputDirectory: string;
   period?: number;
   repeatCount: number;

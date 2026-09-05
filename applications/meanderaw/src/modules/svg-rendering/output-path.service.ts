@@ -69,7 +69,16 @@ export class OutputPathService {
     }
 
     if ("strands" in modifier) {
-      return `${modifier.name}-strands-${modifier.strands}-${suffix}`;
+      const flip =
+        modifier.name === "serpentine" && modifier.flip !== undefined
+          ? `-flip-${modifier.flip}`
+          : "";
+      const offset =
+        modifier.name === "serpentine" && modifier.offset !== undefined
+          ? `-offset-${modifier.offset}`
+          : "";
+
+      return `${modifier.name}-strands-${modifier.strands}${flip}${offset}-${suffix}`;
     }
 
     return `${modifier.name}-${suffix}`;

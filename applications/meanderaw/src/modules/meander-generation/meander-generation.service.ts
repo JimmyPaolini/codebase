@@ -9,6 +9,7 @@ import {
   COMPATIBLE_MODIFIERS,
   ConflictingSubFamilyError,
   InvalidModifierError,
+  InvalidOffsetError,
   InvalidPeriodError,
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
@@ -191,6 +192,28 @@ export class MeanderGenerationService {
     }
   }
 
+  /**
+   * Throws {@link InvalidOffsetError} when `serpentine`'s `offset` isn't a
+   * whole number inside its own strand count.
+   *
+   * The bound is `strands` because the offset rotates a cyclic sequence of
+   * that length: rotating it `strands` places is rotating it none, so every
+   * value outside `0 … strands - 1` names a drawing already reachable by a
+   * value inside it. Refused rather than folded, so a caller that meant
+   * something else finds out.
+   */
+  private validateOffset(modifier: Modifier | undefined): void {
+    if (modifier?.name !== "serpentine" || modifier.offset === undefined) {
+      return;
+    }
+
+    const { offset, strands } = modifier;
+
+    if (!Number.isInteger(offset) || offset < 0 || offset >= strands) {
+      throw new InvalidOffsetError(offset, strands);
+    }
+  }
+
   /** Throws {@link InvalidPeriodError} when `alternated`'s `period` isn't a whole number within the shared bounds. */
   private validatePeriod(modifier: Modifier | undefined): void {
     if (modifier?.name !== "alternated") {
@@ -283,6 +306,7 @@ export class MeanderGenerationService {
     this.validatePeriod(parameters.modifier);
     this.validateModifierCycle(parameters.modifier, parameters.repeatCount);
     this.validateStrands(parameters.modifier, parameters.rows);
+    this.validateOffset(parameters.modifier);
 
     const geometry = this.gridGeometryService.compute(parameters.rows);
     const paths = this.buildPaths(geometry, parameters);

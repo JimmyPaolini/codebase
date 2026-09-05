@@ -15,6 +15,7 @@ import {
 } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
+import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
@@ -28,6 +29,7 @@ import type {
   GenerationParameters,
   MeanderType,
   Modifier,
+  SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
 import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type {
@@ -192,6 +194,15 @@ export class DrawCommand extends CommandRunner {
 
   // 🌎 Public Methods
 
+  /** Parses `--flip`, rejecting any value outside the supported set. Used only with `--modifier serpentine`. */
+  @Option({
+    description: `Which ribbons are turned upside down, for --modifier serpentine (${SUPPORTED_SERPENTINE_FLIPS.join(", ")})`,
+    flags: "--flip <flip>",
+  })
+  parseFlip(value: string): SerpentineFlip {
+    return this.drawParametersService.serpentineFlip(value);
+  }
+
   /** Parses `--modifier`, rejecting any name outside the supported set. Omitted entirely when no modifier is requested. */
   @Option({
     description: `Modifier applied to the motif (${SUPPORTED_MODIFIER_NAMES.join(", ")})`,
@@ -199,6 +210,16 @@ export class DrawCommand extends CommandRunner {
   })
   parseModifier(value: string): Modifier["name"] {
     return this.drawParametersService.modifierName(value);
+  }
+
+  /** Parses `--offset` as an integer, used only with `--modifier serpentine`. */
+  @Option({
+    description:
+      "How far the strip depths are rotated, for --modifier serpentine",
+    flags: "--offset <offset>",
+  })
+  parseOffset(value: string): number {
+    return Number.parseInt(value, 10);
   }
 
   /** Registers `--output-directory`; nest-commander requires a parser method per option even when no transformation is needed. */

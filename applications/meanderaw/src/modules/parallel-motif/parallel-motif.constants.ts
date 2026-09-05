@@ -1,5 +1,7 @@
 // ♟️ Constants
 
+import type { SerpentineFlip } from "../meander-generation/meander-generation.types";
+
 /**
  * How many lattice columns one strand of a bundle adds to a repeat unit.
  *
@@ -61,3 +63,23 @@ export const PARALLEL_MODIFIER_NAMES: readonly string[] = [
   "plied",
   "serpentine",
 ];
+
+/**
+ * Every value `serpentine`'s `flip` takes, `undefined` included, in the
+ * order {@link ParallelSerpentineService.variants} enumerates them.
+ *
+ * `undefined` leads, so the in-phase drawing is the one that keeps the bare
+ * `serpentine-strands-N` filename and every flipped variant is named for
+ * what it does to it.
+ */
+export const SERPENTINE_FLIPS: readonly (SerpentineFlip | undefined)[] = [
+  undefined,
+  "alternating",
+  "one",
+];
+
+/** Every `--flip` value the command line accepts, mirroring `SUPPORTED_MODIFIER_NAMES`'s widened declaration so `Array.prototype.includes` stays usable with a plain `string`. */
+export const SUPPORTED_SERPENTINE_FLIPS: readonly string[] = [
+  "alternating",
+  "one",
+] satisfies readonly SerpentineFlip[];

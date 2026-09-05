@@ -330,6 +330,23 @@ export class InvalidModifierError extends Error {
   }
 }
 
+/**
+ * Thrown when `serpentine`'s `offset` falls outside its own strand count.
+ *
+ * The bound is the strand count rather than a constant because the offset
+ * rotates a cyclic sequence of exactly that length — rotating `strands`
+ * places is rotating none — so the message names the count it was measured
+ * against rather than a number written here.
+ */
+export class InvalidOffsetError extends Error {
+  constructor(offset: number, strands: number) {
+    super(
+      `offset must be between 0 and the strand count ${strands} exclusive, received ${offset}`,
+    );
+    this.name = "InvalidOffsetError";
+  }
+}
+
 /** Thrown when `alternated`'s `period` falls outside the shared bounds, or `repeatCount` isn't a whole multiple of it. */
 export class InvalidPeriodError extends Error {
   constructor(period: number, minimum: number, maximum: number) {
@@ -415,3 +432,22 @@ export class UnavailableSubFamilyError extends Error {
     this.name = "UnavailableSubFamilyError";
   }
 }
+
+/**
+ * Types whose unmodified drawing one of their own modifiers already names,
+ * so the sweep draws it once under that name rather than twice under two.
+ *
+ * `parallel` is the only one. Drawn with no modifier it is a two-strand
+ * `plied` bundle, and `plied` naming two strands renders the same bytes —
+ * which used to reach disk as `plain-…svg` while every sibling drawing was
+ * named for its ply. The sweep now omits the unmodified entry for this type
+ * and lets `plied` cover it, so the whole family is named on one scheme and
+ * a reader can tell two drawings apart by their filenames alone.
+ *
+ * Nothing is lost from the corpus by it: the two documents were always
+ * identical, and the command line still accepts `--type parallel` with no
+ * modifier.
+ */
+export const TYPES_WITH_MODIFIER_NAMED_DEFAULT: readonly MeanderType[] = [
+  "parallel",
+];

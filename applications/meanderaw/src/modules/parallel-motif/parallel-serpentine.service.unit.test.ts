@@ -104,6 +104,72 @@ describe(ParallelSerpentineService, () => {
     });
   });
 
+  describe("variants", () => {
+    // 🎯 The first variant carries neither field, so the drawing that
+    // rotates nothing and turns nothing over keeps the bare
+    // `serpentine-strands-N` filename it had before either axis existed, and
+    // the corpus's existing names survive.
+    it("leads with the variant that names neither axis", () => {
+      expect(service.variants(8, 4)[0]).toStrictEqual({});
+    });
+
+    // 🎯 No two variants may render the same drawing, which is the whole
+    // reason the sweep asks this service instead of taking a cross product
+    // of its own. Measured as the drawings rather than as the variants: two
+    // different `{flip, offset}` pairs that produce the same strips and the
+    // same flipped ribbons are one document under two names.
+    it.each(PLIES)(
+      "names $strands strands at $rows rows without repeating a drawing",
+      ({ rows, strands }) => {
+        const drawings = service.variants(rows, strands).map((variant) =>
+          service.path(
+            geometryService.compute(rows),
+            {
+              isLastUnit: false,
+              modifier: { name: "serpentine", strands, ...variant },
+              rows,
+              unitIndex: 0,
+            },
+            strands,
+          ),
+        );
+
+        expect(new Set(drawings).size).toBe(drawings.length);
+      },
+    );
+
+    // 🎯 Both axes collapse, and at different places — which is why the
+    // count is deduplicated rather than `strands × 3`. A ply that divides
+    // the band evenly has one rotation, since rotating equal depths changes
+    // nothing; and `alternating` and `one` name the same single ribbon
+    // below three strands.
+    it.each([
+      // 🎯 One ribbon: nothing to rotate and nothing to alternate, but the
+      // lone ribbon can still be turned over — so `one` is the only flip
+      // that says anything, and there are two drawings rather than three.
+      { expected: 2, rows: 3, strands: 1 },
+      // 🎯 Four lattice rows over two strands divide evenly, so the two
+      // rotations are one drawing; and at two strands `alternating` and
+      // `one` both name the second ribbon, so the two flips are one.
+      { expected: 2, rows: 3, strands: 2 },
+      // 🎯 Nine lattice rows over three strands also divide evenly, but at
+      // three strands the flips finally part company — `alternating` turns
+      // the middle ribbon over and `one` turns the last.
+      { expected: 3, rows: 8, strands: 3 },
+      // 🎯 The case where all three collapses bite at once. Five lattice
+      // rows over three strands give depths 1, 2, 2, so the three rotations
+      // are three distinct partitions — but two of them put the flat strip
+      // where a flip would land on it, and a flip with no depth to invert
+      // is a no-op. Three rotations × three flips is nine; seven survive.
+      { expected: 7, rows: 4, strands: 3 },
+    ])(
+      "keeps $expected distinct variants at $strands strands and $rows rows",
+      ({ expected, rows, strands }) => {
+        expect(service.variants(rows, strands)).toHaveLength(expected);
+      },
+    );
+  });
+
   describe("path", () => {
     // 🎯 The wave in one string. Two columns, one strip: the first column
     // runs top to bottom and hands the ribbon right along the band's bottom,
@@ -148,6 +214,42 @@ describe(ParallelSerpentineService, () => {
       expect(service.path(geometry, { ...unit, unitIndex: 1 }, 1)).toBe(
         "M67.5 7.5V67.5H97.5M97.5 67.5V7.5H127.5",
       );
+    });
+
+    // 🎯 Flipping a ribbon inverts its phase and nothing else: it turns at
+    // the top out of an even column where a ribbon left in phase turns at the
+    // bottom. The vertical runs are the same runs, which is why no flip can
+    // cost the family a charter invariant.
+    it("inverts a flipped ribbon's phase and leaves its runs alone", () => {
+      const geometry = geometryService.compute(2);
+      const unit = { isLastUnit: true, rows: 2, unitIndex: 0 };
+
+      expect(
+        service.path(
+          geometry,
+          {
+            ...unit,
+            modifier: { flip: "one", name: "serpentine", strands: 1 },
+          },
+          1,
+        ),
+      ).toBe("M7.5 67.5V7.5H37.5M37.5 7.5V67.5");
+    });
+
+    // 🎯 The rotation, at the row and strand count where exactly one strip
+    // is flat. With no rotation the flat rule sits at the top of the band; one
+    // rotation moves it down a strip. This is the axis that unpins it.
+    it("moves the flat strip down the band as the offset turns", () => {
+      expect(service.strips(4, 3)).toStrictEqual([
+        { bottomRow: 0, topRow: 0 },
+        { bottomRow: 2, topRow: 1 },
+        { bottomRow: 4, topRow: 3 },
+      ]);
+      expect(service.strips(4, 3, 1)).toStrictEqual([
+        { bottomRow: 1, topRow: 0 },
+        { bottomRow: 3, topRow: 2 },
+        { bottomRow: 4, topRow: 4 },
+      ]);
     });
 
     // 🎯 Every strip draws its own run in every column, which is the half of

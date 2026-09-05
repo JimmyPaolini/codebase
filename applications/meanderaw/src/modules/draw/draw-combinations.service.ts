@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
 import {
   COMPATIBLE_MODIFIERS,
@@ -11,8 +11,9 @@ import {
   STRUCTURAL_MINIMUM_ROWS,
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
+  TYPES_WITH_MODIFIER_NAMED_DEFAULT,
 } from "../meander-generation/meander-generation.constants";
-import { DEFAULT_PARALLEL_STRANDS } from "../parallel-motif/parallel-motif.constants";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 
 import { ALTERNATED_SWEEP_PERIODS, DOT_SWEEP_SHAPES } from "./draw.constants";
 
@@ -50,7 +51,10 @@ import type {
 export class DrawCombinationsService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(ParallelSerpentineService)
+    private readonly parallelSerpentineService: ParallelSerpentineService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -92,11 +96,16 @@ export class DrawCombinationsService {
       return DOT_SWEEP_SHAPES.map((shape) => ({ name, shape }));
     }
 
+    if (name === "serpentine") {
+      return this.strandCounts(rowCount).flatMap((strands) =>
+        this.parallelSerpentineService
+          .variants(rowCount, strands)
+          .map((variant) => ({ name, strands, ...variant })),
+      );
+    }
+
     if (this.isPlyModifierName(name)) {
-      return this.strandCounts(name, rowCount).map((strands) => ({
-        name,
-        strands,
-      }));
+      return this.strandCounts(rowCount).map((strands) => ({ name, strands }));
     }
 
     return [{ name }];
@@ -126,12 +135,15 @@ export class DrawCombinationsService {
       (value): value is Modifier["name"] => this.isModifierName(value),
     );
 
-    return [
-      undefined,
-      ...modifierNames.flatMap((name) =>
-        this.expandModifierName(name, rowCount),
-      ),
-    ];
+    const expanded = modifierNames.flatMap((name) =>
+      this.expandModifierName(name, rowCount),
+    );
+
+    if (TYPES_WITH_MODIFIER_NAMED_DEFAULT.includes(type)) {
+      return expanded;
+    }
+
+    return [undefined, ...expanded];
   }
 
   /** The `repeatCount` a combination uses: `DEFAULT_REPEAT_COUNT`, rounded up to the spin family's required cycle length when needed. */
@@ -173,28 +185,18 @@ export class DrawCombinationsService {
    * it: every combination this yields is valid at the row count it was
    * asked for, by construction rather than by a test noticing.
    *
-   * Only `plied` skips a ply, and the one it skips is
-   * {@link DEFAULT_PARALLEL_STRANDS} rather than a literal 2, so the hole
-   * moves if the family's default ever does. `plied` naming that ply
-   * renders a document byte-identical to the unmodified drawing the sweep
-   * already writes — `parallel-motif.service.unit.test.ts` asserts the
-   * identity — so sweeping it would commit the same bytes twice under two
-   * filenames. `aligned` and `serpentine` have no unmodified drawing to
-   * collide with, since the family draws exactly one shape without a
-   * modifier and it is `plied`'s, so their ranges are whole.
+   * The range has no hole in it any more. `plied` used to skip the family's
+   * own default ply, because a `plied` drawing naming it and the unmodified
+   * drawing beside it are the same bytes under two filenames. The sweep now
+   * drops the unmodified entry for this family instead — see
+   * `TYPES_WITH_MODIFIER_NAMED_DEFAULT` — so the ply that used to be the
+   * duplicate is the one that carries the drawing, and every parallel
+   * document is named for its own ply.
    */
-  private strandCounts(name: PlyModifierName, rowCount: number): number[] {
+  private strandCounts(rowCount: number): number[] {
     const length = rowCount - MINIMUM_STRANDS + 1;
-    const counts = Array.from(
-      { length },
-      (_value, index) => MINIMUM_STRANDS + index,
-    );
 
-    if (name !== "plied") {
-      return counts;
-    }
-
-    return counts.filter((strands) => strands !== DEFAULT_PARALLEL_STRANDS);
+    return Array.from({ length }, (_value, index) => MINIMUM_STRANDS + index);
   }
 
   // 🌎 Public Methods

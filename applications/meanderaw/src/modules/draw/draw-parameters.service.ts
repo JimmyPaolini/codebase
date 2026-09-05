@@ -7,6 +7,7 @@ import {
   SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
 import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
+import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
 
 import {
   IncompleteDrawingError,
@@ -20,6 +21,7 @@ import type {
   MeanderType,
   Modifier,
   PlyModifierName,
+  SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
 import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type { DrawCommandOptions } from "./draw.types";
@@ -69,9 +71,37 @@ export class DrawParametersService {
     return PLY_MODIFIER_NAMES.includes(value);
   }
 
+  /** Narrows a raw string to a {@link SerpentineFlip} without an unchecked assertion. */
+  private isSerpentineFlip(value: string): value is SerpentineFlip {
+    return SUPPORTED_SERPENTINE_FLIPS.includes(value);
+  }
+
   /** Narrows a raw string to a {@link MosaicSubFamily} without an unchecked assertion. */
   private isSubFamily(value: string): value is MosaicSubFamily {
     return SUPPORTED_SUB_FAMILIES.includes(value);
+  }
+
+  /**
+   * Builds the `serpentine` {@link Modifier} the parsed options describe.
+   *
+   * Its two extra axes are optional where every other modifier's parameter
+   * is required, and deliberately so: omitting them names the drawing that
+   * rotates nothing and turns nothing over, which is the one the corpus
+   * already had under the bare `serpentine-strands-N` filename. Demanding
+   * them would rename every one of those files for no gain.
+   */
+  private serpentineModifier(
+    options: DrawCommandOptions,
+    strands: number,
+  ): Modifier {
+    const { flip, offset } = options;
+
+    return {
+      name: "serpentine",
+      strands,
+      ...(flip === undefined ? {} : { flip }),
+      ...(offset === undefined ? {} : { offset }),
+    };
   }
 
   // 🌎 Public Methods
@@ -120,7 +150,9 @@ export class DrawParametersService {
         throw new MissingModifierParameterError(modifier, "--strands");
       }
 
-      return { name: modifier, strands };
+      return modifier === "serpentine"
+        ? this.serpentineModifier(options, strands)
+        : { name: modifier, strands };
     }
 
     return { name: modifier };
@@ -133,6 +165,19 @@ export class DrawParametersService {
         "modifier",
         value,
         SUPPORTED_MODIFIER_NAMES,
+      );
+    }
+
+    return value;
+  }
+
+  /** Narrows `--flip`, rejecting any value outside the supported set. Used only with `--modifier serpentine`. */
+  serpentineFlip(value: string): SerpentineFlip {
+    if (!this.isSerpentineFlip(value)) {
+      throw new UnsupportedOptionError(
+        "flip",
+        value,
+        SUPPORTED_SERPENTINE_FLIPS,
       );
     }
 
