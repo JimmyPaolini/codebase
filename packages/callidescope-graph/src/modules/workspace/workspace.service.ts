@@ -19,6 +19,7 @@ import type {
   BuildExclusionsArguments,
   DiscoverProjectsArguments,
   FileFilter,
+  ResolveDependencyClosureArguments,
   WorkspaceProject,
   WorkspaceStructure,
 } from "./workspace.types";
@@ -310,6 +311,63 @@ export class WorkspaceService {
     return (
       TEST_FILE_PATTERN.test(filePath) ||
       filePath.split("/").includes(TEST_DIRECTORY_SEGMENT)
+    );
+  }
+
+  /**
+   * Resolves the projects a set of starting roots' imports transitively
+   * reach — a starting project's dependency closure.
+   *
+   * `args.resolveProjectFiles` reports the workspace-relative paths one
+   * project's program pulled in; this method owns only the fixed-point walk
+   * over those reports, never how a program comes to exist. Each reported
+   * path is walked back to its owning project through `resolveOwningProject`
+   * against `args.workspaceProjects`, so a path `node_modules` holds, or one
+   * no traced project's root contains, resolves to `undefined` and never
+   * manufactures a project that is not there. A project already reached is
+   * never asked again, which is what makes a cycle between two projects
+   * terminate instead of looping forever.
+   *
+   * Every starting project is in the result, even one whose program pulls in
+   * nothing outside itself, and a project's dependents never are — nothing
+   * here walks from a file to whoever imports it, only from a project to what
+   * its own program reaches. The result is sorted by name, so the same
+   * starting roots resolve to the same set whichever order they were given
+   * in.
+   */
+  public resolveDependencyClosure(
+    args: ResolveDependencyClosureArguments,
+  ): WorkspaceProject[] {
+    const reached = new Map<string, WorkspaceProject>();
+    let pending = args.startingProjects;
+
+    while (pending.length > 0) {
+      const next: WorkspaceProject[] = [];
+
+      for (const project of pending) {
+        if (reached.has(project.name)) {
+          continue;
+        }
+
+        reached.set(project.name, project);
+
+        for (const workspaceRelativePath of args.resolveProjectFiles(project)) {
+          const owner = this.resolveOwningProject({
+            projects: args.workspaceProjects,
+            workspaceRelativePath,
+          });
+
+          if (owner !== undefined && !reached.has(owner.name)) {
+            next.push(owner);
+          }
+        }
+      }
+
+      pending = next;
+    }
+
+    return [...reached.values()].toSorted((first, second) =>
+      first.name.localeCompare(second.name),
     );
   }
 
