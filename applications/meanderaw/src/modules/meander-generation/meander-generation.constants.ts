@@ -19,7 +19,7 @@ import type {
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
-  branch: ["rung", "stagger"],
+  branch: ["comb", "rung", "stagger"],
   chain: ["edge", "flip", "edge-flip"],
   cross: ["interrupted"],
   mosaic: ["alternated", "dot", "split"],
@@ -107,6 +107,7 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "interrupted",
   "brick",
   "ruled",
+  "comb",
   "rung",
   "stagger",
   "plied",
@@ -318,6 +319,25 @@ export class InvalidRowsError extends Error {
   constructor(rows: number, minimum: number, maximum: number) {
     super(`rows must be between ${minimum} and ${maximum}, received ${rows}`);
     this.name = "InvalidRowsError";
+  }
+}
+
+/**
+ * Thrown when `stagger`'s `branches` falls outside
+ * {@link MINIMUM_STAGGER_BRANCHES} and the shared {@link MAXIMUM_VALUE}.
+ *
+ * The minimum is the family's own and the maximum is the command line's,
+ * which is why the message names them rather than restating either: below
+ * the minimum the mode stops forking altogether, and above the maximum
+ * nothing structural fails — a crenel simply grows wider than any other
+ * parameter this application accepts.
+ */
+export class InvalidStaggerBranchCountError extends Error {
+  constructor(branches: number, minimum: number, maximum: number) {
+    super(
+      `branches must be between ${minimum} and ${maximum}, received ${branches}`,
+    );
+    this.name = "InvalidStaggerBranchCountError";
   }
 }
 
