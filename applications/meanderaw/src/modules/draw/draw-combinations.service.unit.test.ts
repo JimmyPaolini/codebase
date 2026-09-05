@@ -74,8 +74,8 @@ describe(DrawCombinationsService, () => {
       { expected: 18, type: "whirl" },
       // rows 6..12 × (none + interrupted)
       { expected: 14, type: "cross" },
-      // rows 3..12 × (none + brick + ruled)
-      { expected: 30, type: "negative" },
+      // rows 3..12 × (none + the nine sources the family names)
+      { expected: 100, type: "negative" },
       // rows 2..12 × (none + comb up + rung ×2 + stagger ×4)
       { expected: 88, type: "branch" },
       // rows 2..12 × (plied over every ply 1..rows + aligned over the same
@@ -92,7 +92,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(1149);
+      expect(combinations).toHaveLength(1219);
     });
 
     it("names every combination distinctly", () => {

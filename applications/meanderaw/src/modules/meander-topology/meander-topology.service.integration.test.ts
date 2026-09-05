@@ -1,6 +1,13 @@
 // cspell:ignore dvvxxd dvvxxvdx dvvxxvvxxd dvvxxvvxxvdx dvvxxvvxxvvxxd
 // cspell:ignore hxxhhx hxxhhxxh hxxhhxxhhx hxxhhxxhhxxh hxxhhxxhhxxhhx
+// cspell:ignore hxhxhx hxhxhxhx hxhxhxhxhx hxhxhxhxhxhx hxhxhxhxhxhxhx
+// cspell:ignore dvx vxvx dvxvx vxvxvx dvxvxvx
+// cspell:ignore ddd dddd ddddd dddddd ddddddd
+// cspell:ignore lll llll lllll llllll lllllll
 // cspell:ignore dld dldl dldld dldldl dldldld
+// cspell:ignore ldl ldldl ldldldl
+// cspell:ignore dll dlld dlldl dlldll dlldlld
+// cspell:ignore lvx lvxl dlvxl lvxlvx lvxlvxl
 // — mosaic tile identifiers, one letter per cell of the tile, from
 // MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
 import { readdir, readFile } from "node:fs/promises";
@@ -110,14 +117,27 @@ interface CharterRelaxation {
  * else is declared for it: the break keeps every lattice point painted, so
  * space-filling holds in both modes, and neither mode branches.
  *
- * `negative` relaxes no-branching in every one of its modes, which is why
- * its entry names no modifier at all: it inks the corridors a `mosaic` tile
- * leaves, a cell where three corridors meet becomes a lattice point where
- * three arms of ink meet, and all three of its sources were chosen off the
- * survey's _branches only_ shortlist precisely because they branch. Nothing
- * else is declared for it — its sources have zero negative X-junctions at
- * every swept row count, so its ink has zero too, and every lattice point of
- * its canvas carries ink, so space-filling holds.
+ * `negative` relaxes no-branching in every one of its modes but one: it inks
+ * the corridors a `mosaic` tile leaves, and a cell where three corridors meet
+ * becomes a lattice point where three arms of ink meet. The exception is
+ * `ruled-closed`, which inverts the `lines` sub-family — the survey's whole
+ * "neither" class, whose negative is two straight channels that neither
+ * branch nor cross — so it is the one mode of the one branching family that
+ * needs no relaxation at all, and naming it is cheaper than a charter that
+ * forgives more than it has to. It relaxes no-crossing in three of them, and those
+ * three are named, because a cell where *four* corridors meet becomes a
+ * lattice point where four arms do. Which sources those are is not a taste:
+ * two adjacent corridors in one lattice column is exactly an X-junction, so a
+ * source that never puts two openings side by side branches without crossing
+ * and one that does cannot avoid it. `brick-straight` is stack bond, whose
+ * mortar runs unbroken in both directions where running bond's does not;
+ * `grid` inverts the `dots` sub-family, which is nothing but openings; and
+ * `brick-upright` inverts `diamond`, whose two-level openings are adjacent by
+ * construction. The survey found the same thing across the whole `mosaic`
+ * unit space — 3,070 of its 3,179 tiles have a crossing negative — so a
+ * `negative` family that crossed nowhere was showing the 3.3% minority.
+ * Nothing else is declared: every lattice point of its canvas carries ink in
+ * every mode, so space-filling holds throughout.
  *
  * `branch` relaxes no-branching in every one of its modes, which is why its
  * entry names no modifier either. It inks a spanning tree of the band's
@@ -150,7 +170,13 @@ const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
   chain: [{ invariant: "no-branching", modifierNames: ["edge", "edge-flip"] }],
   cross: [{ exceptModifierNames: ["interrupted"], invariant: "no-crossing" }],
   mosaic: [],
-  negative: [{ invariant: "no-branching" }],
+  negative: [
+    { exceptModifierNames: ["ruled-closed"], invariant: "no-branching" },
+    {
+      invariant: "no-crossing",
+      modifierNames: ["brick-straight", "brick-upright", "grid"],
+    },
+  ],
   parallel: [],
   snake: [{ invariant: "no-branching", modifierNames: ["edge", "edge-flip"] }],
   swirl: [],
@@ -231,7 +257,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 
 /**
  * How long a corpus-wide measurement may take. Each of the three tests that
- * use it reads all 3,536 committed documents from disk and measures every
+ * use it reads all 3,981 committed documents from disk and measures every
  * one, which takes roughly two seconds locally but several times that on a
  * shared CI runner — past vitest's five-second default, which is what failed
  * there while passing everywhere else. Bounded rather than removed, so a
@@ -240,26 +266,32 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
 
 /**
- * How many documents `DrawCommand` commits: 1,149 named patterns beside 3,179
- * enumerated `mosaic` tiles.
+ * How many documents `DrawCommand` commits: 1,219 named patterns beside two
+ * exhaustive halves — 3,179 enumerated `mosaic` tiles and 375 enumerated
+ * one-column `negative` sources.
  *
  * The named half was 174 until issue #507. It sampled row counts up to 8
  * while the command line accepted 12, and the four row counts in between
  * were where `chain` and `snake` drew self-retracing ink that no test could
  * see. That half now runs to `MAXIMUM_VALUE`, which is where 128 of the
- * extra 183 come from — every family gained its own four row counts,
- * `branch` and the families with a lower structural minimum included. The
- * remaining 55 are `branch`'s, whose modes each gained a parameter: `rung`
- * a direction, `stagger` a branch count swept at four values, and `comb` a
- * direction whose downward half the unmodified drawing already was.
+ * extra 253 come from — every family gained its own four row counts,
+ * `branch` and the families with a lower structural minimum included. 55 are
+ * `branch`'s, whose modes each gained a parameter: `rung` a direction,
+ * `stagger` a branch count swept at four values, and `comb` a direction
+ * whose downward half the unmodified drawing already was. The last 70 are
+ * `negative`'s, which grew from three modes to ten — seven new sources at
+ * ten row counts apiece.
  *
- * The `mosaic` half did not follow, and stays at 3,179. It enumerates its
- * space exhaustively rather than sampling it, so the same four row counts
- * would add 552,002 tiles — see `PERMUTATION_ROWS_SWEEP_MAXIMUM`, which
- * carries the count per row and the reason the cap is not a charter blind
- * spot.
+ * Neither exhaustive half followed, and they stay at 3,179 and 375. Both
+ * enumerate their space rather than sampling it, so the same four row counts
+ * would add 552,002 `mosaic` tiles — see `PERMUTATION_ROWS_SWEEP_MAXIMUM`,
+ * which carries the count per row and the reason the cap is not a charter
+ * blind spot. The `negative` half stops one row earlier still, and for a
+ * reason of its own rather than a budget: every drawing in it inverts a tile
+ * the `mosaic` half has already committed, which is what lets the
+ * corridor-identity gate cover it completely.
  */
-const COMMITTED_CORPUS_SIZE = 1149 + 3179;
+const COMMITTED_CORPUS_SIZE = 1219 + 3179 + 375;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -364,57 +396,151 @@ const NEGATIVE_SPACE_SURVEYED_FAMILIES: ReadonlySet<MeanderType> = new Set([
 ]);
 
 /**
- * Every `negative` drawing the sweep commits, beside the committed `mosaic`
- * permutation whose white space it inks.
+ * Every `negative` mode, beside the committed `mosaic` permutation whose
+ * white space it inks.
  *
  * This is what makes "the candidates drawn come from the survey's shortlist"
- * — #415's second acceptance criterion — a fact rather than a comment. The
- * right-hand column names files that were on disk before this family
- * existed, measured by the survey and committed by the permutation sweep, and
- * the assertion below reads both and compares them. The `rows` on the left is
- * one lower than the `rows` in the filename on the right, which is the whole
- * of `NEGATIVE_SOURCE_ROW_OFFSET`.
+ * — #415's second acceptance criterion — a fact rather than a comment, and it
+ * now carries the seven modes added beside those three as well. The
+ * right-hand column names files that were on disk before this family existed,
+ * measured by the survey and committed by the permutation sweep, and the
+ * assertion below reads both and compares them. The `rows` on the left is one
+ * lower than the `rows` in the filename on the right, which is the whole of
+ * `NEGATIVE_SOURCE_ROW_OFFSET`.
  *
- * The sweep also draws `negative` at 8 rows, one row past the survey's own
- * range, so those three drawings have no committed source to compare against
- * and are absent here. They are still gated by the sweep above, which
- * measures them like every other drawing.
+ * Two details are worth knowing before reading a row of it.
+ *
+ * **The repeat count is not always six.** A `mosaic` drawing's canvas ends at
+ * its rightmost mark, so a tile whose last cell carries a rightward-reaching
+ * mark — a horizontal dash, a rule, or, for a two-column tile, simply a
+ * second column — declares a canvas one lattice column wider than one whose
+ * marks are all dots or all vertical dashes in a single column. `grid` and
+ * `brick-upright` are the two of those, so the committed source at six
+ * repeats covers the band a `negative` of *five* repeats draws, and that is
+ * what they are compared against. It is invariant 7 in miniature: the two
+ * families agree on the band and disagree on where it stops.
+ *
+ * **Some rows name a re-phasing rather than the tile as built.** The
+ * permutation sweep files each symmetry class under its canonical
+ * representative, and for eight of these fifty the tile this family builds is
+ * a re-phasing of that representative — the same wallpaper, started at a
+ * different level. The corridor counts are a property of the class, so they
+ * match anyway; the identifier is the class's, not the tile's.
+ *
+ * The sweep also draws `negative` from 8 rows up, past the survey's own
+ * range, so those drawings have no committed source to compare against and
+ * are absent here. They are still gated by the sweep above, which measures
+ * them like every other drawing.
  */
 const NEGATIVE_SOURCE_DOCUMENTS: readonly {
   readonly parameters: GenerationParameters;
   readonly sourceName: string;
-}[] = [
-  ["dvvxxd", "dvvxxvdx", "dvvxxvvxxd", "dvvxxvvxxvdx", "dvvxxvvxxvvxxd"].map(
-    (identifier, index) => ({
-      parameters: {
-        repeatCount: 6,
-        rows: index + 3,
-        type: "negative" as const,
-      },
-      sourceName: `mosaic/${index + 4}-rows/permutations/2-columns/${identifier}.svg`,
-    }),
-  ),
-  ["hxxhhx", "hxxhhxxh", "hxxhhxxhhx", "hxxhhxxhhxxh", "hxxhhxxhhxxhhx"].map(
-    (identifier, index) => ({
-      parameters: {
-        modifier: { name: "brick" as const },
-        repeatCount: 6,
-        rows: index + 3,
-        type: "negative" as const,
-      },
-      sourceName: `mosaic/${index + 4}-rows/permutations/2-columns/${identifier}-dashes.svg`,
-    }),
-  ),
-  ["dld", "dldl", "dldld", "dldldl", "dldldld"].map((identifier, index) => ({
+}[] = (
+  [
+    {
+      columns: 2,
+      identifiers: [
+        "dvvxxd",
+        "dvvxxvdx",
+        "dvvxxvvxxd",
+        "dvvxxvvxxvdx",
+        "dvvxxvvxxvvxxd",
+      ],
+    },
+    {
+      columns: 2,
+      identifiers: [
+        "hxxhhx-dashes",
+        "hxxhhxxh-dashes",
+        "hxxhhxxhhx-dashes",
+        "hxxhhxxhhxxh-dashes",
+        "hxxhhxxhhxxhhx-dashes",
+      ],
+      modifierName: "brick-staggered",
+    },
+    {
+      columns: 2,
+      identifiers: [
+        "hxhxhx-dashes",
+        "hxhxhxhx-dashes",
+        "hxhxhxhxhx-dashes",
+        "hxhxhxhxhxhx-dashes",
+        "hxhxhxhxhxhxhx-dashes",
+      ],
+      modifierName: "brick-straight",
+    },
+    {
+      columns: 1,
+      identifiers: [
+        "dvx",
+        "vxvx-diamond",
+        "dvxvx",
+        "vxvxvx-diamond",
+        "dvxvxvx",
+      ],
+      modifierName: "brick-upright",
+      repeatCount: 5,
+    },
+    {
+      columns: 1,
+      identifiers: [
+        "ddd-dots",
+        "dddd-dots",
+        "ddddd-dots",
+        "dddddd-dots",
+        "ddddddd-dots",
+      ],
+      modifierName: "grid",
+      repeatCount: 5,
+    },
+    {
+      columns: 1,
+      identifiers: ["dld", "dldl", "dldld", "dldldl", "dldldld"],
+      modifierName: "ruled",
+    },
+    {
+      columns: 1,
+      identifiers: [
+        "lll-lines",
+        "llll-lines",
+        "lllll-lines",
+        "llllll-lines",
+        "lllllll-lines",
+      ],
+      modifierName: "ruled-closed",
+    },
+    {
+      columns: 1,
+      identifiers: ["ldl", "dldl", "ldldl", "dldldl", "ldldldl"],
+      modifierName: "ruled-raised",
+    },
+    {
+      columns: 1,
+      identifiers: ["dll", "dlld", "dlldl", "dlldll", "dlldlld"],
+      modifierName: "ruled-spaced",
+    },
+    {
+      columns: 1,
+      identifiers: ["lvx", "lvxl", "dlvxl", "lvxlvx", "lvxlvxl"],
+      modifierName: "ruled-tall",
+    },
+  ] satisfies readonly {
+    columns: number;
+    identifiers: readonly string[];
+    modifierName?: Modifier["name"];
+    repeatCount?: number;
+  }[]
+).flatMap(({ columns, identifiers, modifierName, repeatCount }) =>
+  identifiers.map((identifier, index) => ({
     parameters: {
-      modifier: { name: "ruled" as const },
-      repeatCount: 6,
+      repeatCount: repeatCount ?? 6,
       rows: index + 3,
       type: "negative" as const,
+      ...(modifierName ? { modifier: { name: modifierName } } : {}),
     },
-    sourceName: `mosaic/${index + 4}-rows/permutations/1-columns/${identifier}.svg`,
+    sourceName: `mosaic/${index + 4}-rows/permutations/${columns}-columns/${identifier}.svg`,
   })),
-].flat();
+);
 
 /**
  * The family a committed document belongs to, read off the directory it is
@@ -487,7 +613,7 @@ describe(MeanderTopologyService, () => {
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
     //
-    // The count also pins where the sweep stops, on every axis. 1,149 is
+    // The count also pins where the sweep stops, on every axis. 1,219 is
     // every combination up to `MAXIMUM_VALUE`; 174 was every combination up
     // to 8, and 128 of the difference is the row counts issue #507 was
     // reachable at and untested at. Reverting the sweep to a maximum of its
@@ -502,7 +628,7 @@ describe(MeanderTopologyService, () => {
     // corpus does not commit is the same blind spot #507 was, one modifier
     // over.
     it("sweeps every named-type combination DrawCommand writes, out to the deepest row count the command line accepts", () => {
-      expect(charterSweep).toHaveLength(1149);
+      expect(charterSweep).toHaveLength(1219);
       expect(
         Math.max(...charterSweep.map(({ parameters }) => parameters.rows)),
       ).toBe(12);
@@ -551,9 +677,15 @@ describe(MeanderTopologyService, () => {
     // the white space of a document this repository already committed. The
     // two counts are read from two different files by two different routes —
     // one generated here, one measured off disk — so a change to either side
-    // that stopped them being complements would fail. The `toBeGreaterThan`
-    // is the guard against the assertion passing vacuously on a source with
-    // nothing in its negative to ink.
+    // that stopped them being complements would fail.
+    //
+    // The first expectation is the guard against a vacuous `0 === 0`. Every
+    // source but one really does have corridors that branch or cross;
+    // `ruled-closed` inverts the `lines` sub-family, which the survey put in
+    // its "neither" class at every row count, and its negative has neither
+    // kind of junction by nature. Asserting the guard as an equality rather
+    // than as a threshold names that one exception instead of quietly
+    // admitting any other source that stopped having corridors at all.
     it.each(NEGATIVE_SOURCE_DOCUMENTS)(
       "inks exactly the corridors $sourceName leaves",
       async ({ parameters, sourceName }) => {
@@ -564,7 +696,9 @@ describe(MeanderTopologyService, () => {
           generationService.generate(parameters),
         );
 
-        expect(source.negativeTJunctions).toBeGreaterThan(0);
+        expect(source.negativeTJunctions + source.negativeXJunctions > 0).toBe(
+          parameters.modifier?.name !== "ruled-closed",
+        );
         expect({
           branches: negative.inkTJunctions,
           crosses: negative.inkXJunctions,
@@ -635,11 +769,11 @@ describe(MeanderTopologyService, () => {
         // one thing. Published in three places and computed in none until
         // this assertion: the cycle count is `edges - nodes + components`,
         // which this loop already had all three inputs for.
-        expect(negativeCycles).toHaveLength(30);
-        expect(Math.min(...negativeCycles)).toBe(10);
+        expect(negativeCycles).toHaveLength(475);
+        expect(Math.min(...negativeCycles)).toBe(0);
         expect(Math.max(...negativeCycles)).toBe(65);
         expect(Math.min(...negativeComponents)).toBe(1);
-        expect(Math.max(...negativeComponents)).toBe(7);
+        expect(Math.max(...negativeComponents)).toBe(13);
 
         expect(trees).toHaveLength(110);
         expect(
@@ -662,13 +796,22 @@ describe(MeanderTopologyService, () => {
           ),
         ).toBe(true);
 
-        // 🎯 The loops are all somewhere else: `negative`'s thirty corridor
-        // networks, `cross`'s seven solid crossings, and the eighteen `snake`
-        // drawings whose `edge` pitch closes a loop against the band border.
-        // `branch` appears nowhere in this list, which is the half of the
-        // claim a tree test alone would not make — and neither does
+        // 🎯 The loops are all somewhere else: 460 of `negative`'s 475
+        // corridor networks, `cross`'s seven solid crossings, and the eighteen
+        // `snake` drawings whose `edge` pitch closes a loop against the band
+        // border. `branch` appears nowhere in this list, which is the half of
+        // the claim a tree test alone would not make — and neither does
         // `parallel`, whose three shapes are all acyclic at every ply.
-        expect(looped).toHaveLength(55);
+        //
+        // The fifteen `negative` documents missing from it are the `lines`
+        // sub-family's negative — `ruled-closed` at each of the family's ten
+        // row counts, and the same class enumerated at each of the five its
+        // permutation half covers. They are why the cycle floor above is zero
+        // and the component ceiling thirteen: that source's negative is the
+        // band's own rules and nothing joining them, so it is one component
+        // per lattice row with no loop anywhere, and the one corner of this
+        // family that is a forest like the six oldest.
+        expect(looped).toHaveLength(485);
         expect(
           [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual(["cross", "negative", "snake"]);
@@ -698,9 +841,9 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(documents).toHaveLength(1149);
-      expect(tJunctions).toBe(3998);
-      expect(branching).toHaveLength(154);
+      expect(documents).toHaveLength(1219);
+      expect(tJunctions).toBe(5152);
+      expect(branching).toHaveLength(214);
       expect(
         [...new Set(branching.map((name) => familyOf(name)))].toSorted(),
       ).toStrictEqual(["branch", "chain", "negative", "snake"]);
@@ -724,18 +867,27 @@ describe(MeanderTopologyService, () => {
             .map(({ name }) => name),
         ).toStrictEqual([]);
 
-        // 🎯 Ink crosses in exactly the seven documents that were committed
-        // to make it cross, and nowhere else in 3,536 files. The
-        // `interrupted` renderings of the same seven row counts are absent on
-        // purpose: the break takes the junction out of the ink graph.
-        //
-        // Twelve junctions per document at every one of the seven row counts,
-        // 6 through 12 — the count is a property of the repeat count rather
-        // than of `rows`, which is what the four row counts added with the
-        // widened sweep confirm rather than merely illustrate.
+        // 🎯 Ink crosses in exactly two families across all 3,981 files, and
+        // in neither of them by accident. Taken as three statements rather
+        // than one list, so each says something a longer list would bury.
+        const crossing = measured.filter(
+          (topology) => topology.inkXJunctions > 0,
+        );
+
         expect(
-          measured
-            .filter((topology) => topology.inkXJunctions > 0)
+          [...new Set(crossing.map(({ name }) => familyOf(name)))].toSorted(),
+        ).toStrictEqual(["cross", "negative"]);
+
+        // 🎯 `cross`'s seven, at twelve junctions per document at every one
+        // of its row counts, 6 through 12 — the count is a property of the
+        // repeat count rather than of `rows`, which is what the four row
+        // counts added with the widened sweep confirm rather than merely
+        // illustrate. The `interrupted` renderings of those same seven row
+        // counts are absent on purpose: the break takes the junction out of
+        // the ink graph.
+        expect(
+          crossing
+            .filter(({ name }) => familyOf(name) === "cross")
             .map(({ inkXJunctions, name }) => `${name} ${inkXJunctions}`),
         ).toStrictEqual([
           "cross/10-rows/plain-6-repeats.svg 12",
@@ -746,6 +898,45 @@ describe(MeanderTopologyService, () => {
           "cross/8-rows/plain-6-repeats.svg 12",
           "cross/9-rows/plain-6-repeats.svg 12",
         ]);
+
+        // 🎯 `negative`'s named thirty: exactly the three modes
+        // `RELAXED_INVARIANTS` names, at every one of the family's ten row
+        // counts and at no other mode. How many junctions each carries is
+        // pinned mode by mode in `negative-motif.service.unit.test.ts`; what
+        // this adds is that the set of crossing modes on disk is the set the
+        // charter declares, so a fourth mode that started crossing fails here
+        // even if somebody updated that table to match it.
+        const namedCrossing = crossing.filter(
+          ({ name }) =>
+            familyOf(name) === "negative" &&
+            !name.includes(`/${PERMUTATIONS_SUBDIRECTORY}/`),
+        );
+
+        expect(
+          [
+            ...new Set(namedCrossing.map(({ name }) => name.split("/").at(-1))),
+          ].toSorted(),
+        ).toStrictEqual([
+          "brick-straight-6-repeats.svg",
+          "brick-upright-6-repeats.svg",
+          "grid-6-repeats.svg",
+        ]);
+        expect(namedCrossing).toHaveLength(30);
+
+        // 🎯 And the permutation half's 276, which is a different kind of
+        // statement: not a charter declaration but a measurement of the space
+        // itself. 276 of its 375 one-column sources cross, 94 branch without
+        // crossing, and 5 do neither — the `lines` class at each swept row
+        // count. The named half draws six members of this space, and the
+        // proportions here are why naming more of them would not have found
+        // many more non-crossing ones to name.
+        expect(
+          crossing.filter(
+            ({ name }) =>
+              familyOf(name) === "negative" &&
+              name.includes(`/${PERMUTATIONS_SUBDIRECTORY}/`),
+          ),
+        ).toHaveLength(276);
       },
       CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
     );
