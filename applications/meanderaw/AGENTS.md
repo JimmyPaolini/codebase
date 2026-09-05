@@ -16,7 +16,7 @@ nx run meanderaw:start
 ## 🏛️ Before You Change a Meander
 
 Meander geometry is governed by a charter of seven invariants, five of which are fixed.
-They are measured against all 3,981 committed SVGs, not read off the code, so
+They are measured against all 4,773 committed SVGs, not read off the code, so
 they are facts about the output rather than intentions in the source. The full charter,
 with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
@@ -84,13 +84,20 @@ Three things that look like defects and are not:
   [#340](https://github.com/JimmyPaolini/codebase/issues/340) models it as the one modifier
   compatible with every family; `N` strands cannot trace the path one strand traces, so
   there is no existing repeat unit for a modifier to construct, and it ships as a family
-  whose ply is chosen by its own `plied` modifier. Do not list `parallel` in
-  `COMPATIBLE_MODIFIERS`. See "The Parallel Family" in [README.md](./README.md).
+  whose ply is chosen by its own modifiers — `plied`, `aligned`, and `serpentine`, which
+  all carry the same `strands` count and differ only in what those strands trace. It is
+  also the one family that commits no unmodified drawing: `plied` at two strands _is_ that
+  drawing, so it carries it rather than the sweep writing the same bytes twice. Do not
+  list `parallel` in `COMPATIBLE_MODIFIERS`. See "The Parallel Family" in
+  [README.md](./README.md).
 - **`negative` and `branch` both branching** is not one family under two names. Both relax
   invariant 3 and both come off the same survey shortlist; they differ in loops, and now in
   crossing too. `negative` inks a whole corridor graph and carries up to 65 cycles per
   drawing on one to thirteen components, and `branch` inks a loop-free spanning tree and
-  carries none — the only trees in the corpus. Those cycle counts are asserted in
+  carries none. They are no longer the only trees in the corpus: a `serpentine` ply of one
+  is a single ribbon covering the whole band, which is a tree by way of being a path rather
+  than by forking — in phase or turned over, which is why there are two of them at every
+  row count. Those cycle counts and both tree families are asserted in
   `meander-topology.service.integration.test.ts`, not merely stated here. See "The
   Branching Family" in [README.md](./README.md).
 - **A `negative` mode that crosses** is deliberate, not a geometry bug. Two corridors

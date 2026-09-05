@@ -3,10 +3,13 @@ import { Inject, Injectable } from "@nestjs/common";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 
 import {
+  COLUMNS_PER_SERPENTINE_UNIT,
   COLUMNS_PER_STRAND,
   DEFAULT_PARALLEL_STRANDS,
+  PARALLEL_MODIFIER_NAMES,
   UnknownParallelModifierError,
 } from "./parallel-motif.constants";
+import { ParallelSerpentineService } from "./parallel-serpentine.service";
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
 import type {
@@ -79,6 +82,8 @@ export class ParallelMotifService implements MotifService {
   constructor(
     @Inject(GridGeometryService)
     private readonly gridGeometryService: GridGeometryService,
+    @Inject(ParallelSerpentineService)
+    private readonly parallelSerpentineService: ParallelSerpentineService,
   ) {}
 
   // 🔐 Private Fields
@@ -97,6 +102,30 @@ export class ParallelMotifService implements MotifService {
   /** The lattice column the drawing ends at: one short of the columns its repeat units span, since the units count lattice columns rather than the gaps between them. */
   private lastColumn(strands: number, repeatCount: number): number {
     return COLUMNS_PER_STRAND * strands * repeatCount - 1;
+  }
+
+  /**
+   * Which way a repeat unit's bundle opens.
+   *
+   * `plied` and the unmodified drawing alternate by unit index, so the band
+   * reads ⊔⊓⊔⊓ — the flip is what makes a row of brackets read as a running
+   * border rather than as a row of identical stamps. `aligned` is the same
+   * bundle with that alternation taken away: every unit opens upward, and
+   * the band reads ⊔⊔⊔⊔.
+   *
+   * Nothing about the charter turns on this. A bundle's exact cover of its
+   * own repeat unit is an argument about the unit's interior, and it holds
+   * whichever way round the unit is drawn — so `aligned` is space-filling,
+   * non-branching and non-crossing for exactly the reasons `plied` is, and
+   * the family still declares no relaxation. What changes is only what the
+   * eye does with it.
+   */
+  private opensUp(modifier: Modifier | undefined, unitIndex: number): boolean {
+    if (modifier?.name === "aligned") {
+      return true;
+    }
+
+    return unitIndex % 2 === 0;
   }
 
   /**
@@ -131,12 +160,25 @@ export class ParallelMotifService implements MotifService {
 
   // 🌎 Public Methods
 
-  /** Draws one repeat unit: a bundle of nested brackets, opening upward in an even unit and downward in an odd one. */
+  /**
+   * Draws one repeat unit: a bundle of nested brackets under `plied` and
+   * `aligned`, and a slice of every stacked ribbon under `serpentine`.
+   *
+   * The three shapes share one axis and differ on everything else, so the
+   * dispatch is here rather than inside the geometry: `strandCount` reads
+   * the same `strands` off all three, and only then does the unit become a
+   * bundle or a stack.
+   */
   path(geometry: GridGeometry, unit: MotifUnit): string {
     const strands = this.strandCount(unit.modifier);
+
+    if (unit.modifier?.name === "serpentine") {
+      return this.parallelSerpentineService.path(geometry, unit, strands);
+    }
+
     const placement: ParallelUnitPlacement = {
       firstColumn: COLUMNS_PER_STRAND * strands * unit.unitIndex,
-      opensUp: unit.unitIndex % 2 === 0,
+      opensUp: this.opensUp(unit.modifier, unit.unitIndex),
       rows: unit.rows,
       strands,
     };
@@ -146,21 +188,34 @@ export class ParallelMotifService implements MotifService {
     ).join("");
   }
 
-  /** The x-coordinate of the drawing's last lattice column, before the stroke-width margin. */
+  /**
+   * The x-coordinate of the drawing's last lattice column, before the
+   * stroke-width margin.
+   *
+   * The two shapes measure their width differently because they nest on
+   * different axes: a bracket bundle's pitch grows with the ply, and a
+   * serpentine's does not. Reading the ply for a serpentine would widen the
+   * canvas past the ink and leave a blank margin down the right-hand side.
+   */
   rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
-    return (
-      geometry.offset +
-      this.lastColumn(this.strandCount(pattern.modifier), pattern.repeatCount) *
-        geometry.unit
-    );
+    const columns =
+      pattern.modifier?.name === "serpentine"
+        ? COLUMNS_PER_SERPENTINE_UNIT * pattern.repeatCount - 1
+        : this.lastColumn(
+            this.strandCount(pattern.modifier),
+            pattern.repeatCount,
+          );
+
+    return geometry.offset + columns * geometry.unit;
   }
 
   /**
    * How many strands a drawing's modifier asks for; no modifier draws
    * {@link DEFAULT_PARALLEL_STRANDS}.
    *
-   * The dispatch is total rather than defaulted: `plied` is the only
-   * modifier this family declares compatible, and any other name is refused.
+   * The dispatch is total rather than defaulted: this family declares
+   * `plied`, `aligned`, and `serpentine` compatible — all three name the
+   * same ply axis — and any other name is refused.
    * Nothing can reach that refusal through
    * `MeanderGenerationService.generate`, which validates compatibility
    * first — but a family that answered "the default ply" to a modifier it
@@ -172,7 +227,11 @@ export class ParallelMotifService implements MotifService {
       return DEFAULT_PARALLEL_STRANDS;
     }
 
-    if (modifier.name !== "plied") {
+    if (!PARALLEL_MODIFIER_NAMES.includes(modifier.name)) {
+      throw new UnknownParallelModifierError(modifier.name);
+    }
+
+    if (!("strands" in modifier)) {
       throw new UnknownParallelModifierError(modifier.name);
     }
 

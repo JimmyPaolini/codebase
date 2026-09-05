@@ -1,21 +1,24 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
 import {
   COMPATIBLE_MODIFIERS,
   DEFAULT_REPEAT_COUNT,
   MAXIMUM_VALUE,
+  MINIMUM_STRANDS,
+  PLY_MODIFIER_NAMES,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
+  TYPES_WITH_MODIFIER_NAMED_DEFAULT,
 } from "../meander-generation/meander-generation.constants";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 
 import {
   ALTERNATED_SWEEP_PERIODS,
   COMB_SWEEP_UPWARD_VALUES,
   DOT_SWEEP_SHAPES,
-  PLIED_SWEEP_STRAND_COUNTS,
   RUNG_SWEEP_LEFTWARD_VALUES,
   STAGGER_SWEEP_BRANCH_COUNTS,
 } from "./draw.constants";
@@ -24,6 +27,7 @@ import type {
   GenerationParameters,
   MeanderType,
   Modifier,
+  PlyModifierName,
 } from "../meander-generation/meander-generation.types";
 
 /**
@@ -54,7 +58,10 @@ import type {
 export class DrawCombinationsService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(ParallelSerpentineService)
+    private readonly parallelSerpentineService: ParallelSerpentineService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -64,11 +71,8 @@ export class DrawCombinationsService {
 
   /** Enumerates every combination for a single type: every swept row count crossed with every swept modifier. */
   private combinationsForType(type: MeanderType): GenerationParameters[] {
-    const rows = this.rowsSweep(type);
-    const modifiers = this.modifiersForType(type);
-
-    return rows.flatMap((rowCount) =>
-      modifiers.map((modifier) => ({
+    return this.rowsSweep(type).flatMap((rowCount) =>
+      this.modifiersForType(type, rowCount).map((modifier) => ({
         repeatCount: this.repeatCountFor(modifier),
         rows: rowCount,
         type,
@@ -77,8 +81,20 @@ export class DrawCombinationsService {
     );
   }
 
-  /** Expands one modifier name into every representative {@link Modifier} value the sweep covers. */
-  private expandModifierName(name: Modifier["name"]): Modifier[] {
+  /**
+   * Expands one modifier name into every {@link Modifier} value the sweep
+   * covers at `rowCount`.
+   *
+   * `alternated` and `dot` ignore the row count and expand to the
+   * representative values `draw.constants.ts` names. `plied` does not: its
+   * range *is* the row count, so it is the one modifier whose expansion has
+   * to be asked per row rather than once per family — see
+   * {@link pliedStrandCounts}.
+   */
+  private expandModifierName(
+    name: Modifier["name"],
+    rowCount: number,
+  ): Modifier[] {
     if (name === "alternated") {
       return ALTERNATED_SWEEP_PERIODS.map((period) => ({ name, period }));
     }
@@ -91,8 +107,16 @@ export class DrawCombinationsService {
       return DOT_SWEEP_SHAPES.map((shape) => ({ name, shape }));
     }
 
-    if (name === "plied") {
-      return PLIED_SWEEP_STRAND_COUNTS.map((strands) => ({ name, strands }));
+    if (name === "serpentine") {
+      return this.strandCounts(rowCount).flatMap((strands) =>
+        this.parallelSerpentineService
+          .variants(rowCount, strands)
+          .map((variant) => ({ name, strands, ...variant })),
+      );
+    }
+
+    if (this.isPlyModifierName(name)) {
+      return this.strandCounts(rowCount).map((strands) => ({ name, strands }));
     }
 
     if (name === "rung") {
@@ -122,16 +146,29 @@ export class DrawCombinationsService {
     return SUPPORTED_MODIFIER_NAMES.includes(value);
   }
 
-  /** Every modifier the sweep covers for `type`: `undefined` (no modifier) plus every representative value of each compatible modifier. */
-  private modifiersForType(type: MeanderType): (Modifier | undefined)[] {
+  /** Narrows a modifier name to one of the ply-carrying ones, so its expansion can supply the `strands` those members require. */
+  private isPlyModifierName(value: Modifier["name"]): value is PlyModifierName {
+    return PLY_MODIFIER_NAMES.includes(value);
+  }
+
+  /** Every modifier the sweep covers for `type` at `rowCount`: `undefined` (no modifier) plus every value of each compatible modifier. */
+  private modifiersForType(
+    type: MeanderType,
+    rowCount: number,
+  ): (Modifier | undefined)[] {
     const modifierNames = COMPATIBLE_MODIFIERS[type].filter(
       (value): value is Modifier["name"] => this.isModifierName(value),
     );
 
-    return [
-      undefined,
-      ...modifierNames.flatMap((name) => this.expandModifierName(name)),
-    ];
+    const expanded = modifierNames.flatMap((name) =>
+      this.expandModifierName(name, rowCount),
+    );
+
+    if (TYPES_WITH_MODIFIER_NAMED_DEFAULT.includes(type)) {
+      return expanded;
+    }
+
+    return [undefined, ...expanded];
   }
 
   /** The `repeatCount` a combination uses: `DEFAULT_REPEAT_COUNT`, rounded up to the spin family's required cycle length when needed. */
@@ -151,6 +188,40 @@ export class DrawCombinationsService {
     const length = MAXIMUM_VALUE - minimum + 1;
 
     return Array.from({ length }, (_value, index) => minimum + index);
+  }
+
+  /**
+   * Every ply the sweep draws for `name` at `rowCount`: the family's whole
+   * range there, from {@link MINIMUM_STRANDS} up to the row count itself,
+   * less the one ply that would duplicate the unmodified drawing.
+   *
+   * The bound is the row count because that is where the geometry's bound
+   * is — a bundle's innermost strand has `rows - strands + 1` lattice steps
+   * of arm, so one ply further leaves it a bare crossbar running alongside
+   * nothing, and `MeanderGenerationService.generate` refuses it. Asking per
+   * row is what lets the sweep draw a twelve-ply bundle at twelve rows
+   * *and* a one-ply bundle at four, which a single flat list cannot: a list
+   * is applied to every row count alike, so its deepest entry has to be
+   * shallow enough for the shallowest row count to accept — which is why
+   * the sweep used to stop at four plies and `parallel`'s
+   * `STRUCTURAL_MINIMUM_ROWS` had to be pinned to that same four.
+   *
+   * Neither number is pinned to the other any more, and nothing is lost by
+   * it: every combination this yields is valid at the row count it was
+   * asked for, by construction rather than by a test noticing.
+   *
+   * The range has no hole in it any more. `plied` used to skip the family's
+   * own default ply, because a `plied` drawing naming it and the unmodified
+   * drawing beside it are the same bytes under two filenames. The sweep now
+   * drops the unmodified entry for this family instead — see
+   * `TYPES_WITH_MODIFIER_NAMED_DEFAULT` — so the ply that used to be the
+   * duplicate is the one that carries the drawing, and every parallel
+   * document is named for its own ply.
+   */
+  private strandCounts(rowCount: number): number[] {
+    const length = rowCount - MINIMUM_STRANDS + 1;
+
+    return Array.from({ length }, (_value, index) => MINIMUM_STRANDS + index);
   }
 
   // 🌎 Public Methods

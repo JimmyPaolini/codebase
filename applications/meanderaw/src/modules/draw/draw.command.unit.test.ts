@@ -18,6 +18,7 @@ import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
 import { NegativeTileGenerationService } from "../negative-motif/negative-tile-generation.service";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
@@ -71,6 +72,7 @@ describe(DrawCommand, () => {
         NegativeSourceService,
         NegativeTileGenerationService,
         DrawCombinationsService,
+        ParallelSerpentineService,
         DrawIndexService,
         DrawParametersService,
         DrawNegativePermutationsService,
@@ -118,6 +120,7 @@ describe(DrawCommand, () => {
         NegativeSourceService,
         NegativeTileGenerationService,
         DrawCombinationsService,
+        ParallelSerpentineService,
         DrawIndexService,
         DrawParametersService,
         DrawNegativePermutationsService,
@@ -140,12 +143,12 @@ describe(DrawCommand, () => {
       });
 
       // 🎯 rows sweep runs from each type's own structural minimum to
-      // `MAXIMUM_VALUE`: 2..12 (branch), 3..12 (mosaic, boxes, negative),
-      // 4..12 (chain, snake, swirl, whirl, parallel), or 6..12 (cross),
+      // `MAXIMUM_VALUE`: 2..12 (branch, parallel), 3..12 (mosaic, boxes,
+      // negative), 4..12 (chain, snake, swirl, whirl), or 6..12 (cross),
       // crossed with "no modifier" plus every compatible modifier
-      // (alternated, dot, plied, and rung each expand to 2 representative
-      // values, stagger to 4, and comb to 1 — its other direction is what
-      // "no modifier" already draws):
+      // (alternated, dot, and rung each expand to 2 representative values,
+      // stagger to 4, and comb to 1 — its other direction is what "no
+      // modifier" already draws):
       // mosaic: 10 rows * (1 + 2 + 2 + 1) modifiers = 60
       // boxes: 10 rows * (1 + 1 + 1) modifiers = 30
       // chain: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
@@ -155,9 +158,39 @@ describe(DrawCommand, () => {
       // cross: 7 rows * (1 + 1) modifiers = 14
       // negative: 10 rows * (1 + 9) modifiers = 100
       // branch: 11 rows * (1 + 1 + 2 + 4) modifiers = 88
-      // parallel: 9 rows * (1 + 2) modifiers = 27
+      //
+      // `parallel` is the one family whose modifiers do not expand to a
+      // fixed number of values, so it is the one row here that is neither a
+      // multiplication nor a single literal. It has no unmodified entry —
+      // `plied` names that drawing — and `plied` and `aligned` each sweep
+      // 1..rows, which is the `2 * rows` term. `serpentine` sweeps every
+      // *distinct* rotation and flip of each of those plies, and distinct
+      // is the operative word: rotating a partition whose strips are all the
+      // same depth changes nothing, `alternating` and `one` name the same
+      // ribbon below three strands, and flipping a strip with no depth is a
+      // no-op. So its per-row counts are written out rather than derived —
+      // they are what `ParallelSerpentineService.variants` deduplicates down
+      // to, and a change in that deduplication should fail here rather than
+      // quietly committing the same drawing twice.
+      const serpentinePerRow: Record<number, number> = {
+        2: 5,
+        3: 9,
+        4: 19,
+        5: 19,
+        6: 44,
+        7: 45,
+        8: 65,
+        9: 66,
+        10: 126,
+        11: 85,
+        12: 182,
+      };
+      const expectedParallelCount = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].reduce(
+        (total, rows) => total + 2 * rows + (serpentinePerRow[rows] ?? 0),
+        0,
+      );
       const expectedNamedTypeCount =
-        60 + 30 + 36 + 36 + 18 + 18 + 14 + 100 + 88 + 27;
+        60 + 30 + 36 + 36 + 18 + 18 + 14 + 100 + 88 + expectedParallelCount;
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
@@ -212,7 +245,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("3981 drawings");
+      expect(index?.[1]).toContain("4773 drawings");
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
       );
@@ -300,6 +333,8 @@ describe(DrawCommand, () => {
             }),
           },
           DrawCombinationsService,
+          GridGeometryService,
+          ParallelSerpentineService,
           DrawParametersService,
           {
             provide: DrawIndexService,
@@ -588,6 +623,8 @@ describe(DrawCommand, () => {
         imports: [MeanderGenerationModule],
         providers: [
           DrawCombinationsService,
+          GridGeometryService,
+          ParallelSerpentineService,
           DrawCommand,
           DrawIndexService,
           DrawParametersService,
@@ -608,14 +645,14 @@ describe(DrawCommand, () => {
         realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
       ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 427 enumerated named-type combinations, every
+      // 🎯 every one of the 1,219 enumerated named-type combinations, every
       // one of the 3,179 mosaic tiles, and every one of the 375 one-column
       // negative sources, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
       // replace the generation services entirely. The extra file is the
       // single index page listing all of them.
-      expect(mockWriteFile).toHaveBeenCalledTimes(427 + 3179 + 375 + 1);
+      expect(mockWriteFile).toHaveBeenCalledTimes(1219 + 3179 + 375 + 1);
     });
   });
 });

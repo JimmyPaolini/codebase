@@ -3,6 +3,7 @@ import { Module } from "@nestjs/common";
 import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
 
 import { ParallelMotifService } from "./parallel-motif.service";
+import { ParallelSerpentineService } from "./parallel-serpentine.service";
 
 /**
  * Wires up the `parallel` motif, the one family whose ink runs in bundles:
@@ -12,8 +13,8 @@ import { ParallelMotifService } from "./parallel-motif.service";
  */
 @Module({
   controllers: [],
-  exports: [ParallelMotifService],
+  exports: [ParallelMotifService, ParallelSerpentineService],
   imports: [GridGeometryModule],
-  providers: [ParallelMotifService],
+  providers: [ParallelMotifService, ParallelSerpentineService],
 })
 export class ParallelMotifModule {}

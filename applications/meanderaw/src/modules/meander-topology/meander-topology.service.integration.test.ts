@@ -33,6 +33,7 @@ import { MotifTransformsService } from "../motif-transforms/motif-transforms.ser
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
 import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
@@ -196,8 +197,8 @@ const modifierLabel = (modifier: Modifier): string => {
     return `dot ${modifier.shape}`;
   }
 
-  if (modifier.name === "plied") {
-    return `plied ${modifier.strands}`;
+  if ("strands" in modifier) {
+    return `${modifier.name} ${modifier.strands}`;
   }
 
   if (modifier.name === "rung") {
@@ -220,8 +221,11 @@ const modifierLabel = (modifier: Modifier): string => {
  *
  * It is instantiated directly rather than resolved from a testing module
  * because `it.each` needs the table at collection time, before any
- * `beforeAll` has run. The service takes no dependencies, so there is
- * nothing for a container to supply.
+ * `beforeAll` has run — so its two dependencies are constructed by hand
+ * here. It needs `ParallelSerpentineService` because `serpentine`'s variant
+ * space is not a cross product: which rotations and flips are distinct at a
+ * given ply is a fact about the geometry, and asking the geometry is what
+ * keeps the sweep from committing the same drawing twice.
  *
  * The sweep stops short of `mosaic`'s 3,179 enumerated tiles for one reason:
  * those are reachable only through a motif service, and the charter is
@@ -235,7 +239,9 @@ const modifierLabel = (modifier: Modifier): string => {
  * counts between — the reason `DrawCombinationsService` no longer has a
  * sweep maximum of its own.
  */
-const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
+const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
+  new ParallelSerpentineService(new GridGeometryService()),
+)
   .enumerate()
   .map((parameters) => {
     const modifier = parameters.modifier
@@ -260,7 +266,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
 
 /**
- * How many documents `DrawCommand` commits: 427 named patterns beside two
+ * How many documents `DrawCommand` commits: 1,219 named patterns beside two
  * exhaustive halves — 3,179 enumerated `mosaic` tiles and 375 enumerated
  * one-column `negative` sources.
  *
@@ -285,7 +291,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
  * the `mosaic` half has already committed, which is what lets the
  * corridor-identity gate cover it completely.
  */
-const COMMITTED_CORPUS_SIZE = 427 + 3179 + 375;
+const COMMITTED_CORPUS_SIZE = 1219 + 3179 + 375;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -586,6 +592,7 @@ describe(MeanderTopologyService, () => {
         NegativeMotifService,
         NegativeSourceService,
         ParallelMotifService,
+        ParallelSerpentineService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,
@@ -606,13 +613,22 @@ describe(MeanderTopologyService, () => {
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
     //
-    // The count also pins where the sweep stops. 427 is every combination up
-    // to `MAXIMUM_VALUE`; 174 was every combination up to 8, and 128 of the
-    // difference is the row counts issue #507 was reachable at and untested
-    // at. Reverting the sweep to a maximum of its own would fail here
-    // rather than quietly narrow the gate.
+    // The count also pins where the sweep stops, on every axis. 1,219 is
+    // every combination up to `MAXIMUM_VALUE`; 174 was every combination up
+    // to 8, and 128 of the difference is the row counts issue #507 was
+    // reachable at and untested at. Reverting the sweep to a maximum of its
+    // own would fail here rather than quietly narrow the gate.
+    //
+    // Most of the rest is `parallel`, which had one shape and a flat pair of
+    // swept plies. Its ply range is now the row count's at each row count,
+    // it is swept for all three of the family's shapes — `plied`,
+    // `aligned`, and `serpentine` — and `serpentine` is swept over every
+    // distinct rotation and flip of each ply. Those axes are gated here
+    // exactly as the row axis is: a value the command line accepts and the
+    // corpus does not commit is the same blind spot #507 was, one modifier
+    // over.
     it("sweeps every named-type combination DrawCommand writes, out to the deepest row count the command line accepts", () => {
-      expect(charterSweep).toHaveLength(427);
+      expect(charterSweep).toHaveLength(1219);
       expect(
         Math.max(...charterSweep.map(({ parameters }) => parameters.rows)),
       ).toBe(12);
@@ -693,17 +709,33 @@ describe(MeanderTopologyService, () => {
       },
     );
 
-    // 🎯 The `branch` family's whole claim, taken over the corpus rather
-    // than over a family's own drawings: its eighty-eight documents are
-    // trees and every other one of the 3,981 is not. Reading from disk is
-    // what makes the second half say anything — a family that started
-    // drawing loops, or one that stopped, fails here rather than in its own
-    // test.
+    // 🎯 The `branch` family's claim, taken over the corpus rather than over
+    // a family's own drawings: its eighty-eight documents are trees.
+    // Reading from disk is what makes the second half say anything — a
+    // family that started drawing loops, or one that stopped, fails here
+    // rather than in its own test.
     //
     // The two conditions are separated on purpose. Being a forest is what
     // every family but three already is; being one connected piece is what
-    // `negative` already is. Only `branch` is both, and the 3,421 documents
-    // that predate it manage it in not a single case.
+    // `negative` already is.
+    //
+    // **`branch` is no longer the only family that is both**, and that is a
+    // measurement rather than a regression. A `serpentine` ply of one is a
+    // single ribbon that never stops: it runs down a column, along the
+    // bottom of the only strip there is, up the next column, and on across
+    // the whole band — one component, every lattice point on it, and not a
+    // step repeated. That is the definition of a tree, arrived at from the
+    // opposite direction to `branch`'s. `branch` is a tree because it forks
+    // at most of its columns; a one-ply serpentine is a tree because it
+    // forks at none and simply does not end until the band does. A path is
+    // the degenerate tree, and this is the corpus's first one.
+    //
+    // So the family set below is asserted, not the count alone, and the
+    // parallel half is pinned to the one ply that can do it: a two-ply
+    // serpentine is two ribbons and two components, which is a forest and
+    // not a tree. Were `plied` or `aligned` ever to connect their brackets
+    // into one figure, they would land here and fail rather than pass
+    // quietly.
     it(
       "draws a tree in exactly the branching family's documents",
       async () => {
@@ -743,16 +775,33 @@ describe(MeanderTopologyService, () => {
         expect(Math.min(...negativeComponents)).toBe(1);
         expect(Math.max(...negativeComponents)).toBe(13);
 
-        expect(trees).toHaveLength(88);
+        expect(trees).toHaveLength(110);
         expect(
           [...new Set(trees.map((name) => familyOf(name)))].toSorted(),
-        ).toStrictEqual(["branch"]);
+        ).toStrictEqual(["branch", "parallel"]);
+
+        // 🎯 Every parallel tree is a single-strand serpentine — two of them
+        // at each of the eleven row counts the family draws at, since a lone
+        // ribbon can be flipped as well as left in phase and the two are
+        // different drawings. A deeper ply is that many ribbons and so a
+        // forest, whatever it is rotated or flipped to.
+        const parallelTrees = trees.filter(
+          (name) => familyOf(name) === "parallel",
+        );
+
+        expect(parallelTrees).toHaveLength(22);
+        expect(
+          parallelTrees.every((name) =>
+            path.basename(name).startsWith("serpentine-strands-1-"),
+          ),
+        ).toBe(true);
 
         // 🎯 The loops are all somewhere else: 460 of `negative`'s 475
         // corridor networks, `cross`'s seven solid crossings, and the eighteen
         // `snake` drawings whose `edge` pitch closes a loop against the band
         // border. `branch` appears nowhere in this list, which is the half of
-        // the claim a tree test alone would not make.
+        // the claim a tree test alone would not make — and neither does
+        // `parallel`, whose three shapes are all acyclic at every ply.
         //
         // The fifteen `negative` documents missing from it are the `lines`
         // sub-family's negative — `ruled-closed` at each of the family's ten
@@ -792,7 +841,7 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(documents).toHaveLength(427);
+      expect(documents).toHaveLength(1219);
       expect(tJunctions).toBe(5152);
       expect(branching).toHaveLength(214);
       expect(

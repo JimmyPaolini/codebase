@@ -14,7 +14,6 @@ import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import {
   COMB_SWEEP_UPWARD_VALUES,
-  PLIED_SWEEP_STRAND_COUNTS,
   RUNG_SWEEP_LEFTWARD_VALUES,
   STAGGER_SWEEP_BRANCH_COUNTS,
 } from "../draw/draw.constants";
@@ -27,6 +26,7 @@ import { MotifTransformsService } from "../motif-transforms/motif-transforms.ser
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
 import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
@@ -37,6 +37,7 @@ import {
   COMPATIBLE_MODIFIERS,
   ConflictingSubFamilyError,
   DEFAULT_REPEAT_COUNT,
+  InvalidOffsetError,
   InvalidPeriodError,
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
@@ -53,7 +54,11 @@ import {
 import { MeanderGenerationService } from "./meander-generation.service";
 import { MotifRegistryService } from "./motif-registry.service";
 
-import type { MeanderType, Modifier } from "./meander-generation.types";
+import type {
+  MeanderType,
+  Modifier,
+  PlyModifierName,
+} from "./meander-generation.types";
 
 // 🔧 Configuration
 
@@ -67,12 +72,59 @@ interface PatternCase {
 }
 
 /**
+ * One ply-carrying modifier, built without an assertion.
+ *
+ * The switch is what makes it type-safe: each arm narrows `name` to a single
+ * literal, so the object literal is checked against that member of
+ * {@link Modifier} rather than cast into it. A ply-carrying member added to
+ * the union fails to compile here until it is handled.
+ */
+const plyModifier = (name: PlyModifierName, strands: number): Modifier => {
+  switch (name) {
+    case "aligned": {
+      return { name, strands };
+    }
+    case "plied": {
+      return { name, strands };
+    }
+    case "serpentine": {
+      return { name, strands };
+    }
+  }
+};
+
+/** Every ply-carrying modifier crossed with `strandCounts`, as `it.each` rows. */
+const plyCases = (strandCounts: readonly number[]): { modifier: Modifier }[] =>
+  (["aligned", "plied", "serpentine"] satisfies PlyModifierName[]).flatMap(
+    (name) =>
+      strandCounts.map((strands) => ({ modifier: plyModifier(name, strands) })),
+  );
+
+/**
+ * The plies this suite sweeps every ply-carrying modifier over.
+ *
+ * Three representative points rather than the whole range: one at the floor,
+ * one at the family's own default, and one above it. This suite sweeps row
+ * counts as low as 4, and the range's top is the row count, so a whole-range
+ * sweep here would mean a different set per row — which is
+ * `DrawCombinationsService`'s job and is gated in its own suite. What this
+ * one needs is only that each modifier is exercised at more than one ply.
+ */
+const PLY_SWEEP_STRAND_COUNTS: readonly number[] = [1, 2, 3];
+
+/**
  * Every {@link Modifier} one `COMPATIBLE_MODIFIERS` name stands for: a
  * parameterized modifier expands to one entry per parameter value the
  * services document, and every other name to a single entry.
  */
 const modifiersNamed = (name: string): Modifier[] => {
   switch (name) {
+    case "aligned": {
+      return PLY_SWEEP_STRAND_COUNTS.map((strands) => ({
+        name: "aligned",
+        strands,
+      }));
+    }
     case "alternated": {
       return [1, 2, 3].map((period) => ({ name: "alternated", period }));
     }
@@ -113,7 +165,7 @@ const modifiersNamed = (name: string): Modifier[] => {
       return [{ name: "interrupted" }];
     }
     case "plied": {
-      return PLIED_SWEEP_STRAND_COUNTS.map((strands) => ({
+      return PLY_SWEEP_STRAND_COUNTS.map((strands) => ({
         name: "plied",
         strands,
       }));
@@ -137,6 +189,12 @@ const modifiersNamed = (name: string): Modifier[] => {
       return RUNG_SWEEP_LEFTWARD_VALUES.map((isLeftward) => ({
         isLeftward,
         name: "rung",
+      }));
+    }
+    case "serpentine": {
+      return PLY_SWEEP_STRAND_COUNTS.map((strands) => ({
+        name: "serpentine",
+        strands,
       }));
     }
     case "spin": {
@@ -187,8 +245,9 @@ const sweptTypes: readonly MeanderType[] = [
  * cycle admits — `SPIN_CYCLE_LENGTH` for the spin family, the shared
  * default otherwise. `alternated` is swept over the periods
  * `MosaicMotifService` documents rather than the whole allowed range, and
- * `comb`, `plied`, `rung`, and `stagger` over the sweep's own constants for
- * the same reason.
+ * `comb`, `rung`, and `stagger` over the sweep's own constants, and every
+ * ply-carrying modifier over {@link PLY_SWEEP_STRAND_COUNTS}, for the same
+ * reason.
  */
 const patternCases: readonly PatternCase[] = sweptTypes.flatMap((type) => {
   const modifiers: readonly (Modifier | undefined)[] = [
@@ -203,16 +262,30 @@ const patternCases: readonly PatternCase[] = sweptTypes.flatMap((type) => {
           (rows) => rows >= STRUCTURAL_MINIMUM_ROWS[type],
         ),
       ),
-    ].map((rows) => ({
-      label: `${type} at ${rows} rows${modifier ? ` with ${modifier.name}` : ""}`,
-      repeatCount:
-        modifier && SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name)
-          ? SPIN_CYCLE_LENGTH
-          : DEFAULT_REPEAT_COUNT,
-      rows,
-      type,
-      ...(modifier ? { modifier } : {}),
-    })),
+    ]
+      // 🎯 A ply is bounded by the drawing's own row count, not by a
+      // constant, so the two axes are not independent and their cross
+      // product is not the swept space. `parallel` starts at 2 rows, where
+      // only a one-strand ply exists — asking for three there is a
+      // combination `generate` refuses by design, and sweeping it would
+      // fail this suite on its own validation rather than on anything it
+      // set out to measure.
+      .filter(
+        (rows) =>
+          modifier === undefined ||
+          !("strands" in modifier) ||
+          modifier.strands <= rows,
+      )
+      .map((rows) => ({
+        label: `${type} at ${rows} rows${modifier ? ` with ${modifier.name}` : ""}`,
+        repeatCount:
+          modifier && SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name)
+            ? SPIN_CYCLE_LENGTH
+            : DEFAULT_REPEAT_COUNT,
+        rows,
+        type,
+        ...(modifier ? { modifier } : {}),
+      })),
   );
 });
 
@@ -269,6 +342,8 @@ describe(MeanderGenerationService, () => {
         NegativeMotifService,
         NegativeSourceService,
         ParallelMotifService,
+        ParallelSerpentineService,
+        ParallelSerpentineService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,
@@ -364,16 +439,26 @@ describe(MeanderGenerationService, () => {
       ).toThrow(InvalidPeriodError);
     });
 
-    // 🎯 `plied`'s bound is the drawing's own row count rather than the
-    // shared maximum, so both edges of it are pinned against the same row
-    // count: one ply past it is refused and the ply that equals it is
+    // 🎯 The ply bound is the drawing's own row count rather than the shared
+    // maximum, so its upper edge is pinned against the same row count the
+    // drawing has: one ply past it is refused and the ply that equals it is
     // drawn. A bound read off `MAXIMUM_VALUE` instead would accept both.
-    it.each([{ strands: 1 }, { strands: 2.5 }, { strands: 6 }])(
-      "throws when plied's strand count is $strands at 5 rows",
-      ({ strands }) => {
+    //
+    // Its lower edge is `MINIMUM_STRANDS`, which is 1 — so 0 is refused and
+    // 1 is not. A single-strand ply used to be refused here too, on the
+    // argument that a family named for parallel strands needs two of them;
+    // that argument was about the name rather than the geometry, and the
+    // constant's own doc comment now says so.
+    //
+    // Swept over all three ply-carrying modifiers rather than `plied` alone,
+    // because the bound is a property of the count and not of the shape the
+    // count is drawn as.
+    it.each(plyCases([0, 2.5, 6]))(
+      "throws when $modifier.name's strand count is $modifier.strands at 5 rows",
+      ({ modifier }) => {
         expect(() =>
           service.generate({
-            modifier: { name: "plied", strands },
+            modifier,
             repeatCount: 6,
             rows: 5,
             type: "parallel",
@@ -382,16 +467,53 @@ describe(MeanderGenerationService, () => {
       },
     );
 
-    it("draws a ply exactly as deep as the row count", () => {
-      expect(() =>
-        service.generate({
-          modifier: { name: "plied", strands: 5 },
-          repeatCount: 6,
-          rows: 5,
-          type: "parallel",
-        }),
-      ).not.toThrow();
-    });
+    it.each(plyCases([1, 5]))(
+      "draws $modifier.name at a strand count of $modifier.strands, both edges of the bound",
+      ({ modifier }) => {
+        expect(() =>
+          service.generate({
+            modifier,
+            repeatCount: 6,
+            rows: 5,
+            type: "parallel",
+          }),
+        ).not.toThrow();
+      },
+    );
+
+    // 🎯 The offset rotates a cyclic sequence of `strands` places, so
+    // rotating `strands` is rotating none. Every value outside
+    // `0 … strands - 1` therefore names a drawing already reachable from
+    // inside it, and is refused rather than folded — a caller that meant
+    // something else finds out instead of silently getting the drawing they
+    // did not ask for.
+    it.each([{ offset: -1 }, { offset: 1.5 }, { offset: 3 }])(
+      "throws when serpentine's offset is $offset at 3 strands",
+      ({ offset }) => {
+        expect(() =>
+          service.generate({
+            modifier: { name: "serpentine", offset, strands: 3 },
+            repeatCount: 6,
+            rows: 5,
+            type: "parallel",
+          }),
+        ).toThrow(InvalidOffsetError);
+      },
+    );
+
+    it.each([{ offset: 0 }, { offset: 2 }])(
+      "draws a serpentine at an offset of $offset, both edges of the bound",
+      ({ offset }) => {
+        expect(() =>
+          service.generate({
+            modifier: { name: "serpentine", offset, strands: 3 },
+            repeatCount: 6,
+            rows: 5,
+            type: "parallel",
+          }),
+        ).not.toThrow();
+      },
+    );
 
     it("does not require repeatCount to divide evenly by alternated's period, since each tile is self-contained", () => {
       expect(() =>

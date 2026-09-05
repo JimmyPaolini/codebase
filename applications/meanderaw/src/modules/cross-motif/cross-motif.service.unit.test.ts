@@ -17,6 +17,7 @@ import { MotifTransformsService } from "../motif-transforms/motif-transforms.ser
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
 import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
@@ -222,6 +223,8 @@ describe(CrossMotifService, () => {
         NegativeMotifService,
         NegativeSourceService,
         ParallelMotifService,
+        ParallelSerpentineService,
+        ParallelSerpentineService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,

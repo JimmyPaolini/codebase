@@ -5,11 +5,13 @@ import {
   DEFAULT_RUNG_IS_LEFTWARD,
 } from "../branch-motif/branch-motif.constants";
 import {
+  PLY_MODIFIER_NAMES,
   SUPPORTED_DOT_SHAPES,
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
 import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
+import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
 
 import {
   IncompleteDrawingError,
@@ -22,6 +24,8 @@ import type {
   GenerationParameters,
   MeanderType,
   Modifier,
+  PlyModifierName,
+  SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
 import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type { DrawCommandOptions } from "./draw.types";
@@ -98,9 +102,19 @@ export class DrawParametersService {
     return SUPPORTED_TYPES.includes(value);
   }
 
-  /** Narrows a raw string to a supported {@link Modifier} name without an unchecked assertion. */
+  /** Narrows a raw string to a supported {@link Modifier} name, so the option parser can reject an unknown one by name. */
   private isModifierName(value: string): value is Modifier["name"] {
     return SUPPORTED_MODIFIER_NAMES.includes(value);
+  }
+
+  /** Narrows a modifier name to one of the ply-carrying ones, so `--strands` is demanded for exactly those. */
+  private isPlyModifierName(value: Modifier["name"]): value is PlyModifierName {
+    return PLY_MODIFIER_NAMES.includes(value);
+  }
+
+  /** Narrows a raw string to a {@link SerpentineFlip} without an unchecked assertion. */
+  private isSerpentineFlip(value: string): value is SerpentineFlip {
+    return SUPPORTED_SERPENTINE_FLIPS.includes(value);
   }
 
   /** Narrows a raw string to a {@link MosaicSubFamily} without an unchecked assertion. */
@@ -108,13 +122,29 @@ export class DrawParametersService {
     return SUPPORTED_SUB_FAMILIES.includes(value);
   }
 
-  /** The `plied` modifier `--strands` describes, refusing the modifier when the flag is absent. */
-  private pliedModifier(strands: number | undefined): Modifier {
+  /**
+   * The ply-carrying modifier `--strands` describes, refusing the modifier
+   * when the flag is absent.
+   *
+   * One builder for all three of `parallel`'s modifiers, because the flag
+   * they read and the refusal they owe are the same — they differ only in
+   * what the strands trace, which is the motif service's business rather
+   * than this one's. `serpentine` alone carries more than `--strands`, and
+   * {@link serpentineModifier} is where that is added.
+   */
+  private plyModifier(
+    name: PlyModifierName,
+    options: DrawCommandOptions,
+  ): Modifier {
+    const { strands } = options;
+
     if (strands === undefined) {
-      throw new MissingModifierParameterError("plied", "--strands");
+      throw new MissingModifierParameterError(name, "--strands");
     }
 
-    return { name: "plied", strands };
+    return name === "serpentine"
+      ? this.serpentineModifier(options, strands)
+      : { name, strands };
   }
 
   /**
@@ -130,6 +160,29 @@ export class DrawParametersService {
     return {
       isLeftward: isLeftward ?? DEFAULT_RUNG_IS_LEFTWARD,
       name: "rung",
+    };
+  }
+
+  /**
+   * The `serpentine` modifier `--flip` and `--offset` describe.
+   *
+   * Both are optional where every other modifier's parameter is required,
+   * and deliberately so: omitting them names the drawing that rotates
+   * nothing and turns nothing over, which is the one the corpus already had
+   * under the bare `serpentine-strands-N` filename. Demanding them would
+   * rename every one of those files for no gain.
+   */
+  private serpentineModifier(
+    options: DrawCommandOptions,
+    strands: number,
+  ): Modifier {
+    const { flip, offset } = options;
+
+    return {
+      name: "serpentine",
+      strands,
+      ...(flip === undefined ? {} : { flip }),
+      ...(offset === undefined ? {} : { offset }),
     };
   }
 
@@ -180,8 +233,8 @@ export class DrawParametersService {
       return this.dotModifier(options.shape);
     }
 
-    if (modifier === "plied") {
-      return this.pliedModifier(options.strands);
+    if (this.isPlyModifierName(modifier)) {
+      return this.plyModifier(modifier, options);
     }
 
     if (modifier === "rung") {
@@ -202,6 +255,19 @@ export class DrawParametersService {
         "modifier",
         value,
         SUPPORTED_MODIFIER_NAMES,
+      );
+    }
+
+    return value;
+  }
+
+  /** Narrows `--flip`, rejecting any value outside the supported set. Used only with `--modifier serpentine`. */
+  serpentineFlip(value: string): SerpentineFlip {
+    if (!this.isSerpentineFlip(value)) {
+      throw new UnsupportedOptionError(
+        "flip",
+        value,
+        SUPPORTED_SERPENTINE_FLIPS,
       );
     }
 

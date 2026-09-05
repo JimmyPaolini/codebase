@@ -45,8 +45,15 @@ export type MeanderType =
  */
 export type Modifier =
   | { readonly branches: number; readonly name: "stagger" }
+  | {
+      readonly flip?: SerpentineFlip;
+      readonly name: "serpentine";
+      readonly offset?: number;
+      readonly strands: number;
+    }
   | { readonly isLeftward: boolean; readonly name: "rung" }
   | { readonly isUpward: boolean; readonly name: "comb" }
+  | { readonly name: "aligned"; readonly strands: number }
   | { readonly name: "alternated"; readonly period: number }
   | { readonly name: "brick-staggered" }
   | { readonly name: "brick-straight" }
@@ -97,12 +104,36 @@ export interface MotifUnit {
   readonly unitIndex: number;
 }
 
+/**
+ * The name of a modifier that carries a `strands` count.
+ *
+ * Derived from {@link Modifier} rather than written out, so a ply-carrying
+ * member added to that union is a member of this the same day. The three it
+ * names today all belong to `parallel` — see `PLY_MODIFIER_NAMES`, which is
+ * this type's runtime half.
+ */
+export type PlyModifierName = Extract<
+  Modifier,
+  { readonly strands: number }
+>["name"];
+
 /** The row count, repeat count, and optional modifier a whole pattern's shared geometry (right edge, border) is computed from. */
 export interface RepeatPatternOptions {
   readonly modifier?: Modifier;
   readonly repeatCount: number;
   readonly rows: number;
 }
+
+/**
+ * Which ribbons a `serpentine` drawing turns upside down.
+ *
+ * `"alternating"` flips every other ribbon, so the stack interlocks;
+ * `"one"` flips only the deepest ribbon however many there are. The two
+ * agree at one and two strands and part company at three, which is why both
+ * are swept rather than one standing in for the other. A drawing with no
+ * `flip` at all leaves every ribbon waving in phase.
+ */
+export type SerpentineFlip = "alternating" | "one";
 
 /**
  * The row count, optional modifier, and horizontal offset one repeat unit's

@@ -1,13 +1,16 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import {
   MAXIMUM_VALUE,
   STRUCTURAL_MINIMUM_ROWS,
+  SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
+import { DEFAULT_PARALLEL_STRANDS } from "../parallel-motif/parallel-motif.constants";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
-import { PLIED_SWEEP_STRAND_COUNTS } from "./draw.constants";
 
 import type { GenerationParameters } from "../meander-generation/meander-generation.types";
 
@@ -36,7 +39,11 @@ describe(DrawCombinationsService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [DrawCombinationsService],
+      providers: [
+        DrawCombinationsService,
+        GridGeometryService,
+        ParallelSerpentineService,
+      ],
     }).compile();
 
     service = await module.resolve(DrawCombinationsService);
@@ -71,8 +78,13 @@ describe(DrawCombinationsService, () => {
       { expected: 100, type: "negative" },
       // rows 2..12 × (none + comb up + rung ×2 + stagger ×4)
       { expected: 88, type: "branch" },
-      // rows 4..12 × (none + plied ×2)
-      { expected: 27, type: "parallel" },
+      // rows 2..12 × (plied over every ply 1..rows + aligned over the same
+      // + serpentine over every distinct rotation and flip of each). The
+      // family has no unmodified entry — `plied` names that drawing — and
+      // serpentine's variant count is not a multiplication, since rotations
+      // of an even partition, flips that name the same ribbon, and flips
+      // that land on a strip with no depth all collapse.
+      { expected: 819, type: "parallel" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
       expect(
         combinations.filter((parameters) => parameters.type === type),
@@ -80,7 +92,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(427);
+      expect(combinations).toHaveLength(1219);
     });
 
     it("names every combination distinctly", () => {
@@ -89,18 +101,83 @@ describe(DrawCombinationsService, () => {
       expect(new Set(keys).size).toBe(combinations.length);
     });
 
-    // 🎯 Two numbers written in two files, made to agree here rather than
-    // by anybody remembering. A `parallel` bundle of N strands needs N rows,
-    // so the deepest ply the sweep draws is exactly the row count the family
-    // may start at. Equality rather than an upper bound is deliberate and it
-    // is what the name says: a shallower deepest ply would leave the minimum
-    // stricter than any drawing needs, and a deeper one would enumerate a
-    // combination `MeanderGenerationService.generate` refuses. This fails
-    // before either does.
-    it("pins the deepest swept ply to the row count the parallel family starts at", () => {
-      expect(Math.max(...PLIED_SWEEP_STRAND_COUNTS)).toBe(
-        STRUCTURAL_MINIMUM_ROWS.parallel,
+    // 🎯 The sweep's `plied` range is the row count's, so this asserts the
+    // property the old pinned-constants test stood in for, and asserts it of
+    // every combination rather than of one number. A bundle of N strands
+    // needs N rows, and `MeanderGenerationService.generate` refuses one that
+    // does not have them — so a sweep that enumerated such a combination
+    // would fail the charter sweep downstream with a thrown error rather
+    // than a measurement. This fails first, and says why.
+    it("never sweeps a ply deeper than the row count it is drawn at", () => {
+      const plied = combinations.filter(
+        (parameters) => parameters.modifier?.name === "plied",
       );
+
+      expect(plied.length).toBeGreaterThan(0);
+
+      for (const parameters of plied) {
+        const { modifier, rows } = parameters;
+
+        if (modifier?.name !== "plied") {
+          continue;
+        }
+
+        expect(modifier.strands).toBeLessThanOrEqual(rows);
+        expect(modifier.strands).toBeGreaterThanOrEqual(1);
+      }
+    });
+
+    // 🎯 The range has no hole in it, and the family has no unmodified
+    // entry — the two facts are one change. `parallel` drawn with no
+    // modifier is a two-strand `plied` bundle, so the sweep used to commit
+    // it as `plain-…svg` and skip the ply that would have duplicated it.
+    // Dropping the unmodified entry instead lets `plied` carry that drawing
+    // under a name its siblings share, which is what makes every parallel
+    // filename readable as a ply.
+    it("names every parallel drawing for its ply rather than committing an unmodified one", () => {
+      const parallel = combinations.filter(({ type }) => type === "parallel");
+      const strandCounts = parallel.flatMap((parameters) =>
+        parameters.modifier?.name === "plied"
+          ? [parameters.modifier.strands]
+          : [],
+      );
+
+      expect(parallel).not.toHaveLength(0);
+      expect(parallel.every(({ modifier }) => modifier !== undefined)).toBe(
+        true,
+      );
+      expect(strandCounts).toContain(DEFAULT_PARALLEL_STRANDS);
+    });
+
+    // 🎯 Every other family keeps its unmodified entry, so dropping one is
+    // a decision about `parallel` rather than a change to the sweep.
+    it("still sweeps an unmodified drawing for every other family", () => {
+      const unmodified = new Set(
+        combinations
+          .filter(({ modifier }) => modifier === undefined)
+          .map(({ type }) => type),
+      );
+
+      expect([...unmodified].toSorted()).toStrictEqual(
+        SUPPORTED_TYPES.filter((type) => type !== "parallel").toSorted(),
+      );
+    });
+
+    // 🎯 The deepest ply the sweep reaches is the deepest the command line
+    // accepts, which is what "every drawing the command line can be asked
+    // for is a drawing this repository commits" means for this family's
+    // second axis. A flat list could not say this.
+    it("sweeps the family's whole ply range, up to the deepest row count", () => {
+      const strandCounts = new Set(
+        combinations.flatMap((parameters) =>
+          parameters.modifier?.name === "plied"
+            ? [parameters.modifier.strands]
+            : [],
+        ),
+      );
+
+      expect(Math.max(...strandCounts)).toBe(MAXIMUM_VALUE);
+      expect(Math.min(...strandCounts)).toBe(1);
     });
 
     // 🎯 The two figures README.md's discarded-density argument rests on,

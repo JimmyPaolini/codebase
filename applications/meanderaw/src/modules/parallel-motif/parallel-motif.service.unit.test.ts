@@ -6,6 +6,10 @@ import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import {
+  COMPATIBLE_MODIFIERS,
+  MAXIMUM_VALUE,
+} from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MotifRegistryService } from "../meander-generation/motif-registry.service";
 import { MeanderLatticeService } from "../meander-topology/meander-lattice.service";
@@ -26,9 +30,11 @@ import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 import {
   COLUMNS_PER_STRAND,
   DEFAULT_PARALLEL_STRANDS,
+  PARALLEL_MODIFIER_NAMES,
   UnknownParallelModifierError,
 } from "./parallel-motif.constants";
 import { ParallelMotifService } from "./parallel-motif.service";
+import { ParallelSerpentineService } from "./parallel-serpentine.service";
 
 import type { Modifier } from "../meander-generation/meander-generation.types";
 
@@ -41,9 +47,9 @@ const REPEAT_COUNT = 6;
 const SWEPT_ROWS: readonly number[] = [4, 5, 6, 7, 8];
 
 /**
- * Every ply the sweep draws — the unmodified default beside each `plied`
- * count `PLIED_SWEEP_STRAND_COUNTS` names — and how many strands each one
- * puts in a repeat unit.
+ * Representative plies of the bracket-bundle shapes, and how many strands
+ * each one puts in a repeat unit. One at the floor the family now admits,
+ * one at its own default, and two above it.
  */
 const PLIES: readonly {
   readonly label: string;
@@ -51,6 +57,7 @@ const PLIES: readonly {
   readonly strands: number;
 }[] = [
   { label: "unmodified", strands: DEFAULT_PARALLEL_STRANDS },
+  { label: "plied 1", modifier: { name: "plied", strands: 1 }, strands: 1 },
   { label: "plied 3", modifier: { name: "plied", strands: 3 }, strands: 3 },
   { label: "plied 4", modifier: { name: "plied", strands: 4 }, strands: 4 },
 ];
@@ -85,6 +92,7 @@ describe(ParallelMotifService, () => {
         NegativeMotifService,
         NegativeSourceService,
         ParallelMotifService,
+        ParallelSerpentineService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,
@@ -188,6 +196,103 @@ describe(ParallelMotifService, () => {
         }),
       ).toContain("M67.5 7.5V7.5H97.5V7.5");
     });
+  });
+
+  // 🎯 The family's three shapes: two bracket bundles that differ only in
+  // whether they flip, and one that abandons brackets altogether.
+  describe("the shapes", () => {
+    // 🎯 Two lists in two files, made to agree here rather than by anybody
+    // remembering. A name in `COMPATIBLE_MODIFIERS` and not in this
+    // family's own list is a modifier the seam admits and the family
+    // refuses at run time; a name in this family's list and not in
+    // `COMPATIBLE_MODIFIERS` is a shape nothing can ask for.
+    it("draws a ply for exactly the modifiers the seam declares compatible", () => {
+      expect([...PARALLEL_MODIFIER_NAMES].toSorted()).toStrictEqual(
+        [...COMPATIBLE_MODIFIERS.parallel].toSorted(),
+      );
+    });
+
+    // 🎯 A single-strand ply is one bracket per unit and two lattice
+    // columns wide — the shallow end of the same axis, and the drawing the
+    // old floor of two made unreachable. Pinned as a string because the
+    // claim is about the shape and not only about its validity.
+    it("draws one bracket per unit at a ply of one", () => {
+      expect(
+        service.path(geometryService.compute(4), {
+          isLastUnit: false,
+          modifier: { name: "plied", strands: 1 },
+          rows: 4,
+          unitIndex: 0,
+        }),
+      ).toBe("M3.75 3.75V63.75H18.75V3.75");
+    });
+
+    // 🎯 `aligned` is the bundle with the alternation taken away, pinned as
+    // the two strings that differ. An odd `aligned` unit is its even
+    // neighbor translated one unit right — same crossbar on the band's
+    // bottom border, same arms reaching its top — where the same odd unit
+    // under `plied` is that bundle turned over. A shape that quietly
+    // stopped alternating, or one that quietly started, changes one of
+    // these two strings and fails.
+    it("translates an aligned unit rather than turning it over", () => {
+      const geometry = geometryService.compute(4);
+      const unit = { isLastUnit: false, rows: 4, unitIndex: 1 };
+
+      expect(
+        service.path(geometry, {
+          ...unit,
+          modifier: { name: "aligned", strands: 2 },
+        }),
+      ).toBe("M63.75 3.75V63.75H108.75V3.75M78.75 3.75V48.75H93.75V3.75");
+
+      expect(
+        service.path(geometry, {
+          ...unit,
+          modifier: { name: "plied", strands: 2 },
+        }),
+      ).toBe("M63.75 63.75V3.75H108.75V63.75M78.75 63.75V18.75H93.75V63.75");
+    });
+
+    // 🎯 Why the serpentine's repeat pitch does not move with its ply, and
+    // the bracket bundles' does. Reading the ply for a serpentine would
+    // widen the canvas past its own ink.
+    it("keeps one pitch at every ply, unlike the bracket bundles", () => {
+      const geometry = geometryService.compute(6);
+      const widthOf = (modifier: Modifier): number =>
+        service.rightEdge(geometry, { modifier, repeatCount: 6, rows: 6 });
+
+      expect(widthOf({ name: "serpentine", strands: 2 })).toBe(
+        widthOf({ name: "serpentine", strands: 5 }),
+      );
+      expect(widthOf({ name: "plied", strands: 5 })).toBeGreaterThan(
+        widthOf({ name: "plied", strands: 2 }),
+      );
+    });
+
+    // 🎯 The corpus's first tree that is not a `branch` drawing, and the
+    // reason it is one: a one-ply serpentine is a single ribbon that runs
+    // the whole band without stopping or repeating a step. A deeper ply is
+    // that many ribbons, so it is a forest and not a tree — which is what
+    // separates the two assertions here.
+    it.each([
+      { expected: 1, strands: 1 },
+      { expected: 3, strands: 3 },
+    ])(
+      "leaves $expected connected ribbon(s) at a serpentine ply of $strands",
+      ({ expected, strands }) => {
+        const document = generationService.generate({
+          modifier: { name: "serpentine", strands },
+          repeatCount: REPEAT_COUNT,
+          rows: 6,
+          type: "parallel",
+        });
+        const { components, edges, nodes } =
+          topologyService.connectivity(document);
+
+        expect(components).toBe(expected);
+        expect(edges).toBe(nodes - components);
+      },
+    );
   });
 
   describe("rightEdge", () => {
@@ -367,23 +472,37 @@ describe(ParallelMotifService, () => {
       });
     };
 
-    // 🎯 The default ply is not a floor the geometry imposes; it draws
-    // perfectly well below the family's own structural minimum, which its
-    // deepest swept ply sets instead. Measured at both row counts the
-    // minimum excludes, the same way `branch` measures its own modes below
-    // theirs.
-    it.each([2, 3])(
-      "still holds at %i rows, below the family's structural minimum",
-      (rows) => {
-        expect(topologyService.measure(belowMinimum(rows))).toStrictEqual({
-          channelWidthCompliant: true,
-          inkTJunctions: 0,
-          inkXJunctions: 0,
-          negativeTJunctions: 0,
-          negativeXJunctions: 0,
-        });
-      },
-    );
+    // 🎯 Why the family's minimum of 2 is a floor on the *family* rather
+    // than on any one drawing. A one-row band holds every charter invariant
+    // — measured here, through the motif service, at the one row count
+    // `MeanderGenerationService.generate` refuses. What it cannot hold is
+    // the family's own axis: `strands` is bounded above by `rows`, so a
+    // one-row band admits a single ply and there is no second strand to run
+    // alongside the first. The number and its reason are pinned together
+    // here the same way `branch` pins its own.
+    it("still holds every invariant at 1 row, below the family's structural minimum", () => {
+      expect(topologyService.measure(belowMinimum(1))).toStrictEqual({
+        channelWidthCompliant: true,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        negativeTJunctions: 0,
+        negativeXJunctions: 0,
+      });
+    });
+
+    // 🎯 The other half of that claim: at 1 row the ply axis has exactly one
+    // value, and at 2 it has two. This is the number the minimum is set by.
+    it.each([
+      { plies: 1, rows: 1 },
+      { plies: 2, rows: 2 },
+    ])("admits $plies ply/plies at $rows row(s)", ({ plies, rows }) => {
+      const admitted = Array.from(
+        { length: MAXIMUM_VALUE },
+        (_value, index) => index + 1,
+      ).filter((strands) => strands <= rows);
+
+      expect(admitted).toHaveLength(plies);
+    });
 
     // 🎯 `plied` naming the default ply is the default, byte for byte. The
     // sweep leaves it out for exactly this reason: it would commit a second

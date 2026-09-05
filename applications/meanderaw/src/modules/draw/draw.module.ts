@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
+import { ParallelMotifModule } from "../parallel-motif/parallel-motif.module";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawIndexService } from "./draw-index.service";
@@ -19,11 +20,17 @@ import { DrawCommand } from "./draw.command";
  * `DrawCombinationsService` is exported because the meander charter's
  * property test sweeps the same enumeration, so the corpus written here and
  * the corpus gated there cannot drift apart.
+ *
+ * It imports `ParallelMotifModule` for one reason: `serpentine`'s variant
+ * space is not a cross product of its axes, and which rotations and flips
+ * are distinct at a given ply is a fact about the geometry rather than about
+ * the sweep. Asking `ParallelSerpentineService` is what keeps the corpus
+ * from carrying the same drawing under several filenames.
  */
 @Module({
   controllers: [],
   exports: [DrawCombinationsService, DrawCommand],
-  imports: [MeanderGenerationModule],
+  imports: [MeanderGenerationModule, ParallelMotifModule],
   providers: [
     DrawCombinationsService,
     DrawCommand,

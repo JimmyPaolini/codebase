@@ -74,7 +74,10 @@ export class OutputPathService {
    * one a modifier takes is decided by whether the value reads on its own:
    * `dot`'s shapes and `comb`'s and `rung`'s directions are words, so they
    * follow the name unadorned, while a bare number would say nothing — so
-   * `alternated`, `plied`, and `stagger` name their parameter before it.
+   * `alternated`, `stagger`, and the ply-carrying modifiers name their
+   * parameter before it. The last of those are spelled by
+   * {@link plySlug}, since all three spell it the same way and one of them
+   * carries a second parameter besides.
    */
   private modifierSlug(modifier: Modifier): string {
     if (modifier.name === "alternated") {
@@ -89,10 +92,6 @@ export class OutputPathService {
       return `dot-${modifier.shape}`;
     }
 
-    if (modifier.name === "plied") {
-      return `plied-strands-${modifier.strands}`;
-    }
-
     if (modifier.name === "rung") {
       return `rung-${modifier.isLeftward ? "leftward" : "rightward"}`;
     }
@@ -101,7 +100,32 @@ export class OutputPathService {
       return `stagger-branches-${modifier.branches}`;
     }
 
+    if ("strands" in modifier) {
+      return this.plySlug(modifier);
+    }
+
     return modifier.name;
+  }
+
+  /**
+   * What one ply-carrying modifier is called in a filename.
+   *
+   * All three name their strand count the same way. `serpentine` is the one
+   * that carries more than one parameter, and it names each in turn —
+   * `serpentine-strands-4-flip-alternating-offset-2`. Both of its extra axes
+   * are omitted at their defaults, which is what keeps the drawing that
+   * rotates nothing and turns nothing over on the same bare
+   * `serpentine-strands-N` name it had before either axis existed.
+   */
+  private plySlug(modifier: Extract<Modifier, { strands: number }>): string {
+    const suffix =
+      modifier.name === "serpentine"
+        ? `${modifier.flip === undefined ? "" : `-flip-${modifier.flip}`}${
+            modifier.offset === undefined ? "" : `-offset-${modifier.offset}`
+          }`
+        : "";
+
+    return `${modifier.name}-strands-${modifier.strands}${suffix}`;
   }
 
   // 🌎 Public Methods
