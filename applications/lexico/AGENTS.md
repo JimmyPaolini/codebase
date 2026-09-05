@@ -33,7 +33,7 @@ routes/
 └── settings.tsx            # /settings (auth)
 ```
 
-Generated route tree: [src/routeTree.gen.ts](src/routeTree.gen.ts) (auto-generated, never edit)
+Generated route tree: [src/lib/routeTree.gen.ts](src/lib/routeTree.gen.ts) (auto-generated, never edit; its path is set by `router.generatedRouteTree` in `vite.config.mts`, resolved relative to `srcDirectory`)
 
 ### Authentication Flow
 

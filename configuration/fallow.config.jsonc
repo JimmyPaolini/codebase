@@ -75,7 +75,7 @@
       "**/coverage/**",
       "**/dist/**",
       "**/src/lib/database.types.ts",
-      "**/src/routeTree.gen.ts",
+      "**/routeTree.gen.ts",
     ],
     "maxCognitive": 12,
     "maxCrap": 16,
@@ -156,7 +156,7 @@
   "ignoreExports": [
     {
       "exports": ["*"],
-      "file": "**/src/routeTree.gen.ts",
+      "file": "**/routeTree.gen.ts",
     },
     {
       "exports": ["*"],
@@ -218,7 +218,7 @@
     "**/packages/conformetry-examples/examples/*/templates/**",
     "**/pnpm-lock.yaml",
     "**/src/lib/database.types.ts",
-    "**/src/routeTree.gen.ts",
+    "**/routeTree.gen.ts",
     "**/tmp/**",
     "**/vite.config.*.timestamp*",
     "**/vitest.config.*.timestamp*",
