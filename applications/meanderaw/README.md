@@ -1474,18 +1474,18 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
      ↳ Draws every meander the application can draw, and indexes them all in one page.
     └─> DrawCommand.renderCombinations(): RenderedDocument[] [applications/meanderaw/src/modules/draw/draw.command.ts:130]
        ↳ Renders the named-family half of the sweep.
-      └─> DrawCombinationsService.enumerate(): GenerationParameters[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:248]
+      └─> DrawCombinationsService.enumerate(): GenerationParameters[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:252]
          ↳ Enumerates every `(type, modifier-or-none, rows, repeatCount)` combination the named-type sweep covers, from each…
-        └─> DrawCombinationsService.flatMap(…)(this: undefined, type: MeanderType): GenerationParameters[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:253]
-          └─> DrawCombinationsService.combinationsForType(type: MeanderType): GenerationParameters[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:73]
+        └─> DrawCombinationsService.flatMap(…)(this: undefined, type: MeanderType): GenerationParameters[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:257]
+          └─> DrawCombinationsService.combinationsForType(type: MeanderType): GenerationParameters[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:74]
              ↳ Enumerates every combination for a single type: every swept row count crossed with every swept modifier.
-            └─> DrawCombinationsService.flatMap(…)(…): { modifier?: Modifier; repeatCount: number; rows: number; type: MeanderType; }[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:74]
-              └─> DrawCombinationsService.modifiersForType(type: MeanderType, rowCount: number): (Modifier | undefined)[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:155]
+            └─> DrawCombinationsService.flatMap(…)(…): { modifier?: Modifier; repeatCount: number; rows: number; type: MeanderType; }[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:75]
+              └─> DrawCombinationsService.modifiersForType(type: MeanderType, rowCount: number): (Modifier | undefined)[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:156]
                  ↳ Every modifier the sweep covers for `type` at `rowCount`: `undefined` (no modifier) plus every value of each compatible…
-                └─> DrawCombinationsService.flatMap(…)(…): Modifier[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:163]
-                  └─> DrawCombinationsService.expandModifierName(name: Modifier["name"], rowCount: number): Modifier[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:94]
+                └─> DrawCombinationsService.flatMap(…)(…): Modifier[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:164]
+                  └─> DrawCombinationsService.expandModifierName(name: Modifier["name"], rowCount: number): Modifier[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:95]
                      ↳ Expands one modifier name into every {@link Modifier} value the sweep covers at `rowCount`. `alternated` and `dot`…
-                    └─> DrawCombinationsService.flatMap(…)(…): { flip?: SerpentineFlip; offset?: number; name: "serpentine"; strands: number; }[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:111]
+                    └─> DrawCombinationsService.flatMap(…)(…): { flip?: SerpentineFlip; offset?: number; name: "serpentine"; strands: number; }[] [applications/meanderaw/src/modules/draw/draw-combinations.service.ts:112]
                       └─> ParallelSerpentineService.variants(rows: number, strands: number): SerpentineVariant[] [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:296]
                          ↳ Every distinct drawing this shape has at `rows` and `strands`, as the variant each one is asked for by.
                         └─> ParallelSerpentineService.strips(rows: number, strands: number, offset?: number): SerpentineStrip[] [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:255]
@@ -1952,9 +1952,9 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MeanderGenerationService.generate` | 14 | `MeanderGenerationService.generateSubFamily`, `MeanderGenerationService.validateRows`, `MeanderGenerationService.validateRepeatCount`, `MeanderGenerationService.validateModifier`, `MeanderGenerationService.validatePeriod`, `MeanderGenerationService.validateModifierCycle`, `MeanderGenerationService.validateStaggerBranches`, `MeanderGenerationService.validateStrands`, `MeanderGenerationService.validateOffset`, `GridGeometryService.compute`, `MeanderGenerationService.buildPaths`, `MotifRegistryService.resolve`, `SvgRenderingService.render`, `MeanderGenerationService.format` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:332` |
-| `DrawCombinationsService.expandModifierName` | 9 | `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.flatMap(…)`, `DrawCombinationsService.strandCounts`, `DrawCombinationsService.isPlyModifierName`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:94` |
-| `MosaicTileGenerationService.generate` | 8 | `InvalidRowsError.constructor`, `InvalidRepeatCountError.constructor`, `GridGeometryService.compute`, `MosaicTileGenerationService.from(…)`, `MosaicTileMotifService.leadingOverhang`, `MosaicTileMotifService.rightEdge`, `SvgRenderingService.render`, `MosaicTileGenerationService.format` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-generation.service.ts:46` |
+| `MeanderGenerationService.generate` | 14 | `MeanderGenerationService.generateSubFamily`, `MeanderGenerationService.validateRows`, `MeanderGenerationService.validateRepeatCount`, `MeanderGenerationService.validateModifier`, `MeanderGenerationService.validatePeriod`, `MeanderGenerationService.validateModifierCycle`, `MeanderGenerationService.validateStaggerBranches`, `MeanderGenerationService.validateStrands`, `MeanderGenerationService.validateOffset`, `GridGeometryService.compute`, `MeanderGenerationService.buildPaths`, `MotifRegistryService.resolve`, `SvgRenderingService.render`, `MeanderGenerationService.format` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:345` |
+| `DrawCombinationsService.expandModifierName` | 9 | `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.flatMap(…)`, `DrawCombinationsService.strandCounts`, `DrawCombinationsService.isPlyModifierName`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:95` |
+| `MosaicTileGenerationService.generate` | 8 | `InvalidRowsError.constructor`, `InvalidRepeatCountError.constructor`, `GridGeometryService.compute`, `MosaicTileGenerationService.from(…)`, `MosaicTileMotifService.leadingOverhang`, `MosaicTileMotifService.rightEdge`, `SvgRenderingService.render`, `MosaicTileGenerationService.format` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-generation.service.ts:59` |
 
 <details>
 <summary>238 more callables</summary>
@@ -1972,7 +1972,7 @@ None.
 | `MosaicMotifService.path` | 5 | `MosaicMotifService.alternatedPath`, `MosaicMotifService.dotPath`, `MosaicMotifService.splitPath`, `MosaicMotifService.format`, `MosaicMotifService.capColumns` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-motif.service.ts:279` |
 | `MosaicTilesService.coverFrom` | 5 | `MosaicTilesService.recordTile`, `MosaicTilesService.candidatePieces`, `MosaicSymmetryService.coveredCells`, `MosaicTilesService.some(…)`, `MosaicTilesService.setClaimed` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:80` |
 | `NegativeMotifService.tilePath` | 5 | `NegativeMotifService.reach`, `NegativeMotifService.from(…)`, `NegativeMotifService.from(…)`, `NegativeMotifService.map(…)`, `NegativeMotifService.map(…)` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:308` |
-| `MeanderGenerationService.generateSubFamily` | 5 | `InvalidSubFamilyError.constructor`, `ConflictingSubFamilyError.constructor`, `MosaicSubFamilyService.tile`, `UnavailableSubFamilyError.constructor`, `MosaicTileGenerationService.generate` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:116` |
+| `MeanderGenerationService.generateSubFamily` | 5 | `InvalidSubFamilyError.constructor`, `ConflictingSubFamilyError.constructor`, `MosaicSubFamilyService.tile`, `UnavailableSubFamilyError.constructor`, `MosaicTileGenerationService.generate` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:117` |
 | `DrawPermutationsService.render` | 5 | `OutputPathService.familyDirectory`, `MosaicTilesService.enumerate`, `MosaicSymmetryService.canonicalIdentifier`, `MosaicSubFamilyService.classify`, `MosaicTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:75` |
 | `MeanderTopologyService.measure` | 5 | `MeanderLatticeService.build`, `MeanderTopologyService.tally`, `MeanderTopologyService.inkDegree`, `MeanderTopologyService.negativeDegree`, `MeanderTopologyService.isChannelWidthCompliant` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:239` |
 | `BranchMotifService.rungUnit` | 4 | `BranchMotifService.rungRail`, `BranchMotifService.from(…)`, `BranchMotifService.verticalRun`, `BranchMotifService.stileColumn` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:194` |
@@ -1986,7 +1986,7 @@ None.
 | `SwirlMotifService.path` | 4 | `SwirlMotifService.unitWidth`, `SwirlMotifService.map(…)`, `SwirlMotifService.subpaths`, `SwirlMotifService.borderSegment` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:157` |
 | `WhirlMotifService.borderSegment` | 4 | `MotifTransformsService.rightmostLevel`, `WhirlMotifService.subpaths`, `WhirlMotifService.unitWidth`, `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:126` |
 | `WhirlMotifService.path` | 4 | `WhirlMotifService.unitWidth`, `WhirlMotifService.map(…)`, `WhirlMotifService.subpaths`, `WhirlMotifService.borderSegment` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:148` |
-| `MeanderGenerationService.buildPaths` | 4 | `MotifRegistryService.resolve`, `MeanderGenerationService.from(…)`, `BoxesMotifService.border`, `CrossMotifService.border` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:72` |
+| `MeanderGenerationService.buildPaths` | 4 | `MotifRegistryService.resolve`, `MeanderGenerationService.from(…)`, `BoxesMotifService.border`, `CrossMotifService.border` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:73` |
 | `DrawCommand.writeDocuments` | 4 | `DrawCommand.map(…)`, `DrawCommand.map(…)`, `DrawCommand.map(…)`, `DrawCommand.map(…)` | `applications/meanderaw/src/modules/draw/draw.command.ts:186` |
 | `MeanderTopologyService.connectivity` | 4 | `MeanderLatticeService.build`, `MeanderTopologyService.key`, `MeanderTopologyService.inkDegree`, `MeanderTopologyService.walk` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:211` |
 | `BoxesMotifService.unitPoints` | 3 | `BoxesMotifService.spiralPoints`, `BoxesMotifService.centerPoint`, `MotifTransformsService.rotate` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:129` |
@@ -2009,8 +2009,8 @@ None.
 | `WhirlMotifService.flippedPoints` | 3 | `WhirlMotifService.basePoints`, `WhirlMotifService.pitchLevels`, `MotifTransformsService.mirror` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:80` |
 | `DrawIndexService.renderSection` | 3 | `DrawIndexService.map(…)`, `DrawIndexService.escape`, `DrawIndexService.slug` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:111` |
 | `DrawIndexService.render` | 3 | `DrawIndexService.groupByDirectory`, `DrawIndexService.map(…)`, `DrawIndexService.renderContents` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:148` |
-| `DrawNegativePermutationsService.render` | 3 | `OutputPathService.familyDirectory`, `DrawNegativePermutationsService.map(…)`, `MosaicTilesService.enumerate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:121` |
-| `DrawNegativePermutationsService.map(…)` | 3 | `MosaicSymmetryService.canonicalIdentifier`, `DrawNegativePermutationsService.classify`, `NegativeTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:130` |
+| `DrawNegativePermutationsService.render` | 3 | `OutputPathService.familyDirectory`, `DrawNegativePermutationsService.map(…)`, `MosaicTilesService.enumerate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:130` |
+| `DrawNegativePermutationsService.map(…)` | 3 | `MosaicSymmetryService.canonicalIdentifier`, `DrawNegativePermutationsService.classify`, `NegativeTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:139` |
 | `MeanderLatticeService.trace` | 3 | `MeanderLatticeService.snap`, `MeanderLatticeService.addHorizontal`, `MeanderLatticeService.addVertical` | `applications/meanderaw/src/modules/meander-topology/meander-lattice.service.ts:204` |
 | `MeanderTopologyService.neighbors` | 3 | `MeanderTopologyService.key`, `MeanderTopologyService.map(…)`, `MeanderTopologyService.filter(…)` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:121` |
 | `BoxesMotifService.border` | 2 | `GridGeometryService.formatCoordinate`, `BoxesMotifService.rightEdge` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:165` |
@@ -2032,15 +2032,15 @@ None.
 | `ParallelMotifService.rightEdge` | 2 | `ParallelMotifService.lastColumn`, `ParallelMotifService.strandCount` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:200` |
 | `SwirlMotifService.subpaths` | 2 | `SwirlMotifService.basePoints`, `SwirlMotifService.flippedPoints` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:107` |
 | `WhirlMotifService.subpaths` | 2 | `WhirlMotifService.basePoints`, `WhirlMotifService.flippedPoints` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:96` |
-| `DrawCombinationsService.combinationsForType` | 2 | `DrawCombinationsService.flatMap(…)`, `DrawCombinationsService.rowsSweep` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:73` |
-| `DrawCombinationsService.flatMap(…)` | 2 | `DrawCombinationsService.map(…)`, `DrawCombinationsService.modifiersForType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:74` |
-| `DrawCombinationsService.flatMap(…)` | 2 | `DrawCombinationsService.map(…)`, `ParallelSerpentineService.variants` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:111` |
-| `DrawCombinationsService.modifiersForType` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:155` |
-| `DrawCombinationsService.enumerate` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:248` |
+| `DrawCombinationsService.combinationsForType` | 2 | `DrawCombinationsService.flatMap(…)`, `DrawCombinationsService.rowsSweep` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:74` |
+| `DrawCombinationsService.flatMap(…)` | 2 | `DrawCombinationsService.map(…)`, `DrawCombinationsService.modifiersForType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:75` |
+| `DrawCombinationsService.flatMap(…)` | 2 | `DrawCombinationsService.map(…)`, `ParallelSerpentineService.variants` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:112` |
+| `DrawCombinationsService.modifiersForType` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:156` |
+| `DrawCombinationsService.enumerate` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:252` |
 | `DrawIndexService.groupByDirectory` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:74` |
 | `DrawIndexService.map(…)` | 2 | `DrawIndexService.escape`, `DrawIndexService.slug` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:102` |
-| `DrawNegativePermutationsService.classify` | 2 | `MosaicSymmetryService.canonicalIdentifier`, `DrawNegativePermutationsService.find(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:99` |
-| `DrawNegativePermutationsService.find(…)` | 2 | `MosaicSymmetryService.canonicalIdentifier`, `NegativeSourceService.tile` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:103` |
+| `DrawNegativePermutationsService.classify` | 2 | `MosaicSymmetryService.canonicalIdentifier`, `DrawNegativePermutationsService.find(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:108` |
+| `DrawNegativePermutationsService.find(…)` | 2 | `MosaicSymmetryService.canonicalIdentifier`, `NegativeSourceService.tile` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:112` |
 | `DrawParametersService.plyModifier` | 2 | `MissingModifierParameterError.constructor`, `DrawParametersService.serpentineModifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:135` |
 | `DrawParametersService.dotShape` | 2 | `DrawParametersService.isDotShape`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:201` |
 | `DrawParametersService.modifierName` | 2 | `DrawParametersService.isModifierName`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:252` |
@@ -2118,8 +2118,8 @@ None.
 | `MosaicTileMotifService.map(…)` | 1 | `MosaicTileMotifService.markSegment` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-motif.service.ts:81` |
 | `MosaicTileMotifService.map(…)` | 1 | `MosaicTileMotifService.markSegment` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-motif.service.ts:100` |
 | `MosaicTileMotifService.rightEdge` | 1 | `MosaicTileMotifService.map(…)` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-motif.service.ts:127` |
-| `MosaicTileGenerationService.from(…)` | 1 | `MosaicTileMotifService.path` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-generation.service.ts:72` |
-| `MosaicTileGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-generation.service.ts:85` |
+| `MosaicTileGenerationService.from(…)` | 1 | `MosaicTileMotifService.path` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-generation.service.ts:85` |
+| `MosaicTileGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-generation.service.ts:98` |
 | `MosaicTilesService.recordTile` | 1 | `MosaicSymmetryService.canonicalIdentifier` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:112` |
 | `NegativeSourceService.brickPieces` | 1 | `NegativeSourceService.from(…)` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:77` |
 | `NegativeMotifService.from(…)` | 1 | `NegativeMotifService.hasMark` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:93` |
@@ -2157,28 +2157,28 @@ None.
 | `WhirlMotifService.map(…)` | 1 | `MotifTransformsService.pointsToPathData` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:160` |
 | `WhirlMotifService.rightEdge` | 1 | `WhirlMotifService.unitWidth` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:188` |
 | `WhirlMotifService.unitWidth` | 1 | `WhirlMotifService.pitchLevels` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:197` |
-| `MeanderGenerationService.validateModifier` | 1 | `InvalidModifierError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:147` |
-| `MeanderGenerationService.validateModifierCycle` | 1 | `InvalidRepeatCountCycleError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:180` |
-| `MeanderGenerationService.validateOffset` | 1 | `InvalidOffsetError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:207` |
-| `MeanderGenerationService.validatePeriod` | 1 | `InvalidPeriodError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:220` |
-| `MeanderGenerationService.validateRepeatCount` | 1 | `InvalidRepeatCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:237` |
-| `MeanderGenerationService.validateRows` | 1 | `InvalidRowsError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:252` |
-| `MeanderGenerationService.validateStaggerBranches` | 1 | `InvalidStaggerBranchCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:272` |
-| `MeanderGenerationService.validateStrands` | 1 | `InvalidStrandCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:304` |
-| `MeanderGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:355` |
-| `DrawCombinationsService.map(…)` | 1 | `DrawCombinationsService.repeatCountFor` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:75` |
-| `DrawCombinationsService.filter(…)` | 1 | `DrawCombinationsService.isModifierName` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:160` |
-| `DrawCombinationsService.flatMap(…)` | 1 | `DrawCombinationsService.expandModifierName` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:163` |
-| `DrawCombinationsService.rowsSweep` | 1 | `DrawCombinationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:186` |
-| `DrawCombinationsService.strandCounts` | 1 | `DrawCombinationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:221` |
-| `DrawCombinationsService.filter(…)` | 1 | `DrawCombinationsService.isMeanderType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:249` |
-| `DrawCombinationsService.flatMap(…)` | 1 | `DrawCombinationsService.combinationsForType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:253` |
+| `MeanderGenerationService.validateModifier` | 1 | `InvalidModifierError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:148` |
+| `MeanderGenerationService.validateModifierCycle` | 1 | `InvalidRepeatCountCycleError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:181` |
+| `MeanderGenerationService.validateOffset` | 1 | `InvalidOffsetError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:208` |
+| `MeanderGenerationService.validatePeriod` | 1 | `InvalidPeriodError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:221` |
+| `MeanderGenerationService.validateRepeatCount` | 1 | `InvalidRepeatCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:238` |
+| `MeanderGenerationService.validateRows` | 1 | `InvalidRowsError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:264` |
+| `MeanderGenerationService.validateStaggerBranches` | 1 | `InvalidStaggerBranchCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:285` |
+| `MeanderGenerationService.validateStrands` | 1 | `InvalidStrandCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:317` |
+| `MeanderGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:368` |
+| `DrawCombinationsService.map(…)` | 1 | `DrawCombinationsService.repeatCountFor` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:76` |
+| `DrawCombinationsService.filter(…)` | 1 | `DrawCombinationsService.isModifierName` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:161` |
+| `DrawCombinationsService.flatMap(…)` | 1 | `DrawCombinationsService.expandModifierName` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:164` |
+| `DrawCombinationsService.rowsSweep` | 1 | `DrawCombinationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:187` |
+| `DrawCombinationsService.strandCounts` | 1 | `DrawCombinationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:222` |
+| `DrawCombinationsService.filter(…)` | 1 | `DrawCombinationsService.isMeanderType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:253` |
+| `DrawCombinationsService.flatMap(…)` | 1 | `DrawCombinationsService.combinationsForType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:257` |
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.toSorted(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:87` |
 | `DrawIndexService.toSorted(…)` | 1 | `DrawIndexService.familyRank` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:92` |
 | `DrawIndexService.renderContents` | 1 | `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:99` |
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.escape` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:116` |
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.renderSection` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:151` |
-| `DrawNegativePermutationsService.rowsSweep` | 1 | `DrawNegativePermutationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:146` |
+| `DrawNegativePermutationsService.rowsSweep` | 1 | `DrawNegativePermutationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:155` |
 | `DrawParametersService.alternatedModifier` | 1 | `MissingModifierParameterError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:66` |
 | `DrawParametersService.dotModifier` | 1 | `MissingModifierParameterError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:87` |
 | `DrawParametersService.staggerModifier` | 1 | `MissingModifierParameterError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:190` |
@@ -2551,6 +2551,7 @@ graph LR
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_draw_draw_types_ts
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_symmetry_service_ts
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_tiles_service_ts
@@ -2743,6 +2744,7 @@ graph LR
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_draw_draw_combinations_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
@@ -2808,6 +2810,7 @@ graph LR
   file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
   file_src_modules_mosaic_motif_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_mosaic_motif_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_mosaic_motif_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
   file_src_modules_mosaic_motif_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
   file_src_modules_mosaic_motif_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_symmetry_service_ts
   file_src_modules_mosaic_motif_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_motif_mosaic_tile_generation_service_ts
@@ -2849,6 +2852,7 @@ graph LR
   file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
   file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_constants_ts
   file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
   file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
@@ -3007,14 +3011,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-20640-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-11.05_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-151-4a4a4a?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-20750-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-4.12_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-137-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-128-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-119.42_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-120.48_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -3023,7 +3027,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-130-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-409-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-410-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -3032,15 +3036,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-37-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-12-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-72-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-1018-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-1024-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-364-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-1297-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-1303-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-85-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-1091-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-718-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-202-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-1035-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-3481-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-1093-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-722-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-203-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-1052-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-3552-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -3188,14 +3192,14 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-376-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-383-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-69-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-70-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-8-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-38-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
@@ -3204,7 +3208,7 @@ graph LR
 ![Links](https://img.shields.io/badge/Links-23-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-15-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-159-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-161-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
