@@ -1,6 +1,10 @@
 // ♟️ Constants
 
-import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
+import {
+  MOSAIC_TILE_MINIMUM_ROWS,
+  SUPPORTED_SUB_FAMILIES,
+} from "../mosaic-motif/mosaic-motif.constants";
+import { NEGATIVE_SOURCE_ROW_OFFSET } from "../negative-motif/negative-motif.constants";
 
 import type {
   DotShape,
@@ -15,8 +19,12 @@ import type {
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
+  branch: ["rung", "stagger"],
   chain: ["edge", "flip", "edge-flip"],
+  cross: ["interrupted"],
   mosaic: ["alternated", "dot", "split"],
+  negative: ["brick", "ruled"],
+  parallel: ["plied"],
   snake: ["edge", "flip", "edge-flip"],
   swirl: ["flip"],
   whirl: ["flip"],
@@ -32,13 +40,13 @@ export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
  */
 export const DOT_MINIMUM_ROWS = 4;
 
-/** Directory a generated meander is written to when the caller doesn't override it, shared by both `generate` and `generate-batch`. */
+/** Directory a drawing is written to when the caller doesn't override it, shared by `draw`'s sweep and its single-drawing mode alike. */
 export const DEFAULT_OUTPUT_DIRECTORY = "output";
 
 /**
  * `repeatCount` a generated meander uses when the caller doesn't override it,
- * shared by both `generate` and `generate-batch` so a single-pattern file and
- * a batch-swept file for the same type/rows/modifier are identical.
+ * shared by `draw`'s single-drawing mode and its sweep so a hand-named file
+ * and a swept file for the same type/rows/modifier are identical.
  */
 export const DEFAULT_REPEAT_COUNT = 6;
 
@@ -50,6 +58,16 @@ export const MINIMUM_PERIOD = 1;
 
 /** Lowest `repeatCount` value the CLI accepts: at least one unit must be drawn. */
 export const MINIMUM_REPEAT_COUNT = 1;
+
+/**
+ * Lowest `strands` value `plied` accepts. Two, because a family named for
+ * strands running alongside one another needs two of them to have one; see
+ * {@link DEFAULT_PARALLEL_STRANDS}, which is the same number for the same
+ * reason. The upper bound is not a constant: it is the drawing's own `rows`,
+ * because the innermost strand's arms are `rows - strands + 1` lattice steps
+ * long and vanish beyond it.
+ */
+export const MINIMUM_STRANDS = 2;
 
 /**
  * How many repeat units `spin` and `spin-flip` need before their 90° rotation
@@ -86,6 +104,12 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "alternated",
   "split",
   "dot",
+  "interrupted",
+  "brick",
+  "ruled",
+  "rung",
+  "stagger",
+  "plied",
 ] satisfies readonly Modifier["name"][];
 
 /**
@@ -94,14 +118,27 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
  * keeps `Array.prototype.includes` usable with a plain `string` at the CLI
  * boundary, with the `satisfies` check below as the only place a typo could
  * surface.
+ *
+ * **The order is load-bearing, and it is a reading order rather than an
+ * alphabetical or a historical one.** It runs from the families whose motif is
+ * a single line — `snake` through `boxes` — into the four that break one of
+ * the charter's negotiable invariants, and ends at `mosaic`, whose enumerated
+ * tiles outnumber every other family put together. It is the order the `--type`
+ * help text lists, the order the sweep generates in, and the order
+ * `DrawIndexService` lays the index page out in, so a family moved here moves
+ * in all three at once.
  */
 export const SUPPORTED_TYPES: readonly string[] = [
-  "mosaic",
-  "boxes",
-  "chain",
   "snake",
+  "chain",
   "swirl",
   "whirl",
+  "boxes",
+  "branch",
+  "cross",
+  "parallel",
+  "negative",
+  "mosaic",
 ] satisfies readonly MeanderType[];
 
 /**
@@ -113,8 +150,12 @@ export const SUPPORTED_TYPES: readonly string[] = [
  */
 export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
   boxes: [],
+  branch: [],
   chain: [],
+  cross: [],
   mosaic: SUPPORTED_SUB_FAMILIES,
+  negative: [],
+  parallel: [],
   snake: [],
   swirl: [],
   whirl: [],
@@ -137,11 +178,71 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * exactly 3 rows the bar spans a single grid unit, so the `split` modifier
  * degenerates to a no-op there — it has nothing left to split, and its
  * output is byte-identical to the unmodified bar.
+ *
+ * `cross`'s minimum of 6 is set by its `interrupted` modifier rather than by
+ * its solid shape, which would draw down to 4 rows. The break gives up the
+ * grid level either side of the crossing, and the crossing sits at
+ * `floor(rows / 2)`, so below 6 rows the *upper* remnant has no whole level
+ * left and collapses to a zero-length run — a square line cap and nothing
+ * else, a dot one stroke wide rather than a length of strand. At 4 rows both
+ * remnants collapse. The pair stops reading as one strand passing under
+ * another, which is the whole point of the mode.
+ *
+ * Nothing measures that, and the minimum is the only thing standing in its
+ * way: at 4 and 5 rows the drawing is still fully space-filling —
+ * `channelWidthCompliant` stays true, because a collapsed run still paints
+ * its own lattice point and the unit's top connector paints level 1 in any
+ * case. This is a legibility floor, not a topology one, and
+ * `cross-motif.service.unit.test.ts` pins both halves of that at 4, 5, and 6
+ * rows so the number and its reason cannot drift apart. One minimum per
+ * family is the model here, so the family takes the stricter of its two
+ * modes.
+ *
+ * `negative`'s minimum is its source's minimum moved down one, and it is
+ * written as that subtraction rather than as the 3 it evaluates to, so the
+ * two cannot drift. It inks the corridors a `mosaic` tile leaves and puts a
+ * lattice point on each of that tile's cells, so its own band is one row
+ * shorter than the tile it inverts (see `NEGATIVE_SOURCE_ROW_OFFSET`).
+ * `MOSAIC_TILE_MINIMUM_ROWS` is 4 for its own reason — below it a tile's
+ * interior is a single level and there is nothing to permute — so 3 rows is
+ * the shallowest negative the shallowest enumerable tile can yield.
+ *
+ * `branch`'s minimum of 2 is its `rung` mode's, and the family takes the
+ * stricter of its modes the same way `cross` does. `comb` and `stagger` do
+ * draw at one row — a rail with a one-step tooth under every column still
+ * forks at every interior column, 10 times and 5 times respectively, which
+ * is what they fork at every other row count too. `rung` does not. Its fork
+ * is a rung meeting the middle of a stile, so it needs the stile to have a
+ * middle — at least one lattice point strictly between the band's two
+ * border rows — and a one-row band has none, leaving each unit a plain
+ * bracket with the mode's characteristic junction absent entirely. The
+ * `rows - 1` stile forks per unit that the mode is named for appear first
+ * at 2 rows. `branch-motif.service.unit.test.ts` renders all three modes
+ * below the minimum and measures every claim in this paragraph there, so
+ * the number and its reason cannot drift apart.
+ *
+ * `parallel`'s minimum of 4 is its deepest ply's rather than its default's,
+ * and the family takes the stricter of its modes the same way `cross` and
+ * `branch` do. A bundle of `strands` nested brackets needs `strands` rows:
+ * the innermost bracket's arms are `rows - strands + 1` lattice steps long,
+ * so one ply further collapses them onto its own crossbar and leaves a bare
+ * segment running alongside nothing. Four is the deepest ply the sweep
+ * draws — `PLIED_SWEEP_STRAND_COUNTS` names them, and
+ * `start-combinations.service.unit.test.ts` asserts the two numbers agree.
+ * The default two-strand ply draws perfectly well at 2 and 3 rows, which
+ * `parallel-motif.service.unit.test.ts` measures below the minimum the same
+ * way `branch` does; a deeper ply is admitted at a deeper row count by
+ * {@link InvalidStrandCountError} rather than by this number, which is why
+ * the bound on `strands` is `rows` and not a constant.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
+  branch: 2,
   chain: 4,
+  cross: 6,
   mosaic: 3,
+  negative: MOSAIC_TILE_MINIMUM_ROWS - NEGATIVE_SOURCE_ROW_OFFSET,
+  parallel: 4,
   snake: 4,
   swirl: 4,
   whirl: 4,
@@ -217,6 +318,25 @@ export class InvalidRowsError extends Error {
   constructor(rows: number, minimum: number, maximum: number) {
     super(`rows must be between ${minimum} and ${maximum}, received ${rows}`);
     this.name = "InvalidRowsError";
+  }
+}
+
+/**
+ * Thrown when `plied`'s `strands` falls outside {@link MINIMUM_STRANDS} and
+ * the drawing's own row count.
+ *
+ * The maximum is `rows` rather than {@link MAXIMUM_VALUE} because the bound
+ * is the geometry's, not the CLI's: a bundle's innermost strand has
+ * `rows - strands + 1` lattice steps of arm, and at one ply further it has
+ * none. That is also why the message names the row count it was measured
+ * against rather than a constant.
+ */
+export class InvalidStrandCountError extends Error {
+  constructor(strands: number, minimum: number, rows: number) {
+    super(
+      `strands must be between ${minimum} and the row count ${rows}, received ${strands}`,
+    );
+    this.name = "InvalidStrandCountError";
   }
 }
 

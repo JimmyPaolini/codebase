@@ -1,0 +1,109 @@
+name: 👮 Audit Issues
+
+# Issue metadata — the `type:*`, `scope:*`, and `source:*` labels an issue
+# carries, judged against the `issue.yml` submission in its own body. This is
+# not an Nx target and has no project graph to build, so this workflow
+# deliberately skips `setup-codebase`: no Nx cache, no uv, no Homebrew, no
+# full install.
+#
+# It was one of two jobs in `validate-conventions.yml` until it moved here.
+# `pull_request` and `issues` never fire together, so the issue job reported
+# "skipped" on every pull request event and the pull request job reported
+# "skipped" on every issue event — free, but it left one badge standing for
+# two unrelated signals, and a red 🧑‍⚖️ Validate Conventions could not be read
+# without opening it. Two workflows mean two badges, and each one is only ever
+# red for its own reason.
+#
+# On an issue's `opened`, the type and scope labels a submitted `issue.yml`
+# body implies are reconciled onto the issue first, through the `issue-labels`
+# command in `tools/synchronization`, run through node directly rather than
+# through Nx — the same invocation that project's own targets use — so this
+# workflow still builds no project graph.
+#
+# GitHub has no gate on issue creation the way it has one on a pull request
+# merge, so a failing issue-metadata check can never block anything — the
+# issue already exists by the time this workflow runs. It is allowed to fail
+# the job anyway, on purpose: this workflow's own README badge is the signal,
+# so a mislabeled issue shows up there rather than only as a comment nobody
+# reads.
+#
+# The metadata check is a nest-commander command in `tools/validation`,
+# invoked the same way and for the same reason. It is one-sided — a `check`
+# with no `write` to reconcile against — which is why it lives there rather
+# than beside the label synchronizer.
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled]
+
+permissions:
+  contents: read
+  # Label creation and updates are issues-scoped endpoints, which is what the
+  # label reconciliation step below writes through.
+  issues: write
+
+concurrency:
+  # One group per issue, rather than per `github.ref`: every issue event
+  # carries the repository's default-branch ref, so grouping on that would
+  # collapse unrelated issues into a single queue.
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  # Deliberately not cancelling. One `gh issue edit` that adds a few labels
+  # fires several of the events above within a second, and `cancel-in-progress`
+  # would leave the badge reporting a `cancelled` run rather than the check's
+  # real verdict. These runs take about thirty seconds and build no Nx graph,
+  # so cancelling saves almost nothing.
+  cancel-in-progress: false
+
+jobs:
+  audit-issues:
+    name: 👮 Audit Issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.actor != 'dependabot[bot]'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: 📦 Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: 🟢 Setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # The label reconciliation step and the metadata check both run their
+      # CLIs directly through node rather than through Nx, so those two
+      # projects and the workspace packages they import are all this needs.
+      # The trailing `...` on each filter resolves that transitively. Still no
+      # Nx cache, no uv, and no Homebrew: there is no project graph to build.
+      - name: 📚 Install Root Dependencies
+        run: |
+          CI=true pnpm install --frozen-lockfile --reporter=append-only \
+            --filter . --filter synchronization... --filter validation... \
+            --ignore-scripts
+
+      # Only on the event that creates an issue — an edit or a label change
+      # never adds a field the body didn't already have, and re-adding labels
+      # on every edit would fight a human who removed one on purpose.
+      - name: 🏷️ Reconcile Issue Labels
+        if: github.event.action == 'opened'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ toJSON(github.event.issue.labels) }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/synchronization/src/main.ts issue-labels
+
+      - name: 🧾 Audit Issue Metadata
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ toJSON(github.event.issue.labels) }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts issue-metadata

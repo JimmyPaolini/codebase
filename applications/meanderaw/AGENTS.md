@@ -16,23 +16,42 @@ nx run meanderaw:start
 ## 🏛️ Before You Change a Meander
 
 Meander geometry is governed by a charter of seven invariants, five of which are fixed.
-They were established by measuring all 3,293 committed SVGs, not by reading the code, so
+They are measured against all 3,481 committed SVGs, not read off the code, so
 they are facts about the output rather than intentions in the source. The full charter,
 with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
+
+**The named half of the sweep runs to `MAXIMUM_VALUE`,** so every drawing the command line
+can be asked for is one this repository commits and the charter gates — 302 named patterns,
+each family from its own structural minimum through 12 rows. It stopped at 8 until
+[#507](https://github.com/JimmyPaolini/codebase/issues/507), which lived in the four row
+counts between, so do not give that half a sweep maximum of its own again. The `mosaic`
+permutation half does keep one, at 8, because it enumerates exhaustively — following the
+named half would commit 552,002 more tiles. See `PERMUTATION_ROWS_SWEEP_MAXIMUM`.
+
+Adding four row counts per family moved most of the published counts, so a figure below
+that disagrees with a measurement is more likely stale than wrong.
 
 The three that most often catch a change:
 
 - **Space-filling.** Every interior white channel is exactly one stroke width — which
   equals half a grid unit. `GridGeometryService` derives stroke width and offset from the
   grid unit for this reason; setting either independently breaks the invariant silently,
-  because nothing currently fails when it does.
-- **No branching and no crossing.** Ink has zero X-junctions everywhere, and zero
-  T-junctions everywhere except `chain` and `snake` under `edge`/`edge-flip`, which branch
-  where their zigzag lands mid-border — 200 junctions across 20 of the 114 named patterns.
+  because nothing currently fails when it does. The stroke is `unit / 2` in every document
+  the project writes, `parallel` at every ply included — a family that draws more strands
+  does not draw thinner ones, and `strokeWidth = unit / (2N)` is a discarded proposal
+  rather than an unimplemented one. See "The Parallel Family" in [README.md](./README.md).
+- **No branching and no crossing.** Ink has zero T-junctions everywhere except `negative`
+  and `branch`, the two families added to branch, and `chain`/`snake` under
+  `edge`/`edge-flip`, which branch where their zigzag lands mid-border — 2,876 junctions
+  across 99 of the 302 named patterns, 1,900 of them `negative`'s and 616 `branch`'s. It has
+  zero X-junctions everywhere except `cross` drawn solid, which is the family added to
+  cross: 12 per document at every one of its seven row counts, and none under its
+  `interrupted` modifier, where the break takes the junction out of the ink graph.
   These two are the charter's negotiable invariants, so a family may break them — but only
   deliberately, and never as a side effect of a geometry fix. Both counts are measured by
   `MeanderTopologyService` and gated by the charter property test, which asserts a declared
-  relaxation is _present_ as well as an undeclared one absent.
+  relaxation is _present_ as well as an undeclared one absent. Declare a relaxation in that
+  test's `RELAXED_INVARIANTS` rather than editing its assertions.
 - **Band, not field.** Canvas height is fixed and `rows` sets density, not size. These
   patterns are meant for borders.
 
@@ -47,6 +66,18 @@ Three things that look like defects and are not:
   sub-family. `split` is a modifier that constructs a shape; `diamond` is the sub-family
   that recognizes the same shape however it arose. Do not collapse either pair — see
   "Naming a Mosaic Sub-family" in [README.md](./README.md).
+- **`parallel` being a family rather than a modifier** is a correction, not an oversight.
+  [#340](https://github.com/JimmyPaolini/codebase/issues/340) models it as the one modifier
+  compatible with every family; `N` strands cannot trace the path one strand traces, so
+  there is no existing repeat unit for a modifier to construct, and it ships as a family
+  whose ply is chosen by its own `plied` modifier. Do not list `parallel` in
+  `COMPATIBLE_MODIFIERS`. See "The Parallel Family" in [README.md](./README.md).
+- **`negative` and `branch` both branching** is not one family under two names. Both relax
+  invariant 3 and both come off the same survey shortlist; they differ in loops.
+  `negative` inks a whole corridor graph and carries 10–45 cycles per drawing, and
+  `branch` inks a loop-free spanning tree and carries none — the only trees in the corpus.
+  Those cycle counts are asserted in `meander-topology.service.integration.test.ts`, not
+  merely stated here. See "The Branching Family" in [README.md](./README.md).
 
 When adding a family, prefer extending an existing family's unit space over hand-writing a
 new motif service — see
@@ -134,6 +165,19 @@ nx run meanderaw:lint-codebase   # Every static check, in one graph
 nx run meanderaw:typecheck       # tsc --noEmit
 nx run meanderaw:oxfmt           # Formatting
 ```
+
+This application has **one command, `draw`**, and it is the default — so `start` runs it.
+With no arguments it writes every drawing under `output/<family>/<rows>-rows/`, nests the
+enumerated `mosaic` tiles a `permutations/<columns>-columns/` deeper, and writes one
+`output/index.html` listing them all. With `--type` and `--rows` it draws that
+one into the same tree:
+
+```bash
+nx run meanderaw:start --args="--type chain --rows 7 --modifier edge-flip"
+```
+
+There is deliberately no second command — see "One Command" and "Output Layout" in
+[README.md](./README.md).
 
 ### Testing
 

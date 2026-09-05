@@ -10,7 +10,7 @@ import { IssueLabelsService } from "./issue-labels.service";
 /**
  * CLI command that adds the `type:*` and `scope:*` labels a freshly filed
  * `issue.yml` submission implies, so a new issue already carries them before
- * 🧾 Validate Issue Conventions runs its check.
+ * 🧾 Audit Issue Metadata runs its check.
  *
  * This is the write side of the label reconciliation the check-only
  * `issue-metadata` command in `tools/validation` verifies: `tools/validation`

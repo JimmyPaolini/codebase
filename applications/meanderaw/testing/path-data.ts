@@ -18,6 +18,25 @@ export const COORDINATE_ROUNDING_TOLERANCE = 0.0001;
 
 // 🌎 Utilities
 
+/**
+ * Whether a rendered document lays ink back over ink it has already drawn.
+ *
+ * Every motif emits only `M`, `H`, and `V`, and a well-formed run
+ * alternates axis: a horizontal run ends where a vertical one begins. Two
+ * consecutive commands along the *same* axis mean the subpath reversed
+ * direction without turning, retracing the segment it just drew. That is a
+ * charter violation rather than a cosmetic one — the duplicate ink is a
+ * second stroke over the first — and it is what issue #507 reports for
+ * `chain` and `snake` above eight rows.
+ *
+ * Coordinates are stripped rather than parsed: the axis alternation is a
+ * property of the command letters alone.
+ */
+export const retracesItself = (document: string): boolean =>
+  [...document.matchAll(/\sd="([^"]*)"/gu)].some((match) =>
+    /HH|VV/u.test((match[1] ?? "").replaceAll(/[^HMV]/gu, "")),
+  );
+
 /** The rightmost x-coordinate a stretch of path data draws. */
 export const rightmostX = (pathData: string): number =>
   Math.max(

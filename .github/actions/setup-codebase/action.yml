@@ -19,8 +19,9 @@ inputs:
     default: "true"
   nx-graph-cache:
     description: |
-      Restore and save the Nx project graph (.nx/workspace-data). Saves ~11s
-      of cold graph construction on the first Nx invocation of a job.
+      Restore and save the Nx project graph (.nx/workspace-data, minus the
+      task-result database, which travels with the task cache). Saves ~11s of
+      cold graph construction on the first Nx invocation of a job.
     default: "true"
   nx-shas:
     description: Resolve NX_BASE and NX_HEAD, required by `nx affected`
@@ -46,7 +47,7 @@ runs:
   using: composite
   steps:
     - name: 📦 Setup pnpm
-      uses: pnpm/action-setup@v6
+      uses: ./.github/actions/setup-pnpm
 
     - name: 🟢 Setup node
       uses: actions/setup-node@v7
@@ -123,11 +124,33 @@ runs:
     # Keyed per job. Every workflow previously shared one key, so concurrent
     # jobs on a single SHA raced and all but one failed to reserve it — the
     # cache was effectively write-only.
+    #
+    # The task-result database is cached here rather than with the graph,
+    # because it is the index of these files and the two must never come from
+    # different tarballs. Nx splits a cached task across two directories:
+    # `.nx/cache/<hash>` holds the output files and
+    # `.nx/cache/terminalOutputs/<hash>` the recorded log, while the row saying
+    # the task is cached at all lives in `.nx/workspace-data/*.db`. Nx decides
+    # a hit from that row alone, so a job holding a row whose files it never
+    # restored reports `[local cache]`, prints an empty terminal output,
+    # restores nothing, and exits 0 — a build that leaves no `dist/` behind and
+    # says nothing about it. That is what failed 🦸 Push Releases run
+    # 33827705049 at `📊 Measure Codebase`: `logger:build` hit hollow, so
+    # `packages/logger/dist` never appeared and codometer measured a project
+    # whose compiled output was not there. Which tasks hit hollow is a lottery,
+    # because the two keys are matched independently and a re-run draws a
+    # different pair — attempt 2 of that same run restored another database,
+    # rebuilt `logger`, and got through the step. A green re-run is luck rather
+    # than a fix, which is what makes this worth keying correctly instead of
+    # retrying. The reverse mismatch is safe: files with no row are an ordinary
+    # cache miss.
     - name: ♻️ Sync Nx Cache
       if: inputs.nx-cache == 'true'
       uses: actions/cache@v6
       with:
-        path: .nx/cache
+        path: |
+          .nx/cache
+          .nx/workspace-data/*.db*
         key: |
           nx-cache-${{ github.job }}-${{ runner.os }}-${{ hashFiles(
           'pnpm-lock.yaml') }}-${{ github.sha }}
@@ -138,13 +161,27 @@ runs:
 
     # Exact match only, and no restore-keys: a partially stale project graph
     # is worse than rebuilding one. `nx reset` clears it if it ever misbehaves.
+    #
+    # The task-result database is excluded and cached with `.nx/cache` above —
+    # see that step for what restoring the two from different tarballs does.
+    # This key is shared by every job and matched on `project.json` content
+    # alone, which is exactly the sharing the database must not have. Nothing
+    # is lost by leaving it out: what this cache saves lives in
+    # `project-graph.json` and `file-map.json`, and a data directory holding
+    # those but no database builds the graph just as fast as a complete one.
+    #
+    # `v2` retires every tarball written before the exclusion. `path` decides
+    # what is archived, not what is extracted, so an entry saved under the old
+    # key would still deliver the database it was saved with.
     - name: 🕸️ Sync Nx Graph
       if: inputs.nx-graph-cache == 'true'
       uses: actions/cache@v6
       with:
-        path: .nx/workspace-data
+        path: |
+          .nx/workspace-data
+          !.nx/workspace-data/*.db*
         key: |
-          nx-graph-${{ runner.os }}-${{ hashFiles(
+          nx-graph-v2-${{ runner.os }}-${{ hashFiles(
           'pnpm-lock.yaml', 'nx.json', 'project.json',
           'applications/*/project.json', 'packages/*/project.json',
           'tools/*/project.json') }}

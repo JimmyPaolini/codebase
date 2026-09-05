@@ -499,7 +499,7 @@ Format: `<type>(<scope>): <gitmoji> <subject>` — single line only, max 128 cha
 - **Type and scope** must come from the [Conventional Naming](#conventional-naming) tables, both lowercase
 - **Gitmoji required** as the first token of the subject line
 - Subject: lowercase, present-imperative mood (`add`, not `added` or `adds`), no trailing period, never empty
-- **Body and footer are forbidden**, with one exception: lines that are exactly `Co-authored-by: ...` trailers. All other context goes in the subject or the PR description
+- **Body and footer are forbidden**, with one exception: lines that are exactly `Co-authored-by: ...` trailers, in any casing — git and GitHub treat trailer keys case-insensitively, and the agents that write this one disagree on it. All other context goes in the subject or the PR description
 - Never list multiple changes — summarize at a higher level or split into separate commits
 
 Common gitmojis: ✨ `feat` · 🐛 `fix` · 📝 `docs` · 🧪 `test` · ♻️ `refactor` · 🎨 `style` · ⚡️ `perf` · 🔧 `chore` · 👷 `ci` · 📦 `build` · ⏪ `revert`
@@ -597,8 +597,8 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 | `lexico-components` | Shared React/shadcn component library |
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
-| `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
 | `meanderaw` | Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads |
+| `sempientor` | Lexical gap discovery CLI that surveys English for morphological, phonotactic, and semantic gaps and coins words to fill them |
 | `callidescope` | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph |
 | `codependix` | Dependency graph export CLI, the configuration package it reads, and the package that judges the graphs against declared rules |
 | `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |

@@ -39,6 +39,21 @@ jobs:
           gitleaks: "true"
           trivy: "true"
 
+      # `pnpm-audit:check` passes `--ignore-registry-errors`, which exits 0
+      # when the advisory fetch itself throws. npm's
+      # `/-/npm/v1/security/advisories/bulk` endpoint accepts the POST and
+      # then never answers during an incident — ordinary registry reads stay
+      # fast, so nothing else in the job notices — and pnpm's three retries
+      # turn that into a three-minute red build on every push and pull
+      # request. Scan Security is a required check, so an npm outage blocked
+      # every merge in the repository.
+      #
+      # The flag is narrower than it sounds: pnpm wraps only the advisory
+      # fetch in the try/catch it short-circuits, so a registry that answers
+      # with vulnerabilities still fails this step. Only an unreachable
+      # registry passes, and the warnings it printed stay in the log. The
+      # weekly schedule re-audits once npm recovers.
+      #
       # Terraform scanning used to sit behind a `dorny/paths-filter` step with
       # a special case for schedule events, which have no diff context. The
       # trivy-config target declares the terraform tree in its `inputs`, so Nx

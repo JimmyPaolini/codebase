@@ -4,15 +4,24 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { COORDINATE_ROUNDING_TOLERANCE } from "../../../testing/path-data";
+import {
+  COORDINATE_ROUNDING_TOLERANCE,
+  retracesItself,
+} from "../../../testing/path-data";
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
+import { CrossMotifService } from "../cross-motif/cross-motif.service";
+import { PLIED_SWEEP_STRAND_COUNTS } from "../draw/draw.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
+import { NegativeMotifService } from "../negative-motif/negative-motif.service";
+import { NegativeSourceService } from "../negative-motif/negative-source.service";
+import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
@@ -27,13 +36,17 @@ import {
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
   InvalidRowsError,
+  InvalidStrandCountError,
   InvalidSubFamilyError,
+  MAXIMUM_VALUE,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
+  SUPPORTED_TYPES,
   UnavailableSubFamilyError,
 } from "./meander-generation.constants";
 import { MeanderGenerationService } from "./meander-generation.service";
+import { MotifRegistryService } from "./motif-registry.service";
 
 import type { MeanderType, Modifier } from "./meander-generation.types";
 
@@ -58,6 +71,9 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "alternated": {
       return [1, 2, 3].map((period) => ({ name: "alternated", period }));
     }
+    case "brick": {
+      return [{ name: "brick" }];
+    }
     case "dot": {
       return [
         { name: "dot", shape: "bounce" },
@@ -73,6 +89,21 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "flip": {
       return [{ name: "flip" }];
     }
+    case "interrupted": {
+      return [{ name: "interrupted" }];
+    }
+    case "plied": {
+      return PLIED_SWEEP_STRAND_COUNTS.map((strands) => ({
+        name: "plied",
+        strands,
+      }));
+    }
+    case "ruled": {
+      return [{ name: "ruled" }];
+    }
+    case "rung": {
+      return [{ name: "rung" }];
+    }
     case "spin": {
       return [{ name: "spin" }];
     }
@@ -82,6 +113,9 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "split": {
       return [{ name: "split" }];
     }
+    case "stagger": {
+      return [{ name: "stagger" }];
+    }
     default: {
       throw new Error(`Unknown modifier name: ${name}`);
     }
@@ -89,22 +123,48 @@ const modifiersNamed = (name: string): Modifier[] => {
 };
 
 /**
+ * Every family the sweep below draws. Kept as its own literal rather than
+ * derived from {@link SUPPORTED_TYPES}, which is widened to `string` for the
+ * CLI boundary — "every family is enrolled" is then a claim the suite can
+ * fail on instead of one the types quietly satisfy. The `border containment`
+ * block asserts this list against `SUPPORTED_TYPES`, so a family added there
+ * and not here fails rather than going unswept.
+ */
+const sweptTypes: readonly MeanderType[] = [
+  "boxes",
+  "branch",
+  "chain",
+  "cross",
+  "mosaic",
+  "negative",
+  "parallel",
+  "snake",
+  "swirl",
+  "whirl",
+];
+
+/**
  * Every type/modifier pairing `COMPATIBLE_MODIFIERS` allows, swept over the
  * row counts each type supports, at the repeat count its modifier's own
  * cycle admits — `SPIN_CYCLE_LENGTH` for the spin family, the shared
  * default otherwise. `alternated` is swept over the periods
- * `MosaicMotifService` documents rather than the whole allowed range.
+ * `MosaicMotifService` documents rather than the whole allowed range, and
+ * `plied` over `PLIED_SWEEP_STRAND_COUNTS` for the same reason.
  */
-const patternCases: readonly PatternCase[] = (
-  ["boxes", "chain", "mosaic", "snake", "swirl", "whirl"] as const
-).flatMap((type) => {
+const patternCases: readonly PatternCase[] = sweptTypes.flatMap((type) => {
   const modifiers: readonly (Modifier | undefined)[] = [
     undefined,
     ...COMPATIBLE_MODIFIERS[type].flatMap((name) => modifiersNamed(name)),
   ];
 
   return modifiers.flatMap((modifier) =>
-    [STRUCTURAL_MINIMUM_ROWS[type], 5, 6, 7, 8].map((rows) => ({
+    [
+      ...new Set(
+        [STRUCTURAL_MINIMUM_ROWS[type], 5, 6, 7, 8].filter(
+          (rows) => rows >= STRUCTURAL_MINIMUM_ROWS[type],
+        ),
+      ),
+    ].map((rows) => ({
       label: `${type} at ${rows} rows${modifier ? ` with ${modifier.name}` : ""}`,
       repeatCount:
         modifier && SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name)
@@ -162,8 +222,14 @@ describe(MeanderGenerationService, () => {
         MosaicTileGenerationService,
         MosaicTileMotifService,
         BoxesMotifService,
+        BranchMotifService,
         ChainMotifService,
+        CrossMotifService,
+        MotifRegistryService,
         MotifTransformsService,
+        NegativeMotifService,
+        NegativeSourceService,
+        ParallelMotifService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,
@@ -200,6 +266,15 @@ describe(MeanderGenerationService, () => {
     it("throws below the structural minimum rows for mosaic", () => {
       expect(() =>
         service.generate({ repeatCount: 1, rows: 2, type: "mosaic" }),
+      ).toThrow(InvalidRowsError);
+    });
+
+    // 🎯 `cross` stops at 6 rather than the 4 its solid mode alone would
+    // allow. Why it does is pinned in `cross-motif.service.unit.test.ts`,
+    // against the geometry rather than against the constant.
+    it("throws below the structural minimum rows for cross", () => {
+      expect(() =>
+        service.generate({ repeatCount: 6, rows: 5, type: "cross" }),
       ).toThrow(InvalidRowsError);
     });
 
@@ -248,6 +323,35 @@ describe(MeanderGenerationService, () => {
           type: "mosaic",
         }),
       ).toThrow(InvalidPeriodError);
+    });
+
+    // 🎯 `plied`'s bound is the drawing's own row count rather than the
+    // shared maximum, so both edges of it are pinned against the same row
+    // count: one ply past it is refused and the ply that equals it is
+    // drawn. A bound read off `MAXIMUM_VALUE` instead would accept both.
+    it.each([{ strands: 1 }, { strands: 2.5 }, { strands: 6 }])(
+      "throws when plied's strand count is $strands at 5 rows",
+      ({ strands }) => {
+        expect(() =>
+          service.generate({
+            modifier: { name: "plied", strands },
+            repeatCount: 6,
+            rows: 5,
+            type: "parallel",
+          }),
+        ).toThrow(InvalidStrandCountError);
+      },
+    );
+
+    it("draws a ply exactly as deep as the row count", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "plied", strands: 5 },
+          repeatCount: 6,
+          rows: 5,
+          type: "parallel",
+        }),
+      ).not.toThrow();
     });
 
     it("does not require repeatCount to divide evenly by alternated's period, since each tile is self-contained", () => {
@@ -772,7 +876,51 @@ describe(MeanderGenerationService, () => {
     );
   });
 
+  // 🎯 Issue #507, measured rather than described. `chain` and `snake`
+  // share one zigzag sequence, and it used to double back above eight rows:
+  // two consecutive runs along the same axis, a second stroke of ink laid
+  // over one already drawn. The gap that hid it was between two numbers: the
+  // sweep stopped at 8 row counts while `MAXIMUM_VALUE` let the command line
+  // ask for 12. Both are 12 now, and this sweeps every family rather than
+  // the six that existed when the defect was found.
+  //
+  // This is deliberately a rendered measurement. A drawing that *emits*
+  // proves nothing here — every family emitted at every row count through
+  // 12 while the defect was live, and reading that as "it works" is exactly
+  // how the wrong cause reached the README. The defect was in what the path
+  // said, not in whether there was one.
+  describe("every row count the command line accepts", () => {
+    it("lays no ink back over ink, in any family", () => {
+      const retracing = sweptTypes.flatMap((type) =>
+        Array.from(
+          { length: MAXIMUM_VALUE - STRUCTURAL_MINIMUM_ROWS[type] + 1 },
+          (_, offset) => STRUCTURAL_MINIMUM_ROWS[type] + offset,
+        )
+          .filter((rows) =>
+            retracesItself(
+              service.generate({
+                repeatCount: DEFAULT_REPEAT_COUNT,
+                rows,
+                type,
+              }),
+            ),
+          )
+          .map((rows) => `${type} at ${rows} rows`),
+      );
+
+      expect(retracing).toStrictEqual([]);
+    });
+  });
+
   describe("border containment", () => {
+    it("sweeps every supported family", () => {
+      const swept = [
+        ...new Set(patternCases.map((patternCase) => patternCase.type)),
+      ].toSorted();
+
+      expect(swept).toStrictEqual([...SUPPORTED_TYPES].toSorted());
+    });
+
     it.each(
       patternCases.map((patternCase) => [patternCase.label, patternCase]),
     )(

@@ -55,8 +55,8 @@ body:
         - lexico-components
         - lexico-entities
         - lexico-ingestion
-        - logger
         - meanderaw
+        - sempientor
         - callidescope
         - codependix
         - codometer
