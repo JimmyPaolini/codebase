@@ -31,6 +31,7 @@ import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 import {
   BRANCH_MODES_BY_MODIFIER_NAME,
   BRANCH_UNIT_COLUMNS,
+  DEFAULT_COMB_IS_UPWARD,
   DEFAULT_RUNG_IS_LEFTWARD,
   MINIMUM_STAGGER_BRANCHES,
   UnknownBranchModeError,
@@ -53,22 +54,26 @@ const SWEPT_ROWS: readonly number[] = [2, 3, 4, 5, 6, 7, 8];
  * count each produces at every swept row count, in {@link SWEPT_ROWS}
  * order.
  *
- * These forty-two numbers are the table `README.md` publishes under "The
+ * These fifty-six numbers are the table `README.md` publishes under "The
  * Branching Family", and this is the only thing making that table true. All
  * but the two `rung` rows are flat, because their forks live on the rail
- * rather than on the teeth: `comb` forks at every lattice column whose rail
- * continues on both sides, and a `stagger` only where a whole crenel's rail
- * does, neither of which depends on how tall the band is. `rung`'s forks are
- * on its stiles, so its row climbs by one per unit per row added — which is
- * also the reason for the family's minimum row count, pinned below.
+ * rather than on the teeth: a `comb` forks at every lattice column whose
+ * rail continues on both sides, and a `stagger` only where a whole crenel's
+ * rail does, neither of which depends on how tall the band is. `rung`'s
+ * forks are on its stiles, so its row climbs by one per unit per row
+ * added — which is also the reason for the family's minimum row count,
+ * pinned below.
  *
  * `unitColumns` is how wide one repeat unit is, and only `stagger` varies
  * it: its crenel spans the branches one rail joins, so a run of `b`
  * branches is a unit `b - 1` lattice columns wide and the whole drawing is
- * that much wider. The two `rung` rows carry identical numbers because the
- * directions are mirror images of each other — which is asserted below
- * rather than assumed here, since no count in this table could tell them
- * apart.
+ * that much wider. The upward `comb` and the two `rung` rows carry the same
+ * numbers as the drawings they are reflections of, which is asserted below
+ * rather than assumed here — no count in this table could tell a reflection
+ * from its original. A `comb` drawn explicitly downward has no row of its
+ * own for the opposite reason: it is byte-identical to the unmodified
+ * drawing rather than merely equal to it in every count, which "the comb
+ * direction" block asserts directly.
  */
 const MODES: readonly {
   readonly freeEnds: readonly number[];
@@ -80,6 +85,13 @@ const MODES: readonly {
   {
     freeEnds: [12, 12, 12, 12, 12, 12, 12],
     label: "comb",
+    tJunctions: [10, 10, 10, 10, 10, 10, 10],
+    unitColumns: BRANCH_UNIT_COLUMNS,
+  },
+  {
+    freeEnds: [12, 12, 12, 12, 12, 12, 12],
+    label: "comb standing up",
+    modifier: { isUpward: true, name: "comb" },
     tJunctions: [10, 10, 10, 10, 10, 10, 10],
     unitColumns: BRANCH_UNIT_COLUMNS,
   },
@@ -117,6 +129,13 @@ const MODES: readonly {
     modifier: { branches: 5, name: "stagger" },
     tJunctions: [17, 17, 17, 17, 17, 17, 17],
     unitColumns: 4,
+  },
+  {
+    freeEnds: [25, 25, 25, 25, 25, 25, 25],
+    label: "stagger over 6 branches",
+    modifier: { branches: 6, name: "stagger" },
+    tJunctions: [23, 23, 23, 23, 23, 23, 23],
+    unitColumns: 5,
   },
 ];
 
@@ -224,17 +243,28 @@ const segments = (document: string): InkSegment[] =>
     .toSorted(bySegment);
 
 /**
- * The same ink reflected about a vertical line at `axis`, in the same
- * canonical order. A vertical run keeps its span and moves to the mirrored
- * column; a horizontal run keeps its row and has its span reversed.
+ * The same ink reflected about a line at `axis` perpendicular to
+ * `coordinate`, in the same canonical order.
+ *
+ * A run whose own direction is the one being reflected has its span
+ * reversed and stays on its line; a run across it keeps its span and moves
+ * to the reflected line. So reflecting `"x"` mirrors a drawing left to
+ * right, and reflecting `"y"` turns it upside down.
  */
-const mirroredSegments = (document: string, axis: number): InkSegment[] =>
+const reflectedSegments = (
+  document: string,
+  axis: number,
+  coordinate: "x" | "y",
+): InkSegment[] =>
   parseSegments(document)
-    .map((segment) =>
-      segment.axis === "V"
-        ? { ...segment, level: axis - segment.level }
-        : { ...segment, from: axis - segment.to, to: axis - segment.from },
-    )
+    .map((segment) => {
+      const runsAlongCoordinate =
+        coordinate === "x" ? segment.axis === "H" : segment.axis === "V";
+
+      return runsAlongCoordinate
+        ? { ...segment, from: axis - segment.to, to: axis - segment.from }
+        : { ...segment, level: axis - segment.level };
+    })
     .map((segment) => settle(segment))
     .toSorted(bySegment);
 
@@ -292,7 +322,7 @@ describe(BranchMotifService, () => {
     // would quietly measure fewer drawings — or none — without failing.
     it("covers every mode at every swept row count", () => {
       expect(BRANCH_CASES).toHaveLength(MODES.length * SWEPT_ROWS.length);
-      expect(BRANCH_CASES).toHaveLength(42);
+      expect(BRANCH_CASES).toHaveLength(56);
     });
 
     it("starts at the family's own structural minimum", () => {
@@ -461,7 +491,7 @@ describe(BranchMotifService, () => {
       const geometry = gridGeometryService.compute(rows);
       const axis = 2 * geometry.offset + (LATTICE_COLUMNS - 1) * geometry.unit;
 
-      expect(mirroredSegments(drawing(true), axis)).toStrictEqual(
+      expect(reflectedSegments(drawing(true), axis, "x")).toStrictEqual(
         segments(drawing(false)),
       );
     });
@@ -476,6 +506,69 @@ describe(BranchMotifService, () => {
         service.mode({ isLeftward: DEFAULT_RUNG_IS_LEFTWARD, name: "rung" }),
       ).toBe("rung");
     });
+  });
+
+  describe("the comb direction", () => {
+    const drawing = (modifier?: Modifier): string =>
+      generationService.generate({
+        repeatCount: REPEAT_COUNT,
+        rows: 5,
+        type: "branch",
+        ...(modifier ? { modifier } : {}),
+      });
+
+    // 🎯 The claim `--upward` rests on, and the reason its two rows of
+    // `MODES` repeat the unmodified row's numbers: the drawing is the same
+    // figure turned upside down. Every tooth already spans the whole band,
+    // so the rail's own border row is the only thing left for a direction to
+    // move — and reflecting one drawing across the band has to reproduce the
+    // other exactly.
+    it.each(SWEPT_ROWS)("turns the comb upside down at %i rows", (rows) => {
+      const comb = (isUpward: boolean): string =>
+        generationService.generate({
+          modifier: { isUpward, name: "comb" },
+          repeatCount: REPEAT_COUNT,
+          rows,
+          type: "branch",
+        });
+      const geometry = gridGeometryService.compute(rows);
+      const axis = 2 * geometry.offset + rows * geometry.unit;
+
+      expect(reflectedSegments(comb(true), axis, "y")).toStrictEqual(
+        segments(comb(false)),
+      );
+    });
+
+    // 🎯 `--modifier comb` is not a second spelling of "no modifier" — it
+    // takes a direction the unmodified drawing cannot be given — but with
+    // no direction asked for it has to draw exactly what the unmodified one
+    // does, or the family would have two defaults. A byte identity rather
+    // than a topology comparison, because that is the whole claim.
+    it("draws what no modifier draws when no direction is asked for", () => {
+      expect(drawing({ isUpward: DEFAULT_COMB_IS_UPWARD, name: "comb" })).toBe(
+        drawing(),
+      );
+    });
+
+    // 🎯 The one thing the two directions genuinely disagree about, read
+    // off the drawing: which border row carries the rail. Every tooth spans
+    // both rows either way, so this is what a reader would point at.
+    it.each([
+      { isUpward: false, railRow: 0 },
+      { isUpward: true, railRow: 5 },
+    ])(
+      "runs an upward=$isUpward rail along row $railRow",
+      ({ isUpward, railRow }) => {
+        const geometry = gridGeometryService.compute(5);
+        const railLevels = segments(drawing({ isUpward, name: "comb" }))
+          .filter((segment) => segment.axis === "H")
+          .map((segment) => (segment.level - geometry.offset) / geometry.unit);
+
+        expect([
+          ...new Set(railLevels.map((level) => Math.round(level))),
+        ]).toStrictEqual([railRow]);
+      },
+    );
   });
 
   describe("the stagger crenel", () => {
@@ -709,6 +802,14 @@ describe(BranchMotifService, () => {
       {
         expected: "rung" as const,
         modifier: { isLeftward: true, name: "rung" as const },
+      },
+      {
+        expected: "comb" as const,
+        modifier: { isUpward: false, name: "comb" as const },
+      },
+      {
+        expected: "comb" as const,
+        modifier: { isUpward: true, name: "comb" as const },
       },
       {
         expected: "stagger" as const,

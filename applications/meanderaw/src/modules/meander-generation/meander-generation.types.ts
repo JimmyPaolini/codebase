@@ -46,6 +46,7 @@ export type MeanderType =
 export type Modifier =
   | { readonly branches: number; readonly name: "stagger" }
   | { readonly isLeftward: boolean; readonly name: "rung" }
+  | { readonly isUpward: boolean; readonly name: "comb" }
   | { readonly name: "alternated"; readonly period: number }
   | { readonly name: "brick" }
   | { readonly name: "dot"; readonly shape: DotShape }

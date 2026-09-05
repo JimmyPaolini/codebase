@@ -16,6 +16,7 @@ export const BRANCH_MODES_BY_MODIFIER_NAME: Record<
   BranchModifierName,
   BranchMode
 > = {
+  comb: "comb",
   rung: "rung",
   stagger: "stagger",
 };
@@ -42,10 +43,30 @@ export const BRANCH_MODES_BY_MODIFIER_NAME: Record<
 export const BRANCH_UNIT_COLUMNS = 2;
 
 /**
+ * Which direction a `comb` drawn with no `--upward` reaches its teeth:
+ * downward from a rail along the band's top row, which is the only way the
+ * mode was drawn before the flag existed and so the one every `plain`
+ * drawing this family committed is.
+ *
+ * It is a stated default rather than an absent one for the same reason as
+ * {@link DEFAULT_RUNG_IS_LEFTWARD}, and it is what makes
+ * `--modifier comb` with no direction byte-identical to no modifier at all
+ * rather than merely similar to it.
+ */
+export const DEFAULT_COMB_IS_UPWARD = false;
+
+/**
  * Which mode a `branch` drawn with no modifier inks: the plainest of the
  * three, a rail with a tooth per column. It is named here rather than
  * written inline so the default is a stated choice rather than whichever
  * branch a dispatch happened to fall through to.
+ *
+ * The mode now has a modifier of its own name as well, carrying the
+ * direction its teeth reach. That is not a second way to spell "no
+ * modifier": `--modifier comb --upward` draws something no unmodified
+ * drawing can, and `--modifier comb` alone draws exactly what this default
+ * does — which `branch-motif.service.unit.test.ts` asserts as a byte
+ * identity rather than leaving to be assumed.
  */
 export const DEFAULT_BRANCH_MODE: BranchMode = "comb";
 
@@ -99,7 +120,7 @@ export const MINIMUM_STAGGER_BRANCHES = 3;
 export class UnknownBranchModeError extends Error {
   constructor(modifierName: string) {
     super(
-      `modifier "${modifierName}" selects no branch mode; the branch family inks "rung", "stagger", or no modifier at all`,
+      `modifier "${modifierName}" selects no branch mode; the branch family inks "comb", "rung", "stagger", or no modifier at all`,
     );
     this.name = "UnknownBranchModeError";
   }

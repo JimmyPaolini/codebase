@@ -6,6 +6,7 @@ import {
   BRANCH_MODES_BY_MODIFIER_NAME,
   BRANCH_UNIT_COLUMNS,
   DEFAULT_BRANCH_MODE,
+  DEFAULT_COMB_IS_UPWARD,
   DEFAULT_RUNG_IS_LEFTWARD,
   UnknownBranchModeError,
 } from "./branch-motif.constants";
@@ -124,6 +125,19 @@ export class BranchMotifService implements MotifService {
       : DEFAULT_RUNG_IS_LEFTWARD;
   }
 
+  /**
+   * Which way a `comb` drawing's teeth reach, read off its own modifier.
+   *
+   * Only `comb` answers anything but {@link DEFAULT_COMB_IS_UPWARD}, and
+   * only `comb` could: `stagger` puts its rail on both border rows already,
+   * and `rung`'s rail is not what its teeth hang from.
+   */
+  private isUpward(modifier: Modifier | undefined): boolean {
+    return modifier?.name === "comb"
+      ? modifier.isUpward
+      : DEFAULT_COMB_IS_UPWARD;
+  }
+
   /** The lattice column the drawing ends at: one short of the columns its repeat units span, since the units count lattice columns rather than the gaps between them. */
   private lastColumn(pattern: RepeatPatternOptions): number {
     return this.unitColumns(pattern.modifier) * pattern.repeatCount - 1;
@@ -202,20 +216,30 @@ export class BranchMotifService implements MotifService {
   }
 
   /**
-   * Which lattice row a unit's rail runs along: the band's top row, except
-   * under `stagger`, where every second unit's rail runs along the bottom
-   * instead.
+   * Which of the band's two border rows a unit's rail runs along.
    *
-   * Alternating the rail costs the figure nothing structurally — the number
-   * of rail steps is the same either way, so the tree property is
-   * untouched — and it changes which lattice points fork: a column where
-   * the rail changes side carries only one rail step, so it is a corner
-   * rather than a fork.
+   * `stagger` decides it per unit — every second one runs along the bottom,
+   * which is the crenellation. Every other spine drawing puts every unit's
+   * rail on the same row, and `comb`'s modifier says which: the top by
+   * default, so its teeth hang down, or the bottom under `--upward`, so
+   * they stand up.
+   *
+   * Moving the rail costs the figure nothing structurally — the number of
+   * rail steps is the same wherever it runs, so the tree property is
+   * untouched. Under `stagger` it also changes which lattice points fork: a
+   * column where the rail changes side carries only one rail step, so it is
+   * a corner rather than a fork. A `comb` that moves its rail as a whole
+   * forks in exactly the same places, one border row down.
    */
-  private spineRow(placement: BranchUnitPlacement, mode: BranchMode): number {
-    return mode === "stagger" && placement.unitIndex % 2 === 1
-      ? placement.rows
-      : 0;
+  private spineRow(
+    placement: BranchUnitPlacement,
+    modifier: Modifier | undefined,
+  ): number {
+    if (modifier?.name === "stagger") {
+      return placement.unitIndex % 2 === 1 ? placement.rows : 0;
+    }
+
+    return this.isUpward(modifier) ? placement.rows : 0;
   }
 
   /**
@@ -232,11 +256,15 @@ export class BranchMotifService implements MotifService {
    * and the teeth strictly inside that run are the mode's forks. Under
    * `comb` the rail never changes side, so the unit width is only a tiling
    * step and every interior column forks whatever it is.
+   *
+   * The teeth span the whole band in both modes, so which border row the
+   * rail runs along is the only thing left for a direction to change — see
+   * {@link spineRow}.
    */
   private spineUnit(
     geometry: GridGeometry,
     placement: BranchUnitPlacement,
-    mode: BranchMode,
+    modifier: Modifier | undefined,
   ): string {
     const { firstColumn, isLastUnit, rows, unitColumns } = placement;
     const lastColumn = firstColumn + unitColumns - 1;
@@ -246,7 +274,7 @@ export class BranchMotifService implements MotifService {
 
     return [
       ...teeth,
-      this.horizontalRun(geometry, this.spineRow(placement, mode), {
+      this.horizontalRun(geometry, this.spineRow(placement, modifier), {
         from: firstColumn,
         to: isLastUnit ? lastColumn : lastColumn + 1,
       }),
@@ -341,7 +369,7 @@ export class BranchMotifService implements MotifService {
 
     return mode === "rung"
       ? this.rungUnit(geometry, placement, this.isLeftward(unit.modifier))
-      : this.spineUnit(geometry, placement, mode);
+      : this.spineUnit(geometry, placement, unit.modifier);
   }
 
   /** The x-coordinate of the drawing's last lattice column, before the stroke-width margin. */

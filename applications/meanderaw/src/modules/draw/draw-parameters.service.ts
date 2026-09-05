@@ -1,6 +1,9 @@
 import { Injectable } from "@nestjs/common";
 
-import { DEFAULT_RUNG_IS_LEFTWARD } from "../branch-motif/branch-motif.constants";
+import {
+  DEFAULT_COMB_IS_UPWARD,
+  DEFAULT_RUNG_IS_LEFTWARD,
+} from "../branch-motif/branch-motif.constants";
 import {
   SUPPORTED_DOT_SHAPES,
   SUPPORTED_MODIFIER_NAMES,
@@ -31,14 +34,15 @@ import type { DrawCommandOptions } from "./draw.types";
  * commands' worth of options: nest-commander derives each option's key from
  * its own long flag, so `--modifier` and the parameter it needs
  * (`alternated`'s `--period`, `dot`'s `--shape`, `plied`'s `--strands`,
- * `stagger`'s `--branches`, `rung`'s `--leftward`) are parsed by separate
+ * `stagger`'s `--branches`, `rung`'s `--leftward`, `comb`'s `--upward`) are
+ * parsed by separate
  * methods that cannot see each other. Recombining them, and narrowing every
  * raw string to the union it belongs to, is the whole of this service — the
  * command keeps only the `@Option` methods nest-commander insists live on
  * it, and delegates each one here.
  *
  * One builder per parameter-carrying modifier, rather than one method that
- * knows all five: {@link modifier} is then a flat dispatch on the name, and
+ * knows all six: {@link modifier} is then a flat dispatch on the name, and
  * each builder holds only its own parameter's absence and the flag that
  * would have supplied it.
  */
@@ -61,6 +65,18 @@ export class DrawParametersService {
     }
 
     return { name: "alternated", period };
+  }
+
+  /**
+   * The `comb` modifier `--upward` describes.
+   *
+   * Like {@link rungModifier} it cannot refuse an absent flag, and for the
+   * same reason: a boolean left off and a boolean passed `false` reach this
+   * identically. It takes {@link DEFAULT_COMB_IS_UPWARD}, which is what
+   * makes `--modifier comb` draw exactly what no modifier at all draws.
+   */
+  private combModifier(isUpward: boolean | undefined): Modifier {
+    return { isUpward: isUpward ?? DEFAULT_COMB_IS_UPWARD, name: "comb" };
   }
 
   /** The `dot` modifier `--shape` describes, refusing the modifier when the flag is absent. */
@@ -142,7 +158,7 @@ export class DrawParametersService {
    * where no `--modifier` was given. A modifier carrying a parameter is
    * refused rather than defaulted when that parameter is absent, since
    * guessing one would silently draw something other than what was asked
-   * for — `rung`'s boolean excepted, for the reason
+   * for — the two booleans excepted, for the reason
    * {@link rungModifier} gives.
    */
   modifier(options: DrawCommandOptions): Modifier | undefined {
@@ -154,6 +170,10 @@ export class DrawParametersService {
 
     if (modifier === "alternated") {
       return this.alternatedModifier(options.period);
+    }
+
+    if (modifier === "comb") {
+      return this.combModifier(options.upward);
     }
 
     if (modifier === "dot") {

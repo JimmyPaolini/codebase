@@ -58,10 +58,10 @@ import type {
  * says where drawings go, and a sub-command boundary between them only
  * decided which half of that set was legal.
  *
- * Five of those flags belong to one modifier each — `--period`, `--shape`,
- * `--strands`, `--branches`, and `--leftward` — and are recombined with
- * `--modifier` by {@link DrawParametersService.modifier}, since
- * nest-commander parses each one through a method that cannot see the
+ * Six of those flags belong to one modifier each — `--period`, `--shape`,
+ * `--strands`, `--branches`, `--leftward`, and `--upward` — and are
+ * recombined with `--modifier` by {@link DrawParametersService.modifier},
+ * since nest-commander parses each one through a method that cannot see the
  * others.
  *
  * Both halves are written through the same {@link writeDocuments}, so
@@ -304,6 +304,21 @@ export class DrawCommand extends CommandRunner {
   })
   parseType(value: string): MeanderType {
     return this.drawParametersService.type(value);
+  }
+
+  /**
+   * Parses `--upward` as a boolean toggle, used only with
+   * `--modifier comb`. Bare, or with any value but `false` or `0`, it
+   * stands the teeth up from a rail along the band's bottom row; absent,
+   * `comb` hangs them from the top the way every unmodified drawing does.
+   */
+  @Option({
+    description:
+      "Stand the teeth up from the bottom instead of hanging them from the top, for --modifier comb",
+    flags: "-u, --upward [upward]",
+  })
+  parseUpward(value: string | undefined): boolean {
+    return value !== "false" && value !== "0";
   }
 
   /** Sweeps every meander, or draws the one `--type` and `--rows` name. */

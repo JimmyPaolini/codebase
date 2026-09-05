@@ -19,7 +19,7 @@ import type {
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
-  branch: ["rung", "stagger"],
+  branch: ["comb", "rung", "stagger"],
   chain: ["edge", "flip", "edge-flip"],
   cross: ["interrupted"],
   mosaic: ["alternated", "dot", "split"],
@@ -107,6 +107,7 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "interrupted",
   "brick",
   "ruled",
+  "comb",
   "rung",
   "stagger",
   "plied",

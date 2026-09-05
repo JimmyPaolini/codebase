@@ -13,6 +13,7 @@ import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import {
+  COMB_SWEEP_UPWARD_VALUES,
   PLIED_SWEEP_STRAND_COUNTS,
   RUNG_SWEEP_LEFTWARD_VALUES,
   STAGGER_SWEEP_BRANCH_COUNTS,
@@ -77,6 +78,12 @@ const modifiersNamed = (name: string): Modifier[] => {
     }
     case "brick": {
       return [{ name: "brick" }];
+    }
+    case "comb": {
+      return COMB_SWEEP_UPWARD_VALUES.map((isUpward) => ({
+        isUpward,
+        name: "comb",
+      }));
     }
     case "dot": {
       return [
@@ -159,8 +166,8 @@ const sweptTypes: readonly MeanderType[] = [
  * cycle admits — `SPIN_CYCLE_LENGTH` for the spin family, the shared
  * default otherwise. `alternated` is swept over the periods
  * `MosaicMotifService` documents rather than the whole allowed range, and
- * `plied`, `rung`, and `stagger` over the sweep's own constants for the
- * same reason.
+ * `comb`, `plied`, `rung`, and `stagger` over the sweep's own constants for
+ * the same reason.
  */
 const patternCases: readonly PatternCase[] = sweptTypes.flatMap((type) => {
   const modifiers: readonly (Modifier | undefined)[] = [

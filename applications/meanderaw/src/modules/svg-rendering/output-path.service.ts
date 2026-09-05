@@ -72,13 +72,17 @@ export class OutputPathService {
    * sweep's own values would collide on one path and `CollidingPathsError`
    * would fire rather than a drawing being written. Two spellings, and which
    * one a modifier takes is decided by whether the value reads on its own:
-   * `dot`'s shapes and `rung`'s directions are words, so they follow the
-   * name unadorned, while a bare number would say nothing — so `alternated`,
-   * `plied`, and `stagger` name their parameter before it.
+   * `dot`'s shapes and `comb`'s and `rung`'s directions are words, so they
+   * follow the name unadorned, while a bare number would say nothing — so
+   * `alternated`, `plied`, and `stagger` name their parameter before it.
    */
   private modifierSlug(modifier: Modifier): string {
     if (modifier.name === "alternated") {
       return `alternated-period-${modifier.period}`;
+    }
+
+    if (modifier.name === "comb") {
+      return `comb-${modifier.isUpward ? "upward" : "downward"}`;
     }
 
     if (modifier.name === "dot") {
