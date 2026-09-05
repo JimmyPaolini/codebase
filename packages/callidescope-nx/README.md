@@ -111,11 +111,13 @@ involved. Measured on this package,
 in 7 projects.
 
 What the Nx graph decides is which projects the run is **scoped to** rather
-than merely reaches. A project the closure only reached is measured but is not
-one of the run's own: `--write` publishes a `## 🔭 Callidescope` section into a
-scoped project's `README.md` and leaves a reached one's to the run that is
-scoped to it. The graph also names dependencies no import closure can find —
-an implicit dependency, or an edge that exists only at run time.
+than merely reaches. This executor writes nothing anywhere — it renders one
+report and prints it — so the distinction costs nothing here, and widening the
+selection changes only which projects seed the closure. It is the command-line
+host that acts on it: a `--write` run there publishes a `## 🔭 Callidescope`
+section into a scoped project's `README.md` and leaves a reached one's to the
+run that is scoped to it. The graph also names dependencies no import closure
+can find — an implicit dependency, or an edge that exists only at run time.
 
 The two sets are not the same. The Nx graph gives `callidescope-nx` six
 projects; the import closure reaches seven, adding `codometer-configuration`,
