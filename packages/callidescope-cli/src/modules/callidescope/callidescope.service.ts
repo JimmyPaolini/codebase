@@ -83,15 +83,32 @@ export class CallidescopeService {
       excludeFrom: args.configuration.excludeFrom,
       workspaceRoot: args.workspaceRoot,
     });
-    const projects = this.workspaceService.discoverProjects({
+    const startingProjects = this.workspaceService.discoverProjects({
       directories: args.directories,
       fileFilter,
       workspaceRoot: args.workspaceRoot,
     });
+    // A run naming no directory already asked for every project, so the walk
+    // that would find them again is the one it just did.
+    const workspaceProjects =
+      args.directories.length === 0
+        ? startingProjects
+        : this.workspaceService.discoverProjects({
+            directories: [],
+            fileFilter,
+            workspaceRoot: args.workspaceRoot,
+          });
     const programSet = this.programService.buildPrograms({
-      projects,
+      startingProjects,
+      workspaceProjects,
       workspaceRoot: args.workspaceRoot,
     });
+    // The closure rather than the starting roots: a scoped run traces the
+    // projects its imports reach as well, so a call into a dependency lands on
+    // a frame instead of stopping at the package boundary.
+    const projects = programSet.programs.map(
+      (projectProgram) => projectProgram.project,
+    );
 
     this.externalService.configure({
       ownedFilePaths: new Set(programSet.ownerByFilePath.keys()),

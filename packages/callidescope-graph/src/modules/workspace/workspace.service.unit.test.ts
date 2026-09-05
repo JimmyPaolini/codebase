@@ -7,6 +7,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { ANALYSIS_MODULES } from "../../../testing/modules";
+import { ProgramConfigurationError } from "../program/program.constants";
 
 import { WorkspaceService } from "./workspace.service";
 
@@ -117,22 +118,33 @@ describe(WorkspaceService, () => {
     ).toStrictEqual(["packages/wanted"]);
   });
 
-  it("skips a named directory with no tsconfig, and warns why", async () => {
+  it("refuses a named directory with no tsconfig", async () => {
+    // Stepping over it was the old behavior, and it is how a run came to
+    // report a workspace smaller than the one it was pointed at — a typo in a
+    // `--directories` list passed every gate for having traced less.
     const root = await mkdtemp(path.join(tmpdir(), "callidescope-untyped-"));
 
     await mkdir(path.join(root, "packages", "untyped"), { recursive: true });
 
-    expect(
+    expect(() =>
       subject.discoverProjects({
         directories: ["packages/untyped"],
         workspaceRoot: root,
       }),
-    ).toStrictEqual([]);
-    expect(subjectLogger.warn).toHaveBeenCalledWith(
-      "🔭 Skipped a directory without a tsconfig.json",
-      undefined,
-      { root: "packages/untyped" },
-    );
+    ).toThrow(ProgramConfigurationError);
+  });
+
+  it("names the directory it found no tsconfig in", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "callidescope-untyped-"));
+
+    await mkdir(path.join(root, "packages", "untyped"), { recursive: true });
+
+    expect(() =>
+      subject.discoverProjects({
+        directories: ["packages/untyped"],
+        workspaceRoot: root,
+      }),
+    ).toThrow(/packages[\\/]untyped[\\/]tsconfig\.json/);
   });
 
   it("finds every tsconfig.json in the workspace when none are named", async () => {

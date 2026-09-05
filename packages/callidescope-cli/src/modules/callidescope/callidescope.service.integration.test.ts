@@ -85,6 +85,70 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
 }
 
 /**
+ * Writes four projects: one that calls into a second, one that calls into the
+ * first, and one nothing touches.
+ *
+ * The shape a scoped run has to get right in three directions at once — down
+ * into a dependency, not up into a dependent, and not sideways into a package
+ * neither of them mentions.
+ */
+async function buildLayeredWorkspace(): Promise<string> {
+  const workspaceRoot = await mkdtemp(
+    path.join(tmpdir(), "callidescope-closure-"),
+  );
+
+  await writeProject({
+    name: "library",
+    sources: {
+      "src/index.ts": `
+        export class Repository {
+          public find(): void { this.open(); }
+          public open(): void {}
+        }
+      `,
+    },
+    workspaceRoot,
+  });
+  await writeProject({
+    name: "application",
+    sources: {
+      "src/main.ts": `
+        import { Repository } from "../../library/src/index";
+
+        function Command(): ClassDecorator { return () => undefined; }
+
+        @Command()
+        export class ApplicationCommand {
+          constructor(private readonly repository: Repository) {}
+          public run(): void { this.repository.find(); }
+        }
+      `,
+    },
+    workspaceRoot,
+  });
+  await writeProject({
+    name: "consumer",
+    sources: {
+      "src/index.ts": `
+        import { ApplicationCommand } from "../../application/src/main";
+
+        export function bootstrap(command: ApplicationCommand): void {
+          command.run();
+        }
+      `,
+    },
+    workspaceRoot,
+  });
+  await writeProject({
+    name: "unrelated",
+    sources: { "src/index.ts": "export function unrelated(): void {}\n" },
+    workspaceRoot,
+  });
+
+  return workspaceRoot;
+}
+
+/**
  * Writes a workspace to disk holding a command that reaches a repository
  * through an injected service — the shape this tool exists to follow.
  */
@@ -141,6 +205,46 @@ async function buildWorkspace(): Promise<string> {
   );
 
   return workspaceRoot;
+}
+
+/** Reads the deepest depth a project's report measured for one type. */
+function readTypeDepth(args: {
+  projectName: string;
+  result: CallGraphResult;
+  typeName: string;
+}): number | undefined {
+  return args.result.projects
+    .find((report) => report.projectName === args.projectName)
+    ?.typeDepths.find((entry) => entry.typeName === args.typeName)
+    ?.maximumDepth;
+}
+
+/** Writes one project into a workspace, with the fixture compiler options. */
+async function writeProject(args: {
+  name: string;
+  sources: Record<string, string>;
+  workspaceRoot: string;
+}): Promise<void> {
+  const root = path.join(args.workspaceRoot, "packages", args.name);
+
+  await mkdir(root, { recursive: true });
+  await writeFile(
+    path.join(root, "tsconfig.json"),
+    JSON.stringify({
+      compilerOptions: {
+        experimentalDecorators: true,
+        noLib: true,
+        target: "es2022",
+      },
+      include: ["src/**/*.ts"],
+    }),
+    "utf8",
+  );
+
+  for (const [name, text] of Object.entries(args.sources)) {
+    await mkdir(path.dirname(path.join(root, name)), { recursive: true });
+    await writeFile(path.join(root, name), text, "utf8");
+  }
 }
 
 describe(`${CallidescopeService.name} (integration)`, () => {
@@ -341,6 +445,97 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     expect(outcome.projectNames).toStrictEqual([
       path.join("packages", "example"),
     ]);
+  });
+
+  // 🕸️ A run scoped to one project
+
+  describe("scoped to one project", () => {
+    let layeredWorkspaceRoot: string;
+    let scoped: ReturnType<CallidescopeService["trace"]>;
+    let unscoped: ReturnType<CallidescopeService["trace"]>;
+
+    beforeAll(async () => {
+      layeredWorkspaceRoot = await buildLayeredWorkspace();
+      scoped = service.trace({
+        configuration: buildConfiguration(),
+        directories: [path.join("packages", "application")],
+        workspaceRoot: layeredWorkspaceRoot,
+      });
+      unscoped = service.trace({
+        configuration: buildConfiguration(),
+        directories: [],
+        workspaceRoot: layeredWorkspaceRoot,
+      });
+    });
+
+    it("reports the project it was given and the one its imports reach", () => {
+      expect(scoped.projectNames).toStrictEqual([
+        path.join("packages", "application"),
+        path.join("packages", "library"),
+      ]);
+    });
+
+    it("follows a call into a dependency down to a real frame", () => {
+      // Without the dependency's own program there is no declaration to
+      // resolve `find` against, so the stack stopped at the package boundary
+      // and the two frames below it were never measured.
+      expect(
+        scoped.result.deepStacks[0]?.frames.map((frame) => frame.displayName),
+      ).toStrictEqual([
+        "ApplicationCommand.run",
+        "Repository.find",
+        "Repository.open",
+      ]);
+    });
+
+    it("reports an exact depth rather than a lower bound", () => {
+      expect(scoped.result.deepStacks[0]?.isLowerBound).toBe(false);
+    });
+
+    it("leaves a project that imports the scoped one out of the report", () => {
+      expect(
+        scoped.result.projects.map((report) => report.projectName),
+      ).not.toContain(path.join("packages", "consumer"));
+    });
+
+    it("leaves a project nothing reaches out of the report", () => {
+      expect(
+        scoped.result.projects.map((report) => report.projectName),
+      ).not.toContain(path.join("packages", "unrelated"));
+    });
+
+    it("measures the same depth as the run that traced everything", () => {
+      const arguments_ = {
+        projectName: path.join("packages", "application"),
+        typeName: "ApplicationCommand",
+      };
+
+      expect(readTypeDepth({ ...arguments_, result: scoped.result })).toBe(
+        readTypeDepth({ ...arguments_, result: unscoped.result }),
+      );
+    });
+
+    it("still means every project when no directory is named", () => {
+      expect(unscoped.projectNames).toStrictEqual([
+        path.join("packages", "application"),
+        path.join("packages", "consumer"),
+        path.join("packages", "library"),
+        path.join("packages", "unrelated"),
+      ]);
+    });
+
+    it("refuses a named directory holding no tsconfig.json", () => {
+      // Reported through the same channel as a project it could not read,
+      // rather than warned past — a run that quietly traced one project fewer
+      // than it was told to is a gate that passed for having looked at less.
+      expect(() =>
+        service.trace({
+          configuration: buildConfiguration(),
+          directories: [path.join("packages", "missing")],
+          workspaceRoot: layeredWorkspaceRoot,
+        }),
+      ).toThrow(ProgramConfigurationError);
+    });
   });
 
   it("builds the same graph a full trace would, without any analysis", () => {

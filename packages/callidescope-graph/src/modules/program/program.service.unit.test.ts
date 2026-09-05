@@ -18,16 +18,14 @@ import type { WorkspaceProject } from "../workspace/workspace.types";
 import type { LoggerService } from "@codebase/logger";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
-/** Writes a project holding one source file, and returns its description. */
-async function buildProject(args: {
+/** Writes a project into an existing workspace, and describes it. */
+async function addProject(args: {
   configuration?: string;
   name: string;
   sources?: Record<string, string>;
-}): Promise<{ project: WorkspaceProject; workspaceRoot: string }> {
-  const workspaceRoot = await mkdtemp(
-    path.join(tmpdir(), "callidescope-program-"),
-  );
-  const root = path.join(workspaceRoot, "packages", args.name);
+  workspaceRoot: string;
+}): Promise<WorkspaceProject> {
+  const root = path.join(args.workspaceRoot, "packages", args.name);
 
   await mkdir(root, { recursive: true });
   await writeFile(
@@ -48,13 +46,35 @@ async function buildProject(args: {
   }
 
   return {
-    project: {
-      configurationPath: path.join(root, "tsconfig.json"),
-      name: args.name,
-      root: `packages/${args.name}`,
-    },
+    configurationPath: path.join(root, "tsconfig.json"),
+    name: args.name,
+    root: `packages/${args.name}`,
+  };
+}
+
+/** Writes a project holding one source file, and returns its description. */
+async function buildProject(args: {
+  configuration?: string;
+  name: string;
+  sources?: Record<string, string>;
+}): Promise<{ project: WorkspaceProject; workspaceRoot: string }> {
+  const workspaceRoot = await mkdtemp(
+    path.join(tmpdir(), "callidescope-program-"),
+  );
+
+  return {
+    project: await addProject({ ...args, workspaceRoot }),
     workspaceRoot,
   };
+}
+
+/** Names the projects a `ProgramSet` really built, in the order it holds. */
+function readProjectNames(programSet: {
+  programs: readonly { project: WorkspaceProject }[];
+}): string[] {
+  return programSet.programs.map(
+    (projectProgram) => projectProgram.project.name,
+  );
 }
 
 describe(ProgramService, () => {
@@ -88,7 +108,11 @@ describe(ProgramService, () => {
   it("logs which project it is reading", async () => {
     const { project, workspaceRoot } = await buildProject({ name: "example" });
 
-    buildSubject().buildPrograms({ projects: [project], workspaceRoot });
+    buildSubject().buildPrograms({
+      startingProjects: [project],
+      workspaceProjects: [project],
+      workspaceRoot,
+    });
 
     expect(subjectLogger.debug).toHaveBeenCalledWith(
       "🔭 Reading a project",
@@ -101,7 +125,8 @@ describe(ProgramService, () => {
     const { project, workspaceRoot } = await buildProject({ name: "example" });
 
     const programSet = buildSubject().buildPrograms({
-      projects: [project],
+      startingProjects: [project],
+      workspaceProjects: [project],
       workspaceRoot,
     });
 
@@ -119,7 +144,8 @@ describe(ProgramService, () => {
     });
 
     const programSet = buildSubject().buildPrograms({
-      projects: [project],
+      startingProjects: [project],
+      workspaceProjects: [project],
       workspaceRoot,
     });
 
@@ -130,7 +156,8 @@ describe(ProgramService, () => {
     const { project, workspaceRoot } = await buildProject({ name: "example" });
 
     const programSet = buildSubject().buildPrograms({
-      projects: [project],
+      startingProjects: [project],
+      workspaceProjects: [project],
       workspaceRoot,
     });
 
@@ -173,7 +200,8 @@ describe(ProgramService, () => {
 
     const subject = buildSubject();
     const programSet = subject.buildPrograms({
-      projects: [parent, nested],
+      startingProjects: [parent, nested],
+      workspaceProjects: [parent, nested],
       workspaceRoot,
     });
 
@@ -214,7 +242,8 @@ describe(ProgramService, () => {
 
     const subject = buildSubject();
     const programSet = subject.buildPrograms({
-      projects: [project],
+      startingProjects: [project],
+      workspaceProjects: [project],
       workspaceRoot,
     });
 
@@ -233,7 +262,11 @@ describe(ProgramService, () => {
     });
 
     expect(() =>
-      buildSubject().buildPrograms({ projects: [project], workspaceRoot }),
+      buildSubject().buildPrograms({
+        startingProjects: [project],
+        workspaceProjects: [project],
+        workspaceRoot,
+      }),
     ).toThrow(ProgramConfigurationError);
   });
 
@@ -246,7 +279,11 @@ describe(ProgramService, () => {
     });
 
     expect(() =>
-      buildSubject().buildPrograms({ projects: [project], workspaceRoot }),
+      buildSubject().buildPrograms({
+        startingProjects: [project],
+        workspaceProjects: [project],
+        workspaceRoot,
+      }),
     ).toThrow(ProgramConfigurationError);
   });
 
@@ -262,10 +299,164 @@ describe(ProgramService, () => {
 
     expect(() =>
       buildSubject().buildPrograms({
-        projects: [broken.project, readable.project],
+        startingProjects: [broken.project, readable.project],
+        workspaceProjects: [broken.project, readable.project],
         workspaceRoot: readable.workspaceRoot,
       }),
     ).toThrow(ProgramConfigurationError);
+  });
+
+  // 🕸️ Dependency closure
+
+  it("builds a program for a project only an import reaches", async () => {
+    const { project: dependency, workspaceRoot } = await buildProject({
+      name: "dependency",
+      sources: { "src/index.ts": "export function helper(): void {}\n" },
+    });
+    const dependent = await addProject({
+      name: "dependent",
+      sources: {
+        "src/index.ts": `
+          import { helper } from "../../dependency/src/index";
+
+          export function entry(): void { helper(); }
+        `,
+      },
+      workspaceRoot,
+    });
+
+    const programSet = buildSubject().buildPrograms({
+      startingProjects: [dependent],
+      workspaceProjects: [dependency, dependent],
+      workspaceRoot,
+    });
+
+    expect(readProjectNames(programSet)).toStrictEqual([
+      "dependency",
+      "dependent",
+    ]);
+  });
+
+  it("builds no program for a project no import reaches", async () => {
+    const { project: dependent, workspaceRoot } = await buildProject({
+      name: "dependent",
+    });
+    const unrelated = await addProject({ name: "unrelated", workspaceRoot });
+
+    const programSet = buildSubject().buildPrograms({
+      startingProjects: [dependent],
+      workspaceProjects: [dependent, unrelated],
+      workspaceRoot,
+    });
+
+    expect(readProjectNames(programSet)).toStrictEqual(["dependent"]);
+  });
+
+  it("builds no program for a project that imports a starting one", async () => {
+    // The closure runs one way. A dependent's own stacks belong to a run
+    // scoped to the dependent, and putting them in this one would report
+    // findings about code nobody asked about.
+    const { project: dependency, workspaceRoot } = await buildProject({
+      name: "dependency",
+      sources: { "src/index.ts": "export function helper(): void {}\n" },
+    });
+    const dependent = await addProject({
+      name: "dependent",
+      sources: {
+        "src/index.ts": `
+          import { helper } from "../../dependency/src/index";
+
+          export function entry(): void { helper(); }
+        `,
+      },
+      workspaceRoot,
+    });
+
+    const programSet = buildSubject().buildPrograms({
+      startingProjects: [dependency],
+      workspaceProjects: [dependency, dependent],
+      workspaceRoot,
+    });
+
+    expect(readProjectNames(programSet)).toStrictEqual(["dependency"]);
+  });
+
+  it("does not let a dependency drag in the project that holds it", async () => {
+    // The workspace root is itself a project, and its root contains every
+    // path in the workspace — `node_modules` included. Reporting a dependency
+    // as something a project reached would therefore pull the whole workspace
+    // into every scoped run's closure.
+    const { project, workspaceRoot } = await buildProject({
+      name: "example",
+      sources: {
+        "src/index.ts": `
+          import { library } from "../../../node_modules/library/index";
+
+          export function entry(): void { library(); }
+        `,
+      },
+    });
+    const workspaceRootProject: WorkspaceProject = {
+      configurationPath: path.join(workspaceRoot, "tsconfig.json"),
+      name: "workspace-root",
+      root: "",
+    };
+
+    await mkdir(path.join(workspaceRoot, "node_modules/library"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspaceRoot, "node_modules/library/index.ts"),
+      "export function library(): void {}\n",
+      "utf8",
+    );
+
+    const programSet = buildSubject().buildPrograms({
+      startingProjects: [project],
+      workspaceProjects: [project, workspaceRootProject],
+      workspaceRoot,
+    });
+
+    expect(readProjectNames(programSet)).toStrictEqual(["example"]);
+  });
+
+  it("does not let a file above the workspace drag in the workspace root", async () => {
+    const enclosing = await mkdtemp(
+      path.join(tmpdir(), "callidescope-enclosing-"),
+    );
+    const workspaceRoot = path.join(enclosing, "workspace");
+
+    await mkdir(path.join(enclosing, "outside"), { recursive: true });
+    await writeFile(
+      path.join(enclosing, "outside/helper.ts"),
+      "export function helper(): void {}\n",
+      "utf8",
+    );
+
+    const project = await addProject({
+      name: "example",
+      sources: {
+        "src/index.ts": `
+          import { helper } from "../../../../outside/helper";
+
+          export function entry(): void { helper(); }
+        `,
+      },
+      workspaceRoot,
+    });
+    const workspaceRootProject: WorkspaceProject = {
+      configurationPath: path.join(workspaceRoot, "tsconfig.json"),
+      name: "workspace-root",
+      root: "",
+    };
+
+    const programSet = buildSubject().buildPrograms({
+      startingProjects: [project],
+      workspaceProjects: [project, workspaceRootProject],
+      workspaceRoot,
+    });
+
+    expect(readProjectNames(programSet)).toStrictEqual(["example"]);
   });
 
   it("resolves a path that is not a symlink to itself", () => {

@@ -7,6 +7,11 @@ import { Injectable } from "@nestjs/common";
 import { LoggerService } from "@codebase/logger";
 
 import {
+  MISSING_PROJECT_CONFIGURATION_MESSAGE,
+  ProgramConfigurationError,
+} from "../program/program.constants";
+
+import {
   DEFAULT_MODULES_DIRECTORY,
   DEFAULT_ROOT_MODULE_SEGMENT,
   EXCLUDED_SCAN_DIRECTORY_NAMES,
@@ -252,6 +257,15 @@ export class WorkspaceService {
    * being filtered — is too late to help: reading the configuration is itself
    * what fails on a `tsconfig.json` written to be unreadable, so an exclusion
    * that only reaches the files cannot keep the run away from it.
+   *
+   * A named directory holding no `tsconfig.json` ends the run through
+   * `ProgramConfigurationError`, the same way one holding an unreadable
+   * `tsconfig.json` does. Naming a directory is the caller saying it should be
+   * traced, so a run that quietly traced one fewer project than it was asked
+   * to would report depths for a workspace nobody described — and a typo in a
+   * `--directories` list would pass every gate for having looked at less. The
+   * whole-workspace walk cannot reach this: it only ever yields directories a
+   * `tsconfig.json` was found in.
    */
   public discoverProjects(args: DiscoverProjectsArguments): WorkspaceProject[] {
     const roots =
@@ -287,12 +301,10 @@ export class WorkspaceService {
       }
 
       if (!existsSync(configurationPath)) {
-        this.logger.warn(
-          "🔭 Skipped a directory without a tsconfig.json",
-          undefined,
-          { root },
-        );
-        continue;
+        throw new ProgramConfigurationError({
+          configurationPath,
+          messages: [MISSING_PROJECT_CONFIGURATION_MESSAGE],
+        });
       }
 
       projects.push({ configurationPath, name: root, root });
