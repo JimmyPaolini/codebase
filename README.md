@@ -43,7 +43,7 @@
 [![Validate Conventions](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml/badge.svg?event=pull_request)](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml)
 [![Make Projects](https://github.com/JimmyPaolini/codebase/actions/workflows/make-projects.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/make-projects.yml)
 [![Audit Issues](https://github.com/JimmyPaolini/codebase/actions/workflows/audit-issues.yml/badge.svg?branch=main)](https://github.com/JimmyPaolini/codebase/actions/workflows/audit-issues.yml)
-[![Make Codebase](https://github.com/JimmyPaolini/codebase/actions/workflows/make-codebase.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/make-codebase.yml)
+[![Pack Codebase](https://github.com/JimmyPaolini/codebase/actions/workflows/pack-codebase.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/pack-codebase.yml)
 [![Push Releases](https://github.com/JimmyPaolini/codebase/actions/workflows/push-releases.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/push-releases.yml)
 
 A modern TypeScript codebase with Nx, featuring automated releases, comprehensive code quality tools, and strict type safety.

@@ -1,6 +1,6 @@
 ---
 name: triage-deployment
-description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, eslint, oxlint, oxfmt, spell-check, knip, markdown-lint, yaml-lint, conformetry-validate, synchronization targets), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-issues (issue labels and metadata), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image)."
+description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, eslint, oxlint, oxfmt, spell-check, knip, markdown-lint, yaml-lint, conformetry-validate, synchronization targets), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-issues (issue labels and metadata), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), make-projects (builds, bundle sizes), and pack-codebase (devcontainer image)."
 argument-hint: "Optional: paste failure logs, or specify a workflow name / run URL to fetch"
 ---
 
@@ -332,7 +332,7 @@ Fix: Address the CRITICAL/HIGH finding in the Terraform config, or add a scoped 
 
 ---
 
-### 🧑‍🔧 Make Codebase
+### 🧑‍🔧 Pack Codebase
 
 Triggered only when `.devcontainer/**` files change (or on manual dispatch). Each step is independent:
 
@@ -344,7 +344,7 @@ Source: [.vscode/extensions.json](../../../.vscode/extensions.json), [.devcontai
 
 Fix: Run `npx nx run codebase:sync-vscode-extensions` and commit the generated changes.
 
-#### 🔧 Docker Build — `devcontainers/ci@v0.3` (Make Codebase step)
+#### 🔧 Docker Build — `devcontainers/ci@v0.3` (Pack Codebase step)
 
 Config: [.devcontainer/cloud/devcontainer.json](../../../.devcontainer/cloud/devcontainer.json)
 
