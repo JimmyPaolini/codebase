@@ -11,7 +11,7 @@ import type { ExecutorContext } from "@nx/devkit";
 
 const pluginService = createMock<PluginService>();
 
-vi.mock("../../plugin-context.utilities", () => ({
+vi.mock("../../modules/plugin/plugin-context.utilities", () => ({
   resolveOptionsService: async (): Promise<OptionsService> =>
     await Promise.resolve(new OptionsService()),
   resolvePluginService: async (): Promise<PluginService> =>

@@ -75,8 +75,17 @@ export class CallidescopeService {
   } {
     this.workspaceService.configure(args.configuration.workspaceStructure);
 
+    // Built before discovery rather than beside the collection it filters: a
+    // project the exclusions name has to be dropped before its
+    // `tsconfig.json` is opened, since opening it is what fails.
+    const fileFilter = this.workspaceService.buildFileFilter({
+      exclude: args.configuration.exclude,
+      excludeFrom: args.configuration.excludeFrom,
+      workspaceRoot: args.workspaceRoot,
+    });
     const projects = this.workspaceService.discoverProjects({
       directories: args.directories,
+      fileFilter,
       workspaceRoot: args.workspaceRoot,
     });
     const programSet = this.programService.buildPrograms({
@@ -95,11 +104,7 @@ export class CallidescopeService {
     });
 
     const collection = this.callablesService.collect({
-      fileFilter: this.workspaceService.buildFileFilter({
-        exclude: args.configuration.exclude,
-        excludeFrom: args.configuration.excludeFrom,
-        workspaceRoot: args.workspaceRoot,
-      }),
+      fileFilter,
       includeTests: args.configuration.entryPoints.includeTests,
       ownerByFilePath: programSet.ownerByFilePath,
       workspaceRoot: args.workspaceRoot,

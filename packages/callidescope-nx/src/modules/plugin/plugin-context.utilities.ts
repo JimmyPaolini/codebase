@@ -3,21 +3,22 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 
-import { MainModule } from "./main.module";
-import { GeneratorService } from "./modules/generator/generator.service";
-import { OptionsService } from "./modules/options/options.service";
-import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./modules/plugin/plugin.constants";
-import { PluginService } from "./modules/plugin/plugin.service";
-import { ProjectsService } from "./modules/projects/projects.service";
+import { MainModule } from "../../main.module";
+import { AddressService } from "../address/address.service";
+import { OptionsService } from "../options/options.service";
+import { ProjectsService } from "../projects/projects.service";
 
-import type { PluginContextGlobal } from "./modules/plugin/plugin.types";
+import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./plugin.constants";
+import { PluginService } from "./plugin.service";
+
+import type { PluginContextGlobal } from "./plugin.types";
 import type { INestApplicationContext } from "@nestjs/common";
 
-/** Resolves the service that derives the consumer's generator plugin. */
-export async function resolveGeneratorService(): Promise<GeneratorService> {
+/** Resolves the service backing the `depth` and `breadth` lookups. */
+export async function resolveAddressService(): Promise<AddressService> {
   const context = await resolvePluginContext();
 
-  return context.get(GeneratorService);
+  return context.get(AddressService);
 }
 
 /** Resolves the service that reads this plugin's registration in `nx.json`. */
@@ -27,14 +28,14 @@ export async function resolveOptionsService(): Promise<OptionsService> {
   return context.get(OptionsService);
 }
 
-/** Resolves the service backing target inference, generation, and validation. */
+/** Resolves the service backing target inference and the trace executor. */
 export async function resolvePluginService(): Promise<PluginService> {
   const context = await resolvePluginContext();
 
   return context.get(PluginService);
 }
 
-/** Resolves the service that lists the workspace's projects. */
+/** Resolves the service that reads the workspace's Nx project graph. */
 export async function resolveProjectsService(): Promise<ProjectsService> {
   const context = await resolvePluginContext();
 
@@ -54,8 +55,6 @@ export async function resolveProjectsService(): Promise<ProjectsService> {
  * — under plugin isolation, per worker — and one NestJS context per process is
  * the point. The pending promise is stored, not the resolved context, so
  * concurrent callers share a single bootstrap instead of racing to build two.
- * No signal handlers or file watches are registered, so the context never
- * keeps the daemon alive on its own.
  */
 async function resolvePluginContext(): Promise<INestApplicationContext> {
   const globalScope: PluginContextGlobal = globalThis;

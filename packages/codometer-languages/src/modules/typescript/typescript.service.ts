@@ -35,6 +35,20 @@ export class TypescriptService {
 
   // 🔐 Private Fields
 
+  /**
+   * What to count for each syntax kind the walk cares about.
+   *
+   * Read by `dispatchNode`, which is the only caller: a kind absent from the
+   * table is a node this analyzer counts nothing for, so adding a statistic
+   * means adding a row here rather than another branch inside the walk.
+   *
+   * `dispatchNode` reaches a row by computed member access, which no call
+   * graph can follow — callidescope records the call as unfollowable and
+   * every row here as an entry point nothing calls. So a traced stack stops
+   * at `dispatchNode` and each `handle*` method appears again at the root of
+   * a stack of its own. That is the price of a table over a `switch`, and
+   * worth knowing before reading those roots as dead code.
+   */
   private readonly kindDispatch: Partial<
     Record<
       number,

@@ -1,6 +1,6 @@
 {
   "bin": {
-    "conformetry-nx-bootstrap": "./src/bootstrap.mjs"
+    "conformetry-nx-bootstrap": "./src/main.mjs"
   },
   "dependencies": {
     "@codebase/logger": "workspace:*",

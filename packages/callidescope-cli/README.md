@@ -113,6 +113,36 @@ so it runs on every commit. Depth reads source and needs no build, which is
 what keeps it in the commit path where codometer's limits — read from compiled
 output — cannot go.
 
+### Two failures no flag turns off
+
+`--check` chooses which findings about the code fail the run. Two failures are
+not findings about the code at all, and neither waits to be asked:
+
+| Failure | What it means |
+| ------- | ------------- |
+| `🔭 Rejected a project it could not read` | A project's `tsconfig.json` could not be parsed |
+| `🔭 Traced nothing` | The run collected no callables at all |
+
+Both exist because the alternative is a green gate over a workspace nobody
+looked at. A run reports what it found, so a run that found nothing reports
+nothing — which reads exactly like a clean workspace.
+
+A `tsconfig.json` that will not parse **ends the run where it happens**, before
+anything is printed and before any destination is touched. It is tempting to
+step over the project and trace the rest, and that is wrong here: destinations
+are written before findings are weighed, so a partial graph would publish
+depths measured through a workspace that was missing a project, and only then
+fail. On the default branch that means committing wrong numbers into every
+project README, which exiting non-zero afterwards does not take back. Ending
+the trace leaves the checkout exactly as the run found it.
+
+A project that should not be read at all is a different question, and
+exclusions answer it. They are applied to the `tsconfig.json` itself, before it
+is opened — excluding a project's _files_ is too late, because opening its
+configuration is the step that fails. This repository's own
+[`.callidescopeignore`](../../configuration/.callidescopeignore) names one such
+project: a fixture in `codependix-examples` written not to parse.
+
 ### Where the report goes
 
 Printing and writing are separate. `--format` decides what reaches the terminal;
@@ -428,26 +458,59 @@ Call stacks traced through `packages/callidescope-cli`, deepest first. Each fram
 
 | Measure | Value |
 | --- | --- |
-| Callables | 85 |
-| Files | 32 |
-| Calls traced | 119 |
-| Call stacks | 14 |
-| Deepest stack | 14 |
+| Callables | 103 |
+| Files | 33 |
+| Calls traced | 140 |
+| Call stacks | 16 |
+| Deepest stack | 15 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 3 |
 
 ### Call stacks (depth)
 
-**1. `BreadthCommand.run`** — depth ≥ 14 · decorated-method
+**1. `CallidescopeCommand.run`** — depth ≥ 15 · decorated-method
 
 ```text
-🚀 BreadthCommand.run(passedParameters: string[], options: AddressCommandOptions): Promise<void> [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:197]
-   ↳ Resolves the address and prints its direct callers and callees.
-  └─> BreadthCommand.resolveDirectCalls(…): Promise<{ callable: DiscoveredCallable; directCalls: CallableDirectCalls; format: CallidescopeOutputFormat; id: string; } | undefined> [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:96]
-     ↳ Resolves the address to a callable and its direct calls, or fails the run and returns nothing.
-    └─> AddressLookupService.lookup(args: LookupAddressArguments): Promise<LookupAddressOutcome> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:74]
-       ↳ Loads the configuration, traces the workspace, and matches the address.
-      └─> CallidescopeService.locate(args: TraceArguments): LocateOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:233]
+🚀 CallidescopeCommand.run(…): Promise<void> [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:461]
+   ↳ Traces the workspace, reports, and sets the exit code.
+  └─> CallidescopeCommand.traceWorkspace(options: CallidescopeCommandOptions): Promise<void> [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:333]
+     ↳ Traces the workspace, reports, and sets the exit code.
+    └─> CallidescopeService.trace(args: TraceArguments): TraceOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:251]
+       ↳ Traces a workspace and returns everything the run found.
+      └─> CallidescopeService.analyze(…): CallGraphResult [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:133]
+         ↳ Derives every finding from the collected callables.
+        └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
+           ↳ Builds the call graph and everything derived from it.
+          └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-graph/src/modules/edges/edges.service.ts:251]
+             ↳ Builds every edge in the graph, and records the calls it could not.
+            └─> EdgesService.buildSiteEdges(…): { edges: CallEdge[]; unresolved: UnresolvedCall[]; } [packages/callidescope-graph/src/modules/edges/edges.service.ts:59]
+               ↳ Turns one call site into the edges and non-resolutions it produced.
+              └─> EdgesService.resolveSite(…): ResolvedCallSite | undefined [packages/callidescope-graph/src/modules/edges/edges.service.ts:226]
+                 ↳ Resolves one call site, choosing the right strategy for its shape.
+                └─> SymbolResolutionService.resolve(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:267]
+                   ↳ Resolves a call expression to every declaration it can reach.
+                  └─> SymbolResolutionService.resolveSymbol(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:165]
+                     ↳ Resolves an already-identified callee symbol to its declarations.
+                    └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
+                       ↳ Expands an interface or abstract member to its implementations.
+                      └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
+                         ↳ Finds the concrete declarations one interface member resolves to.
+                        └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:235]
+                          └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:149]
+                             ↳ Reads one member's concrete declarations off a candidate class.
+                            └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:163]
+```
+
+**2. `BreadthCommand.run`** — depth ≥ 15 · decorated-method
+
+```text
+🚀 BreadthCommand.run(_passedParameters: string[], options: AddressCommandOptions): Promise<void> [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:240]
+   ↳ Prints each named callable's direct callers and callees.
+  └─> BreadthCommand.printBreadth(options: AddressCommandOptions): Promise<void> [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:127]
+     ↳ Resolves the addresses and prints their direct callers and callees.
+    └─> AddressLookupService.locate(options: AddressCommandOptions): Promise<LocatedWorkspace> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:85]
+       ↳ Loads the configuration and traces the workspace, matching nothing yet.
+      └─> CallidescopeService.locate(args: TraceArguments): LocateOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:238]
          ↳ Collects every callable and assembles the graph over them, without running the analysis a full trace does.
         └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
            ↳ Builds the call graph and everything derived from it.
@@ -465,173 +528,167 @@ Call stacks traced through `packages/callidescope-cli`, deepest first. Each fram
                        ↳ Expands an interface or abstract member to its implementations.
                       └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
                          ↳ Finds the concrete declarations one interface member resolves to.
-                        └─> ClassesService.filterAssignable(…): ClassDeclaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:87]
-                           ↳ Keeps only classes whose instance type satisfies the declaring type.
-                          └─> ClassesService.filter(…)(candidate: ts.ClassDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:94]
+                        └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:235]
+                          └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:149]
+                             ↳ Reads one member's concrete declarations off a candidate class.
+                            └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:163]
 ```
 
-**2. `CallidescopeCommand.run`** — depth ≥ 13 · decorated-method
+**3. `DepthCommand.run`** — depth ≥ 15 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.run(…): Promise<void> [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:396]
-   ↳ Traces the workspace, reports, and sets the exit code.
-  └─> CallidescopeService.trace(args: TraceArguments): TraceOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:246]
-     ↳ Traces a workspace and returns everything the run found.
-    └─> CallidescopeService.analyze(…): CallGraphResult [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:128]
-       ↳ Derives every finding from the collected callables.
-      └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
-         ↳ Builds the call graph and everything derived from it.
-        └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-graph/src/modules/edges/edges.service.ts:251]
-           ↳ Builds every edge in the graph, and records the calls it could not.
-          └─> EdgesService.buildSiteEdges(…): { edges: CallEdge[]; unresolved: UnresolvedCall[]; } [packages/callidescope-graph/src/modules/edges/edges.service.ts:59]
-             ↳ Turns one call site into the edges and non-resolutions it produced.
-            └─> EdgesService.resolveSite(…): ResolvedCallSite | undefined [packages/callidescope-graph/src/modules/edges/edges.service.ts:226]
-               ↳ Resolves one call site, choosing the right strategy for its shape.
-              └─> SymbolResolutionService.resolve(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:267]
-                 ↳ Resolves a call expression to every declaration it can reach.
-                └─> SymbolResolutionService.resolveSymbol(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:165]
-                   ↳ Resolves an already-identified callee symbol to its declarations.
-                  └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
-                     ↳ Expands an interface or abstract member to its implementations.
-                    └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
-                       ↳ Finds the concrete declarations one interface member resolves to.
-                      └─> ClassesService.filterAssignable(…): ClassDeclaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:87]
-                         ↳ Keeps only classes whose instance type satisfies the declaring type.
-                        └─> ClassesService.filter(…)(candidate: ts.ClassDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:94]
-```
-
-**3. `DepthCommand.run`** — depth ≥ 13 · decorated-method
-
-```text
-🚀 DepthCommand.run(passedParameters: string[], options: AddressCommandOptions): Promise<void> [packages/callidescope-cli/src/modules/depth/depth.command.ts:144]
-   ↳ Resolves the address, traces every path above and below it, and prints them.
-  └─> AddressLookupService.lookup(args: LookupAddressArguments): Promise<LookupAddressOutcome> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:74]
-     ↳ Loads the configuration, traces the workspace, and matches the address.
-    └─> CallidescopeService.locate(args: TraceArguments): LocateOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:233]
-       ↳ Collects every callable and assembles the graph over them, without running the analysis a full trace does.
-      └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
-         ↳ Builds the call graph and everything derived from it.
-        └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-graph/src/modules/edges/edges.service.ts:251]
-           ↳ Builds every edge in the graph, and records the calls it could not.
-          └─> EdgesService.buildSiteEdges(…): { edges: CallEdge[]; unresolved: UnresolvedCall[]; } [packages/callidescope-graph/src/modules/edges/edges.service.ts:59]
-             ↳ Turns one call site into the edges and non-resolutions it produced.
-            └─> EdgesService.resolveSite(…): ResolvedCallSite | undefined [packages/callidescope-graph/src/modules/edges/edges.service.ts:226]
-               ↳ Resolves one call site, choosing the right strategy for its shape.
-              └─> SymbolResolutionService.resolve(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:267]
-                 ↳ Resolves a call expression to every declaration it can reach.
-                └─> SymbolResolutionService.resolveSymbol(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:165]
-                   ↳ Resolves an already-identified callee symbol to its declarations.
-                  └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
-                     ↳ Expands an interface or abstract member to its implementations.
-                    └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
-                       ↳ Finds the concrete declarations one interface member resolves to.
-                      └─> ClassesService.filterAssignable(…): ClassDeclaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:87]
-                         ↳ Keeps only classes whose instance type satisfies the declaring type.
-                        └─> ClassesService.filter(…)(candidate: ts.ClassDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:94]
+🚀 DepthCommand.run(_passedParameters: string[], options: AddressCommandOptions): Promise<void> [packages/callidescope-cli/src/modules/depth/depth.command.ts:217]
+   ↳ Resolves the addresses, traces every path above and below each, and prints them.
+  └─> DepthCommand.printDepth(options: AddressCommandOptions): Promise<void> [packages/callidescope-cli/src/modules/depth/depth.command.ts:91]
+     ↳ Traces every path above and below each resolved address, and prints them.
+    └─> AddressLookupService.locate(options: AddressCommandOptions): Promise<LocatedWorkspace> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:85]
+       ↳ Loads the configuration and traces the workspace, matching nothing yet.
+      └─> CallidescopeService.locate(args: TraceArguments): LocateOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:238]
+         ↳ Collects every callable and assembles the graph over them, without running the analysis a full trace does.
+        └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
+           ↳ Builds the call graph and everything derived from it.
+          └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-graph/src/modules/edges/edges.service.ts:251]
+             ↳ Builds every edge in the graph, and records the calls it could not.
+            └─> EdgesService.buildSiteEdges(…): { edges: CallEdge[]; unresolved: UnresolvedCall[]; } [packages/callidescope-graph/src/modules/edges/edges.service.ts:59]
+               ↳ Turns one call site into the edges and non-resolutions it produced.
+              └─> EdgesService.resolveSite(…): ResolvedCallSite | undefined [packages/callidescope-graph/src/modules/edges/edges.service.ts:226]
+                 ↳ Resolves one call site, choosing the right strategy for its shape.
+                └─> SymbolResolutionService.resolve(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:267]
+                   ↳ Resolves a call expression to every declaration it can reach.
+                  └─> SymbolResolutionService.resolveSymbol(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:165]
+                     ↳ Resolves an already-identified callee symbol to its declarations.
+                    └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
+                       ↳ Expands an interface or abstract member to its implementations.
+                      └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
+                         ↳ Finds the concrete declarations one interface member resolves to.
+                        └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:235]
+                          └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:149]
+                             ↳ Reads one member's concrete declarations off a candidate class.
+                            └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:163]
 ```
 
 <details>
-<summary>11 more call stacks</summary>
+<summary>13 more call stacks</summary>
 
 **4. `CallidescopeCommand.parseDirectories`** — depth 3 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.parseDirectories(value: string | undefined): string[] [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:328]
+🚀 CallidescopeCommand.parseDirectories(value: string | undefined): string[] [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:402]
    ↳ Parses `--directories`, a comma-separated list of project directories.
-  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:55]
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:96]
      ↳ Splits `--directories`, a comma-separated list of project directories.
-    └─> InputService.map(…)(entry: string): string [packages/callidescope-configuration/src/modules/input/input.service.ts:60]
+    └─> InputService.map(…)(entry: string): string [packages/callidescope-configuration/src/modules/input/input.service.ts:101]
 ```
 
-**5. `BreadthCommand.parseDirectories`** — depth 3 · decorated-method
+**5. `BreadthCommand.parseAddresses`** — depth 3 · decorated-method
 
 ```text
-🚀 BreadthCommand.parseDirectories(value: string | undefined): string[] [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:170]
-   ↳ Parses `--directories`, a comma-separated list of project directories.
-  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:55]
+🚀 BreadthCommand.parseAddresses(value: string | undefined): string[] [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:197]
+   ↳ Parses `--addresses`, a comma-separated list of callable addresses.
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:96]
      ↳ Splits `--directories`, a comma-separated list of project directories.
-    └─> InputService.map(…)(entry: string): string [packages/callidescope-configuration/src/modules/input/input.service.ts:60]
+    └─> InputService.map(…)(entry: string): string [packages/callidescope-configuration/src/modules/input/input.service.ts:101]
 ```
 
-**6. `DepthCommand.parseDirectories`** — depth 3 · decorated-method
+**6. `BreadthCommand.parseDirectories`** — depth 3 · decorated-method
 
 ```text
-🚀 DepthCommand.parseDirectories(value: string | undefined): string[] [packages/callidescope-cli/src/modules/depth/depth.command.ts:114]
+🚀 BreadthCommand.parseDirectories(value: string | undefined): string[] [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:216]
    ↳ Parses `--directories`, a comma-separated list of project directories.
-  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:55]
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:96]
      ↳ Splits `--directories`, a comma-separated list of project directories.
-    └─> InputService.map(…)(entry: string): string [packages/callidescope-configuration/src/modules/input/input.service.ts:60]
+    └─> InputService.map(…)(entry: string): string [packages/callidescope-configuration/src/modules/input/input.service.ts:101]
 ```
 
-**7. `CallidescopeCommand.parseConfig`** — depth 2 · decorated-method
+**7. `DepthCommand.parseAddresses`** — depth 3 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.parseConfig(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:319]
+🚀 DepthCommand.parseAddresses(value: string | undefined): string[] [packages/callidescope-cli/src/modules/depth/depth.command.ts:173]
+   ↳ Parses `--addresses`, a comma-separated list of callable addresses.
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:96]
+     ↳ Splits `--directories`, a comma-separated list of project directories.
+    └─> InputService.map(…)(entry: string): string [packages/callidescope-configuration/src/modules/input/input.service.ts:101]
+```
+
+**8. `DepthCommand.parseDirectories`** — depth 3 · decorated-method
+
+```text
+🚀 DepthCommand.parseDirectories(value: string | undefined): string[] [packages/callidescope-cli/src/modules/depth/depth.command.ts:192]
+   ↳ Parses `--directories`, a comma-separated list of project directories.
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:96]
+     ↳ Splits `--directories`, a comma-separated list of project directories.
+    └─> InputService.map(…)(entry: string): string [packages/callidescope-configuration/src/modules/input/input.service.ts:101]
+```
+
+**9. `CallidescopeCommand.parseConfig`** — depth 2 · decorated-method
+
+```text
+🚀 CallidescopeCommand.parseConfig(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:393]
    ↳ Parses `--config`.
-  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:80]
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:121]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**8. `CallidescopeCommand.parseFormat`** — depth 2 · decorated-method
+**10. `CallidescopeCommand.parseFormat`** — depth 2 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:337]
+🚀 CallidescopeCommand.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:411]
    ↳ Parses `--format`, which decides what the run prints.
-  └─> InputService.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-configuration/src/modules/input/input.service.ts:71]
+  └─> InputService.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-configuration/src/modules/input/input.service.ts:112]
      ↳ Parses `--format`, which decides what a run prints.
 ```
 
-**9. `CallidescopeCommand.parseJson`** — depth 2 · decorated-method
+**11. `CallidescopeCommand.parseJson`** — depth 2 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.parseJson(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:355]
+🚀 CallidescopeCommand.parseJson(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:420]
    ↳ Parses `--json`.
-  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:80]
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:121]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**10. `CallidescopeCommand.parseMarkdown`** — depth 2 · decorated-method
+**12. `CallidescopeCommand.parseMarkdown`** — depth 2 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.parseMarkdown(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:364]
+🚀 CallidescopeCommand.parseMarkdown(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:429]
    ↳ Parses `--markdown`.
-  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:80]
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:121]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**11. `BreadthCommand.parseConfig`** — depth 2 · decorated-method
+**13. `BreadthCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
-🚀 BreadthCommand.parseConfig(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:161]
+🚀 BreadthCommand.parseConfig(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:207]
    ↳ Parses `--config`.
-  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:80]
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:121]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**12. `BreadthCommand.parseFormat`** — depth 2 · decorated-method
+**14. `BreadthCommand.parseFormat`** — depth 2 · decorated-method
 
 ```text
-🚀 BreadthCommand.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:179]
+🚀 BreadthCommand.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-cli/src/modules/breadth/breadth.command.ts:225]
    ↳ Parses `--format`.
-  └─> InputService.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-configuration/src/modules/input/input.service.ts:71]
+  └─> InputService.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-configuration/src/modules/input/input.service.ts:112]
      ↳ Parses `--format`, which decides what a run prints.
 ```
 
-**13. `DepthCommand.parseConfig`** — depth 2 · decorated-method
+**15. `DepthCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
-🚀 DepthCommand.parseConfig(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/depth/depth.command.ts:105]
+🚀 DepthCommand.parseConfig(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/depth/depth.command.ts:183]
    ↳ Parses `--config`.
-  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:80]
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:121]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**14. `DepthCommand.parseFormat`** — depth 2 · decorated-method
+**16. `DepthCommand.parseFormat`** — depth 2 · decorated-method
 
 ```text
-🚀 DepthCommand.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-cli/src/modules/depth/depth.command.ts:123]
+🚀 DepthCommand.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-cli/src/modules/depth/depth.command.ts:201]
    ↳ Parses `--format`.
-  └─> InputService.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-configuration/src/modules/input/input.service.ts:71]
+  └─> InputService.parseFormat(value: string | undefined): CallidescopeOutputFormat [packages/callidescope-configuration/src/modules/input/input.service.ts:112]
      ↳ Parses `--format`, which decides what a run prints.
 ```
 
@@ -641,69 +698,81 @@ Call stacks traced through `packages/callidescope-cli`, deepest first. Each fram
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CallidescopeService.analyze` | 11 | `packages/callidescope-graph:modules/cohesion`, `packages/callidescope-graph:modules/entries`, `packages/callidescope-graph:modules/graph`, `packages/callidescope-output:modules/project-reports` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:128` |
-| `AddressLookupService.lookup` | 10 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-cli:modules/run-plan`, `packages/callidescope-graph:modules/callables` | `packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:74` |
+| `CallidescopeService.analyze` | 11 | `packages/callidescope-graph:modules/cohesion`, `packages/callidescope-graph:modules/entries`, `packages/callidescope-graph:modules/graph`, `packages/callidescope-output:modules/project-reports` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:133` |
 | `CallidescopeService.discoverCallables` | 5 | `packages/callidescope-graph:modules/callables`, `packages/callidescope-graph:modules/classes`, `packages/callidescope-graph:modules/program`, `packages/callidescope-graph:modules/workspace` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:71` |
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CallidescopeService.analyze` | 10 | `GraphAssemblyService.assemble`, `EntriesService.resolve`, `CohesionService.findMisplacedCallables`, `CohesionService.findModuleSpreads`, `CohesionService.summarizeTypeDepths`, `ProjectReportsService.build`, `CallidescopeService.filter(…)`, `CallidescopeService.readMaximumDepth`, `ProjectReportsService.findDeepStacks`, `ProjectReportsService.findWideCallables` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:128` |
-| `CallidescopeService.discoverCallables` | 9 | `WorkspaceService.configure`, `WorkspaceService.discoverProjects`, `ProgramService.buildPrograms`, `ExternalService.configure`, `ClassesService.build`, `CallablesService.collect`, `WorkspaceService.buildFileFilter`, `CallidescopeService.map(…)`, `CallidescopeService.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:71` |
-| `DepthCommand.run` | 9 | `InputService.canPrompt`, `DepthCommand.resolveAddress`, `DepthCommand.resolveOptions`, `AddressLookupService.lookup`, `AddressLookupService.describeProblem`, `DepthCommand.rejectAddress`, `AddressDepthService.buildDownwardStacks`, `AddressDepthService.buildUpwardStacks`, `AddressReportService.renderDepth` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:144` |
+| `CallidescopeService.analyze` | 10 | `GraphAssemblyService.assemble`, `EntriesService.resolve`, `CohesionService.findMisplacedCallables`, `CohesionService.findModuleSpreads`, `CohesionService.summarizeTypeDepths`, `ProjectReportsService.build`, `CallidescopeService.filter(…)`, `CallidescopeService.readMaximumDepth`, `ProjectReportsService.findDeepStacks`, `ProjectReportsService.findWideCallables` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:133` |
+| `CallidescopeService.discoverCallables` | 9 | `WorkspaceService.configure`, `WorkspaceService.buildFileFilter`, `WorkspaceService.discoverProjects`, `ProgramService.buildPrograms`, `ExternalService.configure`, `ClassesService.build`, `CallablesService.collect`, `CallidescopeService.map(…)`, `CallidescopeService.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:71` |
+| `CallidescopeCommand.traceWorkspace` | 7 | `InputService.resolveFormatOption`, `RunPlanService.prepareRun`, `CallidescopeService.trace`, `CallidescopeCommand.report`, `RunPlanService.touchesFiles`, `CallidescopeCommand.syncDestinations`, `CallidescopeCommand.reportFindings` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:333` |
 
 <details>
-<summary>46 more callables</summary>
+<summary>59 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CallidescopeCommand.run` | 8 | `InputService.canPrompt`, `CallidescopeCommand.resolveOptions`, `RunPlanService.prepareRun`, `CallidescopeService.trace`, `CallidescopeCommand.report`, `RunPlanService.touchesFiles`, `CallidescopeCommand.syncDestinations`, `CallidescopeCommand.reportFindings` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:396` |
-| `CallidescopeCommand.syncDestinations` | 6 | `OutputJsonService.sync`, `OutputMarkdownService.sync`, `MarkdownReportService.renderRun`, `CallidescopeCommand.readPreviewCount`, `OutputMarkdownService.syncProjectReadmes`, `CallidescopeCommand.buildProjectSections` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:243` |
-| `BreadthCommand.run` | 5 | `InputService.canPrompt`, `BreadthCommand.resolveAddress`, `BreadthCommand.resolveOptions`, `BreadthCommand.resolveDirectCalls`, `AddressReportService.renderBreadth` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:197` |
+| `CallidescopeCommand.syncDestinations` | 6 | `OutputJsonService.sync`, `OutputMarkdownService.sync`, `MarkdownReportService.renderRun`, `CallidescopeCommand.readPreviewCount`, `OutputMarkdownService.syncProjectReadmes`, `CallidescopeCommand.buildProjectSections` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:275` |
+| `DepthCommand.printDepth` | 6 | `InputService.resolveFormatOption`, `AddressLookupService.locate`, `DepthCommand.resolveAddresses`, `DepthCommand.identifyAddresses`, `AddressReportService.renderDepthReports`, `DepthCommand.map(…)` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:91` |
+| `BreadthCommand.printBreadth` | 5 | `InputService.resolveFormatOption`, `AddressLookupService.locate`, `BreadthCommand.resolveAddresses`, `BreadthCommand.buildReports`, `AddressReportService.renderBreadthReports` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:127` |
 | `RunPlanService.readCheckNames` | 4 | `RunPlanService.describeAcceptedCheckNames`, `RunPlanService.filter(…)`, `RunPlanService.map(…)`, `RunPlanService.validateCheckNames` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:60` |
 | `RunPlanService.prepareRun` | 4 | `RunPlanService.selectMode`, `ConfigurationService.loadConfiguration`, `RunPlanService.resolveMarkdownDestination`, `RunPlanService.validateConfiguration` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:165` |
-| `AddressReportService.renderBreadthDiagram` | 4 | `AddressReportService.toFrame`, `AddressReportService.map(…)`, `AddressReportService.map(…)`, `MermaidReportService.renderStacks` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:37` |
-| `BreadthCommand.resolveDirectCalls` | 4 | `AddressLookupService.lookup`, `AddressLookupService.describeProblem`, `BreadthCommand.rejectAddress`, `BreadthService.describeDirectCalls` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:96` |
-| `CallidescopeCommand.report` | 3 | `OutputJsonService.buildReport`, `MarkdownReportService.renderRun`, `CallidescopeCommand.readPreviewCount` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:114` |
-| `CallidescopeCommand.reportFindings` | 3 | `CallidescopeCommand.reportStaleness`, `CallidescopeCommand.reportDeepStacks`, `CallidescopeCommand.reportWideCallables` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:175` |
-| `AddressLookupService.lookup` | 3 | `RunPlanService.prepareLookup`, `CallidescopeService.locate`, `AddressService.resolve` | `packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:74` |
-| `CallidescopeService.locate` | 2 | `CallidescopeService.discoverCallables`, `GraphAssemblyService.assemble` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:233` |
-| `CallidescopeService.trace` | 2 | `CallidescopeService.discoverCallables`, `CallidescopeService.analyze` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:246` |
-| `CallidescopeCommand.reportDeepStacks` | 2 | `CallidescopeCommand.map(…)`, `CallidescopeCommand.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:150` |
-| `CallidescopeCommand.reportWideCallables` | 2 | `CallidescopeCommand.map(…)`, `CallidescopeCommand.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:205` |
-| `AddressReportService.renderBreadth` | 2 | `AddressReportService.renderBreadthDiagram`, `AddressReportService.renderReferenceTable` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:129` |
-| `AddressReportService.renderDepth` | 2 | `MermaidReportService.renderStacks`, `AddressReportService.renderDepthStacks` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:166` |
+| `CallidescopeCommand.reportFindings` | 4 | `CallidescopeCommand.reportStaleness`, `CallidescopeCommand.reportDeepStacks`, `CallidescopeCommand.reportWideCallables`, `CallidescopeCommand.reportEmptyTrace` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:223` |
+| `AddressReportService.renderBreadthDiagram` | 4 | `AddressReportService.toFrame`, `AddressReportService.map(…)`, `AddressReportService.map(…)`, `MermaidReportService.renderStacks` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:59` |
+| `CallidescopeCommand.report` | 3 | `OutputJsonService.buildReport`, `MarkdownReportService.renderRun`, `CallidescopeCommand.readPreviewCount` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:138` |
+| `CallidescopeCommand.run` | 3 | `CallidescopeCommand.traceWorkspace`, `CallidescopeCommand.rejectProject`, `CallidescopeCommand.rejectCommandLine` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:461` |
+| `AddressReportService.renderBreadth` | 3 | `AddressReportService.buildBreadthPayload`, `AddressReportService.renderBreadthDiagram`, `AddressReportService.renderReferenceTable` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:151` |
+| `AddressReportService.renderDepth` | 3 | `AddressReportService.buildDepthPayload`, `MermaidReportService.renderStacks`, `AddressReportService.renderDepthStacks` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:206` |
+| `BreadthCommand.describeAddress` | 3 | `AddressLookupService.resolve`, `AddressLookupService.describeProblem`, `BreadthService.describeDirectCalls` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:91` |
+| `DepthCommand.identifyAddresses` | 3 | `AddressLookupService.resolve`, `AddressLookupService.describeProblem`, `DepthCommand.rejectAddresses` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:57` |
+| `CallidescopeService.locate` | 2 | `CallidescopeService.discoverCallables`, `GraphAssemblyService.assemble` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:238` |
+| `CallidescopeService.trace` | 2 | `CallidescopeService.discoverCallables`, `CallidescopeService.analyze` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:251` |
+| `CallidescopeCommand.reportDeepStacks` | 2 | `CallidescopeCommand.map(…)`, `CallidescopeCommand.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:174` |
+| `CallidescopeCommand.reportWideCallables` | 2 | `CallidescopeCommand.map(…)`, `CallidescopeCommand.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:254` |
+| `AddressLookupService.locate` | 2 | `RunPlanService.prepareLookup`, `CallidescopeService.locate` | `packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:85` |
+| `AddressReportService.renderBreadthReports` | 2 | `AddressReportService.map(…)`, `AddressReportService.map(…)` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:191` |
+| `AddressReportService.renderDepthReports` | 2 | `AddressReportService.map(…)`, `AddressReportService.map(…)` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:254` |
+| `BreadthCommand.buildReports` | 2 | `BreadthCommand.describeAddress`, `BreadthCommand.rejectAddresses` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:55` |
+| `BreadthCommand.resolveAddresses` | 2 | `InputService.promptForAutocompleteMultiselect`, `AddressLookupService.listAddresses` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:176` |
+| `BreadthCommand.run` | 2 | `BreadthCommand.printBreadth`, `BreadthCommand.rejectCommandLine` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:240` |
+| `DepthCommand.map(…)` | 2 | `AddressDepthService.buildDownwardStacks`, `AddressDepthService.buildUpwardStacks` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:111` |
+| `DepthCommand.resolveAddresses` | 2 | `InputService.promptForAutocompleteMultiselect`, `AddressLookupService.listAddresses` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:152` |
+| `DepthCommand.run` | 2 | `DepthCommand.printDepth`, `DepthCommand.rejectCommandLine` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:217` |
 | `RunPlanService.describeAcceptedCheckNames` | 1 | `RunPlanService.map(…)` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:48` |
 | `RunPlanService.resolveMarkdownDestination` | 1 | `ConfigurationService.resolveConfiguration` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:92` |
 | `RunPlanService.validateCheckNames` | 1 | `RunPlanService.describeAcceptedCheckNames` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:108` |
 | `RunPlanService.prepareLookup` | 1 | `ConfigurationService.loadConfiguration` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:136` |
 | `RunPlanService.selectMode` | 1 | `RunPlanService.readCheckNames` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:230` |
-| `CallidescopeService.readMaximumDepth` | 1 | `CallidescopeService.reduce(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:118` |
-| `CallidescopeCommand.buildProjectSections` | 1 | `CallidescopeCommand.flatMap(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:69` |
-| `CallidescopeCommand.flatMap(…)` | 1 | `MarkdownReportService.renderProjectSection` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:77` |
-| `CallidescopeCommand.resolveOptions` | 1 | `InputService.promptForSelect` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:226` |
-| `CallidescopeCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:319` |
-| `CallidescopeCommand.parseDirectories` | 1 | `InputService.parseCommaDelimitedOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:328` |
-| `CallidescopeCommand.parseFormat` | 1 | `InputService.parseFormat` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:337` |
-| `CallidescopeCommand.parseJson` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:355` |
-| `CallidescopeCommand.parseMarkdown` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:364` |
-| `AddressLookupService.describeProblem` | 1 | `AddressLookupService.map(…)` | `packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:45` |
-| `AddressReportService.map(…)` | 1 | `AddressReportService.toFrame` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:48` |
-| `AddressReportService.map(…)` | 1 | `AddressReportService.toFrame` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:51` |
-| `AddressReportService.renderDepthStacks` | 1 | `AddressReportService.map(…)` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:60` |
-| `AddressReportService.map(…)` | 1 | `ReportService.renderStackTree` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:71` |
-| `AddressReportService.renderReferenceTable` | 1 | `AddressReportService.map(…)` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:92` |
-| `BreadthCommand.resolveAddress` | 1 | `InputService.promptForText` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:66` |
-| `BreadthCommand.resolveOptions` | 1 | `InputService.promptForSelect` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:142` |
-| `BreadthCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:161` |
-| `BreadthCommand.parseDirectories` | 1 | `InputService.parseCommaDelimitedOption` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:170` |
-| `BreadthCommand.parseFormat` | 1 | `InputService.parseFormat` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:179` |
-| `DepthCommand.resolveAddress` | 1 | `InputService.promptForText` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:59` |
-| `DepthCommand.resolveOptions` | 1 | `InputService.promptForSelect` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:86` |
-| `DepthCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:105` |
-| `DepthCommand.parseDirectories` | 1 | `InputService.parseCommaDelimitedOption` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:114` |
-| `DepthCommand.parseFormat` | 1 | `InputService.parseFormat` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:123` |
+| `CallidescopeService.readMaximumDepth` | 1 | `CallidescopeService.reduce(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:123` |
+| `CallidescopeCommand.buildProjectSections` | 1 | `CallidescopeCommand.flatMap(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:70` |
+| `CallidescopeCommand.flatMap(…)` | 1 | `MarkdownReportService.renderProjectSection` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:78` |
+| `CallidescopeCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:393` |
+| `CallidescopeCommand.parseDirectories` | 1 | `InputService.parseCommaDelimitedOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:402` |
+| `CallidescopeCommand.parseFormat` | 1 | `InputService.parseFormat` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:411` |
+| `CallidescopeCommand.parseJson` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:420` |
+| `CallidescopeCommand.parseMarkdown` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:429` |
+| `AddressLookupService.describeProblem` | 1 | `AddressLookupService.map(…)` | `packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:46` |
+| `AddressLookupService.listAddresses` | 1 | `AddressService.listAddresses` | `packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:80` |
+| `AddressLookupService.resolve` | 1 | `AddressService.resolve` | `packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:100` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.toFrame` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:70` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.toFrame` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:73` |
+| `AddressReportService.renderDepthStacks` | 1 | `AddressReportService.map(…)` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:82` |
+| `AddressReportService.map(…)` | 1 | `ReportService.renderStackTree` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:93` |
+| `AddressReportService.renderReferenceTable` | 1 | `AddressReportService.map(…)` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:114` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.buildBreadthPayload` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:194` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.renderBreadth` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:201` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.buildDepthPayload` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:257` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.renderDepth` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:264` |
+| `BreadthCommand.parseAddresses` | 1 | `InputService.parseCommaDelimitedOption` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:197` |
+| `BreadthCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:207` |
+| `BreadthCommand.parseDirectories` | 1 | `InputService.parseCommaDelimitedOption` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:216` |
+| `BreadthCommand.parseFormat` | 1 | `InputService.parseFormat` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:225` |
+| `DepthCommand.parseAddresses` | 1 | `InputService.parseCommaDelimitedOption` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:173` |
+| `DepthCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:183` |
+| `DepthCommand.parseDirectories` | 1 | `InputService.parseCommaDelimitedOption` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:192` |
+| `DepthCommand.parseFormat` | 1 | `InputService.parseFormat` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:201` |
 
 </details>
 
@@ -955,14 +1024,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6379-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-205.51_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6829-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-220.17_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-47-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-23.39_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-24.24_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -971,24 +1040,24 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-32-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-132-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-141-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-10-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-17-8b5cf6?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-19-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-14-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-248-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-91-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-240-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-99-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-230-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-223-0284c7?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-274-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-93-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-257-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-110-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-250-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-230-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-55-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-301-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-518-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-323-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-587-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

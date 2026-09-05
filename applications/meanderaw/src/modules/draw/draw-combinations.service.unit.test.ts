@@ -76,13 +76,14 @@ describe(DrawCombinationsService, () => {
       { expected: 14, type: "cross" },
       // rows 3..12 × (none + brick + ruled)
       { expected: 30, type: "negative" },
-      // rows 2..12 × (none + rung + stagger)
-      { expected: 33, type: "branch" },
+      // rows 2..12 × (none + comb up + rung ×2 + stagger ×4)
+      { expected: 88, type: "branch" },
       // rows 2..12 × (plied over every ply 1..rows + aligned over the same
       // + serpentine over every distinct rotation and flip of each). The
       // family has no unmodified entry — `plied` names that drawing — and
       // serpentine's variant count is not a multiplication, since rotations
-      // of an even partition and flips that name the same ribbon collapse.
+      // of an even partition, flips that name the same ribbon, and flips
+      // that land on a strip with no depth all collapse.
       { expected: 819, type: "parallel" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
       expect(
@@ -91,7 +92,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(1094);
+      expect(combinations).toHaveLength(1149);
     });
 
     it("names every combination distinctly", () => {

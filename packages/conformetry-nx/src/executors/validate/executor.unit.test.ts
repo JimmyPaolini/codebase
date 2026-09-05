@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { resolvePluginService } from "../../plugin-context.utilities";
+import { resolvePluginService } from "../../modules/plugin/plugin-context.utilities";
 
 import validateExecutor from "./executor";
 
@@ -8,7 +8,7 @@ import type { ExecutorContext } from "@nx/devkit";
 
 // The plugin service compiles a whole NestJS graph and reads the workspace;
 // what this executor owns is the argument shuffling around it.
-vi.mock("../../plugin-context.utilities", () => ({
+vi.mock("../../modules/plugin/plugin-context.utilities", () => ({
   resolvePluginService: vi.fn(),
 }));
 

@@ -20,11 +20,14 @@ import type { LanguageModuleLoader } from "@conformetry/validation";
  * graph. The cost is that an Nx workspace installs every language rather than
  * the ones it uses; a library consumer still gets the on-demand behavior.
  *
- * These sit here rather than beside the plugin's other constants because the
- * plugin entry point imports that file for its glob, and anything the entry
- * point reaches is loaded while Nx builds the project graph — before any
- * project has been built. Six workspace packages there is what kept every
- * package in this plugin's closure resolving to TypeScript sources.
+ * These sit in a file of their own rather than in `plugin.constants.ts`
+ * beside them because the plugin entry point imports that file for its glob,
+ * and anything the entry point reaches is loaded while Nx builds the project
+ * graph — before any project has been built. Six workspace packages there is
+ * what kept every package in this plugin's closure resolving to TypeScript
+ * sources. Only `PluginService` reaches this file, so the separation is what
+ * matters, not the directory — which is why it survived the move out of the
+ * `src/` root.
  */
 export const LANGUAGE_MODULE_NAMESPACES: Record<string, unknown> = {
   "@conformetry/json": jsonPackage,

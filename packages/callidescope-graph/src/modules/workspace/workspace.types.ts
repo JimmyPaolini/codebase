@@ -15,6 +15,16 @@ export interface DiscoverProjectsArguments {
    * when empty.
    */
   readonly directories: readonly string[];
+  /**
+   * Decides which projects a run will not trace, judged on the
+   * `tsconfig.json` that would identify each one.
+   *
+   * Applied here rather than only to the files a program yields, because a
+   * `tsconfig.json` an exclusion already names should never be read at all —
+   * one that does not parse, belonging to a directory nobody asked to trace,
+   * is not a reason for the run to say anything.
+   */
+  readonly fileFilter?: FileFilter | undefined;
   readonly workspaceRoot: string;
 }
 

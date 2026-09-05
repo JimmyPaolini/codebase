@@ -513,3 +513,45 @@ graph LR
   file_testing_run_examples_ts --> file_testing_codometer_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `packages/codometer-examples`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 2 |
+| Files | 27 |
+| Calls traced | 1 |
+| Call stacks | 1 |
+| Deepest stack | 2 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 0 |
+
+### Call stacks (depth)
+
+**1. `codometerConfiguration`** — depth 2 · orphan-root
+
+```text
+🚀 codometerConfiguration(context: CodometerConfigurationContext): CodometerConfiguration [packages/codometer-examples/codometer.config.ts:111]
+   ↳ Everything codometer needs to know about this package in particular.
+  └─> buildPackageConfiguration(): CodometerConfiguration [packages/codometer-examples/codometer.config.ts:73]
+     ↳ What a run measuring this package itself measures.
+```
+
+### Module spread
+
+None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `codometerConfiguration` | 1 | `buildPackageConfiguration` | `packages/codometer-examples/codometer.config.ts:111` |
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

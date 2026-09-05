@@ -56,7 +56,7 @@ Call stacks traced through `packages/conformetry-jupyter`, deepest first. Each f
 | Measure | Value |
 | --- | --- |
 | Callables | 22 |
-| Files | 8 |
+| Files | 9 |
 | Calls traced | 28 |
 | Call stacks | 1 |
 | Deepest stack | 13 |

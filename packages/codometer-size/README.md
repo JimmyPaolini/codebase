@@ -32,8 +32,8 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `SizeService.measureFile` | 2 | `SizeService.compress`, `UnreadableTargetFileError.constructor` | `packages/codometer-size/src/modules/size/size.service.ts:58` |
-| `SizeService.analyze` | 1 | `SizeService.measureFile` | `packages/codometer-size/src/modules/size/size.service.ts:82` |
+| `SizeService.measureFile` | 2 | `SizeService.compress`, `UnreadableTargetFileError.constructor` | `packages/codometer-size/src/modules/size/size.service.ts:61` |
+| `SizeService.analyze` | 1 | `SizeService.measureFile` | `packages/codometer-size/src/modules/size/size.service.ts:85` |
 
 ### Possibly misplaced
 

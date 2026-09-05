@@ -44,12 +44,15 @@ export type MeanderType =
  * member would be dead code no `COMPATIBLE_MODIFIERS` entry could point to.
  */
 export type Modifier =
+  | { readonly branches: number; readonly name: "stagger" }
   | {
       readonly flip?: SerpentineFlip;
       readonly name: "serpentine";
       readonly offset?: number;
       readonly strands: number;
     }
+  | { readonly isLeftward: boolean; readonly name: "rung" }
+  | { readonly isUpward: boolean; readonly name: "comb" }
   | { readonly name: "aligned"; readonly strands: number }
   | { readonly name: "alternated"; readonly period: number }
   | { readonly name: "brick" }
@@ -60,11 +63,9 @@ export type Modifier =
   | { readonly name: "interrupted" }
   | { readonly name: "plied"; readonly strands: number }
   | { readonly name: "ruled" }
-  | { readonly name: "rung" }
   | { readonly name: "spin" }
   | { readonly name: "spin-flip" }
-  | { readonly name: "split" }
-  | { readonly name: "stagger" };
+  | { readonly name: "split" };
 
 /**
  * The per-type contract `MeanderGenerationService` dispatches through:

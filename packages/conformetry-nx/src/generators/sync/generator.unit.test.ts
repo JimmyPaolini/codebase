@@ -5,7 +5,7 @@ import {
   resolveGeneratorService,
   resolveOptionsService,
   resolveProjectsService,
-} from "../../plugin-context.utilities";
+} from "../../modules/plugin/plugin-context.utilities";
 
 import syncGenerator from "./generator";
 
@@ -13,7 +13,7 @@ import type { Tree } from "@nx/devkit";
 
 // The emitted plugin is the generator service's business and is tested there;
 // what this entry point owns is writing the result through the tree.
-vi.mock("../../plugin-context.utilities", () => ({
+vi.mock("../../modules/plugin/plugin-context.utilities", () => ({
   resolveGeneratorService: vi.fn(),
   resolveOptionsService: vi.fn(),
   resolveProjectsService: vi.fn(),

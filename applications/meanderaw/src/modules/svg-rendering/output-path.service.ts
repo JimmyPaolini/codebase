@@ -5,6 +5,7 @@ import { UNMODIFIED_VARIANT_NAME } from "./svg-rendering.constants";
 import type {
   GenerationParameters,
   MeanderType,
+  Modifier,
 } from "../meander-generation/meander-generation.types";
 
 /**
@@ -60,28 +61,71 @@ export class OutputPathService {
       return `${UNMODIFIED_VARIANT_NAME}-${suffix}`;
     }
 
+    return `${this.modifierSlug(modifier)}-${suffix}`;
+  }
+
+  /**
+   * What one modifier is called in a filename: its own name, and the
+   * parameter it carries where it carries one.
+   *
+   * A parameter-carrying modifier has to say its parameter here, or the
+   * sweep's own values would collide on one path and `CollidingPathsError`
+   * would fire rather than a drawing being written. Two spellings, and which
+   * one a modifier takes is decided by whether the value reads on its own:
+   * `dot`'s shapes and `comb`'s and `rung`'s directions are words, so they
+   * follow the name unadorned, while a bare number would say nothing — so
+   * `alternated`, `stagger`, and the ply-carrying modifiers name their
+   * parameter before it. The last of those are spelled by
+   * {@link plySlug}, since all three spell it the same way and one of them
+   * carries a second parameter besides.
+   */
+  private modifierSlug(modifier: Modifier): string {
     if (modifier.name === "alternated") {
-      return `alternated-period-${modifier.period}-${suffix}`;
+      return `alternated-period-${modifier.period}`;
+    }
+
+    if (modifier.name === "comb") {
+      return `comb-${modifier.isUpward ? "upward" : "downward"}`;
     }
 
     if (modifier.name === "dot") {
-      return `dot-${modifier.shape}-${suffix}`;
+      return `dot-${modifier.shape}`;
+    }
+
+    if (modifier.name === "rung") {
+      return `rung-${modifier.isLeftward ? "leftward" : "rightward"}`;
+    }
+
+    if (modifier.name === "stagger") {
+      return `stagger-branches-${modifier.branches}`;
     }
 
     if ("strands" in modifier) {
-      const flip =
-        modifier.name === "serpentine" && modifier.flip !== undefined
-          ? `-flip-${modifier.flip}`
-          : "";
-      const offset =
-        modifier.name === "serpentine" && modifier.offset !== undefined
-          ? `-offset-${modifier.offset}`
-          : "";
-
-      return `${modifier.name}-strands-${modifier.strands}${flip}${offset}-${suffix}`;
+      return this.plySlug(modifier);
     }
 
-    return `${modifier.name}-${suffix}`;
+    return modifier.name;
+  }
+
+  /**
+   * What one ply-carrying modifier is called in a filename.
+   *
+   * All three name their strand count the same way. `serpentine` is the one
+   * that carries more than one parameter, and it names each in turn —
+   * `serpentine-strands-4-flip-alternating-offset-2`. Both of its extra axes
+   * are omitted at their defaults, which is what keeps the drawing that
+   * rotates nothing and turns nothing over on the same bare
+   * `serpentine-strands-N` name it had before either axis existed.
+   */
+  private plySlug(modifier: Extract<Modifier, { strands: number }>): string {
+    const suffix =
+      modifier.name === "serpentine"
+        ? `${modifier.flip === undefined ? "" : `-flip-${modifier.flip}`}${
+            modifier.offset === undefined ? "" : `-offset-${modifier.offset}`
+          }`
+        : "";
+
+    return `${modifier.name}-strands-${modifier.strands}${suffix}`;
   }
 
   // 🌎 Public Methods

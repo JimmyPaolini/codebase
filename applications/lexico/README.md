@@ -99,13 +99,13 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
 
 | Measure | Value |
 | --- | --- |
-| Callables | 210 |
-| Files | 34 |
-| Calls traced | 114 |
-| Call stacks | 30 |
+| Callables | 211 |
+| Files | 35 |
+| Calls traced | 129 |
+| Call stacks | 24 |
 | Deepest stack | 9 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 57 |
+| Unfollowable calls | 68 |
 
 ### Call stacks (depth)
 
@@ -131,7 +131,26 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
                    ↳ Helper to get person display string.
 ```
 
-**2. `WordForms`** — depth 8 · orphan-root
+**2. `AdjectiveFormsTable`** — depth 8 · orphan-root
+
+```text
+🚀 AdjectiveFormsTable(properties: AdjectiveFormsTableProperties): null | React.ReactElement [applications/lexico/src/components/entry/adjective-forms-table.tsx:73]
+   ↳ Render adjective forms with degree and gender tab navigation.
+  └─> useMemo(…)(): AdjectiveFormGroup[] [applications/lexico/src/components/entry/adjective-forms-table.tsx:77]
+    └─> groupAdjectiveForms(forms: AdjectiveForm[]): AdjectiveFormGroup[] [applications/lexico/src/components/entry/adjective-forms-table.tsx:165]
+       ↳ Group adjective forms by degree -\> gender for tabs.
+      └─> buildDegreeGroupsFromForms(forms: AdjectiveForm[]): AdjectiveFormGroup[] [applications/lexico/src/components/entry/adjective-forms-table.tsx:140]
+         ↳ Build degree groups when the forms include degree data.
+        └─> groupByGender(forms: AdjectiveForm[]): AdjectiveFormGroup["genders"] [applications/lexico/src/components/entry/adjective-forms-table.tsx:175]
+           ↳ Group forms by gender and restructure into cells.
+          └─> restructureAdjectiveForms(forms: AdjectiveForm[]): FormCellProperties[] [applications/lexico/src/components/entry/adjective-forms-table.tsx:236]
+             ↳ Restructure adjective forms for a specific gender into cells.
+            └─> flatMap(…)(this: undefined, caseName: string): [FormCellProperties, FormCellProperties] [applications/lexico/src/components/entry/adjective-forms-table.tsx:252]
+              └─> buildAdjectiveCaseRow(…): [FormCellProperties, FormCellProperties] [applications/lexico/src/components/entry/adjective-forms-table.tsx:120]
+                 ↳ Build the singular + plural cell pair for one grammatical case.
+```
+
+**3. `WordForms`** — depth 8 · orphan-root
 
 ```text
 🚀 WordForms(properties: WordFormsProperties): ReactNode [applications/lexico/src/routes/word.$id.tsx:51]
@@ -152,36 +171,64 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
                  ↳ Helper to get person display string.
 ```
 
-**3. `groupAdjectiveForms`** — depth 5 · orphan-root
-
-```text
-🚀 groupAdjectiveForms(forms: AdjectiveForm[]): AdjectiveFormGroup[] [applications/lexico/src/components/entry/adjective-forms-table.tsx:165]
-   ↳ Group adjective forms by degree -\> gender for tabs.
-  └─> buildDegreeGroupsFromForms(forms: AdjectiveForm[]): AdjectiveFormGroup[] [applications/lexico/src/components/entry/adjective-forms-table.tsx:140]
-     ↳ Build degree groups when the forms include degree data.
-    └─> groupByGender(forms: AdjectiveForm[]): AdjectiveFormGroup["genders"] [applications/lexico/src/components/entry/adjective-forms-table.tsx:175]
-       ↳ Group forms by gender and restructure into cells.
-      └─> restructureAdjectiveForms(forms: AdjectiveForm[]): FormCellProperties[] [applications/lexico/src/components/entry/adjective-forms-table.tsx:236]
-         ↳ Restructure adjective forms for a specific gender into cells.
-        └─> flatMap(…)(this: undefined, caseName: string): [FormCellProperties, FormCellProperties] [applications/lexico/src/components/entry/adjective-forms-table.tsx:252]
-```
-
 <details>
-<summary>27 more call stacks</summary>
+<summary>21 more call stacks</summary>
 
-**4. `groupVerbForms`** — depth 4 · orphan-root
+**4. `VerbFormsTable`** — depth 7 · orphan-root
 
 ```text
-🚀 groupVerbForms(forms: VerbForm[]): VerbFormGroup[] [applications/lexico/src/components/entry/verb-forms-table.tsx:165]
-   ↳ Group verb forms by mood -\> tense -\> voice for nested tabs.
-  └─> buildVerbFormTenses(moodGroup: Record<string, Record<string, VerbForm[]>>): VerbFormGroup["tenses"] [applications/lexico/src/components/entry/verb-forms-table.tsx:114]
-     ↳ Convert a mood's nested tense/voice record into the ordered tenses array.
-    └─> restructureVerbForms(forms: VerbForm[]): FormCellProperties[] [applications/lexico/src/components/entry/verb-forms-table.tsx:239]
-       ↳ Restructure verb forms for a specific mood/tense/voice into cells.
-      └─> some(…)(form: VerbForm): string | undefined [applications/lexico/src/components/entry/verb-forms-table.tsx:248]
+🚀 VerbFormsTable(properties: VerbFormsTableProperties): null | React.ReactElement [applications/lexico/src/components/entry/verb-forms-table.tsx:261]
+   ↳ Render verb forms with mood, tense, and voice tab navigation.
+  └─> useMemo(…)(): VerbFormGroup[] [applications/lexico/src/components/entry/verb-forms-table.tsx:265]
+    └─> groupVerbForms(forms: VerbForm[]): VerbFormGroup[] [applications/lexico/src/components/entry/verb-forms-table.tsx:165]
+       ↳ Group verb forms by mood -\> tense -\> voice for nested tabs.
+      └─> buildVerbFormTenses(moodGroup: Record<string, Record<string, VerbForm[]>>): VerbFormGroup["tenses"] [applications/lexico/src/components/entry/verb-forms-table.tsx:114]
+         ↳ Convert a mood's nested tense/voice record into the ordered tenses array.
+        └─> restructureVerbForms(forms: VerbForm[]): FormCellProperties[] [applications/lexico/src/components/entry/verb-forms-table.tsx:239]
+           ↳ Restructure verb forms for a specific mood/tense/voice into cells.
+          └─> flatMap(…)(this: undefined, person: string): FormCellProperties[] [applications/lexico/src/components/entry/verb-forms-table.tsx:253]
+            └─> buildPersonCells(person: string, byPersonNumber: Record<string, string>): FormCellProperties[] [applications/lexico/src/components/entry/verb-forms-table.tsx:87]
+               ↳ Build the singular + plural cell pair for one grammatical person.
 ```
 
-**5. `SearchPage`** — depth ≥ 4 · orphan-root
+**5. `LibraryPage`** — depth ≥ 6 · orphan-root
+
+```text
+🚀 LibraryPage(): ReactNode [applications/lexico/src/routes/library.tsx:270]
+   ↳ Library page component that displays and manages user's saved texts.
+  └─> useLibraryPage(): LibraryPageState [applications/lexico/src/routes/hooks/useLibraryPage.ts:67]
+     ↳ Hook managing the library page state and operations. Handles text CRUD operations, form state, and UI dialogs.
+    └─> useCallback(…)(): Promise<void> [applications/lexico/src/routes/hooks/useLibraryPage.ts:95]
+      └─> updateTextAsync(…): Promise<void> [applications/lexico/src/routes/hooks/useLibraryPage.ts:265]
+         ↳ Updates the currently edited text and synchronizes the local sorted collection.
+        └─> setTexts(…)(previous: UserText[]): UserText[] [applications/lexico/src/routes/hooks/useLibraryPage.ts:292]
+          └─> map(…)(t: UserText): UserText [applications/lexico/src/routes/hooks/useLibraryPage.ts:293]
+```
+
+**6. `NounFormsTable`** — depth 5 · orphan-root
+
+```text
+🚀 NounFormsTable(properties: NounFormsTableProperties): React.ReactElement [applications/lexico/src/components/entry/noun-forms-table.tsx:74]
+   ↳ Render noun forms in a singular/plural table.
+  └─> useMemo(…)(): FormCellProperties[] [applications/lexico/src/components/entry/noun-forms-table.tsx:78]
+    └─> restructureNounForms(forms: NounForm[]): FormCellProperties[] [applications/lexico/src/components/entry/noun-forms-table.tsx:94]
+       ↳ Restructure noun forms into a 2-column grid (singular, plural) Each row is a case, columns are singular and plural.
+      └─> flatMap(…)(this: undefined, caseName: string): [FormCellProperties, FormCellProperties] [applications/lexico/src/components/entry/noun-forms-table.tsx:108]
+        └─> buildNounCaseRow(…): [FormCellProperties, FormCellProperties] [applications/lexico/src/components/entry/noun-forms-table.tsx:54]
+           ↳ Build the singular + plural cell pair for one grammatical case.
+```
+
+**7. `BookmarksPage`** — depth ≥ 4 · orphan-root
+
+```text
+🚀 BookmarksPage(): ReactNode [applications/lexico/src/routes/bookmarks.tsx:103]
+   ↳ Bookmarks page component that displays user's bookmarked entries.
+  └─> useCallback(…)(entryId: string): Promise<void> [applications/lexico/src/routes/bookmarks.tsx:127]
+    └─> setBookmarks(…)(previous: BookmarkedEntry[]): BookmarkedEntry[] [applications/lexico/src/routes/bookmarks.tsx:131]
+      └─> filter(…)(b: BookmarkedEntry): boolean [applications/lexico/src/routes/bookmarks.tsx:131]
+```
+
+**8. `SearchPage`** — depth ≥ 4 · orphan-root
 
 ```text
 🚀 SearchPage(): ReactNode [applications/lexico/src/routes/search.tsx:68]
@@ -192,7 +239,7 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
       └─> setTimeout(…)(): void [applications/lexico/src/routes/search.tsx:207]
 ```
 
-**6. `FormCell`** — depth 3 · orphan-root
+**9. `FormCell`** — depth 3 · orphan-root
 
 ```text
 🚀 FormCell(properties: FormCellProperties): React.ReactElement [applications/lexico/src/components/entry/form-cell.tsx:57]
@@ -202,17 +249,7 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
     └─> cn(...inputs: ClassValue[]): string [packages/lexico-components/src/lib/utils.ts:4]
 ```
 
-**7. `AdjectiveFormsTable`** — depth 3 · orphan-root
-
-```text
-🚀 AdjectiveFormsTable(properties: AdjectiveFormsTableProperties): null | React.ReactElement [applications/lexico/src/components/entry/adjective-forms-table.tsx:73]
-   ↳ Render adjective forms with degree and gender tab navigation.
-  └─> renderAdjectiveGenderContent(…): ReactElement<unknown, string | JSXElementConstructor<any>> | null [applications/lexico/src/components/entry/adjective-forms-table.tsx:201]
-     ↳ Render the gender tabs (and forms table) for the currently selected degree.
-    └─> map(…)(gender: { cells: FormCellProperties[]; gender: string; }): string [applications/lexico/src/components/entry/adjective-forms-table.tsx:209]
-```
-
-**8. `PrincipalParts`** — depth 3 · orphan-root
+**10. `PrincipalParts`** — depth 3 · orphan-root
 
 ```text
 🚀 PrincipalParts(properties: PrincipalPartsProperties): ReactElement [applications/lexico/src/components/entry/principal-parts.tsx:125]
@@ -222,33 +259,13 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
     └─> map(…)(principalPart: PrincipalPart): string [applications/lexico/src/components/entry/principal-parts.tsx:199]
 ```
 
-**9. `BookmarksPage`** — depth ≥ 3 · orphan-root
+**11. `Translations`** — depth 3 · orphan-root
 
 ```text
-🚀 BookmarksPage(): ReactNode [applications/lexico/src/routes/bookmarks.tsx:103]
-   ↳ Bookmarks page component that displays user's bookmarked entries.
-  └─> useCallback(…)(entryId: string): Promise<void> [applications/lexico/src/routes/bookmarks.tsx:127]
-    └─> setBookmarks(…)(previous: BookmarkedEntry[]): BookmarkedEntry[] [applications/lexico/src/routes/bookmarks.tsx:131]
-```
-
-**10. `updateTextAsync`** — depth ≥ 3 · orphan-root
-
-```text
-🚀 updateTextAsync(…): Promise<void> [applications/lexico/src/routes/hooks/useLibraryPage.ts:265]
-   ↳ Updates the currently edited text and synchronizes the local sorted collection.
-  └─> setTexts(…)(previous: UserText[]): UserText[] [applications/lexico/src/routes/hooks/useLibraryPage.ts:292]
-    └─> map(…)(t: UserText): UserText [applications/lexico/src/routes/hooks/useLibraryPage.ts:293]
-```
-
-**11. `LibraryPage`** — depth 3 · orphan-root
-
-```text
-🚀 LibraryPage(): ReactNode [applications/lexico/src/routes/library.tsx:270]
-   ↳ Library page component that displays and manages user's saved texts.
-  └─> useLibraryPage(): LibraryPageState [applications/lexico/src/routes/hooks/useLibraryPage.ts:67]
-     ↳ Hook managing the library page state and operations. Handles text CRUD operations, form state, and UI dialogs.
-    └─> useLibraryPageStateInitialization(): LibraryPageHookState [applications/lexico/src/routes/hooks/useLibraryPage.ts:315]
-       ↳ Initializes all local state used by the library page hook.
+🚀 Translations(properties: TranslationsProperties): ReactElement [applications/lexico/src/components/entry/translations.tsx:26]
+   ↳ Renders translations inline, collapsing entries after the first two when expandable.
+  └─> map(…)(t: string): ReactElement<unknown, string | JSXElementConstructor<any>> [applications/lexico/src/components/entry/translations.tsx:57]
+    └─> renderTranslation(translation: string): ReactElement [applications/lexico/src/components/entry/translations.tsx:38]
 ```
 
 **12. `PronunciationButton`** — depth ≥ 3 · orphan-root
@@ -267,15 +284,7 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
   └─> cn(...inputs: ClassValue[]): string [packages/lexico-components/src/lib/utils.ts:4]
 ```
 
-**14. `ApplicationSidebar`** — depth 2 · orphan-root
-
-```text
-🚀 ApplicationSidebar(properties: Readonly<ApplicationSidebarProperties>): ReactNode [applications/lexico/src/routes/__root.tsx:112]
-   ↳ Application sidebar component with navigation items.
-  └─> useSidebar(): SidebarContextProperties [packages/lexico-components/src/components/ui/sidebar.tsx:46]
-```
-
-**15. `Identifier`** — depth 2 · orphan-root
+**14. `Identifier`** — depth 2 · orphan-root
 
 ```text
 🚀 Identifier(properties: IdentifierProperties): ReactElement [applications/lexico/src/components/entry/identifier.tsx:171]
@@ -283,7 +292,7 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
   └─> cn(...inputs: ClassValue[]): string [packages/lexico-components/src/lib/utils.ts:4]
 ```
 
-**16. `FormTabs`** — depth 2 · orphan-root
+**15. `FormTabs`** — depth 2 · orphan-root
 
 ```text
 🚀 FormTabs(properties: FormTabsProperties): React.ReactElement [applications/lexico/src/components/entry/form-tabs.tsx:32]
@@ -291,7 +300,7 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
   └─> cn(...inputs: ClassValue[]): string [packages/lexico-components/src/lib/utils.ts:4]
 ```
 
-**17. `FormsTable`** — depth 2 · orphan-root
+**16. `FormsTable`** — depth 2 · orphan-root
 
 ```text
 🚀 FormsTable(properties: FormsTableProperties): React.ReactElement [applications/lexico/src/components/entry/forms-table.tsx:27]
@@ -299,39 +308,15 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
   └─> cn(...inputs: ClassValue[]): string [packages/lexico-components/src/lib/utils.ts:4]
 ```
 
-**18. `NounFormsTable`** — depth 2 · orphan-root
+**17. `ApplicationSidebar`** — depth 2 · orphan-root
 
 ```text
-🚀 NounFormsTable(properties: NounFormsTableProperties): React.ReactElement [applications/lexico/src/components/entry/noun-forms-table.tsx:74]
-   ↳ Render noun forms in a singular/plural table.
-  └─> useMemo(…)(): FormCellProperties[] [applications/lexico/src/components/entry/noun-forms-table.tsx:78]
+🚀 ApplicationSidebar(properties: Readonly<ApplicationSidebarProperties>): ReactNode [applications/lexico/src/routes/__root.tsx:112]
+   ↳ Application sidebar component with navigation items.
+  └─> useSidebar(): SidebarContextProperties [packages/lexico-components/src/components/ui/sidebar.tsx:46]
 ```
 
-**19. `restructureNounForms`** — depth 2 · orphan-root
-
-```text
-🚀 restructureNounForms(forms: NounForm[]): FormCellProperties[] [applications/lexico/src/components/entry/noun-forms-table.tsx:94]
-   ↳ Restructure noun forms into a 2-column grid (singular, plural) Each row is a case, columns are singular and plural.
-  └─> flatMap(…)(this: undefined, caseName: string): [FormCellProperties, FormCellProperties] [applications/lexico/src/components/entry/noun-forms-table.tsx:108]
-```
-
-**20. `Translations`** — depth 2 · orphan-root
-
-```text
-🚀 Translations(properties: TranslationsProperties): ReactElement [applications/lexico/src/components/entry/translations.tsx:26]
-   ↳ Renders translations inline, collapsing entries after the first two when expandable.
-  └─> cn(...inputs: ClassValue[]): string [packages/lexico-components/src/lib/utils.ts:4]
-```
-
-**21. `VerbFormsTable`** — depth 2 · orphan-root
-
-```text
-🚀 VerbFormsTable(properties: VerbFormsTableProperties): null | React.ReactElement [applications/lexico/src/components/entry/verb-forms-table.tsx:261]
-   ↳ Render verb forms with mood, tense, and voice tab navigation.
-  └─> useMemo(…)(): VerbFormGroup[] [applications/lexico/src/components/entry/verb-forms-table.tsx:265]
-```
-
-**22. `EntryCard`** — depth 2 · orphan-root
+**18. `EntryCard`** — depth 2 · orphan-root
 
 ```text
 🚀 EntryCard(properties: EntryCardProperties): ReactElement [applications/lexico/src/components/entry/entry-card.tsx:104]
@@ -339,7 +324,7 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
   └─> cn(...inputs: ClassValue[]): string [packages/lexico-components/src/lib/utils.ts:4]
 ```
 
-**23. `BookmarksList`** — depth 2 · orphan-root
+**19. `BookmarksList`** — depth 2 · orphan-root
 
 ```text
 🚀 BookmarksList(properties: BookmarksListProperties): ReactNode [applications/lexico/src/routes/bookmarks.tsx:83]
@@ -347,23 +332,7 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
   └─> map(…)(entry: BookmarkedEntry): JSX.Element [applications/lexico/src/routes/bookmarks.tsx:87]
 ```
 
-**24. `createTextAsync`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 createTextAsync(…): Promise<void> [applications/lexico/src/routes/hooks/useLibraryPage.ts:173]
-   ↳ Creates a new user text and updates local state after a successful mutation.
-  └─> setTexts(…)(previous: UserText[]): UserText[] [applications/lexico/src/routes/hooks/useLibraryPage.ts:198]
-```
-
-**25. `deleteTextAsync`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 deleteTextAsync(…): Promise<void> [applications/lexico/src/routes/hooks/useLibraryPage.ts:218]
-   ↳ Deletes a user text and clears selection when the deleted text was active.
-  └─> setTexts(…)(previous: UserText[]): UserText[] [applications/lexico/src/routes/hooks/useLibraryPage.ts:228]
-```
-
-**26. `LibraryTextGrid`** — depth 2 · orphan-root
+**20. `LibraryTextGrid`** — depth 2 · orphan-root
 
 ```text
 🚀 LibraryTextGrid(…): ReactNode [applications/lexico/src/routes/library.tsx:438]
@@ -371,7 +340,7 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
   └─> map(…)(text: UserText): JSX.Element [applications/lexico/src/routes/library.tsx:453]
 ```
 
-**27. `anonymous`** — depth 2 · orphan-root
+**21. `anonymous`** — depth 2 · orphan-root
 
 ```text
 🚀 anonymous(): undefined [applications/lexico/src/routes/settings.tsx:67]
@@ -379,21 +348,21 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
      ↳ Handle sign in.
 ```
 
-**28. `anonymous`** — depth 2 · orphan-root
+**22. `anonymous`** — depth 2 · orphan-root
 
 ```text
 🚀 anonymous(): undefined [applications/lexico/src/routes/settings.tsx:92]
   └─> handleSignOut(): Promise<void> [applications/lexico/src/routes/settings.tsx:41]
 ```
 
-**29. `anonymous`** — depth 2 · orphan-root
+**23. `anonymous`** — depth 2 · orphan-root
 
 ```text
 🚀 anonymous(): undefined [applications/lexico/src/routes/settings.tsx:129]
   └─> handleDeleteAccount(): Promise<void> [applications/lexico/src/routes/settings.tsx:46]
 ```
 
-**30. `WordPage`** — depth ≥ 2 · orphan-root
+**24. `WordPage`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 WordPage(): ReactNode [applications/lexico/src/routes/word.$id.tsx:78]
@@ -416,7 +385,7 @@ None.
 | `autoDetectFormTransform` | 6 | `isVerbForms`, `transformVerbForms`, `isAdjectiveForms`, `transformAdjectiveForms`, `isNounForms`, `transformNounForms` | `applications/lexico/src/lib/forms.ts:153` |
 
 <details>
-<summary>53 more callables</summary>
+<summary>68 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -430,32 +399,28 @@ None.
 | `restructureVerbForms` | 3 | `some(…)`, `map(…)`, `flatMap(…)` | `applications/lexico/src/components/entry/verb-forms-table.tsx:239` |
 | `BookmarksPage` | 3 | `useCallback(…)`, `useEffect(…)`, `useCallback(…)` | `applications/lexico/src/routes/bookmarks.tsx:103` |
 | `WordPage` | 3 | `useEffect(…)`, `useCallback(…)`, `map(…)` | `applications/lexico/src/routes/word.$id.tsx:78` |
-| `ApplicationSidebar` | 2 | `useSidebar`, `map(…)` | `applications/lexico/src/routes/__root.tsx:112` |
 | `FormCell` | 2 | `computeBorderClasses`, `cn` | `applications/lexico/src/components/entry/form-cell.tsx:57` |
 | `FormsTable` | 2 | `cn`, `map(…)` | `applications/lexico/src/components/entry/forms-table.tsx:27` |
 | `restructureAdjectiveForms` | 2 | `flatMap(…)`, `filter(…)` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:236` |
 | `restructureNounForms` | 2 | `flatMap(…)`, `filter(…)` | `applications/lexico/src/components/entry/noun-forms-table.tsx:94` |
-| `PrincipalParts` | 2 | `getPrincipalPartsLabel`, `cn` | `applications/lexico/src/components/entry/principal-parts.tsx:125` |
 | `groupVerbForms` | 2 | `buildVerbGroupRecord`, `buildVerbFormTenses` | `applications/lexico/src/components/entry/verb-forms-table.tsx:165` |
 | `transformNonFiniteForms` | 2 | `collectInfinitiveForms`, `collectParticipleForms` | `applications/lexico/src/lib/forms.ts:441` |
+| `ApplicationSidebar` | 2 | `useSidebar`, `map(…)` | `applications/lexico/src/routes/__root.tsx:112` |
+| `PrincipalParts` | 2 | `getPrincipalPartsLabel`, `cn` | `applications/lexico/src/components/entry/principal-parts.tsx:125` |
 | `Logo` | 1 | `cn` | `applications/lexico/src/components/layout/logo.tsx:18` |
 | `Identifier` | 1 | `cn` | `applications/lexico/src/components/entry/identifier.tsx:171` |
 | `computeBorderClasses` | 1 | `cn` | `applications/lexico/src/components/entry/form-cell.tsx:43` |
+| `useMemo(…)` | 1 | `groupAdjectiveForms` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:77` |
 | `buildDegreeGroupsFromForms` | 1 | `groupByGender` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:140` |
 | `groupByGender` | 1 | `restructureAdjectiveForms` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:175` |
 | `renderAdjectiveGenderContent` | 1 | `map(…)` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:201` |
+| `flatMap(…)` | 1 | `buildAdjectiveCaseRow` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:252` |
 | `NounFormsTable` | 1 | `useMemo(…)` | `applications/lexico/src/components/entry/noun-forms-table.tsx:74` |
-| `getPrincipalPartsLabel` | 1 | `map(…)` | `applications/lexico/src/components/entry/principal-parts.tsx:194` |
+| `useMemo(…)` | 1 | `restructureNounForms` | `applications/lexico/src/components/entry/noun-forms-table.tsx:78` |
+| `flatMap(…)` | 1 | `buildNounCaseRow` | `applications/lexico/src/components/entry/noun-forms-table.tsx:108` |
 | `buildVerbFormTenses` | 1 | `restructureVerbForms` | `applications/lexico/src/components/entry/verb-forms-table.tsx:114` |
-| `EntryCard` | 1 | `cn` | `applications/lexico/src/components/entry/entry-card.tsx:104` |
-| `BookmarksList` | 1 | `map(…)` | `applications/lexico/src/routes/bookmarks.tsx:83` |
-| `useCallback(…)` | 1 | `setBookmarks(…)` | `applications/lexico/src/routes/bookmarks.tsx:127` |
-| `createTextAsync` | 1 | `setTexts(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:173` |
-| `deleteTextAsync` | 1 | `setTexts(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:218` |
-| `updateTextAsync` | 1 | `setTexts(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:265` |
-| `setTexts(…)` | 1 | `map(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:292` |
-| `LibraryPage` | 1 | `useLibraryPage` | `applications/lexico/src/routes/library.tsx:270` |
-| `LibraryTextGrid` | 1 | `map(…)` | `applications/lexico/src/routes/library.tsx:438` |
+| `flatMap(…)` | 1 | `buildPersonCells` | `applications/lexico/src/components/entry/verb-forms-table.tsx:253` |
+| `useMemo(…)` | 1 | `groupVerbForms` | `applications/lexico/src/components/entry/verb-forms-table.tsx:265` |
 | `transformForms` | 1 | `dispatchFormTransform` | `applications/lexico/src/lib/forms.ts:100` |
 | `collectParticipleForms` | 1 | `collectParticipialTenseForms` | `applications/lexico/src/lib/forms.ts:218` |
 | `collectPersonNumberForms` | 1 | `personDisplay` | `applications/lexico/src/lib/forms.ts:244` |
@@ -463,6 +428,25 @@ None.
 | `transformIndicativeForms` | 1 | `collectPersonNumberForms` | `applications/lexico/src/lib/forms.ts:413` |
 | `transformSubjunctiveForms` | 1 | `collectPersonNumberForms` | `applications/lexico/src/lib/forms.ts:459` |
 | `transformVerbalNounForms` | 1 | `collectVerbalNounCaseForms` | `applications/lexico/src/lib/forms.ts:487` |
+| `getPrincipalPartsLabel` | 1 | `map(…)` | `applications/lexico/src/components/entry/principal-parts.tsx:194` |
+| `map(…)` | 1 | `renderTranslation` | `applications/lexico/src/components/entry/translations.tsx:57` |
+| `map(…)` | 1 | `renderTranslation` | `applications/lexico/src/components/entry/translations.tsx:66` |
+| `map(…)` | 1 | `renderTranslation` | `applications/lexico/src/components/entry/translations.tsx:71` |
+| `EntryCard` | 1 | `cn` | `applications/lexico/src/components/entry/entry-card.tsx:104` |
+| `BookmarksList` | 1 | `map(…)` | `applications/lexico/src/routes/bookmarks.tsx:83` |
+| `useCallback(…)` | 1 | `setBookmarks(…)` | `applications/lexico/src/routes/bookmarks.tsx:127` |
+| `setBookmarks(…)` | 1 | `filter(…)` | `applications/lexico/src/routes/bookmarks.tsx:131` |
+| `useCallback(…)` | 1 | `fetchTextsAsync` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:71` |
+| `useCallback(…)` | 1 | `createTextAsync` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:81` |
+| `useCallback(…)` | 1 | `updateTextAsync` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:95` |
+| `useCallback(…)` | 1 | `deleteTextAsync` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:110` |
+| `createTextAsync` | 1 | `setTexts(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:173` |
+| `deleteTextAsync` | 1 | `setTexts(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:218` |
+| `setTexts(…)` | 1 | `filter(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:228` |
+| `updateTextAsync` | 1 | `setTexts(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:265` |
+| `setTexts(…)` | 1 | `map(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:292` |
+| `LibraryPage` | 1 | `useLibraryPage` | `applications/lexico/src/routes/library.tsx:270` |
+| `LibraryTextGrid` | 1 | `map(…)` | `applications/lexico/src/routes/library.tsx:438` |
 | `SearchResultsList` | 1 | `map(…)` | `applications/lexico/src/routes/search.tsx:165` |
 | `map(…)` | 1 | `transformForms` | `applications/lexico/src/routes/search.tsx:170` |
 | `useDebounce` | 1 | `useEffect(…)` | `applications/lexico/src/routes/search.tsx:203` |
@@ -507,7 +491,6 @@ graph LR
 graph LR
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
-  file_src_client_tsx["src/client.tsx"]
   file_src_components_entry_adjective_forms_table_tsx["src/components/entry/adjective-forms-table.tsx"]
   file_src_components_entry_entry_card_tsx["src/components/entry/entry-card.tsx"]
   file_src_components_entry_form_cell_tsx["src/components/entry/form-cell.tsx"]
@@ -524,9 +507,11 @@ graph LR
   file_src_components_PronunciationButton_tsx["src/components/PronunciationButton.tsx"]
   file_src_lib_auth_ts["src/lib/auth.ts"]
   file_src_lib_bookmarks_ts["src/lib/bookmarks.ts"]
+  file_src_lib_client_tsx["src/lib/client.tsx"]
   file_src_lib_forms_ts["src/lib/forms.ts"]
   file_src_lib_library_ts["src/lib/library.ts"]
   file_src_lib_pronunciation_ts["src/lib/pronunciation.ts"]
+  file_src_lib_routeTree_gen_ts["src/lib/routeTree.gen.ts"]
   file_src_lib_search_ts["src/lib/search.ts"]
   file_src_lib_types_ts["src/lib/types.ts"]
   file_src_router_tsx["src/router.tsx"]
@@ -539,7 +524,6 @@ graph LR
   file_src_routes_settings_tsx["src/routes/settings.tsx"]
   file_src_routes_tools_tsx["src/routes/tools.tsx"]
   file_src_routes_word__id_tsx["src/routes/word.$id.tsx"]
-  file_src_routeTree_gen_ts["src/routeTree.gen.ts"]
   file_vite_config_mts["vite.config.mts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_components_entry_adjective_forms_table_tsx --> file_src_components_entry_form_cell_tsx
@@ -568,8 +552,17 @@ graph LR
   file_src_lib_forms_ts --> file_src_components_entry_noun_forms_table_tsx
   file_src_lib_forms_ts --> file_src_components_entry_verb_forms_table_tsx
   file_src_lib_forms_ts --> file_src_lib_types_ts
+  file_src_lib_routeTree_gen_ts --> file_src_router_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes___root_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_bookmarks_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_index_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_library_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_search_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_settings_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_tools_tsx
+  file_src_lib_routeTree_gen_ts --> file_src_routes_word__id_tsx
   file_src_lib_search_ts --> file_src_lib_types_ts
-  file_src_router_tsx --> file_src_routeTree_gen_ts
+  file_src_router_tsx --> file_src_lib_routeTree_gen_ts
   file_src_routes___root_tsx --> file_src_components_layout_index_ts
   file_src_routes___root_tsx --> file_src_lib_auth_ts
   file_src_routes_bookmarks_tsx --> file_src_components_entry_entry_card_tsx
@@ -591,15 +584,6 @@ graph LR
   file_src_routes_word__id_tsx --> file_src_lib_forms_ts
   file_src_routes_word__id_tsx --> file_src_lib_search_ts
   file_src_routes_word__id_tsx --> file_src_lib_types_ts
-  file_src_routeTree_gen_ts --> file_src_router_tsx
-  file_src_routeTree_gen_ts --> file_src_routes___root_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_bookmarks_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_index_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_library_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_search_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_settings_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_tools_tsx
-  file_src_routeTree_gen_ts --> file_src_routes_word__id_tsx
   file_vitest_config_ts --> file_vite_config_mts
 ```
 <!-- codependix:end name="codependix-imports" -->
@@ -610,14 +594,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5417-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-163.30_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5441-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-164.59_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-39-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Client entry JavaScript Size](https://img.shields.io/badge/Client_entry_JavaScript_Size-123.76_kB_gzip-6b7280?style=flat-square)
+![Client entry JavaScript Size](https://img.shields.io/badge/Client_entry_JavaScript_Size-123.78_kB_gzip-6b7280?style=flat-square)
 ![Client route JavaScript Size](https://img.shields.io/badge/Client_route_JavaScript_Size-86.44_kB_gzip-6b7280?style=flat-square)
 ![Client CSS Size](https://img.shields.io/badge/Client_CSS_Size-15.45_kB_gzip-6b7280?style=flat-square)
 ![Server JavaScript Size](https://img.shields.io/badge/Server_JavaScript_Size-156.03_kB_gzip-6b7280?style=flat-square)
@@ -638,15 +622,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-1-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-0-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-220-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-221-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-0-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-185-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-186-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-35-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-289-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-155-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-82-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-401-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-622-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-416-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-637-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -810,7 +794,7 @@ graph LR
 ![Links](https://img.shields.io/badge/Links-10-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-4-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-2-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-5-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

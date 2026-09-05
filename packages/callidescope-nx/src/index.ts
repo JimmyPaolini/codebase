@@ -1,8 +1,8 @@
 // 📤 Exports
 import path from "node:path";
 
+import { resolvePluginService } from "./modules/plugin/plugin-context.utilities";
 import { PROJECT_CONFIGURATION_GLOB } from "./modules/plugin/plugin.constants";
-import { resolvePluginService } from "./plugin-context.utilities";
 
 import type {
   CreateNodes,
@@ -26,6 +26,12 @@ export {
 export { OptionsModule } from "./modules/options/options.module";
 export { OptionsService } from "./modules/options/options.service";
 export type { CallidescopePluginOptions } from "./modules/options/options.types";
+export {
+  resolveAddressService,
+  resolveOptionsService,
+  resolvePluginService,
+  resolveProjectsService,
+} from "./modules/plugin/plugin-context.utilities";
 export { PluginModule } from "./modules/plugin/plugin.module";
 export { PluginService } from "./modules/plugin/plugin.service";
 export type {
@@ -39,12 +45,6 @@ export type {
   ResolvedProjectDirectories,
   ResolvedProjectSelection,
 } from "./modules/projects/projects.types";
-export {
-  resolveAddressService,
-  resolveOptionsService,
-  resolvePluginService,
-  resolveProjectsService,
-} from "./plugin-context.utilities";
 
 /**
  * Infers a trace target onto every project holding a `tsconfig.json`.

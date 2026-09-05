@@ -111,7 +111,7 @@ Call stacks traced through `packages/lexico-entities`, deepest first. Each frame
 | Measure | Value |
 | --- | --- |
 | Callables | 93 |
-| Files | 46 |
+| Files | 47 |
 | Calls traced | 9 |
 | Call stacks | 3 |
 | Deepest stack | 3 |

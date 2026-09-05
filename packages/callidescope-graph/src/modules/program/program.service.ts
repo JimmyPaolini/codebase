@@ -134,6 +134,12 @@ export class ProgramService {
 
   /**
    * Builds every project's program and decides which one owns each file.
+   *
+   * A project whose configuration cannot be parsed ends the run rather than
+   * being stepped over — see `ProgramConfigurationError` for why a partial
+   * graph is the worse outcome. A project that should not be read at all is
+   * kept out by an exclusion, which `WorkspaceService.discoverProjects`
+   * applies before this ever sees it.
    */
   public buildPrograms(args: BuildProgramsArguments): ProgramSet {
     const programs: ProjectProgram[] = [];

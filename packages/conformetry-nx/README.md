@@ -141,19 +141,49 @@ Call stacks traced through `packages/conformetry-nx`, deepest first. Each frame 
 | Measure | Value |
 | --- | --- |
 | Callables | 114 |
-| Files | 42 |
-| Calls traced | 134 |
+| Files | 44 |
+| Calls traced | 136 |
 | Call stacks | 8 |
-| Deepest stack | 12 |
+| Deepest stack | 14 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 1 |
 
 ### Call stacks (depth)
 
-**1. `runConformetryGenerator`** — depth ≥ 12 · exported-function
+**1. `validateExecutor`** — depth ≥ 14 · orphan-root
 
 ```text
-🚀 runConformetryGenerator(…): Promise<string[]> [packages/conformetry-nx/src/index.ts:90]
+🚀 validateExecutor(…): Promise<{ success: boolean; }> [packages/conformetry-nx/src/executors/validate/executor.ts:16]
+   ↳ Validates one project's instances against their conformetry templates.
+  └─> PluginService.runValidation(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:396]
+     ↳ Validates one project's instances and renders the report.
+    └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:132]
+       ↳ Validates every instance and returns the differences found.
+      └─> InstanceDiscoveryService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:95]
+         ↳ Resolves every instance to the template, or templates, that explain it.
+        └─> InstanceDiscoveryMatchingService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:93]
+           ↳ Resolves every instance to the template — or templates — that explain it.
+          └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
+             ↳ Weighs every template that shares at least one file with the instance, best-first.
+            └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
+              └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
+                 ↳ Counts how many of a template's files the instance path already has.
+                └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
+                  └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+                     ↳ Maps a template file path to the instance file path it governs.
+                    └─> RenderingService.renderPath(…): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:142]
+                       ↳ Renders a template path with mustache, the same way contents are rendered.
+                      └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:35]
+                         ↳ Refuses to render a template asking for a value nobody supplied.
+                        └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:61]
+                           ↳ Every placeholder a template interpolates, deduplicated.
+                          └─> RenderingService.walk(spans: TemplateSpans): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:63]
+```
+
+**2. `runConformetryGenerator`** — depth ≥ 13 · exported-function
+
+```text
+🚀 runConformetryGenerator(…): Promise<string[]> [packages/conformetry-nx/src/index.ts:93]
    ↳ Runs one configured generator against an Nx tree.
   └─> PluginService.runGenerator(args: RunGeneratorArguments): Promise<string[]> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:335]
      ↳ Runs one configured generator against an Nx tree.
@@ -161,102 +191,82 @@ Call stacks traced through `packages/conformetry-nx`, deepest first. Each frame 
        ↳ Fails fast when the plugin would run against a stale or broken setup.
       └─> PluginService.assertEmittedPluginCurrent(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:89]
          ↳ Fails when the emitted Nx plugin no longer matches the configuration. `generators.json` and its schemas are derived…
-        └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:215]
+        └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:212]
            ↳ Returns every file the consumer's generator plugin consists of.
-          └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:241]
-            └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:183]
+          └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:238]
+            └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:180]
                ↳ The projects a generator's tagged groups admit, or nothing when it has none.
-              └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:127]
+              └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:134]
                  ↳ The projects a generator's groups admit, by name and sorted.
-                └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:140]
-                  └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:141]
-                    └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:45]
+                └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:147]
+                  └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:148]
+                    └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:52]
                        ↳ Returns whether a group applies to a project.
-                      └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:32]
+                      └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:39]
                          ↳ Whether a group locates its instances by project tag.
+                        └─> InstanceGroupService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/conformetry-configuration/src/modules/configuration/instance-group.service.ts:41]
+                           ↳ Whether a group locates its instances inside the hosts its tags select.
 ```
 
-**2. `validateExecutor`** — depth ≥ 12 · orphan-root
+**3. `runBootstrapCli`** — depth ≥ 11 · orphan-root
 
 ```text
-🚀 validateExecutor(…): Promise<{ success: boolean; }> [packages/conformetry-nx/src/executors/validate/executor.ts:16]
-   ↳ Validates one project's instances against their conformetry templates.
-  └─> PluginService.runValidation(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:396]
-     ↳ Validates one project's instances and renders the report.
-    └─> PluginService.assertPluginInSync(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:123]
-       ↳ Fails fast when the plugin would run against a stale or broken setup.
-      └─> PluginService.assertEmittedPluginCurrent(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:89]
-         ↳ Fails when the emitted Nx plugin no longer matches the configuration. `generators.json` and its schemas are derived…
-        └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:215]
-           ↳ Returns every file the consumer's generator plugin consists of.
-          └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:241]
-            └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:183]
-               ↳ The projects a generator's tagged groups admit, or nothing when it has none.
-              └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:127]
-                 ↳ The projects a generator's groups admit, by name and sorted.
-                └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:140]
-                  └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:141]
-                    └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:45]
-                       ↳ Returns whether a group applies to a project.
-                      └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:32]
-                         ↳ Whether a group locates its instances by project tag.
-```
-
-**3. `runBootstrapCli`** — depth ≥ 10 · orphan-root
-
-```text
-🚀 runBootstrapCli(workspaceRoot: string): Promise<void> [packages/conformetry-nx/src/bootstrap.utilities.ts:73]
+🚀 runBootstrapCli(workspaceRoot: string): Promise<void> [packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:74]
    ↳ Bootstraps the plugin, warning rather than failing the install.
-  └─> bootstrapPlugin(workspaceRoot: string): Promise<EmittedFile[]> [packages/conformetry-nx/src/bootstrap.utilities.ts:38]
+  └─> bootstrapPlugin(workspaceRoot: string): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:39]
      ↳ Emits the generator plugin and puts it where Nx will find it.
-    └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:215]
+    └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:212]
        ↳ Returns every file the consumer's generator plugin consists of.
-      └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:241]
-        └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:183]
+      └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:238]
+        └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:180]
            ↳ The projects a generator's tagged groups admit, or nothing when it has none.
-          └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:127]
+          └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:134]
              ↳ The projects a generator's groups admit, by name and sorted.
-            └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:140]
-              └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:141]
-                └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:45]
+            └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:147]
+              └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:148]
+                └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:52]
                    ↳ Returns whether a group applies to a project.
-                  └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:32]
+                  └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:39]
                      ↳ Whether a group locates its instances by project tag.
+                    └─> InstanceGroupService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/conformetry-configuration/src/modules/configuration/instance-group.service.ts:41]
+                       ↳ Whether a group locates its instances inside the hosts its tags select.
 ```
 
 <details>
 <summary>5 more call stacks</summary>
 
-**4. `syncGenerator`** — depth ≥ 9 · orphan-root
+**4. `syncGenerator`** — depth ≥ 10 · orphan-root
 
 ```text
 🚀 syncGenerator(…): Promise<{ outOfSyncMessage: string; }> [packages/conformetry-nx/src/generators/sync/generator.ts:26]
    ↳ Regenerates the workspace's conformetry generator plugin.
-  └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:215]
+  └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:212]
      ↳ Returns every file the consumer's generator plugin consists of.
-    └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:241]
-      └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:183]
+    └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:238]
+      └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:180]
          ↳ The projects a generator's tagged groups admit, or nothing when it has none.
-        └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:127]
+        └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:134]
            ↳ The projects a generator's groups admit, by name and sorted.
-          └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:140]
-            └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:141]
-              └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:45]
+          └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:147]
+            └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:148]
+              └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:52]
                  ↳ Returns whether a group applies to a project.
-                └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:32]
+                └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:39]
                    ↳ Whether a group locates its instances by project tag.
+                  └─> InstanceGroupService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/conformetry-configuration/src/modules/configuration/instance-group.service.ts:41]
+                     ↳ Whether a group locates its instances inside the hosts its tags select.
 ```
 
 **5. `anonymous`** — depth ≥ 8 · orphan-root
 
 ```text
-🚀 anonymous(…): Promise<CreateNodesResultArray> [packages/conformetry-nx/src/index.ts:46]
+🚀 anonymous(…): Promise<CreateNodesResultArray> [packages/conformetry-nx/src/index.ts:49]
   └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:270]
      ↳ Infers a validation target onto every project that holds at least one instance.
     └─> InstancesService.findProjectInstances(args: FindProjectInstancesArguments): Promise<Instance[]> [packages/conformetry-nx/src/modules/instances/instances.service.ts:72]
        ↳ Expands every instance group that applies to a project, keeping only the instances that live inside it.
       └─> InstancesService.flatMap(…)(this: undefined, group: ConformetryInstanceGroup): Instance[] [packages/conformetry-nx/src/modules/instances/instances.service.ts:88]
-        └─> InstanceDiscoveryService.findInstances(args: FindInstancesArguments): Instance[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:87]
+        └─> InstanceDiscoveryService.findInstances(args: FindInstancesArguments): Instance[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:90]
            ↳ Expands instance globs into the instances that exist.
           └─> InstanceDiscoveryLocatingService.findInstances(args: FindInstancesArguments): Instance[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:121]
              ↳ Expands every pattern and returns one instance per distinct path, name, and scope kind.
@@ -301,39 +311,39 @@ Call stacks traced through `packages/conformetry-nx`, deepest first. Each frame 
 | --- | --- | --- | --- |
 | `PluginService.runValidation` | 16 | `packages/conformetry-core:modules/reporting`, `packages/conformetry-nx:modules/instances`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:396` |
 | `PluginService.runGenerator` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-nx:modules/adapter`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:335` |
-| `syncGenerator` | 7 | `packages/conformetry-nx:modules/generator`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/projects`, `packages/conformetry-nx:src` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
-| `bootstrapPlugin` | 6 | `packages/conformetry-nx:modules/generator`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/bootstrap.utilities.ts:38` |
+| `syncGenerator` | 7 | `packages/conformetry-nx:modules/generator`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
+| `bootstrapPlugin` | 6 | `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:39` |
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `PluginService.runGenerator` | 9 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ConfigurationService.loadConformetryConfiguration`, `PluginService.find(…)`, `PluginService.map(…)`, `AdapterService.createAdapters`, `OptionsService.resolveGeneratorInputs`, `GenerationService.runGenerator`, `PathsService.resolveGenerationPath` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:335` |
-| `bootstrapPlugin` | 9 | `resolveGeneratorService`, `resolveOptionsService`, `resolveProjectsService`, `GeneratorService.emitPlugin`, `OptionsService.resolveConfigurationPath`, `readNxConfiguration`, `ProjectsService.listWorkspaceProjects`, `writePlugin`, `linkPlugin` | `packages/conformetry-nx/src/bootstrap.utilities.ts:38` |
+| `bootstrapPlugin` | 9 | `resolveGeneratorService`, `resolveOptionsService`, `resolveProjectsService`, `GeneratorService.emitPlugin`, `OptionsService.resolveConfigurationPath`, `readNxConfiguration`, `ProjectsService.listWorkspaceProjects`, `writePlugin`, `linkPlugin` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:39` |
 | `syncGenerator` | 7 | `resolveGeneratorService`, `resolveOptionsService`, `resolveProjectsService`, `GeneratorService.emitPlugin`, `OptionsService.resolveConfigurationPath`, `readNxConfiguration`, `ProjectsService.listWorkspaceProjects` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
 
 <details>
-<summary>53 more callables</summary>
+<summary>55 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `GeneratorService.emitPlugin` | 6 | `ConfigurationService.loadConformetryConfiguration`, `GeneratorService.toSorted(…)`, `GeneratorService.buildGeneratorsManifest`, `GeneratorService.map(…)`, `GeneratorService.map(…)`, `GeneratorService.stringify` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:215` |
+| `GeneratorService.emitPlugin` | 6 | `ConfigurationService.loadConformetryConfiguration`, `GeneratorService.toSorted(…)`, `GeneratorService.buildGeneratorsManifest`, `GeneratorService.map(…)`, `GeneratorService.map(…)`, `GeneratorService.stringify` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:212` |
 | `PluginService.runValidation` | 6 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ValidationService.validate`, `InstancesService.findProjectInstances`, `PluginService.resolveTemplates`, `ReportingService.formatReport` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:396` |
 | `InstancesService.findProjectInstances` | 5 | `ConfigurationService.loadConformetryConfiguration`, `InstancesService.filter(…)`, `InstancesService.flatMap(…)`, `InstancesService.flatMap(…)`, `InstancesService.flatMap(…)` | `packages/conformetry-nx/src/modules/instances/instances.service.ts:72` |
 | `PathsService.resolveGenerationPath` | 5 | `PathsService.resolveNewProjectPath`, `InstancesService.findProjectInstances`, `PathsService.requireModulePath`, `PathsService.resolveScopedDirectory`, `PathsService.resolveModuleParentPath` | `packages/conformetry-nx/src/modules/paths/paths.service.ts:209` |
 | `PluginService.inferTargets` | 5 | `PluginService.resolveOptions`, `PluginService.resolveTemplateInputs`, `PluginService.filter(…)`, `ProjectsService.readProjectScope`, `InstancesService.findProjectInstances` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:270` |
-| `ScopeService.resolveScopedProjectNames` | 4 | `ScopeService.filter(…)`, `ScopeService.toSorted(…)`, `ScopeService.map(…)`, `ScopeService.filter(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:127` |
+| `ScopeService.resolveScopedProjectNames` | 4 | `ScopeService.filter(…)`, `ScopeService.toSorted(…)`, `ScopeService.map(…)`, `ScopeService.filter(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:134` |
 | `ProjectsService.listWorkspaceProjects` | 4 | `ProjectsService.toSorted(…)`, `ProjectsService.map(…)`, `ProjectsService.listProjectConfigurationFiles`, `ProjectsService.readIgnoredPaths` | `packages/conformetry-nx/src/modules/projects/projects.service.ts:118` |
-| `anonymous` | 4 | `resolvePluginService`, `PluginService.inferTargets`, `filter(…)`, `map(…)` | `packages/conformetry-nx/src/index.ts:46` |
-| `ScopeService.resolveGroup` | 3 | `ScopeService.matchesProject`, `ScopeService.isProjectGroup`, `ScopeService.map(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:67` |
+| `anonymous` | 4 | `resolvePluginService`, `PluginService.inferTargets`, `filter(…)`, `map(…)` | `packages/conformetry-nx/src/index.ts:49` |
+| `ScopeService.resolveGroup` | 3 | `ScopeService.matchesProject`, `ScopeService.isProjectGroup`, `ScopeService.map(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:74` |
 | `AdapterService.listDirectory` | 3 | `AdapterService.resolveTreePath`, `AdapterService.map(…)`, `AdapterService.map(…)` | `packages/conformetry-nx/src/modules/adapter/adapter.service.ts:42` |
 | `PathsService.resolveScopedDirectory` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PathsService.find(…)`, `ScopeService.resolveScopedDirectory` | `packages/conformetry-nx/src/modules/paths/paths.service.ts:156` |
 | `PluginService.resolveOptions` | 3 | `OptionsService.resolveConfigurationPath`, `PluginService.readNxConfiguration`, `OptionsService.resolvePluginOptions` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:194` |
 | `PluginService.resolveTemplateInputs` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)`, `PluginService.map(…)` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:224` |
-| `ScopeService.matchesProject` | 2 | `ScopeService.isProjectGroup`, `ScopeService.some(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:45` |
-| `ScopeService.resolveScopedDirectory` | 2 | `ScopeService.find(…)`, `ScopeService.findIndex(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:101` |
-| `GeneratorService.buildSchema` | 2 | `GeneratorService.stringify`, `GeneratorService.buildSchemaProperties` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:125` |
-| `GeneratorService.map(…)` | 2 | `GeneratorService.buildSchema`, `GeneratorService.resolveScopedProjectNames` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:241` |
+| `ScopeService.matchesProject` | 2 | `ScopeService.isProjectGroup`, `ScopeService.some(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:52` |
+| `ScopeService.resolveScopedDirectory` | 2 | `ScopeService.find(…)`, `ScopeService.findIndex(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:108` |
+| `GeneratorService.buildSchema` | 2 | `GeneratorService.stringify`, `GeneratorService.buildSchemaProperties` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:122` |
+| `GeneratorService.map(…)` | 2 | `GeneratorService.buildSchema`, `GeneratorService.resolveScopedProjectNames` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:238` |
 | `OptionsService.readRegisteredConfigurationPath` | 2 | `OptionsService.isUnknownArray`, `OptionsService.readString` | `packages/conformetry-nx/src/modules/options/options.service.ts:38` |
 | `OptionsService.resolveConfigurationPath` | 2 | `OptionsService.readRegisteredConfigurationPath`, `OptionsService.find(…)` | `packages/conformetry-nx/src/modules/options/options.service.ts:98` |
 | `ProjectsService.readIgnoredPaths` | 2 | `ProjectsService.filter(…)`, `ProjectsService.map(…)` | `packages/conformetry-nx/src/modules/projects/projects.service.ts:97` |
@@ -341,14 +351,16 @@ Call stacks traced through `packages/conformetry-nx`, deepest first. Each frame 
 | `PluginService.assertEmittedPluginCurrent` | 2 | `GeneratorService.emitPlugin`, `ProjectsService.listWorkspaceProjects` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:89` |
 | `PluginService.assertPluginInSync` | 2 | `PluginService.assertTemplatesExist`, `PluginService.assertEmittedPluginCurrent` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:123` |
 | `PluginService.resolveTemplates` | 2 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:241` |
-| `runConformetryGenerator` | 2 | `resolvePluginService`, `PluginService.runGenerator` | `packages/conformetry-nx/src/index.ts:90` |
+| `runConformetryGenerator` | 2 | `resolvePluginService`, `PluginService.runGenerator` | `packages/conformetry-nx/src/index.ts:93` |
 | `validateExecutor` | 2 | `resolvePluginService`, `PluginService.runValidation` | `packages/conformetry-nx/src/executors/validate/executor.ts:16` |
-| `ScopeService.filter(…)` | 1 | `ScopeService.isProjectGroup` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:131` |
-| `ScopeService.filter(…)` | 1 | `ScopeService.some(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:140` |
-| `ScopeService.some(…)` | 1 | `ScopeService.matchesProject` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:141` |
+| `ScopeService.isProjectGroup` | 1 | `InstanceGroupService.isProjectScoped` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:39` |
+| `ScopeService.find(…)` | 1 | `ScopeService.isProjectGroup` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:111` |
+| `ScopeService.filter(…)` | 1 | `ScopeService.isProjectGroup` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:138` |
+| `ScopeService.filter(…)` | 1 | `ScopeService.some(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:147` |
+| `ScopeService.some(…)` | 1 | `ScopeService.matchesProject` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:148` |
 | `GeneratorService.buildGeneratorsManifest` | 1 | `GeneratorService.stringify` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:86` |
-| `GeneratorService.resolveScopedProjectNames` | 1 | `ScopeService.resolveScopedProjectNames` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:183` |
-| `GeneratorService.map(…)` | 1 | `GeneratorService.buildGeneratorModule` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:232` |
+| `GeneratorService.resolveScopedProjectNames` | 1 | `ScopeService.resolveScopedProjectNames` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:180` |
+| `GeneratorService.map(…)` | 1 | `GeneratorService.buildGeneratorModule` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:229` |
 | `AdapterService.readFile` | 1 | `AdapterService.resolveTreePath` | `packages/conformetry-nx/src/modules/adapter/adapter.service.ts:68` |
 | `AdapterService.listDirectory` | 1 | `AdapterService.listDirectory` | `packages/conformetry-nx/src/modules/adapter/adapter.service.ts:114` |
 | `AdapterService.readFile` | 1 | `AdapterService.readFile` | `packages/conformetry-nx/src/modules/adapter/adapter.service.ts:124` |
@@ -364,12 +376,12 @@ Call stacks traced through `packages/conformetry-nx`, deepest first. Each frame 
 | `ProjectsService.map(…)` | 1 | `ProjectsService.readProjectScope` | `packages/conformetry-nx/src/modules/projects/projects.service.ts:124` |
 | `PluginService.assertTemplatesExist` | 1 | `ConfigurationService.loadConformetryConfiguration` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:139` |
 | `PluginService.map(…)` | 1 | `TemplateDiscoveryService.collectTemplate` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:250` |
-| `resolveGeneratorService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/plugin-context.utilities.ts:17` |
-| `resolveOptionsService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/plugin-context.utilities.ts:24` |
-| `resolvePluginService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/plugin-context.utilities.ts:31` |
-| `resolveProjectsService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/plugin-context.utilities.ts:38` |
-| `runBootstrapCli` | 1 | `bootstrapPlugin` | `packages/conformetry-nx/src/bootstrap.utilities.ts:73` |
-| `linkPlugin` | 1 | `leadsTo` | `packages/conformetry-nx/src/bootstrap.utilities.ts:115` |
+| `resolveGeneratorService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/modules/plugin/plugin-context.utilities.ts:18` |
+| `resolveOptionsService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/modules/plugin/plugin-context.utilities.ts:25` |
+| `resolvePluginService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/modules/plugin/plugin-context.utilities.ts:32` |
+| `resolveProjectsService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/modules/plugin/plugin-context.utilities.ts:39` |
+| `runBootstrapCli` | 1 | `bootstrapPlugin` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:74` |
+| `linkPlugin` | 1 | `leadsTo` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:116` |
 
 </details>
 
@@ -492,8 +504,6 @@ _Rounded modules are global: every module can inject them, so their edges are le
 graph LR
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
-  file_src_bootstrap_utilities_ts["src/bootstrap.utilities.ts"]
-  file_src_bootstrap_utilities_unit_test_ts["src/bootstrap.utilities.unit.test.ts"]
   file_src_executors_validate_executor_ts["src/executors/validate/executor.ts"]
   file_src_executors_validate_executor_types_ts["src/executors/validate/executor.types.ts"]
   file_src_executors_validate_executor_unit_test_ts["src/executors/validate/executor.unit.test.ts"]
@@ -502,14 +512,14 @@ graph LR
   file_src_generators_sync_generator_unit_test_ts["src/generators/sync/generator.unit.test.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
-  file_src_languages_constants_ts["src/languages.constants.ts"]
-  file_src_languages_constants_unit_test_ts["src/languages.constants.unit.test.ts"]
   file_src_main_module_ts["src/main.module.ts"]
   file_src_modules_adapter_adapter_constants_ts["src/modules/adapter/adapter.constants.ts"]
   file_src_modules_adapter_adapter_module_ts["src/modules/adapter/adapter.module.ts"]
   file_src_modules_adapter_adapter_service_ts["src/modules/adapter/adapter.service.ts"]
   file_src_modules_adapter_adapter_service_unit_test_ts["src/modules/adapter/adapter.service.unit.test.ts"]
   file_src_modules_adapter_adapter_types_ts["src/modules/adapter/adapter.types.ts"]
+  file_src_modules_generator_bootstrap_utilities_ts["src/modules/generator/bootstrap.utilities.ts"]
+  file_src_modules_generator_bootstrap_utilities_unit_test_ts["src/modules/generator/bootstrap.utilities.unit.test.ts"]
   file_src_modules_generator_generator_constants_ts["src/modules/generator/generator.constants.ts"]
   file_src_modules_generator_generator_module_ts["src/modules/generator/generator.module.ts"]
   file_src_modules_generator_generator_service_ts["src/modules/generator/generator.service.ts"]
@@ -530,6 +540,10 @@ graph LR
   file_src_modules_paths_paths_service_ts["src/modules/paths/paths.service.ts"]
   file_src_modules_paths_paths_service_unit_test_ts["src/modules/paths/paths.service.unit.test.ts"]
   file_src_modules_paths_paths_types_ts["src/modules/paths/paths.types.ts"]
+  file_src_modules_plugin_languages_constants_ts["src/modules/plugin/languages.constants.ts"]
+  file_src_modules_plugin_languages_constants_unit_test_ts["src/modules/plugin/languages.constants.unit.test.ts"]
+  file_src_modules_plugin_plugin_context_utilities_ts["src/modules/plugin/plugin-context.utilities.ts"]
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts["src/modules/plugin/plugin-context.utilities.unit.test.ts"]
   file_src_modules_plugin_plugin_constants_ts["src/modules/plugin/plugin.constants.ts"]
   file_src_modules_plugin_plugin_module_ts["src/modules/plugin/plugin.module.ts"]
   file_src_modules_plugin_plugin_service_ts["src/modules/plugin/plugin.service.ts"]
@@ -545,39 +559,36 @@ graph LR
   file_src_modules_scope_scope_service_ts["src/modules/scope/scope.service.ts"]
   file_src_modules_scope_scope_service_unit_test_ts["src/modules/scope/scope.service.unit.test.ts"]
   file_src_modules_scope_scope_types_ts["src/modules/scope/scope.types.ts"]
-  file_src_plugin_context_utilities_ts["src/plugin-context.utilities.ts"]
-  file_src_plugin_context_utilities_unit_test_ts["src/plugin-context.utilities.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
-  file_src_bootstrap_utilities_ts --> file_src_modules_generator_generator_constants_ts
-  file_src_bootstrap_utilities_ts --> file_src_modules_generator_generator_types_ts
-  file_src_bootstrap_utilities_ts --> file_src_modules_options_options_constants_ts
-  file_src_bootstrap_utilities_ts --> file_src_plugin_context_utilities_ts
-  file_src_bootstrap_utilities_unit_test_ts --> file_src_bootstrap_utilities_ts
-  file_src_bootstrap_utilities_unit_test_ts --> file_src_modules_generator_generator_constants_ts
-  file_src_bootstrap_utilities_unit_test_ts --> file_src_plugin_context_utilities_ts
   file_src_executors_validate_executor_ts --> file_src_executors_validate_executor_types_ts
-  file_src_executors_validate_executor_ts --> file_src_plugin_context_utilities_ts
+  file_src_executors_validate_executor_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_executors_validate_executor_unit_test_ts --> file_src_executors_validate_executor_ts
-  file_src_executors_validate_executor_unit_test_ts --> file_src_plugin_context_utilities_ts
+  file_src_executors_validate_executor_unit_test_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_generators_sync_generator_ts --> file_src_generators_sync_generator_types_ts
   file_src_generators_sync_generator_ts --> file_src_modules_generator_generator_constants_ts
   file_src_generators_sync_generator_ts --> file_src_modules_options_options_constants_ts
-  file_src_generators_sync_generator_ts --> file_src_plugin_context_utilities_ts
+  file_src_generators_sync_generator_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_generators_sync_generator_unit_test_ts --> file_src_generators_sync_generator_ts
-  file_src_generators_sync_generator_unit_test_ts --> file_src_plugin_context_utilities_ts
+  file_src_generators_sync_generator_unit_test_ts --> file_src_modules_plugin_plugin_context_utilities_ts
+  file_src_index_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_index_ts --> file_src_modules_plugin_plugin_constants_ts
-  file_src_index_ts --> file_src_plugin_context_utilities_ts
   file_src_index_unit_test_ts --> file_src_index_ts
-  file_src_index_unit_test_ts --> file_src_plugin_context_utilities_ts
-  file_src_languages_constants_unit_test_ts --> file_src_languages_constants_ts
+  file_src_index_unit_test_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_main_module_ts --> file_src_modules_generator_generator_module_ts
   file_src_main_module_ts --> file_src_modules_plugin_plugin_module_ts
   file_src_modules_adapter_adapter_module_ts --> file_src_modules_adapter_adapter_service_ts
   file_src_modules_adapter_adapter_service_ts --> file_src_modules_adapter_adapter_constants_ts
   file_src_modules_adapter_adapter_service_ts --> file_src_modules_adapter_adapter_types_ts
   file_src_modules_adapter_adapter_service_unit_test_ts --> file_src_modules_adapter_adapter_service_ts
+  file_src_modules_generator_bootstrap_utilities_ts --> file_src_modules_generator_generator_constants_ts
+  file_src_modules_generator_bootstrap_utilities_ts --> file_src_modules_generator_generator_types_ts
+  file_src_modules_generator_bootstrap_utilities_ts --> file_src_modules_options_options_constants_ts
+  file_src_modules_generator_bootstrap_utilities_ts --> file_src_modules_plugin_plugin_context_utilities_ts
+  file_src_modules_generator_bootstrap_utilities_unit_test_ts --> file_src_modules_generator_bootstrap_utilities_ts
+  file_src_modules_generator_bootstrap_utilities_unit_test_ts --> file_src_modules_generator_generator_constants_ts
+  file_src_modules_generator_bootstrap_utilities_unit_test_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_modules_generator_generator_module_ts --> file_src_modules_generator_generator_service_ts
   file_src_modules_generator_generator_module_ts --> file_src_modules_scope_scope_module_ts
   file_src_modules_generator_generator_service_ts --> file_src_modules_generator_generator_constants_ts
@@ -612,6 +623,20 @@ graph LR
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_paths_paths_module_ts
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_paths_paths_service_ts
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_scope_scope_service_ts
+  file_src_modules_plugin_languages_constants_unit_test_ts --> file_src_modules_plugin_languages_constants_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_main_module_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_generator_generator_service_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_options_options_service_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_constants_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_service_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_types_ts
+  file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_projects_projects_service_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_generator_generator_service_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_options_options_service_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_plugin_plugin_context_utilities_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_plugin_plugin_constants_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_plugin_plugin_service_ts
+  file_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_src_modules_projects_projects_service_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_adapter_adapter_module_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_generator_generator_module_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_instances_instances_module_ts
@@ -620,7 +645,6 @@ graph LR
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_plugin_plugin_service_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_projects_projects_module_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_scope_scope_module_ts
-  file_src_modules_plugin_plugin_service_ts --> file_src_languages_constants_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_adapter_adapter_service_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_generator_generator_constants_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_generator_generator_service_ts
@@ -629,6 +653,7 @@ graph LR
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_options_options_service_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_options_options_types_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_paths_paths_service_ts
+  file_src_modules_plugin_plugin_service_ts --> file_src_modules_plugin_languages_constants_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_plugin_plugin_constants_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_plugin_plugin_types_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_projects_projects_service_ts
@@ -649,19 +674,6 @@ graph LR
   file_src_modules_scope_scope_service_ts --> file_src_modules_scope_scope_constants_ts
   file_src_modules_scope_scope_service_unit_test_ts --> file_src_modules_instances_instances_types_ts
   file_src_modules_scope_scope_service_unit_test_ts --> file_src_modules_scope_scope_service_ts
-  file_src_plugin_context_utilities_ts --> file_src_main_module_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_generator_generator_service_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_options_options_service_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_constants_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_service_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_plugin_plugin_types_ts
-  file_src_plugin_context_utilities_ts --> file_src_modules_projects_projects_service_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_generator_generator_service_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_options_options_service_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_plugin_plugin_constants_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_plugin_plugin_service_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_projects_projects_service_ts
-  file_src_plugin_context_utilities_unit_test_ts --> file_src_plugin_context_utilities_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 
@@ -671,14 +683,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5792-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-202.42_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5807-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-202.87_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-15-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-62-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-33.43_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-33.53_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -703,8 +715,8 @@ graph LR
 ![Constants](https://img.shields.io/badge/Constants-258-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-264-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-78-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-326-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-721-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-330-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-728-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

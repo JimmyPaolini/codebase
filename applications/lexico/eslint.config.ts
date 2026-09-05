@@ -7,7 +7,7 @@ export default [
   // 🚫 Project Ignores
   {
     // Ignore Supabase Edge Functions (Deno runtime, separate tsconfig) and generated files
-    ignores: ["supabase/functions/**", "src/routeTree.gen.ts"],
+    ignores: ["supabase/functions/**", "src/lib/routeTree.gen.ts"],
   },
 
   // � Per-file Rule Overrides

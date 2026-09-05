@@ -7,6 +7,8 @@ import {
   type FormCase,
   type FormMood,
   type FormNumber,
+  type FormTense,
+  type FormVoice,
   GerundForm,
   InfinitiveForm,
   type Lexeme,
@@ -34,7 +36,7 @@ import type { FormGender } from "./forms.types";
  * rules for adjectives, adverbs, and nominals.
  */
 @Injectable()
-export class FormsBuilderOtherService {
+export class FormsBuilderService {
   // 🏗 Dependency Injection
 
   constructor(
@@ -156,8 +158,84 @@ export class FormsBuilderOtherService {
     return forms;
   }
 
-  /** Builds structured data used during form entity building. */
-  private buildFiniteMoodForms(
+  /**
+   * Builds one tense's forms, one per grammatical number.
+   *
+   * The last rung of the cascade this class owns: a number is the innermost
+   * axis whose data is still a record of records, so the person axis below it
+   * is the verb builder's to walk.
+   */
+  private buildFiniteNumberForms(args: {
+    lexeme: Lexeme;
+    mood: FormMood;
+    tense: FormTense;
+    tenseData: Record<string, unknown>;
+    voice: FormVoice;
+  }): Form[] {
+    const forms: Form[] = [];
+    for (const numberKey of Object.keys(args.tenseData)) {
+      if (!this.guards.isFormNumber(numberKey)) continue;
+      const numberData = args.tenseData[numberKey];
+      if (!this.guards.isRecord(numberData)) continue;
+
+      forms.push(
+        ...this.formsBuilderVerbProvider.buildFinitePersonForms({
+          lexeme: args.lexeme,
+          mood: args.mood,
+          number: numberKey,
+          numberData,
+          tense: args.tense,
+          voice: args.voice,
+        }),
+      );
+    }
+    return forms;
+  }
+
+  /**
+   * Builds one voice's forms, one per tense.
+   *
+   * Each rung of the finite cascade narrows its own axis with a guard and
+   * passes the narrowed value down, so no rung below re-checks what the one
+   * above already established. This used to widen every axis back to `string`
+   * on the way down, which forced a fourth rung underneath whose whole job was
+   * to re-run three guards before delegating.
+   */
+  private buildFiniteTenseForms(args: {
+    lexeme: Lexeme;
+    mood: FormMood;
+    voice: FormVoice;
+    voiceData: Record<string, unknown>;
+  }): Form[] {
+    const forms: Form[] = [];
+    for (const tenseKey of Object.keys(args.voiceData)) {
+      if (!this.guards.isFormTense(tenseKey)) continue;
+      const tenseData = args.voiceData[tenseKey];
+      if (!this.guards.isRecord(tenseData)) continue;
+
+      forms.push(
+        ...this.buildFiniteNumberForms({
+          lexeme: args.lexeme,
+          mood: args.mood,
+          tense: tenseKey,
+          tenseData,
+          voice: args.voice,
+        }),
+      );
+    }
+    return forms;
+  }
+
+  /**
+   * Builds one mood's forms, one per voice.
+   *
+   * Named for the axis it walks rather than the one it is handed, which is
+   * what its three siblings below do — a traced stack now reads
+   * voice → tense → number → person, matching the descent. Named
+   * `buildFiniteMoodForms` it claimed the mood axis, which
+   * `buildVerbFormsFromRaw` above actually walks.
+   */
+  private buildFiniteVoiceForms(
     moodData: Record<string, unknown>,
     mood: FormMood,
     lexeme: Lexeme,
@@ -173,89 +251,12 @@ export class FormsBuilderOtherService {
         ...this.buildFiniteTenseForms({
           lexeme,
           mood,
+          voice: voiceKey,
           voiceData,
-          voiceKey,
         }),
       );
     }
 
-    return forms;
-  }
-
-  /** Builds structured data used during form entity building. */
-  private buildFiniteNumberForms(args: {
-    lexeme: Lexeme;
-    mood: FormMood;
-    tenseData: Record<string, unknown>;
-    tenseKey: string;
-    voiceKey: string;
-  }): Form[] {
-    const forms: Form[] = [];
-    for (const numberKey of Object.keys(args.tenseData)) {
-      if (!this.guards.isFormNumber(numberKey)) continue;
-      const numberData = args.tenseData[numberKey];
-      if (!this.guards.isRecord(numberData)) continue;
-
-      forms.push(
-        ...this.buildFinitePersonForms({
-          lexeme: args.lexeme,
-          mood: args.mood,
-          numberData,
-          numberKey,
-          tenseKey: args.tenseKey,
-          voiceKey: args.voiceKey,
-        }),
-      );
-    }
-    return forms;
-  }
-
-  /** Builds structured data used during form entity building. */
-  private buildFinitePersonForms(args: {
-    lexeme: Lexeme;
-    mood: FormMood;
-    numberData: Record<string, unknown>;
-    numberKey: string;
-    tenseKey: string;
-    voiceKey: string;
-  }): Form[] {
-    if (!this.guards.isFormNumber(args.numberKey)) return [];
-    if (!this.guards.isFormTense(args.tenseKey)) return [];
-    if (!this.guards.isFormVoice(args.voiceKey)) return [];
-
-    return this.formsBuilderVerbProvider.buildFinitePersonForms({
-      lexeme: args.lexeme,
-      mood: args.mood,
-      number: args.numberKey,
-      numberData: args.numberData,
-      tense: args.tenseKey,
-      voice: args.voiceKey,
-    });
-  }
-
-  /** Builds structured data used during form entity building. */
-  private buildFiniteTenseForms(args: {
-    lexeme: Lexeme;
-    mood: FormMood;
-    voiceData: Record<string, unknown>;
-    voiceKey: string;
-  }): Form[] {
-    const forms: Form[] = [];
-    for (const tenseKey of Object.keys(args.voiceData)) {
-      if (!this.guards.isFormTense(tenseKey)) continue;
-      const tenseData = args.voiceData[tenseKey];
-      if (!this.guards.isRecord(tenseData)) continue;
-
-      forms.push(
-        ...this.buildFiniteNumberForms({
-          lexeme: args.lexeme,
-          mood: args.mood,
-          tenseData,
-          tenseKey,
-          voiceKey: args.voiceKey,
-        }),
-      );
-    }
     return forms;
   }
 
@@ -398,7 +399,7 @@ export class FormsBuilderOtherService {
       if (!this.guards.isFormMood(moodKey)) continue;
       const moodData = rawForms[moodKey];
       if (!this.guards.isRecord(moodData)) continue;
-      forms.push(...this.buildFiniteMoodForms(moodData, moodKey, lexeme));
+      forms.push(...this.buildFiniteVoiceForms(moodData, moodKey, lexeme));
     }
 
     const nonFinite = rawForms["nonFinite"];

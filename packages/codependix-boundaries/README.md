@@ -475,3 +475,232 @@ graph LR
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `packages/codependix-boundaries`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 66 |
+| Files | 16 |
+| Calls traced | 69 |
+| Call stacks | 7 |
+| Deepest stack | 12 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 2 |
+
+### Call stacks (depth)
+
+**1. `BoundaryCheckService.imports`** — depth ≥ 12 · orphan-root
+
+```text
+🚀 BoundaryCheckService.imports(levelArguments: LevelCheckArguments): Promise<BoundaryCheckOutcome> [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:90]
+  └─> BoundaryCheckService.runTypescriptImportsLevel(args: LevelCheckArguments): Promise<BoundaryCheckOutcome> [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:197]
+     ↳ Judges every TypeScript project's file-level import graph.
+    └─> BoundaryCheckService.runProjectLevel(…): Promise<BoundaryCheckOutcome> [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:157]
+       ↳ Judges every project at one level, isolating each project's failure.
+      └─> BoundariesService.evaluate(args: EvaluateBoundariesArguments): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:222]
+         ↳ Every violation one graph's rules report, in the order the rules were declared.
+        └─> BoundariesService.flatMap(…)(this: undefined, rule: CodependixBoundaryRule): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:223]
+          └─> BoundariesService.evaluateAcyclicRule(…): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:140]
+             ↳ Reports every cycle an `acyclic` rule's selected nodes still form.
+            └─> BoundarySelectorService.selectIds(…): Set<string> [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:106]
+               ↳ The ids of every node a selector claims.
+              └─> BoundarySelectorService.filter(…)(node: BoundaryNode): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:116]
+                └─> BoundarySelectorService.matches(node: BoundaryNode, selector: CodependixBoundarySelector): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:86]
+                   ↳ Whether a selector claims a node.
+                  └─> BoundarySelectorService.matchesTags(…): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:59]
+                     ↳ Whether a node carries a tag matching one of a list of globs.
+                    └─> BoundarySelectorService.some(…)(glob: string): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:71]
+                      └─> BoundarySelectorService.some(…)(tag: string): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:72]
+```
+
+**2. `BoundaryCheckService.nestjs`** — depth ≥ 12 · orphan-root
+
+```text
+🚀 BoundaryCheckService.nestjs(levelArguments: LevelCheckArguments): Promise<BoundaryCheckOutcome> [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:92]
+  └─> BoundaryCheckService.runNestjsLevel(args: LevelCheckArguments): Promise<BoundaryCheckOutcome> [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:102]
+     ↳ Judges every `framework:nestjs` project's module graph.
+    └─> BoundaryCheckService.runProjectLevel(…): Promise<BoundaryCheckOutcome> [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:157]
+       ↳ Judges every project at one level, isolating each project's failure.
+      └─> BoundariesService.evaluate(args: EvaluateBoundariesArguments): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:222]
+         ↳ Every violation one graph's rules report, in the order the rules were declared.
+        └─> BoundariesService.flatMap(…)(this: undefined, rule: CodependixBoundaryRule): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:223]
+          └─> BoundariesService.evaluateAcyclicRule(…): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:140]
+             ↳ Reports every cycle an `acyclic` rule's selected nodes still form.
+            └─> BoundarySelectorService.selectIds(…): Set<string> [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:106]
+               ↳ The ids of every node a selector claims.
+              └─> BoundarySelectorService.filter(…)(node: BoundaryNode): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:116]
+                └─> BoundarySelectorService.matches(node: BoundaryNode, selector: CodependixBoundarySelector): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:86]
+                   ↳ Whether a selector claims a node.
+                  └─> BoundarySelectorService.matchesTags(…): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:59]
+                     ↳ Whether a node carries a tag matching one of a list of globs.
+                    └─> BoundarySelectorService.some(…)(glob: string): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:71]
+                      └─> BoundarySelectorService.some(…)(tag: string): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:72]
+```
+
+**3. `BoundaryCheckService.pythonImports`** — depth ≥ 12 · orphan-root
+
+```text
+🚀 BoundaryCheckService.pythonImports(levelArguments: LevelCheckArguments): Promise<BoundaryCheckOutcome> [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:94]
+  └─> BoundaryCheckService.runPythonImportsLevel(args: LevelCheckArguments): Promise<BoundaryCheckOutcome> [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:181]
+     ↳ Judges every `language:python` project's file-level import graph.
+    └─> BoundaryCheckService.runProjectLevel(…): Promise<BoundaryCheckOutcome> [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:157]
+       ↳ Judges every project at one level, isolating each project's failure.
+      └─> BoundariesService.evaluate(args: EvaluateBoundariesArguments): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:222]
+         ↳ Every violation one graph's rules report, in the order the rules were declared.
+        └─> BoundariesService.flatMap(…)(this: undefined, rule: CodependixBoundaryRule): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:223]
+          └─> BoundariesService.evaluateAcyclicRule(…): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:140]
+             ↳ Reports every cycle an `acyclic` rule's selected nodes still form.
+            └─> BoundarySelectorService.selectIds(…): Set<string> [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:106]
+               ↳ The ids of every node a selector claims.
+              └─> BoundarySelectorService.filter(…)(node: BoundaryNode): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:116]
+                └─> BoundarySelectorService.matches(node: BoundaryNode, selector: CodependixBoundarySelector): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:86]
+                   ↳ Whether a selector claims a node.
+                  └─> BoundarySelectorService.matchesTags(…): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:59]
+                     ↳ Whether a node carries a tag matching one of a list of globs.
+                    └─> BoundarySelectorService.some(…)(glob: string): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:71]
+                      └─> BoundarySelectorService.some(…)(tag: string): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:72]
+```
+
+<details>
+<summary>4 more call stacks</summary>
+
+**4. `BoundaryCheckService.nx`** — depth 11 · orphan-root
+
+```text
+🚀 BoundaryCheckService.nx(levelArguments: LevelCheckArguments): BoundaryCheckOutcome [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:93]
+  └─> BoundaryCheckService.runNxLevel(args: LevelCheckArguments): BoundaryCheckOutcome [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:121]
+     ↳ Judges the whole-workspace Nx project graph.
+    └─> BoundariesService.evaluate(args: EvaluateBoundariesArguments): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:222]
+       ↳ Every violation one graph's rules report, in the order the rules were declared.
+      └─> BoundariesService.flatMap(…)(this: undefined, rule: CodependixBoundaryRule): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:223]
+        └─> BoundariesService.evaluateAcyclicRule(…): BoundaryViolation[] [packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:140]
+           ↳ Reports every cycle an `acyclic` rule's selected nodes still form.
+          └─> BoundarySelectorService.selectIds(…): Set<string> [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:106]
+             ↳ The ids of every node a selector claims.
+            └─> BoundarySelectorService.filter(…)(node: BoundaryNode): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:116]
+              └─> BoundarySelectorService.matches(node: BoundaryNode, selector: CodependixBoundarySelector): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:86]
+                 ↳ Whether a selector claims a node.
+                └─> BoundarySelectorService.matchesTags(…): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:59]
+                   ↳ Whether a node carries a tag matching one of a list of globs.
+                  └─> BoundarySelectorService.some(…)(glob: string): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:71]
+                    └─> BoundarySelectorService.some(…)(tag: string): boolean [packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:72]
+```
+
+**5. `BoundaryCheckService.buildGraph`** — depth 9 · orphan-root
+
+```text
+🚀 BoundaryCheckService.buildGraph(project: PythonProject): BoundaryGraph [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:185]
+  └─> PythonService.buildGraph(project: PythonProject): PythonImportGraph [packages/codependix-imports/src/modules/python/python.service.ts:39]
+     ↳ Builds a Python project's internal file-level import Graph.
+    └─> PythonImportGraphService.buildGraph(project: PythonProject): PythonImportGraph [packages/codependix-imports/src/modules/python/python-import-graph.service.ts:180]
+       ↳ Builds a Python project's internal file-level import Graph.
+      └─> PythonImportGraphService.flatMap(…)(this: undefined, sourceFileName: string): PythonImportGraphEdge[] [packages/codependix-imports/src/modules/python/python-import-graph.service.ts:185]
+        └─> PythonImportGraphService.collectEdgesForFile(…): PythonImportGraphEdge[] [packages/codependix-imports/src/modules/python/python-import-graph.service.ts:64]
+           ↳ Collects every internal import edge one source file declares.
+          └─> PythonImportParserService.parseImportSpecifiers(source: string): PythonImportSpecifier[] [packages/codependix-imports/src/modules/python/python-import-parser.service.ts:158]
+             ↳ Parses every module-level import statement in a Python source file.
+            └─> PythonImportParserService.parseStatement(statement: string): PythonImportSpecifier[] [packages/codependix-imports/src/modules/python/python-import-parser.service.ts:126]
+               ↳ Parses one joined statement into the module(s) it names.
+              └─> PythonImportParserService.parseImportStatement(statement: string): PythonImportSpecifier[] [packages/codependix-imports/src/modules/python/python-import-parser.service.ts:105]
+                 ↳ Parses a joined `import <specifiers>` statement.
+                └─> PythonImportParserService.map(…)(modulePath: string): { level: number; modulePath: string; } [packages/codependix-imports/src/modules/python/python-import-parser.service.ts:122]
+```
+
+**6. `BoundaryCheckService.buildGraph`** — depth ≥ 7 · orphan-root
+
+```text
+🚀 BoundaryCheckService.buildGraph(project: TypescriptProject): BoundaryGraph [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:201]
+  └─> TypescriptService.buildGraph(projectProgram: TypescriptProjectProgram): TypescriptImportGraph [packages/codependix-imports/src/modules/typescript/typescript.service.ts:44]
+     ↳ Builds a project's internal file-level import Graph from its program.
+    └─> TypescriptImportGraphService.buildGraph(projectProgram: TypescriptProjectProgram): TypescriptImportGraph [packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:185]
+       ↳ Builds a project's internal file-level import Graph from its program.
+      └─> TypescriptImportGraphService.listOwnedSourceFileNames(projectProgram: TypescriptProjectProgram): string[] [packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:122]
+         ↳ Lists a program's own source files, excluding declaration files. `program.getRootFileNames()` is the same file list…
+        └─> TypescriptImportGraphService.resolveOwnedFileNames(projectProgram: TypescriptProjectProgram): Set<string> [packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:156]
+           ↳ Resolves the real, absolute file names a program owns.
+          └─> TypescriptImportGraphService.map(…)(fileName: string): string [packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:162]
+            └─> TypescriptProjectService.toRealPath(filePath: string): string [packages/codependix-imports/src/modules/typescript/typescript-project.service.ts:122]
+               ↳ Resolves a path through symlinks, which is how pnpm workspaces link.
+```
+
+**7. `BoundaryCheckService.buildGraph`** — depth ≥ 6 · orphan-root
+
+```text
+🚀 BoundaryCheckService.buildGraph(project: NestjsProject): Promise<BoundaryGraph> [packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:106]
+  └─> NestjsProjectService.exploreProject(project: NestjsProject): Promise<SpelunkedTree[]> [packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:153]
+     ↳ Explores a project's container in preview mode and returns its tree.
+    └─> NestjsProjectService.buildSyntheticRootModule(project: NestjsProject): Promise<DynamicModule> [packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:54]
+       ↳ Roots a package that bootstraps nothing in every module it defines.
+      └─> NestjsProjectService.map(…)(file: string): Promise<Type<unknown>[]> [packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:61]
+        └─> NestjsProjectService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:87]
+           ↳ Imports a module file and returns every module class it exports.
+          └─> NestjsProjectService.map(…)([, moduleClass]: [string, Type<unknown>]): Type<unknown> [packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:98]
+```
+
+</details>
+
+### Module spread
+
+None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `BoundariesService.evaluateAccessRule` | 5 | `BoundariesService.indexNodes`, `BoundariesService.judgesEdge`, `BoundariesService.resolveNode`, `BoundarySelectorService.matches`, `BoundariesService.buildAccessViolation` | `packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:107` |
+| `BoundaryCheckService.runNxLevel` | 4 | `BoundaryGraphService.buildNxGraph`, `WorkspaceGraphService.buildWorkspaceGraph`, `BoundariesService.evaluate`, `BoundaryCheckService.collectProjectFailure` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:121` |
+| `BoundarySelectorService.selectIds` | 3 | `BoundarySelectorService.map(…)`, `BoundarySelectorService.map(…)`, `BoundarySelectorService.filter(…)` | `packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:106` |
+
+<details>
+<summary>34 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `BoundariesService.evaluateAcyclicRule` | 3 | `BoundarySelectorService.selectIds`, `BoundaryCyclesService.findCycles`, `BoundariesService.map(…)` | `packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:140` |
+| `BoundaryCheckService.buildGraph` | 3 | `BoundaryGraphService.buildNestjsGraph`, `ModuleGraphService.buildGraph`, `NestjsProjectService.exploreProject` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:106` |
+| `BoundaryCheckService.buildGraph` | 3 | `BoundaryGraphService.buildTypescriptImportGraph`, `TypescriptService.buildGraph`, `TypescriptService.buildProgram` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:201` |
+| `BoundaryCheckService.run` | 3 | `BoundaryCheckService.runLevel`, `BoundaryCheckService.flatMap(…)`, `BoundaryCheckService.flatMap(…)` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:225` |
+| `BoundaryCyclesService.findCycles` | 2 | `BoundaryCyclesService.buildAdjacency`, `BoundaryCyclesService.walk` | `packages/codependix-boundaries/src/modules/boundaries/boundary-cycles.service.ts:127` |
+| `BoundarySelectorService.matches` | 2 | `BoundarySelectorService.matchesGlobs`, `BoundarySelectorService.matchesTags` | `packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:86` |
+| `BoundariesService.map(…)` | 2 | `BoundariesService.buildMessage`, `describeCycle` | `packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:151` |
+| `BoundariesService.flatMap(…)` | 2 | `BoundariesService.evaluateAcyclicRule`, `BoundariesService.evaluateAccessRule` | `packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:223` |
+| `BoundaryGraphService.buildNxGraph` | 2 | `BoundaryGraphService.map(…)`, `BoundaryGraphService.map(…)` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:100` |
+| `BoundaryCheckService.runNestjsLevel` | 2 | `BoundaryCheckService.runProjectLevel`, `NestjsProjectService.discoverProjects` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:102` |
+| `BoundaryCheckService.runProjectLevel` | 2 | `BoundariesService.evaluate`, `BoundaryCheckService.collectProjectFailure` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:157` |
+| `BoundaryCheckService.runPythonImportsLevel` | 2 | `BoundaryCheckService.runProjectLevel`, `PythonService.discoverProjects` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:181` |
+| `BoundaryCheckService.buildGraph` | 2 | `BoundaryGraphService.buildPythonImportGraph`, `PythonService.buildGraph` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:185` |
+| `BoundaryCheckService.runTypescriptImportsLevel` | 2 | `BoundaryCheckService.runProjectLevel`, `TypescriptService.discoverProjects` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:197` |
+| `BoundaryCyclesService.recordCycle` | 1 | `BoundaryCyclesService.buildCycleKey` | `packages/codependix-boundaries/src/modules/boundaries/boundary-cycles.service.ts:73` |
+| `BoundaryCyclesService.walk` | 1 | `BoundaryCyclesService.recordCycle` | `packages/codependix-boundaries/src/modules/boundaries/boundary-cycles.service.ts:91` |
+| `BoundarySelectorService.matchesGlobs` | 1 | `BoundarySelectorService.some(…)` | `packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:37` |
+| `BoundarySelectorService.matchesTags` | 1 | `BoundarySelectorService.some(…)` | `packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:59` |
+| `BoundarySelectorService.some(…)` | 1 | `BoundarySelectorService.some(…)` | `packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:71` |
+| `BoundarySelectorService.filter(…)` | 1 | `BoundarySelectorService.matches` | `packages/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:116` |
+| `BoundariesService.buildAccessViolation` | 1 | `BoundariesService.buildMessage` | `packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:54` |
+| `BoundariesService.indexNodes` | 1 | `BoundariesService.map(…)` | `packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:166` |
+| `BoundariesService.evaluate` | 1 | `BoundariesService.flatMap(…)` | `packages/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:222` |
+| `BoundaryReportService.renderSummary` | 1 | `BoundaryReportService.map(…)` | `packages/codependix-boundaries/src/modules/boundaries/boundary-report.service.ts:36` |
+| `BoundaryReportService.renderViolations` | 1 | `BoundaryReportService.map(…)` | `packages/codependix-boundaries/src/modules/boundaries/boundary-report.service.ts:56` |
+| `BoundaryGraphService.buildFileNodes` | 1 | `BoundaryGraphService.map(…)` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:45` |
+| `BoundaryGraphService.buildNestjsGraph` | 1 | `BoundaryGraphService.map(…)` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:80` |
+| `BoundaryGraphService.map(…)` | 1 | `BoundaryGraphService.resolveProjectRoot` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:113` |
+| `BoundaryGraphService.buildPythonImportGraph` | 1 | `BoundaryGraphService.buildFileNodes` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:127` |
+| `BoundaryGraphService.buildTypescriptImportGraph` | 1 | `BoundaryGraphService.buildFileNodes` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:140` |
+| `BoundaryCheckService.imports` | 1 | `BoundaryCheckService.runTypescriptImportsLevel` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:90` |
+| `BoundaryCheckService.nestjs` | 1 | `BoundaryCheckService.runNestjsLevel` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:92` |
+| `BoundaryCheckService.nx` | 1 | `BoundaryCheckService.runNxLevel` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:93` |
+| `BoundaryCheckService.pythonImports` | 1 | `BoundaryCheckService.runPythonImportsLevel` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:94` |
+
+</details>
+
+### Possibly misplaced
+
+| Callable | Declared in | Called from | Callers |
+| --- | --- | --- | --- |
+| `BoundariesService.evaluate` | `packages/codependix-boundaries:modules/boundaries` | `packages/codependix-boundaries:modules/boundary-check` | 2/2 |
+<!-- CALL_STACKS_END -->
