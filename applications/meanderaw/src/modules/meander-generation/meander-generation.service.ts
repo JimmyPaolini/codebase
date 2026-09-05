@@ -9,6 +9,7 @@ import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import {
   COMPATIBLE_MODIFIERS,
   ConflictingSubFamilyError,
+  FAMILY_MAXIMUM_ROWS,
   InvalidModifierError,
   InvalidOffsetError,
   InvalidPeriodError,
@@ -248,12 +249,24 @@ export class MeanderGenerationService {
     }
   }
 
-  /** Throws {@link InvalidRowsError} when not a whole number within the type's structural minimum and the shared maximum. */
+  /**
+   * Throws {@link InvalidRowsError} when not a whole number within the
+   * type's own row range.
+   *
+   * Both ends are the family's rather than the command line's.
+   * {@link STRUCTURAL_MINIMUM_ROWS} sets the floor, below which the
+   * family's characteristic figure degenerates; {@link FAMILY_MAXIMUM_ROWS}
+   * sets the ceiling, which is the shared {@link MAXIMUM_VALUE} for every
+   * family but `mosaic`. Reading the ceiling here rather than in the sweep
+   * alone is what keeps a drawing the command line accepts and a drawing
+   * the corpus commits the same set.
+   */
   private validateRows(type: MeanderType, rows: number): void {
     const minimum = STRUCTURAL_MINIMUM_ROWS[type];
+    const maximum = FAMILY_MAXIMUM_ROWS[type];
 
-    if (!Number.isInteger(rows) || rows < minimum || rows > MAXIMUM_VALUE) {
-      throw new InvalidRowsError(rows, minimum, MAXIMUM_VALUE);
+    if (!Number.isInteger(rows) || rows < minimum || rows > maximum) {
+      throw new InvalidRowsError(rows, minimum, maximum);
     }
   }
 

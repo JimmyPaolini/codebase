@@ -46,7 +46,7 @@ describe(DrawPermutationsService, () => {
 
   describe("rowsSweep", () => {
     it("covers the mosaic's own minimum row count through the shared sweep maximum", () => {
-      expect(service.rowsSweep()).toStrictEqual([4, 5, 6, 7, 8]);
+      expect(service.rowsSweep()).toStrictEqual([4, 5, 6]);
     });
   });
 
@@ -63,7 +63,7 @@ describe(DrawPermutationsService, () => {
     });
 
     it("renders a document for every distinct tile in the family", () => {
-      expect(sweepPaths()).toHaveLength(3179);
+      expect(sweepPaths()).toHaveLength(290);
     });
 
     it("names every file after the tile it draws, so no two collide", () => {
@@ -84,7 +84,7 @@ describe(DrawPermutationsService, () => {
       // The mixed dot-and-vertical-dash tile at the smallest size there is
       // belongs to no sub-family, so nothing is appended to its identifier.
       expect(paths).toContain("mosaic/4-rows/permutations/1-columns/dvx.svg");
-      expect(named).toHaveLength(94);
+      expect(named).toHaveLength(30);
     });
 
     it("renders the tile itself, so the document is the drawing rather than a placeholder", () => {

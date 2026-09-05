@@ -69,6 +69,43 @@ export const MOSAIC_SUB_FAMILY_SHAPES: Record<
 export const MOSAIC_TILE_MAXIMUM_COLUMNS = 2;
 
 /**
+ * The deepest band the `mosaic` family is drawn in, and so the highest
+ * `rows` value a tile is enumerated at.
+ *
+ * Six, where every other family runs to the shared `MAXIMUM_VALUE` of 12.
+ * This family is the one whose space is enumerated exhaustively rather than
+ * sampled, and the count grows about 3.4x per row. Counted off
+ * `MosaicTilesService.enumerate` across both column spans:
+ *
+ * | rows  |  4 |  5 |   6 |   7 |    8 |    9 |    10 |     11 |      12 |
+ * | ----- | -- | -- | --- | --- | ---- | ---- | ----- | ------ | ------- |
+ * | tiles | 23 | 68 | 199 | 660 | 2229 | 7977 | 29002 | 108089 |  406934 |
+ *
+ * Rows 4 through 6 are the 290 tiles committed today; carrying the
+ * enumeration to 12 would commit 554,891 more. Sampling the space instead
+ * is not on offer — enumerating it is this family's whole claim — so the
+ * bounded thing to do is to stop the family lower down than the rest.
+ *
+ * It is a budget rather than a structural claim: nothing about the geometry
+ * fails at 7 rows, which is why this is not the opposite number of
+ * `STRUCTURAL_MINIMUM_ROWS`. It is enforced at the generation seam through
+ * `FAMILY_MAXIMUM_ROWS` all the same, so a `mosaic` at 7 rows is refused
+ * rather than drawn outside the corpus the charter gates — the property
+ * issue #507 lived in the absence of.
+ *
+ * **The `negative` permutation half stops here too**, which is why this
+ * constant is read outside the `mosaic` modules. That half used to stop one
+ * row lower, so every drawing in it inverted a tile the `mosaic` half had
+ * already committed; it now runs to the same 6, so its deepest row count
+ * inverts a seven-row source that is enumerable but not committed and the
+ * corridor-identity gate covers rows 3 through 5 of it rather than all of
+ * it. `NegativeSourceService` builds source tiles from a rule rather than
+ * from the enumeration, which is the same reason the named `negative`
+ * family already draws out to 12 rows with no committed source at all.
+ */
+export const MOSAIC_TILE_MAXIMUM_ROWS = 6;
+
+/**
  * The smallest `rows` value a `mosaic` tile is worth enumerating at. Below
  * 4 rows the bar's interior is a single grid level, so the only tiles are
  * one dot or one line and there is nothing to permute.
