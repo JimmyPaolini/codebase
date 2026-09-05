@@ -27,4 +27,4 @@ Two decisions show up in one line of code:
 
 ## Next
 
-[computed member](../computed-member/README.md).
+[dependency closure](../dependency-closure/README.md).

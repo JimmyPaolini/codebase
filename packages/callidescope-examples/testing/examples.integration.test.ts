@@ -13,7 +13,10 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import callidescopeConfiguration from "../callidescope.config.js";
 
-import type { CallGraphResult } from "@callidescope/configuration";
+import type {
+  CallGraphResult,
+  ProjectReport,
+} from "@callidescope/configuration";
 
 // 🔭 Fixture expectations
 
@@ -32,6 +35,52 @@ const EXAMPLES_DIRECTORY = "packages/callidescope-examples";
 const MODULE_PREFIX = `${EXAMPLES_DIRECTORY}:`;
 
 /**
+ * The `dependency-closure` fixture's stack, frame by frame, with the project
+ * each frame was declared in.
+ *
+ * The project is the whole point: two of the four frames are declared outside
+ * this package, and are there only because the run traced its closure.
+ */
+function readClosureFrames(
+  result: CallGraphResult,
+): { displayName: string; project: string }[] {
+  const stack = result.projects
+    .flatMap((project) => project.stacks)
+    .find(
+      (candidate) =>
+        candidate.frames[0]?.displayName ===
+        "DependencyClosureService.allowsDepth",
+    );
+
+  return (stack?.frames ?? []).map((frame) => ({
+    displayName: frame.displayName,
+    project: frame.location.filePath.split("/").slice(0, 2).join("/"),
+  }));
+}
+
+/**
+ * This package's own slice of a run.
+ *
+ * Every count below is read from here rather than from the whole-run summary,
+ * because the run covers three dependency packages as well and they are
+ * ordinary code that changes for ordinary reasons. A suite about fixtures that
+ * failed when `packages/logger` gained a method would teach people to update
+ * its numbers without reading them, which is the one thing these exact
+ * assertions exist to prevent.
+ */
+function readOwnReport(result: CallGraphResult): ProjectReport {
+  const report = result.projects.find(
+    (project) => project.projectName === EXAMPLES_DIRECTORY,
+  );
+
+  if (report === undefined) {
+    throw new Error(`The run reported no project named ${EXAMPLES_DIRECTORY}`);
+  }
+
+  return report;
+}
+
+/**
  * Traces the fixtures the way the Nx target does, into a throwaway report.
  *
  * The real configuration is reused rather than restated — only its output is
@@ -39,11 +88,17 @@ const MODULE_PREFIX = `${EXAMPLES_DIRECTORY}:`;
  * asserts instead of quietly disagreeing with it. The committed reports under
  * `output/` are left exactly where they were.
  *
- * `limits` overrides one threshold for the differential the cap fixture needs:
- * the only way to show a cap doing something is to run the same fixtures again
- * with it lifted.
+ * Both overrides exist for a differential, because a rule that narrows
+ * something can only be shown to do anything by running the same fixtures again
+ * without it. `limits` lifts the implementation cap; `exclude` drops one
+ * project out of the run's dependency closure.
  */
-function traceFixtures(limits: Record<string, number> = {}): CallGraphResult {
+function traceFixtures(
+  overrides: {
+    exclude?: readonly string[];
+    limits?: Record<string, number>;
+  } = {},
+): CallGraphResult {
   const temporaryDirectory = mkdtempSync(
     path.join(tmpdir(), "callidescope-examples-"),
   );
@@ -57,7 +112,11 @@ function traceFixtures(limits: Record<string, number> = {}): CallGraphResult {
     configurationPath,
     JSON.stringify({
       ...callidescopeConfiguration,
-      limits: { ...callidescopeConfiguration.limits, ...limits },
+      exclude: [
+        ...(callidescopeConfiguration.exclude ?? []),
+        ...(overrides.exclude ?? []),
+      ],
+      limits: { ...callidescopeConfiguration.limits, ...overrides.limits },
       output: { json: { path: reportPath } },
     }),
     "utf8",
@@ -132,13 +191,31 @@ describe("callidescope examples (integration)", () => {
   });
 
   describe("what the run measured", () => {
-    it("traces the whole package and nothing else", () => {
-      expect(result.summary).toStrictEqual({
-        callableCount: 69,
+    it("traces this package and the projects its imports reach", () => {
+      // The closure, stated as a set. What is absent asserts the narrowing
+      // rule this run exercises: the package's program really reads four
+      // files under `configuration/`, a project root holding a
+      // `tsconfig.json` and no `package.json`, and admitting it would reach
+      // every toolchain the repository configures. The other refusal — the
+      // workspace root — is only reachable through that one here, so this
+      // list stands for the first rule rather than for both.
+      expect(
+        result.projects.map((project) => project.projectName),
+      ).toStrictEqual([
+        "packages/callidescope-configuration",
+        EXAMPLES_DIRECTORY,
+        "packages/codometer-configuration",
+        "packages/logger",
+      ]);
+    });
+
+    it("measures this package's own fixtures exactly", () => {
+      expect(readOwnReport(result).summary).toStrictEqual({
+        callableCount: 72,
         cyclicComponentCount: 1,
-        edgeCount: 53,
-        entryPointCount: 23,
-        fileCount: 33,
+        edgeCount: 55,
+        entryPointCount: 15,
+        fileCount: 34,
         maximumDepth: 8,
         projectCount: 1,
         unresolvedCallCount: 2,
@@ -154,22 +231,77 @@ describe("callidescope examples (integration)", () => {
       //
       // Without this, the cap could stop working entirely and every other
       // assertion here would still pass.
-      const lifted = traceFixtures({ maximumImplementationCandidates: 8 });
+      const own = readOwnReport(result);
+      const lifted = readOwnReport(
+        traceFixtures({ limits: { maximumImplementationCandidates: 8 } }),
+      );
 
-      expect(result.summary.unresolvedCallCount).toBe(2);
+      expect(own.summary.unresolvedCallCount).toBe(2);
       expect(lifted.summary.unresolvedCallCount).toBe(1);
-      expect(lifted.summary.edgeCount).toBe(result.summary.edgeCount + 3);
+      expect(lifted.summary.edgeCount).toBe(own.summary.edgeCount + 3);
+    });
+  });
+
+  describe("dependency closure", () => {
+    it("follows a call into a dependency, and stops at the boundary without it", () => {
+      // The closure can only be shown to do something by taking one project
+      // out of it. The same fixture heads the same stack either way; what
+      // changes is how far the stack goes, which is the whole claim.
+      const withoutDependency = traceFixtures({
+        exclude: ["packages/callidescope-configuration/**"],
+      });
+
+      expect(readClosureFrames(result)).toStrictEqual([
+        {
+          displayName: "DependencyClosureService.allowsDepth",
+          project: EXAMPLES_DIRECTORY,
+        },
+        {
+          displayName: "DependencyClosureService.readDepthLimit",
+          project: EXAMPLES_DIRECTORY,
+        },
+        {
+          displayName: "ConfigurationService.resolveConfiguration",
+          project: "packages/callidescope-configuration",
+        },
+        {
+          displayName: "ConfigurationService.resolveAllowSpreadFor",
+          project: "packages/callidescope-configuration",
+        },
+      ]);
+
+      expect(readClosureFrames(withoutDependency)).toStrictEqual([
+        {
+          displayName: "DependencyClosureService.allowsDepth",
+          project: EXAMPLES_DIRECTORY,
+        },
+        {
+          displayName: "DependencyClosureService.readDepthLimit",
+          project: EXAMPLES_DIRECTORY,
+        },
+      ]);
     });
   });
 
   describe("depth findings", () => {
     it("reports every deliberately deep stack and no others", () => {
+      // Narrowed to the stacks this package heads. The closure's three
+      // dependency packages are real code judged by a limit set low enough to
+      // make these fixtures findings, so one of them is over it — a fact about
+      // those packages rather than about a fixture, and not this suite's to
+      // pin.
       expect(
-        result.deepStacks.map((stack) => ({
-          depth: stack.depth,
-          entry: stack.frames[0]?.displayName,
-          isLowerBound: stack.isLowerBound,
-        })),
+        result.deepStacks
+          .filter((stack) =>
+            stack.frames[0]?.location.filePath.startsWith(
+              `${EXAMPLES_DIRECTORY}/`,
+            ),
+          )
+          .map((stack) => ({
+            depth: stack.depth,
+            entry: stack.frames[0]?.displayName,
+            isLowerBound: stack.isLowerBound,
+          })),
       ).toStrictEqual([
         {
           depth: 8,
@@ -232,7 +364,7 @@ describe("callidescope examples (integration)", () => {
   describe("cohesion findings", () => {
     it("reports the orchestrator and not its near miss", () => {
       expect(
-        result.moduleSpreads.map((finding) => ({
+        readOwnReport(result).moduleSpreads.map((finding) => ({
           directModuleCount: finding.directModuleIds.length,
           displayName: finding.displayName,
         })),
@@ -246,7 +378,7 @@ describe("callidescope examples (integration)", () => {
 
     it("suggests the module the misplaced helper's callers live in", () => {
       expect(
-        result.misplacedCallables.map((finding) => ({
+        readOwnReport(result).misplacedCallables.map((finding) => ({
           callerCount: finding.callerCount,
           displayName: finding.displayName,
           foreignCallerCount: finding.foreignCallerCount,
@@ -268,9 +400,7 @@ describe("callidescope examples (integration)", () => {
   describe("entry points", () => {
     it("carries one stack of every root kind", () => {
       const kinds = new Set(
-        result.projects.flatMap((project) =>
-          project.stacks.map((stack) => stack.entryPointKind),
-        ),
+        readOwnReport(result).stacks.map((stack) => stack.entryPointKind),
       );
 
       expect([...kinds].toSorted()).toStrictEqual([

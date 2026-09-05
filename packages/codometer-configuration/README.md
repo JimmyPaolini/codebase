@@ -411,14 +411,44 @@ Call stacks traced through `packages/codometer-configuration`, deepest first. Ea
 | Callables | 47 |
 | Files | 16 |
 | Calls traced | 39 |
-| Call stacks | 4 |
-| Deepest stack | 2 |
+| Call stacks | 6 |
+| Deepest stack | 8 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 4 |
 
 ### Call stacks (depth)
 
-**1. `callbackSchema`** — depth 2 · orphan-root
+**1. `ConfigurationService.loadConfiguration`** — depth ≥ 8 · orphan-root
+
+```text
+🚀 ConfigurationService.loadConfiguration(args?: LoadConfigurationArguments): Promise<ResolvedCodometerConfiguration> [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:268]
+   ↳ Loads and validates a codometer configuration file.
+  └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedConfiguration> [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:285]
+     ↳ Loads a configuration and says which file answered.
+    └─> ConfigurationService.resolveConfiguration(configuration: CodometerConfiguration): ResolvedCodometerConfiguration [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:308]
+       ↳ Fills in every field a configuration file may leave out.
+      └─> ConfigurationService.resolveLimits(limits: CodometerLimit[] | undefined): ResolvedCodometerLimit[] [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:190]
+         ↳ Gives every limit its severity and a value read as a number.
+        └─> ConfigurationService.map(…)(…): { label: string | undefined; metric: string; severity: CodometerSeverity; value: number; } [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:193]
+          └─> ConfigurationService.parseLimitValue(limit: CodometerLimit): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:74]
+             ↳ Reads a limit's value, in decimal units when it was written as a string.
+            └─> ConfigurationService.parseLimitValueText(metric: string, text: string): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:94]
+               ↳ Reads a limit written as a string, unit and all.
+              └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:467]
+```
+
+**2. `InputService.parseDirectoryOption`** — depth 3 · orphan-root
+
+```text
+🚀 InputService.parseDirectoryOption(value: unknown): string [packages/codometer-configuration/src/modules/input/input.service.ts:52]
+   ↳ Reads a directory option, falling back to the working directory.
+  └─> InputService.parseDefaultedOption(value: unknown, fallback: string): string [packages/codometer-configuration/src/modules/input/input.service.ts:41]
+     ↳ Reads an option that carries a default when it was left off.
+    └─> InputService.parseOptionalOption(value: unknown): string | undefined [packages/codometer-configuration/src/modules/input/input.service.ts:68]
+       ↳ Reads an option that carries text, or nothing at all.
+```
+
+**3. `callbackSchema`** — depth 2 · orphan-root
 
 ```text
 🚀 callbackSchema<CallbackType>(): z.ZodType<CallbackType> [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:280]
@@ -426,24 +456,24 @@ Call stacks traced through `packages/codometer-configuration`, deepest first. Ea
   └─> custom(…)(value: unknown): value is Function [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:281]
 ```
 
-**2. `refine(…)`** — depth 2 · orphan-root
+<details>
+<summary>3 more call stacks</summary>
+
+**4. `refine(…)`** — depth 2 · orphan-root
 
 ```text
 🚀 refine(…)(kinds: Record<string, number>): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:300]
   └─> every(…)(kind: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:301]
 ```
 
-**3. `superRefine(…)`** — depth 2 · orphan-root
+**5. `superRefine(…)`** — depth 2 · orphan-root
 
 ```text
 🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:415]
   └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:417]
 ```
 
-<details>
-<summary>1 more call stacks</summary>
-
-**4. `refine(…)`** — depth 2 · orphan-root
+**6. `refine(…)`** — depth 2 · orphan-root
 
 ```text
 🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:442]

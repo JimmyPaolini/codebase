@@ -21,6 +21,12 @@ There is no per-example command. An example directory carries no
 `tsconfig.json`, so the package traces as one unit — every example's `## Run it`
 names the command above and then says where in `output/` to look.
 
+The run is not confined to this package, though. A scoped run also traces every
+project its imports transitively reach, so this one covers four projects:
+`packages/callidescope-examples`, `packages/callidescope-configuration`,
+`packages/codometer-configuration`, and `packages/logger`. See
+[`dependency-closure`](examples/dependency-closure/README.md).
+
 ## Callidescope said X — open this example
 
 | What the run said | Open | What it means |
@@ -36,6 +42,8 @@ names the command above and then says where in `output/` to look.
 | A frame marked `⚠ deprecated`, or printed `(…): T` | [`frame-annotations`](examples/frame-annotations/README.md) | Annotation shortening in the printed tree. `output/report.json` carries the full text |
 | A call resolved to a class that never writes `implements` | [`structural-interface`](examples/structural-interface/README.md) | Structural matching, which is the only thing that works on an arrow-typed property |
 | A frame you did not expect, named for a declaration rather than the local name | [`plain-call`](examples/plain-call/README.md) | The checker unwraps the import alias. A report always names the declaration |
+| A frame, a stack, or a per-project row in a package the run was not pointed at | [`dependency-closure`](examples/dependency-closure/README.md) | A scoped run traces the projects its imports reach. Not a leak — a call into a dependency lands on a frame instead of stopping at the package boundary |
+| A stack that ends at a call into another directory, with no frame for it | [`dependency-closure`](examples/dependency-closure/README.md) | The destination is refused: a project root holding no `package.json` is shared settings rather than a package, and the workspace root contains every project |
 | `A configured destination is stale` | [`callidescope.config.ts`](callidescope.config.ts) | Run the `write` configuration of whichever project owns the destination |
 | `--check` rejected a value | [README, "The two flags"](README.md#the-two-flags) | Only `depth` and `reports` are findings; an empty `--check` is refused |
 
@@ -105,6 +113,13 @@ the point:
 - `frame-annotations` carries a `@deprecated` member and a signature past 80
   characters on purpose.
 
+One finding is not a fixture at all. This package's `maximumDepth` is 6 — the
+tool's default, low enough to make the deep fixtures findings — and the closure
+now judges three real dependency packages by it, so a genuine stack in one of
+them is reported as too deep. Do not restructure a dependency to quiet this
+run: nothing here gates depth, and `configuration/callidescope.config.ts` is the
+limit that has a say over those packages.
+
 **This package gates `reports`, not `depth`.** Adding `--check depth` to its
 `examples` target would fail by design.
 
@@ -130,6 +145,16 @@ stale the moment it lands.
 If a number moved and you did not intend it, the resolver changed and that is
 the finding. Do not update the expectation until you know which change caused
 it.
+
+Numbers can also move with no edit here at all. The committed reports cover the
+three projects the closure reaches, so a change to
+`packages/callidescope-configuration`, `packages/codometer-configuration`, or
+`packages/logger` makes them stale. The `examples` target names those packages'
+sources and READMEs in its `inputs`, so the staleness is caught rather than
+cached over, and the three steps above are the fix. The assertions in the test
+suite are deliberately written against this package's **own** per-project report
+for that reason — a sibling package gaining a method should not fail a suite
+about fixtures.
 
 ## Key files
 

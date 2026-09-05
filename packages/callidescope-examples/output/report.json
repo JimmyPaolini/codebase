@@ -685,6 +685,232 @@
       "limit": 6
     },
     {
+      "depth": 8,
+      "entryPointKind": "orphan-root",
+      "frames": [
+        {
+          "displayName": "ConfigurationService.loadConfiguration",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Loads and validates a codometer configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly measure the repository with defaults it never asked for. A path that was not named is searched for from the measured directory upward, and its absence is legal. The nearest configuration file wins outright: nothing from a further ancestor is folded into it. Merging the two would leave a limit that never applied looking exactly like one that did, and the only way to tell them apart would be to know which of several files each field came from.",
+            "tags": []
+          },
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9009",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 268
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "args",
+                "type": "LoadConfigurationArguments"
+              }
+            ],
+            "returnType": "Promise<ResolvedCodometerConfiguration>",
+            "text": "(args?: LoadConfigurationArguments): Promise<ResolvedCodometerConfiguration>"
+          }
+        },
+        {
+          "displayName": "ConfigurationService.loadConfigurationFile",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Loads a configuration and says which file answered. The same work as `loadConfiguration`, keeping the path the upward walk settled on. A caller measuring one directory has no use for it — the configuration is the whole answer — but one listing what a repository configures has to attribute each answer to the file that gave it, and nothing downstream of the walk can still tell.",
+            "tags": []
+          },
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9661",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 285
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "args",
+                "type": "LoadConfigurationArguments"
+              }
+            ],
+            "returnType": "Promise<LoadedConfiguration>",
+            "text": "(args?: LoadConfigurationArguments): Promise<LoadedConfiguration>"
+          }
+        },
+        {
+          "displayName": "ConfigurationService.resolveConfiguration",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Fills in every field a configuration file may leave out. Exposed so a host embedding codometer can hand over a configuration object it assembled itself and get the same shape a configuration file produces.",
+            "tags": []
+          },
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10378",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 308
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configuration",
+                "type": "CodometerConfiguration"
+              }
+            ],
+            "returnType": "ResolvedCodometerConfiguration",
+            "text": "(configuration: CodometerConfiguration): ResolvedCodometerConfiguration"
+          }
+        },
+        {
+          "displayName": "ConfigurationService.resolveLimits",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Gives every limit its severity and a value read as a number. Which metric a limit lands on is decided where the measurement is, since nothing here knows what was measured — the only thing settled at this point is what the limit says.",
+            "tags": []
+          },
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6106",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 190
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "limits",
+                "type": "CodometerLimit[] | undefined"
+              }
+            ],
+            "returnType": "ResolvedCodometerLimit[]",
+            "text": "(limits: CodometerLimit[] | undefined): ResolvedCodometerLimit[]"
+          }
+        },
+        {
+          "displayName": "ConfigurationService.map(…)",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6233",
+          "isCycle": false,
+          "location": {
+            "column": 31,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 193
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "limit",
+                "type": "CodometerLimit"
+              }
+            ],
+            "returnType": "{ label: string | undefined; metric: string; severity: CodometerSeverity; value: number; }",
+            "text": "(limit: CodometerLimit): { label: string | undefined; metric: string; severity: CodometerSeverity; value: number; }"
+          }
+        },
+        {
+          "displayName": "ConfigurationService.parseLimitValue",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Reads a limit's value, in decimal units when it was written as a string. Everything unreadable is refused: a negative number, a unit missing its `b`, a word, an empty string. The tool this replaces coerced an unreadable limit to nothing and then failed every target holding a single byte.",
+            "tags": []
+          },
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2228",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 74
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "limit",
+                "type": "CodometerLimit"
+              }
+            ],
+            "returnType": "number",
+            "text": "(limit: CodometerLimit): number"
+          }
+        },
+        {
+          "displayName": "ConfigurationService.parseLimitValueText",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Reads a limit written as a string, unit and all. A unit multiplies and then rounds: `\"1.5 KB\"` is 1500, and the rounding is what keeps `\"0.1 KB\"` from arriving as the 100.00000000000001 floating point makes of it. A string carrying no unit at all is the plain number, which is what a limit on a count of interfaces or files is written as.",
+            "tags": []
+          },
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2955",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 94
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "metric",
+                "type": "string"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "text",
+                "type": "string"
+              }
+            ],
+            "returnType": "number",
+            "text": "(metric: string, text: string): number"
+          }
+        },
+        {
+          "displayName": "InvalidLimitValueError.constructor",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15615",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+            "line": 467
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "metric",
+                "type": "string"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "string"
+              }
+            ],
+            "returnType": "InvalidLimitValueError",
+            "text": "(metric: string, value: string): InvalidLimitValueError"
+          }
+        }
+      ],
+      "isLowerBound": true,
+      "limit": 6
+    },
+    {
       "depth": 7,
       "entryPointKind": "orphan-root",
       "frames": [
@@ -931,6 +1157,1085 @@
     }
   ],
   "projects": [
+    {
+      "callableBreadths": [
+        {
+          "breadth": 8,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.resolveAllowSpreadFor",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5172"
+            },
+            {
+              "displayName": "ConfigurationService.resolveEntryPoints",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#6271"
+            },
+            {
+              "displayName": "ConfigurationService.resolveExclude",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7030"
+            },
+            {
+              "displayName": "ConfigurationService.resolveLimits",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7643"
+            },
+            {
+              "displayName": "ConfigurationService.resolveJsonOutput",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7252"
+            },
+            {
+              "displayName": "ConfigurationService.resolveMarkdownDestination",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#8642"
+            },
+            {
+              "displayName": "ConfigurationService.resolveProjectReadmes",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#9433"
+            },
+            {
+              "displayName": "ConfigurationService.resolveWorkspaceStructure",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10244"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveConfiguration",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12120",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 375
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configuration",
+                "type": "CallidescopeConfiguration"
+              }
+            ],
+            "returnType": "ResolvedCallidescopeConfiguration",
+            "text": "(configuration: CallidescopeConfiguration): ResolvedCallidescopeConfiguration"
+          }
+        },
+        {
+          "breadth": 5,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.findConfigurationFile",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#2447"
+            },
+            {
+              "displayName": "ConfigurationService.resolveConfigurationPath",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5410"
+            },
+            {
+              "displayName": "ConfigurationService.resolveConfiguration",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12120"
+            },
+            {
+              "displayName": "UnknownConfigurationFileTypeError.constructor",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#4834"
+            },
+            {
+              "displayName": "ConfigurationService.loadConfigurationModule",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3995"
+            }
+          ],
+          "displayName": "ConfigurationService.loadConfiguration",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10999",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 340
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "args",
+                "type": "LoadConfigurationArguments"
+              }
+            ],
+            "returnType": "Promise<ResolvedCallidescopeConfiguration>",
+            "text": "(args?: LoadConfigurationArguments): Promise<ResolvedCallidescopeConfiguration>"
+          }
+        },
+        {
+          "breadth": 4,
+          "callees": [
+            {
+              "displayName": "InputService.assertCanPrompt",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#1290"
+            },
+            {
+              "displayName": "InputService.map(…)",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#5131"
+            },
+            {
+              "displayName": "promptCancelledError",
+              "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#1298"
+            },
+            {
+              "displayName": "InputService.filter(…)",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#6013"
+            }
+          ],
+          "displayName": "InputService.promptForAutocompleteMultiselect",
+          "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#4849",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+            "line": 139
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ message: string; subject: string; suggestions: readonly string[]; }"
+              }
+            ],
+            "returnType": "Promise<string[]>",
+            "text": "(args: { message: string; subject: string; suggestions: readonly string[]; }): Promise<string[]>"
+          }
+        },
+        {
+          "breadth": 4,
+          "callees": [
+            {
+              "displayName": "InputService.assertCanPrompt",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#1290"
+            },
+            {
+              "displayName": "InputService.map(…)",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#6592"
+            },
+            {
+              "displayName": "promptCancelledError",
+              "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#1298"
+            },
+            {
+              "displayName": "InputService.find(…)",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#6889"
+            }
+          ],
+          "displayName": "InputService.promptForSelect",
+          "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#6314",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+            "line": 188
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ choices: readonly Choice[]; message: string; subject: string; }"
+              }
+            ],
+            "returnType": "Promise<Choice>",
+            "text": "<Choice extends string>(args: { choices: readonly Choice[]; message: string; subject: string; }): Promise<Choice>"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.findRepositoryRoot",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3358"
+            },
+            {
+              "displayName": "ConfigurationFileNotFoundError.constructor",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#8161"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveConfigurationPath",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5410",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 177
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configurationPath",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(configurationPath: string): string"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "InputService.isAtTerminal",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#1846"
+            },
+            {
+              "displayName": "missingInputError",
+              "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#885"
+            }
+          ],
+          "displayName": "InputService.assertCanPrompt",
+          "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#1290",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+            "line": 41
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "subject",
+                "type": "string"
+              }
+            ],
+            "returnType": "void",
+            "text": "(subject: string): void"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "InputService.map(…)",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#5407"
+            },
+            {
+              "displayName": "InputService.completeSuggestions",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#2414"
+            }
+          ],
+          "displayName": "InputService.suggest",
+          "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#5235",
+          "location": {
+            "column": 16,
+            "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+            "line": 150
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "input",
+                "type": "string"
+              }
+            ],
+            "returnType": "Promise<{ title: string; value: string; }[]>",
+            "text": "(input: string): Promise<{ title: string; value: string; }[]>"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "InputService.isAtTerminal",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#1846"
+            },
+            {
+              "displayName": "InputService.promptForSelect",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#6314"
+            }
+          ],
+          "displayName": "InputService.resolveFormatOption",
+          "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#7724",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+            "line": 231
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "options",
+                "type": "Options"
+              }
+            ],
+            "returnType": "Promise<Options>",
+            "text": "<Options extends CallidescopeFormatOptions>(options: Options): Promise<Options>"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "custom(…)",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#5359"
+            }
+          ],
+          "displayName": "callbackSchema",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#5298",
+          "location": {
+            "column": 24,
+            "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
+            "line": 178
+          },
+          "signature": {
+            "parameters": [],
+            "returnType": "ZodType<TCallback, unknown, $ZodTypeInternals<TCallback, unknown>>",
+            "text": "<TCallback>(): z.ZodType<TCallback>"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.some(…)",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3577"
+            }
+          ],
+          "displayName": "ConfigurationService.findRepositoryRoot",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3358",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 109
+          },
+          "signature": {
+            "parameters": [],
+            "returnType": "string | undefined",
+            "text": "(): string | undefined"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.loadJsonConfiguration",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4764"
+            }
+          ],
+          "displayName": "ConfigurationService.loadConfigurationModule",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3995",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 133
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configurationPath: string; extension: string; }"
+              }
+            ],
+            "returnType": "Promise<unknown>",
+            "text": "(args: { configurationPath: string; extension: string; }): Promise<unknown>"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InputError.constructor",
+              "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#505"
+            }
+          ],
+          "displayName": "missingInputError",
+          "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#885",
+          "location": {
+            "column": 34,
+            "filePath": "packages/callidescope-configuration/src/modules/input/input.constants.ts",
+            "line": 27
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "subject",
+                "type": "string"
+              }
+            ],
+            "returnType": "InputError",
+            "text": "(subject: string): InputError"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InputError.constructor",
+              "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#505"
+            }
+          ],
+          "displayName": "promptCancelledError",
+          "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#1298",
+          "location": {
+            "column": 37,
+            "filePath": "packages/callidescope-configuration/src/modules/input/input.constants.ts",
+            "line": 39
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "subject",
+                "type": "string"
+              }
+            ],
+            "returnType": "InputError",
+            "text": "(subject: string): InputError"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InputService.filter(…)",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#2604"
+            }
+          ],
+          "displayName": "InputService.completeSuggestions",
+          "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#2414",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+            "line": 73
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ input: string; suggestions: readonly string[]; }"
+              }
+            ],
+            "returnType": "string[]",
+            "text": "(args: { input: string; suggestions: readonly string[]; }): string[]"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InputService.map(…)",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#3526"
+            }
+          ],
+          "displayName": "InputService.parseCommaDelimitedOption",
+          "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#3361",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+            "line": 96
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "string | undefined"
+              }
+            ],
+            "returnType": "string[]",
+            "text": "(value: string | undefined): string[]"
+          }
+        }
+      ],
+      "misplacedCallables": [],
+      "moduleSpreads": [],
+      "projectName": "packages/callidescope-configuration",
+      "stacks": [
+        {
+          "depth": 5,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "InputService.resolveFormatOption",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Returns the given options with `--format` filled in where one is wanted. Offered rather than required, which is the one place this differs from every other missing value: the configuration already declares a format, so with nobody at a terminal the configured one stands and the run proceeds. Demanding it would fail every scripted `--check depth` — the gate this repository runs on each pull request among them — over a flag those runs have never needed to pass. Generic over the caller's options type, so a command carries its own other flags through unchanged.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#7724",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+                "line": 231
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "options",
+                    "type": "Options"
+                  }
+                ],
+                "returnType": "Promise<Options>",
+                "text": "<Options extends CallidescopeFormatOptions>(options: Options): Promise<Options>"
+              }
+            },
+            {
+              "displayName": "InputService.promptForSelect",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Prompts for one value out of a fixed set of choices.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#6314",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+                "line": 188
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ choices: readonly Choice[]; message: string; subject: string; }"
+                  }
+                ],
+                "returnType": "Promise<Choice>",
+                "text": "<Choice extends string>(args: { choices: readonly Choice[]; message: string; subject: string; }): Promise<Choice>"
+              }
+            },
+            {
+              "displayName": "InputService.assertCanPrompt",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Refuses to draw a prompt nobody can answer. `prompts` does not fail on a non-terminal stdin — it renders the menu, never resolves, and lets the process exit 0, so a run that did nothing reads as one that succeeded.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#1290",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+                "line": 41
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "subject",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(subject: string): void"
+              }
+            },
+            {
+              "displayName": "missingInputError",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "A required value that cannot be asked for, because stdin is not a terminal. `prompts` does not fail there — it draws its menu, never resolves, and the process exits 0 having done nothing. This refuses to become that silent green no-op.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#885",
+              "isCycle": false,
+              "location": {
+                "column": 34,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.constants.ts",
+                "line": 27
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "subject",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "InputError",
+                "text": "(subject: string): InputError"
+              }
+            },
+            {
+              "displayName": "InputError.constructor",
+              "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#505",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.constants.ts",
+                "line": 14
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "message",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "InputError",
+                "text": "(message: string): InputError"
+              }
+            }
+          ],
+          "isLowerBound": true
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ConfigurationService.loadConfiguration",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Loads and validates a callidescope configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly trace the repository with defaults it never asked for. A path that was not named is searched for, and its absence is legal.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10999",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 340
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "LoadConfigurationArguments"
+                  }
+                ],
+                "returnType": "Promise<ResolvedCallidescopeConfiguration>",
+                "text": "(args?: LoadConfigurationArguments): Promise<ResolvedCallidescopeConfiguration>"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.resolveConfigurationPath",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Resolves a configuration path against the cwd, then the repository root.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5410",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 177
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "configurationPath",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(configurationPath: string): string"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.findRepositoryRoot",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Walks upward from the process cwd looking for the repository root. Used to resolve a configuration path given relative to that root even when the command was invoked from a nested directory, which is what a task runner does whenever it sets the cwd to the project rather than the workspace.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3358",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 109
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "string | undefined",
+                "text": "(): string | undefined"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.some(…)",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3577",
+              "isCycle": false,
+              "location": {
+                "column": 51,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 114
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "marker",
+                    "type": "\".git\" | \"pnpm-workspace.yaml\""
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(marker: \".git\" | \"pnpm-workspace.yaml\"): boolean"
+              }
+            }
+          ],
+          "isLowerBound": true
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "InputService.promptForAutocompleteMultiselect",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Prompts for several values at once, completing the list as it is typed. The multiselect sibling of `promptForAutocomplete`, and it shares that method's completion rule so a name typed here narrows the list the same way it would there. Selecting nothing is refused rather than read as an empty list: the caller asked because it needs at least one value, and `prompts` returns `[]` both for a deliberate empty selection and for a prompt escaped out of, which are the same thing to whoever has to act on it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#4849",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+                "line": 139
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ message: string; subject: string; suggestions: readonly string[]; }"
+                  }
+                ],
+                "returnType": "Promise<string[]>",
+                "text": "(args: { message: string; subject: string; suggestions: readonly string[]; }): Promise<string[]>"
+              }
+            },
+            {
+              "displayName": "InputService.assertCanPrompt",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Refuses to draw a prompt nobody can answer. `prompts` does not fail on a non-terminal stdin — it renders the menu, never resolves, and lets the process exit 0, so a run that did nothing reads as one that succeeded.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#1290",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+                "line": 41
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "subject",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(subject: string): void"
+              }
+            },
+            {
+              "displayName": "missingInputError",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "A required value that cannot be asked for, because stdin is not a terminal. `prompts` does not fail there — it draws its menu, never resolves, and the process exits 0 having done nothing. This refuses to become that silent green no-op.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#885",
+              "isCycle": false,
+              "location": {
+                "column": 34,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.constants.ts",
+                "line": 27
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "subject",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "InputError",
+                "text": "(subject: string): InputError"
+              }
+            },
+            {
+              "displayName": "InputError.constructor",
+              "id": "packages/callidescope-configuration/src/modules/input/input.constants.ts#505",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.constants.ts",
+                "line": 14
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "message",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "InputError",
+                "text": "(message: string): InputError"
+              }
+            }
+          ],
+          "isLowerBound": true
+        },
+        {
+          "depth": 3,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "InputService.suggest",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#5235",
+              "isCycle": false,
+              "location": {
+                "column": 16,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+                "line": 150
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "input",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "Promise<{ title: string; value: string; }[]>",
+                "text": "(input: string): Promise<{ title: string; value: string; }[]>"
+              }
+            },
+            {
+              "displayName": "InputService.completeSuggestions",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Narrows a suggestion list to what has been typed so far. A method of its own rather than a closure inside the prompt, because this is the whole of the completion rule and it is worth stating — and testing — without a terminal anywhere near it. Matches on a substring rather than a prefix: a callable is addressed `<file>#<name>`, and the name is far more often what someone remembers than the path in front of it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#2414",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+                "line": 73
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ input: string; suggestions: readonly string[]; }"
+                  }
+                ],
+                "returnType": "string[]",
+                "text": "(args: { input: string; suggestions: readonly string[]; }): string[]"
+              }
+            },
+            {
+              "displayName": "InputService.filter(…)",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#2604",
+              "isCycle": false,
+              "location": {
+                "column": 45,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+                "line": 78
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "suggestion",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(suggestion: string): boolean"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "callbackSchema",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Accepts a function-valued option without inspecting its signature. Zod cannot describe a callback's parameters, and parsing one would replace the caller's function with a wrapper. Checking that it is callable is the whole of what validation can honestly assert here.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#5298",
+              "isCycle": false,
+              "location": {
+                "column": 24,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 178
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "ZodType<TCallback, unknown, $ZodTypeInternals<TCallback, unknown>>",
+                "text": "<TCallback>(): z.ZodType<TCallback>"
+              }
+            },
+            {
+              "displayName": "custom(…)",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#5359",
+              "isCycle": false,
+              "location": {
+                "column": 23,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 179
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "unknown"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(value: unknown): value is Function"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "InputService.parseCommaDelimitedOption",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Splits `--directories`, a comma-separated list of project directories. Kept relative rather than resolved here: each entry is later resolved against the workspace root, which is always the working directory, so resolving here as well would only make a relative entry ambiguous about which root it was ever relative to.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#3361",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+                "line": 96
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "string | undefined"
+                  }
+                ],
+                "returnType": "string[]",
+                "text": "(value: string | undefined): string[]"
+              }
+            },
+            {
+              "displayName": "InputService.map(…)",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#3526",
+              "isCycle": false,
+              "location": {
+                "column": 16,
+                "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
+                "line": 101
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entry",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entry: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        }
+      ],
+      "summary": {
+        "callableCount": 42,
+        "cyclicComponentCount": 0,
+        "edgeCount": 40,
+        "entryPointCount": 6,
+        "fileCount": 13,
+        "maximumDepth": 5,
+        "projectCount": 1,
+        "unresolvedCallCount": 3
+      },
+      "typeDepths": [
+        {
+          "maximumDepth": 5,
+          "memberCount": 18,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-configuration:examples",
+          "typeName": "InputService"
+        },
+        {
+          "maximumDepth": 4,
+          "memberCount": 17,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-configuration:examples",
+          "typeName": "ConfigurationService"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-configuration:examples",
+          "typeName": "UnknownConfigurationFileTypeError"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-configuration:examples",
+          "typeName": "ConfigurationFileNotFoundError"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-configuration:examples",
+          "typeName": "InputError"
+        }
+      ]
+    },
     {
       "callableBreadths": [
         {
@@ -1509,6 +2814,62 @@
             ],
             "returnType": "number",
             "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.resolveConfiguration",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12120"
+            }
+          ],
+          "displayName": "DependencyClosureService.readDepthLimit",
+          "id": "packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts#862",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts",
+            "line": 24
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configuration",
+                "type": "CallidescopeConfiguration"
+              }
+            ],
+            "returnType": "number",
+            "text": "(configuration: CallidescopeConfiguration): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "DependencyClosureService.readDepthLimit",
+              "id": "packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts#862"
+            }
+          ],
+          "displayName": "DependencyClosureService.allowsDepth",
+          "id": "packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts#1149",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts",
+            "line": 32
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configuration: CallidescopeConfiguration; depth: number; }"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(args: { configuration: CallidescopeConfiguration; depth: number; }): boolean"
           }
         },
         {
@@ -3341,6 +4702,121 @@
           "entryPointKind": "orphan-root",
           "frames": [
             {
+              "displayName": "DependencyClosureService.allowsDepth",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a configuration allows a stack as deep as the one asked about.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts#1149",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts",
+                "line": 32
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ configuration: CallidescopeConfiguration; depth: number; }"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(args: { configuration: CallidescopeConfiguration; depth: number; }): boolean"
+              }
+            },
+            {
+              "displayName": "DependencyClosureService.readDepthLimit",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads the depth limit the dependency's own defaulting settles on.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts#862",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts",
+                "line": 24
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "configuration",
+                    "type": "CallidescopeConfiguration"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(configuration: CallidescopeConfiguration): number"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.resolveConfiguration",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Fills in every field a configuration file may leave out. Exposed so a host embedding callidescope can hand over a configuration object it assembled itself and get the same shape a configuration file produces.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12120",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 375
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "configuration",
+                    "type": "CallidescopeConfiguration"
+                  }
+                ],
+                "returnType": "ResolvedCallidescopeConfiguration",
+                "text": "(configuration: CallidescopeConfiguration): ResolvedCallidescopeConfiguration"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.resolveAllowSpreadFor",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Applies the default globs exempt from the module-spread finding.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5172",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 170
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "allowSpreadFor",
+                    "type": "string[] | undefined"
+                  }
+                ],
+                "returnType": "string[]",
+                "text": "(allowSpreadFor: string[] | undefined): string[]"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
               "displayName": "FrameAnnotationsService.legacyRender",
               "documentation": {
                 "isDeprecated": true,
@@ -4007,11 +5483,11 @@
         }
       ],
       "summary": {
-        "callableCount": 69,
+        "callableCount": 72,
         "cyclicComponentCount": 1,
-        "edgeCount": 53,
-        "entryPointCount": 14,
-        "fileCount": 33,
+        "edgeCount": 55,
+        "entryPointCount": 15,
+        "fileCount": 34,
         "maximumDepth": 8,
         "projectCount": 1,
         "unresolvedCallCount": 2
@@ -4051,6 +5527,13 @@
           "minimumDepth": 1,
           "moduleId": "packages/callidescope-examples:spread-near-miss",
           "typeName": "SpreadNearMissService"
+        },
+        {
+          "maximumDepth": 4,
+          "memberCount": 3,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:dependency-closure",
+          "typeName": "DependencyClosureService"
         },
         {
           "maximumDepth": 4,
@@ -4179,17 +5662,2553 @@
           "typeName": "StructuralInterfaceService"
         }
       ]
+    },
+    {
+      "callableBreadths": [
+        {
+          "breadth": 6,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.resolveDocumentation",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4943"
+            },
+            {
+              "displayName": "ConfigurationService.resolveLimits",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6106"
+            },
+            {
+              "displayName": "ConfigurationService.resolveJsonOutput",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#5496"
+            },
+            {
+              "displayName": "ConfigurationService.resolveMarkdownOutput",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6497"
+            },
+            {
+              "displayName": "ConfigurationService.resolveCustomStatistics",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#3808"
+            },
+            {
+              "displayName": "ConfigurationService.resolveTargets",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7578"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveConfiguration",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10378",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 308
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configuration",
+                "type": "CodometerConfiguration"
+              }
+            ],
+            "returnType": "ResolvedCodometerConfiguration",
+            "text": "(configuration: CodometerConfiguration): ResolvedCodometerConfiguration"
+          }
+        },
+        {
+          "breadth": 5,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.findConfigurationFile",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#2288"
+            },
+            {
+              "displayName": "ConfigurationLoaderService.resolveConfigurationPath",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#6001"
+            },
+            {
+              "displayName": "UnknownConfigurationFileTypeError.constructor",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#527"
+            },
+            {
+              "displayName": "ConfigurationLoaderService.applyRunContext",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#1683"
+            },
+            {
+              "displayName": "ConfigurationLoaderService.loadConfigurationModule",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#4270"
+            }
+          ],
+          "displayName": "ConfigurationLoaderService.load",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#6939",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts",
+            "line": 229
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "args",
+                "type": "LoadConfigurationArguments"
+              }
+            ],
+            "returnType": "Promise<LoadedConfigurationModule | undefined>",
+            "text": "(args?: LoadConfigurationArguments): Promise<LoadedConfigurationModule | undefined>"
+          }
+        },
+        {
+          "breadth": 3,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8048"
+            },
+            {
+              "displayName": "ConfigurationService.filter(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7981"
+            },
+            {
+              "displayName": "ConfigurationService.filter(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8205"
+            }
+          ],
+          "displayName": "ConfigurationService.map(…)",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7710",
+          "location": {
+            "column": 32,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 234
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "target",
+                "type": "CodometerTarget"
+              }
+            ],
+            "returnType": "{ analyses: CodometerAnalysis[]; compression: CodometerCompression; directory: string; exclude: string[]; include: string[]; name: string; }",
+            "text": "(target: CodometerTarget): { analyses: CodometerAnalysis[]; compression: CodometerCompression; directory: string; exclude: string[]; include: string[]; name: string; }"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.loadJsonConfiguration",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#4748"
+            },
+            {
+              "displayName": "ConfigurationLoaderService.readDefaultExport",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#5384"
+            }
+          ],
+          "displayName": "ConfigurationLoaderService.loadConfigurationModule",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#4270",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts",
+            "line": 138
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configurationPath: string; extension: string; }"
+              }
+            ],
+            "returnType": "Promise<unknown>",
+            "text": "(args: { configurationPath: string; extension: string; }): Promise<unknown>"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.findRepositoryRoot",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#3204"
+            },
+            {
+              "displayName": "ConfigurationFileNotFoundError.constructor",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15114"
+            }
+          ],
+          "displayName": "ConfigurationLoaderService.resolveConfigurationPath",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#6001",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts",
+            "line": 195
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configurationPath",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(configurationPath: string): string"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.parseLimitValueText",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2955"
+            },
+            {
+              "displayName": "InvalidLimitValueError.constructor",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15615"
+            }
+          ],
+          "displayName": "ConfigurationService.parseLimitValue",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2228",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 74
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "limit",
+                "type": "CodometerLimit"
+              }
+            ],
+            "returnType": "number",
+            "text": "(limit: CodometerLimit): number"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.load",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#6939"
+            },
+            {
+              "displayName": "ConfigurationService.resolveConfiguration",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10378"
+            }
+          ],
+          "displayName": "ConfigurationService.loadConfigurationFile",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9661",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 285
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "args",
+                "type": "LoadConfigurationArguments"
+              }
+            ],
+            "returnType": "Promise<LoadedConfiguration>",
+            "text": "(args?: LoadConfigurationArguments): Promise<LoadedConfiguration>"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "custom(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#8669"
+            }
+          ],
+          "displayName": "callbackSchema",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#8599",
+          "location": {
+            "column": 24,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+            "line": 280
+          },
+          "signature": {
+            "parameters": [],
+            "returnType": "ZodType<CallbackType, unknown, $ZodTypeInternals<CallbackType, unknown>>",
+            "text": "<CallbackType>(): z.ZodType<CallbackType>"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "every(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#9336"
+            }
+          ],
+          "displayName": "refine(…)",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#9288",
+          "location": {
+            "column": 11,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+            "line": 300
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "kinds",
+                "type": "Record<string, number>"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(kinds: Record<string, number>): boolean"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "some(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#13696"
+            }
+          ],
+          "displayName": "superRefine(…)",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#13612",
+          "location": {
+            "column": 22,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+            "line": 415
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "target",
+                "type": "{ analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "context",
+                "type": "$RefinementCtx<{ analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }>"
+              }
+            ],
+            "returnType": "void",
+            "text": "(target: { analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }, context: z.core.$RefinementCtx<...>): void"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14830"
+            }
+          ],
+          "displayName": "refine(…)",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14789",
+          "location": {
+            "column": 7,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+            "line": 442
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "targets",
+                "type": "{ analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }[]"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(targets: { analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }[]): boolean"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.isConfigurationFactory",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#4010"
+            }
+          ],
+          "displayName": "ConfigurationLoaderService.applyRunContext",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#1683",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts",
+            "line": 54
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configurationExport",
+                "type": "unknown"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "context",
+                "type": "{ configurationDirectory: string; directory: string; }"
+              }
+            ],
+            "returnType": "Promise<unknown>",
+            "text": "(configurationExport: unknown, context: { configurationDirectory: string; directory: string; }): Promise<unknown>"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.some(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#3423"
+            }
+          ],
+          "displayName": "ConfigurationLoaderService.findRepositoryRoot",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#3204",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts",
+            "line": 102
+          },
+          "signature": {
+            "parameters": [],
+            "returnType": "string | undefined",
+            "text": "(): string | undefined"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InvalidLimitValueError.constructor",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15615"
+            }
+          ],
+          "displayName": "ConfigurationService.parseLimitValueText",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2955",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 94
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "metric",
+                "type": "string"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "text",
+                "type": "string"
+              }
+            ],
+            "returnType": "number",
+            "text": "(metric: string, text: string): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4047"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveCustomStatistics",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#3808",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 121
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "statistics",
+                "type": "CodometerCustomStatistic[] | undefined"
+              }
+            ],
+            "returnType": "ResolvedCodometerCustomStatistic[]",
+            "text": "(statistics: CodometerCustomStatistic[] | undefined): ResolvedCodometerCustomStatistic[]"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6233"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveLimits",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6106",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 190
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "limits",
+                "type": "CodometerLimit[] | undefined"
+              }
+            ],
+            "returnType": "ResolvedCodometerLimit[]",
+            "text": "(limits: CodometerLimit[] | undefined): ResolvedCodometerLimit[]"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.parseLimitValue",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2228"
+            }
+          ],
+          "displayName": "ConfigurationService.map(…)",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6233",
+          "location": {
+            "column": 31,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 193
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "limit",
+                "type": "CodometerLimit"
+              }
+            ],
+            "returnType": "{ label: string | undefined; metric: string; severity: CodometerSeverity; value: number; }",
+            "text": "(limit: CodometerLimit): { label: string | undefined; metric: string; severity: CodometerSeverity; value: number; }"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7710"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveTargets",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7578",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 231
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "targets",
+                "type": "CodometerTarget[] | undefined"
+              }
+            ],
+            "returnType": "ResolvedCodometerTarget[]",
+            "text": "(targets: CodometerTarget[] | undefined): ResolvedCodometerTarget[]"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.loadConfigurationFile",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9661"
+            }
+          ],
+          "displayName": "ConfigurationService.loadConfiguration",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9009",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 268
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "args",
+                "type": "LoadConfigurationArguments"
+              }
+            ],
+            "returnType": "Promise<ResolvedCodometerConfiguration>",
+            "text": "(args?: LoadConfigurationArguments): Promise<ResolvedCodometerConfiguration>"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InputService.parseOptionalOption",
+              "id": "packages/codometer-configuration/src/modules/input/input.service.ts#2645"
+            }
+          ],
+          "displayName": "InputService.parseDefaultedOption",
+          "id": "packages/codometer-configuration/src/modules/input/input.service.ts#1490",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/input/input.service.ts",
+            "line": 41
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "unknown"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "fallback",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(value: unknown, fallback: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InputService.parseDefaultedOption",
+              "id": "packages/codometer-configuration/src/modules/input/input.service.ts#1490"
+            }
+          ],
+          "displayName": "InputService.parseDirectoryOption",
+          "id": "packages/codometer-configuration/src/modules/input/input.service.ts#1931",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/input/input.service.ts",
+            "line": 52
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "unknown"
+              }
+            ],
+            "returnType": "string",
+            "text": "(value: unknown): string"
+          }
+        }
+      ],
+      "misplacedCallables": [],
+      "moduleSpreads": [],
+      "projectName": "packages/codometer-configuration",
+      "stacks": [
+        {
+          "depth": 8,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ConfigurationService.loadConfiguration",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Loads and validates a codometer configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly measure the repository with defaults it never asked for. A path that was not named is searched for from the measured directory upward, and its absence is legal. The nearest configuration file wins outright: nothing from a further ancestor is folded into it. Merging the two would leave a limit that never applied looking exactly like one that did, and the only way to tell them apart would be to know which of several files each field came from.",
+                "tags": []
+              },
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9009",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 268
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "LoadConfigurationArguments"
+                  }
+                ],
+                "returnType": "Promise<ResolvedCodometerConfiguration>",
+                "text": "(args?: LoadConfigurationArguments): Promise<ResolvedCodometerConfiguration>"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.loadConfigurationFile",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Loads a configuration and says which file answered. The same work as `loadConfiguration`, keeping the path the upward walk settled on. A caller measuring one directory has no use for it — the configuration is the whole answer — but one listing what a repository configures has to attribute each answer to the file that gave it, and nothing downstream of the walk can still tell.",
+                "tags": []
+              },
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9661",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 285
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "LoadConfigurationArguments"
+                  }
+                ],
+                "returnType": "Promise<LoadedConfiguration>",
+                "text": "(args?: LoadConfigurationArguments): Promise<LoadedConfiguration>"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.resolveConfiguration",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Fills in every field a configuration file may leave out. Exposed so a host embedding codometer can hand over a configuration object it assembled itself and get the same shape a configuration file produces.",
+                "tags": []
+              },
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10378",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 308
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "configuration",
+                    "type": "CodometerConfiguration"
+                  }
+                ],
+                "returnType": "ResolvedCodometerConfiguration",
+                "text": "(configuration: CodometerConfiguration): ResolvedCodometerConfiguration"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.resolveLimits",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Gives every limit its severity and a value read as a number. Which metric a limit lands on is decided where the measurement is, since nothing here knows what was measured — the only thing settled at this point is what the limit says.",
+                "tags": []
+              },
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6106",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 190
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "limits",
+                    "type": "CodometerLimit[] | undefined"
+                  }
+                ],
+                "returnType": "ResolvedCodometerLimit[]",
+                "text": "(limits: CodometerLimit[] | undefined): ResolvedCodometerLimit[]"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6233",
+              "isCycle": false,
+              "location": {
+                "column": 31,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 193
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "limit",
+                    "type": "CodometerLimit"
+                  }
+                ],
+                "returnType": "{ label: string | undefined; metric: string; severity: CodometerSeverity; value: number; }",
+                "text": "(limit: CodometerLimit): { label: string | undefined; metric: string; severity: CodometerSeverity; value: number; }"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.parseLimitValue",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads a limit's value, in decimal units when it was written as a string. Everything unreadable is refused: a negative number, a unit missing its `b`, a word, an empty string. The tool this replaces coerced an unreadable limit to nothing and then failed every target holding a single byte.",
+                "tags": []
+              },
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2228",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 74
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "limit",
+                    "type": "CodometerLimit"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(limit: CodometerLimit): number"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.parseLimitValueText",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads a limit written as a string, unit and all. A unit multiplies and then rounds: `\"1.5 KB\"` is 1500, and the rounding is what keeps `\"0.1 KB\"` from arriving as the 100.00000000000001 floating point makes of it. A string carrying no unit at all is the plain number, which is what a limit on a count of interfaces or files is written as.",
+                "tags": []
+              },
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2955",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 94
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "metric",
+                    "type": "string"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "text",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(metric: string, text: string): number"
+              }
+            },
+            {
+              "displayName": "InvalidLimitValueError.constructor",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15615",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 467
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "metric",
+                    "type": "string"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "InvalidLimitValueError",
+                "text": "(metric: string, value: string): InvalidLimitValueError"
+              }
+            }
+          ],
+          "isLowerBound": true
+        },
+        {
+          "depth": 3,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "InputService.parseDirectoryOption",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads a directory option, falling back to the working directory. The fallback is the process's working directory as it stands when the option is read, which is what every command means by \"here\" — no command changes it mid-run, and one that did would want the new one.",
+                "tags": []
+              },
+              "id": "packages/codometer-configuration/src/modules/input/input.service.ts#1931",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codometer-configuration/src/modules/input/input.service.ts",
+                "line": 52
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "unknown"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(value: unknown): string"
+              }
+            },
+            {
+              "displayName": "InputService.parseDefaultedOption",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads an option that carries a default when it was left off. The fallback belongs to the command rather than here: two commands that share the parsing rule for `--format` need not share what they render when nobody said.",
+                "tags": []
+              },
+              "id": "packages/codometer-configuration/src/modules/input/input.service.ts#1490",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codometer-configuration/src/modules/input/input.service.ts",
+                "line": 41
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "unknown"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "fallback",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(value: unknown, fallback: string): string"
+              }
+            },
+            {
+              "displayName": "InputService.parseOptionalOption",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads an option that carries text, or nothing at all. A flag written `--baseline-url \"$EMPTY\"` can reach commander with no value at all, which it reports as `true` without calling the option's parser. So anything but a non-empty string counts as absent — passing that boolean through renders a link to the word `true`. Deliberately does not trim, unlike `callidescope`'s same-named method: a codometer option is a path, and a path whose surrounding spaces were silently dropped is a different path from the one that was asked for.",
+                "tags": []
+              },
+              "id": "packages/codometer-configuration/src/modules/input/input.service.ts#2645",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codometer-configuration/src/modules/input/input.service.ts",
+                "line": 68
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "unknown"
+                  }
+                ],
+                "returnType": "string | undefined",
+                "text": "(value: unknown): string | undefined"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "callbackSchema",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Accepts a configured callback. Checked for being a function and nothing else: what it does with its arguments is the author's business, and a schema cannot inspect it anyway.",
+                "tags": []
+              },
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#8599",
+              "isCycle": false,
+              "location": {
+                "column": 24,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 280
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "ZodType<CallbackType, unknown, $ZodTypeInternals<CallbackType, unknown>>",
+                "text": "<CallbackType>(): z.ZodType<CallbackType>"
+              }
+            },
+            {
+              "displayName": "custom(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#8669",
+              "isCycle": false,
+              "location": {
+                "column": 26,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 281
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "unknown"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(value: unknown): value is Function"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "refine(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#9288",
+              "isCycle": false,
+              "location": {
+                "column": 11,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 300
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "kinds",
+                    "type": "Record<string, number>"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(kinds: Record<string, number>): boolean"
+              }
+            },
+            {
+              "displayName": "every(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#9336",
+              "isCycle": false,
+              "location": {
+                "column": 38,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 301
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "kind",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(kind: string): boolean"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "superRefine(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#13612",
+              "isCycle": false,
+              "location": {
+                "column": 22,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 415
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "target",
+                    "type": "{ analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "context",
+                    "type": "$RefinementCtx<{ analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }>"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(target: { analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }, context: z.core.$RefinementCtx<...>): void"
+              }
+            },
+            {
+              "displayName": "some(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#13696",
+              "isCycle": false,
+              "location": {
+                "column": 13,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 417
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "pattern",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(pattern: string): boolean"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "refine(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14789",
+              "isCycle": false,
+              "location": {
+                "column": 7,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 442
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "targets",
+                    "type": "{ analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }[]"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(targets: { analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }[]): boolean"
+              }
+            },
+            {
+              "displayName": "map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14830",
+              "isCycle": false,
+              "location": {
+                "column": 29,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 443
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "target",
+                    "type": "{ analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(target: { analyses: (\"language\" | \"size\")[]; include: string[]; name: string; compression?: \"brotli\" | \"gzip\" | \"none\" | undefined; directory?: string | undefined; exclude?: string[] | undefined; }): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        }
+      ],
+      "summary": {
+        "callableCount": 47,
+        "cyclicComponentCount": 0,
+        "edgeCount": 39,
+        "entryPointCount": 6,
+        "fileCount": 16,
+        "maximumDepth": 8,
+        "projectCount": 1,
+        "unresolvedCallCount": 4
+      },
+      "typeDepths": [
+        {
+          "maximumDepth": 8,
+          "memberCount": 18,
+          "minimumDepth": 1,
+          "moduleId": "packages/codometer-configuration:examples",
+          "typeName": "ConfigurationService"
+        },
+        {
+          "maximumDepth": 4,
+          "memberCount": 11,
+          "minimumDepth": 1,
+          "moduleId": "packages/codometer-configuration:examples",
+          "typeName": "ConfigurationLoaderService"
+        },
+        {
+          "maximumDepth": 3,
+          "memberCount": 4,
+          "minimumDepth": 1,
+          "moduleId": "packages/codometer-configuration:examples",
+          "typeName": "InputService"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/codometer-configuration:examples",
+          "typeName": "UnknownConfigurationFileTypeError"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/codometer-configuration:examples",
+          "typeName": "ConfigurationFileNotFoundError"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/codometer-configuration:examples",
+          "typeName": "InvalidLimitValueError"
+        }
+      ]
+    },
+    {
+      "callableBreadths": [
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "parseLogMessage",
+              "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#3988"
+            },
+            {
+              "displayName": "isConventionalVerb",
+              "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#3520"
+            }
+          ],
+          "displayName": "checkConventionalMessage",
+          "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#2051",
+          "location": {
+            "column": 1,
+            "filePath": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts",
+            "line": 61
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "text",
+                "type": "string"
+              }
+            ],
+            "returnType": "ConventionalLogMessageViolation | undefined",
+            "text": "(text: string): ConventionalLogMessageViolation | undefined"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "isLoggerObjectText",
+              "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#3809"
+            },
+            {
+              "displayName": "checkMessageArgumentConvention",
+              "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#2954"
+            }
+          ],
+          "displayName": "CallExpression",
+          "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#5140",
+          "location": {
+            "column": 7,
+            "filePath": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts",
+            "line": 151
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "node",
+                "type": "SimpleCallExpression & NodeParentExtension"
+              }
+            ],
+            "returnType": "void",
+            "text": "(node: SimpleCallExpression & Rule.NodeParentExtension): void"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "LoggerService.parseMessage",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6380"
+            },
+            {
+              "displayName": "LoggerService.buildBindings",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#5285"
+            }
+          ],
+          "displayName": "LoggerService.debug",
+          "id": "packages/logger/src/modules/logger/logger.service.ts#7860",
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 241
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "message",
+                "type": "unknown"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "context",
+                "type": "string | undefined"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "data",
+                "type": "LogData | undefined"
+              }
+            ],
+            "returnType": "void",
+            "text": "(message: unknown, context?: string, data?: LogData): void"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "LoggerService.parseMessage",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6380"
+            },
+            {
+              "displayName": "LoggerService.buildBindings",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#5285"
+            }
+          ],
+          "displayName": "LoggerService.error",
+          "id": "packages/logger/src/modules/logger/logger.service.ts#8441",
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 256
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "message",
+                "type": "unknown"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "stackOrContext",
+                "type": "string | undefined"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "contextOrData",
+                "type": "string | LogData | undefined"
+              }
+            ],
+            "returnType": "void",
+            "text": "(message: unknown, stackOrContext?: string, contextOrData?: LogData | string): void"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "LoggerService.parseMessage",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6380"
+            },
+            {
+              "displayName": "LoggerService.buildBindings",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#5285"
+            }
+          ],
+          "displayName": "LoggerService.info",
+          "id": "packages/logger/src/modules/logger/logger.service.ts#8999",
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 276
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "message",
+                "type": "unknown"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "context",
+                "type": "string | undefined"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "data",
+                "type": "LogData | undefined"
+              }
+            ],
+            "returnType": "void",
+            "text": "(message: unknown, context?: string, data?: LogData): void"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "LoggerService.parseMessage",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6380"
+            },
+            {
+              "displayName": "LoggerService.buildBindings",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#5285"
+            }
+          ],
+          "displayName": "LoggerService.verbose",
+          "id": "packages/logger/src/modules/logger/logger.service.ts#9983",
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 303
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "message",
+                "type": "unknown"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "context",
+                "type": "string | undefined"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "data",
+                "type": "LogData | undefined"
+              }
+            ],
+            "returnType": "void",
+            "text": "(message: unknown, context?: string, data?: LogData): void"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "LoggerService.parseMessage",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6380"
+            },
+            {
+              "displayName": "LoggerService.buildBindings",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#5285"
+            }
+          ],
+          "displayName": "LoggerService.warn",
+          "id": "packages/logger/src/modules/logger/logger.service.ts#10293",
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 312
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "message",
+                "type": "unknown"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "context",
+                "type": "string | undefined"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "data",
+                "type": "LogData | undefined"
+              }
+            ],
+            "returnType": "void",
+            "text": "(message: unknown, context?: string, data?: LogData): void"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "checkConventionalMessage",
+              "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#2051"
+            }
+          ],
+          "displayName": "checkMessageArgumentConvention",
+          "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#2954",
+          "location": {
+            "column": 1,
+            "filePath": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts",
+            "line": 91
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "argument",
+                "type": "MessageArgumentShape"
+              }
+            ],
+            "returnType": "ConventionalLogMessageViolation | undefined",
+            "text": "(argument: MessageArgumentShape): ConventionalLogMessageViolation | undefined"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "LoggerService.isConventionalVerb",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6074"
+            }
+          ],
+          "displayName": "LoggerService.assertConventionalMessage",
+          "id": "packages/logger/src/modules/logger/logger.service.ts#4418",
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 125
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ context: string | undefined; parsed: ParsedLogMessage; }"
+              }
+            ],
+            "returnType": "void",
+            "text": "(args: { context: string | undefined; parsed: ParsedLogMessage; }): void"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "LoggerService.assertConventionalMessage",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#4418"
+            }
+          ],
+          "displayName": "LoggerService.buildBindings",
+          "id": "packages/logger/src/modules/logger/logger.service.ts#5285",
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 158
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }"
+              }
+            ],
+            "returnType": "Record<string, unknown>",
+            "text": "(args: { context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }): Record<string, unknown>"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "LoggerService.createRootLogger",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#2060"
+            }
+          ],
+          "displayName": "LoggerService.get root",
+          "id": "packages/logger/src/modules/logger/logger.service.ts#6772",
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 207
+          },
+          "signature": {
+            "parameters": [],
+            "returnType": "Logger<never, boolean>",
+            "text": "(): pino.Logger"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "LoggerService.info",
+              "id": "packages/logger/src/modules/logger/logger.service.ts#8999"
+            }
+          ],
+          "displayName": "LoggerService.log",
+          "id": "packages/logger/src/modules/logger/logger.service.ts#9600",
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 292
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "message",
+                "type": "unknown"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "context",
+                "type": "string | undefined"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "data",
+                "type": "LogData | undefined"
+              }
+            ],
+            "returnType": "void",
+            "text": "(message: unknown, context?: string, data?: LogData): void"
+          }
+        }
+      ],
+      "misplacedCallables": [],
+      "moduleSpreads": [],
+      "projectName": "packages/logger",
+      "stacks": [
+        {
+          "depth": 5,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "LoggerService.log",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Logs an informational message at the `info` level. NestJS and `nest-commander` call this method directly as part of the framework's own `LoggerService` contract, so it must keep working exactly as before. Application code should call `info` instead — the same behavior under a name that says what level it logs at.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#9600",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 292
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "message",
+                    "type": "unknown"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "context",
+                    "type": "string | undefined"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "data",
+                    "type": "LogData | undefined"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(message: unknown, context?: string, data?: LogData): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.info",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Logs an informational message at the `info` level.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#8999",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 276
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "message",
+                    "type": "unknown"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "context",
+                    "type": "string | undefined"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "data",
+                    "type": "LogData | undefined"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(message: unknown, context?: string, data?: LogData): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.buildBindings",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Assembles the object pino merges into the line.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#5285",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 158
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }"
+                  }
+                ],
+                "returnType": "Record<string, unknown>",
+                "text": "(args: { context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }): Record<string, unknown>"
+              }
+            },
+            {
+              "displayName": "LoggerService.assertConventionalMessage",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Fails a malformed message in development, and never in production. A logger that throws in production turns an observability call into an outage, so the check runs only where a developer is present to fix it.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#4418",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 125
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ context: string | undefined; parsed: ParsedLogMessage; }"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(args: { context: string | undefined; parsed: ParsedLogMessage; }): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.isConventionalVerb",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is under way; past means it finished. Regular morphology covers both, so a new verb needs no registration anywhere — only irregular pasts are enumerated.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6074",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 183
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "word",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(word: string): boolean"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "CallExpression",
+              "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#5140",
+              "isCycle": false,
+              "location": {
+                "column": 7,
+                "filePath": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts",
+                "line": 151
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "node",
+                    "type": "SimpleCallExpression & NodeParentExtension"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(node: SimpleCallExpression & Rule.NodeParentExtension): void"
+              }
+            },
+            {
+              "displayName": "checkMessageArgumentConvention",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Extracts a message argument's static text, if it has one, and checks it against the logging convention. Only a `Literal` string or a `TemplateLiteral`'s static prefix (the text before its first interpolation) can be checked; anything else — an identifier, a caught error, a non-string literal — has no statically knowable text, so it is left unchecked rather than reported.",
+                "tags": []
+              },
+              "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#2954",
+              "isCycle": false,
+              "location": {
+                "column": 1,
+                "filePath": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts",
+                "line": 91
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "argument",
+                    "type": "MessageArgumentShape"
+                  }
+                ],
+                "returnType": "ConventionalLogMessageViolation | undefined",
+                "text": "(argument: MessageArgumentShape): ConventionalLogMessageViolation | undefined"
+              }
+            },
+            {
+              "displayName": "checkConventionalMessage",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Checks a static message's text against the logging convention.",
+                "tags": []
+              },
+              "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#2051",
+              "isCycle": false,
+              "location": {
+                "column": 1,
+                "filePath": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts",
+                "line": 61
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "text",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "ConventionalLogMessageViolation | undefined",
+                "text": "(text: string): ConventionalLogMessageViolation | undefined"
+              }
+            },
+            {
+              "displayName": "parseLogMessage",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Splits a leading emoji off a message, leaving prose behind.",
+                "tags": []
+              },
+              "id": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts#3988",
+              "isCycle": false,
+              "location": {
+                "column": 1,
+                "filePath": "packages/logger/src/lib/conventional-log-message.eslint-rule.ts",
+                "line": 124
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "message",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "ParsedLogMessage",
+                "text": "(message: string): ParsedLogMessage"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "LoggerService.debug",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Logs a debug message at the `debug` level.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#7860",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 241
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "message",
+                    "type": "unknown"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "context",
+                    "type": "string | undefined"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "data",
+                    "type": "LogData | undefined"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(message: unknown, context?: string, data?: LogData): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.buildBindings",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Assembles the object pino merges into the line.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#5285",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 158
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }"
+                  }
+                ],
+                "returnType": "Record<string, unknown>",
+                "text": "(args: { context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }): Record<string, unknown>"
+              }
+            },
+            {
+              "displayName": "LoggerService.assertConventionalMessage",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Fails a malformed message in development, and never in production. A logger that throws in production turns an observability call into an outage, so the check runs only where a developer is present to fix it.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#4418",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 125
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ context: string | undefined; parsed: ParsedLogMessage; }"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(args: { context: string | undefined; parsed: ParsedLogMessage; }): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.isConventionalVerb",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is under way; past means it finished. Regular morphology covers both, so a new verb needs no registration anywhere — only irregular pasts are enumerated.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6074",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 183
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "word",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(word: string): boolean"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "LoggerService.error",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third slot on a context string that the other levels do not have, so this one accepts either: a string keeps NestJS's meaning, an object is structured data like everywhere else.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#8441",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 256
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "message",
+                    "type": "unknown"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "stackOrContext",
+                    "type": "string | undefined"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "contextOrData",
+                    "type": "string | LogData | undefined"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(message: unknown, stackOrContext?: string, contextOrData?: LogData | string): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.buildBindings",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Assembles the object pino merges into the line.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#5285",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 158
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }"
+                  }
+                ],
+                "returnType": "Record<string, unknown>",
+                "text": "(args: { context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }): Record<string, unknown>"
+              }
+            },
+            {
+              "displayName": "LoggerService.assertConventionalMessage",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Fails a malformed message in development, and never in production. A logger that throws in production turns an observability call into an outage, so the check runs only where a developer is present to fix it.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#4418",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 125
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ context: string | undefined; parsed: ParsedLogMessage; }"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(args: { context: string | undefined; parsed: ParsedLogMessage; }): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.isConventionalVerb",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is under way; past means it finished. Regular morphology covers both, so a new verb needs no registration anywhere — only irregular pasts are enumerated.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6074",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 183
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "word",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(word: string): boolean"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "LoggerService.verbose",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Logs a verbose message at the `trace` level.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#9983",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 303
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "message",
+                    "type": "unknown"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "context",
+                    "type": "string | undefined"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "data",
+                    "type": "LogData | undefined"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(message: unknown, context?: string, data?: LogData): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.buildBindings",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Assembles the object pino merges into the line.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#5285",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 158
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }"
+                  }
+                ],
+                "returnType": "Record<string, unknown>",
+                "text": "(args: { context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }): Record<string, unknown>"
+              }
+            },
+            {
+              "displayName": "LoggerService.assertConventionalMessage",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Fails a malformed message in development, and never in production. A logger that throws in production turns an observability call into an outage, so the check runs only where a developer is present to fix it.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#4418",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 125
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ context: string | undefined; parsed: ParsedLogMessage; }"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(args: { context: string | undefined; parsed: ParsedLogMessage; }): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.isConventionalVerb",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is under way; past means it finished. Regular morphology covers both, so a new verb needs no registration anywhere — only irregular pasts are enumerated.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6074",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 183
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "word",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(word: string): boolean"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "LoggerService.warn",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Logs a warning message at the `warn` level.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#10293",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 312
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "message",
+                    "type": "unknown"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "context",
+                    "type": "string | undefined"
+                  },
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "data",
+                    "type": "LogData | undefined"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(message: unknown, context?: string, data?: LogData): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.buildBindings",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Assembles the object pino merges into the line.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#5285",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 158
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }"
+                  }
+                ],
+                "returnType": "Record<string, unknown>",
+                "text": "(args: { context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }): Record<string, unknown>"
+              }
+            },
+            {
+              "displayName": "LoggerService.assertConventionalMessage",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Fails a malformed message in development, and never in production. A logger that throws in production turns an observability call into an outage, so the check runs only where a developer is present to fix it.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#4418",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 125
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ context: string | undefined; parsed: ParsedLogMessage; }"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(args: { context: string | undefined; parsed: ParsedLogMessage; }): void"
+              }
+            },
+            {
+              "displayName": "LoggerService.isConventionalVerb",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is under way; past means it finished. Regular morphology covers both, so a new verb needs no registration anywhere — only irregular pasts are enumerated.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6074",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 183
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "word",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(word: string): boolean"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "LoggerService.get root",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "The pino instance every logger's child is taken from.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#6772",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 207
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "Logger<never, boolean>",
+                "text": "(): pino.Logger"
+              }
+            },
+            {
+              "displayName": "LoggerService.createRootLogger",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Build the pino instance for production or local development output.",
+                "tags": []
+              },
+              "id": "packages/logger/src/modules/logger/logger.service.ts#2060",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+                "line": 65
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "Logger<never, boolean>",
+                "text": "(): pino.Logger"
+              }
+            }
+          ],
+          "isLowerBound": false
+        }
+      ],
+      "summary": {
+        "callableCount": 24,
+        "cyclicComponentCount": 0,
+        "edgeCount": 19,
+        "entryPointCount": 7,
+        "fileCount": 9,
+        "maximumDepth": 5,
+        "projectCount": 1,
+        "unresolvedCallCount": 1
+      },
+      "typeDepths": [
+        {
+          "maximumDepth": 5,
+          "memberCount": 17,
+          "minimumDepth": 1,
+          "moduleId": "packages/logger:examples",
+          "typeName": "LoggerService"
+        }
+      ]
     }
   ],
   "summary": {
-    "callableCount": 69,
+    "callableCount": 185,
     "cyclicComponentCount": 1,
-    "edgeCount": 53,
-    "entryPointCount": 23,
-    "fileCount": 33,
+    "edgeCount": 153,
+    "entryPointCount": 60,
+    "fileCount": 72,
     "maximumDepth": 8,
-    "projectCount": 1,
-    "unresolvedCallCount": 2
+    "projectCount": 4,
+    "unresolvedCallCount": 10
   },
   "typeDepths": [
     {
@@ -4198,6 +8217,13 @@
       "minimumDepth": 1,
       "moduleId": "packages/callidescope-examples:computed-member",
       "typeName": "ComputedMemberService"
+    },
+    {
+      "maximumDepth": 8,
+      "memberCount": 18,
+      "minimumDepth": 1,
+      "moduleId": "packages/codometer-configuration:examples",
+      "typeName": "ConfigurationService"
     },
     {
       "maximumDepth": 8,
@@ -4222,10 +8248,38 @@
     },
     {
       "maximumDepth": 5,
+      "memberCount": 18,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-configuration:examples",
+      "typeName": "InputService"
+    },
+    {
+      "maximumDepth": 5,
       "memberCount": 2,
       "minimumDepth": 1,
       "moduleId": "packages/callidescope-examples:spread-near-miss",
       "typeName": "SpreadNearMissService"
+    },
+    {
+      "maximumDepth": 5,
+      "memberCount": 17,
+      "minimumDepth": 1,
+      "moduleId": "packages/logger:examples",
+      "typeName": "LoggerService"
+    },
+    {
+      "maximumDepth": 4,
+      "memberCount": 17,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-configuration:examples",
+      "typeName": "ConfigurationService"
+    },
+    {
+      "maximumDepth": 4,
+      "memberCount": 3,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:dependency-closure",
+      "typeName": "DependencyClosureService"
     },
     {
       "maximumDepth": 4,
@@ -4235,11 +8289,25 @@
       "typeName": "ModuleSpreadService"
     },
     {
+      "maximumDepth": 4,
+      "memberCount": 11,
+      "minimumDepth": 1,
+      "moduleId": "packages/codometer-configuration:examples",
+      "typeName": "ConfigurationLoaderService"
+    },
+    {
       "maximumDepth": 3,
       "memberCount": 3,
       "minimumDepth": 1,
       "moduleId": "packages/callidescope-examples:callback-argument",
       "typeName": "CallbackArgumentService"
+    },
+    {
+      "maximumDepth": 3,
+      "memberCount": 4,
+      "minimumDepth": 1,
+      "moduleId": "packages/codometer-configuration:examples",
+      "typeName": "InputService"
     },
     {
       "maximumDepth": 2,
@@ -4261,6 +8329,27 @@
       "minimumDepth": 3,
       "moduleId": "packages/callidescope-examples:mutual-recursion",
       "typeName": "MutualRecursionService"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-configuration:examples",
+      "typeName": "UnknownConfigurationFileTypeError"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-configuration:examples",
+      "typeName": "ConfigurationFileNotFoundError"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-configuration:examples",
+      "typeName": "InputError"
     },
     {
       "maximumDepth": 1,
@@ -4352,6 +8441,27 @@
       "minimumDepth": 2,
       "moduleId": "packages/callidescope-examples:structural-interface",
       "typeName": "StructuralInterfaceService"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/codometer-configuration:examples",
+      "typeName": "UnknownConfigurationFileTypeError"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/codometer-configuration:examples",
+      "typeName": "ConfigurationFileNotFoundError"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/codometer-configuration:examples",
+      "typeName": "InvalidLimitValueError"
     }
   ],
   "wideCallables": []

@@ -162,14 +162,55 @@ Call stacks traced through `packages/callidescope-configuration`, deepest first.
 | Callables | 42 |
 | Files | 13 |
 | Calls traced | 40 |
-| Call stacks | 2 |
-| Deepest stack | 3 |
+| Call stacks | 6 |
+| Deepest stack | 5 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 3 |
 
 ### Call stacks (depth)
 
-**1. `InputService.suggest`** — depth 3 · orphan-root
+**1. `InputService.resolveFormatOption`** — depth ≥ 5 · orphan-root
+
+```text
+🚀 InputService.resolveFormatOption<Options extends CallidescopeFormatOptions>(options: Options): Promise<Options> [packages/callidescope-configuration/src/modules/input/input.service.ts:231]
+   ↳ Returns the given options with `--format` filled in where one is wanted.
+  └─> InputService.promptForSelect(…): Promise<Choice> [packages/callidescope-configuration/src/modules/input/input.service.ts:188]
+     ↳ Prompts for one value out of a fixed set of choices.
+    └─> InputService.assertCanPrompt(subject: string): void [packages/callidescope-configuration/src/modules/input/input.service.ts:41]
+       ↳ Refuses to draw a prompt nobody can answer. `prompts` does not fail on a non-terminal stdin — it renders the menu,…
+      └─> missingInputError(subject: string): InputError [packages/callidescope-configuration/src/modules/input/input.constants.ts:27]
+         ↳ A required value that cannot be asked for, because stdin is not a terminal. `prompts` does not fail there — it draws…
+        └─> InputError.constructor(message: string): InputError [packages/callidescope-configuration/src/modules/input/input.constants.ts:14]
+```
+
+**2. `ConfigurationService.loadConfiguration`** — depth ≥ 4 · orphan-root
+
+```text
+🚀 ConfigurationService.loadConfiguration(args?: LoadConfigurationArguments): Promise<ResolvedCallidescopeConfiguration> [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:340]
+   ↳ Loads and validates a callidescope configuration file.
+  └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): string [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:177]
+     ↳ Resolves a configuration path against the cwd, then the repository root.
+    └─> ConfigurationService.findRepositoryRoot(): string | undefined [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:109]
+       ↳ Walks upward from the process cwd looking for the repository root.
+      └─> ConfigurationService.some(…)(marker: ".git" | "pnpm-workspace.yaml"): boolean [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:114]
+```
+
+**3. `InputService.promptForAutocompleteMultiselect`** — depth ≥ 4 · orphan-root
+
+```text
+🚀 InputService.promptForAutocompleteMultiselect(…): Promise<string[]> [packages/callidescope-configuration/src/modules/input/input.service.ts:139]
+   ↳ Prompts for several values at once, completing the list as it is typed.
+  └─> InputService.assertCanPrompt(subject: string): void [packages/callidescope-configuration/src/modules/input/input.service.ts:41]
+     ↳ Refuses to draw a prompt nobody can answer. `prompts` does not fail on a non-terminal stdin — it renders the menu,…
+    └─> missingInputError(subject: string): InputError [packages/callidescope-configuration/src/modules/input/input.constants.ts:27]
+       ↳ A required value that cannot be asked for, because stdin is not a terminal. `prompts` does not fail there — it draws…
+      └─> InputError.constructor(message: string): InputError [packages/callidescope-configuration/src/modules/input/input.constants.ts:14]
+```
+
+<details>
+<summary>3 more call stacks</summary>
+
+**4. `InputService.suggest`** — depth 3 · orphan-root
 
 ```text
 🚀 InputService.suggest(input: string): Promise<{ title: string; value: string; }[]> [packages/callidescope-configuration/src/modules/input/input.service.ts:150]
@@ -178,13 +219,23 @@ Call stacks traced through `packages/callidescope-configuration`, deepest first.
     └─> InputService.filter(…)(suggestion: string): boolean [packages/callidescope-configuration/src/modules/input/input.service.ts:78]
 ```
 
-**2. `callbackSchema`** — depth 2 · orphan-root
+**5. `callbackSchema`** — depth 2 · orphan-root
 
 ```text
 🚀 callbackSchema<TCallback>(): z.ZodType<TCallback> [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:178]
    ↳ Accepts a function-valued option without inspecting its signature.
   └─> custom(…)(value: unknown): value is Function [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:179]
 ```
+
+**6. `InputService.parseCommaDelimitedOption`** — depth 2 · orphan-root
+
+```text
+🚀 InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:96]
+   ↳ Splits `--directories`, a comma-separated list of project directories.
+  └─> InputService.map(…)(entry: string): string [packages/callidescope-configuration/src/modules/input/input.service.ts:101]
+```
+
+</details>
 
 ### Module spread
 
