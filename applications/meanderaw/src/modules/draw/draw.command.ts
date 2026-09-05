@@ -58,6 +58,12 @@ import type {
  * says where drawings go, and a sub-command boundary between them only
  * decided which half of that set was legal.
  *
+ * Five of those flags belong to one modifier each — `--period`, `--shape`,
+ * `--strands`, `--branches`, and `--leftward` — and are recombined with
+ * `--modifier` by {@link DrawParametersService.modifier}, since
+ * nest-commander parses each one through a method that cannot see the
+ * others.
+ *
  * Both halves are written through the same {@link writeDocuments}, so
  * "somewhere under the output directory" is the only thing this command knows
  * about either one's layout. Where each document actually lands is decided by
@@ -191,6 +197,30 @@ export class DrawCommand extends CommandRunner {
   }
 
   // 🌎 Public Methods
+
+  /** Parses `--branches` as an integer, used only with `--modifier stagger`. */
+  @Option({
+    description:
+      "Branches one crenel's rail joins before it changes side, for --modifier stagger",
+    flags: "-b, --branches <branches>",
+  })
+  parseBranches(value: string): number {
+    return Number.parseInt(value, 10);
+  }
+
+  /**
+   * Parses `--leftward` as a boolean toggle, used only with
+   * `--modifier rung`. Bare, or with any value but `false` or `0`, it points
+   * the rungs left; absent, `rung` keeps the rightward direction it drew
+   * before the flag existed.
+   */
+  @Option({
+    description: "Point the rungs left instead of right, for --modifier rung",
+    flags: "-l, --leftward [leftward]",
+  })
+  parseLeftward(value: string | undefined): boolean {
+    return value !== "false" && value !== "0";
+  }
 
   /** Parses `--modifier`, rejecting any name outside the supported set. Omitted entirely when no modifier is requested. */
   @Option({

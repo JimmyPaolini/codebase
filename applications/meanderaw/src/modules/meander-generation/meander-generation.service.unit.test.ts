@@ -12,7 +12,11 @@ import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
 import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
-import { PLIED_SWEEP_STRAND_COUNTS } from "../draw/draw.constants";
+import {
+  PLIED_SWEEP_STRAND_COUNTS,
+  RUNG_SWEEP_LEFTWARD_VALUES,
+  STAGGER_SWEEP_BRANCH_COUNTS,
+} from "../draw/draw.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
@@ -102,7 +106,10 @@ const modifiersNamed = (name: string): Modifier[] => {
       return [{ name: "ruled" }];
     }
     case "rung": {
-      return [{ name: "rung" }];
+      return RUNG_SWEEP_LEFTWARD_VALUES.map((isLeftward) => ({
+        isLeftward,
+        name: "rung",
+      }));
     }
     case "spin": {
       return [{ name: "spin" }];
@@ -114,7 +121,10 @@ const modifiersNamed = (name: string): Modifier[] => {
       return [{ name: "split" }];
     }
     case "stagger": {
-      return [{ name: "stagger" }];
+      return STAGGER_SWEEP_BRANCH_COUNTS.map((branches) => ({
+        branches,
+        name: "stagger",
+      }));
     }
     default: {
       throw new Error(`Unknown modifier name: ${name}`);
@@ -149,7 +159,8 @@ const sweptTypes: readonly MeanderType[] = [
  * cycle admits — `SPIN_CYCLE_LENGTH` for the spin family, the shared
  * default otherwise. `alternated` is swept over the periods
  * `MosaicMotifService` documents rather than the whole allowed range, and
- * `plied` over `PLIED_SWEEP_STRAND_COUNTS` for the same reason.
+ * `plied`, `rung`, and `stagger` over the sweep's own constants for the
+ * same reason.
  */
 const patternCases: readonly PatternCase[] = sweptTypes.flatMap((type) => {
   const modifiers: readonly (Modifier | undefined)[] = [

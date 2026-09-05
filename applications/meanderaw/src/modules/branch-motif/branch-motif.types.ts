@@ -12,10 +12,14 @@
  *   tooth from every lattice column.
  * - `stagger` keeps the same teeth and moves the rail: it runs along the
  *   top for one repeat unit and along the bottom for the next, so the
- *   figure reads as a crenellation rather than a fringe.
+ *   figure reads as a crenellation rather than a fringe. Its modifier
+ *   carries the run's own width — how many branches one rail joins before
+ *   it changes side — so the crenel is a parameter rather than a constant.
  * - `rung` turns the construction on its side: one vertical stile per
  *   repeat unit, a horizontal rung off it at every lattice row, and a rail
- *   along the top joining each unit to the next.
+ *   along the top joining each unit to the next. Its modifier carries which
+ *   way the rungs point, which mirrors the whole figure rather than
+ *   changing it.
  */
 export type BranchMode = "comb" | "rung" | "stagger";
 
@@ -37,13 +41,19 @@ export interface BranchSpan {
 }
 
 /**
- * Where one repeat unit sits in the drawing, and how tall the band is.
- * Grouped into an object rather than passed alongside the mode so the
- * drawing methods stay inside the workspace's parameter limit.
+ * Where one repeat unit sits in the drawing, how wide it is, and how tall
+ * the band is. Grouped into an object rather than passed alongside the mode
+ * so the drawing methods stay inside the workspace's parameter limit.
+ *
+ * `unitColumns` is here rather than read from a constant because `stagger`
+ * sets it from its own `branches` — see
+ * {@link BranchMotifService.unitColumns}. Every unit of one drawing carries
+ * the same width, so `firstColumn` is always `unitColumns * unitIndex`.
  */
 export interface BranchUnitPlacement {
   readonly firstColumn: number;
   readonly isLastUnit: boolean;
   readonly rows: number;
+  readonly unitColumns: number;
   readonly unitIndex: number;
 }

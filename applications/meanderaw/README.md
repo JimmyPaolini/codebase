@@ -18,8 +18,10 @@ sub-command was picked:
 `--type` and `--rows` go together: one without the other is refused rather than treated
 as a sweep, since neither flag can be declared `required` when passing neither is how the
 sweep is asked for. Every other flag — `--modifier` and the parameter it needs
-(`--period`, `--shape`, `--strands`), `--sub-family`, `--repeat-count`,
-`--output-directory` — narrows the one drawing.
+(`--period`, `--shape`, `--strands`, `--branches`, `--leftward`), `--sub-family`,
+`--repeat-count`, `--output-directory` — narrows the one drawing. A modifier that takes a
+parameter is refused without it, rather than defaulted; `--leftward` alone is exempt,
+because a boolean flag left off and one passed `false` reach the command identically.
 
 This used to be two commands, `start` and `generate`. They are one because the option set
 is one: every flag either names a drawing or says where drawings go, and the sub-command
@@ -52,7 +54,10 @@ output/
 ```
 
 So `output/chain/7-rows/edge-flip-6-repeats.svg`, and
-`output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg`. A directory listing is
+`output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg`. A modifier carrying a
+parameter puts it in the variant too, or two of its own drawings would collide on one
+path: `output/branch/7-rows/stagger-branches-4-6-repeats.svg` and
+`output/branch/7-rows/rung-leftward-6-repeats.svg`. A directory listing is
 then the parameter space it enumerates, and the 3,179 enumerated `mosaic` tiles — which
 would be unreadable as one flat directory — sit a few hundred at a time under the row
 count and column span that produced them, named by nothing but what distinguishes them.
@@ -99,12 +104,12 @@ breaks none of them, and that is the point of it.
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
-against the corpus as it now stands, 302 named patterns beside the same 3,179 tiles. The
-named half was 174 until the sweep's row range was raised to `MAXIMUM_VALUE`, so most of
-these counts have moved once for that reason alone — see the note under "Meander Charter"
-above:
+against the corpus as it now stands, 335 named patterns beside the same 3,179 tiles. The
+named half was 174 until the sweep's row range was raised to `MAXIMUM_VALUE`, and 302
+until `branch`'s two modifiers took parameters of their own, so most of these counts have
+moved twice for those reasons alone — see the note under "Meander Charter" above:
 
-- **Every interior white channel is exactly one stroke width**, in all 3,481 files. The
+- **Every interior white channel is exactly one stroke width**, in all 3,514 files. The
   channel width equals the stroke width equals half a grid unit, and that single number
   is the same in every document the project has ever written — the stroke is `unit / 2`
   at every row count, in every family, at every ply of `parallel`. #340 and #413 both
@@ -115,10 +120,10 @@ above:
   X-junctions across all 3,377 files the six original families produce — a stronger
   statement than "non-self-intersecting", and the sharpest single characterization of what
   those six have in common. The `cross` family relaxes it deliberately: 12 X-junctions in
-  each of the seven solid documents it commits, and none anywhere else in the 3,481-file
+  each of the seven solid documents it commits, and none anywhere else in the 3,514-file
   corpus. Twelve at every one of its row counts, 6 through 12, so the count is a property
   of the repeat count rather than of `rows`. See "The Crossing Family" below.
-- **Ink branches in three places, and only there.** 2,876 T-junctions across 99 of the 302
+- **Ink branches in three places, and only there.** 3,635 T-junctions across 132 of the 335
   named patterns. 360 of them, across 36 patterns, are `chain` and `snake` under `edge`
   and `edge-flip`, ten per document at every row count: the `edge` family widens the
   repeat unit past the zigzag it contains, so the zigzag's terminating vertical lands in
@@ -126,16 +131,16 @@ above:
   side of it — five such junctions along the top border, five along the bottom. An earlier
   reading of this measurement reported zero everywhere; the reference assets are
   hand-verified ground truth for what these patterns should look like, so the geometry is
-  right and the count was wrong. The other 2,516 are the point of two families rather than
-  a side effect of anything: 1,900 across the `negative` family's 30 documents and 616
-  across the `branch` family's 33 — see "The Negative Space Family" and "The Branching
+  right and the count was wrong. The other 3,275 are the point of two families rather than
+  a side effect of anything: 1,900 across the `negative` family's 30 documents and 1,375
+  across the `branch` family's 66 — see "The Negative Space Family" and "The Branching
   Family" below.
 - **Ink was a forest everywhere until it was a tree in one place.** Read as a graph, a
   document's ink is lattice points joined by one-pitch steps. All 3,421 documents that
   predate `branch` are one of two things and neither is a tree: 3,366 are forests of many
   components — a disjoint union of simple arcs — and 55 carry loops, being `negative`'s
   30, `cross`'s 7 solid drawings, and 18 `snake` drawings under `edge`/`edge-flip`.
-  `branch`'s 33 are the only trees in the corpus: one connected piece, `edges = nodes − 1`,
+  `branch`'s 66 are the only trees in the corpus: one connected piece, `edges = nodes − 1`,
   no loop anywhere. See "The Branching Family" below.
 - **The negative space branches and crosses freely.** It branches in every family, and in
   `mosaic split` and `mosaic alternated period-3` it genuinely crosses. Crossing patterns
@@ -798,7 +803,7 @@ the charter sweep like every other drawing instead.
 **Whether the output stays space-filling was measured, not assumed, and it does.** Every
 lattice point of every one of the 30 committed drawings carries ink — including the band's
 first and last lattice column, which invariant 7 would have excused. The family needs no
-termination carve-out at all, where 2,176 of the 3,481 committed documents do have a
+termination carve-out at all, where 2,176 of the 3,514 committed documents do have a
 gap there. The reason is the survey's own finding that no cell of any of the 3,179
 permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
 lattice point with at least one arm of ink.
@@ -850,46 +855,63 @@ groups: **3,366 are forests** of many components — a family's ink is a disjoin
 simple arcs, so `edges = nodes − components` with the component count in the dozens — and
 **55 carry loops**: `negative`'s thirty, `cross`'s seven solid drawings, and the eighteen
 `snake` drawings whose `edge` pitch closes a loop against the band border. Not one is a
-tree. All 33 of `branch`'s are, and
+tree. All 66 of `branch`'s are, and
 `meander-topology.service.integration.test.ts` reads every committed document off disk and
 asserts both halves of that.
 
 ### What it draws
 
-Three modes, each a different spanning tree of the same lattice. A repeat unit is two
-lattice columns wide, so six repeats span twelve columns.
+Three modes, each a different spanning tree of the same lattice, and each of the two
+modifiers carries a parameter of its own.
 
 - **`comb`** (no modifier) — a rail along the band's top lattice row, with a full tooth
-  hanging from every lattice column.
-- **`stagger`** — the same teeth, with the rail changing side once per repeat unit: along
-  the top for one unit, along the bottom for the next. The band reads as a crenellation
-  rather than a fringe.
-- **`rung`** — the construction turned on its side: one vertical stile per repeat unit, a
-  horizontal rung off it at every lattice row, and a rail along the top joining each unit
-  to the next. Each unit reads as an `E`.
+  hanging from every lattice column. A repeat unit is two lattice columns wide, so six
+  repeats span twelve columns.
+- **`stagger --branches <n>`** — the same teeth, with the rail changing side once per
+  repeat unit: along the top for one run of branches, along the bottom for the next. The
+  band reads as a crenellation rather than a fringe. `--branches` is how many teeth one
+  rail joins before it changes side, so the repeat unit is `branches − 1` columns wide and
+  the crenel's wavelength is the parameter. Three is the minimum and the shape every
+  `stagger` was drawn at before the flag existed; below it a run has no tooth strictly
+  inside it, the mode stops forking altogether, and the figure degenerates from a tree
+  into a simple path — see `MINIMUM_STAGGER_BRANCHES`.
+- **`rung [--leftward]`** — the construction turned on its side: one vertical stile per
+  repeat unit, a horizontal rung off it at every lattice row, and a rail along the top
+  joining each unit to the next. Each unit reads as an `E`, or as a `Ǝ` under
+  `--leftward`, which reflects the whole drawing rather than changing it: the stile moves
+  to the unit's other column, the rungs reach the other way, and the one stile with no
+  rail beyond it moves to the other end of the band. Every count below is identical across
+  the two directions, which is why the mirror itself is what is asserted.
 
-At six repeats the figure has 12 × (`rows` + 1) lattice points and one fewer step joining
-them, in every mode at every row count. Ink T-junctions, which is invariant 3's own count:
+At six repeats the figure has `columns × (rows + 1)` lattice points and one fewer step
+joining them, in every mode at every row count — twelve columns everywhere but `stagger`,
+whose unit width is its own crenel's. Ink T-junctions, which is invariant 3's own count:
 
 | Mode | 2 rows | 3 | 4 | 5 | 6 | 7 | 8 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `comb` | 10 | 10 | 10 | 10 | 10 | 10 | 10 |
-| `stagger` | 5 | 5 | 5 | 5 | 5 | 5 | 5 |
-| `rung` | 11 | 17 | 23 | 29 | 35 | 41 | 47 |
+| `stagger`, 3 branches | 5 | 5 | 5 | 5 | 5 | 5 | 5 |
+| `stagger`, 4 branches | 11 | 11 | 11 | 11 | 11 | 11 | 11 |
+| `stagger`, 5 branches | 17 | 17 | 17 | 17 | 17 | 17 | 17 |
+| `rung`, either direction | 11 | 17 | 23 | 29 | 35 | 41 | 47 |
+
+`stagger`'s rows are `repeatCount × (branches − 2) − 1`: a run of `branches` teeth forks at
+the `branches − 2` strictly inside it, and the run at the band's own end is one tooth
+short. `rung`'s is `6 × rows − 1`.
 
 Every mode also leaves **free ends** — lattice points carrying a single arm of ink, where
-a stroke stops rather than turning, forking, or closing. At six repeats `comb` leaves 12
-and `stagger` 7 at every row count, and `rung` leaves `6 × rows + 1`, from 13 at 2 rows to
-49 at 8. They matter to the write-up below: both unbounded constructions measured there
-have none.
+a stroke stops rather than turning, forking, or closing. Each mode leaves exactly two more
+of them than it has forks, so at six repeats `comb` leaves 12 and `stagger` 7, 13, and 19
+at every row count, while `rung` leaves `6 × rows + 1`, from 13 at 2 rows to 49 at 8. They
+matter to the write-up below: both unbounded constructions measured there have none.
 
-Two of those rows are flat because their forks sit on the rail rather than on the teeth,
-and a rail's length does not depend on how tall the band is. `rung`'s forks sit on its
-stiles, so its row climbs by one per unit per row added — which is also why the family's
-minimum is 2 rows rather than 1: at one row a stile has no interior lattice point, the
-rung-into-stile junction the mode is named for does not exist, and each unit degenerates
-to a plain bracket. `branch-motif.service.unit.test.ts` measures that count at one row as
-well as at the minimum, so the number and its reason cannot drift apart.
+Every row but `rung`'s is flat because those forks sit on the rail rather than on the
+teeth, and a rail's length does not depend on how tall the band is. `rung`'s forks sit on
+its stiles, so its row climbs by one per unit per row added — which is also why the
+family's minimum is 2 rows rather than 1: at one row a stile has no interior lattice point,
+the rung-into-stile junction the mode is named for does not exist, and each unit
+degenerates to a plain bracket. `branch-motif.service.unit.test.ts` measures that count at
+one row as well as at the minimum, so the number and its reason cannot drift apart.
 
 ### What it holds and what it relaxes
 

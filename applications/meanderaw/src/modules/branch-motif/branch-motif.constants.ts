@@ -21,15 +21,23 @@ export const BRANCH_MODES_BY_MODIFIER_NAME: Record<
 };
 
 /**
- * How many lattice columns one `branch` repeat unit spans.
+ * How many lattice columns one `comb` or `rung` repeat unit spans.
  *
  * Two is the smallest width at which `rung` reads as a repeat rather than
  * as a solid field: the unit's first column carries the stile and its
  * second carries the free ends of the rungs, so a one-column unit would put
- * a stile in every column and leave no rung anywhere. `comb` and `stagger`
- * would work at any width, and `stagger`'s crenel is this wide because of
- * it — the rail changes side once per unit, so a unit's width is the
- * crenel's width.
+ * a stile in every column and leave no rung anywhere. `comb` would work at
+ * any width and is drawn at this one because nothing asks it to be drawn at
+ * another — every column carries the same full tooth, so its unit width is
+ * a tiling convenience rather than a shape.
+ *
+ * `stagger` is the mode this number no longer decides. Its crenel is as
+ * wide as the run of branches the rail joins before changing side, so its
+ * unit width is `branches - 1` and is read off the modifier by
+ * {@link BranchMotifService.unitColumns}. At
+ * {@link MINIMUM_STAGGER_BRANCHES} that expression evaluates to this
+ * number, which is why the mode drew a two-column unit for as long as it
+ * could not be asked for anything else.
  */
 export const BRANCH_UNIT_COLUMNS = 2;
 
@@ -40,6 +48,40 @@ export const BRANCH_UNIT_COLUMNS = 2;
  * branch a dispatch happened to fall through to.
  */
 export const DEFAULT_BRANCH_MODE: BranchMode = "comb";
+
+/**
+ * Which direction a `rung` drawn with no `--leftward` points its rungs:
+ * rightward, which is the only direction the mode had before the flag
+ * existed and so the one every drawing committed under the bare name was.
+ *
+ * It is a stated default rather than an absent one because the flag is a
+ * boolean: commander cannot tell "not passed" from "passed false", so the
+ * mode has no way to refuse an unstated direction the way `stagger` refuses
+ * an unstated branch count. Naming the fallback here is what keeps the two
+ * halves of that asymmetry visible in one place.
+ */
+export const DEFAULT_RUNG_IS_LEFTWARD = false;
+
+/**
+ * The fewest branches one `stagger` rail run may join before changing side.
+ *
+ * Three, and it is a structural floor rather than a taste one. A run
+ * spanning `branches` teeth forks at the teeth strictly inside it, so a
+ * two-branch run — a rail crossing a single lattice step from one tooth to
+ * the next — has no interior tooth and forks nowhere. The whole figure
+ * would then be a `nodes - 1` edge graph of maximum degree two: a simple
+ * path, still a tree and still space-filling, but with zero T-junctions.
+ *
+ * That is not a stricter drawing, it is a different family. `branch`
+ * declares invariant 3 relaxed in *every* mode, and the charter property
+ * test asserts a declared relaxation is present rather than merely
+ * permitted — so a branching family that stopped branching would fail its
+ * own charter rather than draw something new.
+ * `branch-motif.service.unit.test.ts` renders the two-branch figure this
+ * constant excludes and measures every claim in the paragraph above, so the
+ * number and its reason cannot drift apart.
+ */
+export const MINIMUM_STAGGER_BRANCHES = 3;
 
 // 🚨 Errors
 

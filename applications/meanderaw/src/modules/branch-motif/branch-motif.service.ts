@@ -6,6 +6,7 @@ import {
   BRANCH_MODES_BY_MODIFIER_NAME,
   BRANCH_UNIT_COLUMNS,
   DEFAULT_BRANCH_MODE,
+  DEFAULT_RUNG_IS_LEFTWARD,
   UnknownBranchModeError,
 } from "./branch-motif.constants";
 
@@ -58,7 +59,7 @@ import type {
  *   lattice line, so only `M`, `H`, and `V` are emitted (invariant 1), and
  *   the canvas height comes from the shared geometry like every other
  *   family's (invariant 5). Every lattice column is inked including the
- *   first and last, so unlike 2,120 documents in the corpus this family
+ *   first and last, so unlike 2,176 documents in the corpus this family
  *   leaves no gap even at the band's own termination.
  *
  * The geometry is **derived**, not attested. There is no hand-drawn
@@ -108,41 +109,94 @@ export class BranchMotifService implements MotifService {
     return Object.hasOwn(BRANCH_MODES_BY_MODIFIER_NAME, name);
   }
 
+  /**
+   * Which way a `rung` drawing's rungs point, read off its own modifier.
+   *
+   * Every other mode answers `false` and never asks: the direction is
+   * `rung`'s alone, and `spineUnit` has no side for a tooth to be on. The
+   * fallback is {@link DEFAULT_RUNG_IS_LEFTWARD} rather than an inline
+   * literal, so the direction a bare `--modifier rung` draws is stated in
+   * one place.
+   */
+  private isLeftward(modifier: Modifier | undefined): boolean {
+    return modifier?.name === "rung"
+      ? modifier.isLeftward
+      : DEFAULT_RUNG_IS_LEFTWARD;
+  }
+
   /** The lattice column the drawing ends at: one short of the columns its repeat units span, since the units count lattice columns rather than the gaps between them. */
-  private lastColumn(repeatCount: number): number {
-    return BRANCH_UNIT_COLUMNS * repeatCount - 1;
+  private lastColumn(pattern: RepeatPatternOptions): number {
+    return this.unitColumns(pattern.modifier) * pattern.repeatCount - 1;
   }
 
   /**
-   * One `rung` repeat unit: a stile down the unit's first lattice column, a
-   * rung reaching from it to the unit's second column at every lattice row,
-   * and — for every unit but the last — the rail carrying on into the next
-   * unit along the top row.
+   * The lattice column span one unit's row-0 run covers: its own rung, plus
+   * the rail carrying on to the next unit's stile.
+   *
+   * The two directions are mirror images, and each draws the join between
+   * one unit and the next exactly once. Pointing right, the rail runs on
+   * past the unit's own columns into the unit after it, and the *last* unit
+   * stops short because there is no further stile to reach. Pointing left
+   * it runs back into the unit before it, and the *first* unit stops short
+   * for the same reason at the other end. Nothing else changes: the number
+   * of rail steps is identical either way, so the figure is the same tree
+   * seen in a mirror.
+   */
+  private rungRail(
+    placement: BranchUnitPlacement,
+    isLeftward: boolean,
+  ): BranchSpan {
+    const { firstColumn, isLastUnit, unitIndex } = placement;
+    const stile = this.stileColumn(placement, isLeftward);
+
+    return isLeftward
+      ? { from: firstColumn - (unitIndex === 0 ? 0 : 1), to: stile }
+      : {
+          from: stile,
+          to: firstColumn + (isLastUnit ? 1 : BRANCH_UNIT_COLUMNS),
+        };
+  }
+
+  /**
+   * One `rung` repeat unit: a stile down one of the unit's two lattice
+   * columns, a rung reaching across to the other at every lattice row, and
+   * the rail carrying on to the next unit's stile along the top row.
    *
    * The rail and the top rung are drawn as one run rather than two, so the
    * unit emits one path per lattice row and one for the stile. Only the
-   * stile's interior points fork: a rung meets it from the right while it
+   * stile's interior points fork: a rung meets it from the side while it
    * runs on above and below, which is `rows - 1` forks per unit, plus
-   * `repeatCount - 1` where the rail arrives at a stile's head — the first
-   * stile has no rail on its left, so it is one fewer than the number of
-   * stiles rather than one per stile. That first term is what sets this
-   * family's minimum row count — see `STRUCTURAL_MINIMUM_ROWS`.
+   * `repeatCount - 1` where the rail arrives at a stile's head — the stile
+   * at the drawing's own end has no rail beyond it, so it is one fewer than
+   * the number of stiles rather than one per stile. That first term is what
+   * sets this family's minimum row count — see `STRUCTURAL_MINIMUM_ROWS`.
+   *
+   * `isLeftward` mirrors all of that and changes none of its counts. Which
+   * column the stile sits in, which way the rungs reach, and which end of
+   * the band holds the stile with no rail past it all move together, so the
+   * two directions measure identically and differ only in the drawing. See
+   * {@link rungRail}.
    */
   private rungUnit(
     geometry: GridGeometry,
     placement: BranchUnitPlacement,
+    isLeftward: boolean,
   ): string {
-    const { firstColumn, isLastUnit, rows } = placement;
-    const railEnd = firstColumn + (isLastUnit ? 1 : BRANCH_UNIT_COLUMNS);
+    const { firstColumn, rows } = placement;
+    const rail = this.rungRail(placement, isLeftward);
     const runs = Array.from({ length: rows + 1 }, (_value, row) =>
-      this.horizontalRun(geometry, row, {
-        from: firstColumn,
-        to: row === 0 ? railEnd : firstColumn + 1,
-      }),
+      this.horizontalRun(
+        geometry,
+        row,
+        row === 0 ? rail : { from: firstColumn, to: firstColumn + 1 },
+      ),
     );
 
     return [
-      this.verticalRun(geometry, firstColumn, { from: 0, to: rows }),
+      this.verticalRun(geometry, this.stileColumn(placement, isLeftward), {
+        from: 0,
+        to: rows,
+      }),
       ...runs,
     ].join("");
   }
@@ -172,15 +226,21 @@ export class BranchMotifService implements MotifService {
    * unit is drawn exactly once and by the unit on its left. The last unit
    * stops at its own last column instead: a rail carrying on past the end
    * would reach a column with no tooth under it.
+   *
+   * Under `stagger` the unit is as wide as its own crenel, so a rail run
+   * covers `unitColumns + 1` teeth — the `branches` its modifier names —
+   * and the teeth strictly inside that run are the mode's forks. Under
+   * `comb` the rail never changes side, so the unit width is only a tiling
+   * step and every interior column forks whatever it is.
    */
   private spineUnit(
     geometry: GridGeometry,
     placement: BranchUnitPlacement,
     mode: BranchMode,
   ): string {
-    const { firstColumn, isLastUnit, rows } = placement;
-    const lastColumn = firstColumn + BRANCH_UNIT_COLUMNS - 1;
-    const teeth = Array.from({ length: BRANCH_UNIT_COLUMNS }, (_value, index) =>
+    const { firstColumn, isLastUnit, rows, unitColumns } = placement;
+    const lastColumn = firstColumn + unitColumns - 1;
+    const teeth = Array.from({ length: unitColumns }, (_value, index) =>
       this.verticalRun(geometry, firstColumn + index, { from: 0, to: rows }),
     );
 
@@ -191,6 +251,41 @@ export class BranchMotifService implements MotifService {
         to: isLastUnit ? lastColumn : lastColumn + 1,
       }),
     ].join("");
+  }
+
+  /**
+   * Which of a `rung` unit's two lattice columns carries its stile: the
+   * first when the rungs point right, the second when they point left.
+   *
+   * The rungs hang off the side the stile is not on, which is what makes
+   * the free ends of one direction land where the other's stile does. It is
+   * written against the unit's own width rather than a literal `+ 1`, so
+   * the mirror stays at the unit's far edge whatever that width is.
+   */
+  private stileColumn(
+    placement: BranchUnitPlacement,
+    isLeftward: boolean,
+  ): number {
+    return isLeftward
+      ? placement.firstColumn + placement.unitColumns - 1
+      : placement.firstColumn;
+  }
+
+  /**
+   * How many lattice columns one repeat unit of this drawing spans.
+   *
+   * `stagger` is the only mode that answers anything but
+   * {@link BRANCH_UNIT_COLUMNS}: its rail changes side once per unit, so a
+   * unit's width *is* the crenel's width, and a run joining `branches`
+   * teeth spans `branches - 1` steps between them. The other two modes have
+   * no such freedom — `rung` needs exactly two columns for a stile and the
+   * free ends of its rungs, and every column of `comb` carries the same
+   * full tooth, so widening its unit would change nothing it draws.
+   */
+  private unitColumns(modifier: Modifier | undefined): number {
+    return modifier?.name === "stagger"
+      ? modifier.branches - 1
+      : BRANCH_UNIT_COLUMNS;
   }
 
   /** One vertical run's path data, down `column` across the given lattice row span. */
@@ -235,22 +330,22 @@ export class BranchMotifService implements MotifService {
   /** Draws one repeat unit of whichever spanning tree the modifier selects. */
   path(geometry: GridGeometry, unit: MotifUnit): string {
     const mode = this.mode(unit.modifier);
+    const unitColumns = this.unitColumns(unit.modifier);
     const placement: BranchUnitPlacement = {
-      firstColumn: BRANCH_UNIT_COLUMNS * unit.unitIndex,
+      firstColumn: unitColumns * unit.unitIndex,
       isLastUnit: unit.isLastUnit,
       rows: unit.rows,
+      unitColumns,
       unitIndex: unit.unitIndex,
     };
 
     return mode === "rung"
-      ? this.rungUnit(geometry, placement)
+      ? this.rungUnit(geometry, placement, this.isLeftward(unit.modifier))
       : this.spineUnit(geometry, placement, mode);
   }
 
   /** The x-coordinate of the drawing's last lattice column, before the stroke-width margin. */
   rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
-    return (
-      geometry.offset + this.lastColumn(pattern.repeatCount) * geometry.unit
-    );
+    return geometry.offset + this.lastColumn(pattern) * geometry.unit;
   }
 }

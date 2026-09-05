@@ -13,16 +13,24 @@ import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
  * Everything but `outputDirectory` and `repeatCount` is optional, and that is
  * the command's whole contract: `draw` with no drawing named sweeps every
  * meander the application can draw, and `draw --type <family> --rows <n>`
- * draws that one. `modifier`, `period`, `shape`, and `strands` arrive
+ * draws that one. `branches`, `leftward`, `modifier`, `period`, `shape`, and
+ * `strands` arrive
  * separately because nest-commander derives each option's key from its own
  * long flag — {@link DrawParametersService.modifier} is what puts them back
  * together.
+ *
+ * `leftward` is the one parameter whose absence is not a refusal. It is a
+ * boolean, and commander cannot distinguish a flag left off from one passed
+ * `false`, so `rung` takes {@link DEFAULT_RUNG_IS_LEFTWARD} where the others
+ * throw.
  *
  * `subFamily` needs no such combining: it names a region of the family's
  * unit space on its own, and it is mutually exclusive with `modifier`, which
  * the generation service enforces.
  */
 export interface DrawCommandOptions {
+  branches?: number;
+  leftward?: boolean;
   modifier?: Modifier["name"];
   outputDirectory: string;
   period?: number;

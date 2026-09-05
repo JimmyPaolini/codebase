@@ -322,6 +322,25 @@ export class InvalidRowsError extends Error {
 }
 
 /**
+ * Thrown when `stagger`'s `branches` falls outside
+ * {@link MINIMUM_STAGGER_BRANCHES} and the shared {@link MAXIMUM_VALUE}.
+ *
+ * The minimum is the family's own and the maximum is the command line's,
+ * which is why the message names them rather than restating either: below
+ * the minimum the mode stops forking altogether, and above the maximum
+ * nothing structural fails — a crenel simply grows wider than any other
+ * parameter this application accepts.
+ */
+export class InvalidStaggerBranchCountError extends Error {
+  constructor(branches: number, minimum: number, maximum: number) {
+    super(
+      `branches must be between ${minimum} and ${maximum}, received ${branches}`,
+    );
+    this.name = "InvalidStaggerBranchCountError";
+  }
+}
+
+/**
  * Thrown when `plied`'s `strands` falls outside {@link MINIMUM_STRANDS} and
  * the drawing's own row count.
  *

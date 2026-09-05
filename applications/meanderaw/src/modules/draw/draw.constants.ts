@@ -38,6 +38,41 @@ export const DOT_SWEEP_SHAPES: readonly DotShape[] = ["bounce", "up"];
 export const PLIED_SWEEP_STRAND_COUNTS: readonly number[] = [3, 4];
 
 /**
+ * `isLeftward` values swept for the `rung` modifier's batch combinations.
+ *
+ * Both of them, which is the modifier's whole domain rather than a sample of
+ * it — the same reason {@link DOT_SWEEP_SHAPES} sweeps two. `false` leads,
+ * so the rightward drawing the sweep committed under the bare name before
+ * the flag existed is still the first one enumerated at each row count.
+ *
+ * The two are mirror images and every topology count is identical across
+ * them, so this pair adds no new measurement to the charter. It is swept
+ * anyway because the corpus is what the index page shows, and a direction
+ * nobody can see drawn is a direction nobody will use.
+ */
+export const RUNG_SWEEP_LEFTWARD_VALUES: readonly boolean[] = [false, true];
+
+/**
+ * `branches` values swept for the `stagger` modifier's batch combinations.
+ *
+ * Three points rather than the two `alternated` and `plied` sample at,
+ * because this parameter has a floor the other two do not: the first value
+ * is `MINIMUM_STAGGER_BRANCHES` itself, which is both the tightest crenel
+ * the mode admits and the only one any `stagger` was drawn at before the
+ * flag existed. Sweeping only it would leave the corpus unable to show that
+ * the parameter does anything, and sweeping only two would leave the mode's
+ * fork count — `repeatCount * (branches - 2) - 1`, which is linear in
+ * `branches` — fitted by exactly as many points as it has degrees of
+ * freedom. Three is the first count that could disagree with the line.
+ *
+ * Nothing wider is swept because a crenel keeps its shape and only its
+ * wavelength grows: at five branches the rail already spans most of a
+ * six-repeat band, and past that the figure reads as a `comb` with one
+ * change of side rather than as a crenellation.
+ */
+export const STAGGER_SWEEP_BRANCH_COUNTS: readonly number[] = [3, 4, 5];
+
+/**
  * The gallery page `DrawCommand` writes at the root of the output directory,
  * listing every document the sweep produced under the directory it landed
  * in. One page rather than one per row count: the tiles are now separated by

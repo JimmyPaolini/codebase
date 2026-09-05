@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
+import { DEFAULT_RUNG_IS_LEFTWARD } from "../branch-motif/branch-motif.constants";
 import {
   SUPPORTED_DOT_SHAPES,
   SUPPORTED_MODIFIER_NAMES,
@@ -29,11 +30,17 @@ import type { DrawCommandOptions } from "./draw.types";
  * It exists because `DrawCommand` has one command's worth of room and two
  * commands' worth of options: nest-commander derives each option's key from
  * its own long flag, so `--modifier` and the parameter it needs
- * (`alternated`'s `--period`, `dot`'s `--shape`, `plied`'s `--strands`) are
- * parsed by separate methods that cannot see each other. Recombining them,
- * and narrowing every raw string to the union it belongs to, is the whole of
- * this service — the command keeps only the `@Option` methods nest-commander
- * insists live on it, and delegates each one here.
+ * (`alternated`'s `--period`, `dot`'s `--shape`, `plied`'s `--strands`,
+ * `stagger`'s `--branches`, `rung`'s `--leftward`) are parsed by separate
+ * methods that cannot see each other. Recombining them, and narrowing every
+ * raw string to the union it belongs to, is the whole of this service — the
+ * command keeps only the `@Option` methods nest-commander insists live on
+ * it, and delegates each one here.
+ *
+ * One builder per parameter-carrying modifier, rather than one method that
+ * knows all five: {@link modifier} is then a flat dispatch on the name, and
+ * each builder holds only its own parameter's absence and the flag that
+ * would have supplied it.
  */
 @Injectable()
 export class DrawParametersService {
@@ -46,6 +53,24 @@ export class DrawParametersService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /** The `alternated` modifier `--period` describes, refusing the modifier when the flag is absent. */
+  private alternatedModifier(period: number | undefined): Modifier {
+    if (period === undefined) {
+      throw new MissingModifierParameterError("alternated", "--period");
+    }
+
+    return { name: "alternated", period };
+  }
+
+  /** The `dot` modifier `--shape` describes, refusing the modifier when the flag is absent. */
+  private dotModifier(shape: DotShape | undefined): Modifier {
+    if (shape === undefined) {
+      throw new MissingModifierParameterError("dot", "--shape");
+    }
+
+    return { name: "dot", shape };
+  }
 
   /** Narrows a raw string to a supported {@link DotShape} without an unchecked assertion. */
   private isDotShape(value: string): value is DotShape {
@@ -67,6 +92,40 @@ export class DrawParametersService {
     return SUPPORTED_SUB_FAMILIES.includes(value);
   }
 
+  /** The `plied` modifier `--strands` describes, refusing the modifier when the flag is absent. */
+  private pliedModifier(strands: number | undefined): Modifier {
+    if (strands === undefined) {
+      throw new MissingModifierParameterError("plied", "--strands");
+    }
+
+    return { name: "plied", strands };
+  }
+
+  /**
+   * The `rung` modifier `--leftward` describes.
+   *
+   * The only builder that cannot refuse an absent flag, and the reason is
+   * the flag's own type: commander reports a boolean left off and a boolean
+   * passed `false` identically, so "not stated" is not a state this can
+   * see. It takes {@link DEFAULT_RUNG_IS_LEFTWARD} instead, which is the
+   * direction every `rung` drawn before the flag existed pointed.
+   */
+  private rungModifier(isLeftward: boolean | undefined): Modifier {
+    return {
+      isLeftward: isLeftward ?? DEFAULT_RUNG_IS_LEFTWARD,
+      name: "rung",
+    };
+  }
+
+  /** The `stagger` modifier `--branches` describes, refusing the modifier when the flag is absent. */
+  private staggerModifier(branches: number | undefined): Modifier {
+    if (branches === undefined) {
+      throw new MissingModifierParameterError("stagger", "--branches");
+    }
+
+    return { branches, name: "stagger" };
+  }
+
   // 🌎 Public Methods
 
   /** Narrows `--shape` to a {@link DotShape}, rejecting anything outside the supported set. */
@@ -83,37 +142,34 @@ export class DrawParametersService {
    * where no `--modifier` was given. A modifier carrying a parameter is
    * refused rather than defaulted when that parameter is absent, since
    * guessing one would silently draw something other than what was asked
-   * for.
+   * for — `rung`'s boolean excepted, for the reason
+   * {@link rungModifier} gives.
    */
   modifier(options: DrawCommandOptions): Modifier | undefined {
-    const { modifier, period, shape, strands } = options;
+    const { modifier } = options;
 
     if (!modifier) {
       return undefined;
     }
 
     if (modifier === "alternated") {
-      if (period === undefined) {
-        throw new MissingModifierParameterError(modifier, "--period");
-      }
-
-      return { name: modifier, period };
+      return this.alternatedModifier(options.period);
     }
 
     if (modifier === "dot") {
-      if (shape === undefined) {
-        throw new MissingModifierParameterError(modifier, "--shape");
-      }
-
-      return { name: modifier, shape };
+      return this.dotModifier(options.shape);
     }
 
     if (modifier === "plied") {
-      if (strands === undefined) {
-        throw new MissingModifierParameterError(modifier, "--strands");
-      }
+      return this.pliedModifier(options.strands);
+    }
 
-      return { name: modifier, strands };
+    if (modifier === "rung") {
+      return this.rungModifier(options.leftward);
+    }
+
+    if (modifier === "stagger") {
+      return this.staggerModifier(options.branches);
     }
 
     return { name: modifier };
