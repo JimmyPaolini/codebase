@@ -8,6 +8,15 @@ on:
 
 # Never cancel a release. Interrupting semantic-release between the npm
 # publish and the git tag leaves the repository disagreeing with the registry.
+#
+# This is the one workflow that keeps a shared group, and so the one whose
+# badge can still read red for a run nobody broke: GitHub holds at most one
+# *pending* run per group, so a third push to main cancels the queued second
+# one. The alternative — a per-commit group, the way the check workflows now
+# do it — would let two releases run at once, which is the thing this note
+# forbids. A cancelled run here means no release was attempted, and whichever
+# run holds main's tip covers its commits; `check-supersession` below is what
+# makes that true for the runs that are *not* cancelled.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
@@ -18,8 +27,54 @@ permissions:
   pull-requests: write
 
 jobs:
+  # A run that no longer holds main's tip must not release. `main` moves while
+  # a release is in flight — 8–10 minutes of it is the pre-commit hook running
+  # the whole lint gate over the version commit — and when it does,
+  # `@semantic-release/git` reaches `git push` with a commit built on a stale
+  # base, takes a non-fast-forward rejection, and the pre-push hook then fails
+  # on `Invalid revision range`. Run 33986954688 was exactly that, and read as
+  # a release failure rather than as two merges landing 90 seconds apart.
+  #
+  # Nothing is lost by stopping: every push to main creates a run of this
+  # workflow, so whichever run does hold the tip releases the superseded run's
+  # commits along with its own. A skipped job leaves the run `success`, which
+  # is also what keeps this workflow's badge honest.
+  #
+  # It is a job of its own rather than an `if:` on each step below so that a
+  # superseded run costs seconds instead of the ten minutes `🕋 Setup Codebase`
+  # and `👷 Build Projects` would spend before the release step could decline.
+  check-supersession:
+    name: 🔭 Check Supersession
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    permissions:
+      contents: read
+
+    outputs:
+      superseded: ${{ steps.compare.outputs.superseded }}
+
+    steps:
+      - name: 🔭 Compare This Commit With main
+        id: compare
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          tip="$(gh api "repos/$REPOSITORY/commits/main" --jq .sha)"
+          if [ "$tip" = "$SHA" ]; then
+            echo "superseded=false" >>"$GITHUB_OUTPUT"
+            echo "🦸 $SHA holds main's tip, releasing"
+          else
+            echo "superseded=true" >>"$GITHUB_OUTPUT"
+            echo "⏭️ $SHA superseded by $tip, whose run releases instead"
+          fi
+
   push-releases:
     name: 🦸 Push Releases
+    needs: check-supersession
+    if: needs.check-supersession.outputs.superseded != 'true'
     runs-on: ubuntu-latest
     # Two populations of run hide behind one average, and only the larger one
     # sets this number. Most pushes to main release nothing — semantic-release

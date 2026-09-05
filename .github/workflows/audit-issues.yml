@@ -43,15 +43,21 @@ permissions:
   issues: write
 
 concurrency:
-  # One group per issue, rather than per `github.ref`: every issue event
-  # carries the repository's default-branch ref, so grouping on that would
-  # collapse unrelated issues into a single queue.
-  group: ${{ github.workflow }}-${{ github.event.issue.number }}
-  # Deliberately not cancelling. One `gh issue edit` that adds a few labels
-  # fires several of the events above within a second, and `cancel-in-progress`
-  # would leave the badge reporting a `cancelled` run rather than the check's
-  # real verdict. These runs take about thirty seconds and build no Nx graph,
-  # so cancelling saves almost nothing.
+  # One group per run, so no run of this workflow ever waits behind another.
+  # A per-issue group with `cancel-in-progress: false` looked like it said
+  # exactly that and did not: GitHub keeps at most one *pending* run per
+  # group, so a third event cancels the queued second one whatever the flag
+  # says. One `gh issue edit` that adds a few labels fires several of the
+  # events above within seconds, which left 24 of the last 40 runs concluding
+  # `cancelled` — and this workflow's README badge renders `cancelled` red,
+  # so the badge reported a queue rather than a mislabeled issue.
+  #
+  # Running them all at once is safe because only one of them writes: the
+  # reconciliation step below is gated on `opened`, which fires exactly once
+  # per issue. Every other run is a read-only check, and reads the issue's
+  # labels live rather than from its own event payload — see the audit step
+  # for why that second half is what makes this safe.
+  group: ${{ github.workflow }}-${{ github.run_id }}
   cancel-in-progress: false
 
 jobs:
@@ -99,11 +105,22 @@ jobs:
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/synchronization/src/main.ts issue-labels
 
+      # Read live, by issue number, rather than out of this event's payload.
+      # `issue-labels` above adds one label per `gh issue edit`, so an issue
+      # opened with three labels fires three `labeled` events, each carrying
+      # the label set as it stood at that instant. Judging those partial
+      # snapshots would fail the check on issues that are correctly labeled.
+      # The queue used to hide that by cancelling the intermediate runs; now
+      # that every one of them runs, each has to read the settled state.
+      #
+      # `issue-metadata` already supports both: given a number it reads
+      # `gh issue view --json body,labels`, and given none it reads
+      # ISSUE_BODY and ISSUE_LABELS. ISSUE_NUMBER is still set because the
+      # remediation commands the report prints name it.
       - name: 🧾 Audit Issue Metadata
         env:
-          ISSUE_BODY: ${{ github.event.issue.body }}
-          ISSUE_LABELS: ${{ toJSON(github.event.issue.labels) }}
+          GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
-            tools/validation/src/main.ts issue-metadata
+            tools/validation/src/main.ts issue-metadata "$ISSUE_NUMBER"
