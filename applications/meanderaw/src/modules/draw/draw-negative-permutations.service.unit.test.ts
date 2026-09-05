@@ -26,7 +26,7 @@ import { DrawNegativePermutationsService } from "./draw-negative-permutations.se
  * whatever the search happened to find. The count roughly two-and-a-half
  * times per row, which is also the reason the half stops where it does.
  */
-const TILE_COUNTS: readonly number[] = [8, 18, 40, 93, 216];
+const TILE_COUNTS: readonly number[] = [8, 18, 40, 93];
 
 /**
  * How many of each row count's tiles carry the name of a source the family
@@ -38,7 +38,7 @@ const TILE_COUNTS: readonly number[] = [8, 18, 40, 93, 216];
  * rather than two. The test below asserts they are the only pair that
  * ever collides.
  */
-const NAMED_COUNTS: readonly number[] = [7, 6, 7, 6, 7];
+const NAMED_COUNTS: readonly number[] = [7, 6, 7, 6];
 
 /** The label a permutation filename carries after its source's identifier, where it carries one. */
 const SOURCE_LABEL = /^[a-z]+-([a-z-]+)\.svg$/u;
@@ -71,14 +71,19 @@ describe(DrawNegativePermutationsService, () => {
   });
 
   describe("rowsSweep", () => {
-    // 🎯 The range is derived from two constants rather than chosen, and this
-    // is what makes that concrete: it ends one row below the `mosaic`
-    // permutation half's own maximum, because a negative is one row shorter
-    // than the source it inverts. Every drawing this half writes therefore
-    // has a committed `mosaic` tile to be compared against, which is what
-    // lets the corridor-identity gate cover this half completely.
-    it("covers the family's minimum row count through the deepest committed source", () => {
-      expect(service.rowsSweep()).toStrictEqual([3, 4, 5, 6, 7]);
+    // 🎯 The range is read from a constant rather than chosen, and this is
+    // what makes that concrete: it ends at the same
+    // `MOSAIC_TILE_MAXIMUM_ROWS` the `mosaic` half stops at, so both
+    // exhaustive halves of the sweep cover the same row counts.
+    //
+    // It used to end one row lower, because a negative is one row shorter
+    // than the source it inverts and every drawing here therefore had a
+    // committed `mosaic` tile to be compared against. It no longer does:
+    // the deepest row count inverts a seven-row source that is enumerated
+    // but not committed, so the corridor-identity gate covers rows 3
+    // through 5 and the charter sweep covers the rest.
+    it("covers the family's minimum row count through the cap both exhaustive halves share", () => {
+      expect(service.rowsSweep()).toStrictEqual([3, 4, 5, 6]);
     });
   });
 

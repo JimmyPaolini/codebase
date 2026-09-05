@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { STRUCTURAL_MINIMUM_ROWS } from "../meander-generation/meander-generation.constants";
+import { MOSAIC_TILE_MAXIMUM_ROWS } from "../mosaic-motif/mosaic-motif.constants";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import {
@@ -14,7 +15,6 @@ import { OutputPathService } from "../svg-rendering/output-path.service";
 import {
   NEGATIVE_PERMUTATION_COLUMNS,
   PERMUTATION_REPEAT_COUNT,
-  PERMUTATION_ROWS_SWEEP_MAXIMUM,
   PERMUTATIONS_SUBDIRECTORY,
 } from "./draw.constants";
 
@@ -32,21 +32,30 @@ import type { RenderedDocument } from "./draw.types";
  * the source opens a two-level window — which is to say a one-column source
  * is exactly a *ruled* pattern, and this half is the `ruled` domain
  * enumerated rather than sampled. The named half draws six members of it by
- * name; there are 375 across the row counts swept here, and 45 of them
+ * name; there are 159 across the row counts swept here, and 45 of them
  * branch without crossing at 6 rows alone. The two-column space is not
  * enumerated, and the absent `2-columns` directory beside these is that
  * statement: `stair`, `brick-staggered`, and `brick-straight` are the three
  * of it this repository draws, and the survey found only the first two of
  * those avoid crossing at any row count.
  *
- * **The row range is derived rather than chosen.** It runs from the family's
- * own `STRUCTURAL_MINIMUM_ROWS` to one below
- * {@link PERMUTATION_ROWS_SWEEP_MAXIMUM}, so every drawing here inverts a
- * tile the `mosaic` permutation half has already committed — which is what
- * lets the corridor-identity gate cover this half completely rather than
- * sample it. Raising it past that would produce drawings with no committed
- * source to be compared against, and the count roughly two-and-a-half times
- * per row: 513 at 8 rows, 16,850 at 12.
+ * **The row range is the same one the `mosaic` half runs.** It goes from
+ * this family's own `STRUCTURAL_MINIMUM_ROWS` to
+ * {@link MOSAIC_TILE_MAXIMUM_ROWS}, the ceiling both exhaustive halves
+ * share.
+ *
+ * It used to stop one row below that, so every drawing here inverted a tile
+ * the `mosaic` half had already committed and the corridor-identity gate
+ * covered this half completely. It no longer does: the deepest row count
+ * inverts a seven-row source that is enumerated but not committed, so that
+ * gate covers rows 3 through 5 and the charter sweep covers the rest, the
+ * same way it already covers the named half's drawings from 8 rows up.
+ * Nothing refuses the uncommitted source — `NegativeSourceService` builds
+ * source tiles from a rule rather than from the enumeration.
+ *
+ * The cap is a budget rather than a boundary of the space: the count grows
+ * roughly two-and-a-half times per row, reaching 513 at 8 rows and 16,850
+ * at 12.
  */
 @Injectable()
 export class DrawNegativePermutationsService {
@@ -142,10 +151,10 @@ export class DrawNegativePermutationsService {
       });
   }
 
-  /** Every row count this half covers: the family's structural minimum through the deepest negative a committed `mosaic` tile can yield. */
+  /** Every row count this half covers: the family's structural minimum through the cap both exhaustive halves share. */
   rowsSweep(): number[] {
     const minimum = STRUCTURAL_MINIMUM_ROWS.negative;
-    const maximum = PERMUTATION_ROWS_SWEEP_MAXIMUM - NEGATIVE_SOURCE_ROW_OFFSET;
+    const maximum = MOSAIC_TILE_MAXIMUM_ROWS;
 
     return Array.from(
       { length: maximum - minimum + 1 },

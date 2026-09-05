@@ -19,10 +19,16 @@ import type {
 // 🔧 Configuration
 
 /**
- * The row counts `DrawPermutationsService.rowsSweep` enumerates, which is
- * the whole of the unit space this repository has materialized. Every
- * classification claim below is checked against all of it rather than
- * against a sample.
+ * The row counts every classification claim below is checked against, rather
+ * than a sample of them.
+ *
+ * Two rows deeper than `DrawPermutationsService.rowsSweep` writes, which
+ * stops at `MOSAIC_TILE_MAXIMUM_ROWS`. Classification is a property of a
+ * tile rather than of the corpus — `MosaicSubFamilyService.classify` reads
+ * `MosaicTile.pieces` and knows nothing about what was committed — so
+ * checking the space past the sweep's own ceiling is worth more here than
+ * matching it, and these are the counts README.md's sub-family table
+ * publishes.
  */
 const SWEPT_ROWS: readonly number[] = [4, 5, 6, 7, 8];
 

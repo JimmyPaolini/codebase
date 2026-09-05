@@ -7,6 +7,7 @@ import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { CANVAS_HEIGHT } from "../grid-geometry/grid-geometry.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { FAMILY_MAXIMUM_ROWS } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MotifRegistryService } from "../meander-generation/motif-registry.service";
 import { MeanderLatticeService } from "../meander-topology/meander-lattice.service";
@@ -347,34 +348,47 @@ describe(NegativeMotifService, () => {
   });
 
   describe("charter invariant 5, band not field", () => {
-    // 🎯 A band's height is decided by `rows` alone. Comparing against
-    // `mosaic` at the same row count is what makes that concrete: the two
-    // families draw entirely different things and must still declare the
-    // same canvas height, because both take it from the shared geometry.
+    // 🎯 A band's height is decided by `rows` alone: the concrete number
+    // the shared geometry implies, `CANVAS_HEIGHT` plus half a grid unit of
+    // stroke margin. Every row count this family is drawn at, including the
+    // ones past any enumerated source.
     it.each(SWEEP)(
-      "$label is as tall as a mosaic of the same rows",
+      "$label is as tall as the shared geometry declares",
       ({ parameters }) => {
-        const declared = height(generationService.generate(parameters));
-
-        // 🎯 Two independent statements of the same fact, so neither can pass
-        // by accident: the concrete number the shared geometry implies —
-        // `CANVAS_HEIGHT` plus half a grid unit of stroke margin — and the
-        // height a completely different family declares at the same rows.
-        expect(declared).toBeCloseTo(
+        expect(height(generationService.generate(parameters))).toBeCloseTo(
           CANVAS_HEIGHT + CANVAS_HEIGHT / parameters.rows / 2,
           TOLERANCE_DIGITS,
         );
-        expect(declared).toBe(
-          height(
-            generationService.generate({
-              repeatCount: REPEAT_COUNT,
-              rows: parameters.rows,
-              type: "mosaic",
-            }),
-          ),
-        );
       },
     );
+
+    // 🎯 The same fact stated a second way, so neither can pass by
+    // accident: a completely different family declares the same canvas
+    // height at the same row count, because both take it from the shared
+    // geometry rather than from anything either one draws.
+    //
+    // It covers the row counts where both families are drawn rather than
+    // every row count this one is. `mosaic` stops at
+    // `FAMILY_MAXIMUM_ROWS.mosaic` — see `MOSAIC_TILE_MAXIMUM_ROWS` — and
+    // the command line refuses it above that, so there is no mosaic to
+    // compare a deeper `negative` against. Above the overlap the assertion
+    // on the geometry number stands alone, which is why it is written as a
+    // number rather than only as a second family's height.
+    it.each(
+      SWEEP.filter(
+        ({ parameters }) => parameters.rows <= FAMILY_MAXIMUM_ROWS.mosaic,
+      ),
+    )("$label is as tall as a mosaic of the same rows", ({ parameters }) => {
+      expect(height(generationService.generate(parameters))).toBe(
+        height(
+          generationService.generate({
+            repeatCount: REPEAT_COUNT,
+            rows: parameters.rows,
+            type: "mosaic",
+          }),
+        ),
+      );
+    });
 
     it.each(SWEEP)(
       "$label tiles horizontally and only horizontally",

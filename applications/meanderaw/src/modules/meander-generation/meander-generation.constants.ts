@@ -1,6 +1,7 @@
 // ♟️ Constants
 
 import {
+  MOSAIC_TILE_MAXIMUM_ROWS,
   MOSAIC_TILE_MINIMUM_ROWS,
   SUPPORTED_SUB_FAMILIES,
 } from "../mosaic-motif/mosaic-motif.constants";
@@ -62,6 +63,27 @@ export const DEFAULT_REPEAT_COUNT = 6;
 
 /** Highest `rows` or `repeatCount` value the CLI accepts for any type. */
 export const MAXIMUM_VALUE = 12;
+
+/**
+ * Highest `rows` value each family is drawn at, read by both
+ * `MeanderGenerationService.generate` and `DrawCombinationsService` — which
+ * keeps every drawing the command line accepts one this repository commits
+ * and the charter gates, the property issue #507 lived in the absence of.
+ * Nine families sit at the shared {@link MAXIMUM_VALUE}; only `mosaic` is
+ * lower, and {@link MOSAIC_TILE_MAXIMUM_ROWS} carries the counts and why.
+ */
+export const FAMILY_MAXIMUM_ROWS: Record<MeanderType, number> = {
+  boxes: MAXIMUM_VALUE,
+  branch: MAXIMUM_VALUE,
+  chain: MAXIMUM_VALUE,
+  cross: MAXIMUM_VALUE,
+  mosaic: MOSAIC_TILE_MAXIMUM_ROWS,
+  negative: MAXIMUM_VALUE,
+  parallel: MAXIMUM_VALUE,
+  snake: MAXIMUM_VALUE,
+  swirl: MAXIMUM_VALUE,
+  whirl: MAXIMUM_VALUE,
+};
 
 /** Lowest `period` value `alternated` accepts: a run must span at least one grid level. */
 export const MINIMUM_PERIOD = 1;

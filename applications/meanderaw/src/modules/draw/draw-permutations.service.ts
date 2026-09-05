@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import {
   MOSAIC_TILE_MAXIMUM_COLUMNS,
+  MOSAIC_TILE_MAXIMUM_ROWS,
   MOSAIC_TILE_MINIMUM_ROWS,
 } from "../mosaic-motif/mosaic-motif.constants";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
@@ -12,7 +13,6 @@ import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import {
   PERMUTATION_REPEAT_COUNT,
-  PERMUTATION_ROWS_SWEEP_MAXIMUM,
   PERMUTATIONS_SUBDIRECTORY,
 } from "./draw.constants";
 
@@ -106,7 +106,7 @@ export class DrawPermutationsService {
   /** Every row count the mosaic sweep covers. */
   rowsSweep(): number[] {
     return Array.from(
-      { length: PERMUTATION_ROWS_SWEEP_MAXIMUM - MOSAIC_TILE_MINIMUM_ROWS + 1 },
+      { length: MOSAIC_TILE_MAXIMUM_ROWS - MOSAIC_TILE_MINIMUM_ROWS + 1 },
       (_value, index) => MOSAIC_TILE_MINIMUM_ROWS + index,
     );
   }

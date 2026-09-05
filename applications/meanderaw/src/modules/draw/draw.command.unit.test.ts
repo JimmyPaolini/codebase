@@ -142,14 +142,15 @@ describe(DrawCommand, () => {
         recursive: true,
       });
 
-      // 🎯 rows sweep runs from each type's own structural minimum to
-      // `MAXIMUM_VALUE`: 2..12 (branch, parallel), 3..12 (mosaic, boxes,
-      // negative), 4..12 (chain, snake, swirl, whirl), or 6..12 (cross),
-      // crossed with "no modifier" plus every compatible modifier
-      // (alternated, dot, and rung each expand to 2 representative values,
-      // stagger to 4, and comb to 1 — its other direction is what "no
-      // modifier" already draws):
-      // mosaic: 10 rows * (1 + 2 + 2 + 1) modifiers = 60
+      // 🎯 rows sweep runs from each type's own structural minimum to its
+      // own `FAMILY_MAXIMUM_ROWS`: 2..12 (branch, parallel), 3..12 (boxes,
+      // negative), 4..12 (chain, snake, swirl, whirl), 6..12 (cross), or
+      // 3..6 (mosaic, the one family with a ceiling of its own), crossed
+      // with "no modifier" plus every compatible modifier (alternated, dot,
+      // and rung each expand to 2 representative values, stagger to 4, and
+      // comb to 1 — its other direction is what "no modifier" already
+      // draws):
+      // mosaic: 4 rows * (1 + 2 + 2 + 1) modifiers = 24
       // boxes: 10 rows * (1 + 1 + 1) modifiers = 30
       // chain: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
       // snake: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
@@ -190,7 +191,7 @@ describe(DrawCommand, () => {
         0,
       );
       const expectedNamedTypeCount =
-        60 + 30 + 36 + 36 + 18 + 18 + 14 + 100 + 88 + expectedParallelCount;
+        24 + 30 + 36 + 36 + 18 + 18 + 14 + 100 + 88 + expectedParallelCount;
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
@@ -221,13 +222,13 @@ describe(DrawCommand, () => {
         "output/negative/3-rows/permutations/1-columns",
         { recursive: true },
       );
-      // Every distinct `mosaic` tile at 4 through 8 rows and every distinct
-      // one-column `negative` source at 3 through 7, and nothing else. Both
-      // halves keep a cap where the named-type half runs to `MAXIMUM_VALUE`,
-      // because both enumerate exhaustively — see
-      // `PERMUTATION_ROWS_SWEEP_MAXIMUM`, which the negative half's own range
-      // is derived from so that every drawing in it inverts a committed tile.
-      expect(permutations).toHaveLength(3179 + 375);
+      // Every distinct `mosaic` tile at 4 through 6 rows and every distinct
+      // one-column `negative` source at 3 through 6, and nothing else. Both
+      // halves stop at `MOSAIC_TILE_MAXIMUM_ROWS` where the
+      // named-type half runs on to `MAXIMUM_VALUE` for nine of its ten
+      // families, because both of these enumerate their space exhaustively
+      // rather than sampling it.
+      expect(permutations).toHaveLength(290 + 159);
       expect(permutations).toContain(
         "output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg",
       );
@@ -245,7 +246,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("4773 drawings");
+      expect(index?.[1]).toContain("1632 drawings");
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
       );
@@ -645,14 +646,14 @@ describe(DrawCommand, () => {
         realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
       ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 1,219 enumerated named-type combinations, every
-      // one of the 3,179 mosaic tiles, and every one of the 375 one-column
+      // 🎯 every one of the 1,183 enumerated named-type combinations, every
+      // one of the 290 mosaic tiles, and every one of the 159 one-column
       // negative sources, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
       // replace the generation services entirely. The extra file is the
       // single index page listing all of them.
-      expect(mockWriteFile).toHaveBeenCalledTimes(1219 + 3179 + 375 + 1);
+      expect(mockWriteFile).toHaveBeenCalledTimes(1183 + 290 + 159 + 1);
     });
   });
 });

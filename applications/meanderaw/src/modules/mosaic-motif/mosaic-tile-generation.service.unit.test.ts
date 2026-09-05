@@ -5,9 +5,11 @@ import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import {
   InvalidRepeatCountError,
   InvalidRowsError,
+  MAXIMUM_VALUE,
 } from "../meander-generation/meander-generation.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
+import { MOSAIC_TILE_MAXIMUM_ROWS } from "./mosaic-motif.constants";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "./mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
@@ -153,12 +155,24 @@ describe(MosaicTileGenerationService, () => {
       );
     });
 
+    // 🎯 Both row bounds are the family's own rather than the command
+    // line's. The ceiling is `MOSAIC_TILE_MAXIMUM_ROWS` — six, where the
+    // shared `MAXIMUM_VALUE` is twelve — so a tile one row past the deepest
+    // band this family is drawn in is refused here rather than drawn
+    // outside the corpus the charter gates.
+    it("throws above the mosaic's own maximum rows, well inside the shared maximum", () => {
+      expect(MOSAIC_TILE_MAXIMUM_ROWS).toBeLessThan(MAXIMUM_VALUE);
+      expect(() =>
+        service.generate({ ...dots, rows: MOSAIC_TILE_MAXIMUM_ROWS + 1 }, 6),
+      ).toThrow(InvalidRowsError);
+    });
+
     it("throws when the repeat count falls outside the shared bounds", () => {
       expect(() => service.generate(dots, 0)).toThrow(InvalidRepeatCountError);
       expect(() => service.generate(dots, 13)).toThrow(InvalidRepeatCountError);
     });
 
-    it.each([4, 5, 6, 7])(
+    it.each([4, 5, 6])(
       "renders every enumerated tile space-filling at %i rows",
       (rows) => {
         const geometry = gridGeometryService.compute(rows);

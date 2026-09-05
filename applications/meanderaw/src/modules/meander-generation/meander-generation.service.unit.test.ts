@@ -37,6 +37,7 @@ import {
   COMPATIBLE_MODIFIERS,
   ConflictingSubFamilyError,
   DEFAULT_REPEAT_COUNT,
+  FAMILY_MAXIMUM_ROWS,
   InvalidOffsetError,
   InvalidPeriodError,
   InvalidRepeatCountCycleError,
@@ -44,7 +45,6 @@ import {
   InvalidRowsError,
   InvalidStrandCountError,
   InvalidSubFamilyError,
-  MAXIMUM_VALUE,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
@@ -259,7 +259,9 @@ const patternCases: readonly PatternCase[] = sweptTypes.flatMap((type) => {
     [
       ...new Set(
         [STRUCTURAL_MINIMUM_ROWS[type], 5, 6, 7, 8].filter(
-          (rows) => rows >= STRUCTURAL_MINIMUM_ROWS[type],
+          (rows) =>
+            rows >= STRUCTURAL_MINIMUM_ROWS[type] &&
+            rows <= FAMILY_MAXIMUM_ROWS[type],
         ),
       ),
     ]
@@ -1042,8 +1044,10 @@ describe(MeanderGenerationService, () => {
   // two consecutive runs along the same axis, a second stroke of ink laid
   // over one already drawn. The gap that hid it was between two numbers: the
   // sweep stopped at 8 row counts while `MAXIMUM_VALUE` let the command line
-  // ask for 12. Both are 12 now, and this sweeps every family rather than
-  // the six that existed when the defect was found.
+  // ask for 12. Both read `FAMILY_MAXIMUM_ROWS` now, and this sweeps every
+  // family rather than the six that existed when the defect was found —
+  // each one out to its own ceiling, which is 12 for every family but
+  // `mosaic`, whose exhaustively enumerated space stops at 6.
   //
   // This is deliberately a rendered measurement. A drawing that *emits*
   // proves nothing here — every family emitted at every row count through
@@ -1054,7 +1058,10 @@ describe(MeanderGenerationService, () => {
     it("lays no ink back over ink, in any family", () => {
       const retracing = sweptTypes.flatMap((type) =>
         Array.from(
-          { length: MAXIMUM_VALUE - STRUCTURAL_MINIMUM_ROWS[type] + 1 },
+          {
+            length:
+              FAMILY_MAXIMUM_ROWS[type] - STRUCTURAL_MINIMUM_ROWS[type] + 1,
+          },
           (_, offset) => STRUCTURAL_MINIMUM_ROWS[type] + offset,
         )
           .filter((rows) =>
