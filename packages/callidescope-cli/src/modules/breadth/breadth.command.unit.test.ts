@@ -69,7 +69,7 @@ function buildLocated(): {
     unresolvedCallerIds: Set<string>;
     unresolvedCalls: never[];
   };
-  projectRoots: Map<string, string>;
+  startingProjectRoots: Map<string, string>;
 } {
   return {
     callablesById: new Map(),
@@ -80,7 +80,7 @@ function buildLocated(): {
       unresolvedCallerIds: new Set(),
       unresolvedCalls: [],
     },
-    projectRoots: new Map(),
+    startingProjectRoots: new Map(),
   };
 }
 

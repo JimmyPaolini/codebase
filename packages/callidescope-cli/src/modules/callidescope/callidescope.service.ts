@@ -71,7 +71,7 @@ export class CallidescopeService {
   private discoverCallables(args: TraceArguments): {
     collection: CallableCollection;
     projectNames: string[];
-    projectRoots: ReadonlyMap<string, string>;
+    startingProjectRoots: ReadonlyMap<string, string>;
   } {
     this.workspaceService.configure(args.configuration.workspaceStructure);
 
@@ -130,8 +130,12 @@ export class CallidescopeService {
     return {
       collection,
       projectNames: projects.map((project) => project.name),
-      projectRoots: new Map(
-        projects.map((project) => [project.name, project.root]),
+      // The starting projects rather than the closure: measurement reaches
+      // into a project's dependencies, publishing does not. A run scoped to
+      // one package would otherwise rewrite a section in every README its
+      // imports happened to reach, which is a whole-workspace run's job.
+      startingProjectRoots: new Map(
+        startingProjects.map((project) => [project.name, project.root]),
       ),
     };
   }
@@ -253,7 +257,7 @@ export class CallidescopeService {
    * unconditionally.
    */
   public locate(args: TraceArguments): LocateOutcome {
-    const { collection, projectRoots } = this.discoverCallables(args);
+    const { collection, startingProjectRoots } = this.discoverCallables(args);
     const { graph } = this.graphAssemblyService.assemble({
       callablesById: collection.byId,
       ignoreCallees: args.configuration.ignoreCallees,
@@ -261,7 +265,7 @@ export class CallidescopeService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    return { callablesById: collection.byId, graph, projectRoots };
+    return { callablesById: collection.byId, graph, startingProjectRoots };
   }
 
   /** Traces a workspace and returns everything the run found. */
@@ -270,12 +274,11 @@ export class CallidescopeService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    const { collection, projectNames, projectRoots } =
+    const { collection, projectNames, startingProjectRoots } =
       this.discoverCallables(args);
 
     return {
       projectNames,
-      projectRoots,
       result: this.analyze({
         callablesById: collection.byId,
         configuration: args.configuration,
@@ -285,6 +288,7 @@ export class CallidescopeService {
         projectNames,
         workspaceRoot: args.workspaceRoot,
       }),
+      startingProjectRoots,
     };
   }
 }

@@ -88,30 +88,15 @@ Call stacks traced through `packages/logger`, deepest first. Each frame shows wh
 | --- | --- |
 | Callables | 24 |
 | Files | 9 |
-| Calls traced | 19 |
-| Call stacks | 7 |
-| Deepest stack | 5 |
+| Calls traced | 5 |
+| Call stacks | 1 |
+| Deepest stack | 4 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 1 |
 
 ### Call stacks (depth)
 
-**1. `LoggerService.log`** — depth 5 · orphan-root
-
-```text
-🚀 LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
-   ↳ Logs an informational message at the `info` level.
-  └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-     ↳ Logs an informational message at the `info` level.
-    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:158]
-       ↳ Assembles the object pino merges into the line.
-      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:125]
-         ↳ Fails a malformed message in development, and never in production.
-        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:183]
-           ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**2. `CallExpression`** — depth 4 · orphan-root
+**1. `CallExpression`** — depth 4 · orphan-root
 
 ```text
 🚀 CallExpression(node: SimpleCallExpression & Rule.NodeParentExtension): void [packages/logger/src/lib/conventional-log-message.eslint-rule.ts:151]
@@ -123,72 +108,6 @@ Call stacks traced through `packages/logger`, deepest first. Each frame shows wh
          ↳ Splits a leading emoji off a message, leaving prose behind.
 ```
 
-**3. `LoggerService.debug`** — depth 4 · orphan-root
-
-```text
-🚀 LoggerService.debug(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:241]
-   ↳ Logs a debug message at the `debug` level.
-  └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:158]
-     ↳ Assembles the object pino merges into the line.
-    └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:125]
-       ↳ Fails a malformed message in development, and never in production.
-      └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:183]
-         ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-<details>
-<summary>4 more call stacks</summary>
-
-**4. `LoggerService.error`** — depth 4 · orphan-root
-
-```text
-🚀 LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:256]
-   ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
-  └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:158]
-     ↳ Assembles the object pino merges into the line.
-    └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:125]
-       ↳ Fails a malformed message in development, and never in production.
-      └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:183]
-         ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**5. `LoggerService.verbose`** — depth 4 · orphan-root
-
-```text
-🚀 LoggerService.verbose(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:303]
-   ↳ Logs a verbose message at the `trace` level.
-  └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:158]
-     ↳ Assembles the object pino merges into the line.
-    └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:125]
-       ↳ Fails a malformed message in development, and never in production.
-      └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:183]
-         ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**6. `LoggerService.warn`** — depth 4 · orphan-root
-
-```text
-🚀 LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:312]
-   ↳ Logs a warning message at the `warn` level.
-  └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:158]
-     ↳ Assembles the object pino merges into the line.
-    └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:125]
-       ↳ Fails a malformed message in development, and never in production.
-      └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:183]
-         ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**7. `LoggerService.get root`** — depth 2 · orphan-root
-
-```text
-🚀 LoggerService.get root(): pino.Logger [packages/logger/src/modules/logger/logger.service.ts:207]
-   ↳ The pino instance every logger's child is taken from.
-  └─> LoggerService.createRootLogger(): pino.Logger [packages/logger/src/modules/logger/logger.service.ts:65]
-     ↳ Build the pino instance for production or local development output.
-```
-
-</details>
-
 ### Module spread
 
 None.
@@ -199,24 +118,7 @@ None.
 | --- | --- | --- | --- |
 | `checkConventionalMessage` | 2 | `parseLogMessage`, `isConventionalVerb` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:61` |
 | `CallExpression` | 2 | `isLoggerObjectText`, `checkMessageArgumentConvention` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:151` |
-| `LoggerService.debug` | 2 | `LoggerService.parseMessage`, `LoggerService.buildBindings` | `packages/logger/src/modules/logger/logger.service.ts:241` |
-
-<details>
-<summary>9 more callables</summary>
-
-| Callable | Breadth | Calls directly | Location |
-| --- | --- | --- | --- |
-| `LoggerService.error` | 2 | `LoggerService.parseMessage`, `LoggerService.buildBindings` | `packages/logger/src/modules/logger/logger.service.ts:256` |
-| `LoggerService.info` | 2 | `LoggerService.parseMessage`, `LoggerService.buildBindings` | `packages/logger/src/modules/logger/logger.service.ts:276` |
-| `LoggerService.verbose` | 2 | `LoggerService.parseMessage`, `LoggerService.buildBindings` | `packages/logger/src/modules/logger/logger.service.ts:303` |
-| `LoggerService.warn` | 2 | `LoggerService.parseMessage`, `LoggerService.buildBindings` | `packages/logger/src/modules/logger/logger.service.ts:312` |
 | `checkMessageArgumentConvention` | 1 | `checkConventionalMessage` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:91` |
-| `LoggerService.assertConventionalMessage` | 1 | `LoggerService.isConventionalVerb` | `packages/logger/src/modules/logger/logger.service.ts:125` |
-| `LoggerService.buildBindings` | 1 | `LoggerService.assertConventionalMessage` | `packages/logger/src/modules/logger/logger.service.ts:158` |
-| `LoggerService.get root` | 1 | `LoggerService.createRootLogger` | `packages/logger/src/modules/logger/logger.service.ts:207` |
-| `LoggerService.log` | 1 | `LoggerService.info` | `packages/logger/src/modules/logger/logger.service.ts:292` |
-
-</details>
 
 ### Possibly misplaced
 

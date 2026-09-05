@@ -58,7 +58,7 @@ function buildLocated(): LocateOutcome {
       unresolvedCallerIds: new Set(),
       unresolvedCalls: [],
     },
-    projectRoots: new Map(),
+    startingProjectRoots: new Map(),
   };
 }
 

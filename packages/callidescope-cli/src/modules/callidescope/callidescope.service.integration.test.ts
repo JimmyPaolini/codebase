@@ -393,7 +393,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
     const projectRoot = path.join("packages", "example");
 
-    expect(located.projectRoots.get(projectRoot)).toBe(projectRoot);
+    expect(located.startingProjectRoots.get(projectRoot)).toBe(projectRoot);
   });
 
   // 🚧 A project that cannot be read
@@ -506,6 +506,23 @@ describe(`${CallidescopeService.name} (integration)`, () => {
         path.join("packages", "application"),
         path.join("packages", "library"),
       ]);
+    });
+
+    it("offers only the scoped project for publishing", () => {
+      // Measurement reaches into a dependency; publishing does not. The roots
+      // are what a README section is addressed by, so a closure project
+      // missing from this map is a dependency README the run cannot rewrite.
+      expect([...scoped.startingProjectRoots.keys()]).toStrictEqual([
+        path.join("packages", "application"),
+      ]);
+    });
+
+    it("offers every project for publishing when no directory is named", () => {
+      // The whole-workspace run keeps publishing every project's section,
+      // because with no directory named every project is a starting project.
+      expect(
+        [...unscoped.startingProjectRoots.keys()].toSorted(),
+      ).toStrictEqual(unscoped.projectNames.toSorted());
     });
 
     it("follows a call into a dependency down to a real frame", () => {

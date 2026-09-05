@@ -100,6 +100,20 @@ whole-workspace run's findings are exactly what they were.
 What the rules cost is that a call into a refused directory resolves to no
 frame, the way every call out of a package did before closures existed.
 
+## What a closure never widens
+
+Publishing. A run writes a `## 🔭 Callidescope` section for the projects it was
+**scoped** to and for no others, so this run publishes into this package's guide
+and leaves the three dependency packages alone — measurement reaches into a
+dependency, publishing does not. A closure that widened both would have this
+target rewriting an anchor block in three packages that never asked for it, and
+`nx run codebase:callidescope:write` — which reads different limits — writing
+the opposite content back into the same three blocks on its next run.
+
+The whole-workspace run is unaffected, for the same reason the two rules above
+leave a starting project alone: a run naming no directory has every project as a
+scoped one, so every project's section is still published.
+
 ## Next
 
 [computed member](../computed-member/README.md).

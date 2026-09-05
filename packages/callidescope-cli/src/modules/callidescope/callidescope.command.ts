@@ -66,17 +66,22 @@ export class CallidescopeCommand extends CommandRunner {
 
   // 🔏 Private Methods
 
-  /** Builds one section per project, addressed to that project's README. */
+  /**
+   * Builds one section per scoped project, addressed to that project's README.
+   *
+   * The map holds the projects the run was scoped to, so a project it only
+   * measured through the dependency closure has no root here and is dropped.
+   * That is the rule rather than an accident: a scoped run publishes its own
+   * projects, and leaves its dependencies' READMEs to the run that is scoped
+   * to them.
+   */
   private buildProjectSections(args: {
     destination: ResolvedCallidescopeProjectReadmeConfiguration;
-    projectRoots: ReadonlyMap<string, string>;
     result: CallGraphResult;
+    startingProjectRoots: ReadonlyMap<string, string>;
   }): ProjectSection[] {
-    // A project whose root is unknown is dropped rather than defaulted: the
-    // fallback for a missing root is a path, and the wrong path is a README
-    // rewritten somewhere nobody asked for.
     return args.result.projects.flatMap((report) => {
-      const root = args.projectRoots.get(report.projectName);
+      const root = args.startingProjectRoots.get(report.projectName);
 
       return root === undefined
         ? []
@@ -319,8 +324,8 @@ export class CallidescopeCommand extends CommandRunner {
           destination: projectReadmes,
           sections: this.buildProjectSections({
             destination: projectReadmes,
-            projectRoots: args.projectRoots,
             result: args.result,
+            startingProjectRoots: args.startingProjectRoots,
           }),
         }),
       );
@@ -357,8 +362,8 @@ export class CallidescopeCommand extends CommandRunner {
       ? this.syncDestinations({
           check: mode.checksReports,
           configuration,
-          projectRoots: outcome.projectRoots,
           result: outcome.result,
+          startingProjectRoots: outcome.startingProjectRoots,
         })
       : [];
 

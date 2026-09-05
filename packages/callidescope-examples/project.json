@@ -24,20 +24,17 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Trace this package's fixtures and gate the committed reports against them. Named `examples` rather than `callidescope` so every examples package in this workspace runs the same way, and so it is never confused with `codebase:callidescope`, which is its mirror image: the workspace target runs `--check depth` because a report there goes stale on nearly every change, while the fixtures traced here are frozen, so a stale report means a fixture, the resolver, or one of the three dependency packages this run's closure reaches moved \u2014 which is exactly the regression this package exists to catch. Those three packages' sources and READMEs are named in `inputs` alongside the toolchain, because this run both reads and rewrites a `## \ud83d\udd2d Callidescope` section in each — so a cached result is never replayed over a change to them. Depth is not gated here at all: the deep fixtures are meant to breach, which is why `configuration/.callidescopeignore` keeps them out of the workspace run.",
+      "description": "Trace this package's fixtures and gate the committed reports against them. Named `examples` rather than `callidescope` so every examples package in this workspace runs the same way, and so it is never confused with `codebase:callidescope`, which is its mirror image: the workspace target runs `--check depth` because a report there goes stale on nearly every change, while the fixtures traced here are frozen, so a stale report means a fixture, the resolver, or one of the three dependency packages this run's closure reaches moved \u2014 which is exactly the regression this package exists to catch. Those three packages' sources are named in `inputs` alongside the toolchain, because the closure measures them and their callables reach the committed reports, so a cached result is never replayed over a change to them. Their READMEs are not named, because this run publishes a `## \ud83d\udd2d Callidescope` section only for the project it is scoped to. Depth is not gated here at all: the deep fixtures are meant to breach, which is why `configuration/.callidescopeignore` keeps them out of the workspace run.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.ts",
         "{projectRoot}/output/**",
         "{projectRoot}/README.md",
         "{workspaceRoot}/packages/callidescope-cli/src/**/*.ts",
-        "{workspaceRoot}/packages/callidescope-configuration/README.md",
         "{workspaceRoot}/packages/callidescope-configuration/src/**/*.ts",
         "{workspaceRoot}/packages/callidescope-graph/src/**/*.ts",
         "{workspaceRoot}/packages/callidescope-output/src/**/*.ts",
-        "{workspaceRoot}/packages/codometer-configuration/README.md",
         "{workspaceRoot}/packages/codometer-configuration/src/**/*.ts",
-        "{workspaceRoot}/packages/logger/README.md",
         "{workspaceRoot}/packages/logger/src/**/*.ts",
         "shared-globals"
       ],

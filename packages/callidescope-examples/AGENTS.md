@@ -150,8 +150,9 @@ Numbers can also move with no edit here at all. The committed reports cover the
 three projects the closure reaches, so a change to
 `packages/callidescope-configuration`, `packages/codometer-configuration`, or
 `packages/logger` makes them stale. The `examples` target names those packages'
-sources and READMEs in its `inputs`, so the staleness is caught rather than
-cached over, and the three steps above are the fix. The assertions in the test
+sources in its `inputs`, so the staleness is caught rather than cached over, and
+the three steps above are the fix. Their READMEs are not named there: this run
+measures those packages but publishes nothing into them. The assertions in the test
 suite are deliberately written against this package's **own** per-project report
 for that reason — a sibling package gaining a method should not fail a suite
 about fixtures.

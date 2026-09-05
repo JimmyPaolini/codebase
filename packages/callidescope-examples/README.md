@@ -213,16 +213,19 @@ committed:
 | `json` | [`output/report.json`](output/report.json) — the whole run, machine-readable |
 | `markdown` | [`output/report.md`](output/report.md) — the printed trees, between anchors |
 | `mermaid` | [`output/diagram.md`](output/diagram.md) — the same stacks, drawn |
-| `projectReadmes` | [The section at the bottom of this file](#-callidescope), and one in every other traced project's `README.md` |
+| `projectReadmes` | [The section at the bottom of this file](#-callidescope), and nothing else |
 
-`projectReadmes` writes one section per **traced** project, and since the closure
-landed that is no longer this package alone: a run of this target also rewrites
-the section in each of the three dependency packages it reaches. Those same
-three are written by `nx run codebase:callidescope:write` from the workspace's
-own configuration, which sets different limits and ignores `LoggerService.*`, so
-the two runs disagree about what belongs there and whichever ran last wins. The
-destination is a whole-run setting with no way to name which projects it covers,
-which is the gap — not the closure.
+`projectReadmes` writes one section per **scoped** project — the projects a run
+was pointed at, not the ones its closure reached. This run is scoped to this
+package alone, so the only section it writes is the one at the bottom of this
+file, even though it measures four projects. That is the rule the closure is
+read against: **measurement reaches into a package's dependencies, publishing
+does not.** A scoped run that also published would rewrite the section in three
+sibling packages that never asked for it, and fight
+`nx run codebase:callidescope:write` — which sets different limits and ignores
+`LoggerService.*` — over the same three anchor blocks forever. The
+whole-workspace run still publishes every project's section, because a run that
+names no directory has every project as a scoped one.
 
 `--format` is separate from all four: it decides what reaches the terminal
 rather than a file. All three of its values are committed here too, because each
@@ -268,8 +271,9 @@ alongside the fixtures now, and they are ordinary code that changes for ordinary
 reasons, so a change to one of them makes this report stale too. That is the
 gate working rather than misfiring — the report really did change — but it means
 the fix is `nx run callidescope-examples:examples:write` in whichever change
-moved the dependency, and the `examples` target names those packages' sources
-and READMEs in its `inputs` so a cached run is never replayed over them.
+moved the dependency, and the `examples` target names those packages' sources in
+its `inputs` so a cached run is never replayed over them. Their READMEs are not
+named there, because this run does not write into them.
 
 Two command lines are refused outright:
 
