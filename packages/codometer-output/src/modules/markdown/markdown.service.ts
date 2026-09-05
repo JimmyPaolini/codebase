@@ -62,6 +62,13 @@ export class MarkdownService {
    *
    * Every helper is bound to this run's content, path, and mode, so a writer
    * that only wants the ordinary splice calls one method with no arguments.
+   *
+   * Each helper keeps the name of the method it wraps, because those names are
+   * the `MarkdownAnchorHelpers` contract a configured writer is written
+   * against. The cost lands in a traced call stack, where the helper and the
+   * method it forwards to appear as two frames under one name — `renderContent`
+   * below names its closure differently for exactly this reason, and can only
+   * do so because that one is not part of any contract.
    */
   private buildAnchorHelpers(
     args: BuildAnchorHelpersArguments,
@@ -157,16 +164,22 @@ export class MarkdownService {
    * A configured `render` replaces the built-in badges and is handed them
    * anyway, so a renderer that wants to add to the default report never has to
    * reimplement it.
+   *
+   * The closure is `renderDefaultBadges` rather than `renderBadges`, which is
+   * what the configured renderer receives it as: a traced call stack names a
+   * closure by the binding it was written under, and two frames both reading
+   * `MarkdownService.renderBadges` look like recursion rather than like a
+   * thunk calling the method it wraps.
    */
   private renderContent(args: RenderBadgesArguments): string {
     const { destination } = args;
-    const renderBadges = (): string => this.renderBadges(args);
+    const renderDefaultBadges = (): string => this.renderBadges(args);
 
     return destination.render === undefined
-      ? renderBadges()
+      ? renderDefaultBadges()
       : destination.render({
           description: destination.description,
-          renderBadges,
+          renderBadges: renderDefaultBadges,
           statistics: args.statistics,
         });
   }

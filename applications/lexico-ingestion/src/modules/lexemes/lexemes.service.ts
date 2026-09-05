@@ -7,6 +7,7 @@ import { Lexeme } from "@codebase/lexico-entities";
 import { LoggerService } from "@codebase/logger";
 
 import { EtymologyService } from "../etymology/etymology.service";
+import { FormsBuilderService } from "../forms/forms-builder.service";
 import { FormsService } from "../forms/forms.service";
 import { LEXICO_INGESTION_BY_ID } from "../lexico-ingestion/lexico-ingestion.constants";
 import { PartOfSpeechService } from "../part-of-speech/part-of-speech.service";
@@ -34,6 +35,7 @@ export class LexemesService {
     private readonly lexemeRepository: Repository<Lexeme>,
     private readonly logger: LoggerService,
     private readonly etymologyService: EtymologyService,
+    private readonly formsBuilderService: FormsBuilderService,
     private readonly formsService: FormsService,
     private readonly partOfSpeechService: PartOfSpeechService,
     private readonly principalPartsService: PrincipalPartsService,
@@ -120,7 +122,7 @@ export class LexemesService {
       pos: partOfSpeech,
       principalParts,
     });
-    lexeme.forms = this.formsService.buildFormsForPartOfSpeech(
+    lexeme.forms = this.formsBuilderService.buildFormsForPartOfSpeech(
       partOfSpeech,
       rawForms,
       lexeme,
