@@ -192,7 +192,9 @@ Three things follow, and they are what a moved number should be checked against:
   under-measurement was invisible.
 - **The number does not depend on which run took it.** A file is owned by the
   deepest project root containing it, whichever program pulled it in, so two
-  scoped runs and the whole-workspace run agree about the same callable.
+  scoped runs and the whole-workspace run agree about the same callable —
+  provided each of them builds the project declaring it, which a refused
+  destination's is not.
 - **A whole-workspace run's closure changes nothing.** It names no directory,
   so every project is already a starting project and its closure is the
   workspace. A number that moved there moved for some other reason.

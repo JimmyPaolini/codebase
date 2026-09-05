@@ -346,7 +346,8 @@ A file is owned by the **deepest project root containing it**, whichever program
 pulled it in — not by whichever program happened to read it first. That is what
 makes two runs agree: the same callable sits in the same module and measures the
 same depth whether the run was scoped to its own project, scoped to something
-that depends on it, or scoped to nothing at all.
+that depends on it, or scoped to nothing at all — provided each of those runs
+builds the project declaring it, which a refused destination's is not.
 
 Both cross-project findings survive a downward-only scope, which is worth saying
 because it is not obvious:
