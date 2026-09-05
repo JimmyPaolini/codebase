@@ -129,17 +129,6 @@
               "name": "generators"
             },
             {
-              "children": [
-                {
-                  "ruleId": "kebab-case-folder"
-                },
-                {
-                  "ruleId": "any-file"
-                }
-              ],
-              "name": "validators"
-            },
-            {
               "enforceExistence": "__plugin_entrypoints_are_forbidden__",
               "name": "plugin.ts"
             },
@@ -217,17 +206,6 @@
             }
           ],
           "name": "data"
-        },
-        {
-          "children": [
-            {
-              "ruleId": "kebab-case-folder"
-            },
-            {
-              "ruleId": "any-file"
-            }
-          ],
-          "name": "assets"
         },
         {
           "children": [
@@ -597,9 +575,6 @@
         "children": [
           {
             "ruleId": "codebase-project"
-          },
-          {
-            "ruleId": "any-file"
           }
         ],
         "name": "tools"
