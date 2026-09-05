@@ -120,21 +120,28 @@ not findings about the code at all, and neither waits to be asked:
 
 | Failure | What it means |
 | ------- | ------------- |
-| `🔭 Skipped projects it could not read` | A project's `tsconfig.json` could not be parsed, so that project was left out of the graph |
+| `🔭 Rejected a project it could not read` | A project's `tsconfig.json` could not be parsed |
 | `🔭 Traced nothing` | The run collected no callables at all |
 
 Both exist because the alternative is a green gate over a workspace nobody
 looked at. A run reports what it found, so a run that found nothing reports
-nothing — which reads exactly like a clean workspace. An unreadable
-`tsconfig.json` used to end the whole trace, and the run printed the parsing
-failure, wrote no report, and exited 0.
+nothing — which reads exactly like a clean workspace.
 
-A project is read only if no exclusion names it, and exclusions are applied to
-the `tsconfig.json` itself, before it is opened. That is the way to keep a
-project out of a run: excluding its files is too late, because opening its
+A `tsconfig.json` that will not parse **ends the run where it happens**, before
+anything is printed and before any destination is touched. It is tempting to
+step over the project and trace the rest, and that is wrong here: destinations
+are written before findings are weighed, so a partial graph would publish
+depths measured through a workspace that was missing a project, and only then
+fail. On the default branch that means committing wrong numbers into every
+project README, which exiting non-zero afterwards does not take back. Ending
+the trace leaves the checkout exactly as the run found it.
+
+A project that should not be read at all is a different question, and
+exclusions answer it. They are applied to the `tsconfig.json` itself, before it
+is opened — excluding a project's _files_ is too late, because opening its
 configuration is the step that fails. This repository's own
 [`.callidescopeignore`](../../configuration/.callidescopeignore) names one such
-project — a fixture in `codependix-examples` written not to parse.
+project: a fixture in `codependix-examples` written not to parse.
 
 ### Where the report goes
 

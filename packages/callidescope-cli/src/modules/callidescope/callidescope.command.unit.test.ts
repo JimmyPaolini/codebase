@@ -5,6 +5,7 @@ import {
   InputError,
   InputService,
 } from "@callidescope/configuration";
+import { ProgramConfigurationError } from "@callidescope/graph";
 import {
   MarkdownReportService,
   MermaidReportService,
@@ -37,7 +38,6 @@ import type {
   ProjectReport,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
-import type { SkippedProject } from "@callidescope/graph";
 
 /** Builds a resolved configuration with no destinations configured. */
 function buildConfiguration(
@@ -181,15 +181,11 @@ describe(CallidescopeCommand, () => {
   }
 
   /** Points the trace at a prepared result. */
-  function stubTrace(
-    result: CallGraphResult = buildCallGraphResult(),
-    skippedProjects: SkippedProject[] = [],
-  ): void {
+  function stubTrace(result: CallGraphResult = buildCallGraphResult()): void {
     callidescopeService.trace.mockReturnValue({
       projectNames: ["example"],
       projectRoots: new Map([["example", "packages/example"]]),
       result,
-      skippedProjects,
     });
   }
 
@@ -382,12 +378,7 @@ describe(CallidescopeCommand, () => {
     expect(logger.info).toHaveBeenCalledWith(
       "🔭 Finished a call-stack trace",
       undefined,
-      {
-        deepStackCount: 1,
-        skippedProjectCount: 0,
-        staleReportCount: 0,
-        wideCallableCount: 0,
-      },
+      { deepStackCount: 1, staleReportCount: 0, wideCallableCount: 0 },
     );
   });
 
@@ -785,7 +776,6 @@ describe(CallidescopeCommand, () => {
 
     expect(logger.error).toHaveBeenCalledWith("🔭 Traced nothing", undefined, {
       projectCount: 0,
-      skippedProjectCount: 0,
     });
   });
 
@@ -799,34 +789,52 @@ describe(CallidescopeCommand, () => {
     expect(process.exitCode).toBe(1);
   });
 
-  // 🚧 Projects that could not be read
+  // 🚧 A project that could not be read
 
-  it("fails a run that skipped a project it could not read", async () => {
-    stubTrace(buildCallGraphResult(), [
-      { projectName: "packages/broken", reason: "Could not read tsconfig" },
-    ]);
+  /** Points the trace at a project whose configuration will not parse. */
+  function stubUnreadableProject(): void {
+    callidescopeService.trace.mockImplementation(() => {
+      throw new ProgramConfigurationError({
+        configurationPath: "packages/broken/tsconfig.json",
+        messages: ["Argument for '--target' option must be: 'es6'"],
+      });
+    });
+  }
+
+  it("fails a run whose trace hit a project it could not read", async () => {
+    stubUnreadableProject();
 
     await command.run([], { check: "depth" });
 
     expect(process.exitCode).toBe(1);
   });
 
-  it("names the projects it could not read", async () => {
-    stubTrace(buildCallGraphResult(), [
-      { projectName: "packages/broken", reason: "Could not read tsconfig" },
-    ]);
+  it("names the project it could not read", async () => {
+    stubUnreadableProject();
 
     await command.run([], {});
 
     expect(logger.error).toHaveBeenCalledWith(
-      "🔭 Skipped projects it could not read",
+      "🔭 Rejected a project it could not read",
       undefined,
       {
-        count: 1,
-        projects: ["packages/broken"],
-        reasons: ["Could not read tsconfig"],
+        reason:
+          "Could not read packages/broken/tsconfig.json: Argument for '--target' option must be: 'es6'",
       },
     );
+  });
+
+  it("writes no destination when a project could not be read", async () => {
+    // The whole reason this ends the trace rather than stepping over it:
+    // destinations are written before findings are weighed, so a partial
+    // graph would be published and only then reported as a failure.
+    configureJsonDestination();
+    stubUnreadableProject();
+
+    await command.run([], { write: true });
+
+    expect(outputJsonService.sync).not.toHaveBeenCalled();
+    expect(process.exitCode).toBe(1);
   });
 
   it("reads no destination when only depth is checked", async () => {

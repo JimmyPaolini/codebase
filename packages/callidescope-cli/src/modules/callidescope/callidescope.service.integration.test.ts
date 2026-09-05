@@ -2,7 +2,10 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { GraphAssemblyService } from "@callidescope/graph";
+import {
+  GraphAssemblyService,
+  ProgramConfigurationError,
+} from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -258,17 +261,51 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
   // 🚧 A project that cannot be read
 
-  it("traces the rest of the workspace past an unreadable project", async () => {
-    // The regression this exists for. One deliberately broken `tsconfig.json`
-    // used to abort the whole trace, which the host then reported as a
-    // workspace with no findings in it — a green depth gate that had judged
-    // nothing at all.
+  it("refuses to trace a workspace holding a project it cannot read", async () => {
+    // Fail fast, and fail whole. A partial graph would be published by the
+    // caller before it weighed a single finding, so the wrong depths would be
+    // committed and only then reported as a failure.
+    const workspaceRoot = await buildWorkspace();
+
+    await addUnreadableProject(workspaceRoot);
+
+    expect(() =>
+      service.trace({
+        configuration: buildConfiguration(),
+        directories: [],
+        workspaceRoot,
+      }),
+    ).toThrow(ProgramConfigurationError);
+  });
+
+  it("names the configuration it could not read", async () => {
+    const workspaceRoot = await buildWorkspace();
+
+    await addUnreadableProject(workspaceRoot);
+
+    expect(() =>
+      service.trace({
+        configuration: buildConfiguration(),
+        directories: [],
+        workspaceRoot,
+      }),
+    ).toThrow(/packages[\\/]broken[\\/]tsconfig\.json/);
+  });
+
+  it("traces the rest of a workspace whose broken project is excluded", async () => {
+    // The regression this exists for. Excluding the same project only from
+    // the collected files came too late — opening its configuration is the
+    // step that fails — so `.callidescopeignore` could not keep a run away
+    // from a fixture written to be broken, and the whole trace died on it.
     const workspaceRoot = await buildWorkspace();
 
     await addUnreadableProject(workspaceRoot);
 
     const outcome = service.trace({
-      configuration: buildConfiguration(),
+      configuration: {
+        ...buildConfiguration(),
+        exclude: ["packages/broken/**"],
+      },
       directories: [],
       workspaceRoot,
     });
@@ -282,22 +319,6 @@ describe(`${CallidescopeService.name} (integration)`, () => {
       "Repository.find",
       "Repository.open",
     ]);
-  });
-
-  it("carries the project it could not read out of the trace", async () => {
-    const workspaceRoot = await buildWorkspace();
-
-    await addUnreadableProject(workspaceRoot);
-
-    const outcome = service.trace({
-      configuration: buildConfiguration(),
-      directories: [],
-      workspaceRoot,
-    });
-
-    expect(
-      outcome.skippedProjects.map((skipped) => skipped.projectName),
-    ).toStrictEqual([path.join("packages", "broken")]);
   });
 
   it("never opens a tsconfig an exclusion already names", async () => {
@@ -317,7 +338,6 @@ describe(`${CallidescopeService.name} (integration)`, () => {
       workspaceRoot,
     });
 
-    expect(outcome.skippedProjects).toStrictEqual([]);
     expect(outcome.projectNames).toStrictEqual([
       path.join("packages", "example"),
     ]);

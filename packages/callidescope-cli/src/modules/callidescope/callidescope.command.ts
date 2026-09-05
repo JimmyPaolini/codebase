@@ -6,6 +6,7 @@ import {
   InputError,
   InputService,
 } from "@callidescope/configuration";
+import { ProgramConfigurationError } from "@callidescope/graph";
 import {
   MarkdownReportService,
   OutputJsonService,
@@ -111,6 +112,21 @@ export class CallidescopeCommand extends CommandRunner {
   }
 
   /**
+   * Logs a project whose configuration could not be read, and fails the run.
+   *
+   * Reached only by an exception, because that failure ends the trace where it
+   * happens — which is the point of it. Nothing has been printed and no
+   * destination has been touched by the time this runs, so the checkout is
+   * left exactly as the run found it.
+   */
+  private rejectProject(error: ProgramConfigurationError): void {
+    this.logger.error("🔭 Rejected a project it could not read", undefined, {
+      reason: error.message,
+    });
+    process.exitCode = 1;
+  }
+
+  /**
    * Prints the run in the requested format.
    *
    * Markdown unless asked otherwise: it is the one rendering that reads well
@@ -187,7 +203,6 @@ export class CallidescopeCommand extends CommandRunner {
 
     this.logger.error("🔭 Traced nothing", undefined, {
       projectCount: args.result.summary.projectCount,
-      skippedProjectCount: args.skippedProjects.length,
     });
 
     return true;
@@ -199,42 +214,21 @@ export class CallidescopeCommand extends CommandRunner {
    * They are weighed separately and announced separately. A stack that is too
    * deep is something the code does; a callable calling too many things is
    * something else the code does; a stale report is something the checkout
-   * has not caught up with; a project that could not be read is something the
-   * run never saw at all. Reading one as another sends the author to fix the
-   * wrong thing.
+   * has not caught up with. Reading one as another sends the author to fix
+   * the wrong thing.
+   *
+   * A project that could not be read never reaches here: it ends the trace
+   * before anything is printed or written, and is reported by `rejectProject`.
    */
   private reportFindings(args: ReportFindingsArguments): void {
     const stale = this.reportStaleness(args);
     const deep = this.reportDeepStacks(args);
     const wide = this.reportWideCallables(args);
-    const skipped = this.reportSkippedProjects(args);
     const empty = this.reportEmptyTrace(args);
 
-    if (deep || empty || skipped || stale || wide) {
+    if (deep || empty || stale || wide) {
       process.exitCode = 1;
     }
-  }
-
-  /**
-   * Names the projects the run could not read.
-   *
-   * Also unconditional. An exclusion is how a workspace says a project is not
-   * its business; anything left is a project this run was meant to trace and
-   * did not, so every depth measured through it is missing frames nobody was
-   * told about.
-   */
-  private reportSkippedProjects(args: ReportFindingsArguments): boolean {
-    if (args.skippedProjects.length === 0) {
-      return false;
-    }
-
-    this.logger.error("🔭 Skipped projects it could not read", undefined, {
-      count: args.skippedProjects.length,
-      projects: args.skippedProjects.map((skipped) => skipped.projectName),
-      reasons: args.skippedProjects.map((skipped) => skipped.reason),
-    });
-
-    return true;
   }
 
   /** Names the destinations that no longer hold what a fresh run would write. */
@@ -370,17 +364,11 @@ export class CallidescopeCommand extends CommandRunner {
 
     this.logger.info("🔭 Finished a call-stack trace", undefined, {
       deepStackCount: outcome.result.deepStacks.length,
-      skippedProjectCount: outcome.skippedProjects.length,
       staleReportCount: stalePaths.length,
       wideCallableCount: outcome.result.wideCallables.length,
     });
 
-    this.reportFindings({
-      mode,
-      result: outcome.result,
-      skippedProjects: outcome.skippedProjects,
-      stalePaths,
-    });
+    this.reportFindings({ mode, result: outcome.result, stalePaths });
   }
 
   // 🌎 Public Methods
@@ -477,6 +465,11 @@ export class CallidescopeCommand extends CommandRunner {
     try {
       await this.traceWorkspace(options);
     } catch (error) {
+      if (error instanceof ProgramConfigurationError) {
+        this.rejectProject(error);
+        return;
+      }
+
       if (!(error instanceof InputError)) {
         throw error;
       }

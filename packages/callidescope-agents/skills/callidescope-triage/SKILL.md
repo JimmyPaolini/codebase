@@ -14,14 +14,14 @@ occurred is most of the work. Separate them first:
 | `🚨 [DEPTH n > limit]` | A **finding** about the code. Fix the layering |
 | A breadth row over the limit | A **finding**. Split the callable |
 | `A configured destination is stale` | **Drift**. Re-run `--write` |
-| `🔭 Skipped projects it could not read` | A **project was left out**. Its `tsconfig.json` did not parse |
+| `🔭 Rejected a project it could not read` | A `tsconfig.json` **did not parse**. The trace stopped there |
 | `🔭 Traced nothing` | The run **saw no code at all**. Nothing below it means anything |
 | `🔭 Rejected the command line` | A **mistake** in the flags. Nothing was traced |
 | `🔭 Rejected the configuration` | The run **cannot do what was asked**. Nothing was traced |
 
-The two rejections happen before any tracing, so they never say anything about
-the code. The two above them say the run is incomplete, so read them before
-believing any finding — or any absence of one.
+The bottom four all mean the run never produced a verdict on the code. None of
+them writes a destination, so a checkout is unchanged by any of them — and no
+finding, or absence of one, should be believed from a run that printed one.
 
 ## A depth gate that failed
 
@@ -184,13 +184,14 @@ The command line was fine but the configuration cannot support what was asked:
 
 ## A project it could not read
 
-One project's `tsconfig.json` did not parse. The run stepped over it, traced
-everything else, and then failed — the message names each project and the
-parsing error behind it.
+One project's `tsconfig.json` did not parse, and the run stopped there. The
+message carries the path and the compiler's own diagnostic.
 
-This fails whatever `--check` was asked for, because it is not a finding about
-the code: a project missing from the graph makes every depth measured through
-it wrong, and quietly wrong is the outcome the gate exists to prevent.
+Nothing was printed and no destination was written, which is the point of
+stopping rather than stepping over it: a caller writes its report before it
+weighs its findings, so a partial graph would publish depths measured through a
+workspace missing a project and only then fail. Stopping means there is nothing
+to un-commit.
 
 Two ways out, and which one is right depends on why the file does not parse:
 
@@ -202,20 +203,18 @@ Two ways out, and which one is right depends on why the file does not parse:
   failure is demonstrated. Exclude the project instead, by adding its directory
   to an `excludeFrom` ignore file or an `exclude` glob. Exclusions are applied
   to the `tsconfig.json` before it is opened, so this really does keep the run
-  away from it.
+  away from it. Excluding the project's _files_ does not: opening its
+  configuration is the step that fails, and that happens first.
 
 ## A run that traced nothing
 
 Every gate above passed for having nothing to judge, so the run fails on its
 own emptiness. It is never a clean result. Work down this list:
 
-1. **Did a project get skipped?** `🔭 Skipped projects it could not read`
-   appears above it when the emptiness came from a configuration that did not
-   parse. Read that section first.
-2. **Is the code excluded?** `exclude` globs are additive to the built-in
+1. **Is the code excluded?** `exclude` globs are additive to the built-in
    defaults, and `excludeFrom` files are easy to forget. An exclusion broad
    enough to cover every project empties the run.
-3. **Is `--directories` pointed where you think?** It takes paths holding their
+2. **Is `--directories` pointed where you think?** It takes paths holding their
    own `tsconfig.json`, not project names.
 
 ## A run that found no stacks

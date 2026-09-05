@@ -4,7 +4,6 @@ import type {
   CallGraphResult,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
-import type { SkippedProject } from "@callidescope/graph";
 
 /** What a command line and its configuration resolved to. */
 export interface PreparedRun {
@@ -17,8 +16,6 @@ export interface PreparedRun {
 export interface ReportFindingsArguments {
   readonly mode: RunMode;
   readonly result: CallGraphResult;
-  /** Projects the run could not read, and therefore never traced. */
-  readonly skippedProjects: readonly SkippedProject[];
   /**
    * Destinations found not to hold the current report. Only ever non-empty
    * when the run was comparing, since nothing else reads a destination.

@@ -13,7 +13,6 @@ import type {
   BuildProgramsArguments,
   ProgramSet,
   ProjectProgram,
-  SkippedProject,
 } from "./program.types";
 
 /**
@@ -136,51 +135,25 @@ export class ProgramService {
   /**
    * Builds every project's program and decides which one owns each file.
    *
-   * A project whose configuration cannot be parsed is recorded and stepped
-   * over rather than ending the run. The rest of the workspace is still worth
-   * tracing, and the skipped project travels out with the result so the run
-   * can name it and fail on it — which is what keeps this from being the
-   * silent drop `ProgramConfigurationError` warns about.
-   *
-   * Only that one failure is caught. Anything else — a compiler host that
-   * cannot reach the disk, a program that runs out of memory — is not a
-   * project-shaped problem, and carrying on past one would report a workspace
-   * that was never really traced.
+   * A project whose configuration cannot be parsed ends the run rather than
+   * being stepped over — see `ProgramConfigurationError` for why a partial
+   * graph is the worse outcome. A project that should not be read at all is
+   * kept out by an exclusion, which `WorkspaceService.discoverProjects`
+   * applies before this ever sees it.
    */
   public buildPrograms(args: BuildProgramsArguments): ProgramSet {
     const programs: ProjectProgram[] = [];
-    const skippedProjects: SkippedProject[] = [];
 
     for (const project of args.projects) {
       this.logger.debug("🔭 Reading a project", undefined, {
         projectName: project.name,
       });
-
-      try {
-        programs.push(
-          this.buildProgram({ project, workspaceRoot: args.workspaceRoot }),
-        );
-      } catch (error) {
-        if (!(error instanceof ProgramConfigurationError)) {
-          throw error;
-        }
-
-        this.logger.error("🔭 Skipped an unreadable project", undefined, {
-          projectName: project.name,
-          reason: error.message,
-        });
-        skippedProjects.push({
-          projectName: project.name,
-          reason: error.message,
-        });
-      }
+      programs.push(
+        this.buildProgram({ project, workspaceRoot: args.workspaceRoot }),
+      );
     }
 
-    return {
-      ownerByFilePath: this.assignOwnership(programs),
-      programs,
-      skippedProjects,
-    };
+    return { ownerByFilePath: this.assignOwnership(programs), programs };
   }
 
   /** Resolves a path through symlinks, which is how pnpm workspaces link. */

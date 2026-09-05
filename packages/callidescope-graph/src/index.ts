@@ -107,7 +107,6 @@ export type {
   BuildProgramsArguments,
   ProgramSet,
   ProjectProgram,
-  SkippedProject,
 } from "./modules/program/program.types";
 export { SIGNATURE_FORMAT_FLAGS } from "./modules/signatures/signatures.constants";
 export { SignaturesModule } from "./modules/signatures/signatures.module";

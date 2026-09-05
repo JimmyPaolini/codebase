@@ -5,11 +5,12 @@ import path from "node:path";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import ts from "typescript";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { CompilerHostService } from "./compiler-host.service";
+import { ProgramConfigurationError } from "./program.constants";
 import { ProgramService } from "./program.service";
 
 import type { WorkspaceProject } from "../workspace/workspace.types";
@@ -146,22 +147,18 @@ describe(ProgramService, () => {
     );
   });
 
-  it("skips a project whose tsconfig cannot be read", async () => {
+  it("throws when a tsconfig cannot be read", async () => {
     const { project, workspaceRoot } = await buildProject({
       configuration: "{ not json",
       name: "broken",
     });
 
-    const programSet = buildSubject().buildPrograms({
-      projects: [project],
-      workspaceRoot,
-    });
-
-    expect(programSet.programs).toHaveLength(0);
-    expect(programSet.skippedProjects).toHaveLength(1);
+    expect(() =>
+      buildSubject().buildPrograms({ projects: [project], workspaceRoot }),
+    ).toThrow(ProgramConfigurationError);
   });
 
-  it("skips a project whose tsconfig holds an invalid option", async () => {
+  it("throws when a tsconfig holds an invalid option", async () => {
     const { project, workspaceRoot } = await buildProject({
       configuration: JSON.stringify({
         compilerOptions: { target: "not-a-target" },
@@ -169,67 +166,27 @@ describe(ProgramService, () => {
       name: "invalid",
     });
 
-    const programSet = buildSubject().buildPrograms({
-      projects: [project],
-      workspaceRoot,
-    });
-
-    expect(programSet.skippedProjects[0]?.projectName).toBe("invalid");
-    expect(programSet.skippedProjects[0]?.reason).toContain("must be: 'es6'");
+    expect(() =>
+      buildSubject().buildPrograms({ projects: [project], workspaceRoot }),
+    ).toThrow(ProgramConfigurationError);
   });
 
-  it("names the project it could not read", async () => {
-    const { project, workspaceRoot } = await buildProject({
-      configuration: "{ not json",
-      name: "broken",
-    });
-
-    buildSubject().buildPrograms({ projects: [project], workspaceRoot });
-
-    expect(subjectLogger.error).toHaveBeenCalledWith(
-      "🔭 Skipped an unreadable project",
-      undefined,
-      expect.objectContaining({ projectName: "broken" }),
-    );
-  });
-
-  it("goes on building the rest of the workspace past an unreadable project", async () => {
-    // The regression this exists for: one project written to be unreadable
-    // used to abandon the whole trace, which presented as a workspace with
-    // nothing in it rather than as a failure.
+  it("builds no program at all when one project cannot be read", async () => {
+    // Deliberately not partial. A caller writes its report before it weighs
+    // its findings, so half a graph is a published wrong answer rather than a
+    // smaller right one.
     const broken = await buildProject({
       configuration: "{ not json",
       name: "broken",
     });
     const readable = await buildProject({ name: "readable" });
 
-    const programSet = buildSubject().buildPrograms({
-      projects: [broken.project, readable.project],
-      workspaceRoot: readable.workspaceRoot,
-    });
-
-    expect(programSet.programs).toHaveLength(1);
-    expect(programSet.programs[0]?.project.name).toBe("readable");
-    expect(programSet.skippedProjects.map((skipped) => skipped.projectName)) //
-      .toStrictEqual(["broken"]);
-  });
-
-  it("lets a failure that is not a configuration problem escape", async () => {
-    // Anything the service does not recognize as an unreadable project is a
-    // reason to stop, not to carry on reporting a partial workspace as whole.
-    const { project, workspaceRoot } = await buildProject({ name: "example" });
-    const compilerHostService = new CompilerHostService();
-
-    vi.spyOn(compilerHostService, "createHost").mockImplementation(() => {
-      throw new Error("the compiler host is unusable");
-    });
-
     expect(() =>
-      new ProgramService(
-        compilerHostService,
-        createMock<LoggerService>(),
-      ).buildPrograms({ projects: [project], workspaceRoot }),
-    ).toThrow("the compiler host is unusable");
+      buildSubject().buildPrograms({
+        projects: [broken.project, readable.project],
+        workspaceRoot: readable.workspaceRoot,
+      }),
+    ).toThrow(ProgramConfigurationError);
   });
 
   it("resolves a path that is not a symlink to itself", () => {

@@ -30,7 +30,6 @@ import type {
   CallableCollection,
   DepthMeasurement,
   DiscoveredCallable,
-  SkippedProject,
 } from "@callidescope/graph";
 
 /**
@@ -73,7 +72,6 @@ export class CallidescopeService {
     collection: CallableCollection;
     projectNames: string[];
     projectRoots: ReadonlyMap<string, string>;
-    skippedProjects: readonly SkippedProject[];
   } {
     this.workspaceService.configure(args.configuration.workspaceStructure);
 
@@ -112,19 +110,12 @@ export class CallidescopeService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    // The projects that really got a program, not every project discovered. A
-    // project skipped for being unreadable has no callables, no stacks, and no
-    // report — naming it here would put an empty section in a project README
-    // and count it toward a project total the run never looked at.
-    const traced = programSet.programs.map((program) => program.project);
-
     return {
       collection,
-      projectNames: traced.map((project) => project.name),
+      projectNames: projects.map((project) => project.name),
       projectRoots: new Map(
-        traced.map((project) => [project.name, project.root]),
+        projects.map((project) => [project.name, project.root]),
       ),
-      skippedProjects: programSet.skippedProjects,
     };
   }
 
@@ -262,7 +253,7 @@ export class CallidescopeService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    const { collection, projectNames, projectRoots, skippedProjects } =
+    const { collection, projectNames, projectRoots } =
       this.discoverCallables(args);
 
     return {
@@ -277,7 +268,6 @@ export class CallidescopeService {
         projectNames,
         workspaceRoot: args.workspaceRoot,
       }),
-      skippedProjects,
     };
   }
 }

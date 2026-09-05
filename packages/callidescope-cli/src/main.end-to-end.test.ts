@@ -173,10 +173,10 @@ describe("main end-to-end suite", () => {
 
       const { output, status } = runCallidescope(workspaceRoot);
 
-      // Traced, and then failed for the project it could not reach — rather
-      // than abandoned at the first `tsconfig.json` it could not parse.
+      // Fails on the project it could not read, rather than on anything it
+      // measured through a workspace that was missing one.
       expect(status).toBe(1);
-      expect(output).toContain("Skipped projects it could not read");
+      expect(output).toContain("Rejected a project it could not read");
     });
   });
 });
