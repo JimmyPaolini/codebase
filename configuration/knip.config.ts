@@ -81,7 +81,6 @@ const config: KnipConfig = {
         "configuration/commitlint.config.ts",
         "configuration/dependency-cruiser.cjs",
         "configuration/eslint.config.ts",
-        "configuration/eslint-structure.config.ts",
         "configuration/lint-staged.config.ts",
         "configuration/oxfmt.config.ts",
         "configuration/oxlint.config.ts",

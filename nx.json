@@ -366,7 +366,6 @@
         "conformetry-validate",
         "dependency-cruiser",
         "eslint",
-        "eslint-structure",
         "fallow-dead-code",
         "knip",
         "markdown-lint",

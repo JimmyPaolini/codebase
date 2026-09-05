@@ -13,7 +13,10 @@ import jsdocPlugin from "eslint-plugin-jsdoc";
 import jsoncPlugin from "eslint-plugin-jsonc";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import perfectionistPlugin from "eslint-plugin-perfectionist";
-import projectStructurePlugin from "eslint-plugin-project-structure";
+import {
+  projectStructureParser,
+  projectStructurePlugin,
+} from "eslint-plugin-project-structure";
 import tsdocPlugin from "eslint-plugin-tsdoc";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import eslintPluginYml from "eslint-plugin-yml";
@@ -23,35 +26,35 @@ import { conventionalLogMessagePlugin } from "@codebase/logger/eslint";
 
 import type { ConfigWithExtends } from "typescript-eslint";
 
-import type { AST, Linter } from "eslint";
-
-const EMPTY_LOCATION = { column: 0, line: 1 };
+const folderStructureRule = projectStructurePlugin.rules["folder-structure"];
 
 /**
- * Parses any file into an empty `Program`, so a rule that judges only a file's
- * path fires on a file type ESLint has no real parser for.
+ * `folder-structure`, rebound to markdown's syntax tree.
  *
- * `project-structure/folder-structure` listens on `Program` and reads nothing
- * but `context.filename`, so an empty tree is all it needs. Exported for
- * `eslint-structure.config.ts`, which needs the same parser for markdown in a
- * pass of its own.
+ * The rule listens on `Program` and reads nothing but `context.filename`, so it
+ * fires only on a file ESLint parsed into a JavaScript tree. Markdown is parsed
+ * with `@eslint/markdown`'s `markdown/gfm` language, whose tree is mdast and
+ * whose root node is `root` — so the visitor never runs and no markdown path is
+ * ever checked.
+ *
+ * ESLint resolves exactly one `language` per file, so this cannot be fixed by
+ * giving markdown a JavaScript parser: overriding `language` rejects the
+ * markdown block's own `frontmatter` option outright, and leaving it alone
+ * leaves the rule silently inert. Binding the same handler to `root` instead
+ * puts both the markdown rules and the structure rule in one pass, which is why
+ * this repository needs no second ESLint configuration for markdown.
  */
-export const pathOnlyParser: Linter.Parser = {
-  // ESLint serializes the parser into `.eslintcache`, and refuses a custom one
-  // that cannot name itself — without this the main pass fails outright under
-  // `--cache`, which the second pass does not use and so never revealed.
-  meta: { name: "path-only-parser", version: "1.0.0" },
-  parseForESLint: () => ({
-    ast: {
-      body: [],
-      comments: [],
-      loc: { end: EMPTY_LOCATION, start: EMPTY_LOCATION },
-      range: [0, 0],
-      sourceType: "module",
-      tokens: [],
-      type: "Program",
-    } as AST.Program,
-  }),
+const markdownStructurePlugin = {
+  rules: {
+    "folder-structure": {
+      ...folderStructureRule,
+      create: (context: Parameters<typeof folderStructureRule.create>[0]) => {
+        const { Program: judgePath } = folderStructureRule.create(context);
+
+        return judgePath === undefined ? {} : { root: judgePath };
+      },
+    },
+  },
 };
 
 const tsconfigRootDir = path.resolve(
@@ -124,21 +127,12 @@ export default [
   // parser that yields an empty `Program` is enough: the structure rule reads
   // only the path, so nothing here parses HTML or pretends to.
   //
-  // Markdown cannot be folded in the same way. It resolves to
-  // `@eslint/markdown`'s `markdown/gfm` language, ESLint allows exactly one
-  // language per file, and overriding it rejects that block's `frontmatter`
-  // option outright — so `configuration/eslint-structure.config.ts` judges
-  // markdown paths in a pass of its own.
+  // Markdown needs a different treatment — see 📝 Markdown Placement below,
+  // which rebinds the same rule to mdast's root node rather than re-parsing.
   {
     files: ["**/*.html"],
     languageOptions: {
-      parser: pathOnlyParser,
-    },
-    plugins: {
-      "project-structure": projectStructurePlugin,
-    },
-    rules: {
-      "project-structure/folder-structure": "error",
+      parser: projectStructureParser,
     },
   },
 
@@ -1634,8 +1628,14 @@ export default [
     },
   },
 
-  // 📝 Markdown Files
-  // GitHub Flavored Markdown (GFM) with YAML frontmatter support
+  // 📝 Markdown Placement
+  // Establishes markdown as markdown, and judges where every markdown file
+  // sits. This is separate from the authored-content rules below so that it
+  // reaches generated pages too: the same `folder-structure` rule the rest of
+  // the workspace is judged by, reading the same `codebase-structure.json`,
+  // bound to mdast's root node. Without it an undeclared markdown file — or a
+  // whole directory of them — passes lint, which is how `openwiki/` stayed
+  // undeclared.
   {
     files: ["**/*.md"],
     language: "markdown/gfm",
@@ -1643,8 +1643,27 @@ export default [
       frontmatter: "yaml",
     },
     plugins: {
+      // Registered here rather than only below, because `language:
+      // "markdown/gfm"` resolves against the plugins of the config this file
+      // ends up with — and a generated page excluded from the rules below
+      // would otherwise fail with `Could not find "gfm" in plugin "markdown"`.
       markdown,
+      "markdown-structure": markdownStructurePlugin,
     },
+    rules: {
+      "markdown-structure/folder-structure": "error",
+    },
+  },
+
+  // 📝 Markdown Files
+  // GitHub Flavored Markdown (GFM) content rules, for the markdown this
+  // repository writes. `openwiki/` is excluded because its pages are generated
+  // and must not be hand-edited — its generator emits several H1s per page —
+  // which is the same reason `markdownlint` and `cspell` exclude the vendored
+  // skills. Placement above is judged for those pages regardless.
+  {
+    files: ["**/*.md"],
+    ignores: [".agents/**", "openwiki/**"],
     rules: {
       // Enable markdown-specific rules
       "markdown/fenced-code-language": "warn",
