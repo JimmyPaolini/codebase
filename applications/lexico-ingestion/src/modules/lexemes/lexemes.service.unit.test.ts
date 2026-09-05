@@ -15,6 +15,7 @@ import { LoggerService } from "@codebase/logger";
 
 import { createRepositoryMock } from "../../../testing/mocks";
 import { EtymologyService } from "../etymology/etymology.service";
+import { FormsBuilderService } from "../forms/forms-builder.service";
 import { FormsService } from "../forms/forms.service";
 import { PartOfSpeechService } from "../part-of-speech/part-of-speech.service";
 import { PrincipalPartsService } from "../principal-parts/principal-parts.service";
@@ -31,6 +32,7 @@ describe(LexemesService, () => {
   let service: LexemesService;
   let logger: DeepMocked<LoggerService>;
   let etymologyService: DeepMocked<EtymologyService>;
+  let formsBuilderService: DeepMocked<FormsBuilderService>;
   let formsService: DeepMocked<FormsService>;
   let partOfSpeechService: DeepMocked<PartOfSpeechService>;
   let principalPartsService: DeepMocked<PrincipalPartsService>;
@@ -60,11 +62,16 @@ describe(LexemesService, () => {
         { provide: getRepositoryToken(Lexeme), useValue: lexemeRepository },
         { provide: EtymologyService, useValue: createMock<EtymologyService>() },
         {
-          provide: FormsService,
-          useValue: createMock<FormsService>({
+          provide: FormsBuilderService,
+          useValue: createMock<FormsBuilderService>({
             buildFormsForPartOfSpeech: vi
               .fn<() => Form[]>()
               .mockReturnValue([]),
+          }),
+        },
+        {
+          provide: FormsService,
+          useValue: createMock<FormsService>({
             ingestLexemeForms: vi
               .fn<() => Promise<void>>()
               .mockResolvedValue(undefined),
@@ -147,6 +154,7 @@ describe(LexemesService, () => {
     service = await module.resolve(LexemesService);
     logger = await module.resolve(LoggerService);
     etymologyService = module.get(EtymologyService);
+    formsBuilderService = module.get(FormsBuilderService);
     formsService = module.get(FormsService);
     partOfSpeechService = module.get(PartOfSpeechService);
     principalPartsService = module.get(PrincipalPartsService);
@@ -174,7 +182,7 @@ describe(LexemesService, () => {
       undefined,
     );
 
-    formsService.buildFormsForPartOfSpeech.mockReturnValue([]);
+    formsBuilderService.buildFormsForPartOfSpeech.mockReturnValue([]);
     formsService.ingestLexemeForms.mockResolvedValue(undefined);
 
     pronunciationService.parse.mockReturnValue([]);
@@ -743,7 +751,7 @@ describe(LexemesService, () => {
     });
     pronunciationService.parse.mockReturnValue([]);
     partOfSpeechService.parseForms.mockResolvedValue({});
-    formsService.buildFormsForPartOfSpeech.mockReturnValue([]);
+    formsBuilderService.buildFormsForPartOfSpeech.mockReturnValue([]);
 
     const $ = cheerio.load("<p><strong class='Latn headword'>amo</strong></p>");
     const element = $("p").toArray()[0];

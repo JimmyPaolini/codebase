@@ -6,8 +6,8 @@ import { Form } from "@codebase/lexico-entities";
 import { WordsModule } from "../words/words.module";
 
 import { FormsBuilderGuardsService } from "./forms-builder-guards.service";
-import { FormsBuilderOtherService } from "./forms-builder-other.service";
 import { FormsBuilderVerbService } from "./forms-builder-verb.service";
+import { FormsBuilderService } from "./forms-builder.service";
 import { FormsTransientWordsService } from "./forms-transient-words.service";
 import { FormsService } from "./forms.service";
 
@@ -25,7 +25,7 @@ import { FormsService } from "./forms.service";
     FormsService,
     FormsTransientWordsService,
     FormsBuilderGuardsService,
-    FormsBuilderOtherService,
+    FormsBuilderService,
     FormsBuilderVerbService,
   ],
 })
