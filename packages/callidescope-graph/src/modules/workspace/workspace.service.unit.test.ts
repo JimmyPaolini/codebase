@@ -166,6 +166,37 @@ describe(WorkspaceService, () => {
     ).toStrictEqual(["packages/library"]);
   });
 
+  it("drops a project an exclusion names, before reading its tsconfig", async () => {
+    // The regression this exists for: excluding a project only from the file
+    // list is too late, because reading its `tsconfig.json` is what fails.
+    const root = await buildWorkspace(["packages/library", "packages/broken"]);
+
+    expect(
+      subject
+        .discoverProjects({
+          directories: [],
+          fileFilter: {
+            isExcluded: (relativePath): boolean =>
+              relativePath.startsWith("packages/broken/"),
+          },
+          workspaceRoot: root,
+        })
+        .map((project) => project.name),
+    ).toStrictEqual(["packages/library"]);
+  });
+
+  it("drops a named directory an exclusion also names", async () => {
+    const root = await buildWorkspace(["packages/broken"]);
+
+    expect(
+      subject.discoverProjects({
+        directories: ["packages/broken"],
+        fileFilter: { isExcluded: (): boolean => true },
+        workspaceRoot: root,
+      }),
+    ).toStrictEqual([]);
+  });
+
   it("finds nothing in an empty workspace", async () => {
     const root = await mkdtemp(path.join(tmpdir(), "callidescope-empty-"));
 

@@ -10,6 +10,7 @@ import {
   DEFAULT_MODULES_DIRECTORY,
   DEFAULT_ROOT_MODULE_SEGMENT,
   EXCLUDED_SCAN_DIRECTORY_NAMES,
+  PROJECT_CONFIGURATION_NAME,
   TEST_DIRECTORY_SEGMENT,
   TEST_FILE_PATTERN,
 } from "./workspace.constants";
@@ -78,7 +79,7 @@ export class WorkspaceService {
     found: string[];
     workspaceRoot: string;
   }): void {
-    if (existsSync(path.join(args.directory, "tsconfig.json"))) {
+    if (existsSync(path.join(args.directory, PROJECT_CONFIGURATION_NAME))) {
       args.found.push(
         this.toWorkspaceRelative({
           absolutePath: args.directory,
@@ -115,6 +116,22 @@ export class WorkspaceService {
       (EXCLUDED_SCAN_DIRECTORY_NAMES as readonly string[]).includes(
         directoryName,
       )
+    );
+  }
+
+  /** True when an exclusion already names the project's own `tsconfig.json`. */
+  private isExcludedProject(args: {
+    configurationPath: string;
+    fileFilter: FileFilter | undefined;
+    workspaceRoot: string;
+  }): boolean {
+    return (
+      args.fileFilter?.isExcluded(
+        this.toWorkspaceRelative({
+          absolutePath: args.configurationPath,
+          workspaceRoot: args.workspaceRoot,
+        }),
+      ) === true
     );
   }
 
@@ -210,6 +227,12 @@ export class WorkspaceService {
    * the caller saying exactly what it means to trace. Passing none is what
    * asks for the whole workspace instead, found by walking it for every
    * `tsconfig.json` there is — the only case that needs a search at all.
+   *
+   * A project an exclusion names is dropped here, before its `tsconfig.json`
+   * is ever opened. Excluding later — once the files a program yielded are
+   * being filtered — is too late to help: reading the configuration is itself
+   * what fails on a `tsconfig.json` written to be unreadable, so an exclusion
+   * that only reaches the files cannot keep the run away from it.
    */
   public discoverProjects(args: DiscoverProjectsArguments): WorkspaceProject[] {
     const roots =
@@ -228,8 +251,21 @@ export class WorkspaceService {
       const configurationPath = path.join(
         args.workspaceRoot,
         root,
-        "tsconfig.json",
+        PROJECT_CONFIGURATION_NAME,
       );
+
+      if (
+        this.isExcludedProject({
+          configurationPath,
+          fileFilter: args.fileFilter,
+          workspaceRoot: args.workspaceRoot,
+        })
+      ) {
+        this.logger.debug("🔭 Skipped an excluded project", undefined, {
+          root,
+        });
+        continue;
+      }
 
       if (!existsSync(configurationPath)) {
         this.logger.warn(

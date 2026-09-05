@@ -6,6 +6,7 @@ import {
   InputError,
   InputService,
 } from "@callidescope/configuration";
+import { ProgramConfigurationError } from "@callidescope/graph";
 import {
   MarkdownReportService,
   OutputJsonService,
@@ -111,6 +112,21 @@ export class CallidescopeCommand extends CommandRunner {
   }
 
   /**
+   * Logs a project whose configuration could not be read, and fails the run.
+   *
+   * Reached only by an exception, because that failure ends the trace where it
+   * happens — which is the point of it. Nothing has been printed and no
+   * destination has been touched by the time this runs, so the checkout is
+   * left exactly as the run found it.
+   */
+  private rejectProject(error: ProgramConfigurationError): void {
+    this.logger.error("🔭 Rejected a project it could not read", undefined, {
+      reason: error.message,
+    });
+    process.exitCode = 1;
+  }
+
+  /**
    * Prints the run in the requested format.
    *
    * Markdown unless asked otherwise: it is the one rendering that reads well
@@ -172,6 +188,27 @@ export class CallidescopeCommand extends CommandRunner {
   }
 
   /**
+   * Fails a run that traced nothing at all.
+   *
+   * Unconditional, and not something `--check` turns on. Every other finding
+   * is a verdict on code that was read; this one says no code was read, and a
+   * gate that passes because it never looked is worse than one that fails —
+   * it reports the workspace as clean and there is nothing in the output to
+   * say otherwise.
+   */
+  private reportEmptyTrace(args: ReportFindingsArguments): boolean {
+    if (args.result.summary.callableCount > 0) {
+      return false;
+    }
+
+    this.logger.error("🔭 Traced nothing", undefined, {
+      projectCount: args.result.summary.projectCount,
+    });
+
+    return true;
+  }
+
+  /**
    * Weighs every finding a run can produce, and fails on any of them.
    *
    * They are weighed separately and announced separately. A stack that is too
@@ -179,13 +216,17 @@ export class CallidescopeCommand extends CommandRunner {
    * something else the code does; a stale report is something the checkout
    * has not caught up with. Reading one as another sends the author to fix
    * the wrong thing.
+   *
+   * A project that could not be read never reaches here: it ends the trace
+   * before anything is printed or written, and is reported by `rejectProject`.
    */
   private reportFindings(args: ReportFindingsArguments): void {
     const stale = this.reportStaleness(args);
     const deep = this.reportDeepStacks(args);
     const wide = this.reportWideCallables(args);
+    const empty = this.reportEmptyTrace(args);
 
-    if (deep || wide || stale) {
+    if (deep || empty || stale || wide) {
       process.exitCode = 1;
     }
   }
@@ -424,6 +465,11 @@ export class CallidescopeCommand extends CommandRunner {
     try {
       await this.traceWorkspace(options);
     } catch (error) {
+      if (error instanceof ProgramConfigurationError) {
+        this.rejectProject(error);
+        return;
+      }
+
       if (!(error instanceof InputError)) {
         throw error;
       }
