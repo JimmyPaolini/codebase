@@ -254,11 +254,10 @@ export class ProgramService {
   public buildPrograms(args: BuildProgramsArguments): ProgramSet {
     const built: ProjectProgram[] = [];
 
-    // The traversal's return value is the same set of projects `built` now
-    // holds a program for, so it is deliberately dropped rather than kept
-    // beside it: two representations of one set stay in step only by
-    // convention, and the count logged below would then be free to describe
-    // something other than what was really built.
+    // The traversal returns nothing, by design: the projects it reached are
+    // exactly the ones it asked for files, so `built` is the only
+    // representation of the closure there is and the count logged below
+    // cannot describe anything other than what was really built.
     this.workspaceService.resolveDependencyClosure({
       resolveProjectFiles: (project): readonly string[] => {
         this.logger.debug("🔭 Reading a project", undefined, {

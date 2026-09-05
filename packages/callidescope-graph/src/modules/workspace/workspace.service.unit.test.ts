@@ -109,12 +109,28 @@ const CLOSURE_PROJECTS: readonly WorkspaceProject[] = [
  * Builds a fake `resolveProjectFiles` callback from a fixed project graph —
  * no TypeScript program anywhere, exactly what makes the traversal testable
  * on its own.
+ *
+ * `reached` records the projects the callback was asked about, in the order it
+ * was asked, which is the same thing `ProgramService.buildPrograms` collects
+ * in the real callback. The traversal returns nothing, so this is how a
+ * closure is read here and in production alike.
  */
 function fakeProjectFiles(
   filesByProjectName: Readonly<Record<string, readonly string[]>>,
-): (project: WorkspaceProject) => readonly string[] {
-  return (project: WorkspaceProject): readonly string[] =>
-    filesByProjectName[project.name] ?? [];
+): {
+  reached: string[];
+  resolveProjectFiles: (project: WorkspaceProject) => readonly string[];
+} {
+  const reached: string[] = [];
+
+  return {
+    reached,
+    resolveProjectFiles: (project: WorkspaceProject): readonly string[] => {
+      reached.push(project.name);
+
+      return filesByProjectName[project.name] ?? [];
+    },
+  };
 }
 
 describe(WorkspaceService, () => {
@@ -440,140 +456,139 @@ describe(WorkspaceService, () => {
 
   // 🕸️ Dependency closure
 
-  it("resolves a starting project to itself plus every project its imports transitively reach", () => {
-    const resolveProjectFiles = fakeProjectFiles({
+  it("reaches a starting project itself plus every project its imports transitively reach", () => {
+    const { reached, resolveProjectFiles } = fakeProjectFiles({
       "packages/dependency": ["packages/transitive/src/index.ts"],
       "packages/starting": ["packages/dependency/src/index.ts"],
     });
 
-    expect(
-      subject
-        .resolveDependencyClosure({
-          resolveProjectFiles,
-          startingProjects: [STARTING_PROJECT],
-          workspaceProjects: CLOSURE_PROJECTS,
-        })
-        .map((project) => project.name),
-    ).toStrictEqual([
+    subject.resolveDependencyClosure({
+      resolveProjectFiles,
+      startingProjects: [STARTING_PROJECT],
+      workspaceProjects: CLOSURE_PROJECTS,
+    });
+
+    expect(reached.toSorted()).toStrictEqual([
       "packages/dependency",
       "packages/starting",
       "packages/transitive",
     ]);
   });
 
-  it("does not include a project's dependents in the resolved set", () => {
-    const resolveProjectFiles = fakeProjectFiles({
+  it("does not reach a project's dependents", () => {
+    const { reached, resolveProjectFiles } = fakeProjectFiles({
       "packages/dependent": ["packages/starting/src/index.ts"],
     });
 
-    expect(
-      subject
-        .resolveDependencyClosure({
-          resolveProjectFiles,
-          startingProjects: [STARTING_PROJECT],
-          workspaceProjects: CLOSURE_PROJECTS,
-        })
-        .map((project) => project.name),
-    ).toStrictEqual(["packages/starting"]);
-  });
-
-  it("terminates a cycle between two projects", () => {
-    const calls: string[] = [];
-    const resolveProjectFiles = (project: WorkspaceProject): string[] => {
-      calls.push(project.name);
-
-      return project.name === STARTING_PROJECT.name
-        ? ["packages/dependency/src/index.ts"]
-        : ["packages/starting/src/index.ts"];
-    };
-
-    const result = subject.resolveDependencyClosure({
+    subject.resolveDependencyClosure({
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
     });
 
-    expect(result.map((project) => project.name)).toStrictEqual([
-      "packages/dependency",
-      "packages/starting",
-    ]);
+    expect(reached).toStrictEqual(["packages/starting"]);
+  });
+
+  it("terminates a cycle between two projects", () => {
+    const { reached, resolveProjectFiles } = fakeProjectFiles({
+      "packages/dependency": ["packages/starting/src/index.ts"],
+      "packages/starting": ["packages/dependency/src/index.ts"],
+    });
+
+    subject.resolveDependencyClosure({
+      resolveProjectFiles,
+      startingProjects: [STARTING_PROJECT],
+      workspaceProjects: CLOSURE_PROJECTS,
+    });
+
     // Each project's files are read exactly once — proof the cycle
     // terminated instead of looping between the two projects forever.
-    expect(calls).toStrictEqual(["packages/starting", "packages/dependency"]);
+    expect(reached).toStrictEqual(["packages/starting", "packages/dependency"]);
   });
 
   it("does not mistake a resolved file belonging to no project for one", () => {
-    const resolveProjectFiles = fakeProjectFiles({
+    const { reached, resolveProjectFiles } = fakeProjectFiles({
       "packages/starting": [
         "node_modules/left-pad/index.js",
         "packages/transitive/src/index.d.ts",
       ],
     });
 
-    expect(
-      subject
-        .resolveDependencyClosure({
-          resolveProjectFiles,
-          startingProjects: [STARTING_PROJECT],
-          workspaceProjects: [STARTING_PROJECT],
-        })
-        .map((project) => project.name),
-    ).toStrictEqual(["packages/starting"]);
-  });
-
-  it("resolves the same set whichever order the starting roots are given in", () => {
-    const resolveProjectFiles = fakeProjectFiles({
-      "packages/dependent": ["packages/starting/src/index.ts"],
-      "packages/starting": ["packages/dependency/src/index.ts"],
+    subject.resolveDependencyClosure({
+      resolveProjectFiles,
+      startingProjects: [STARTING_PROJECT],
+      workspaceProjects: [STARTING_PROJECT],
     });
 
-    const forward = subject.resolveDependencyClosure({
-      resolveProjectFiles,
+    expect(reached).toStrictEqual(["packages/starting"]);
+  });
+
+  it("reaches the same set whichever order the starting roots are given in", () => {
+    const files = {
+      "packages/dependent": ["packages/starting/src/index.ts"],
+      "packages/starting": ["packages/dependency/src/index.ts"],
+    };
+    const forward = fakeProjectFiles(files);
+    const reversed = fakeProjectFiles(files);
+
+    subject.resolveDependencyClosure({
+      resolveProjectFiles: forward.resolveProjectFiles,
       startingProjects: [STARTING_PROJECT, DEPENDENT_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
     });
-    const reversed = subject.resolveDependencyClosure({
-      resolveProjectFiles,
+    subject.resolveDependencyClosure({
+      resolveProjectFiles: reversed.resolveProjectFiles,
       startingProjects: [DEPENDENT_PROJECT, STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
     });
 
-    expect(reversed).toStrictEqual(forward);
+    const expected = [
+      "packages/dependency",
+      "packages/dependent",
+      "packages/starting",
+    ];
+
+    expect(forward.reached.toSorted()).toStrictEqual(expected);
+    expect(reversed.reached.toSorted()).toStrictEqual(expected);
   });
 
-  it("does not resolve a pulled-in file into a project root holding no package.json", () => {
+  it("does not reach a project root holding no package.json through a pulled-in file", () => {
     // A directory of shared settings is read by everything and depended on by
     // nothing — see `isClosureDestination` for what it would otherwise drag in.
-    const resolveProjectFiles = fakeProjectFiles({
+    const { reached, resolveProjectFiles } = fakeProjectFiles({
       "packages/starting": [
         "packages/shared/eslint.config.ts",
         "packages/transitive/src/index.ts",
       ],
     });
 
-    expect(
-      subject
-        .resolveDependencyClosure({
-          resolveProjectFiles,
-          startingProjects: [STARTING_PROJECT],
-          workspaceProjects: CLOSURE_PROJECTS,
-        })
-        .map((project) => project.name),
-    ).toStrictEqual(["packages/starting", "packages/transitive"]);
+    subject.resolveDependencyClosure({
+      resolveProjectFiles,
+      startingProjects: [STARTING_PROJECT],
+      workspaceProjects: CLOSURE_PROJECTS,
+    });
+
+    expect(reached.toSorted()).toStrictEqual([
+      "packages/starting",
+      "packages/transitive",
+    ]);
   });
 
-  it("still resolves a starting project root holding no package.json", () => {
+  it("still reaches a starting project root holding no package.json", () => {
     // Only a destination is refused. Naming a project — which is what an
     // unscoped run does to every one of them — still traces it.
-    expect(
-      subject
-        .resolveDependencyClosure({
-          resolveProjectFiles: fakeProjectFiles({}),
-          startingProjects: [SHARED_PROJECT, STARTING_PROJECT],
-          workspaceProjects: CLOSURE_PROJECTS,
-        })
-        .map((project) => project.name),
-    ).toStrictEqual(["packages/shared", "packages/starting"]);
+    const { reached, resolveProjectFiles } = fakeProjectFiles({});
+
+    subject.resolveDependencyClosure({
+      resolveProjectFiles,
+      startingProjects: [SHARED_PROJECT, STARTING_PROJECT],
+      workspaceProjects: CLOSURE_PROJECTS,
+    });
+
+    expect(reached.toSorted()).toStrictEqual([
+      "packages/shared",
+      "packages/starting",
+    ]);
   });
 
   it("does not let a file the workspace root owns widen the closure", () => {
@@ -582,31 +597,29 @@ describe(WorkspaceService, () => {
     // project, so admitting it as a dependency puts the whole workspace in
     // every closure. It holds a `package.json`, so the manifest rule alone
     // would let it through.
-    const resolveProjectFiles = fakeProjectFiles({
+    const { reached, resolveProjectFiles } = fakeProjectFiles({
       "packages/starting": ["codometer.config.ts"],
     });
 
-    expect(
-      subject
-        .resolveDependencyClosure({
-          resolveProjectFiles,
-          startingProjects: [STARTING_PROJECT],
-          workspaceProjects: CLOSURE_PROJECTS,
-        })
-        .map((project) => project.name),
-    ).toStrictEqual(["packages/starting"]);
+    subject.resolveDependencyClosure({
+      resolveProjectFiles,
+      startingProjects: [STARTING_PROJECT],
+      workspaceProjects: CLOSURE_PROJECTS,
+    });
+
+    expect(reached).toStrictEqual(["packages/starting"]);
   });
 
-  it("still resolves the workspace root as a starting project", () => {
-    expect(
-      subject
-        .resolveDependencyClosure({
-          resolveProjectFiles: fakeProjectFiles({}),
-          startingProjects: [WORKSPACE_ROOT_PROJECT],
-          workspaceProjects: CLOSURE_PROJECTS,
-        })
-        .map((project) => project.name),
-    ).toStrictEqual(["workspace-root"]);
+  it("still reaches the workspace root as a starting project", () => {
+    const { reached, resolveProjectFiles } = fakeProjectFiles({});
+
+    subject.resolveDependencyClosure({
+      resolveProjectFiles,
+      startingProjects: [WORKSPACE_ROOT_PROJECT],
+      workspaceProjects: CLOSURE_PROJECTS,
+    });
+
+    expect(reached).toStrictEqual(["workspace-root"]);
   });
 
   // ⚙️ Configuration

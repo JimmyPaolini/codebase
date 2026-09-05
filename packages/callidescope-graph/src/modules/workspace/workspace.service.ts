@@ -368,17 +368,24 @@ export class WorkspaceService {
    * closure *destination* is dropped as though nothing owned the path —
    * `isClosureDestination` says which projects those are, and why.
    *
-   * Every starting project is in the result, even one whose program pulls in
+   * Every starting project is asked about, even one whose program pulls in
    * nothing outside itself and even one no closure could have reached, and a
    * project's dependents never are — nothing here walks from a file to
    * whoever imports it, only from a project to what its own program reaches.
-   * The result is sorted by name, so the same starting roots resolve to the
-   * same set whichever order they were given in.
+   *
+   * The callback's invocations are the whole result, which is why nothing is
+   * returned: the closure is exactly the set of projects the callback was
+   * asked about, and handing that set back as well would be a second
+   * representation of it, free to drift from whatever the caller collected
+   * while it answered. Ordering belongs to the caller for the same reason —
+   * `ProgramService.buildPrograms` sorts the programs it collected, so the
+   * order a report reads in is decided once, over the things a report is
+   * really made of.
    */
   public resolveDependencyClosure(
     args: ResolveDependencyClosureArguments,
-  ): WorkspaceProject[] {
-    const reached = new Map<string, WorkspaceProject>();
+  ): void {
+    const reached = new Set<string>();
     let pending = args.startingProjects;
 
     while (pending.length > 0) {
@@ -389,7 +396,7 @@ export class WorkspaceService {
           continue;
         }
 
-        reached.set(project.name, project);
+        reached.add(project.name);
 
         for (const workspaceRelativePath of args.resolveProjectFiles(project)) {
           const owner = this.resolveOwningProject({
@@ -409,10 +416,6 @@ export class WorkspaceService {
 
       pending = next;
     }
-
-    return [...reached.values()].toSorted((first, second) =>
-      first.name.localeCompare(second.name),
-    );
   }
 
   /**
