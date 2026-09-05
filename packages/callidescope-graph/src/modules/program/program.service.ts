@@ -236,9 +236,10 @@ export class ProgramService {
    *
    * A project nothing reaches is never asked about and so never built, which
    * is what keeps a run scoped to one package from compiling the workspace.
-   * Neither is a project reached only as a directory of shared settings —
-   * `WorkspaceService.resolveDependencyClosure` refuses those as destinations,
-   * and holds the reasoning. An unscoped run passes every project as a
+   * Neither is a project reached only as a directory of shared settings, nor
+   * the workspace root itself — `WorkspaceService.isClosureDestination`
+   * refuses those and holds the reasoning. An unscoped run passes every
+   * project as a
    * starting project, so its closure is every project, both rules are moot,
    * and nothing about it changes.
    *
@@ -253,7 +254,12 @@ export class ProgramService {
   public buildPrograms(args: BuildProgramsArguments): ProgramSet {
     const built: ProjectProgram[] = [];
 
-    const closure = this.workspaceService.resolveDependencyClosure({
+    // The traversal's return value is the same set of projects `built` now
+    // holds a program for, so it is deliberately dropped rather than kept
+    // beside it: two representations of one set stay in step only by
+    // convention, and the count logged below would then be free to describe
+    // something other than what was really built.
+    this.workspaceService.resolveDependencyClosure({
       resolveProjectFiles: (project): readonly string[] => {
         this.logger.debug("🔭 Reading a project", undefined, {
           projectName: project.name,
@@ -273,11 +279,10 @@ export class ProgramService {
       },
       startingProjects: args.startingProjects,
       workspaceProjects: args.workspaceProjects,
-      workspaceRoot: args.workspaceRoot,
     });
 
     this.logger.debug("🔭 Resolved a dependency closure", undefined, {
-      projectCount: closure.length,
+      projectCount: built.length,
       startingProjectCount: args.startingProjects.length,
     });
 

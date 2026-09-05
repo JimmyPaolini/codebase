@@ -46,12 +46,6 @@ export interface ResolveDependencyClosureArguments {
    * not visited yet.
    */
   readonly workspaceProjects: readonly WorkspaceProject[];
-  /**
-   * Where the projects sit on disk, read only to tell a project another one
-   * may depend on from a directory of shared settings — see
-   * `WorkspaceService.resolveDependencyClosure`.
-   */
-  readonly workspaceRoot: string;
 }
 
 /**
@@ -69,6 +63,18 @@ export type ResolveProjectFilesFunction = (
 export interface WorkspaceProject {
   /** Absolute path to the project's `tsconfig.json`. */
   readonly configurationPath: string;
+  /**
+   * Whether the project's root holds a `package.json`, read once when the
+   * project is discovered.
+   *
+   * A fact about the directory rather than a policy about it — what it is
+   * used for is `WorkspaceService.isClosureDestination`, and
+   * `PACKAGE_MANIFEST_NAME` holds why. Carried on the project so the closure
+   * traversal is a walk over data rather than over the filesystem: it is
+   * consulted once per pulled-in *path*, and a project reached late would
+   * otherwise be stat-ed thousands of times before it was reached at all.
+   */
+  readonly hasPackageManifest: boolean;
   /** Same as `root`: the project's own directory is its identity. */
   readonly name: string;
   /** Workspace-relative project root, POSIX separators. */

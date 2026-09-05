@@ -17,6 +17,7 @@ import type { DeepMocked } from "@golevelup/ts-vitest";
 
 const PROJECT: WorkspaceProject = {
   configurationPath: "/workspace/packages/example/tsconfig.json",
+  hasPackageManifest: true,
   name: "example",
   root: "packages/example",
 };
@@ -28,9 +29,10 @@ const PROJECT: WorkspaceProject = {
  */
 async function buildWorkspace(
   projectRoots: readonly string[],
-  rootsWithoutManifest: readonly string[] = [],
+  options: { rootsWithoutManifest?: readonly string[] } = {},
 ): Promise<string> {
   const root = await mkdtemp(path.join(tmpdir(), "callidescope-workspace-"));
+  const rootsWithoutManifest = options.rootsWithoutManifest ?? [];
 
   for (const projectRoot of projectRoots) {
     const directory = path.join(root, projectRoot);
@@ -48,32 +50,49 @@ async function buildWorkspace(
 
 const DEPENDENCY_PROJECT: WorkspaceProject = {
   configurationPath: "",
+  hasPackageManifest: true,
   name: "packages/dependency",
   root: "packages/dependency",
 };
 
 const DEPENDENT_PROJECT: WorkspaceProject = {
   configurationPath: "",
+  hasPackageManifest: true,
   name: "packages/dependent",
   root: "packages/dependent",
 };
 
 const STARTING_PROJECT: WorkspaceProject = {
   configurationPath: "",
+  hasPackageManifest: true,
   name: "packages/starting",
   root: "packages/starting",
 };
 
+/** A directory of shared settings: a project root holding no manifest. */
 const SHARED_PROJECT: WorkspaceProject = {
   configurationPath: "",
+  hasPackageManifest: false,
   name: "packages/shared",
   root: "packages/shared",
 };
 
 const TRANSITIVE_PROJECT: WorkspaceProject = {
   configurationPath: "",
+  hasPackageManifest: true,
   name: "packages/transitive",
   root: "packages/transitive",
+};
+
+/**
+ * The workspace root as a project: a manifest of its own, and a root that
+ * contains every other project's.
+ */
+const WORKSPACE_ROOT_PROJECT: WorkspaceProject = {
+  configurationPath: "",
+  hasPackageManifest: true,
+  name: "workspace-root",
+  root: "",
 };
 
 /** Every project the closure tests resolve paths against. */
@@ -83,6 +102,7 @@ const CLOSURE_PROJECTS: readonly WorkspaceProject[] = [
   SHARED_PROJECT,
   STARTING_PROJECT,
   TRANSITIVE_PROJECT,
+  WORKSPACE_ROOT_PROJECT,
 ];
 
 /**
@@ -98,17 +118,9 @@ function fakeProjectFiles(
 }
 
 describe(WorkspaceService, () => {
-  let closureRoot: string;
   let service: WorkspaceService;
 
   beforeAll(async () => {
-    // Every closure project is a real directory, because whether a project
-    // may be a closure destination is read off disk.
-    closureRoot = await buildWorkspace(
-      CLOSURE_PROJECTS.map((project) => project.root),
-      [SHARED_PROJECT.root],
-    );
-
     const module = await Test.createTestingModule({
       imports: [...ANALYSIS_MODULES],
       providers: [WorkspaceService],
@@ -179,6 +191,23 @@ describe(WorkspaceService, () => {
         workspaceRoot: root,
       }),
     ).toThrow(/packages[\\/]untyped[\\/]tsconfig\.json/);
+  });
+
+  it("records whether each discovered project root holds a package.json", async () => {
+    // Read here, once per project, rather than once per file a program pulled
+    // in — and it is what `isClosureDestination` goes on to judge.
+    const root = await buildWorkspace(["packages/library", "packages/shared"], {
+      rootsWithoutManifest: ["packages/shared"],
+    });
+
+    expect(
+      subject
+        .discoverProjects({ directories: [], workspaceRoot: root })
+        .map((project) => [project.name, project.hasPackageManifest]),
+    ).toStrictEqual([
+      ["packages/library", true],
+      ["packages/shared", false],
+    ]);
   });
 
   it("finds every tsconfig.json in the workspace when none are named", async () => {
@@ -332,7 +361,12 @@ describe(WorkspaceService, () => {
     expect(
       subject.resolveOwningProject({
         projects: [
-          { configurationPath: "", name: "other", root: "packages/other" },
+          {
+            configurationPath: "",
+            hasPackageManifest: true,
+            name: "other",
+            root: "packages/other",
+          },
           PROJECT,
         ],
         workspaceRelativePath: "packages/example/src/main.ts",
@@ -343,6 +377,7 @@ describe(WorkspaceService, () => {
   it("gives a file to the nearest containing root, not any ancestor", () => {
     const nested: WorkspaceProject = {
       configurationPath: "",
+      hasPackageManifest: true,
       name: "example/testing",
       root: "packages/example/testing",
     };
@@ -365,6 +400,7 @@ describe(WorkspaceService, () => {
   it("does not let a sibling with a shared string prefix claim a file", () => {
     const sibling: WorkspaceProject = {
       configurationPath: "",
+      hasPackageManifest: true,
       name: "example",
       root: "packages/example",
     };
@@ -380,6 +416,7 @@ describe(WorkspaceService, () => {
   it("falls back to the workspace root project for an otherwise unowned file", () => {
     const root: WorkspaceProject = {
       configurationPath: "",
+      hasPackageManifest: true,
       name: "",
       root: "",
     };
@@ -415,7 +452,6 @@ describe(WorkspaceService, () => {
           resolveProjectFiles,
           startingProjects: [STARTING_PROJECT],
           workspaceProjects: CLOSURE_PROJECTS,
-          workspaceRoot: closureRoot,
         })
         .map((project) => project.name),
     ).toStrictEqual([
@@ -436,7 +472,6 @@ describe(WorkspaceService, () => {
           resolveProjectFiles,
           startingProjects: [STARTING_PROJECT],
           workspaceProjects: CLOSURE_PROJECTS,
-          workspaceRoot: closureRoot,
         })
         .map((project) => project.name),
     ).toStrictEqual(["packages/starting"]);
@@ -456,7 +491,6 @@ describe(WorkspaceService, () => {
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
-      workspaceRoot: closureRoot,
     });
 
     expect(result.map((project) => project.name)).toStrictEqual([
@@ -482,7 +516,6 @@ describe(WorkspaceService, () => {
           resolveProjectFiles,
           startingProjects: [STARTING_PROJECT],
           workspaceProjects: [STARTING_PROJECT],
-          workspaceRoot: closureRoot,
         })
         .map((project) => project.name),
     ).toStrictEqual(["packages/starting"]);
@@ -498,13 +531,11 @@ describe(WorkspaceService, () => {
       resolveProjectFiles,
       startingProjects: [STARTING_PROJECT, DEPENDENT_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
-      workspaceRoot: closureRoot,
     });
     const reversed = subject.resolveDependencyClosure({
       resolveProjectFiles,
       startingProjects: [DEPENDENT_PROJECT, STARTING_PROJECT],
       workspaceProjects: CLOSURE_PROJECTS,
-      workspaceRoot: closureRoot,
     });
 
     expect(reversed).toStrictEqual(forward);
@@ -526,7 +557,6 @@ describe(WorkspaceService, () => {
           resolveProjectFiles,
           startingProjects: [STARTING_PROJECT],
           workspaceProjects: CLOSURE_PROJECTS,
-          workspaceRoot: closureRoot,
         })
         .map((project) => project.name),
     ).toStrictEqual(["packages/starting", "packages/transitive"]);
@@ -541,10 +571,42 @@ describe(WorkspaceService, () => {
           resolveProjectFiles: fakeProjectFiles({}),
           startingProjects: [SHARED_PROJECT, STARTING_PROJECT],
           workspaceProjects: CLOSURE_PROJECTS,
-          workspaceRoot: closureRoot,
         })
         .map((project) => project.name),
     ).toStrictEqual(["packages/shared", "packages/starting"]);
+  });
+
+  it("does not let a file the workspace root owns widen the closure", () => {
+    // A repository keeps files at its own root — a `codometer.config.ts`, a
+    // `scripts/` directory — and the root project's root contains every other
+    // project, so admitting it as a dependency puts the whole workspace in
+    // every closure. It holds a `package.json`, so the manifest rule alone
+    // would let it through.
+    const resolveProjectFiles = fakeProjectFiles({
+      "packages/starting": ["codometer.config.ts"],
+    });
+
+    expect(
+      subject
+        .resolveDependencyClosure({
+          resolveProjectFiles,
+          startingProjects: [STARTING_PROJECT],
+          workspaceProjects: CLOSURE_PROJECTS,
+        })
+        .map((project) => project.name),
+    ).toStrictEqual(["packages/starting"]);
+  });
+
+  it("still resolves the workspace root as a starting project", () => {
+    expect(
+      subject
+        .resolveDependencyClosure({
+          resolveProjectFiles: fakeProjectFiles({}),
+          startingProjects: [WORKSPACE_ROOT_PROJECT],
+          workspaceProjects: CLOSURE_PROJECTS,
+        })
+        .map((project) => project.name),
+    ).toStrictEqual(["workspace-root"]);
   });
 
   // ⚙️ Configuration

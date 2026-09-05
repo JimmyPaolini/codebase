@@ -22,6 +22,7 @@ export const FIXTURE_ROOT = "/workspace";
 /** The project an in-memory fixture belongs to. */
 export const FIXTURE_PROJECT = {
   configurationPath: `${FIXTURE_ROOT}/packages/example/tsconfig.json`,
+  hasPackageManifest: true,
   name: "example",
   root: "packages/example",
 };

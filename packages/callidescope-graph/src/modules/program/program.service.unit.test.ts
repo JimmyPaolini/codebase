@@ -57,6 +57,7 @@ async function addProject(args: {
 
   return {
     configurationPath: path.join(root, "tsconfig.json"),
+    hasPackageManifest: args.omitManifest !== true,
     name: args.name,
     root: `packages/${args.name}`,
   };
@@ -205,6 +206,7 @@ describe(ProgramService, () => {
 
     const nested: WorkspaceProject = {
       configurationPath: path.join(nestedRoot, "tsconfig.json"),
+      hasPackageManifest: true,
       name: "example-testing",
       root: "packages/example/testing",
     };
@@ -393,42 +395,32 @@ describe(ProgramService, () => {
   });
 
   it("does not let a dependency drag in the project that holds it", async () => {
-    // The workspace root is itself a project, and its root contains every
-    // path in the workspace — `node_modules` included. Reporting a dependency
-    // as something a project reached would therefore pull the whole workspace
-    // into every scoped run's closure.
-    const { project, workspaceRoot } = await buildProject({
+    // A package manager puts a dependency inside a package's own directory,
+    // so the project whose root contains it is an ordinary workspace package
+    // — reporting the dependency as something another project reached would
+    // make every package holding one a dependency of everyone who uses it.
+    const { project: vendor, workspaceRoot } = await buildProject({
+      name: "vendor",
+      sources: {
+        "node_modules/library/index.ts": "export function library(): void {}\n",
+        "src/index.ts": "export function vendored(): void {}\n",
+      },
+    });
+    const example = await addProject({
       name: "example",
       sources: {
         "src/index.ts": `
-          import { library } from "../../../node_modules/library/index";
+          import { library } from "../../vendor/node_modules/library/index";
 
           export function entry(): void { library(); }
         `,
       },
+      workspaceRoot,
     });
-    const workspaceRootProject: WorkspaceProject = {
-      configurationPath: path.join(workspaceRoot, "tsconfig.json"),
-      name: "workspace-root",
-      root: "",
-    };
-
-    await mkdir(path.join(workspaceRoot, "node_modules/library"), {
-      recursive: true,
-    });
-    await writeFile(
-      path.join(workspaceRoot, "node_modules/library/index.ts"),
-      "export function library(): void {}\n",
-      "utf8",
-    );
-    // A real manifest, so the workspace root is a project a closure is
-    // allowed to reach — otherwise the destination rule would pass this test
-    // on its own and the guard under test would go unexercised.
-    await writeFile(path.join(workspaceRoot, "package.json"), "{}", "utf8");
 
     const programSet = buildSubject().buildPrograms({
-      startingProjects: [project],
-      workspaceProjects: [project, workspaceRootProject],
+      startingProjects: [example],
+      workspaceProjects: [example, vendor],
       workspaceRoot,
     });
 
@@ -448,9 +440,6 @@ describe(ProgramService, () => {
       "utf8",
     );
     await mkdir(workspaceRoot, { recursive: true });
-    // As above: the workspace root has to be a legitimate destination for
-    // this to be testing the `..` guard rather than the manifest rule.
-    await writeFile(path.join(workspaceRoot, "package.json"), "{}", "utf8");
 
     const project = await addProject({
       name: "example",
@@ -465,9 +454,47 @@ describe(ProgramService, () => {
     });
     const workspaceRootProject: WorkspaceProject = {
       configurationPath: path.join(workspaceRoot, "tsconfig.json"),
+      hasPackageManifest: true,
       name: "workspace-root",
       root: "",
     };
+
+    const programSet = buildSubject().buildPrograms({
+      startingProjects: [project],
+      workspaceProjects: [project, workspaceRootProject],
+      workspaceRoot,
+    });
+
+    expect(readProjectNames(programSet)).toStrictEqual(["example"]);
+  });
+
+  it("builds no program for the workspace root project", async () => {
+    // A repository keeps files at its own root, and the root project's root
+    // contains every other project — so letting a root-level file pull it in
+    // puts the entire workspace in every scoped closure. It holds a real
+    // `package.json`, so the manifest rule alone would admit it.
+    const { project, workspaceRoot } = await buildProject({
+      name: "example",
+      sources: {
+        "src/index.ts": `
+          import { SETTINGS } from "../../../settings";
+
+          export function entry(): string { return SETTINGS.name; }
+        `,
+      },
+    });
+    const workspaceRootProject: WorkspaceProject = {
+      configurationPath: path.join(workspaceRoot, "tsconfig.json"),
+      hasPackageManifest: true,
+      name: "workspace-root",
+      root: "",
+    };
+
+    await writeFile(
+      path.join(workspaceRoot, "settings.ts"),
+      "export const SETTINGS = { name: 'x' };\n",
+      "utf8",
+    );
 
     const programSet = buildSubject().buildPrograms({
       startingProjects: [project],

@@ -22,6 +22,16 @@ import type {
 } from "@callidescope/configuration";
 
 /**
+ * The depth `ApplicationCommand` measures once the closure resolves its call
+ * into the library: `run` → `Repository.find` → `Repository.open`.
+ *
+ * Written out rather than compared between two runs and left at that, so the
+ * scoped-and-unscoped agreement this suite asserts is agreement on a number
+ * somebody checked instead of on two absent lookups.
+ */
+const SCOPED_COMMAND_DEPTH = 3;
+
+/**
  * Adds a second project whose `tsconfig.json` names a compiler target
  * TypeScript rejects.
  *
@@ -549,8 +559,16 @@ describe(`${CallidescopeService.name} (integration)`, () => {
         projectName: path.join("packages", "application"),
         typeName: "ApplicationCommand",
       };
+      const scopedDepth = readTypeDepth({
+        ...arguments_,
+        result: scoped.result,
+      });
 
-      expect(readTypeDepth({ ...arguments_, result: scoped.result })).toBe(
+      // The literal first, and only then the comparison. Both lookups can
+      // come back `undefined` — a renamed type, a project that stops being
+      // reported — and an equality on its own would call that agreement.
+      expect(scopedDepth).toBe(SCOPED_COMMAND_DEPTH);
+      expect(scopedDepth).toBe(
         readTypeDepth({ ...arguments_, result: unscoped.result }),
       );
     });

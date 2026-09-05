@@ -111,35 +111,16 @@ export class WorkspaceService {
   /**
    * True when a project may be pulled into another project's closure.
    *
-   * **A project root holding no `package.json` is not a destination.** The
-   * manifest is what makes a directory something another project can depend
-   * *on*. A root holding only a `tsconfig.json` is where a repository keeps
-   * shared settings — a `configuration/` directory of base compiler options
-   * and lint configuration — and shared settings are read by every project
-   * rather than depended on by any.
-   *
-   * Without this, that one directory drags the whole workspace into every
-   * closure. Each package's `tsconfig.json` `include`s its own tooling
-   * configuration files, each of those imports out of the shared directory, so
-   * the compiler really reads them and `getSourceFiles` truthfully says so.
-   * The shared directory joins the closure, its program then covers every
-   * configuration file in it, and those reach every toolchain the repository
-   * configures — a leaf package's closure measured 18 projects rather than 3,
-   * dearer than one whole-workspace run as soon as a few are affected.
-   *
-   * What it costs: a call into such a directory resolves to no frame in a
-   * scoped run, as it did before closures existed. Only a *destination* is
-   * refused — a named directory is a starting project and an unscoped run
-   * names every project, so one is still traced in full and a whole-workspace
-   * run's findings are untouched.
+   * Two roots are refused. One holding no `package.json` is a directory of
+   * shared settings rather than a package — `PACKAGE_MANIFEST_NAME` holds that
+   * reasoning, and what it costs. The workspace root is refused whatever it
+   * holds: a project whose root contains every other project cannot be a
+   * meaningful dependency of any of them, and admitting it is the same
+   * explosion reached from a root-level file — a `codometer.config.ts`, a
+   * `scripts/` directory — rather than from a shared settings one.
    */
-  private isClosureDestination(args: {
-    project: WorkspaceProject;
-    workspaceRoot: string;
-  }): boolean {
-    return existsSync(
-      path.join(args.workspaceRoot, args.project.root, PACKAGE_MANIFEST_NAME),
-    );
+  private isClosureDestination(project: WorkspaceProject): boolean {
+    return project.root !== "" && project.hasPackageManifest;
   }
 
   /**
@@ -342,7 +323,17 @@ export class WorkspaceService {
         });
       }
 
-      projects.push({ configurationPath, name: root, root });
+      projects.push({
+        configurationPath,
+        // Read here, where each root is already being stat-ed: it is a fixed
+        // fact about a project, and asking again once per file a program
+        // pulled in is tens of thousands of calls for the same answer.
+        hasPackageManifest: existsSync(
+          path.join(args.workspaceRoot, root, PACKAGE_MANIFEST_NAME),
+        ),
+        name: root,
+        root,
+      });
     }
 
     // Sorted so that a report's per-project rows — and anything else keyed
@@ -409,10 +400,7 @@ export class WorkspaceService {
           if (
             owner !== undefined &&
             !reached.has(owner.name) &&
-            this.isClosureDestination({
-              project: owner,
-              workspaceRoot: args.workspaceRoot,
-            })
+            this.isClosureDestination(owner)
           ) {
             next.push(owner);
           }
