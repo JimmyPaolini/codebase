@@ -64,7 +64,7 @@ requires-dist = [
     { name = "langgraph", specifier = ">=0.3" },
     { name = "pandas", specifier = ">=2.0" },
     { name = "pydantic", specifier = ">=2.0" },
-    { name = "tornado", specifier = ">=6.5.7" },
+    { name = "tornado", specifier = ">=6.5.8" },
     { name = "trafilatura", specifier = ">=2.0" },
     { name = "wikipedia", specifier = ">=1.4" },
 ]
