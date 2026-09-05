@@ -8,7 +8,7 @@
 nx run callidescope-examples:examples
 ```
 
-Then read `cyclicComponentCount` in [`output/report.json`](../../output/report.json)'s summary. It is 1 — the cycle of three, counted once.
+Then read `cyclicComponentCount` in the `packages/callidescope-examples` entry of [`output/report.json`](../../output/report.json)'s `projects`. It is 1 — the cycle of three, counted once.
 
 `descend → branch → leaf → descend`. The three are condensed into one component,
 so they contribute three frames once, and every frame is marked `(cycle)`:

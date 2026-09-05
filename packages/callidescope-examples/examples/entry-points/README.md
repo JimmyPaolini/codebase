@@ -8,7 +8,7 @@
 nx run callidescope-examples:examples
 ```
 
-Then read `entryPointCount` in [`output/report.json`](../../output/report.json)'s summary, and the `🚀` lines in [`output/report.md`](../../output/report.md) for the roots deep enough to be reported.
+Then read `entryPointCount` in the `packages/callidescope-examples` entry of [`output/report.json`](../../output/report.json)'s `projects`, and the `🚀` lines in [`output/report.md`](../../output/report.md) for the roots deep enough to be reported. The top-level summary counts the closure's dependency packages too, so it is the wrong place to look for the five kinds below.
 
 Depth is only meaningful relative to a root, and most code in a repository like
 this one is called by a framework rather than by the repository. So roots are

@@ -275,6 +275,15 @@ moved the dependency, and the `examples` target names those packages' sources in
 its `inputs` so a cached run is never replayed over them. Their READMEs are not
 named there, because this run does not write into them.
 
+`{workspaceRoot}/configuration/*.config.ts` is in those `inputs` too, and it is
+not redundant with `shared-globals` — which holds `configuration/tsconfig.json`
+and nothing else. Two of the three dependency packages are in the closure only
+because this package's own `eslint.config.ts` and `codometer.config.ts` spread
+the root ones, and the root ones import `@codebase/logger/eslint` and
+`@codometer/configuration`. Delete an import there and these reports lose a
+whole project, with nothing else in `inputs` changed — a cached green replayed
+over exactly the drift this gate exists to catch.
+
 Two command lines are refused outright:
 
 ```bash

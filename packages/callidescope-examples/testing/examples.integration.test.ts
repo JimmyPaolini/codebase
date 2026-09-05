@@ -54,8 +54,31 @@ function readClosureFrames(
 
   return (stack?.frames ?? []).map((frame) => ({
     displayName: frame.displayName,
-    project: frame.location.filePath.split("/").slice(0, 2).join("/"),
+    project: readFileProject(result, frame.location.filePath),
   }));
+}
+
+/**
+ * The project a frame's file belongs to, named the way the run names it.
+ *
+ * A `StackFrame` carries no project of its own, so the owner is resolved
+ * against the `projectName` values the run itself reported rather than guessed
+ * from the shape of the path — the two agree for every project here, and only
+ * one of them keeps agreeing when a project root is nested any deeper than two
+ * segments. The longest match wins, so a project inside another project is
+ * never credited to its parent.
+ */
+function readFileProject(result: CallGraphResult, filePath: string): string {
+  const owner = result.projects
+    .map((project) => project.projectName)
+    .filter((projectName) => filePath.startsWith(`${projectName}/`))
+    .toSorted((first, second) => second.length - first.length)[0];
+
+  if (owner === undefined) {
+    throw new Error(`The run reported no project owning ${filePath}`);
+  }
+
+  return owner;
 }
 
 /**
@@ -284,12 +307,12 @@ describe("callidescope examples (integration)", () => {
   });
 
   describe("depth findings", () => {
-    it("reports every deliberately deep stack and no others", () => {
-      // Narrowed to the stacks this package heads. The closure's three
-      // dependency packages are real code judged by a limit set low enough to
-      // make these fixtures findings, so one of them is over it — a fact about
-      // those packages rather than about a fixture, and not this suite's to
-      // pin.
+    it("reports every deliberately deep stack this package heads", () => {
+      // Narrowed to the stacks this package heads, so it says nothing about
+      // how many the whole run reports. The closure's three dependency
+      // packages are real code judged by a limit set low enough to make these
+      // fixtures findings, so one of them is over it — a fact about those
+      // packages rather than about a fixture, and not this suite's to pin.
       expect(
         result.deepStacks
           .filter((stack) =>

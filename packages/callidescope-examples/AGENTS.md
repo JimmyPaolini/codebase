@@ -152,7 +152,16 @@ three projects the closure reaches, so a change to
 `packages/logger` makes them stale. The `examples` target names those packages'
 sources in its `inputs`, so the staleness is caught rather than cached over, and
 the three steps above are the fix. Their READMEs are not named there: this run
-measures those packages but publishes nothing into them. The assertions in the test
+measures those packages but publishes nothing into them.
+
+A root `configuration/*.config.ts` moves them too, which is less obvious. Two of
+those projects are in the closure only because this package's own
+`eslint.config.ts` and `codometer.config.ts` spread the root ones, which import
+`@codebase/logger/eslint` and `@codometer/configuration` — so removing an import
+there drops a whole project from the committed reports. That glob is in `inputs`
+for exactly that reason, and belongs there rather than in `shared-globals`.
+
+The assertions in the test
 suite are deliberately written against this package's **own** per-project report
 for that reason — a sibling package gaining a method should not fail a suite
 about fixtures.
