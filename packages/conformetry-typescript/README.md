@@ -61,7 +61,7 @@ Call stacks traced through `packages/conformetry-typescript`, deepest first. Eac
 | Measure | Value |
 | --- | --- |
 | Callables | 40 |
-| Files | 10 |
+| Files | 11 |
 | Calls traced | 49 |
 | Call stacks | 1 |
 | Deepest stack | 12 |

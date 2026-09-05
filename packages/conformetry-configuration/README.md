@@ -262,24 +262,46 @@ Call stacks traced through `packages/conformetry-configuration`, deepest first. 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 119 |
-| Files | 25 |
-| Calls traced | 101 |
-| Call stacks | 6 |
-| Deepest stack | 8 |
+| Callables | 137 |
+| Files | 27 |
+| Calls traced | 123 |
+| Call stacks | 5 |
+| Deepest stack | 10 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 5 |
+| Unfollowable calls | 6 |
 
 ### Call stacks (depth)
 
-**1. `InputService.resolveInputsFromValues`** — depth ≥ 8 · orphan-root
+**1. `InstanceDiscoveryService.matchTemplates`** — depth ≥ 10 · orphan-root
 
 ```text
-🚀 InputService.resolveInputsFromValues(args: ResolveInputsFromValuesArguments): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:203]
+🚀 InstanceDiscoveryService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:103]
+   ↳ Ranks every template that shares a file with one instance, best first.
+  └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
+     ↳ Weighs every template that shares at least one file with the instance, best-first.
+    └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
+      └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
+         ↳ Counts how many of a template's files the instance path already has.
+        └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
+          └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+             ↳ Maps a template file path to the instance file path it governs.
+            └─> RenderingService.renderPath(…): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:142]
+               ↳ Renders a template path with mustache, the same way contents are rendered.
+              └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:35]
+                 ↳ Refuses to render a template asking for a value nobody supplied.
+                └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:61]
+                   ↳ Every placeholder a template interpolates, deduplicated.
+                  └─> RenderingService.walk(spans: TemplateSpans): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:63]
+```
+
+**2. `InputService.resolveInputsFromValues`** — depth ≥ 8 · orphan-root
+
+```text
+🚀 InputService.resolveInputsFromValues(args: ResolveInputsFromValuesArguments): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:195]
    ↳ Resolves inputs from values the caller already parsed.
-  └─> InputService.resolveInputs(…): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:52]
+  └─> InputService.resolveInputs(…): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:53]
      ↳ Walks a schema, taking each value from the resolver or a prompt.
-    └─> InputService.acceptProvidedValue(args: { input: SchemaInput; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:38]
+    └─> InputService.acceptProvidedValue(args: { input: SchemaInput; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:39]
        ↳ Validates a value the caller already had, throwing if it is invalid.
       └─> InputSchemaService.validateValue(args: { input: SchemaInput; value: unknown; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158]
          ↳ Validates a value, returning `true` or the reason it failed.
@@ -292,47 +314,10 @@ Call stacks traced through `packages/conformetry-configuration`, deepest first. 
               └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
 ```
 
-**2. `InstanceDiscoveryService.weighInstance`** — depth 7 · orphan-root
+**3. `InputPromptingService.validate`** — depth 6 · orphan-root
 
 ```text
-🚀 InstanceDiscoveryService.weighInstance(…): { instance: Instance; pairings: InventoriedPairing[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:53]
-   ↳ Weighs one instance against every template, best fit first.
-  └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
-     ↳ Weighs every template that shares at least one file with the instance, best-first.
-    └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
-      └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
-         ↳ Counts how many of a template's files the instance path already has.
-        └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
-          └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:177]
-             ↳ Maps a template file path to the instance file path it governs.
-            └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
-               ↳ Renders a template path with mustache, the same way contents are rendered.
-```
-
-**3. `InstanceDiscoveryService.matchTemplates`** — depth 7 · orphan-root
-
-```text
-🚀 InstanceDiscoveryService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:100]
-   ↳ Ranks every template that shares a file with one instance, best first.
-  └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
-     ↳ Weighs every template that shares at least one file with the instance, best-first.
-    └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
-      └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
-         ↳ Counts how many of a template's files the instance path already has.
-        └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
-          └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:177]
-             ↳ Maps a template file path to the instance file path it governs.
-            └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
-               ↳ Renders a template path with mustache, the same way contents are rendered.
-```
-
-<details>
-<summary>3 more call stacks</summary>
-
-**4. `InputPromptingService.validate`** — depth 6 · orphan-root
-
-```text
-🚀 InputPromptingService.validate(value: unknown): string | true [packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:49]
+🚀 InputPromptingService.validate(value: unknown): string | true [packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:105]
   └─> InputSchemaService.validateValue(args: { input: SchemaInput; value: unknown; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158]
      ↳ Validates a value, returning `true` or the reason it failed.
     └─> InputSchemaService.validateEnum(args: { input: SchemaInput; value: string; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:39]
@@ -344,25 +329,27 @@ Call stacks traced through `packages/conformetry-configuration`, deepest first. 
           └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
 ```
 
-**5. `assertNoCollisions`** — depth ≥ 4 · orphan-root
+<details>
+<summary>2 more call stacks</summary>
+
+**4. `assertNoCollisions`** — depth ≥ 3 · orphan-root
 
 ```text
-🚀 assertNoCollisions(…): void [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:26]
+🚀 assertNoCollisions(…): void [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:28]
    ↳ Fails when two generators would answer to the same thing.
-  └─> findUnusableHandles(…): { message: string; path: (string | number)[]; }[] [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:96]
-     ↳ Reports names and aliases that could not be addressed or emitted.
-    └─> flatMap(…)(…): { message: string; path: number[]; }[] [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:102]
-      └─> map(…)(handle: string): { message: string; path: number[]; } [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:105]
+  └─> findDuplicates(…): { message: string; path: (string | number)[]; }[] [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:62]
+     ↳ Reports every key more than one generator claims.
+    └─> map(…)(…): { message: string; path: number[]; } [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:84]
 ```
 
-**6. `InstanceDiscoveryService.buildSubstitutions`** — depth 3 · orphan-root
+**5. `InstanceDiscoveryService.buildSubstitutions`** — depth 3 · orphan-root
 
 ```text
-🚀 InstanceDiscoveryService.buildSubstitutions(…): Substitutions [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:80]
+🚀 InstanceDiscoveryService.buildSubstitutions(…): Substitutions [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:83]
    ↳ Builds the substitutions an instance's template is rendered with.
   └─> InstanceDiscoveryMatchingService.buildSubstitutions(instance: Instance): Substitutions [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:72]
      ↳ Builds the substitutions an instance's template is rendered with.
-    └─> RenderingService.buildNameSubstitutions(name: string): Substitutions [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:38]
+    └─> RenderingService.buildNameSubstitutions(name: string): Substitutions [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:94]
        ↳ Derives the case variants every template can reference from one name.
 ```
 
@@ -377,35 +364,40 @@ None.
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `InstanceDiscoveryMatchingService.matchInstances` | 5 | `InstanceDiscoveryMatchingService.buildSubstitutions`, `InstanceDiscoveryMatchingService.matchTemplates`, `InstanceDiscoveryMatchingService.filter(…)`, `InstanceDiscoveryMatchingService.map(…)`, `InstanceDiscoveryMatchingService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:93` |
-| `ConfigurationService.loadConformetryConfiguration` | 4 | `ConfigurationService.resolveConfigurationPath`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule`, `ConfigurationService.map(…)` | `packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:172` |
-| `InputService.resolveInputs` | 4 | `InputSchemaService.readPropertyNames`, `InputSchemaService.describeInput`, `InputService.acceptProvidedValue`, `InputService.resolveMissingValue` | `packages/conformetry-configuration/src/modules/input/input.service.ts:52` |
+| `ConfigurationService.loadConformetryConfiguration` | 4 | `ConfigurationService.resolveConfigurationPath`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule`, `ConfigurationService.map(…)` | `packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:169` |
+| `InputPromptingService.promptForInput` | 4 | `InputPromptingService.assertCanPrompt`, `InputSchemaService.readEnumValues`, `InputPromptingService.map(…)`, `InputSchemaService.readPromptMessage` | `packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:90` |
 
 <details>
-<summary>54 more callables</summary>
+<summary>66 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `InputService.resolveInputs` | 4 | `InputSchemaService.readPropertyNames`, `InputSchemaService.describeInput`, `InputService.acceptProvidedValue`, `InputService.resolveMissingValue` | `packages/conformetry-configuration/src/modules/input/input.service.ts:53` |
+| `InputService.resolveMissingValue` | 4 | `InputPromptingService.isAtTerminal`, `missingInputError`, `InputPromptingService.promptForInput`, `InputSchemaService.validateValue` | `packages/conformetry-configuration/src/modules/input/input.service.ts:94` |
 | `InstanceDiscoveryLocatingService.findInstances` | 4 | `InstanceDiscoveryLocatingService.resolveGlobSuffix`, `InstanceDiscoveryLocatingService.resolveNameStem`, `InstanceDiscoveryLocatingService.map(…)`, `InstanceDiscoveryLocatingService.toSorted(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:121` |
-| `InstanceDiscoveryService.resolveInventoriedInstances` | 4 | `InstanceDiscoveryService.takeInventory`, `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryService.filter(…)`, `InstanceDiscoveryService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:160` |
-| `InstanceDiscoveryService.resolveInventoriedTemplates` | 4 | `InstanceDiscoveryService.takeInventory`, `InstanceDiscoveryService.filter(…)`, `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryService.filter(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:185` |
-| `InstanceDiscoveryService.takeInventory` | 4 | `TemplateDiscoveryService.collectTemplates`, `InstanceDiscoveryService.flatMap(…)`, `InstanceDiscoveryService.findInstances`, `InstanceDiscoveryService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:225` |
+| `InstanceDiscoveryService.resolveInventoriedInstances` | 4 | `InstanceDiscoveryService.takeInventory`, `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryService.filter(…)`, `InstanceDiscoveryService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:191` |
+| `InstanceDiscoveryService.resolveInventoriedTemplates` | 4 | `InstanceDiscoveryService.takeInventory`, `InstanceDiscoveryService.filter(…)`, `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryService.filter(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:216` |
+| `InstanceDiscoveryService.takeInventory` | 4 | `TemplateDiscoveryService.collectTemplates`, `InstanceDiscoveryService.flatMap(…)`, `InstanceDiscoveryService.findInstances`, `InstanceDiscoveryService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:255` |
+| `assertNoCollisions` | 3 | `findDuplicates`, `findUnusableNames`, `findReservedNames` | `packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:28` |
+| `findReservedNames` | 3 | `map(…)`, `filter(…)`, `map(…)` | `packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:97` |
+| `findUnusableNames` | 3 | `map(…)`, `filter(…)`, `map(…)` | `packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:112` |
 | `InputOptionsService.collectOneInput` | 3 | `InputOptionsService.readOptionName`, `InputOptionsService.resolvePropertyName`, `InputOptionsService.readOptionValue` | `packages/conformetry-configuration/src/modules/input/input-options.service.ts:38` |
 | `InputSchemaService.validateValue` | 3 | `InputSchemaService.validateEnum`, `InputSchemaService.validateLength`, `InputSchemaService.validatePattern` | `packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158` |
-| `InputPromptingService.promptForInput` | 3 | `InputSchemaService.readEnumValues`, `InputPromptingService.map(…)`, `InputSchemaService.readPromptMessage` | `packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:36` |
 | `InstanceDiscoveryMatchingService.matchTemplates` | 3 | `InstanceDiscoveryMatchingService.toSorted(…)`, `InstanceDiscoveryMatchingService.filter(…)`, `InstanceDiscoveryMatchingService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154` |
-| `InstanceDiscoveryService.weighInstance` | 3 | `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryMatchingService.matchTemplates`, `InstanceDiscoveryMatchingService.buildSubstitutions` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:53` |
-| `InstanceDiscoveryService.map(…)` | 3 | `InstanceDiscoveryService.filter(…)`, `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryService.filter(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:115` |
-| `assertNoCollisions` | 2 | `findDuplicates`, `findUnusableHandles` | `packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:26` |
-| `findDuplicates` | 2 | `map(…)`, `filter(…)` | `packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:67` |
-| `flatMap(…)` | 2 | `map(…)`, `filter(…)` | `packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:102` |
+| `InstanceDiscoveryService.weighInstance` | 3 | `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryMatchingService.matchTemplates`, `InstanceDiscoveryMatchingService.buildSubstitutions` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:56` |
+| `InstanceDiscoveryService.map(…)` | 3 | `InstanceDiscoveryService.filter(…)`, `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryService.filter(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:118` |
+| `findDuplicates` | 2 | `map(…)`, `filter(…)` | `packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:62` |
 | `InputSchemaService.readEnumValues` | 2 | `InputSchemaService.readSchemaProperty`, `InputSchemaService.filter(…)` | `packages/conformetry-configuration/src/modules/input/input-schema.service.ts:123` |
-| `InputService.resolveMissingValue` | 2 | `InputPromptingService.promptForInput`, `InputSchemaService.validateValue` | `packages/conformetry-configuration/src/modules/input/input.service.ts:95` |
-| `InputService.parseCommaDelimitedOption` | 2 | `InputService.filter(…)`, `InputService.map(…)` | `packages/conformetry-configuration/src/modules/input/input.service.ts:125` |
-| `InputService.resolveGeneratorInputs` | 2 | `InputOptionsService.collectGeneratorInputs`, `InputService.resolveInputs` | `packages/conformetry-configuration/src/modules/input/input.service.ts:187` |
+| `InputPromptingService.assertCanPrompt` | 2 | `InputPromptingService.isAtTerminal`, `missingInputError` | `packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:50` |
+| `InputPromptingService.promptForTemplates` | 2 | `InputPromptingService.map(…)`, `InputPromptingService.filter(…)` | `packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:144` |
+| `InputService.parseCommaDelimitedOption` | 2 | `InputService.filter(…)`, `InputService.map(…)` | `packages/conformetry-configuration/src/modules/input/input.service.ts:118` |
+| `InputService.resolveGeneratorInputs` | 2 | `InputOptionsService.collectGeneratorInputs`, `InputService.resolveInputs` | `packages/conformetry-configuration/src/modules/input/input.service.ts:180` |
 | `TemplateDiscoveryService.prepareDocument` | 2 | `TemplateDiscoveryService.resolveInstanceFilePath`, `RenderingService.renderContent` | `packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:152` |
-| `findUnusableHandles` | 1 | `flatMap(…)` | `packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:96` |
-| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:99` |
-| `ConfigurationService.resolveConfigurationPath` | 1 | `ConfigurationService.findWorkspaceRoot` | `packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:138` |
+| `InstanceDiscoveryService.flatMap(…)` | 2 | `InstanceDiscoveryService.flatMap(…)`, `InstanceDiscoveryService.readWorkspaceGroups` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:265` |
+| `missingInputError` | 1 | `InputError.constructor` | `packages/conformetry-configuration/src/modules/input/input.constants.ts:65` |
+| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:96` |
+| `ConfigurationService.resolveConfigurationPath` | 1 | `ConfigurationService.findWorkspaceRoot` | `packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:135` |
+| `ConfigurationService.map(…)` | 1 | `ConfigurationService.applyGeneratorDefaults` | `packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:185` |
 | `InputOptionsService.resolvePropertyName` | 1 | `InputOptionsService.find(…)` | `packages/conformetry-configuration/src/modules/input/input-options.service.ts:104` |
 | `InputOptionsService.collectGeneratorInputs` | 1 | `InputOptionsService.collectOneInput` | `packages/conformetry-configuration/src/modules/input/input-options.service.ts:124` |
 | `InputSchemaService.readSchemaProperty` | 1 | `InputSchemaService.find(…)` | `packages/conformetry-configuration/src/modules/input/input-schema.service.ts:26` |
@@ -413,10 +405,13 @@ None.
 | `InputSchemaService.validateLength` | 1 | `InputSchemaService.readSchemaProperty` | `packages/conformetry-configuration/src/modules/input/input-schema.service.ts:53` |
 | `InputSchemaService.validatePattern` | 1 | `InputSchemaService.readSchemaProperty` | `packages/conformetry-configuration/src/modules/input/input-schema.service.ts:85` |
 | `InputSchemaService.readPromptMessage` | 1 | `InputSchemaService.readSchemaProperty` | `packages/conformetry-configuration/src/modules/input/input-schema.service.ts:136` |
-| `InputPromptingService.validate` | 1 | `InputSchemaService.validateValue` | `packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:49` |
-| `InputService.acceptProvidedValue` | 1 | `InputSchemaService.validateValue` | `packages/conformetry-configuration/src/modules/input/input.service.ts:38` |
-| `InputService.parseThresholdOption` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-configuration/src/modules/input/input.service.ts:168` |
-| `InputService.resolveInputsFromValues` | 1 | `InputService.resolveInputs` | `packages/conformetry-configuration/src/modules/input/input.service.ts:203` |
+| `InputPromptingService.validate` | 1 | `InputSchemaService.validateValue` | `packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:105` |
+| `InputPromptingService.promptForTemplate` | 1 | `InputPromptingService.map(…)` | `packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:122` |
+| `InputPromptingService.map(…)` | 1 | `InputPromptingService.describeChoice` | `packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:126` |
+| `InputPromptingService.map(…)` | 1 | `InputPromptingService.describeChoice` | `packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:154` |
+| `InputService.acceptProvidedValue` | 1 | `InputSchemaService.validateValue` | `packages/conformetry-configuration/src/modules/input/input.service.ts:39` |
+| `InputService.parseThresholdOption` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-configuration/src/modules/input/input.service.ts:161` |
+| `InputService.resolveInputsFromValues` | 1 | `InputService.resolveInputs` | `packages/conformetry-configuration/src/modules/input/input.service.ts:195` |
 | `InstanceDiscoveryLocatingService.resolveGlobSuffix` | 1 | `InstanceDiscoveryLocatingService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:73` |
 | `InstanceDiscoveryLocatingService.map(…)` | 1 | `InstanceDiscoveryLocatingService.deriveLocationSubstitutions` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:162` |
 | `TemplateDiscoveryService.collectTemplate` | 1 | `TemplateDiscoveryService.collectFilePaths` | `packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:77` |
@@ -424,21 +419,25 @@ None.
 | `TemplateDiscoveryService.map(…)` | 1 | `TemplateDiscoveryService.collectTemplate` | `packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:101` |
 | `TemplateDiscoveryService.countMatchingFiles` | 1 | `TemplateDiscoveryService.filter(…)` | `packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120` |
 | `TemplateDiscoveryService.filter(…)` | 1 | `TemplateDiscoveryService.resolveInstanceFilePath` | `packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129` |
-| `TemplateDiscoveryService.resolveInstanceFilePath` | 1 | `RenderingService.renderPath` | `packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:177` |
+| `TemplateDiscoveryService.resolveInstanceFilePath` | 1 | `RenderingService.renderPath` | `packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178` |
 | `InstanceDiscoveryMatchingService.buildSubstitutions` | 1 | `RenderingService.buildNameSubstitutions` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:72` |
 | `InstanceDiscoveryMatchingService.map(…)` | 1 | `TemplateDiscoveryService.countMatchingFiles` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160` |
-| `InstanceDiscoveryService.buildSubstitutions` | 1 | `InstanceDiscoveryMatchingService.buildSubstitutions` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:80` |
-| `InstanceDiscoveryService.findInstances` | 1 | `InstanceDiscoveryLocatingService.findInstances` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:87` |
-| `InstanceDiscoveryService.matchInstances` | 1 | `InstanceDiscoveryMatchingService.matchInstances` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:92` |
-| `InstanceDiscoveryService.matchTemplates` | 1 | `InstanceDiscoveryMatchingService.matchTemplates` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:100` |
-| `InstanceDiscoveryService.prepareDocuments` | 1 | `InstanceDiscoveryService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:110` |
-| `InstanceDiscoveryService.map(…)` | 1 | `TemplateDiscoveryService.prepareDocument` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:121` |
-| `InstanceDiscoveryService.resolveInstanceFiles` | 1 | `InstanceDiscoveryService.flatMap(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:136` |
-| `InstanceDiscoveryService.flatMap(…)` | 1 | `InstanceDiscoveryService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:137` |
-| `InstanceDiscoveryService.map(…)` | 1 | `TemplateDiscoveryService.resolveInstanceFilePath` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:138` |
-| `InstanceDiscoveryService.map(…)` | 1 | `InstanceDiscoveryService.filter(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:169` |
-| `InstanceDiscoveryService.map(…)` | 1 | `InstanceDiscoveryService.flatMap(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:197` |
-| `InstanceDiscoveryService.flatMap(…)` | 1 | `InstanceDiscoveryService.find(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:198` |
+| `InstanceDiscoveryMatchingService.toSorted(…)` | 1 | `InstanceDiscoveryMatchingService.compareMatches` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:180` |
+| `InstanceDiscoveryService.buildSubstitutions` | 1 | `InstanceDiscoveryMatchingService.buildSubstitutions` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:83` |
+| `InstanceDiscoveryService.findInstances` | 1 | `InstanceDiscoveryLocatingService.findInstances` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:90` |
+| `InstanceDiscoveryService.matchInstances` | 1 | `InstanceDiscoveryMatchingService.matchInstances` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:95` |
+| `InstanceDiscoveryService.matchTemplates` | 1 | `InstanceDiscoveryMatchingService.matchTemplates` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:103` |
+| `InstanceDiscoveryService.prepareDocuments` | 1 | `InstanceDiscoveryService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:113` |
+| `InstanceDiscoveryService.map(…)` | 1 | `TemplateDiscoveryService.prepareDocument` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:124` |
+| `InstanceDiscoveryService.readWorkspaceGroups` | 1 | `InstanceDiscoveryService.filter(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:158` |
+| `InstanceDiscoveryService.filter(…)` | 1 | `InstanceGroupService.isProjectScoped` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:161` |
+| `InstanceDiscoveryService.resolveInstanceFiles` | 1 | `InstanceDiscoveryService.flatMap(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:167` |
+| `InstanceDiscoveryService.flatMap(…)` | 1 | `InstanceDiscoveryService.map(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:168` |
+| `InstanceDiscoveryService.map(…)` | 1 | `TemplateDiscoveryService.resolveInstanceFilePath` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:169` |
+| `InstanceDiscoveryService.map(…)` | 1 | `InstanceDiscoveryService.filter(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:200` |
+| `InstanceDiscoveryService.map(…)` | 1 | `InstanceDiscoveryService.flatMap(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:228` |
+| `InstanceDiscoveryService.flatMap(…)` | 1 | `InstanceDiscoveryService.find(…)` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:229` |
+| `InstanceDiscoveryService.map(…)` | 1 | `InstanceDiscoveryService.weighInstance` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:277` |
 
 </details>
 

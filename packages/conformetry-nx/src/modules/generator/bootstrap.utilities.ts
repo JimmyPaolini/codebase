@@ -12,18 +12,19 @@ import {
 } from "node:fs";
 import path from "node:path";
 
-import {
-  DEFAULT_OUTPUT_PATH,
-  DEFAULT_PACKAGE_NAME,
-} from "./modules/generator/generator.constants";
-import { NX_CONFIGURATION_FILENAME } from "./modules/options/options.constants";
+import { NX_CONFIGURATION_FILENAME } from "../options/options.constants";
 import {
   resolveGeneratorService,
   resolveOptionsService,
   resolveProjectsService,
-} from "./plugin-context.utilities";
+} from "../plugin/plugin-context.utilities";
 
-import type { EmittedFile } from "./modules/generator/generator.types";
+import {
+  DEFAULT_OUTPUT_PATH,
+  DEFAULT_PACKAGE_NAME,
+} from "./generator.constants";
+
+import type { EmittedFile } from "./generator.types";
 
 /**
  * Emits the generator plugin and puts it where Nx will find it.

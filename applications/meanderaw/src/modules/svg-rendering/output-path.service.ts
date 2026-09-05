@@ -5,6 +5,7 @@ import { UNMODIFIED_VARIANT_NAME } from "./svg-rendering.constants";
 import type {
   GenerationParameters,
   MeanderType,
+  Modifier,
 } from "../meander-generation/meander-generation.types";
 
 /**
@@ -60,19 +61,47 @@ export class OutputPathService {
       return `${UNMODIFIED_VARIANT_NAME}-${suffix}`;
     }
 
+    return `${this.modifierSlug(modifier)}-${suffix}`;
+  }
+
+  /**
+   * What one modifier is called in a filename: its own name, and the
+   * parameter it carries where it carries one.
+   *
+   * A parameter-carrying modifier has to say its parameter here, or the
+   * sweep's own values would collide on one path and `CollidingPathsError`
+   * would fire rather than a drawing being written. Two spellings, and which
+   * one a modifier takes is decided by whether the value reads on its own:
+   * `dot`'s shapes and `comb`'s and `rung`'s directions are words, so they
+   * follow the name unadorned, while a bare number would say nothing — so
+   * `alternated`, `plied`, and `stagger` name their parameter before it.
+   */
+  private modifierSlug(modifier: Modifier): string {
     if (modifier.name === "alternated") {
-      return `alternated-period-${modifier.period}-${suffix}`;
+      return `alternated-period-${modifier.period}`;
+    }
+
+    if (modifier.name === "comb") {
+      return `comb-${modifier.isUpward ? "upward" : "downward"}`;
     }
 
     if (modifier.name === "dot") {
-      return `dot-${modifier.shape}-${suffix}`;
+      return `dot-${modifier.shape}`;
     }
 
     if (modifier.name === "plied") {
-      return `plied-strands-${modifier.strands}-${suffix}`;
+      return `plied-strands-${modifier.strands}`;
     }
 
-    return `${modifier.name}-${suffix}`;
+    if (modifier.name === "rung") {
+      return `rung-${modifier.isLeftward ? "leftward" : "rightward"}`;
+    }
+
+    if (modifier.name === "stagger") {
+      return `stagger-branches-${modifier.branches}`;
+    }
+
+    return modifier.name;
   }
 
   // 🌎 Public Methods

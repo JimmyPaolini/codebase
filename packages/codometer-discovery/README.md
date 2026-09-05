@@ -14,7 +14,7 @@ Call stacks traced through `packages/codometer-discovery`, deepest first. Each f
 | --- | --- |
 | Callables | 49 |
 | Files | 14 |
-| Calls traced | 57 |
+| Calls traced | 58 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
@@ -32,22 +32,22 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `TargetsService.matchFiles` | 7 | `TargetsService.findBoundary`, `TargetsService.sitsInsideBoundary`, `TargetOutsideRepositoryError.constructor`, `TargetsService.readTargetPrefix`, `TargetsService.walk`, `TargetsService.map(…)`, `TargetsService.map(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:279` |
+| `TargetsService.matchFiles` | 7 | `TargetsService.findBoundary`, `TargetsService.sitsInsideBoundary`, `TargetOutsideRepositoryError.constructor`, `TargetsService.readTargetPrefix`, `TargetsService.walk`, `TargetsService.map(…)`, `TargetsService.map(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:282` |
 | `DiscoveryService.categorize` | 6 | `DiscoveryService.filter(…)`, `DiscoveryService.filterByExtension`, `DiscoveryService.filter(…)`, `DiscoveryService.filter(…)`, `DiscoveryService.filter(…)`, `DiscoveryService.filter(…)` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:285` |
 | `DiscoveryService.walkDirectory` | 4 | `DiscoveryService.readDirectoryEntries`, `DiscoveryService.applyDirectoryIgnoreFile`, `DiscoveryService.walkSubdirectory`, `DiscoveryService.isIgnoredPath` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:217` |
 
 <details>
-<summary>18 more callables</summary>
+<summary>19 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `TargetsService.walk` | 4 | `TargetsService.readEntries`, `TargetsService.resolveEntryKind`, `TargetsService.canDescend`, `TargetsService.isMatched` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:236` |
+| `TargetsService.walk` | 4 | `TargetsService.readEntries`, `TargetsService.resolveEntryKind`, `TargetsService.canDescend`, `TargetsService.isMatched` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:239` |
 | `DiscoveryService.listDiscoveredFiles` | 3 | `DiscoveryService.walkDirectory`, `DiscoveryService.readExcludeFromScopes`, `DiscoveryService.filter(…)` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:145` |
 | `DiscoveryService.walkSubdirectory` | 3 | `DiscoveryService.isExhaustivelyExcluded`, `DiscoveryService.isIgnoredPath`, `DiscoveryService.walkDirectory` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:261` |
 | `DiscoveryService.discoverFiles` | 2 | `DiscoveryService.categorize`, `DiscoveryService.listDiscoveredFiles` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:317` |
-| `TargetsService.canDescend` | 2 | `TargetsService.isHidden`, `TargetsService.some(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:47` |
-| `TargetsService.some(…)` | 2 | `TargetsService.leadsToBase`, `TargetsService.sitsInsideBase` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:53` |
-| `TargetsService.isMatched` | 2 | `TargetsService.some(…)`, `TargetsService.some(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:123` |
+| `TargetsService.canDescend` | 2 | `TargetsService.isHidden`, `TargetsService.some(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:50` |
+| `TargetsService.some(…)` | 2 | `TargetsService.leadsToBase`, `TargetsService.sitsInsideBase` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:56` |
+| `TargetsService.isMatched` | 2 | `TargetsService.some(…)`, `TargetsService.some(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:126` |
 | `IgnoreRulesService.isIgnored` | 1 | `IgnoreRulesService.toScopedPath` | `packages/codometer-discovery/src/modules/discovery/ignore-rules.service.ts:84` |
 | `IgnoreRulesService.readScope` | 1 | `IgnoreRulesService.createScope` | `packages/codometer-discovery/src/modules/discovery/ignore-rules.service.ts:115` |
 | `DiscoveryService.applyDirectoryIgnoreFile` | 1 | `IgnoreRulesService.readScope` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:59` |
@@ -57,8 +57,9 @@ None.
 | `DiscoveryService.isIgnoredPath` | 1 | `IgnoreRulesService.isIgnored` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:128` |
 | `DiscoveryService.filter(…)` | 1 | `DiscoveryService.isExcluded` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:155` |
 | `DiscoveryService.readExcludeFromScopes` | 1 | `IgnoreRulesService.readScope` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:187` |
-| `TargetsService.findBoundary` | 1 | `TargetsService.some(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:69` |
-| `TargetsService.resolveEntryKind` | 1 | `TargetsService.isLinkedFile` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:181` |
+| `TargetsService.findBoundary` | 1 | `TargetsService.some(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:72` |
+| `TargetsService.resolveEntryKind` | 1 | `TargetsService.isLinkedFile` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:184` |
+| `TargetsService.map(…)` | 1 | `TargetsService.toIncludeBase` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:300` |
 
 </details>
 

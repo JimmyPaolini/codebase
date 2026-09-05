@@ -22,3 +22,12 @@ notepads/
 # configuration instead, gated on report freshness rather than depth:
 # `nx run callidescope-examples:callidescope`.
 packages/callidescope-examples/
+
+# The codependix examples package's deliberately unreadable project. Its
+# `tsconfig.json` names a compiler target TypeScript rejects, which is the
+# whole point of it — it is the fixture behind codependix's TypeScript
+# resolution failure example, and repairing it would delete the only place
+# that failure is demonstrated. Named here so callidescope never opens it:
+# reading a project's configuration is what fails, so a project has to be
+# excluded before discovery rather than after.
+packages/codependix-examples/examples/typescript-resolution/broken/

@@ -138,61 +138,15 @@ Call stacks traced through `packages/codependix-imports`, deepest first. Each fr
 | --- | --- |
 | Callables | 84 |
 | Files | 19 |
-| Calls traced | 71 |
-| Call stacks | 4 |
-| Deepest stack | 5 |
+| Calls traced | 83 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 1 |
 
 ### Call stacks (depth)
 
-**1. `PythonImportGraphService.collectEdgesForFile`** — depth 5 · orphan-root
-
-```text
-🚀 PythonImportGraphService.collectEdgesForFile(…): PythonImportGraphEdge[] [packages/codependix-imports/src/modules/python/python-import-graph.service.ts:64]
-   ↳ Collects every internal import edge one source file declares.
-  └─> PythonImportParserService.parseImportSpecifiers(source: string): PythonImportSpecifier[] [packages/codependix-imports/src/modules/python/python-import-parser.service.ts:158]
-     ↳ Parses every module-level import statement in a Python source file.
-    └─> PythonImportParserService.parseStatement(statement: string): PythonImportSpecifier[] [packages/codependix-imports/src/modules/python/python-import-parser.service.ts:126]
-       ↳ Parses one joined statement into the module(s) it names.
-      └─> PythonImportParserService.parseImportStatement(statement: string): PythonImportSpecifier[] [packages/codependix-imports/src/modules/python/python-import-parser.service.ts:105]
-         ↳ Parses a joined `import <specifiers>` statement.
-        └─> PythonImportParserService.map(…)(modulePath: string): { level: number; modulePath: string; } [packages/codependix-imports/src/modules/python/python-import-parser.service.ts:122]
-```
-
-**2. `TypescriptImportGraphService.collectEdgesForFile`** — depth 3 · orphan-root
-
-```text
-🚀 TypescriptImportGraphService.collectEdgesForFile(…): TypescriptImportGraphEdge[] [packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:49]
-   ↳ Collects every internal import edge one source file declares.
-  └─> TypescriptImportGraphService.resolveImportTarget(…): string | undefined [packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:136]
-     ↳ Resolves an import specifier to a real, absolute file path.
-    └─> TypescriptProjectService.toRealPath(filePath: string): string [packages/codependix-imports/src/modules/typescript/typescript-project.service.ts:120]
-       ↳ Resolves a path through symlinks, which is how pnpm workspaces link.
-```
-
-**3. `PythonImportGraphService.renderNode`** — depth 2 · orphan-root
-
-```text
-🚀 PythonImportGraphService.renderNode(fileName: string): string [packages/codependix-imports/src/modules/python/python-import-graph.service.ts:120]
-   ↳ Renders one file as a mermaid node, labelled with its relative path.
-  └─> PythonImportGraphService.toNodeIdentifier(fileName: string): string [packages/codependix-imports/src/modules/python/python-import-graph.service.ts:162]
-     ↳ Turns a relative file path into an identifier mermaid accepts.
-```
-
-<details>
-<summary>1 more call stacks</summary>
-
-**4. `TypescriptImportGraphService.renderNode`** — depth 2 · orphan-root
-
-```text
-🚀 TypescriptImportGraphService.renderNode(fileName: string): string [packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:131]
-   ↳ Renders one file as a mermaid node, labelled with its relative path.
-  └─> TypescriptImportGraphService.toNodeIdentifier(fileName: string): string [packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:167]
-     ↳ Turns a relative file path into an identifier mermaid accepts.
-```
-
-</details>
+None.
 
 ### Module spread
 
@@ -207,35 +161,47 @@ None.
 | `PythonImportParserService.parseImportStatement` | 3 | `PythonImportParserService.map(…)`, `PythonImportParserService.filter(…)`, `PythonImportParserService.map(…)` | `packages/codependix-imports/src/modules/python/python-import-parser.service.ts:105` |
 
 <details>
-<summary>30 more callables</summary>
+<summary>42 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `PythonImportParserService.parseImportSpecifiers` | 3 | `PythonImportParserService.isTopLevelImportStart`, `PythonImportParserService.collectStatement`, `PythonImportParserService.parseStatement` | `packages/codependix-imports/src/modules/python/python-import-parser.service.ts:158` |
 | `PythonImportGraphService.collectEdgesForFile` | 3 | `PythonImportParserService.parseImportSpecifiers`, `PythonImportGraphService.resolveSpecifierPath`, `PythonImportGraphService.toRelativePath` | `packages/codependix-imports/src/modules/python/python-import-graph.service.ts:64` |
-| `TypescriptProjectService.parseConfiguration` | 3 | `TypescriptProjectService.readJsonConfigFile(…)`, `TypescriptProjectConfigurationError.constructor`, `TypescriptProjectService.map(…)` | `packages/codependix-imports/src/modules/typescript/typescript-project.service.ts:49` |
+| `TypescriptProjectService.parseConfiguration` | 3 | `TypescriptProjectService.readJsonConfigFile(…)`, `TypescriptProjectConfigurationError.constructor`, `TypescriptProjectService.map(…)` | `packages/codependix-imports/src/modules/typescript/typescript-project.service.ts:51` |
 | `TypescriptImportGraphService.listOwnedSourceFileNames` | 3 | `TypescriptImportGraphService.toSorted(…)`, `TypescriptImportGraphService.filter(…)`, `TypescriptImportGraphService.resolveOwnedFileNames` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:122` |
 | `PythonImportParserService.collectStatement` | 2 | `PythonImportParserService.stripComment`, `PythonImportParserService.countCharacter` | `packages/codependix-imports/src/modules/python/python-import-parser.service.ts:42` |
 | `PythonImportParserService.isTopLevelImportStart` | 2 | `PythonImportParserService.measureIndent`, `PythonImportParserService.stripComment` | `packages/codependix-imports/src/modules/python/python-import-parser.service.ts:79` |
 | `PythonImportParserService.parseStatement` | 2 | `PythonImportParserService.parseFromStatement`, `PythonImportParserService.parseImportStatement` | `packages/codependix-imports/src/modules/python/python-import-parser.service.ts:126` |
-| `PythonProjectService.discoverProjects` | 2 | `PythonProjectService.map(…)`, `PythonProjectService.filter(…)` | `packages/codependix-imports/src/modules/python/python-project.service.ts:70` |
-| `PythonProjectService.listSourceFileNames` | 2 | `PythonProjectService.toSorted(…)`, `PythonProjectService.listSourceFilesInDirectory` | `packages/codependix-imports/src/modules/python/python-project.service.ts:89` |
+| `PythonProjectService.discoverProjects` | 2 | `PythonProjectService.map(…)`, `PythonProjectService.filter(…)` | `packages/codependix-imports/src/modules/python/python-project.service.ts:69` |
+| `PythonProjectService.listSourceFileNames` | 2 | `PythonProjectService.toSorted(…)`, `PythonProjectService.listSourceFilesInDirectory` | `packages/codependix-imports/src/modules/python/python-project.service.ts:85` |
 | `PythonImportGraphService.renderMermaid` | 2 | `PythonImportGraphService.map(…)`, `PythonImportGraphService.map(…)` | `packages/codependix-imports/src/modules/python/python-import-graph.service.ts:207` |
-| `TypescriptProjectService.discoverProjects` | 2 | `TypescriptProjectService.map(…)`, `TypescriptProjectService.filter(…)` | `packages/codependix-imports/src/modules/typescript/typescript-project.service.ts:105` |
+| `TypescriptProjectService.discoverProjects` | 2 | `TypescriptProjectService.map(…)`, `TypescriptProjectService.filter(…)` | `packages/codependix-imports/src/modules/typescript/typescript-project.service.ts:107` |
 | `TypescriptImportGraphService.collectEdgesForFile` | 2 | `TypescriptImportGraphService.resolveImportTarget`, `TypescriptImportGraphService.toRelativePath` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:49` |
 | `TypescriptImportGraphService.renderMermaid` | 2 | `TypescriptImportGraphService.map(…)`, `TypescriptImportGraphService.map(…)` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:215` |
+| `PythonProjectService.filter(…)` | 1 | `PythonProjectService.isPythonProject` | `packages/codependix-imports/src/modules/python/python-project.service.ts:73` |
+| `PythonProjectService.map(…)` | 1 | `PythonProjectService.describeProject` | `packages/codependix-imports/src/modules/python/python-project.service.ts:74` |
 | `PythonImportGraphService.dedupeEdges` | 1 | `PythonImportGraphService.toSorted(…)` | `packages/codependix-imports/src/modules/python/python-import-graph.service.ts:107` |
+| `PythonImportGraphService.toSorted(…)` | 1 | `PythonImportGraphService.compareEdges` | `packages/codependix-imports/src/modules/python/python-import-graph.service.ts:114` |
 | `PythonImportGraphService.renderNode` | 1 | `PythonImportGraphService.toNodeIdentifier` | `packages/codependix-imports/src/modules/python/python-import-graph.service.ts:120` |
 | `PythonImportGraphService.resolveSpecifierPath` | 1 | `PythonImportGraphService.ascendDirectories` | `packages/codependix-imports/src/modules/python/python-import-graph.service.ts:133` |
+| `PythonImportGraphService.flatMap(…)` | 1 | `PythonImportGraphService.collectEdgesForFile` | `packages/codependix-imports/src/modules/python/python-import-graph.service.ts:185` |
+| `PythonImportGraphService.map(…)` | 1 | `PythonImportGraphService.toRelativePath` | `packages/codependix-imports/src/modules/python/python-import-graph.service.ts:193` |
+| `PythonImportGraphService.map(…)` | 1 | `PythonImportGraphService.renderNode` | `packages/codependix-imports/src/modules/python/python-import-graph.service.ts:215` |
 | `PythonImportGraphService.map(…)` | 1 | `PythonImportGraphService.toNodeIdentifier` | `packages/codependix-imports/src/modules/python/python-import-graph.service.ts:217` |
-| `PythonService.buildGraph` | 1 | `PythonImportGraphService.buildGraph` | `packages/codependix-imports/src/modules/python/python.service.ts:40` |
-| `PythonService.discoverProjects` | 1 | `PythonProjectService.discoverProjects` | `packages/codependix-imports/src/modules/python/python.service.ts:48` |
-| `PythonService.renderMermaid` | 1 | `PythonImportGraphService.renderMermaid` | `packages/codependix-imports/src/modules/python/python.service.ts:56` |
-| `TypescriptProjectService.buildProgram` | 1 | `TypescriptProjectService.parseConfiguration` | `packages/codependix-imports/src/modules/typescript/typescript-project.service.ts:76` |
+| `PythonService.buildGraph` | 1 | `PythonImportGraphService.buildGraph` | `packages/codependix-imports/src/modules/python/python.service.ts:39` |
+| `PythonService.discoverProjects` | 1 | `PythonProjectService.discoverProjects` | `packages/codependix-imports/src/modules/python/python.service.ts:47` |
+| `PythonService.renderMermaid` | 1 | `PythonImportGraphService.renderMermaid` | `packages/codependix-imports/src/modules/python/python.service.ts:54` |
+| `TypescriptProjectService.buildProgram` | 1 | `TypescriptProjectService.parseConfiguration` | `packages/codependix-imports/src/modules/typescript/typescript-project.service.ts:78` |
+| `TypescriptProjectService.map(…)` | 1 | `TypescriptProjectService.describeProject` | `packages/codependix-imports/src/modules/typescript/typescript-project.service.ts:116` |
 | `TypescriptImportGraphService.dedupeEdges` | 1 | `TypescriptImportGraphService.toSorted(…)` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:100` |
+| `TypescriptImportGraphService.toSorted(…)` | 1 | `TypescriptImportGraphService.compareEdges` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:109` |
 | `TypescriptImportGraphService.renderNode` | 1 | `TypescriptImportGraphService.toNodeIdentifier` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:131` |
 | `TypescriptImportGraphService.resolveImportTarget` | 1 | `TypescriptProjectService.toRealPath` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:136` |
 | `TypescriptImportGraphService.resolveOwnedFileNames` | 1 | `TypescriptImportGraphService.map(…)` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:156` |
+| `TypescriptImportGraphService.map(…)` | 1 | `TypescriptProjectService.toRealPath` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:162` |
+| `TypescriptImportGraphService.flatMap(…)` | 1 | `TypescriptImportGraphService.collectEdgesForFile` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:189` |
+| `TypescriptImportGraphService.map(…)` | 1 | `TypescriptImportGraphService.toRelativePath` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:201` |
+| `TypescriptImportGraphService.map(…)` | 1 | `TypescriptImportGraphService.renderNode` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:223` |
 | `TypescriptImportGraphService.map(…)` | 1 | `TypescriptImportGraphService.toNodeIdentifier` | `packages/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:225` |
 | `TypescriptService.buildGraph` | 1 | `TypescriptImportGraphService.buildGraph` | `packages/codependix-imports/src/modules/typescript/typescript.service.ts:44` |
 | `TypescriptService.buildProgram` | 1 | `TypescriptProjectService.buildProgram` | `packages/codependix-imports/src/modules/typescript/typescript.service.ts:49` |

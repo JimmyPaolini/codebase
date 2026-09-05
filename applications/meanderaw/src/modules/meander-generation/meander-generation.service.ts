@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { MINIMUM_STAGGER_BRANCHES } from "../branch-motif/branch-motif.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
@@ -13,6 +14,7 @@ import {
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
   InvalidRowsError,
+  InvalidStaggerBranchCountError,
   InvalidStrandCountError,
   InvalidSubFamilyError,
   MAXIMUM_VALUE,
@@ -232,6 +234,38 @@ export class MeanderGenerationService {
   }
 
   /**
+   * Throws {@link InvalidStaggerBranchCountError} when `stagger`'s
+   * `branches` isn't a whole number between
+   * {@link MINIMUM_STAGGER_BRANCHES} and {@link MAXIMUM_VALUE}.
+   *
+   * The lower bound is the family's own rather than the command line's: a
+   * two-branch run has no tooth strictly inside it, so the mode stops
+   * forking and the drawing degenerates from a spanning tree into a simple
+   * path — which would fail the charter relaxation `branch` declares. The
+   * upper bound is the shared one, the same as `alternated`'s `period`,
+   * because nothing structural fails above it.
+   */
+  private validateStaggerBranches(modifier: Modifier | undefined): void {
+    if (modifier?.name !== "stagger") {
+      return;
+    }
+
+    const { branches } = modifier;
+
+    if (
+      !Number.isInteger(branches) ||
+      branches < MINIMUM_STAGGER_BRANCHES ||
+      branches > MAXIMUM_VALUE
+    ) {
+      throw new InvalidStaggerBranchCountError(
+        branches,
+        MINIMUM_STAGGER_BRANCHES,
+        MAXIMUM_VALUE,
+      );
+    }
+  }
+
+  /**
    * Throws {@link InvalidStrandCountError} when `plied`'s `strands` isn't a
    * whole number between {@link MINIMUM_STRANDS} and the drawing's own row
    * count.
@@ -277,6 +311,7 @@ export class MeanderGenerationService {
     this.validateModifier(parameters.type, parameters.modifier);
     this.validatePeriod(parameters.modifier);
     this.validateModifierCycle(parameters.modifier, parameters.repeatCount);
+    this.validateStaggerBranches(parameters.modifier);
     this.validateStrands(parameters.modifier, parameters.rows);
 
     const geometry = this.gridGeometryService.compute(parameters.rows);

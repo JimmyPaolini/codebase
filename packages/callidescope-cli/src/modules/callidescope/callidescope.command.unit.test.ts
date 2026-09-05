@@ -5,6 +5,7 @@ import {
   InputError,
   InputService,
 } from "@callidescope/configuration";
+import { ProgramConfigurationError } from "@callidescope/graph";
 import {
   MarkdownReportService,
   MermaidReportService,
@@ -74,6 +75,20 @@ function buildConfiguration(
       rootModuleSegment: "src",
     },
     ...overrides,
+  };
+}
+
+/** Builds the summary of a run that collected nothing at all. */
+function buildEmptySummary(): CallGraphResult["summary"] {
+  return {
+    callableCount: 0,
+    cyclicComponentCount: 0,
+    edgeCount: 0,
+    entryPointCount: 0,
+    fileCount: 0,
+    maximumDepth: 0,
+    projectCount: 0,
+    unresolvedCallCount: 0,
   };
 }
 
@@ -739,6 +754,87 @@ describe(CallidescopeCommand, () => {
 
     expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
     expect(process.exitCode).toBeUndefined();
+  });
+
+  // 🕳️ A run that traced nothing
+
+  it("fails a run that collected no callables at all", async () => {
+    // What an aborted trace looks like from here, and what used to exit 0:
+    // the whole workspace produced nothing, so every gate above passed for
+    // having nothing to judge.
+    stubTrace(buildCallGraphResult({ summary: buildEmptySummary() }));
+
+    await command.run([], { check: "depth" });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("names an empty trace as its own finding", async () => {
+    stubTrace(buildCallGraphResult({ summary: buildEmptySummary() }));
+
+    await command.run([], { check: "depth" });
+
+    expect(logger.error).toHaveBeenCalledWith("🔭 Traced nothing", undefined, {
+      projectCount: 0,
+    });
+  });
+
+  it("fails a run that traced nothing even when no check was asked for", async () => {
+    // Not something `--check` turns on: a bare `--write` that traced nothing
+    // would otherwise publish an empty report over a real one.
+    stubTrace(buildCallGraphResult({ summary: buildEmptySummary() }));
+
+    await command.run([], {});
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  // 🚧 A project that could not be read
+
+  /** Points the trace at a project whose configuration will not parse. */
+  function stubUnreadableProject(): void {
+    callidescopeService.trace.mockImplementation(() => {
+      throw new ProgramConfigurationError({
+        configurationPath: "packages/broken/tsconfig.json",
+        messages: ["Argument for '--target' option must be: 'es6'"],
+      });
+    });
+  }
+
+  it("fails a run whose trace hit a project it could not read", async () => {
+    stubUnreadableProject();
+
+    await command.run([], { check: "depth" });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("names the project it could not read", async () => {
+    stubUnreadableProject();
+
+    await command.run([], {});
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected a project it could not read",
+      undefined,
+      {
+        reason:
+          "Could not read packages/broken/tsconfig.json: Argument for '--target' option must be: 'es6'",
+      },
+    );
+  });
+
+  it("writes no destination when a project could not be read", async () => {
+    // The whole reason this ends the trace rather than stepping over it:
+    // destinations are written before findings are weighed, so a partial
+    // graph would be published and only then reported as a failure.
+    configureJsonDestination();
+    stubUnreadableProject();
+
+    await command.run([], { write: true });
+
+    expect(outputJsonService.sync).not.toHaveBeenCalled();
+    expect(process.exitCode).toBe(1);
   });
 
   it("reads no destination when only depth is checked", async () => {

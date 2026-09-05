@@ -87,17 +87,22 @@ Call stacks traced through `packages/codependix-configuration`, deepest first. E
 
 | Measure | Value |
 | --- | --- |
-| Callables | 18 |
-| Files | 8 |
-| Calls traced | 19 |
-| Call stacks | 0 |
-| Deepest stack | 0 |
+| Callables | 40 |
+| Files | 12 |
+| Calls traced | 38 |
+| Call stacks | 1 |
+| Deepest stack | 2 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 2 |
+| Unfollowable calls | 3 |
 
 ### Call stacks (depth)
 
-None.
+**1. `refine(…)`** — depth 2 · orphan-root
+
+```text
+🚀 refine(…)(…): boolean [packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:104]
+  └─> some(…)(value: string[] | undefined): value is string[] [packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:104]
+```
 
 ### Module spread
 
@@ -107,20 +112,32 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:229` |
-| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findWorkspaceRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:151` |
-| `ConfigurationService.resolveForProject` | 2 | `ConfigurationService.isProjectIncluded`, `ConfigurationService.resolveGraphOutput` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:289` |
+| `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:325` |
+| `InputService.promptForSelect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.find(…)` | `packages/codependix-configuration/src/modules/input/input.service.ts:75` |
+| `ConfigurationService.isProjectNamedOnCommandLine` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:119` |
 
 <details>
-<summary>5 more callables</summary>
+<summary>17 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.findWorkspaceRoot` | 1 | `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:89` |
-| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.readDefaultExport` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:113` |
-| `ConfigurationService.matchesAnyGlob` | 1 | `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:129` |
-| `ConfigurationService.isProjectIncluded` | 1 | `ConfigurationService.matchesAnyGlob` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:204` |
-| `ConfigurationService.resolveForWorkspace` | 1 | `ConfigurationService.resolveGraphOutput` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:311` |
+| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findWorkspaceRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:202` |
+| `ConfigurationService.splitSelectionArgument` | 2 | `ConfigurationService.filter(…)`, `ConfigurationService.map(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:260` |
+| `ConfigurationService.isProjectIncluded` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.isProjectNamedOnCommandLine` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:282` |
+| `ConfigurationService.resolveConfiguration` | 2 | `ConfigurationService.resolveBoundaries`, `ConfigurationService.resolveSelection` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:362` |
+| `ConfigurationService.resolveForProject` | 2 | `ConfigurationService.isProjectIncluded`, `ConfigurationService.resolveGraphOutput` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:390` |
+| `refine(…)` | 1 | `some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:104` |
+| `ConfigurationService.findWorkspaceRoot` | 1 | `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:95` |
+| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.readDefaultExport` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:134` |
+| `ConfigurationService.matchesAnyGlob` | 1 | `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:150` |
+| `ConfigurationService.matchesAnyName` | 1 | `ConfigurationService.matchesAnyGlob` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:155` |
+| `ConfigurationService.resolveSelection` | 1 | `ConfigurationService.splitSelectionArgument` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:250` |
+| `ConfigurationService.isProjectSelected` | 1 | `ConfigurationService.isProjectNamedOnCommandLine` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:307` |
+| `ConfigurationService.resolveForWorkspace` | 1 | `ConfigurationService.resolveGraphOutput` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:424` |
+| `missingInputError` | 1 | `InputError.constructor` | `packages/codependix-configuration/src/modules/input/input.constants.ts:29` |
+| `promptCancelledError` | 1 | `InputError.constructor` | `packages/codependix-configuration/src/modules/input/input.constants.ts:41` |
+| `InputService.assertCanPrompt` | 1 | `missingInputError` | `packages/codependix-configuration/src/modules/input/input.service.ts:38` |
+| `InputService.parsePathOption` | 1 | `InputService.parseOptionalOption` | `packages/codependix-configuration/src/modules/input/input.service.ts:70` |
 
 </details>
 

@@ -543,24 +543,82 @@ Call stacks traced through `packages/conformetry-cli`, deepest first. Each frame
 
 | Measure | Value |
 | --- | --- |
-| Callables | 38 |
-| Files | 23 |
-| Calls traced | 40 |
-| Call stacks | 15 |
-| Deepest stack | 10 |
+| Callables | 59 |
+| Files | 24 |
+| Calls traced | 72 |
+| Call stacks | 16 |
+| Deepest stack | 14 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 4 |
 
 ### Call stacks (depth)
 
-**1. `ValidateCommand.run`** — depth ≥ 10 · decorated-method
+**1. `InstancesCommand.run`** — depth ≥ 14 · decorated-method
 
 ```text
-🚀 ValidateCommand.run(_passedParameters: string[], options: ValidateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/validate/validate.command.ts:152]
+🚀 InstancesCommand.run(_passedParameters: string[], options: InstancesCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/instances/instances.command.ts:90]
+   ↳ Writes every instance found, filtered to the given templates.
+  └─> InstanceDiscoveryService.resolveInventoriedInstances(args: ResolveInventoryArguments): InventoriedInstance[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:191]
+     ↳ Lists every instance found, paired with the templates that explain it. `templateNames` narrows the pairing rather than…
+    └─> InstanceDiscoveryService.takeInventory(…): { templates: TemplateDefinition[]; weighed: { instance: Instance; pairings: InventoriedPairing[]; }[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:255]
+       ↳ Weighs every instance the globs find against every declared template.
+      └─> InstanceDiscoveryService.map(…)(instance: Instance): { instance: Instance; pairings: InventoriedPairing[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:277]
+        └─> InstanceDiscoveryService.weighInstance(…): { instance: Instance; pairings: InventoriedPairing[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:56]
+           ↳ Weighs one instance against every template, best fit first.
+          └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
+             ↳ Weighs every template that shares at least one file with the instance, best-first.
+            └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
+              └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
+                 ↳ Counts how many of a template's files the instance path already has.
+                └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
+                  └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+                     ↳ Maps a template file path to the instance file path it governs.
+                    └─> RenderingService.renderPath(…): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:142]
+                       ↳ Renders a template path with mustache, the same way contents are rendered.
+                      └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:35]
+                         ↳ Refuses to render a template asking for a value nobody supplied.
+                        └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:61]
+                           ↳ Every placeholder a template interpolates, deduplicated.
+                          └─> RenderingService.walk(spans: TemplateSpans): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:63]
+```
+
+**2. `TemplatesCommand.run`** — depth ≥ 14 · decorated-method
+
+```text
+🚀 TemplatesCommand.run(_passedParameters: string[], options: TemplatesCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/templates/templates.command.ts:91]
+   ↳ Writes every declared template, filtered to the given instances.
+  └─> InstanceDiscoveryService.resolveInventoriedTemplates(args: ResolveInventoryArguments): InventoriedTemplate[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:216]
+     ↳ Lists every template declared, paired with the instances it explains. `instancePatterns` narrows which instances are…
+    └─> InstanceDiscoveryService.takeInventory(…): { templates: TemplateDefinition[]; weighed: { instance: Instance; pairings: InventoriedPairing[]; }[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:255]
+       ↳ Weighs every instance the globs find against every declared template.
+      └─> InstanceDiscoveryService.map(…)(instance: Instance): { instance: Instance; pairings: InventoriedPairing[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:277]
+        └─> InstanceDiscoveryService.weighInstance(…): { instance: Instance; pairings: InventoriedPairing[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:56]
+           ↳ Weighs one instance against every template, best fit first.
+          └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
+             ↳ Weighs every template that shares at least one file with the instance, best-first.
+            └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
+              └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
+                 ↳ Counts how many of a template's files the instance path already has.
+                └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
+                  └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+                     ↳ Maps a template file path to the instance file path it governs.
+                    └─> RenderingService.renderPath(…): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:142]
+                       ↳ Renders a template path with mustache, the same way contents are rendered.
+                      └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:35]
+                         ↳ Refuses to render a template asking for a value nobody supplied.
+                        └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:61]
+                           ↳ Every placeholder a template interpolates, deduplicated.
+                          └─> RenderingService.walk(spans: TemplateSpans): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:63]
+```
+
+**3. `ValidateCommand.run`** — depth ≥ 13 · decorated-method
+
+```text
+🚀 ValidateCommand.run(_passedParameters: string[], options: ValidateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/validate/validate.command.ts:372]
    ↳ Runs validation and reports every difference found.
   └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:132]
      ↳ Validates every instance and returns the differences found.
-    └─> InstanceDiscoveryService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:92]
+    └─> InstanceDiscoveryService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:95]
        ↳ Resolves every instance to the template, or templates, that explain it.
       └─> InstanceDiscoveryMatchingService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:93]
          ↳ Resolves every instance to the template — or templates — that explain it.
@@ -570,71 +628,42 @@ Call stacks traced through `packages/conformetry-cli`, deepest first. Each frame
             └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
                ↳ Counts how many of a template's files the instance path already has.
               └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
-                └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:177]
+                └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
                    ↳ Maps a template file path to the instance file path it governs.
-                  └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
+                  └─> RenderingService.renderPath(…): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:142]
                      ↳ Renders a template path with mustache, the same way contents are rendered.
-```
-
-**2. `GenerateCommand.run`** — depth ≥ 9 · decorated-method
-
-```text
-🚀 GenerateCommand.run(passedParameters: string[], options: GenerateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/generate/generate.command.ts:108]
-   ↳ Resolves the generator's inputs and writes its files.
-  └─> InputService.resolveGeneratorInputs(args: ResolveGeneratorInputsArguments): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:187]
-     ↳ Resolves generator inputs from raw command-line arguments.
-    └─> InputService.resolveInputs(…): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:52]
-       ↳ Walks a schema, taking each value from the resolver or a prompt.
-      └─> InputService.acceptProvidedValue(args: { input: SchemaInput; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:38]
-         ↳ Validates a value the caller already had, throwing if it is invalid.
-        └─> InputSchemaService.validateValue(args: { input: SchemaInput; value: unknown; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158]
-           ↳ Validates a value, returning `true` or the reason it failed.
-          └─> InputSchemaService.validateEnum(args: { input: SchemaInput; value: string; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:39]
-             ↳ Validates a value against a schema `enum`, when one is declared.
-            └─> InputSchemaService.readEnumValues(propertySchema: unknown): string[] [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:123]
-               ↳ Reads the string members of a schema `enum`.
-              └─> InputSchemaService.readSchemaProperty(propertySchema: unknown, key: string): unknown [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:26]
-                 ↳ Reads one property off a schema fragment when it is an object.
-                └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
-```
-
-**3. `InstancesCommand.run`** — depth ≥ 7 · decorated-method
-
-```text
-🚀 InstancesCommand.run(_passedParameters: string[], options: InstancesCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/instances/instances.command.ts:90]
-   ↳ Writes every instance found, filtered to the given templates.
-  └─> InstanceDiscoveryService.resolveInventoriedInstances(args: ResolveInventoryArguments): InventoriedInstance[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:160]
-     ↳ Lists every instance found, paired with the templates that explain it. `templateNames` narrows the pairing rather than…
-    └─> InstanceDiscoveryService.takeInventory(…): { templates: TemplateDefinition[]; weighed: { instance: Instance; pairings: InventoriedPairing[]; }[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:225]
-       ↳ Weighs every instance the globs find against every declared template.
-      └─> TemplateDiscoveryService.collectTemplates(…): TemplateDefinition[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:97]
-         ↳ Reads every configured generator's template folder.
-        └─> TemplateDiscoveryService.map(…)(generator: ConformetryGeneratorDefinition): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:101]
-          └─> TemplateDiscoveryService.collectTemplate(…): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:77]
-             ↳ Reads one template folder.
-            └─> TemplateDiscoveryService.collectFilePaths(directoryPath: string): string[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:38]
-               ↳ Lists every file under a directory, recursively and sorted.
+                    └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:35]
+                       ↳ Refuses to render a template asking for a value nobody supplied.
+                      └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:61]
+                         ↳ Every placeholder a template interpolates, deduplicated.
+                        └─> RenderingService.walk(spans: TemplateSpans): void [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:63]
 ```
 
 <details>
-<summary>12 more call stacks</summary>
+<summary>13 more call stacks</summary>
 
-**4. `TemplatesCommand.run`** — depth ≥ 7 · decorated-method
+**4. `GenerateCommand.run`** — depth ≥ 10 · decorated-method
 
 ```text
-🚀 TemplatesCommand.run(_passedParameters: string[], options: TemplatesCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/templates/templates.command.ts:91]
-   ↳ Writes every declared template, filtered to the given instances.
-  └─> InstanceDiscoveryService.resolveInventoriedTemplates(args: ResolveInventoryArguments): InventoriedTemplate[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:185]
-     ↳ Lists every template declared, paired with the instances it explains. `instancePatterns` narrows which instances are…
-    └─> InstanceDiscoveryService.takeInventory(…): { templates: TemplateDefinition[]; weighed: { instance: Instance; pairings: InventoriedPairing[]; }[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:225]
-       ↳ Weighs every instance the globs find against every declared template.
-      └─> TemplateDiscoveryService.collectTemplates(…): TemplateDefinition[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:97]
-         ↳ Reads every configured generator's template folder.
-        └─> TemplateDiscoveryService.map(…)(generator: ConformetryGeneratorDefinition): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:101]
-          └─> TemplateDiscoveryService.collectTemplate(…): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:77]
-             ↳ Reads one template folder.
-            └─> TemplateDiscoveryService.collectFilePaths(directoryPath: string): string[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:38]
-               ↳ Lists every file under a directory, recursively and sorted.
+🚀 GenerateCommand.run(passedParameters: string[], options: GenerateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/generate/generate.command.ts:261]
+   ↳ Renders the template, reporting a refused command line as one.
+  └─> GenerateCommand.generate(…): Promise<void> [packages/conformetry-cli/src/modules/generate/generate.command.ts:71]
+     ↳ Resolves the template's inputs and writes its files.
+    └─> InputService.resolveGeneratorInputs(args: ResolveGeneratorInputsArguments): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:180]
+       ↳ Resolves generator inputs from raw command-line arguments.
+      └─> InputService.resolveInputs(…): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:53]
+         ↳ Walks a schema, taking each value from the resolver or a prompt.
+        └─> InputService.acceptProvidedValue(args: { input: SchemaInput; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:39]
+           ↳ Validates a value the caller already had, throwing if it is invalid.
+          └─> InputSchemaService.validateValue(args: { input: SchemaInput; value: unknown; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158]
+             ↳ Validates a value, returning `true` or the reason it failed.
+            └─> InputSchemaService.validateEnum(args: { input: SchemaInput; value: string; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:39]
+               ↳ Validates a value against a schema `enum`, when one is declared.
+              └─> InputSchemaService.readEnumValues(propertySchema: unknown): string[] [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:123]
+                 ↳ Reads the string members of a schema `enum`.
+                └─> InputSchemaService.readSchemaProperty(propertySchema: unknown, key: string): unknown [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:26]
+                   ↳ Reads one property off a schema fragment when it is an object.
+                  └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
 ```
 
 **5. `InstancesCommand.parseTemplates`** — depth 3 · decorated-method
@@ -642,9 +671,9 @@ Call stacks traced through `packages/conformetry-cli`, deepest first. Each frame
 ```text
 🚀 InstancesCommand.parseTemplates(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/instances/instances.command.ts:80]
    ↳ Parses the optional template filter.
-  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:118]
      ↳ Splits a comma-delimited filter option into its values.
-    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
+    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:128]
 ```
 
 **6. `TemplatesCommand.parseInstances`** — depth 3 · decorated-method
@@ -652,93 +681,103 @@ Call stacks traced through `packages/conformetry-cli`, deepest first. Each frame
 ```text
 🚀 TemplatesCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/templates/templates.command.ts:72]
    ↳ Parses the optional instance filter.
-  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:118]
      ↳ Splits a comma-delimited filter option into its values.
-    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
+    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:128]
 ```
 
 **7. `ValidateCommand.parseInstances`** — depth 3 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:123]
+🚀 ValidateCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:329]
    ↳ Parses the optional instance glob override.
-  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:118]
      ↳ Splits a comma-delimited filter option into its values.
-    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
+    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:128]
 ```
 
 **8. `ValidateCommand.parseLanguages`** — depth 3 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseLanguages(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:133]
+🚀 ValidateCommand.parseLanguages(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:339]
    ↳ Parses the optional language filter.
-  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:118]
      ↳ Splits a comma-delimited filter option into its values.
-    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
+    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:128]
 ```
 
-**9. `ValidateCommand.parseThreshold`** — depth 3 · decorated-method
+**9. `ValidateCommand.parseTemplates`** — depth 3 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseThreshold(value: string | undefined): number | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:142]
+🚀 ValidateCommand.parseTemplates(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:353]
+   ↳ Parses the optional template filter.
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:118]
+     ↳ Splits a comma-delimited filter option into its values.
+    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:128]
+```
+
+**10. `ValidateCommand.parseThreshold`** — depth 3 · decorated-method
+
+```text
+🚀 ValidateCommand.parseThreshold(value: string | undefined): number | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:362]
    ↳ Parses the optional run-level conformance threshold.
-  └─> InputService.parseThresholdOption(value: string | undefined): number | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:168]
+  └─> InputService.parseThresholdOption(value: string | undefined): number | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:161]
      ↳ Parses a threshold option as a ratio from 0 to 1.
-    └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+    └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:134]
        ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**10. `GenerateCommand.parseConfig`** — depth 2 · decorated-method
+**11. `GenerateCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
-🚀 GenerateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:68]
+🚀 GenerateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:223]
    ↳ Parses the optional configuration path.
-  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:134]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**11. `GenerateCommand.parseDirectory`** — depth 2 · decorated-method
+**12. `GenerateCommand.parseDirectory`** — depth 2 · decorated-method
 
 ```text
-🚀 GenerateCommand.parseDirectory(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:77]
+🚀 GenerateCommand.parseDirectory(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:232]
    ↳ Parses the output directory override.
-  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:134]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**12. `GenerateCommand.parseGenerator`** — depth 2 · decorated-method
+**13. `GenerateCommand.parseTemplate`** — depth 2 · decorated-method
 
 ```text
-🚀 GenerateCommand.parseGenerator(value: string): string [packages/conformetry-cli/src/modules/generate/generate.command.ts:86]
-   ↳ Parses the name of the generator to run.
-  └─> InputService.parseRequiredOption(args: { optionName: string; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:148]
-     ↳ Trims a required string option, rejecting blank values.
+🚀 GenerateCommand.parseTemplate(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:246]
+   ↳ Parses the name of the template to render.
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:134]
+     ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**13. `InstancesCommand.parseConfig`** — depth 2 · decorated-method
+**14. `InstancesCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
 🚀 InstancesCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/instances/instances.command.ts:62]
    ↳ Parses the optional configuration path.
-  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:134]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**14. `TemplatesCommand.parseConfig`** — depth 2 · decorated-method
+**15. `TemplatesCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
 🚀 TemplatesCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/templates/templates.command.ts:63]
    ↳ Parses the optional configuration path.
-  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:134]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**15. `ValidateCommand.parseConfig`** — depth 2 · decorated-method
+**16. `ValidateCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:114]
+🚀 ValidateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:320]
    ↳ Parses the optional configuration path.
-  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:134]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
@@ -752,31 +791,43 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ValidateCommand.run` | 8 | `ConfigurationService.loadConformetryConfiguration`, `ValidationService.validate`, `ValidateCommand.findInstances`, `ValidateCommand.flatMap(…)`, `TemplateDiscoveryService.collectTemplates`, `ReportingService.formatReport`, `ValidateCommand.filter(…)`, `ValidateCommand.describeFailure` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:152` |
-| `GenerateCommand.run` | 7 | `ConfigurationService.loadConformetryConfiguration`, `GenerateCommand.find(…)`, `GenerateCommand.map(…)`, `InputService.resolveGeneratorInputs`, `GenerateCommand.canPrompt`, `GenerationService.runGenerator`, `GenerateCommand.map(…)` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:108` |
-| `InstancesCommand.run` | 4 | `ConfigurationService.loadConformetryConfiguration`, `InventoryService.shortenInstancePaths`, `InstanceDiscoveryService.resolveInventoriedInstances`, `InventoryService.describeInstances` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:90` |
+| `GenerateCommand.generate` | 9 | `GenerateCommand.rejectRemovedGeneratorOption`, `ConfigurationService.loadConformetryConfiguration`, `GenerateCommand.resolveTemplateName`, `GenerateCommand.find(…)`, `unknownTemplateError`, `GenerateCommand.map(…)`, `InputService.resolveGeneratorInputs`, `GenerationService.runGenerator`, `GenerateCommand.map(…)` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:71` |
+| `ValidateCommand.run` | 7 | `ConfigurationService.loadConformetryConfiguration`, `ValidateCommand.selectTemplates`, `ValidateCommand.selectInstances`, `ValidateCommand.reportEmptySelection`, `ValidationService.validate`, `TemplateDiscoveryService.collectTemplates`, `ValidateCommand.reportResult` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:372` |
+| `GenerateCommand.resolveTemplateName` | 4 | `GenerateCommand.map(…)`, `InputPromptingService.isAtTerminal`, `missingTemplateError`, `InputPromptingService.promptForTemplate` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:190` |
 
 <details>
-<summary>16 more callables</summary>
+<summary>28 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `InstancesCommand.run` | 4 | `ConfigurationService.loadConformetryConfiguration`, `InventoryService.shortenInstancePaths`, `InstanceDiscoveryService.resolveInventoriedInstances`, `InventoryService.describeInstances` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:90` |
 | `TemplatesCommand.run` | 4 | `ConfigurationService.loadConformetryConfiguration`, `InventoryService.shortenTemplatePairings`, `InstanceDiscoveryService.resolveInventoriedTemplates`, `InventoryService.describeTemplates` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:91` |
-| `ValidateCommand.describeFailure` | 2 | `ValidateCommand.filter(…)`, `ValidateCommand.map(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:66` |
-| `GenerateCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:68` |
-| `GenerateCommand.parseDirectory` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:77` |
-| `GenerateCommand.parseGenerator` | 1 | `InputService.parseRequiredOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:86` |
+| `ValidateCommand.selectInstances` | 4 | `ValidateCommand.findInstances`, `ValidateCommand.flatMap(…)`, `ValidateCommand.map(…)`, `ValidateCommand.filter(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:238` |
+| `ValidateCommand.reportEmptySelection` | 3 | `ValidateCommand.map(…)`, `ValidateCommand.map(…)`, `ValidateCommand.filter(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:159` |
+| `ValidateCommand.reportResult` | 3 | `ReportingService.formatReport`, `ValidateCommand.filter(…)`, `ValidateCommand.describeFailure` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:200` |
+| `ValidateCommand.map(…)` | 3 | `ValidateCommand.find(…)`, `unknownTemplateError`, `ValidateCommand.map(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:296` |
+| `GenerateCommand.rejectRemovedGeneratorOption` | 2 | `GenerateCommand.some(…)`, `removedGeneratorOptionError` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:168` |
+| `GenerateCommand.run` | 2 | `GenerateCommand.generate`, `GenerateCommand.rejectCommandLine` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:261` |
+| `ValidateCommand.describeFailure` | 2 | `ValidateCommand.filter(…)`, `ValidateCommand.map(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:81` |
+| `ValidateCommand.findInstances` | 2 | `ValidateCommand.flatMap(…)`, `InstanceDiscoveryService.readWorkspaceGroups` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:105` |
+| `ValidateCommand.promptForTemplateNames` | 2 | `InputPromptingService.isAtTerminal`, `InputPromptingService.promptForTemplates` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:141` |
+| `ValidateCommand.selectTemplates` | 2 | `ValidateCommand.promptForTemplateNames`, `ValidateCommand.map(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:281` |
+| `missingTemplateError` | 1 | `InputError.constructor` | `packages/conformetry-cli/src/modules/generate/generate.constants.ts:15` |
+| `GenerateCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:223` |
+| `GenerateCommand.parseDirectory` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:232` |
+| `GenerateCommand.parseTemplate` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:246` |
 | `InstancesCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:62` |
 | `InstancesCommand.parseTemplates` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:80` |
 | `TemplatesCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:63` |
 | `TemplatesCommand.parseInstances` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:72` |
-| `ValidateCommand.map(…)` | 1 | `ReportingService.formatPercentage` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:69` |
-| `ValidateCommand.findInstances` | 1 | `ValidateCommand.flatMap(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:90` |
-| `ValidateCommand.flatMap(…)` | 1 | `InstanceDiscoveryService.findInstances` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:94` |
-| `ValidateCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:114` |
-| `ValidateCommand.parseInstances` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:123` |
-| `ValidateCommand.parseLanguages` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:133` |
-| `ValidateCommand.parseThreshold` | 1 | `InputService.parseThresholdOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:142` |
+| `ValidateCommand.map(…)` | 1 | `ReportingService.formatPercentage` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:84` |
+| `ValidateCommand.flatMap(…)` | 1 | `InstanceDiscoveryService.findInstances` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:113` |
+| `ValidateCommand.filter(…)` | 1 | `InstanceDiscoveryService.readWorkspaceGroups` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:167` |
+| `ValidateCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:320` |
+| `ValidateCommand.parseInstances` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:329` |
+| `ValidateCommand.parseLanguages` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:339` |
+| `ValidateCommand.parseTemplates` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:353` |
+| `ValidateCommand.parseThreshold` | 1 | `InputService.parseThresholdOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:362` |
 
 </details>
 

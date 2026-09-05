@@ -1,10 +1,10 @@
 // 🛠️ Utilities
 
-import { resolveExecutorScope } from "../../modules/plugin/plugin.utilities";
 import {
   resolveOptionsService,
   resolvePluginService,
-} from "../../plugin-context.utilities";
+} from "../../modules/plugin/plugin-context.utilities";
+import { resolveExecutorScope } from "../../modules/plugin/plugin.utilities";
 
 import type { TraceExecutorOptions } from "./executor.types";
 import type { ExecutorContext } from "@nx/devkit";

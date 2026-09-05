@@ -30,7 +30,15 @@ export class DocumentationMeasurementService {
 
   // 🔏 Private Methods
 
-  /** Counts every non-whitespace character, markers and all. */
+  /**
+   * Counts every character of the comment, whitespace and markers and all.
+   *
+   * The raw slice, deliberately: it is the one unit a reader can check against
+   * their editor's own column count, and stripping the delimiters first would
+   * make a limit written in characters mean something different from the
+   * length the file actually carries. `countWords` strips them because a
+   * marker is not a word; a marker is very much a character.
+   */
   private countCharacters(text: string): number {
     return text.length;
   }

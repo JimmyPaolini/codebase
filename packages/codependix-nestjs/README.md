@@ -94,22 +94,16 @@ Call stacks traced through `packages/codependix-nestjs`, deepest first. Each fra
 | Measure | Value |
 | --- | --- |
 | Callables | 31 |
-| Files | 12 |
-| Calls traced | 23 |
-| Call stacks | 1 |
-| Deepest stack | 2 |
+| Files | 13 |
+| Calls traced | 27 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
 
 ### Call stacks (depth)
 
-**1. `NestjsProjectService.loadModuleClasses`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 NestjsProjectService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:88]
-   ↳ Imports a module file and returns every module class it exports.
-  └─> NestjsProjectService.map(…)([, moduleClass]: [string, Type<unknown>]): Type<unknown> [packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:99]
-```
+None.
 
 ### Module spread
 
@@ -120,22 +114,26 @@ None.
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `ModuleGraphService.buildGraph` | 5 | `ModuleGraphService.findAmbientModuleNames`, `ModuleGraphService.collectEdges`, `ModuleGraphService.sortNames`, `ModuleGraphService.toSorted(…)`, `ModuleGraphService.filter(…)` | `packages/codependix-nestjs/src/modules/module-graph/module-graph.service.ts:136` |
-| `NestjsProjectService.buildSyntheticRootModule` | 3 | `NestjsProjectService.findModuleFiles`, `NestjsProjectService.map(…)`, `SyntheticRootModule.forModules` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:55` |
+| `NestjsProjectService.buildSyntheticRootModule` | 3 | `NestjsProjectService.findModuleFiles`, `NestjsProjectService.map(…)`, `SyntheticRootModule.forModules` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:54` |
 | `ModuleGraphService.renderMermaid` | 2 | `ModuleGraphService.map(…)`, `ModuleGraphService.map(…)` | `packages/codependix-nestjs/src/modules/module-graph/module-graph.service.ts:158` |
 
 <details>
-<summary>8 more callables</summary>
+<summary>12 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `NestjsProjectService.loadModuleClasses` | 2 | `NestjsProjectService.map(…)`, `NestjsProjectService.filter(…)` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:88` |
-| `NestjsProjectService.discoverProjects` | 2 | `NestjsProjectService.map(…)`, `NestjsProjectService.filter(…)` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:143` |
-| `NestjsProjectService.exploreProject` | 2 | `NestjsProjectService.buildSyntheticRootModule`, `NestjsProjectService.loadRootModule` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:155` |
+| `NestjsProjectService.loadModuleClasses` | 2 | `NestjsProjectService.map(…)`, `NestjsProjectService.filter(…)` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:87` |
+| `NestjsProjectService.discoverProjects` | 2 | `NestjsProjectService.map(…)`, `NestjsProjectService.filter(…)` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:142` |
+| `NestjsProjectService.exploreProject` | 2 | `NestjsProjectService.buildSyntheticRootModule`, `NestjsProjectService.loadRootModule` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:153` |
 | `ModuleGraphService.collectEdges` | 1 | `ModuleGraphService.map(…)` | `packages/codependix-nestjs/src/modules/module-graph/module-graph.service.ts:46` |
 | `ModuleGraphService.findAmbientModuleNames` | 1 | `ModuleGraphService.countInboundEdges` | `packages/codependix-nestjs/src/modules/module-graph/module-graph.service.ts:105` |
 | `ModuleGraphService.sortNames` | 1 | `ModuleGraphService.toSorted(…)` | `packages/codependix-nestjs/src/modules/module-graph/module-graph.service.ts:129` |
+| `ModuleGraphService.toSorted(…)` | 1 | `ModuleGraphService.compareEdges` | `packages/codependix-nestjs/src/modules/module-graph/module-graph.service.ts:146` |
 | `ModuleGraphService.map(…)` | 1 | `ModuleGraphService.renderNode` | `packages/codependix-nestjs/src/modules/module-graph/module-graph.service.ts:167` |
-| `NestjsProjectService.findModuleFiles` | 1 | `NestjsProjectService.toSorted(…)` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:69` |
+| `NestjsProjectService.map(…)` | 1 | `NestjsProjectService.loadModuleClasses` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:61` |
+| `NestjsProjectService.findModuleFiles` | 1 | `NestjsProjectService.toSorted(…)` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:68` |
+| `NestjsProjectService.filter(…)` | 1 | `NestjsProjectService.isNestjsProject` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:146` |
+| `NestjsProjectService.map(…)` | 1 | `NestjsProjectService.describeProject` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:147` |
 
 </details>
 

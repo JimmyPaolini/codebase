@@ -109,16 +109,36 @@ Call stacks traced through `tools/validation`, deepest first. Each frame shows w
 | Measure | Value |
 | --- | --- |
 | Callables | 162 |
-| Files | 44 |
-| Calls traced | 200 |
-| Call stacks | 10 |
-| Deepest stack | 7 |
+| Files | 45 |
+| Calls traced | 204 |
+| Call stacks | 7 |
+| Deepest stack | 8 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 17 |
 
 ### Call stacks (depth)
 
-**1. `IssueMetadataCommand.run`** — depth ≥ 7 · decorated-method
+**1. `PullRequestMetadataCommand.run`** — depth ≥ 8 · decorated-method
+
+```text
+🚀 PullRequestMetadataCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:264]
+   ↳ Checks the pull request's metadata and exits 0 or 1 on the verdict.
+  └─> PullRequestMetadataCommand.resolveMetadata(…): PullRequestMetadataResolution [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:214]
+     ↳ Reads the metadata from wherever this invocation says it lives.
+    └─> PullRequestMetadataCommand.readEnvironmentMetadata(reportLines: string[]): PullRequestMetadataResolution [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:132]
+       ↳ Reads the metadata from the environment, the workflow mode.
+      └─> PullRequestMetadataService.resolveFromEnvironment(…): PullRequestMetadataResolution [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:332]
+         ↳ Reads the metadata out of the three environment documents.
+        └─> PullRequestMetadataService.readNames(entries: unknown[], propertyName: string): string[] [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:199]
+           ↳ Every entry's name, with the nameless ones dropped.
+          └─> PullRequestMetadataService.map(…)(entry: unknown): string [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:201]
+            └─> PullRequestMetadataService.nameOf(entry: unknown, propertyName: string): string [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:162]
+               ↳ Reads one label or assignee entry, whichever shape it arrived in.
+              └─> PullRequestMetadataService.isRecord(value: unknown): value is Record<string, unknown> [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:157]
+                 ↳ Whether this value can be read by property name at all.
+```
+
+**2. `IssueMetadataCommand.run`** — depth ≥ 7 · decorated-method
 
 ```text
 🚀 IssueMetadataCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:257]
@@ -136,43 +156,40 @@ Call stacks traced through `tools/validation`, deepest first. Each frame shows w
                ↳ Whether this value can be read by property name at all.
 ```
 
-**2. `PullRequestMetadataCommand.run`** — depth ≥ 6 · decorated-method
-
-```text
-🚀 PullRequestMetadataCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:264]
-   ↳ Checks the pull request's metadata and exits 0 or 1 on the verdict.
-  └─> PullRequestMetadataCommand.resolveMetadata(…): PullRequestMetadataResolution [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:214]
-     ↳ Reads the metadata from wherever this invocation says it lives.
-    └─> PullRequestMetadataCommand.readEnvironmentMetadata(reportLines: string[]): PullRequestMetadataResolution [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:132]
-       ↳ Reads the metadata from the environment, the workflow mode.
-      └─> PullRequestMetadataService.resolveFromEnvironment(…): PullRequestMetadataResolution [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:332]
-         ↳ Reads the metadata out of the three environment documents.
-        └─> PullRequestMetadataService.parseJsonArray(…): { entries: unknown[]; } | { failure: string; } [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:177]
-           ↳ Reads a JSON array, or says why the document was not one.
-          └─> PullRequestMetadataService.describeError(error: unknown): string [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:249]
-             ↳ Whatever went wrong, as the one line a report can carry.
-```
-
-**3. `PullRequestReleaseSignificanceCommand.run`** — depth 6 · decorated-method
+**3. `PullRequestReleaseSignificanceCommand.run`** — depth 7 · decorated-method
 
 ```text
 🚀 PullRequestReleaseSignificanceCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:212]
    ↳ Checks the pull request's title against its commits and exits 0 or 1.
-  └─> PullRequestReleaseSignificanceService.checkSignificance(…): SignificanceVerdict [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:205]
-     ↳ Every way this pull request's title understates its own commits.
-    └─> PullRequestReleaseSignificanceService.findMostSignificantCommit(…): { commit: PullRequestCommit; rank: number; } | undefined [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:103]
-       ↳ The commit whose own type and scopes rank most release-significant.
-      └─> PullRequestReleaseSignificanceService.significanceRank(subject: ConventionalSubject, releaseRules: readonly ReleaseRule[]): number [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:332]
-         ↳ How release-significant this subject is, under these `releaseRules`.
-        └─> PullRequestReleaseSignificanceService.matchRule(…): ReleaseRule | undefined [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:140]
-           ↳ The first `releaseRules` entry this subject satisfies, in array order.
-          └─> PullRequestReleaseSignificanceService.find(…)(rule: ReleaseRule): boolean [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:144]
+  └─> PullRequestReleaseSignificanceCommand.readLivePullRequest(reportLines: string[], pullRequestNumber: string): PullRequestCommitsResolution [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:114]
+     ↳ Reads the pull request's title and commits live, through `gh pr view`.
+    └─> PullRequestReleaseSignificanceService.resolveFromDocument(documentText: string): PullRequestCommitsResolution [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:306]
+       ↳ Reads the title and commits out of a `gh pr view` document.
+      └─> PullRequestReleaseSignificanceService.map(…)(entry: unknown): PullRequestCommit [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:325]
+        └─> PullRequestReleaseSignificanceService.readRawCommit(entry: unknown): PullRequestCommit [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:153]
+           ↳ Reads one raw `commits` array entry into a `PullRequestCommit`.
+          └─> PullRequestReleaseSignificanceService.parseConventionalSubject(subject: string, body?: string): ConventionalSubject | undefined [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:250]
+             ↳ Reads the type, scopes, and breaking marker out of a conventional subject line.
+            └─> PullRequestReleaseSignificanceService.filter(…)(scope: string): boolean [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:266]
 ```
 
 <details>
-<summary>7 more call stacks</summary>
+<summary>4 more call stacks</summary>
 
-**4. `PullRequestBodyCommand.run`** — depth 5 · decorated-method
+**4. `CatalogManifestsCommand.run`** — depth 5 · decorated-method
+
+```text
+🚀 CatalogManifestsCommand.run(): Promise<void> [tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:44]
+   ↳ Checks every workspace manifest and exits 0 or 1 on the verdict.
+  └─> CatalogManifestsCommand.flatMap(…)(this: undefined, manifestPath: string): string[] [tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:50]
+    └─> CatalogManifestsService.validateManifestDependencies(manifestPath: string, manifest: PackageManifest): string[] [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:84]
+       ↳ Every mis-pinned dependency in one manifest, in every section.
+      └─> CatalogManifestsService.isInternalWorkspaceDependency(dependencyName: string): boolean [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:37]
+         ↳ Whether this dependency names one of this workspace's own packages.
+        └─> CatalogManifestsService.some(…)(scope: string): boolean [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:38]
+```
+
+**5. `PullRequestBodyCommand.run`** — depth 5 · decorated-method
 
 ```text
 🚀 PullRequestBodyCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:123]
@@ -184,16 +201,6 @@ Call stacks traced through `tools/validation`, deepest first. Each frame shows w
       └─> PullRequestBodyService.filter(…)(templateComment: string): boolean [tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:81]
         └─> PullRequestBodyService.prefixOf(templateComment: string): string [tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:41]
            ↳ The leading run of a prompt that a description has to still carry.
-```
-
-**5. `CatalogManifestsCommand.run`** — depth 3 · decorated-method
-
-```text
-🚀 CatalogManifestsCommand.run(): Promise<void> [tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:44]
-   ↳ Checks every workspace manifest and exits 0 or 1 on the verdict.
-  └─> CatalogManifestsCommand.flatMap(…)(this: undefined, manifestPath: string): string[] [tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:50]
-    └─> CatalogManifestsService.readManifest(manifestPath: string): PackageManifest [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:46]
-       ↳ Reads and parses one manifest.
 ```
 
 **6. `LockfileCommand.run`** — depth 3 · decorated-method
@@ -217,35 +224,6 @@ Call stacks traced through `tools/validation`, deepest first. Each frame shows w
     └─> ReadmeProjectsService.filter(…)(projectPath: string): boolean [tools/validation/src/modules/readme-projects/readme-projects.service.ts:41]
 ```
 
-**8. `CatalogManifestsService.validateManifestDependencies`** — depth 3 · orphan-root
-
-```text
-🚀 CatalogManifestsService.validateManifestDependencies(manifestPath: string, manifest: PackageManifest): string[] [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:84]
-   ↳ Every mis-pinned dependency in one manifest, in every section.
-  └─> CatalogManifestsService.isInternalWorkspaceDependency(dependencyName: string): boolean [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:37]
-     ↳ Whether this dependency names one of this workspace's own packages.
-    └─> CatalogManifestsService.some(…)(scope: string): boolean [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:38]
-```
-
-**9. `PullRequestReleaseSignificanceService.readRawCommit`** — depth 3 · orphan-root
-
-```text
-🚀 PullRequestReleaseSignificanceService.readRawCommit(entry: unknown): PullRequestCommit [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:153]
-   ↳ Reads one raw `commits` array entry into a `PullRequestCommit`.
-  └─> PullRequestReleaseSignificanceService.parseConventionalSubject(subject: string, body?: string): ConventionalSubject | undefined [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:250]
-     ↳ Reads the type, scopes, and breaking marker out of a conventional subject line.
-    └─> PullRequestReleaseSignificanceService.filter(…)(scope: string): boolean [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:266]
-```
-
-**10. `PullRequestMetadataService.nameOf`** — depth 2 · orphan-root
-
-```text
-🚀 PullRequestMetadataService.nameOf(entry: unknown, propertyName: string): string [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:162]
-   ↳ Reads one label or assignee entry, whichever shape it arrived in.
-  └─> PullRequestMetadataService.isRecord(value: unknown): value is Record<string, unknown> [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:157]
-     ↳ Whether this value can be read by property name at all.
-```
-
 </details>
 
 ### Module spread
@@ -261,7 +239,7 @@ None.
 | `PullRequestMetadataCommand.run` | 8 | `PullRequestMetadataCommand.resolveMetadata`, `PullRequestMetadataCommand.failWithMessage`, `PullRequestMetadataService.parseTitle`, `PullRequestMetadataService.checkMetadata`, `PullRequestMetadataCommand.resolvePullRequestNumber`, `PullRequestMetadataCommand.reportFailures`, `PullRequestMetadataCommand.appendToReport`, `PullRequestMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:264` |
 
 <details>
-<summary>70 more callables</summary>
+<summary>73 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -281,6 +259,7 @@ None.
 | `PullRequestMetadataCommand.resolveMetadata` | 3 | `PullRequestMetadataCommand.failWithUsageError`, `PullRequestMetadataCommand.readEnvironmentMetadata`, `PullRequestMetadataCommand.readLiveMetadata` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:214` |
 | `ReadmeProjectsCommand.run` | 3 | `ReadmeProjectsService.resolveWorkspaceProjectPaths`, `ReadmeProjectsService.readRootReadme`, `ReadmeProjectsService.findUndocumentedProjectPaths` | `tools/validation/src/modules/readme-projects/readme-projects.command.ts:43` |
 | `CatalogManifestsCommand.run` | 2 | `CatalogManifestsService.resolveWorkspaceManifestPaths`, `CatalogManifestsCommand.flatMap(…)` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:44` |
+| `CatalogManifestsCommand.flatMap(…)` | 2 | `CatalogManifestsService.validateManifestDependencies`, `CatalogManifestsService.readManifest` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:50` |
 | `IssueMetadataService.checkSourceLabel` | 2 | `IssueMetadataService.map(…)`, `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:88` |
 | `IssueMetadataService.readLabelNames` | 2 | `IssueMetadataService.filter(…)`, `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:209` |
 | `IssueMetadataService.resolveFromEnvironment` | 2 | `IssueMetadataService.describeError`, `IssueMetadataService.readLabelNames` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:311` |
@@ -309,7 +288,6 @@ None.
 | `PullRequestReleaseSignificanceCommand.reportFailures` | 2 | `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:146` |
 | `CatalogManifestsService.isInternalWorkspaceDependency` | 1 | `CatalogManifestsService.some(…)` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:37` |
 | `CatalogManifestsService.validateManifestDependencies` | 1 | `CatalogManifestsService.isInternalWorkspaceDependency` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:84` |
-| `CatalogManifestsCommand.flatMap(…)` | 1 | `CatalogManifestsService.readManifest` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:50` |
 | `IssueMetadataGithubService.describeFailure` | 1 | `IssueMetadataGithubService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata-github.service.ts:47` |
 | `IssueMetadataGithubService.isAvailable` | 1 | `IssueMetadataGithubService.run` | `tools/validation/src/modules/issue-metadata/issue-metadata-github.service.ts:56` |
 | `IssueMetadataService.checkTypeLabelPresence` | 1 | `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:162` |
@@ -326,13 +304,16 @@ None.
 | `PullRequestMetadataGithubService.isAvailable` | 1 | `PullRequestMetadataGithubService.run` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata-github.service.ts:56` |
 | `PullRequestMetadataService.nameOf` | 1 | `PullRequestMetadataService.isRecord` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:162` |
 | `PullRequestMetadataService.parseJsonArray` | 1 | `PullRequestMetadataService.describeError` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:177` |
+| `PullRequestMetadataService.map(…)` | 1 | `PullRequestMetadataService.nameOf` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:201` |
 | `PullRequestReleaseSignificanceGithubService.describeFailure` | 1 | `PullRequestReleaseSignificanceGithubService.filter(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts:42` |
 | `PullRequestReleaseSignificanceGithubService.isAvailable` | 1 | `PullRequestReleaseSignificanceGithubService.run` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts:51` |
 | `PullRequestReleaseSignificanceService.describeMissingScopeFailures` | 1 | `PullRequestReleaseSignificanceService.map(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:51` |
 | `PullRequestReleaseSignificanceService.findMostSignificantCommit` | 1 | `PullRequestReleaseSignificanceService.significanceRank` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:103` |
 | `PullRequestReleaseSignificanceService.matchRule` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:140` |
+| `PullRequestReleaseSignificanceService.find(…)` | 1 | `PullRequestReleaseSignificanceService.ruleMatches` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:144` |
 | `PullRequestReleaseSignificanceService.releaseLevelName` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:172` |
 | `PullRequestReleaseSignificanceService.readReleaseRules` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:284` |
+| `PullRequestReleaseSignificanceService.map(…)` | 1 | `PullRequestReleaseSignificanceService.readRawCommit` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:325` |
 | `PullRequestReleaseSignificanceCommand.resolvePullRequestNumber` | 1 | `PullRequestReleaseSignificanceCommand.failWithUsageError` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:173` |
 | `ReadmeProjectsService.findUndocumentedProjectPaths` | 1 | `ReadmeProjectsService.filter(…)` | `tools/validation/src/modules/readme-projects/readme-projects.service.ts:36` |
 

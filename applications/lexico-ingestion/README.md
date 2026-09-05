@@ -112,8 +112,8 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | Measure | Value |
 | --- | --- |
 | Callables | 576 |
-| Files | 107 |
-| Calls traced | 614 |
+| Files | 108 |
+| Calls traced | 638 |
 | Call stacks | 34 |
 | Deepest stack | 19 |
 | Stacks through recursion | 3 |
@@ -241,7 +241,28 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 <details>
 <summary>31 more call stacks</summary>
 
-**4. `WiktionaryCommand.run`** — depth ≥ 8 · decorated-method
+**4. `LatinLibraryCommand.run`** — depth ≥ 10 · decorated-method
+
+```text
+🚀 LatinLibraryCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:381]
+   ↳ Crawls The Latin Library and caches discovered HTML pages locally.
+  └─> LatinLibraryCommand.from(…)(): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:428]
+    └─> LatinLibraryCommand.worker(): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:419]
+      └─> LatinLibraryCommand.processQueueUrl(urlString: string, host: string, enqueue: (url: string) => void): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:345]
+         ↳ Processes one workflow step for Latin Library source crawling.
+        └─> LatinLibraryCommand.parseHtmlForLinks(html: string, baseUrl: string, enqueue: (url: string) => void): void [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:272]
+           ↳ Parses and normalizes inputs for Latin Library source crawling.
+          └─> LatinLibraryCommand.each(…)(this: Element, _index: number, a: Element): void [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:279]
+            └─> LatinLibraryCommand.processLink(href: string, baseUrl: string, enqueue: (url: string) => void): void [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:324]
+               ↳ Processes one workflow step for Latin Library source crawling.
+              └─> LatinLibraryCommand.shouldSkipLink(href: string): boolean [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:370]
+                 ↳ Handles an internal workflow step for Latin Library source crawling.
+                └─> LatinLibraryCommand.isIgnoredLinkFileName(href: string): boolean [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:190]
+                   ↳ Returns whether the current input should proceed in Latin Library source crawling.
+                  └─> LatinLibraryCommand.some(…)(f: string): boolean [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:200]
+```
+
+**5. `WiktionaryCommand.run`** — depth ≥ 8 · decorated-method
 
 ```text
 🚀 WiktionaryCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/wiktionary/wiktionary.command.ts:302]
@@ -261,25 +282,26 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
               └─> WiktionaryCommand.anonymous(resolve: (value: unknown) => void): void [applications/lexico-ingestion/src/modules/wiktionary/wiktionary.command.ts:102]
 ```
 
-**5. `LatinLibraryCommand.worker`** — depth ≥ 8 · orphan-root
+**6. `LiteratureService.ingestText`** — depth 8 · orphan-root
 
 ```text
-🚀 LatinLibraryCommand.worker(): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:419]
-  └─> LatinLibraryCommand.processQueueUrl(urlString: string, host: string, enqueue: (url: string) => void): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:345]
-     ↳ Processes one workflow step for Latin Library source crawling.
-    └─> LatinLibraryCommand.parseHtmlForLinks(html: string, baseUrl: string, enqueue: (url: string) => void): void [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:272]
-       ↳ Parses and normalizes inputs for Latin Library source crawling.
-      └─> LatinLibraryCommand.each(…)(this: Element, _index: number, a: Element): void [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:279]
-        └─> LatinLibraryCommand.processLink(href: string, baseUrl: string, enqueue: (url: string) => void): void [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:324]
-           ↳ Processes one workflow step for Latin Library source crawling.
-          └─> LatinLibraryCommand.shouldSkipLink(href: string): boolean [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:370]
-             ↳ Handles an internal workflow step for Latin Library source crawling.
-            └─> LatinLibraryCommand.isIgnoredLinkFileName(href: string): boolean [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:190]
-               ↳ Returns whether the current input should proceed in Latin Library source crawling.
-              └─> LatinLibraryCommand.some(…)(f: string): boolean [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:200]
+🚀 LiteratureService.ingestText(ingestArguments: IngestTextArguments): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:313]
+  └─> LiteratureService.ingestText(args: IngestTextArguments): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:270]
+     ↳ Ingests text in the literature ingestion pipeline.
+    └─> LiteratureService.ingestLines(text: Text, ast: Root): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:241]
+       ↳ Ingests lines in the literature ingestion pipeline.
+      └─> LiteratureService.map(…)(paragraph: Paragraph, index: number): _QueryDeepPartialEntity<Line> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:254]
+        └─> LiteratureService.buildLineEntityFromParagraph(paragraph: Paragraph, index: number, text: Text): QueryDeepPartialEntity<Line> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:91]
+           ↳ Builds line entity from paragraph for literature ingestion.
+          └─> LiteratureService.parseLabelFromStrongNode(strongNode: Strong, lineNodes: PhrasingContent[]): ParsedLabelResult [applications/lexico-ingestion/src/modules/literature/literature.service.ts:355]
+             ↳ Parses label from strong node during literature ingestion.
+            └─> LiteratureService.parseStandardLabel(labelMatch: RegExpExecArray, lineNodes: PhrasingContent[]): ParsedLabelResult [applications/lexico-ingestion/src/modules/literature/literature.service.ts:391]
+               ↳ Parses standard label during literature ingestion.
+              └─> NumeralsService.toDecimal(roman: string): number [applications/lexico-ingestion/src/modules/numerals/numerals.service.ts:25]
+                 ↳ Parses a Roman numeral string into its decimal integer value.
 ```
 
-**6. `LibraryCommand.parseAuthor`** — depth 7 · decorated-method
+**7. `LibraryCommand.parseAuthor`** — depth 7 · decorated-method
 
 ```text
 🚀 LibraryCommand.parseAuthor(author?: string, provider?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/library/library.command.ts:368]
@@ -298,7 +320,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
                ↳ Handles an internal workflow step for library provider orchestration.
 ```
 
-**7. `LibraryCommand.parseText`** — depth 7 · decorated-method
+**8. `LibraryCommand.parseText`** — depth 7 · decorated-method
 
 ```text
 🚀 LibraryCommand.parseText(…): Promise<string | undefined> [applications/lexico-ingestion/src/modules/library/library.command.ts:431]
@@ -315,22 +337,6 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
              ↳ Processes one workflow step for library provider orchestration.
             └─> LibraryCommand.pushTextEntry(…): void [applications/lexico-ingestion/src/modules/library/library.command.ts:191]
                ↳ Handles an internal workflow step for library provider orchestration.
-```
-
-**8. `LatinLibraryCommand.run`** — depth ≥ 6 · decorated-method
-
-```text
-🚀 LatinLibraryCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:381]
-   ↳ Crawls The Latin Library and caches discovered HTML pages locally.
-  └─> LatinLibraryCommand.getFinalAuthorUrls(host: string, authorUrls: string[]): Promise<string[]> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:149]
-     ↳ Resolves derived values needed by Latin Library source crawling.
-    └─> LatinLibraryCommand.processCategoryHref(href: string, host: string, finalAuthorUrls: string[]): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:290]
-       ↳ Processes one workflow step for Latin Library source crawling.
-      └─> LatinLibraryCommand.fetchAndCachePage(urlString: string, host: string): Promise<string> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:86]
-         ↳ Loads source data required by Latin Library source crawling.
-        └─> LatinLibraryCommand.downloadAndSaveLatinLibraryFile(parsedUrl: URL, targetPath: string): Promise<string> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:46]
-           ↳ Handles an internal workflow step for Latin Library source crawling.
-          └─> LatinLibraryCommand.anonymous(resolve: (value: unknown) => void): void [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:60]
 ```
 
 **9. `LiteratureCommand.run`** — depth ≥ 6 · decorated-method
@@ -350,22 +356,39 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
              ↳ Recursively walks one provider directory and collects markdown entries.
 ```
 
-**10. `LiteratureService.ingestText`** — depth 6 · orphan-root
+**10. `PartOfSpeechService.generic`** — depth ≥ 6 · orphan-root
 
 ```text
-🚀 LiteratureService.ingestText(args: IngestTextArguments): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:270]
-   ↳ Ingests text in the literature ingestion pipeline.
-  └─> LiteratureService.ingestLines(text: Text, ast: Root): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:241]
-     ↳ Ingests lines in the literature ingestion pipeline.
-    └─> LiteratureService.extractTokensFromLine(…): _QueryDeepPartialEntity<Token>[] [applications/lexico-ingestion/src/modules/literature/literature.service.ts:152]
-       ↳ Extracts tokens from line from literature ingestion input.
-      └─> LiteratureService.map(…)(…): { author: { id: string; }; data: string; index: number; isPunctuation: boolean; line: { id: string; }; text: { id: string; }; word: { id: string; } | null; } [applications/lexico-ingestion/src/modules/literature/literature.service.ts:158]
-        └─> LiteratureWordNormalizationService.escapeCapitals(word: string): string [applications/lexico-ingestion/src/modules/literature/literature-word-normalization.service.ts:27]
-           ↳ Escapes capitals as an underscore and the lowercase letter, matching how the dictionary stores words whose case is…
-          └─> LiteratureWordNormalizationService.replaceAll(…)(character: string): string [applications/lexico-ingestion/src/modules/literature/literature-word-normalization.service.ts:30]
+🚀 PartOfSpeechService.generic(): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:445]
+  └─> PartOfSpeechFormsService.parseGenericForms(args: { $: cheerio.CheerioAPI; elt: AnyNode; lexeme: Lexeme; }): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:358]
+     ↳ Parses non-verb inflection table forms into nested identifiers.
+    └─> PartOfSpeechFormsService.findGenericIdentifiers(…): string[] [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:58]
+       ↳ Finds generic identifiers for part-of-speech parsing workflows.
+      └─> PartOfSpeechFormsService.collectTableIdentifiers(index: number, index_: number, table_: string[][]): Set<string> [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:35]
+         ↳ Collects table identifiers required by part-of-speech parsing.
+        └─> PartOfSpeechFormsService.scanTableAxis(…): { finalIndex: number; identifiers: Set<string>; } [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:299]
+           ↳ Scans table axis for part-of-speech parsing context.
+          └─> PartOfSpeechFormsService.isGenericFormCell(cell: string): boolean [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:127]
+             ↳ Checks whether generic form cell in part-of-speech parsing logic.
 ```
 
-**11. `EpigraphikDatenbankClaussSlabyCommand.run`** — depth 5 · decorated-method
+**11. `PartOfSpeechService.verb`** — depth ≥ 6 · orphan-root
+
+```text
+🚀 PartOfSpeechService.verb(): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:447]
+  └─> PartOfSpeechFormsService.parseVerbForms(args: { $: cheerio.CheerioAPI; elt: AnyNode; }): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:404]
+     ↳ Parses verb inflection table forms into nested identifiers.
+    └─> PartOfSpeechFormsService.processVerbFormRow(…): void [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:225]
+       ↳ Processes verb form row during part-of-speech parsing.
+      └─> PartOfSpeechFormsService.findVerbIdentifiers(index: number, index_: number, table_: string[][]): string[] [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:83]
+         ↳ Finds verb identifiers for part-of-speech parsing workflows.
+        └─> PartOfSpeechFormsService.scanVerbHeader(…): { finalIndex: number; identifiers: Set<string>; } [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:317]
+           ↳ Scans verb header for part-of-speech parsing context.
+          └─> PartOfSpeechFormsService.isVerbFormCell(cell: string): boolean [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:146]
+             ↳ Checks whether verb form cell in part-of-speech parsing logic.
+```
+
+**12. `EpigraphikDatenbankClaussSlabyCommand.run`** — depth 5 · decorated-method
 
 ```text
 🚀 EpigraphikDatenbankClaussSlabyCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:137]
@@ -379,7 +402,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
         └─> EpigraphikDatenbankClaussSlabyCommand.anonymous(resolve: (value: unknown) => void): void [applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:128]
 ```
 
-**12. `LiteratureCommand.parseAuthor`** — depth 5 · decorated-method
+**13. `LiteratureCommand.parseAuthor`** — depth 5 · decorated-method
 
 ```text
 🚀 LiteratureCommand.parseAuthor(author?: string, provider?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:153]
@@ -394,7 +417,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
            ↳ Recursively walks one provider directory and collects markdown entries.
 ```
 
-**13. `LiteratureCommand.parseProvider`** — depth 5 · decorated-method
+**14. `LiteratureCommand.parseProvider`** — depth 5 · decorated-method
 
 ```text
 🚀 LiteratureCommand.parseProvider(provider?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:188]
@@ -409,7 +432,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
            ↳ Recursively walks one provider directory and collects markdown entries.
 ```
 
-**14. `LiteratureCommand.parseText`** — depth 5 · decorated-method
+**15. `LiteratureCommand.parseText`** — depth 5 · decorated-method
 
 ```text
 🚀 LiteratureCommand.parseText(…): Promise<string | undefined> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:218]
@@ -424,37 +447,33 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
            ↳ Recursively walks one provider directory and collects markdown entries.
 ```
 
-**15. `PartOfSpeechFormsService.parseGenericForms`** — depth ≥ 5 · orphan-root
+**16. `PartOfSpeechService.adjective`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 PartOfSpeechFormsService.parseGenericForms(args: { $: cheerio.CheerioAPI; elt: AnyNode; lexeme: Lexeme; }): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:358]
-   ↳ Parses non-verb inflection table forms into nested identifiers.
-  └─> PartOfSpeechFormsService.findGenericIdentifiers(…): string[] [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:58]
-     ↳ Finds generic identifiers for part-of-speech parsing workflows.
-    └─> PartOfSpeechFormsService.collectTableIdentifiers(index: number, index_: number, table_: string[][]): Set<string> [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:35]
-       ↳ Collects table identifiers required by part-of-speech parsing.
-      └─> PartOfSpeechFormsService.scanTableAxis(…): { finalIndex: number; identifiers: Set<string>; } [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:299]
-         ↳ Scans table axis for part-of-speech parsing context.
-        └─> PartOfSpeechFormsService.isGenericFormCell(cell: string): boolean [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:127]
-           ↳ Checks whether generic form cell in part-of-speech parsing logic.
+🚀 PartOfSpeechService.adjective(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:418]
+  └─> PartOfSpeechService.ingestAdjectiveInflection($: cheerio.CheerioAPI, elt: AnyNode): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:187]
+     ↳ Ingests adjective inflection in the part-of-speech parsing pipeline.
+    └─> PartOfSpeechService.buildAdjectiveInflection(declension: string): AdjectiveInflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:142]
+       ↳ Builds adjective inflection for part-of-speech parsing.
+      └─> PartOfSpeechService.findTypedValue(…): ValueType | undefined [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:129]
+         ↳ Returns the first matching typed value from the provided candidate list.
+        └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
 ```
 
-**16. `PartOfSpeechFormsService.parseVerbForms`** — depth ≥ 5 · orphan-root
+**17. `PartOfSpeechService.noun`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 PartOfSpeechFormsService.parseVerbForms(args: { $: cheerio.CheerioAPI; elt: AnyNode; }): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:404]
-   ↳ Parses verb inflection table forms into nested identifiers.
-  └─> PartOfSpeechFormsService.processVerbFormRow(…): void [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:225]
-     ↳ Processes verb form row during part-of-speech parsing.
-    └─> PartOfSpeechFormsService.findVerbIdentifiers(index: number, index_: number, table_: string[][]): string[] [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:83]
-       ↳ Finds verb identifiers for part-of-speech parsing workflows.
-      └─> PartOfSpeechFormsService.scanVerbHeader(…): { finalIndex: number; identifiers: Set<string>; } [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:317]
-         ↳ Scans verb header for part-of-speech parsing context.
-        └─> PartOfSpeechFormsService.isVerbFormCell(cell: string): boolean [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:146]
-           ↳ Checks whether verb form cell in part-of-speech parsing logic.
+🚀 PartOfSpeechService.noun(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:420]
+  └─> PartOfSpeechService.ingestNounInflection($: cheerio.CheerioAPI, elt: AnyNode): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:249]
+     ↳ Ingests noun inflection in the part-of-speech parsing pipeline.
+    └─> PartOfSpeechService.buildNounInflection(declension: string, gender: string): NounInflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:161]
+       ↳ Builds noun inflection for part-of-speech parsing.
+      └─> PartOfSpeechService.findTypedValue(…): ValueType | undefined [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:129]
+         ↳ Returns the first matching typed value from the provided candidate list.
+        └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
 ```
 
-**17. `CorpusScriptorumEcclesiasticorumLatinorumCommand.run`** — depth 4 · decorated-method
+**18. `CorpusScriptorumEcclesiasticorumLatinorumCommand.run`** — depth 4 · decorated-method
 
 ```text
 🚀 CorpusScriptorumEcclesiasticorumLatinorumCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:127]
@@ -466,7 +485,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
       └─> CorpusScriptorumEcclesiasticorumLatinorumCommand.anonymous(resolve: (value: unknown) => void): void [applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:88]
 ```
 
-**18. `PerseusCommand.run`** — depth 4 · decorated-method
+**19. `PerseusCommand.run`** — depth 4 · decorated-method
 
 ```text
 🚀 PerseusCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:133]
@@ -478,44 +497,40 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
       └─> PerseusCommand.anonymous(resolve: (value: unknown) => void): void [applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:92]
 ```
 
-**19. `PartOfSpeechService.ingestAdjectiveInflection`** — depth ≥ 4 · orphan-root
+**20. `PartOfSpeechService.preposition`** — depth ≥ 4 · orphan-root
 
 ```text
-🚀 PartOfSpeechService.ingestAdjectiveInflection($: cheerio.CheerioAPI, elt: AnyNode): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:187]
-   ↳ Ingests adjective inflection in the part-of-speech parsing pipeline.
-  └─> PartOfSpeechService.buildAdjectiveInflection(declension: string): AdjectiveInflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:142]
-     ↳ Builds adjective inflection for part-of-speech parsing.
+🚀 PartOfSpeechService.preposition(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:422]
+  └─> PartOfSpeechService.ingestPrepositionInflection($: cheerio.CheerioAPI, elt: AnyNode): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:293]
+     ↳ Ingests preposition inflection in the part-of-speech parsing pipeline.
     └─> PartOfSpeechService.findTypedValue(…): ValueType | undefined [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:129]
        ↳ Returns the first matching typed value from the provided candidate list.
       └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
 ```
 
-**20. `PartOfSpeechService.ingestNounInflection`** — depth ≥ 4 · orphan-root
+**21. `PartOfSpeechService.pronoun`** — depth ≥ 4 · orphan-root
 
 ```text
-🚀 PartOfSpeechService.ingestNounInflection($: cheerio.CheerioAPI, elt: AnyNode): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:249]
-   ↳ Ingests noun inflection in the part-of-speech parsing pipeline.
-  └─> PartOfSpeechService.buildNounInflection(declension: string, gender: string): NounInflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:161]
-     ↳ Builds noun inflection for part-of-speech parsing.
+🚀 PartOfSpeechService.pronoun(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:423]
+  └─> PartOfSpeechService.ingestPronounInflection($: cheerio.CheerioAPI, elt: AnyNode): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:318]
+     ↳ Ingests pronoun inflection in the part-of-speech parsing pipeline.
     └─> PartOfSpeechService.findTypedValue(…): ValueType | undefined [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:129]
        ↳ Returns the first matching typed value from the provided candidate list.
       └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
 ```
 
-**21. `LiteratureService.buildLineEntityFromParagraph`** — depth 4 · orphan-root
+**22. `PartOfSpeechService.verb`** — depth ≥ 4 · orphan-root
 
 ```text
-🚀 LiteratureService.buildLineEntityFromParagraph(paragraph: Paragraph, index: number, text: Text): QueryDeepPartialEntity<Line> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:91]
-   ↳ Builds line entity from paragraph for literature ingestion.
-  └─> LiteratureService.parseLabelFromStrongNode(strongNode: Strong, lineNodes: PhrasingContent[]): ParsedLabelResult [applications/lexico-ingestion/src/modules/literature/literature.service.ts:355]
-     ↳ Parses label from strong node during literature ingestion.
-    └─> LiteratureService.parseStandardLabel(labelMatch: RegExpExecArray, lineNodes: PhrasingContent[]): ParsedLabelResult [applications/lexico-ingestion/src/modules/literature/literature.service.ts:391]
-       ↳ Parses standard label during literature ingestion.
-      └─> NumeralsService.toDecimal(roman: string): number [applications/lexico-ingestion/src/modules/numerals/numerals.service.ts:25]
-         ↳ Parses a Roman numeral string into its decimal integer value.
+🚀 PartOfSpeechService.verb(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:425]
+  └─> PartOfSpeechService.ingestVerbInflection($: cheerio.CheerioAPI, elt: AnyNode): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:350]
+     ↳ Ingests verb inflection in the part-of-speech parsing pipeline.
+    └─> PartOfSpeechService.findTypedValue(…): ValueType | undefined [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:129]
+       ↳ Returns the first matching typed value from the provided candidate list.
+      └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
 ```
 
-**22. `DictionaryCommand.parseEndLemma`** — depth 3 · decorated-method
+**23. `DictionaryCommand.parseEndLemma`** — depth 3 · decorated-method
 
 ```text
 🚀 DictionaryCommand.parseEndLemma(endLemma?: string, startLemma?: null | string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:399]
@@ -525,7 +540,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
     └─> DictionaryCommand.map(…)(file: string): { title: string; value: string; } [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:82]
 ```
 
-**23. `DictionaryCommand.parseStartLemma`** — depth 3 · decorated-method
+**24. `DictionaryCommand.parseStartLemma`** — depth 3 · decorated-method
 
 ```text
 🚀 DictionaryCommand.parseStartLemma(startLemma?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:437]
@@ -535,7 +550,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
     └─> DictionaryCommand.map(…)(file: string): { title: string; value: string; } [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:82]
 ```
 
-**24. `LibraryCommand.parseProvider`** — depth 3 · decorated-method
+**25. `LibraryCommand.parseProvider`** — depth 3 · decorated-method
 
 ```text
 🚀 LibraryCommand.parseProvider(provider?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/library/library.command.ts:401]
@@ -545,37 +560,17 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
     └─> LibraryCommand.map(…)(p: LibrarySourceProvider): string [applications/lexico-ingestion/src/modules/library/library.command.ts:94]
 ```
 
-**25. `PartOfSpeechService.ingestPrepositionInflection`** — depth ≥ 3 · orphan-root
+**26. `PartOfSpeechService.adverb`** — depth 3 · orphan-root
 
 ```text
-🚀 PartOfSpeechService.ingestPrepositionInflection($: cheerio.CheerioAPI, elt: AnyNode): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:293]
-   ↳ Ingests preposition inflection in the part-of-speech parsing pipeline.
-  └─> PartOfSpeechService.findTypedValue(…): ValueType | undefined [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:129]
-     ↳ Returns the first matching typed value from the provided candidate list.
-    └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
+🚀 PartOfSpeechService.adverb(): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:444]
+  └─> PartOfSpeechService.ingestAdverbForms(principalParts: PrincipalPart[]): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:221]
+     ↳ Ingests adverb forms in the part-of-speech parsing pipeline.
+    └─> PartOfSpeechService.getTextOrEmpty(part: PrincipalPart | undefined): string[] [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:182]
+       ↳ Gets text or empty used by part-of-speech parsing.
 ```
 
-**26. `PartOfSpeechService.ingestPronounInflection`** — depth ≥ 3 · orphan-root
-
-```text
-🚀 PartOfSpeechService.ingestPronounInflection($: cheerio.CheerioAPI, elt: AnyNode): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:318]
-   ↳ Ingests pronoun inflection in the part-of-speech parsing pipeline.
-  └─> PartOfSpeechService.findTypedValue(…): ValueType | undefined [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:129]
-     ↳ Returns the first matching typed value from the provided candidate list.
-    └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
-```
-
-**27. `PartOfSpeechService.ingestVerbInflection`** — depth ≥ 3 · orphan-root
-
-```text
-🚀 PartOfSpeechService.ingestVerbInflection($: cheerio.CheerioAPI, elt: AnyNode): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:350]
-   ↳ Ingests verb inflection in the part-of-speech parsing pipeline.
-  └─> PartOfSpeechService.findTypedValue(…): ValueType | undefined [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:129]
-     ↳ Returns the first matching typed value from the provided candidate list.
-    └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
-```
-
-**28. `ClearCommand.run`** — depth 2 · decorated-method
+**27. `ClearCommand.run`** — depth 2 · decorated-method
 
 ```text
 🚀 ClearCommand.run(_passedParameters: string[], options: ClearCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/clear/clear.command.ts:138]
@@ -584,22 +579,14 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
      ↳ Parses prompt output into strongly typed clear options.
 ```
 
-**29. `WordsService.escapeCapitals`** — depth 2 · orphan-root
-
-```text
-🚀 WordsService.escapeCapitals(word: string): string [applications/lexico-ingestion/src/modules/words/words.service.ts:67]
-   ↳ Escape capitals for word indexing.
-  └─> WordsService.replaceAll(…)(character: string): string [applications/lexico-ingestion/src/modules/words/words.service.ts:70]
-```
-
-**30. `normalizeStringArray`** — depth 2 · orphan-root
+**28. `normalizeStringArray`** — depth 2 · orphan-root
 
 ```text
 🚀 normalizeStringArray(…): string[] [applications/lexico-ingestion/src/modules/forms/forms.constants.ts:21]
   └─> isNormalizableStringArray(…): boolean [applications/lexico-ingestion/src/modules/forms/forms.constants.ts:17]
 ```
 
-**31. `FormsService.setTransientWords`** — depth 2 · orphan-root
+**29. `FormsService.setTransientWords`** — depth 2 · orphan-root
 
 ```text
 🚀 FormsService.setTransientWords(form: Form, words: string[]): void [applications/lexico-ingestion/src/modules/forms/forms.service.ts:181]
@@ -608,28 +595,43 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
      ↳ Associates a list of transient words with a given Form entity.
 ```
 
-**32. `compactStringValues`** — depth 2 · orphan-root
+**30. `compactStringValues`** — depth 2 · orphan-root
 
 ```text
 🚀 compactStringValues(…): string[] [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.constants.ts:17]
   └─> isCompactStringArray(…): boolean [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.constants.ts:13]
 ```
 
-**33. `PartOfSpeechService.ingestAdverbForms`** — depth 2 · orphan-root
+**31. `PartOfSpeechService.adverb`** — depth 2 · orphan-root
 
 ```text
-🚀 PartOfSpeechService.ingestAdverbForms(principalParts: PrincipalPart[]): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:221]
-   ↳ Ingests adverb forms in the part-of-speech parsing pipeline.
-  └─> PartOfSpeechService.getTextOrEmpty(part: PrincipalPart | undefined): string[] [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:182]
-     ↳ Gets text or empty used by part-of-speech parsing.
+🚀 PartOfSpeechService.adverb(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:419]
+  └─> PartOfSpeechService.ingestAdverbInflection(principalParts: PrincipalPart[]): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:235]
+     ↳ Ingests adverb inflection in the part-of-speech parsing pipeline.
 ```
 
-**34. `LatinLibraryProvider.cleanupAuthorMetadata`** — depth 2 · orphan-root
+**32. `PartOfSpeechService.prefix`** — depth 2 · orphan-root
 
 ```text
-🚀 LatinLibraryProvider.cleanupAuthorMetadata(author: Author): void [applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:91]
-   ↳ Handles an internal workflow step for Latin Library provider ingestion.
-  └─> LatinLibraryProvider.forEach(…)(child: Text): void [applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:97]
+🚀 PartOfSpeechService.prefix(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:421]
+  └─> PartOfSpeechService.ingestPrefixInflection(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:288]
+     ↳ Ingests prefix inflection in the part-of-speech parsing pipeline.
+```
+
+**33. `PartOfSpeechService.uninflected`** — depth 2 · orphan-root
+
+```text
+🚀 PartOfSpeechService.uninflected(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:424]
+  └─> PartOfSpeechService.ingestConjunctionInflection(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:244]
+     ↳ Ingests conjunction inflection in the part-of-speech parsing pipeline.
+```
+
+**34. `PartOfSpeechService.anonymous`** — depth 2 · orphan-root
+
+```text
+🚀 PartOfSpeechService.anonymous(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:427]
+  └─> PartOfSpeechService.ingestConjunctionInflection(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:244]
+     ↳ Ingests conjunction inflection in the part-of-speech parsing pipeline.
 ```
 
 </details>
@@ -650,7 +652,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `LexemesService.enrichLexeme` | 7 | `PrincipalPartsService.parsePrincipalParts`, `PartOfSpeechService.ingestInflection`, `TranslationsService.parseTranslations`, `EtymologyService.parse`, `PronunciationService.parse`, `PartOfSpeechService.parseForms`, `FormsService.buildFormsForPartOfSpeech` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:71` |
 
 <details>
-<summary>259 more callables</summary>
+<summary>282 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -734,6 +736,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `PerseusLibraryProvider.writeSourceMarkdownFiles` | 3 | `PerseusLibraryTextExtractionProvider.extractTextNodes`, `PerseusLibraryProvider.writeTextFiles`, `PerseusLibraryProvider.anonymous` | `applications/lexico-ingestion/src/modules/library/providers/perseus-library.provider.ts:263` |
 | `LiteratureCommand.getProviderChoices` | 3 | `LiteratureService.scanLibrary`, `LiteratureCommand.map(…)`, `LiteratureCommand.map(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:91` |
 | `WiktionaryCommand.ingestCategory` | 3 | `WiktionaryCommand.fetchCategoryPage`, `WiktionaryCommand.processWiktionaryCategoryLink`, `WiktionaryCommand.handleCategoryError` | `applications/lexico-ingestion/src/modules/wiktionary/wiktionary.command.ts:139` |
+| `WordsService.map(…)` | 2 | `WordsService.escapeCapitals`, `WordsService.normalize` | `applications/lexico-ingestion/src/modules/words/words.service.ts:136` |
 | `normalizeStringArray` | 2 | `isNormalizableStringArray`, `filter(…)` | `applications/lexico-ingestion/src/modules/forms/forms.constants.ts:21` |
 | `FormsService.findIndex(…)` | 2 | `FormsService.filter(…)`, `FormsService.every(…)` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:86` |
 | `EtymologyService.parse` | 2 | `EtymologyService.filter(…)`, `Translation.constructor` | `applications/lexico-ingestion/src/modules/etymology/etymology.service.ts:31` |
@@ -797,13 +800,18 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `CorpusScriptorumEcclesiasticorumLatinorumCommand.fetchAndWriteXmlFile` | 1 | `CorpusScriptorumEcclesiasticorumLatinorumCommand.anonymous` | `applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:76` |
 | `WordsService.escapeCapitals` | 1 | `WordsService.replaceAll(…)` | `applications/lexico-ingestion/src/modules/words/words.service.ts:67` |
 | `WordsService.getLexemeWords` | 1 | `WordsService.forEach(…)` | `applications/lexico-ingestion/src/modules/words/words.service.ts:118` |
-| `WordsService.map(…)` | 1 | `WordsService.normalize` | `applications/lexico-ingestion/src/modules/words/words.service.ts:136` |
 | `FormsBuilderVerbService.buildFiniteVerbForm` | 1 | `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts:55` |
 | `FormsBuilderOtherService.buildParticipleFormsFromRaw` | 1 | `FormsBuilderVerbService.buildParticipleFormsFromRaw` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:360` |
 | `FormsBuilderOtherService.createAdjectivalForm` | 1 | `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:458` |
 | `FormsService.preserveMatchingExistingFormIdentity` | 1 | `FormsService.findIndex(…)` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:81` |
 | `FormsService.buildFormsForPartOfSpeech` | 1 | `FormsBuilderOtherService.buildFormsForPartOfSpeech` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:127` |
+| `FormsService.map(…)` | 1 | `FormsTransientWordsService.getTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:160` |
 | `FormsService.setTransientWords` | 1 | `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:181` |
+| `PartOfSpeechFormsService.find(…)` | 1 | `PartOfSpeechFormsService.isNumber` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:72` |
+| `PartOfSpeechFormsService.find(…)` | 1 | `PartOfSpeechFormsService.isCase` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:73` |
+| `PartOfSpeechFormsService.find(…)` | 1 | `PartOfSpeechFormsService.isGender` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:74` |
+| `PartOfSpeechFormsService.map(…)` | 1 | `PartOfSpeechFormsService.map(…)` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:189` |
+| `PartOfSpeechFormsService.map(…)` | 1 | `PartOfSpeechFormsService.map(…)` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:193` |
 | `PartOfSpeechFormsService.parseVerbWordCell` | 1 | `PartOfSpeechFormsService.resolveVerbSumEntry` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:207` |
 | `PartOfSpeechFormsService.scanTableAxis` | 1 | `PartOfSpeechFormsService.isGenericFormCell` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:299` |
 | `PartOfSpeechFormsService.scanVerbHeader` | 1 | `PartOfSpeechFormsService.isVerbFormCell` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:317` |
@@ -816,6 +824,18 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `PartOfSpeechService.ingestPronounInflection` | 1 | `PartOfSpeechService.findTypedValue` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:318` |
 | `PartOfSpeechService.ingestVerbInflection` | 1 | `PartOfSpeechService.findTypedValue` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:350` |
 | `PartOfSpeechService.getPartOfSpeech` | 1 | `PartOfSpeechService.isPartOfSpeech` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:393` |
+| `PartOfSpeechService.adjective` | 1 | `PartOfSpeechService.ingestAdjectiveInflection` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:418` |
+| `PartOfSpeechService.adverb` | 1 | `PartOfSpeechService.ingestAdverbInflection` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:419` |
+| `PartOfSpeechService.noun` | 1 | `PartOfSpeechService.ingestNounInflection` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:420` |
+| `PartOfSpeechService.prefix` | 1 | `PartOfSpeechService.ingestPrefixInflection` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:421` |
+| `PartOfSpeechService.preposition` | 1 | `PartOfSpeechService.ingestPrepositionInflection` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:422` |
+| `PartOfSpeechService.pronoun` | 1 | `PartOfSpeechService.ingestPronounInflection` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:423` |
+| `PartOfSpeechService.uninflected` | 1 | `PartOfSpeechService.ingestConjunctionInflection` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:424` |
+| `PartOfSpeechService.verb` | 1 | `PartOfSpeechService.ingestVerbInflection` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:425` |
+| `PartOfSpeechService.anonymous` | 1 | `PartOfSpeechService.ingestConjunctionInflection` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:427` |
+| `PartOfSpeechService.adverb` | 1 | `PartOfSpeechService.ingestAdverbForms` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:444` |
+| `PartOfSpeechService.generic` | 1 | `PartOfSpeechFormsService.parseGenericForms` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:445` |
+| `PartOfSpeechService.verb` | 1 | `PartOfSpeechFormsService.parseVerbForms` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:447` |
 | `PrincipalPartsService.ingestLexemePrincipalParts` | 1 | `PrincipalPartsService.find(…)` | `applications/lexico-ingestion/src/modules/principal-parts/principal-parts.service.ts:65` |
 | `PronunciationEcclesiasticalService.classifyEcclesiasticalC` | 1 | `PronunciationEcclesiasticalService.isPalatalizedCConsonant` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:120` |
 | `PronunciationEcclesiasticalService.classifyEcclesiasticalG` | 1 | `PronunciationEcclesiasticalService.isPalatalizedGConsonant` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:143` |
@@ -840,6 +860,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `DictionaryCommand.escapeCapitals` | 1 | `DictionaryCommand.replaceAll(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:65` |
 | `DictionaryCommand.getPageForLexeme` | 1 | `DictionaryCommand.loadWiktionaryPageForWord` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:114` |
 | `DictionaryCommand.getWiktionaryFilePathForWord` | 1 | `DictionaryCommand.escapeCapitals` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:130` |
+| `DictionaryCommand.map(…)` | 1 | `Translation.constructor` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:274` |
 | `EpigraphikDatenbankClaussSlabyCommand.downloadChunkData` | 1 | `EpigraphikDatenbankClaussSlabyCommand.saveChunkData` | `applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:50` |
 | `EpigraphikDatenbankClaussSlabyCommand.downloadChunkIfMissing` | 1 | `EpigraphikDatenbankClaussSlabyCommand.downloadChunkData` | `applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:75` |
 | `EpigraphikDatenbankClaussSlabyCommand.saveChunkData` | 1 | `EpigraphikDatenbankClaussSlabyCommand.anonymous` | `applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:97` |
@@ -853,6 +874,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `LatinLibraryCommand.parseHtmlForLinks` | 1 | `LatinLibraryCommand.each(…)` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:272` |
 | `LatinLibraryCommand.each(…)` | 1 | `LatinLibraryCommand.processLink` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:279` |
 | `LatinLibraryCommand.worker` | 1 | `LatinLibraryCommand.processQueueUrl` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:419` |
+| `LatinLibraryCommand.from(…)` | 1 | `LatinLibraryCommand.worker` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:428` |
 | `LibraryCommand.buildIngestParameters` | 1 | `LibraryCommand.filter(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:59` |
 | `LibraryCommand.scanLibraryAuthor` | 1 | `LibraryCommand.walkLibraryDirectory` | `applications/lexico-ingestion/src/modules/library/library.command.ts:271` |
 | `LibraryCommand.scanLibraryProvider` | 1 | `LibraryCommand.scanLibraryAuthor` | `applications/lexico-ingestion/src/modules/library/library.command.ts:297` |
@@ -885,6 +907,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `LatinLibraryProvider.cleanupAuthorMetadata` | 1 | `LatinLibraryProvider.forEach(…)` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:91` |
 | `LatinLibraryProvider.each(…)` | 1 | `LatinLibraryProvider.buildCategoryAuthor` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:156` |
 | `LatinLibraryProvider.sort(…)` | 1 | `LatinLibraryProvider.getMetadataString` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:416` |
+| `LatinLibraryProvider.forEach(…)` | 1 | `LatinLibraryProvider.cleanupAuthorMetadata` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:437` |
 | `PerseusLibraryTextExtractionProvider.collectParagraphsFromElements` | 1 | `PerseusLibraryTextExtractionProvider.each(…)` | `applications/lexico-ingestion/src/modules/library/providers/perseus-library-text-extraction.provider.ts:26` |
 | `PerseusLibraryTextExtractionProvider.each(…)` | 1 | `formatLineNumber` | `applications/lexico-ingestion/src/modules/library/providers/perseus-library-text-extraction.provider.ts:32` |
 | `PerseusLibraryTextExtractionProvider.extractChildTextParts` | 1 | `PerseusLibraryTextExtractionProvider.each(…)` | `applications/lexico-ingestion/src/modules/library/providers/perseus-library-text-extraction.provider.ts:57` |
@@ -897,7 +920,9 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `LiteratureService.buildLineEntityFromParagraph` | 1 | `LiteratureService.parseLabelFromStrongNode` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:91` |
 | `LiteratureService.extractTokensFromLine` | 1 | `LiteratureService.map(…)` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:152` |
 | `LiteratureService.getWordsCache` | 1 | `LiteratureService.map(…)` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:195` |
+| `LiteratureService.map(…)` | 1 | `LiteratureService.buildLineEntityFromParagraph` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:254` |
 | `LiteratureService.ingestTextChunks` | 1 | `LiteratureTextIngestionService.ingestTextWithLogging` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:298` |
+| `LiteratureService.ingestText` | 1 | `LiteratureService.ingestText` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:313` |
 | `LiteratureService.parseNonStandardLabel` | 1 | `NumeralsService.toDecimal` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:369` |
 | `LiteratureService.parseStandardLabel` | 1 | `NumeralsService.toDecimal` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:391` |
 | `LiteratureService.saveTextToDatabase` | 1 | `LiteratureService.isRecord` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:409` |

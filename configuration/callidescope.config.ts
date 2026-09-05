@@ -58,12 +58,28 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
      * green and only fails on a regression past today's worst.
      *
      * A ratchet rather than a target. Set to the issue's suggested six, this
-     * fails on arrival with 46 findings — which is a backlog, not a gate, and
-     * a red pipeline nobody can act on teaches people to ignore it. Lower it
-     * as the outliers come down; the distribution today runs
-     * 19, 18, 17, 15, 14, 13, 13, 12, 12, 11, 11, then a tail at 10 and below.
+     * fails on arrival with dozens of findings — which is a backlog, not a
+     * gate, and a red pipeline nobody can act on teaches people to ignore it.
+     * Lower it as the outliers come down; the distribution today runs
+     * 17, 17, 17, 16, 16, 16, then six at 15, four at 14, four at 13, five at
+     * 12, and a long tail at 11 and below.
+     *
+     * Came down from 19 by removing three frames that were not layers: a
+     * `FormsService` method that forwarded its arguments unchanged to the
+     * forms builder, a rung of lexico-ingestion's finite-verb cascade whose
+     * whole body re-ran three guards the rungs above had already applied, and
+     * a caelundas method that destructured six fields and passed the same six
+     * on. Nothing was merged that was doing work.
+     *
+     * Three stacks now sit at 17 and pin the ratchet: `LexicoIngestionCommand.run`,
+     * and callidescope-nx's `depthExecutor` and `breadthExecutor`. Sixteen is
+     * one frame from each, and neither one is obviously spare — lexico's
+     * remaining seventeen are a command, a recursion pair, a parse, and the
+     * mood/voice/tense/number/person descent, each of which earns its frame.
+     * Reaching 16 by collapsing one of those would buy the number and cost the
+     * code, which is the trade this comment exists to refuse.
      */
-    maximumDepth: 19,
+    maximumDepth: 17,
     spreadThreshold: 4,
   },
 };

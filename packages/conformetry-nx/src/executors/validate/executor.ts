@@ -1,6 +1,6 @@
 // 🛠️ Utilities
 
-import { resolvePluginService } from "../../plugin-context.utilities";
+import { resolvePluginService } from "../../modules/plugin/plugin-context.utilities";
 
 import type { ValidateExecutorOptions } from "./executor.types";
 import type { ExecutorContext } from "@nx/devkit";

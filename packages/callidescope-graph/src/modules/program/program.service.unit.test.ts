@@ -171,6 +171,24 @@ describe(ProgramService, () => {
     ).toThrow(ProgramConfigurationError);
   });
 
+  it("builds no program at all when one project cannot be read", async () => {
+    // Deliberately not partial. A caller writes its report before it weighs
+    // its findings, so half a graph is a published wrong answer rather than a
+    // smaller right one.
+    const broken = await buildProject({
+      configuration: "{ not json",
+      name: "broken",
+    });
+    const readable = await buildProject({ name: "readable" });
+
+    expect(() =>
+      buildSubject().buildPrograms({
+        projects: [broken.project, readable.project],
+        workspaceRoot: readable.workspaceRoot,
+      }),
+    ).toThrow(ProgramConfigurationError);
+  });
+
   it("resolves a path that is not a symlink to itself", () => {
     expect(buildSubject().toRealPath("/workspace/a.ts")).toContain("a.ts");
   });

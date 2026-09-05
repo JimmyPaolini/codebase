@@ -47,47 +47,22 @@ export class PhaseCalculationService {
   // 🔏 Private Methods
 
   /**
-   * Derives brightness.
+   * Derives apparent brightness from illumination and distance.
+   *
+   * Inverse-square: the same illuminated fraction seen twice as far away
+   * reads a quarter as bright. Relative, not a magnitude — only ever compared
+   * against other samples of the same body.
    */
   private getBrightness(args: BrightnessArguments): number {
     return args.illumination / args.distance ** 2;
   }
 
   /**
-   * Derives brightnesses result.
-   */
-  private getBrightnessesResult(args: BrightnessesArguments): {
-    currentBrightness: number;
-    nextBrightnesses: number[];
-    previousBrightnesses: number[];
-  } {
-    const {
-      currentDistance,
-      currentIllumination,
-      nextDistances,
-      nextIlluminations,
-      previousDistances,
-      previousIlluminations,
-    } = args;
-    const currentBrightness = this.getBrightness({
-      distance: currentDistance,
-      illumination: currentIllumination,
-    });
-    const previousBrightnesses = this.mapBrightnessArray(
-      previousDistances,
-      previousIlluminations,
-      "previous",
-    );
-    const nextBrightnesses = this.mapBrightnessArray(
-      nextDistances,
-      nextIlluminations,
-      "next",
-    );
-    return { currentBrightness, nextBrightnesses, previousBrightnesses };
-  }
-
-  /**
-   * Handles map brightness array.
+   * Derives one brightness per sample, refusing mismatched sample arrays.
+   *
+   * The two arrays are read positionally — sample `n`'s distance against
+   * sample `n`'s illumination — so a length mismatch is not a shorter answer
+   * but a wrong one, and the `label` names which margin was malformed.
    */
   private mapBrightnessArray(
     distances: number[],
@@ -271,28 +246,32 @@ export class PhaseCalculationService {
 
   /**
    * Derives brightnesses from current and margin illumination/distance samples.
+   *
+   * The margins are what make a brightness maximum detectable: a sample is
+   * only brightest if the samples either side of it are dimmer, so all three
+   * are computed together rather than one call at a time.
    */
   getBrightnesses(args: BrightnessesArguments): {
     currentBrightness: number;
     nextBrightnesses: number[];
     previousBrightnesses: number[];
   } {
-    const {
-      currentDistance,
-      currentIllumination,
-      nextDistances,
-      nextIlluminations,
-      previousDistances,
-      previousIlluminations,
-    } = args;
-    return this.getBrightnessesResult({
-      currentDistance,
-      currentIllumination,
-      nextDistances,
-      nextIlluminations,
-      previousDistances,
-      previousIlluminations,
-    });
+    return {
+      currentBrightness: this.getBrightness({
+        distance: args.currentDistance,
+        illumination: args.currentIllumination,
+      }),
+      nextBrightnesses: this.mapBrightnessArray(
+        args.nextDistances,
+        args.nextIlluminations,
+        "next",
+      ),
+      previousBrightnesses: this.mapBrightnessArray(
+        args.previousDistances,
+        args.previousIlluminations,
+        "previous",
+      ),
+    };
   }
 
   /**

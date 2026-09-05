@@ -59,7 +59,7 @@ Call stacks traced through `packages/conformetry-python`, deepest first. Each fr
 | Measure | Value |
 | --- | --- |
 | Callables | 11 |
-| Files | 8 |
+| Files | 9 |
 | Calls traced | 20 |
 | Call stacks | 1 |
 | Deepest stack | 6 |

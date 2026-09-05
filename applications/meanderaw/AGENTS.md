@@ -16,12 +16,12 @@ nx run meanderaw:start
 ## 🏛️ Before You Change a Meander
 
 Meander geometry is governed by a charter of seven invariants, five of which are fixed.
-They are measured against all 3,926 committed SVGs, not read off the code, so
+They are measured against all 3,981 committed SVGs, not read off the code, so
 they are facts about the output rather than intentions in the source. The full charter,
 with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
 **The named half of the sweep runs to `MAXIMUM_VALUE`,** so every drawing the command line
-can be asked for is one this repository commits and the charter gates — 372 named patterns,
+can be asked for is one this repository commits and the charter gates — 427 named patterns,
 each family from its own structural minimum through 12 rows. It stopped at 8 until
 [#507](https://github.com/JimmyPaolini/codebase/issues/507), which lived in the four row
 counts between, so do not give that half a sweep maximum of its own again. The `mosaic`
@@ -35,7 +35,10 @@ every drawing in it inverts a `mosaic` tile this repository has already committe
 give it a maximum of its own: that condition is what lets the corridor-identity gate cover
 the half completely, and it is the only thing standing between 375 files and 28,876.
 
-Adding four row counts per family moved most of the published counts, so a figure below
+Adding four row counts per family moved most of the published counts, and so did giving
+every `branch` mode a parameter of its own — `rung` a direction, `stagger` a branch count
+the sweep draws at four values, and `comb` a direction whose downward half the unmodified
+drawing already was — and `negative` growing from three sources to ten. So a figure below
 that disagrees with a measurement is more likely stale than wrong.
 
 The three that most often catch a change:
@@ -49,11 +52,11 @@ The three that most often catch a change:
   rather than an unimplemented one. See "The Parallel Family" in [README.md](./README.md).
 - **No branching and no crossing.** Ink has zero T-junctions everywhere except `negative`
   and `branch`, the two families added to branch, and `chain`/`snake` under
-  `edge`/`edge-flip`, which branch where their zigzag lands mid-border — 4,030 junctions
-  across 159 of the 372 named patterns, 3,054 of them `negative`'s and 616 `branch`'s. It
-  has zero X-junctions everywhere except `cross` drawn solid — 12 per document at every one
-  of its seven row counts, and none under its `interrupted` modifier, where the break takes
-  the junction out of the ink graph — and `negative` under `brick-straight`,
+  `edge`/`edge-flip`, which branch where their zigzag lands mid-border — 5,152 junctions
+  across 214 of the 427 named patterns, 3,054 of them `negative`'s and 1,738 `branch`'s.
+  It has zero X-junctions everywhere except `cross` drawn solid — 12 per document at every
+  one of its seven row counts, and none under its `interrupted` modifier, where the break
+  takes the junction out of the ink graph — and `negative` under `brick-straight`,
   `brick-upright`, and `grid`, which carry 705 between their thirty documents.
   These two are the charter's negotiable invariants, so a family may break them — but only
   deliberately, and never as a side effect of a geometry fix. Both counts are measured by

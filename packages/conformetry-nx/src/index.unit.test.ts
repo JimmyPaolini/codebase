@@ -1,7 +1,7 @@
 import { createTree } from "nx/src/generators/testing-utils/create-tree";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { resolvePluginService } from "./plugin-context.utilities";
+import { resolvePluginService } from "./modules/plugin/plugin-context.utilities";
 
 import conformetryPlugin, { runConformetryGenerator } from "./index";
 
@@ -9,7 +9,7 @@ import type { CreateNodesContext } from "@nx/devkit";
 
 // The plugin service compiles a NestJS graph and reads the workspace; what
 // these entry points own is the shape Nx expects back from them.
-vi.mock("./plugin-context.utilities", () => ({
+vi.mock("./modules/plugin/plugin-context.utilities", () => ({
   resolvePluginService: vi.fn(),
 }));
 

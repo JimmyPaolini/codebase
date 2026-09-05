@@ -159,17 +159,32 @@ Call stacks traced through `packages/callidescope-configuration`, deepest first.
 
 | Measure | Value |
 | --- | --- |
-| Callables | 31 |
+| Callables | 42 |
 | Files | 13 |
-| Calls traced | 23 |
-| Call stacks | 0 |
-| Deepest stack | 0 |
+| Calls traced | 40 |
+| Call stacks | 2 |
+| Deepest stack | 3 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 2 |
+| Unfollowable calls | 3 |
 
 ### Call stacks (depth)
 
-None.
+**1. `InputService.suggest`** — depth 3 · orphan-root
+
+```text
+🚀 InputService.suggest(input: string): Promise<{ title: string; value: string; }[]> [packages/callidescope-configuration/src/modules/input/input.service.ts:150]
+  └─> InputService.completeSuggestions(args: { input: string; suggestions: readonly string[]; }): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:73]
+     ↳ Narrows a suggestion list to what has been typed so far.
+    └─> InputService.filter(…)(suggestion: string): boolean [packages/callidescope-configuration/src/modules/input/input.service.ts:78]
+```
+
+**2. `callbackSchema`** — depth 2 · orphan-root
+
+```text
+🚀 callbackSchema<TCallback>(): z.ZodType<TCallback> [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:178]
+   ↳ Accepts a function-valued option without inspecting its signature.
+  └─> custom(…)(value: unknown): value is Function [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:179]
+```
 
 ### Module spread
 
@@ -181,17 +196,25 @@ None.
 | --- | --- | --- | --- |
 | `ConfigurationService.resolveConfiguration` | 8 | `ConfigurationService.resolveAllowSpreadFor`, `ConfigurationService.resolveEntryPoints`, `ConfigurationService.resolveExclude`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownDestination`, `ConfigurationService.resolveProjectReadmes`, `ConfigurationService.resolveWorkspaceStructure` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:375` |
 | `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:340` |
-| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:177` |
+| `InputService.promptForAutocompleteMultiselect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.filter(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:139` |
 
 <details>
-<summary>4 more callables</summary>
+<summary>12 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `InputService.promptForSelect` | 2 | `InputService.map(…)`, `InputService.find(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:87` |
+| `InputService.promptForSelect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.find(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:188` |
+| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:177` |
+| `InputService.assertCanPrompt` | 2 | `InputService.isAtTerminal`, `missingInputError` | `packages/callidescope-configuration/src/modules/input/input.service.ts:41` |
+| `InputService.suggest` | 2 | `InputService.map(…)`, `InputService.completeSuggestions` | `packages/callidescope-configuration/src/modules/input/input.service.ts:150` |
+| `InputService.resolveFormatOption` | 2 | `InputService.isAtTerminal`, `InputService.promptForSelect` | `packages/callidescope-configuration/src/modules/input/input.service.ts:231` |
+| `callbackSchema` | 1 | `custom(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:178` |
 | `ConfigurationService.findRepositoryRoot` | 1 | `ConfigurationService.some(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:109` |
 | `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:133` |
-| `InputService.parseCommaDelimitedOption` | 1 | `InputService.map(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:55` |
+| `missingInputError` | 1 | `InputError.constructor` | `packages/callidescope-configuration/src/modules/input/input.constants.ts:27` |
+| `promptCancelledError` | 1 | `InputError.constructor` | `packages/callidescope-configuration/src/modules/input/input.constants.ts:39` |
+| `InputService.completeSuggestions` | 1 | `InputService.filter(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:73` |
+| `InputService.parseCommaDelimitedOption` | 1 | `InputService.map(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:96` |
 
 </details>
 

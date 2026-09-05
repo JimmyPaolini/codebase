@@ -1,17 +1,18 @@
 import { NestFactory } from "@nestjs/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { GeneratorService } from "./modules/generator/generator.service";
-import { OptionsService } from "./modules/options/options.service";
-import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./modules/plugin/plugin.constants";
-import { PluginService } from "./modules/plugin/plugin.service";
-import { ProjectsService } from "./modules/projects/projects.service";
+import { GeneratorService } from "../generator/generator.service";
+import { OptionsService } from "../options/options.service";
+import { ProjectsService } from "../projects/projects.service";
+
 import {
   resolveGeneratorService,
   resolveOptionsService,
   resolvePluginService,
   resolveProjectsService,
 } from "./plugin-context.utilities";
+import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./plugin.constants";
+import { PluginService } from "./plugin.service";
 
 import type nestCore from "@nestjs/core";
 
