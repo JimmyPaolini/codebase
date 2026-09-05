@@ -25,34 +25,34 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
 **1. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:48]
-  └─> TypescriptService.handleFunction(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:279]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:62]
+  └─> TypescriptService.handleFunction(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:293]
      ↳ Increments function, method, async, sync, exported, and generic counts for a function node.
-    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:369]
+    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:383]
        ↳ Returns true when the node has an export modifier keyword.
-      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:375]
+      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:389]
 ```
 
 **2. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:53]
-  └─> TypescriptService.handleEnum(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:273]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:67]
+  └─> TypescriptService.handleEnum(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:287]
      ↳ Increments enum and exported counts for an enum declaration node.
-    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:369]
+    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:383]
        ↳ Returns true when the node has an export modifier keyword.
-      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:375]
+      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:389]
 ```
 
 **3. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:55]
-  └─> TypescriptService.handleFunction(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:279]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:69]
+  └─> TypescriptService.handleFunction(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:293]
      ↳ Increments function, method, async, sync, exported, and generic counts for a function node.
-    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:369]
+    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:383]
        ↳ Returns true when the node has an export modifier keyword.
-      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:375]
+      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:389]
 ```
 
 <details>
@@ -61,85 +61,85 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
 **4. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:57]
-  └─> TypescriptService.handleFunction(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:279]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:71]
+  └─> TypescriptService.handleFunction(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:293]
      ↳ Increments function, method, async, sync, exported, and generic counts for a function node.
-    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:369]
+    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:383]
        ↳ Returns true when the node has an export modifier keyword.
-      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:375]
+      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:389]
 ```
 
 **5. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:59]
-  └─> TypescriptService.handleMethodOrAccessor(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:323]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:73]
+  └─> TypescriptService.handleMethodOrAccessor(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:337]
      ↳ Increments method and async or sync counts for a method or accessor node.
-    └─> TypescriptService.hasAsyncKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:357]
+    └─> TypescriptService.hasAsyncKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:371]
        ↳ Returns true when the node has an async modifier keyword.
-      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:363]
+      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:377]
 ```
 
 **6. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:63]
-  └─> TypescriptService.handleInterface(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:313]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:77]
+  └─> TypescriptService.handleInterface(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:327]
      ↳ Increments interface, exported, and generic counts for an interface declaration node.
-    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:369]
+    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:383]
        ↳ Returns true when the node has an export modifier keyword.
-      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:375]
+      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:389]
 ```
 
 **7. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:65]
-  └─> TypescriptService.handleMethodOrAccessor(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:323]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:79]
+  └─> TypescriptService.handleMethodOrAccessor(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:337]
      ↳ Increments method and async or sync counts for a method or accessor node.
-    └─> TypescriptService.hasAsyncKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:357]
+    └─> TypescriptService.hasAsyncKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:371]
        ↳ Returns true when the node has an async modifier keyword.
-      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:363]
+      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:377]
 ```
 
 **8. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:67]
-  └─> TypescriptService.handleMethodOrAccessor(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:323]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:81]
+  └─> TypescriptService.handleMethodOrAccessor(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:337]
      ↳ Increments method and async or sync counts for a method or accessor node.
-    └─> TypescriptService.hasAsyncKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:357]
+    └─> TypescriptService.hasAsyncKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:371]
        ↳ Returns true when the node has an async modifier keyword.
-      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:363]
+      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:377]
 ```
 
 **9. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:69]
-  └─> TypescriptService.handleTypeAlias(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:336]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:83]
+  └─> TypescriptService.handleTypeAlias(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:350]
      ↳ Increments exported and generic counts for a type alias declaration node.
-    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:369]
+    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:383]
        ↳ Returns true when the node has an export modifier keyword.
-      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:375]
+      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:389]
 ```
 
 **10. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:71]
-  └─> TypescriptService.handleVariable(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:345]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:85]
+  └─> TypescriptService.handleVariable(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:359]
      ↳ Increments constant and exported counts for a const variable statement.
-    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:369]
+    └─> TypescriptService.hasExportKeyword(node: tsCompiler.Node): boolean [packages/codometer-languages/src/modules/typescript/typescript.service.ts:383]
        ↳ Returns true when the node has an export modifier keyword.
-      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:375]
+      └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:389]
 ```
 
 **11. `TypescriptService.anonymous`** — depth 2 · orphan-root
 
 ```text
-🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:61]
-  └─> TypescriptService.handleImport(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:299]
+🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:75]
+  └─> TypescriptService.handleImport(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:313]
      ↳ Increments import count and tracks the external package name if applicable.
 ```
 
@@ -156,7 +156,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `LanguagesService.analyze` | 11 | `CssService.analyze`, `HclService.analyze`, `JsonService.analyze`, `JupyterService.analyze`, `MarkdownService.analyze`, `PythonService.analyze`, `ShellService.analyze`, `SqlService.analyze`, `TomlService.analyze`, `TypescriptService.analyze`, `YamlService.analyze` | `packages/codometer-languages/src/modules/languages/languages.service.ts:54` |
-| `TypescriptService.walkNode` | 6 | `TypescriptService.countSymbols`, `TypescriptService.collectDocumentation`, `TypescriptService.handleClass`, `TypescriptService.forEachChild(…)`, `TypescriptService.dispatchNode`, `TypescriptService.forEachChild(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:416` |
+| `TypescriptService.walkNode` | 6 | `TypescriptService.countSymbols`, `TypescriptService.collectDocumentation`, `TypescriptService.handleClass`, `TypescriptService.forEachChild(…)`, `TypescriptService.dispatchNode`, `TypescriptService.forEachChild(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:430` |
 | `JsonService.countNode` | 5 | `JsonService.isArrayNode`, `JsonService.countArrayNode`, `JsonService.isRecordNode`, `JsonService.countRecordNode`, `JsonService.countPrimitiveNode` | `packages/codometer-languages/src/modules/json/json.service.ts:111` |
 
 <details>
@@ -166,25 +166,25 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
 | --- | --- | --- | --- |
 | `JupyterService.analyze` | 5 | `JupyterService.collectParts`, `JsonService.analyze`, `PythonService.analyzeContents`, `MarkdownService.analyzeContents`, `JupyterService.countHeadings` | `packages/codometer-languages/src/modules/jupyter/jupyter.service.ts:166` |
 | `JsonService.consumeJsoncCharacter` | 4 | `JsonService.handleLineCommentState`, `JsonService.handleBlockCommentState`, `JsonService.handleStringState`, `JsonService.consumeCharacterOutsideComments` | `packages/codometer-languages/src/modules/json/json.service.ts:66` |
-| `TypescriptService.createEmptyResult` | 4 | `TypescriptService.filter(…)`, `TypescriptService.map(…)`, `TypescriptService.filter(…)`, `TypescriptService.filter(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:186` |
+| `TypescriptService.createEmptyResult` | 4 | `TypescriptService.filter(…)`, `TypescriptService.map(…)`, `TypescriptService.filter(…)`, `TypescriptService.filter(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:200` |
 | `JsonService.parseDocuments` | 3 | `JsonService.map(…)`, `JsonService.filter(…)`, `JsonService.stripJsoncComments` | `packages/codometer-languages/src/modules/json/json.service.ts:258` |
 | `JsonService.analyze` | 3 | `JsonService.filter(…)`, `JsonService.parseDocuments`, `JsonService.countNode` | `packages/codometer-languages/src/modules/json/json.service.ts:308` |
 | `SqlService.analyze` | 3 | `SqlService.stripComments`, `SqlService.filter(…)`, `SqlService.countKeywords` | `packages/codometer-languages/src/modules/sql/sql.service.ts:63` |
-| `DocumentationMeasurementService.measureLength` | 3 | `DocumentationMeasurementService.countCharacters`, `DocumentationMeasurementService.countWords`, `DocumentationMeasurementService.countLines` | `packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:92` |
-| `DocumentationMeasurementService.measure` | 3 | `DocumentationMeasurementService.getJsDocRange`, `DocumentationMeasurementService.measureLength`, `DocumentationMeasurementService.getDeclarationName` | `packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:117` |
-| `TypescriptService.analyzeFile` | 3 | `TypescriptService.getScriptKind`, `TypescriptService.scanComments`, `TypescriptService.walkNode` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:80` |
-| `TypescriptService.handleFunction` | 3 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasAsyncKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:279` |
-| `TypescriptService.analyze` | 3 | `TypescriptService.createEmptyResult`, `TypescriptService.analyzeFile`, `TypescriptService.getCountersForFile` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:442` |
+| `DocumentationMeasurementService.measureLength` | 3 | `DocumentationMeasurementService.countCharacters`, `DocumentationMeasurementService.countWords`, `DocumentationMeasurementService.countLines` | `packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:100` |
+| `DocumentationMeasurementService.measure` | 3 | `DocumentationMeasurementService.getJsDocRange`, `DocumentationMeasurementService.measureLength`, `DocumentationMeasurementService.getDeclarationName` | `packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:125` |
+| `TypescriptService.analyzeFile` | 3 | `TypescriptService.getScriptKind`, `TypescriptService.scanComments`, `TypescriptService.walkNode` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:94` |
+| `TypescriptService.handleFunction` | 3 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasAsyncKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:293` |
+| `TypescriptService.analyze` | 3 | `TypescriptService.createEmptyResult`, `TypescriptService.analyzeFile`, `TypescriptService.getCountersForFile` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:456` |
 | `MarkdownService.countNode` | 2 | `MarkdownService.countHeading`, `MarkdownService.countListItem` | `packages/codometer-languages/src/modules/markdown/markdown.service.ts:62` |
 | `PythonService.analyzeContents` | 2 | `PythonService.map(…)`, `PythonService.analyze` | `packages/codometer-languages/src/modules/python/python.service.ts:87` |
 | `JupyterService.collectParts` | 2 | `JupyterService.readNotebook`, `JupyterService.collectCell` | `packages/codometer-languages/src/modules/jupyter/jupyter.service.ts:88` |
 | `SqlService.stripComments` | 2 | `SqlService.replaceAll(…)`, `SqlService.replaceAll(…)` | `packages/codometer-languages/src/modules/sql/sql.service.ts:48` |
 | `TomlService.analyze` | 2 | `TomlService.countLine`, `TomlService.isInsideMultilineString` | `packages/codometer-languages/src/modules/toml/toml.service.ts:98` |
-| `DocumentationMeasurementService.countWords` | 2 | `DocumentationMeasurementService.map(…)`, `DocumentationMeasurementService.filter(…)` | `packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:51` |
-| `TypescriptService.countSymbols` | 2 | `TypescriptService.getSymbolModifiers`, `TypescriptService.every(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:156` |
-| `TypescriptService.handleClass` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:266` |
-| `TypescriptService.handleInterface` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:313` |
-| `TypescriptService.handleTypeAlias` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:336` |
+| `DocumentationMeasurementService.countWords` | 2 | `DocumentationMeasurementService.map(…)`, `DocumentationMeasurementService.filter(…)` | `packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:59` |
+| `TypescriptService.countSymbols` | 2 | `TypescriptService.getSymbolModifiers`, `TypescriptService.every(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:170` |
+| `TypescriptService.handleClass` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:280` |
+| `TypescriptService.handleInterface` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:327` |
+| `TypescriptService.handleTypeAlias` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:350` |
 | `YamlService.countDocument` | 2 | `YamlService.countComments`, `YamlService.countNode` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:88` |
 | `YamlService.countNode` | 2 | `YamlService.countComments`, `YamlService.countCollection` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:95` |
 | `CssService.analyze` | 1 | `CssService.walk(…)` | `packages/codometer-languages/src/modules/css/css.service.ts:74` |
@@ -202,29 +202,29 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
 | `ShellService.countLine` | 1 | `ShellService.countStatements` | `packages/codometer-languages/src/modules/shell/shell.service.ts:45` |
 | `ShellService.analyze` | 1 | `ShellService.countLine` | `packages/codometer-languages/src/modules/shell/shell.service.ts:93` |
 | `TomlService.countLine` | 1 | `TomlService.countKey` | `packages/codometer-languages/src/modules/toml/toml.service.ts:61` |
-| `DocumentationMeasurementService.getJsDocRange` | 1 | `DocumentationMeasurementService.findLast(…)` | `packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:75` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleFunction` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:48` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleEnum` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:53` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleFunction` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:55` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleFunction` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:57` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleMethodOrAccessor` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:59` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleImport` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:61` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleInterface` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:63` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleMethodOrAccessor` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:65` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleMethodOrAccessor` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:67` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleTypeAlias` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:69` |
-| `TypescriptService.anonymous` | 1 | `TypescriptService.handleVariable` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:71` |
-| `TypescriptService.collectDocumentation` | 1 | `DocumentationMeasurementService.measure` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:108` |
-| `TypescriptService.getCountersForFile` | 1 | `TypescriptService.filter(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:221` |
-| `TypescriptService.filter(…)` | 1 | `TypescriptService.some(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:226` |
-| `TypescriptService.handleEnum` | 1 | `TypescriptService.hasExportKeyword` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:273` |
-| `TypescriptService.handleMethodOrAccessor` | 1 | `TypescriptService.hasAsyncKeyword` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:323` |
-| `TypescriptService.handleVariable` | 1 | `TypescriptService.hasExportKeyword` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:345` |
-| `TypescriptService.hasAsyncKeyword` | 1 | `TypescriptService.some(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:357` |
-| `TypescriptService.hasExportKeyword` | 1 | `TypescriptService.some(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:369` |
-| `TypescriptService.scanComments` | 1 | `TypescriptService.countComment` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:393` |
-| `TypescriptService.forEachChild(…)` | 1 | `TypescriptService.walkNode` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:429` |
-| `TypescriptService.forEachChild(…)` | 1 | `TypescriptService.walkNode` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:436` |
+| `DocumentationMeasurementService.getJsDocRange` | 1 | `DocumentationMeasurementService.findLast(…)` | `packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:83` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleFunction` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:62` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleEnum` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:67` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleFunction` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:69` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleFunction` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:71` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleMethodOrAccessor` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:73` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleImport` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:75` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleInterface` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:77` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleMethodOrAccessor` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:79` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleMethodOrAccessor` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:81` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleTypeAlias` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:83` |
+| `TypescriptService.anonymous` | 1 | `TypescriptService.handleVariable` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:85` |
+| `TypescriptService.collectDocumentation` | 1 | `DocumentationMeasurementService.measure` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:122` |
+| `TypescriptService.getCountersForFile` | 1 | `TypescriptService.filter(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:235` |
+| `TypescriptService.filter(…)` | 1 | `TypescriptService.some(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:240` |
+| `TypescriptService.handleEnum` | 1 | `TypescriptService.hasExportKeyword` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:287` |
+| `TypescriptService.handleMethodOrAccessor` | 1 | `TypescriptService.hasAsyncKeyword` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:337` |
+| `TypescriptService.handleVariable` | 1 | `TypescriptService.hasExportKeyword` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:359` |
+| `TypescriptService.hasAsyncKeyword` | 1 | `TypescriptService.some(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:371` |
+| `TypescriptService.hasExportKeyword` | 1 | `TypescriptService.some(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:383` |
+| `TypescriptService.scanComments` | 1 | `TypescriptService.countComment` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:407` |
+| `TypescriptService.forEachChild(…)` | 1 | `TypescriptService.walkNode` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:443` |
+| `TypescriptService.forEachChild(…)` | 1 | `TypescriptService.walkNode` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:450` |
 | `YamlService.countCollection` | 1 | `YamlService.countNode` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:46` |
 | `YamlService.analyze` | 1 | `YamlService.countDocument` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:123` |
 
@@ -537,14 +537,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-7423-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-221.51_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-7445-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-222.66_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-15-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-81-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-31.90_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-32.44_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -553,7 +553,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-25-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-181-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-182-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -569,8 +569,8 @@ graph LR
 ![Constants](https://img.shields.io/badge/Constants-410-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-367-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-96-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-371-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-537-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-372-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-557-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
