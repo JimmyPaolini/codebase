@@ -19,7 +19,7 @@ import { FormsService } from "./forms.service";
  */
 @Module({
   controllers: [],
-  exports: [FormsService],
+  exports: [FormsBuilderService, FormsService],
   imports: [TypeOrmModule.forFeature([Form]), WordsModule],
   providers: [
     FormsService,
