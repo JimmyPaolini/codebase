@@ -1,3 +1,6 @@
+// cspell:ignore dldldl ddddd — mosaic tile identifiers, one letter per cell
+// of the tile, from MOSAIC_MARK_LETTERS in
+// src/modules/mosaic-motif/mosaic-motif.constants.ts.
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -12,11 +15,15 @@ import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
+import { NegativeMotifService } from "../negative-motif/negative-motif.service";
+import { NegativeSourceService } from "../negative-motif/negative-source.service";
+import { NegativeTileGenerationService } from "../negative-motif/negative-tile-generation.service";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawIndexService } from "./draw-index.service";
+import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
 import { DrawCommand } from "./draw.command";
@@ -60,9 +67,13 @@ describe(DrawCommand, () => {
         MosaicTileMotifService,
         MosaicSymmetryService,
         MosaicTilesService,
+        NegativeMotifService,
+        NegativeSourceService,
+        NegativeTileGenerationService,
         DrawCombinationsService,
         DrawIndexService,
         DrawParametersService,
+        DrawNegativePermutationsService,
         DrawPermutationsService,
         SvgRenderingService,
       ],
@@ -103,9 +114,13 @@ describe(DrawCommand, () => {
         MosaicTileMotifService,
         MosaicSymmetryService,
         MosaicTilesService,
+        NegativeMotifService,
+        NegativeSourceService,
+        NegativeTileGenerationService,
         DrawCombinationsService,
         DrawIndexService,
         DrawParametersService,
+        DrawNegativePermutationsService,
         DrawPermutationsService,
         SvgRenderingService,
       ],
@@ -138,11 +153,11 @@ describe(DrawCommand, () => {
       // swirl: 9 rows * (1 + 1) modifiers = 18
       // whirl: 9 rows * (1 + 1) modifiers = 18
       // cross: 7 rows * (1 + 1) modifiers = 14
-      // negative: 10 rows * (1 + 1 + 1) modifiers = 30
+      // negative: 10 rows * (1 + 9) modifiers = 100
       // branch: 11 rows * (1 + 1 + 2 + 4) modifiers = 88
       // parallel: 9 rows * (1 + 2) modifiers = 27
       const expectedNamedTypeCount =
-        60 + 30 + 36 + 36 + 18 + 18 + 14 + 30 + 88 + 27;
+        60 + 30 + 36 + 36 + 18 + 18 + 14 + 100 + 88 + 27;
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
@@ -155,7 +170,7 @@ describe(DrawCommand, () => {
       expect(new Set(writtenFileNames).size).toBe(writtenFileNames.length);
     });
 
-    it("nests the mosaic half under the row count and column span that produced it", async () => {
+    it("nests each permutation half under the row count and column span that produced it", async () => {
       await command.run([], { outputDirectory: "output", repeatCount: 6 });
 
       const writtenFileNames = vi
@@ -169,13 +184,22 @@ describe(DrawCommand, () => {
         "output/mosaic/4-rows/permutations/1-columns",
         { recursive: true },
       );
-      // Every distinct tile at 4 through 8 rows, and nothing else: this
-      // half keeps a cap of its own where the named-type half runs to
-      // `MAXIMUM_VALUE`, because it enumerates exhaustively — see
-      // `PERMUTATION_ROWS_SWEEP_MAXIMUM`.
-      expect(permutations).toHaveLength(3179);
+      expect(mockMkdir).toHaveBeenCalledWith(
+        "output/negative/3-rows/permutations/1-columns",
+        { recursive: true },
+      );
+      // Every distinct `mosaic` tile at 4 through 8 rows and every distinct
+      // one-column `negative` source at 3 through 7, and nothing else. Both
+      // halves keep a cap where the named-type half runs to `MAXIMUM_VALUE`,
+      // because both enumerate exhaustively — see
+      // `PERMUTATION_ROWS_SWEEP_MAXIMUM`, which the negative half's own range
+      // is derived from so that every drawing in it inverts a committed tile.
+      expect(permutations).toHaveLength(3179 + 375);
       expect(permutations).toContain(
         "output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg",
+      );
+      expect(permutations).toContain(
+        "output/negative/6-rows/permutations/1-columns/dldldl-ruled.svg",
       );
     });
 
@@ -188,7 +212,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("3536 drawings");
+      expect(index?.[1]).toContain("3981 drawings");
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
       );
@@ -280,6 +304,10 @@ describe(DrawCommand, () => {
           {
             provide: DrawIndexService,
             useValue: createMock<DrawIndexService>(),
+          },
+          {
+            provide: DrawNegativePermutationsService,
+            useValue: createMock<DrawNegativePermutationsService>(),
           },
           {
             provide: DrawPermutationsService,
@@ -563,6 +591,7 @@ describe(DrawCommand, () => {
           DrawCommand,
           DrawIndexService,
           DrawParametersService,
+          DrawNegativePermutationsService,
           DrawPermutationsService,
           {
             provide: LoggerService,
@@ -579,13 +608,14 @@ describe(DrawCommand, () => {
         realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
       ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 357 enumerated named-type combinations, and
-      // every one of the 3,179 mosaic tiles, reached its real generation
+      // 🎯 every one of the 427 enumerated named-type combinations, every
+      // one of the 3,179 mosaic tiles, and every one of the 375 one-column
+      // negative sources, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
       // replace the generation services entirely. The extra file is the
       // single index page listing all of them.
-      expect(mockWriteFile).toHaveBeenCalledTimes(357 + 3179 + 1);
+      expect(mockWriteFile).toHaveBeenCalledTimes(427 + 3179 + 375 + 1);
     });
   });
 });

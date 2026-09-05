@@ -16,6 +16,7 @@ import type {
   NegativeOrientation,
   NegativeRowSpan,
   NegativeSpan,
+  NegativeTileUnit,
 } from "./negative-motif.types";
 
 /**
@@ -36,10 +37,15 @@ import type {
  *   meet becomes a lattice point where three arms of ink meet, so this
  *   family's ink T-junction count is, identically, its source's negative
  *   T-junction count. That is charter invariant 3 relaxed on purpose, and it
- *   is declared as such in the charter property test.
- * - **It does not cross.** All three sources are drawn from the survey's
- *   _branches only_ shortlist, whose negatives have zero X-junctions at every
- *   swept row count, so the ink inherits zero. Invariant 4 holds.
+ *   is declared as such in the charter property test — in every mode but
+ *   `ruled-closed`, whose source is the `lines` sub-family and whose negative
+ *   is the band's own rules with nothing joining them.
+ * - **It crosses wherever its source does, and only there.** A cell where
+ *   *four* corridors meet becomes a lattice point where four arms do, so the
+ *   ink X-junction count is likewise its source's negative X-junction count.
+ *   The three sources whose openings sit side by side — `brick-straight`,
+ *   `brick-upright`, and `grid` — inherit crossings; the other seven inherit
+ *   none. Invariant 4 is relaxed for exactly those three, by name.
  * - **It stays orthogonal and stays a band.** Every stroke is a one-pitch
  *   step along a lattice line, so only `M`, `H`, and `V` are ever emitted
  *   (invariant 1), and the canvas height comes from the shared geometry like
@@ -179,9 +185,22 @@ export class NegativeMotifService implements MotifService {
    * reaches. A dash reaching right claims the column beyond the cell it is
    * anchored on, which is why a tile ending in horizontal marks declares a
    * wider canvas than one ending in dots at the same repeat count.
+   *
+   * The floor of one is load-bearing rather than defensive. A tile carrying
+   * no rightward-reaching mark at all — a one-column tile of nothing but
+   * dots or nothing but vertical dashes, which is what `grid` and
+   * `brick-upright` are — measures zero here, and zero makes the last repeat
+   * unit draw no column and no row at all while every unit before it has
+   * already run its lattice row one column past its own: the drawing would
+   * end on an unterminated horizontal step, one column past the canvas
+   * {@link rightEdge} declares, with nothing closing it. Every tile occupies
+   * at least the lattice column its own first cell sits on, so one is the
+   * true floor and not a fudge. The three sources that predate those two all
+   * measure one or two, so nothing about their committed output moves.
    */
   private reach(tile: MosaicTile): number {
     return Math.max(
+      1,
       ...tile.pieces.map(
         (piece) =>
           piece.column +
@@ -242,6 +261,35 @@ export class NegativeMotifService implements MotifService {
   // 🌎 Public Methods
 
   /**
+   * Draws one repeat unit's corridors for a drawing named by type, rows, and
+   * modifier — the `MotifService` contract every family implements. It
+   * resolves the modifier to a source tile and hands the drawing itself to
+   * {@link tilePath}, which is the same code the permutation half runs.
+   */
+  path(geometry: GridGeometry, unit: MotifUnit): string {
+    return this.tilePath(
+      geometry,
+      this.negativeSourceService.tile(
+        this.negativeSourceService.source(unit.modifier),
+        unit.rows,
+      ),
+      unit,
+    );
+  }
+
+  /** The x-coordinate of the drawing's last lattice column, before the stroke-width margin. */
+  rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
+    return this.tileRightEdge(
+      geometry,
+      this.negativeSourceService.tile(
+        this.negativeSourceService.source(pattern.modifier),
+        pattern.rows,
+      ),
+      pattern.repeatCount,
+    );
+  }
+
+  /**
    * Draws one repeat unit's corridors: every vertical corridor down the
    * lattice columns this unit owns, and every horizontal corridor along them.
    *
@@ -250,12 +298,18 @@ export class NegativeMotifService implements MotifService {
    * draws none past its own end and owns however many columns the source's
    * last tile actually reaches, which for a tile ending in dots is fewer than
    * the tile's full column span.
+   *
+   * It takes the tile rather than resolving one, because the source of a
+   * drawing is not always a modifier: the permutation half enumerates tiles
+   * no modifier names, and it inks them through this same method rather than
+   * through a second copy of the geometry. That is what makes an enumerated
+   * drawing and a named one the same drawing wherever they coincide.
    */
-  path(geometry: GridGeometry, unit: MotifUnit): string {
-    const tile = this.negativeSourceService.tile(
-      this.negativeSourceService.source(unit.modifier),
-      unit.rows,
-    );
+  tilePath(
+    geometry: GridGeometry,
+    tile: MosaicTile,
+    unit: NegativeTileUnit,
+  ): string {
     const from = unit.unitIndex * tile.columns;
     const to = from + (unit.isLastUnit ? this.reach(tile) : tile.columns) - 1;
     const columns = Array.from(
@@ -276,16 +330,12 @@ export class NegativeMotifService implements MotifService {
     ].join("");
   }
 
-  /** The x-coordinate of the drawing's last lattice column, before the stroke-width margin. */
-  rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
-    const tile = this.negativeSourceService.tile(
-      this.negativeSourceService.source(pattern.modifier),
-      pattern.rows,
-    );
-
-    return (
-      geometry.offset +
-      this.lastColumn(tile, pattern.repeatCount) * geometry.unit
-    );
+  /** The x-coordinate the drawing of one tile ends at, before the stroke-width margin. */
+  tileRightEdge(
+    geometry: GridGeometry,
+    tile: MosaicTile,
+    repeatCount: number,
+  ): number {
+    return geometry.offset + this.lastColumn(tile, repeatCount) * geometry.unit;
   }
 }

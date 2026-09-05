@@ -48,14 +48,21 @@ export type Modifier =
   | { readonly isLeftward: boolean; readonly name: "rung" }
   | { readonly isUpward: boolean; readonly name: "comb" }
   | { readonly name: "alternated"; readonly period: number }
-  | { readonly name: "brick" }
+  | { readonly name: "brick-staggered" }
+  | { readonly name: "brick-straight" }
+  | { readonly name: "brick-upright" }
   | { readonly name: "dot"; readonly shape: DotShape }
   | { readonly name: "edge" }
   | { readonly name: "edge-flip" }
   | { readonly name: "flip" }
+  | { readonly name: "grid" }
   | { readonly name: "interrupted" }
   | { readonly name: "plied"; readonly strands: number }
   | { readonly name: "ruled" }
+  | { readonly name: "ruled-closed" }
+  | { readonly name: "ruled-raised" }
+  | { readonly name: "ruled-spaced" }
+  | { readonly name: "ruled-tall" }
   | { readonly name: "spin" }
   | { readonly name: "spin-flip" }
   | { readonly name: "split" };
