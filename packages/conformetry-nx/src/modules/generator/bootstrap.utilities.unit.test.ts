@@ -12,17 +12,18 @@ import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { bootstrapPlugin, runBootstrapCli } from "./bootstrap.utilities";
-import { DEFAULT_OUTPUT_PATH } from "./modules/generator/generator.constants";
 import {
   resolveGeneratorService,
   resolveOptionsService,
   resolveProjectsService,
-} from "./plugin-context.utilities";
+} from "../plugin/plugin-context.utilities";
+
+import { bootstrapPlugin, runBootstrapCli } from "./bootstrap.utilities";
+import { DEFAULT_OUTPUT_PATH } from "./generator.constants";
 
 // What the emitted files contain is the generator service's business and is
 // tested there; what these functions own is putting them where Nx looks.
-vi.mock("./plugin-context.utilities", () => ({
+vi.mock("../plugin/plugin-context.utilities", () => ({
   resolveGeneratorService: vi.fn(),
   resolveOptionsService: vi.fn(),
   resolveProjectsService: vi.fn(),

@@ -190,14 +190,14 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "eslint {args} --cache --cache-strategy content --cache-location \"$NX_WORKSPACE_ROOT/.eslintcache/\" --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' '*.md' 'docs/' 'scripts/' 'documentation/' 'infrastructure/'"
+          "command": "eslint {args} --cache --cache-strategy content --cache-location \"$NX_WORKSPACE_ROOT/.eslintcache/\" --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' 'docs/' 'scripts/' 'documentation/' 'infrastructure/' '**/*.md'"
         },
         "write": {
-          "command": "eslint {args} --fix --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' '*.md' 'docs/' 'scripts/' 'documentation/' 'infrastructure/'"
+          "command": "eslint {args} --fix --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' 'docs/' 'scripts/' 'documentation/' 'infrastructure/' '**/*.md'"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Lint workspace root files with ESLint (config files, scripts, documentation, infrastructure, markdown)",
+      "description": "Lint workspace root files with ESLint \u2014 config files, scripts, documentation, infrastructure, and every markdown file in the workspace. That trailing `**/*.md` is what gives `project-structure/folder-structure` reach over markdown paths, and it is a workspace-wide glob rather than a list of directories on purpose: an enumerated list only judges the directories somebody remembered to add, so it would not have caught openwiki/ \u2014 the undeclared directory that motivated the rule \u2014 and would not catch the next one. Markdown inside a project is judged twice, here and by that project's own eslint target, which costs a second and reports the same answer.",
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{projectRoot}"

@@ -10,7 +10,7 @@ import {
   resolveGeneratorService,
   resolveOptionsService,
   resolveProjectsService,
-} from "../../plugin-context.utilities";
+} from "../../modules/plugin/plugin-context.utilities";
 
 import type { SyncGeneratorOptions } from "./generator.types";
 import type { Tree } from "@nx/devkit";
