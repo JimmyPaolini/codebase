@@ -11,25 +11,27 @@ import {
 } from "@codebase/lexico-entities";
 
 import { FormsBuilderGuardsService } from "./forms-builder-guards.service";
-import { FormsBuilderOtherService } from "./forms-builder-other.service";
 import { FormsBuilderVerbService } from "./forms-builder-verb.service";
+import { FormsBuilderService } from "./forms-builder.service";
 import { FormsTransientWordsService } from "./forms-transient-words.service";
 
-describe(FormsBuilderOtherService, () => {
-  let service: FormsBuilderOtherService;
+describe(FormsBuilderService, () => {
+  let formsBuilderVerbService: FormsBuilderVerbService;
+  let service: FormsBuilderService;
   let transientWordsService: FormsTransientWordsService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        FormsBuilderOtherService,
+        FormsBuilderService,
         FormsBuilderGuardsService,
         FormsBuilderVerbService,
         FormsTransientWordsService,
       ],
     }).compile();
 
-    service = await module.resolve(FormsBuilderOtherService);
+    formsBuilderVerbService = await module.resolve(FormsBuilderVerbService);
+    service = await module.resolve(FormsBuilderService);
     transientWordsService = await module.resolve(FormsTransientWordsService);
   });
 
@@ -345,16 +347,7 @@ describe(FormsBuilderOtherService, () => {
     expect.hasAssertions();
 
     const buildFinitePersonFormsSpy = vi.spyOn(
-      service as unknown as {
-        buildFinitePersonForms: (args: {
-          lexeme: Lexeme;
-          mood: "indicative";
-          numberData: Record<string, unknown>;
-          numberKey: string;
-          tenseKey: string;
-          voiceKey: string;
-        }) => AdjectivalForm[];
-      },
+      formsBuilderVerbService,
       "buildFinitePersonForms",
     );
 
@@ -363,20 +356,20 @@ describe(FormsBuilderOtherService, () => {
         buildFiniteNumberForms: (args: {
           lexeme: Lexeme;
           mood: "indicative";
+          tense: "present";
           tenseData: Record<string, unknown>;
-          tenseKey: string;
-          voiceKey: string;
+          voice: "active";
         }) => AdjectivalForm[];
       }
     ).buildFiniteNumberForms({
       lexeme: new Lexeme(),
       mood: "indicative",
+      tense: "present",
       tenseData: {
         invalidNumber: { first: ["amo"] },
         singular: "not-a-record",
       },
-      tenseKey: "present",
-      voiceKey: "active",
+      voice: "active",
     });
 
     expect(forms).toStrictEqual([]);
@@ -440,7 +433,7 @@ describe(FormsBuilderOtherService, () => {
     expect.hasAssertions();
 
     const serviceWithInternals = service as unknown as {
-      buildFiniteMoodForms: (
+      buildFiniteVoiceForms: (
         moodData: Record<string, unknown>,
         mood: "indicative",
         lexeme: Lexeme,
@@ -452,8 +445,8 @@ describe(FormsBuilderOtherService, () => {
       guards: FormsBuilderGuardsService;
     };
 
-    const buildFiniteMoodFormsSpy = vi
-      .spyOn(serviceWithInternals, "buildFiniteMoodForms")
+    const buildFiniteVoiceFormsSpy = vi
+      .spyOn(serviceWithInternals, "buildFiniteVoiceForms")
       .mockReturnValue([]);
     vi.spyOn(serviceWithInternals.guards, "isFormMood").mockImplementation(
       (value) => value === "indicative",
@@ -468,7 +461,7 @@ describe(FormsBuilderOtherService, () => {
     );
 
     expect(forms).toStrictEqual([]);
-    expect(buildFiniteMoodFormsSpy).toHaveBeenCalledTimes(1);
+    expect(buildFiniteVoiceFormsSpy).toHaveBeenCalledTimes(1);
   });
 
   it("should dispatch gerund and supine builders when verbal noun values are records", () => {
@@ -528,7 +521,7 @@ describe(FormsBuilderOtherService, () => {
     expect.hasAssertions();
 
     const serviceWithInternals = service as unknown as {
-      buildFiniteMoodForms: (
+      buildFiniteVoiceForms: (
         moodData: Record<string, unknown>,
         mood: "indicative",
         lexeme: Lexeme,
@@ -553,9 +546,9 @@ describe(FormsBuilderOtherService, () => {
       (value) => value === "indicative",
     );
 
-    const finiteMoodSpy = vi.spyOn(
+    const finiteVoiceSpy = vi.spyOn(
       serviceWithInternals,
-      "buildFiniteMoodForms",
+      "buildFiniteVoiceForms",
     );
     const gerundSpy = vi.spyOn(serviceWithInternals, "buildGerundForms");
     const supineSpy = vi.spyOn(serviceWithInternals, "buildSupineForms");
@@ -581,87 +574,9 @@ describe(FormsBuilderOtherService, () => {
 
     expect(forms).toStrictEqual([]);
     expect(verbalNounForms).toStrictEqual([]);
-    expect(finiteMoodSpy).not.toHaveBeenCalled();
+    expect(finiteVoiceSpy).not.toHaveBeenCalled();
     expect(gerundSpy).not.toHaveBeenCalled();
     expect(supineSpy).not.toHaveBeenCalled();
-  });
-
-  it("should return empty finite person forms for invalid number key", () => {
-    expect.hasAssertions();
-
-    const forms = (
-      service as unknown as {
-        buildFinitePersonForms: (args: {
-          lexeme: Lexeme;
-          mood: "indicative";
-          numberData: Record<string, unknown>;
-          numberKey: string;
-          tenseKey: string;
-          voiceKey: string;
-        }) => unknown[];
-      }
-    ).buildFinitePersonForms({
-      lexeme: new Lexeme(),
-      mood: "indicative",
-      numberData: { first: ["amo"] },
-      numberKey: "invalid-number",
-      tenseKey: "present",
-      voiceKey: "active",
-    });
-
-    expect(forms).toStrictEqual([]);
-  });
-
-  it("should return empty finite person forms for invalid tense key", () => {
-    expect.hasAssertions();
-
-    const forms = (
-      service as unknown as {
-        buildFinitePersonForms: (args: {
-          lexeme: Lexeme;
-          mood: "indicative";
-          numberData: Record<string, unknown>;
-          numberKey: string;
-          tenseKey: string;
-          voiceKey: string;
-        }) => unknown[];
-      }
-    ).buildFinitePersonForms({
-      lexeme: new Lexeme(),
-      mood: "indicative",
-      numberData: { first: ["amo"] },
-      numberKey: "singular",
-      tenseKey: "invalid-tense",
-      voiceKey: "active",
-    });
-
-    expect(forms).toStrictEqual([]);
-  });
-
-  it("should return empty finite person forms for invalid voice key", () => {
-    expect.hasAssertions();
-
-    const forms = (
-      service as unknown as {
-        buildFinitePersonForms: (args: {
-          lexeme: Lexeme;
-          mood: "indicative";
-          numberData: Record<string, unknown>;
-          numberKey: string;
-          tenseKey: string;
-          voiceKey: string;
-        }) => unknown[];
-      }
-    ).buildFinitePersonForms({
-      lexeme: new Lexeme(),
-      mood: "indicative",
-      numberData: { first: ["amo"] },
-      numberKey: "singular",
-      tenseKey: "present",
-      voiceKey: "invalid-voice",
-    });
-
-    expect(forms).toStrictEqual([]);
   });
 
   it("should skip non-record infinitive and participle non-finite entries", () => {
@@ -798,17 +713,17 @@ describe(FormsBuilderOtherService, () => {
     expect.hasAssertions();
 
     const serviceWithInternals = service as unknown as {
-      buildFiniteMoodForms: (
+      buildFiniteTenseForms: (args: {
+        lexeme: Lexeme;
+        mood: "indicative";
+        voice: "active";
+        voiceData: Record<string, unknown>;
+      }) => Form[];
+      buildFiniteVoiceForms: (
         moodData: Record<string, unknown>,
         mood: "indicative",
         lexeme: Lexeme,
       ) => Form[];
-      buildFiniteTenseForms: (args: {
-        lexeme: Lexeme;
-        mood: "indicative";
-        voiceData: Record<string, unknown>;
-        voiceKey: string;
-      }) => Form[];
     };
 
     const buildFiniteTenseFormsSpy = vi.spyOn(
@@ -816,7 +731,7 @@ describe(FormsBuilderOtherService, () => {
       "buildFiniteTenseForms",
     );
 
-    const forms = serviceWithInternals.buildFiniteMoodForms(
+    const forms = serviceWithInternals.buildFiniteVoiceForms(
       {
         active: "not-a-record",
         invalidVoice: { present: {} },
@@ -836,15 +751,15 @@ describe(FormsBuilderOtherService, () => {
       buildFiniteNumberForms: (args: {
         lexeme: Lexeme;
         mood: "indicative";
+        tense: "present";
         tenseData: Record<string, unknown>;
-        tenseKey: string;
-        voiceKey: string;
+        voice: "active";
       }) => Form[];
       buildFiniteTenseForms: (args: {
         lexeme: Lexeme;
         mood: "indicative";
+        voice: "active";
         voiceData: Record<string, unknown>;
-        voiceKey: string;
       }) => Form[];
     };
 
@@ -856,11 +771,11 @@ describe(FormsBuilderOtherService, () => {
     const forms = serviceWithInternals.buildFiniteTenseForms({
       lexeme: new Lexeme(),
       mood: "indicative",
+      voice: "active",
       voiceData: {
         invalidTense: { singular: {} },
         present: "not-a-record",
       },
-      voiceKey: "active",
     });
 
     expect(forms).toStrictEqual([]);

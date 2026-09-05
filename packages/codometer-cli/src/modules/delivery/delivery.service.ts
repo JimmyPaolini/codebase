@@ -45,10 +45,14 @@ export class DeliveryService {
   // 🔏 Private Methods
 
   /**
-   * Append the breached documentation section to some rendered badges.
+   * Append the breached documentation section to already-rendered badges.
    *
-   * Shared by the console and the markdown file, so a breach reads the same
-   * whether it was printed or written. It needs no destination of its own.
+   * The console's half of a pair: `augmentWithDocumentation` is the markdown
+   * file's. They render the same section and cannot be one method, because
+   * the console has its badges in hand and a markdown destination does not —
+   * its badges are rendered later, inside `MarkdownService.sync`, so the
+   * section has to be folded into the destination's `render` rather than
+   * appended to a string. A change to the section has to land in both.
    */
   private appendDocumentationSection(
     badges: string,
@@ -70,6 +74,8 @@ export class DeliveryService {
    * already renders its own markdown still gets the section appended after
    * its output, the same way `renderBadges` lets a custom `render` add to the
    * built-in badges rather than reimplement them.
+   *
+   * The markdown file's half of the pair `appendDocumentationSection` opens.
    */
   private augmentWithDocumentation(
     destination: ResolvedCodometerMarkdownOutputConfiguration,

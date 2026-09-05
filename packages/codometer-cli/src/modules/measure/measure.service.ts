@@ -10,7 +10,7 @@ import { MetricIndexService } from "../limits/metric-index.service";
 
 import type { LimitFailure } from "../limits/limits.types";
 import type {
-  AnalyzeLanguageArguments,
+  AnalyzeFilesArguments,
   DocumentationMeasurement,
   MeasureArguments,
   MeasurementResult,
@@ -32,6 +32,14 @@ import type {
 
 /**
  * Aggregates every analyzer's report into a single set of statistics.
+ *
+ * The one place `@codometer/discovery`, `@codometer/languages`,
+ * `@codometer/size`, and `@codometer/customization` meet. None of the four
+ * imports another, so joining them has to happen somewhere, and a call-stack
+ * trace reports that join as module spread against `measureTarget` and
+ * `analyzeFiles` — the two methods that personally name three of the four.
+ * That is the arrangement working, not drifting: pushing the join down into
+ * one of the packages is what would couple them to each other.
  */
 @Injectable()
 export class MeasureService {
@@ -54,12 +62,19 @@ export class MeasureService {
   // 🔏 Private Methods
 
   /**
-   * Run every language analyzer over one target's files.
+   * Run every analyzer over one set of files and shape the result.
+   *
+   * Three analyzers, not one: the language analyzers, the size analyzer that
+   * produces the headline byte total, and the custom counters a configuration
+   * declares. Named for the file set rather than for any of the three, because
+   * this sits directly above `LanguagesService.analyze` in every measurement
+   * stack — named for a language it reads there as a forwarding layer instead
+   * of as the place all three are joined.
    *
    * Takes the files it is given rather than finding them, so the codebase and
    * a target naming compiled output are counted by exactly the same analyzers.
    */
-  private analyzeLanguage(args: AnalyzeLanguageArguments): {
+  private analyzeFiles(args: AnalyzeFilesArguments): {
     documentation: TypescriptDocumentationMeasurement[];
     statistics: CodeStatisticsResult;
   } {
@@ -282,7 +297,7 @@ export class MeasureService {
       args.outputPaths,
     );
     const language = this.runsAnalysis(target, "language")
-      ? this.analyzeLanguage({
+      ? this.analyzeFiles({
           configuration: args.configuration,
           discoveredFiles: this.discoveryService.categorize(files),
           workingDirectory: args.workingDirectory,
@@ -339,7 +354,7 @@ export class MeasureService {
    */
   measure(args: MeasureArguments): MeasurementResult {
     const files = this.discoverCodebase(args);
-    const codebase = this.analyzeLanguage({
+    const codebase = this.analyzeFiles({
       configuration: args.configuration,
       discoveredFiles: this.discoveryService.categorize(files),
       workingDirectory: args.workingDirectory,

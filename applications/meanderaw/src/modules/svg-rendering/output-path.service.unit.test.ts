@@ -98,6 +98,55 @@ describe(OutputPathService, () => {
         }),
       ).toBe("mosaic/6-rows/dot-bounce-6-repeats.svg");
     });
+
+    // 🎯 The unmodified `plain` drawing is a downward comb, and this names
+    // the same shape a second way — which is the point rather than a
+    // collision: `comb-upward` is the drawing no unmodified file can be,
+    // and the sweep leaves `comb-downward` out for exactly that reason.
+    it.each([
+      { isUpward: false, variant: "comb-downward" },
+      { isUpward: true, variant: "comb-upward" },
+    ])("names a comb drawing $variant", ({ isUpward, variant }) => {
+      expect(
+        service.build({
+          modifier: { isUpward, name: "comb" },
+          repeatCount: 6,
+          rows: 5,
+          type: "branch",
+        }),
+      ).toBe(`branch/5-rows/${variant}-6-repeats.svg`);
+    });
+
+    // 🎯 A direction reads on its own, so it follows the modifier's name
+    // the way `dot`'s shape does — and both values are spelled out rather
+    // than one being the unmarked case, so neither direction is the one you
+    // have to know the default to identify.
+    it.each([
+      { isLeftward: false, variant: "rung-rightward" },
+      { isLeftward: true, variant: "rung-leftward" },
+    ])("names a rung drawing $variant", ({ isLeftward, variant }) => {
+      expect(
+        service.build({
+          modifier: { isLeftward, name: "rung" },
+          repeatCount: 6,
+          rows: 5,
+          type: "branch",
+        }),
+      ).toBe(`branch/5-rows/${variant}-6-repeats.svg`);
+    });
+
+    // 🎯 A bare number would say nothing, so the parameter is named before
+    // it — the spelling `alternated` and `plied` already use.
+    it("carries stagger's branch count into the filename", () => {
+      expect(
+        service.build({
+          modifier: { branches: 4, name: "stagger" },
+          repeatCount: 6,
+          rows: 5,
+          type: "branch",
+        }),
+      ).toBe("branch/5-rows/stagger-branches-4-6-repeats.svg");
+    });
   });
 
   describe("familyDirectory", () => {

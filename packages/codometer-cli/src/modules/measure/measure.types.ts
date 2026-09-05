@@ -11,9 +11,9 @@ import type { TypescriptDocumentationMeasurement } from "@codometer/languages";
 import type { SizeResult } from "@codometer/size";
 
 /**
- * Arguments accepted when running language analysis over a target's files.
+ * Arguments accepted when running every analyzer over one set of files.
  */
-export interface AnalyzeLanguageArguments {
+export interface AnalyzeFilesArguments {
   configuration: ResolvedCodometerConfiguration;
   discoveredFiles: DiscoveryResult;
   workingDirectory: string;
