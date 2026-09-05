@@ -143,7 +143,25 @@ jobs:
           pnpm exec nx run-many --target=codometer --configuration=write --exclude=codebase
           pnpm exec nx run codebase:codometer:write
 
+      # The committer is overridden so GitHub can verify the signature that
+      # `🔐 Import GPG Key` already produces. semantic-release forces author and
+      # committer to `semantic-release-bot <semantic-release-bot@martynus.net>`,
+      # and GitHub verifies a GPG signature by matching the *committer* email
+      # against an address the signing key carries and the account has
+      # verified — a domain nobody here owns can never be one, so every release
+      # commit read `Unverified` despite being correctly signed. `index.js`
+      # spreads its own `...env` after those defaults, so what is set here wins.
+      #
+      # Only the committer pair is set: the author stays the bot, so the log
+      # still says a release was cut by a machine, exactly the way GitHub's own
+      # squash merges read `authored by a person, committed by GitHub`.
+      #
+      # This is not cosmetic. `main`'s ruleset has `required_signatures` active,
+      # and these commits land only because the admin role holds an always
+      # bypass. Verified commits stop the release depending on that bypass.
       - name: 🦸 Push Releases
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GIT_COMMITTER_EMAIL: jimmypaolini@gmail.com
+          GIT_COMMITTER_NAME: Jimmy Paolini
         run: pnpm semantic-release

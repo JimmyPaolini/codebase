@@ -15,6 +15,22 @@ import type { DotShape } from "../meander-generation/meander-generation.types";
 export const ALTERNATED_SWEEP_PERIODS: readonly number[] = [1, 3];
 
 /**
+ * `isUpward` values swept for the `comb` modifier's batch combinations.
+ *
+ * One value rather than two, and deliberately not the mode's own default:
+ * the unmodified sweep already draws the downward comb, and
+ * `--modifier comb` naming it produces a byte-identical document under a
+ * second filename — `branch-motif.service.unit.test.ts` asserts that
+ * identity, exactly as `parallel`'s does for a two-strand `plied`. Sweeping
+ * the upward one alone is what puts the direction the corpus did not have
+ * into it without putting the one it already had into it twice.
+ *
+ * `rung` sweeps both of its directions because neither is what the
+ * unmodified drawing is — that one is a `comb`.
+ */
+export const COMB_SWEEP_UPWARD_VALUES: readonly boolean[] = [true];
+
+/**
  * Every shape swept for the `dot` modifier's batch combinations. `DotShape`
  * only has two members, so this sweeps the type's full domain rather than a
  * sample of it.
@@ -36,6 +52,41 @@ export const DOT_SWEEP_SHAPES: readonly DotShape[] = ["bounce", "up"];
  * of N strands needs N rows.
  */
 export const PLIED_SWEEP_STRAND_COUNTS: readonly number[] = [3, 4];
+
+/**
+ * `isLeftward` values swept for the `rung` modifier's batch combinations.
+ *
+ * Both of them, which is the modifier's whole domain rather than a sample of
+ * it — the same reason {@link DOT_SWEEP_SHAPES} sweeps two. `false` leads,
+ * so the rightward drawing the sweep committed under the bare name before
+ * the flag existed is still the first one enumerated at each row count.
+ *
+ * The two are mirror images and every topology count is identical across
+ * them, so this pair adds no new measurement to the charter. It is swept
+ * anyway because the corpus is what the index page shows, and a direction
+ * nobody can see drawn is a direction nobody will use.
+ */
+export const RUNG_SWEEP_LEFTWARD_VALUES: readonly boolean[] = [false, true];
+
+/**
+ * `branches` values swept for the `stagger` modifier's batch combinations.
+ *
+ * A contiguous run rather than the sampled pairs `alternated` and `plied`
+ * take, because this parameter has a floor they do not and every value
+ * above it draws a visibly different crenel. The first is
+ * `MINIMUM_STAGGER_BRANCHES` itself, which is both the tightest crenel the
+ * mode admits and the only one any `stagger` was drawn at before the flag
+ * existed; each one after it widens the crenel by a single lattice column,
+ * so no value in the run repeats the one before it at another scale.
+ *
+ * It stops at six because a crenel keeps its shape and only its wavelength
+ * grows: past six branches one rail run spans most of a six-repeat band and
+ * the figure reads as a `comb` with a couple of changes of side rather than
+ * as a crenellation. Nothing structural stops a wider one — the command
+ * line accepts up to `MAXIMUM_VALUE` — so this is where the sweep stops
+ * rather than where the mode does.
+ */
+export const STAGGER_SWEEP_BRANCH_COUNTS: readonly number[] = [3, 4, 5, 6];
 
 /**
  * The gallery page `DrawCommand` writes at the root of the output directory,

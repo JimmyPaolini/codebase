@@ -69,8 +69,8 @@ describe(DrawCombinationsService, () => {
       { expected: 14, type: "cross" },
       // rows 3..12 × (none + brick + ruled)
       { expected: 30, type: "negative" },
-      // rows 2..12 × (none + rung + stagger)
-      { expected: 33, type: "branch" },
+      // rows 2..12 × (none + comb up + rung ×2 + stagger ×4)
+      { expected: 88, type: "branch" },
       // rows 4..12 × (none + plied ×2)
       { expected: 27, type: "parallel" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
@@ -80,7 +80,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(302);
+      expect(combinations).toHaveLength(357);
     });
 
     it("names every combination distinctly", () => {

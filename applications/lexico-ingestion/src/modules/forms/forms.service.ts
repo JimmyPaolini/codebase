@@ -2,15 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import {
-  Form,
-  type Lexeme,
-  type PartOfSpeech,
-} from "@codebase/lexico-entities";
+import { Form, type Lexeme } from "@codebase/lexico-entities";
 
 import { WordsService } from "../words/words.service";
 
-import { FormsBuilderOtherService } from "./forms-builder-other.service";
 import { FormsTransientWordsService } from "./forms-transient-words.service";
 
 /**
@@ -31,7 +26,6 @@ export class FormsService {
     @InjectRepository(Form)
     private readonly formRepository: Repository<Form>,
     private readonly wordsService: WordsService,
-    private readonly formsEntityBuilder: FormsBuilderOtherService,
     private readonly transientWordsService: FormsTransientWordsService,
   ) {}
 
@@ -119,22 +113,6 @@ export class FormsService {
   }
 
   // 🌎 Public Methods
-
-  /**
-   * Builds Form entities from the raw parsed forms object for a given POS.
-   * Returns an empty array when rawForms is null or the POS has no form table.
-   */
-  buildFormsForPartOfSpeech(
-    pos: PartOfSpeech,
-    rawForms: unknown,
-    lexeme: Lexeme,
-  ): Form[] {
-    return this.formsEntityBuilder.buildFormsForPartOfSpeech(
-      pos,
-      rawForms,
-      lexeme,
-    );
-  }
 
   /**
    * Saves Form entities for a Lexeme, then upserts Word rows and creates

@@ -162,12 +162,24 @@ const modifierLabel = (modifier: Modifier): string => {
     return `alternated period ${modifier.period}`;
   }
 
+  if (modifier.name === "comb") {
+    return `comb ${modifier.isUpward ? "standing up" : "hanging down"}`;
+  }
+
   if (modifier.name === "dot") {
     return `dot ${modifier.shape}`;
   }
 
   if (modifier.name === "plied") {
     return `plied ${modifier.strands}`;
+  }
+
+  if (modifier.name === "rung") {
+    return `rung pointing ${modifier.isLeftward ? "left" : "right"}`;
+  }
+
+  if (modifier.name === "stagger") {
+    return `stagger over ${modifier.branches} branches`;
   }
 
   return modifier.name;
@@ -213,7 +225,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
 
 /**
  * How long a corpus-wide measurement may take. Each of the three tests that
- * use it reads all 3,481 committed documents from disk and measures every
+ * use it reads all 3,536 committed documents from disk and measures every
  * one, which takes roughly two seconds locally but several times that on a
  * shared CI runner — past vitest's five-second default, which is what failed
  * there while passing everywhere else. Bounded rather than removed, so a
@@ -222,15 +234,18 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService()
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
 
 /**
- * How many documents `DrawCommand` commits: 302 named patterns beside 3,179
+ * How many documents `DrawCommand` commits: 357 named patterns beside 3,179
  * enumerated `mosaic` tiles.
  *
  * The named half was 174 until issue #507. It sampled row counts up to 8
  * while the command line accepted 12, and the four row counts in between
  * were where `chain` and `snake` drew self-retracing ink that no test could
- * see. That half now runs to `MAXIMUM_VALUE`, which is where the extra 128
- * come from — every family gained its own four row counts, `branch` and the
- * families with a lower structural minimum included.
+ * see. That half now runs to `MAXIMUM_VALUE`, which is where 128 of the
+ * extra 183 come from — every family gained its own four row counts,
+ * `branch` and the families with a lower structural minimum included. The
+ * remaining 55 are `branch`'s, whose modes each gained a parameter: `rung`
+ * a direction, `stagger` a branch count swept at four values, and `comb` a
+ * direction whose downward half the unmodified drawing already was.
  *
  * The `mosaic` half did not follow, and stays at 3,179. It enumerates its
  * space exhaustively rather than sampling it, so the same four row counts
@@ -238,7 +253,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
  * carries the count per row and the reason the cap is not a charter blind
  * spot.
  */
-const COMMITTED_CORPUS_SIZE = 302 + 3179;
+const COMMITTED_CORPUS_SIZE = 357 + 3179;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -465,13 +480,13 @@ describe(MeanderTopologyService, () => {
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
     //
-    // The count also pins where the sweep stops. 302 is every combination up
-    // to `MAXIMUM_VALUE`; 174 was every combination up to 8, and the 128
-    // between them are the row counts issue #507 was reachable at and
-    // untested at. Reverting the sweep to a maximum of its own would fail
-    // here rather than quietly narrow the gate.
+    // The count also pins where the sweep stops. 357 is every combination up
+    // to `MAXIMUM_VALUE`; 174 was every combination up to 8, and 128 of the
+    // difference is the row counts issue #507 was reachable at and untested
+    // at. Reverting the sweep to a maximum of its own would fail here
+    // rather than quietly narrow the gate.
     it("sweeps every named-type combination DrawCommand writes, out to the deepest row count the command line accepts", () => {
-      expect(charterSweep).toHaveLength(302);
+      expect(charterSweep).toHaveLength(357);
       expect(
         Math.max(...charterSweep.map(({ parameters }) => parameters.rows)),
       ).toBe(12);
@@ -545,8 +560,8 @@ describe(MeanderTopologyService, () => {
     );
 
     // 🎯 The `branch` family's whole claim, taken over the corpus rather
-    // than over a family's own drawings: its thirty-three documents are
-    // trees and every other one of the 3,481 is not. Reading from disk is
+    // than over a family's own drawings: its eighty-eight documents are
+    // trees and every other one of the 3,536 is not. Reading from disk is
     // what makes the second half say anything — a family that started
     // drawing loops, or one that stopped, fails here rather than in its own
     // test.
@@ -594,7 +609,7 @@ describe(MeanderTopologyService, () => {
         expect(Math.min(...negativeComponents)).toBe(1);
         expect(Math.max(...negativeComponents)).toBe(7);
 
-        expect(trees).toHaveLength(33);
+        expect(trees).toHaveLength(88);
         expect(
           [...new Set(trees.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual(["branch"]);
@@ -634,9 +649,9 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(documents).toHaveLength(302);
-      expect(tJunctions).toBe(2876);
-      expect(branching).toHaveLength(99);
+      expect(documents).toHaveLength(357);
+      expect(tJunctions).toBe(3998);
+      expect(branching).toHaveLength(154);
       expect(
         [...new Set(branching.map((name) => familyOf(name)))].toSorted(),
       ).toStrictEqual(["branch", "chain", "negative", "snake"]);
@@ -661,7 +676,7 @@ describe(MeanderTopologyService, () => {
         ).toStrictEqual([]);
 
         // 🎯 Ink crosses in exactly the seven documents that were committed
-        // to make it cross, and nowhere else in 3,481 files. The
+        // to make it cross, and nowhere else in 3,536 files. The
         // `interrupted` renderings of the same seven row counts are absent on
         // purpose: the break takes the junction out of the ink graph.
         //

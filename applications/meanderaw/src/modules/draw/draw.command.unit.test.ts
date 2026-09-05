@@ -128,8 +128,9 @@ describe(DrawCommand, () => {
       // `MAXIMUM_VALUE`: 2..12 (branch), 3..12 (mosaic, boxes, negative),
       // 4..12 (chain, snake, swirl, whirl, parallel), or 6..12 (cross),
       // crossed with "no modifier" plus every compatible modifier
-      // (alternated, dot, and plied each expand to 2 representative
-      // values):
+      // (alternated, dot, plied, and rung each expand to 2 representative
+      // values, stagger to 4, and comb to 1 — its other direction is what
+      // "no modifier" already draws):
       // mosaic: 10 rows * (1 + 2 + 2 + 1) modifiers = 60
       // boxes: 10 rows * (1 + 1 + 1) modifiers = 30
       // chain: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
@@ -138,10 +139,10 @@ describe(DrawCommand, () => {
       // whirl: 9 rows * (1 + 1) modifiers = 18
       // cross: 7 rows * (1 + 1) modifiers = 14
       // negative: 10 rows * (1 + 1 + 1) modifiers = 30
-      // branch: 11 rows * (1 + 1 + 1) modifiers = 33
+      // branch: 11 rows * (1 + 1 + 2 + 4) modifiers = 88
       // parallel: 9 rows * (1 + 2) modifiers = 27
       const expectedNamedTypeCount =
-        60 + 30 + 36 + 36 + 18 + 18 + 14 + 30 + 33 + 27;
+        60 + 30 + 36 + 36 + 18 + 18 + 14 + 30 + 88 + 27;
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
@@ -187,7 +188,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("3481 drawings");
+      expect(index?.[1]).toContain("3536 drawings");
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
       );
@@ -515,12 +516,35 @@ describe(DrawCommand, () => {
     });
 
     it.each([
+      { method: "parseBranches" as const, value: "2" },
       { method: "parsePeriod" as const, value: "2" },
       { method: "parseRepeatCount" as const, value: "2" },
       { method: "parseRows" as const, value: "2" },
       { method: "parseStrands" as const, value: "2" },
     ])("parses $method's numeric string as an integer", ({ method, value }) => {
       expect(command[method](value)).toBe(2);
+    });
+
+    // 🎯 The two boolean flags the command takes. Bare is the ordinary way
+    // to pass either, and the two spellings that turn one off are there so
+    // `--leftward false` means what a reader would expect rather than
+    // silently meaning `true` — which is what a bare presence check would
+    // have made it mean.
+    it.each([
+      { expected: true, given: "bare", value: undefined },
+      { expected: true, given: '"true"', value: "true" },
+      { expected: false, given: '"false"', value: "false" },
+      { expected: false, given: '"0"', value: "0" },
+    ])("parses --leftward $given as $expected", ({ expected, value }) => {
+      expect(command.parseLeftward(value)).toBe(expected);
+    });
+
+    it.each([
+      { expected: true, given: "bare", value: undefined },
+      { expected: false, given: '"false"', value: "false" },
+      { expected: false, given: '"0"', value: "0" },
+    ])("parses --upward $given as $expected", ({ expected, value }) => {
+      expect(command.parseUpward(value)).toBe(expected);
     });
 
     it("passes the output directory through unchanged", () => {
@@ -555,13 +579,13 @@ describe(DrawCommand, () => {
         realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
       ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 302 enumerated named-type combinations, and
+      // 🎯 every one of the 357 enumerated named-type combinations, and
       // every one of the 3,179 mosaic tiles, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
       // replace the generation services entirely. The extra file is the
       // single index page listing all of them.
-      expect(mockWriteFile).toHaveBeenCalledTimes(302 + 3179 + 1);
+      expect(mockWriteFile).toHaveBeenCalledTimes(357 + 3179 + 1);
     });
   });
 });
