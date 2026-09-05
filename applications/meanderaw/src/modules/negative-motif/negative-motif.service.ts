@@ -36,10 +36,15 @@ import type {
  *   meet becomes a lattice point where three arms of ink meet, so this
  *   family's ink T-junction count is, identically, its source's negative
  *   T-junction count. That is charter invariant 3 relaxed on purpose, and it
- *   is declared as such in the charter property test.
- * - **It does not cross.** All three sources are drawn from the survey's
- *   _branches only_ shortlist, whose negatives have zero X-junctions at every
- *   swept row count, so the ink inherits zero. Invariant 4 holds.
+ *   is declared as such in the charter property test — in every mode but
+ *   `ruled-closed`, whose source is the `lines` sub-family and whose negative
+ *   is the band's own rules with nothing joining them.
+ * - **It crosses wherever its source does, and only there.** A cell where
+ *   *four* corridors meet becomes a lattice point where four arms do, so the
+ *   ink X-junction count is likewise its source's negative X-junction count.
+ *   The three sources whose openings sit side by side — `brick-straight`,
+ *   `brick-upright`, and `grid` — inherit crossings; the other seven inherit
+ *   none. Invariant 4 is relaxed for exactly those three, by name.
  * - **It stays orthogonal and stays a band.** Every stroke is a one-pitch
  *   step along a lattice line, so only `M`, `H`, and `V` are ever emitted
  *   (invariant 1), and the canvas height comes from the shared geometry like
@@ -179,9 +184,22 @@ export class NegativeMotifService implements MotifService {
    * reaches. A dash reaching right claims the column beyond the cell it is
    * anchored on, which is why a tile ending in horizontal marks declares a
    * wider canvas than one ending in dots at the same repeat count.
+   *
+   * The floor of one is load-bearing rather than defensive. A tile carrying
+   * no rightward-reaching mark at all — a one-column tile of nothing but
+   * dots or nothing but vertical dashes, which is what `grid` and
+   * `brick-upright` are — measures zero here, and zero makes the last repeat
+   * unit draw no column and no row at all while every unit before it has
+   * already run its lattice row one column past its own: the drawing would
+   * end on an unterminated horizontal step, one column past the canvas
+   * {@link rightEdge} declares, with nothing closing it. Every tile occupies
+   * at least the lattice column its own first cell sits on, so one is the
+   * true floor and not a fudge. The three sources that predate those two all
+   * measure one or two, so nothing about their committed output moves.
    */
   private reach(tile: MosaicTile): number {
     return Math.max(
+      1,
       ...tile.pieces.map(
         (piece) =>
           piece.column +

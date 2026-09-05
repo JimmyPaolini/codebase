@@ -71,8 +71,14 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "alternated": {
       return [1, 2, 3].map((period) => ({ name: "alternated", period }));
     }
-    case "brick": {
-      return [{ name: "brick" }];
+    case "brick-staggered": {
+      return [{ name: "brick-staggered" }];
+    }
+    case "brick-straight": {
+      return [{ name: "brick-straight" }];
+    }
+    case "brick-upright": {
+      return [{ name: "brick-upright" }];
     }
     case "dot": {
       return [
@@ -89,6 +95,9 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "flip": {
       return [{ name: "flip" }];
     }
+    case "grid": {
+      return [{ name: "grid" }];
+    }
     case "interrupted": {
       return [{ name: "interrupted" }];
     }
@@ -100,6 +109,18 @@ const modifiersNamed = (name: string): Modifier[] => {
     }
     case "ruled": {
       return [{ name: "ruled" }];
+    }
+    case "ruled-closed": {
+      return [{ name: "ruled-closed" }];
+    }
+    case "ruled-raised": {
+      return [{ name: "ruled-raised" }];
+    }
+    case "ruled-spaced": {
+      return [{ name: "ruled-spaced" }];
+    }
+    case "ruled-tall": {
+      return [{ name: "ruled-tall" }];
     }
     case "rung": {
       return [{ name: "rung" }];

@@ -137,11 +137,11 @@ describe(DrawCommand, () => {
       // swirl: 9 rows * (1 + 1) modifiers = 18
       // whirl: 9 rows * (1 + 1) modifiers = 18
       // cross: 7 rows * (1 + 1) modifiers = 14
-      // negative: 10 rows * (1 + 1 + 1) modifiers = 30
+      // negative: 10 rows * (1 + 9) modifiers = 100
       // branch: 11 rows * (1 + 1 + 1) modifiers = 33
       // parallel: 9 rows * (1 + 2) modifiers = 27
       const expectedNamedTypeCount =
-        60 + 30 + 36 + 36 + 18 + 18 + 14 + 30 + 33 + 27;
+        60 + 30 + 36 + 36 + 18 + 18 + 14 + 100 + 33 + 27;
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
@@ -187,7 +187,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("3481 drawings");
+      expect(index?.[1]).toContain("3551 drawings");
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
       );
@@ -555,13 +555,13 @@ describe(DrawCommand, () => {
         realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
       ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 302 enumerated named-type combinations, and
+      // 🎯 every one of the 372 enumerated named-type combinations, and
       // every one of the 3,179 mosaic tiles, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
       // replace the generation services entirely. The extra file is the
       // single index page listing all of them.
-      expect(mockWriteFile).toHaveBeenCalledTimes(302 + 3179 + 1);
+      expect(mockWriteFile).toHaveBeenCalledTimes(372 + 3179 + 1);
     });
   });
 });
