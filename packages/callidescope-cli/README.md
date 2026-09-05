@@ -457,7 +457,7 @@ comment in full, because a machine reading it has no line width to respect —
 the longest in the workspace runs 1,507 characters.
 
 Annotations are read only for the frames a report actually prints, not for all
-4,728 callables. Rendering a type is the one genuinely costly thing the checker
+4,727 callables. Rendering a type is the one genuinely costly thing the checker
 does, and reports touch a few hundred frames.
 
 ## How it follows a call
