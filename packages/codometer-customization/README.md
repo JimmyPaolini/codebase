@@ -13,8 +13,8 @@ Call stacks traced through `packages/codometer-customization`, deepest first. Ea
 | Measure | Value |
 | --- | --- |
 | Callables | 8 |
-| Files | 7 |
-| Calls traced | 4 |
+| Files | 8 |
+| Calls traced | 5 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
@@ -33,14 +33,15 @@ None.
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `CustomizationService.countMatches` | 1 | `CustomizationService.filter(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:40` |
+| `CustomizationService.filter(…)` | 1 | `CustomizationService.some(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:41` |
 | `CustomizationService.analyze` | 1 | `CustomizationService.map(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:49` |
-| `CustomizationService.map(…)` | 1 | `CustomizationService.countMatches` | `packages/codometer-customization/src/modules/customization/customization.service.ts:54` |
 
 <details>
-<summary>1 more callables</summary>
+<summary>2 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `CustomizationService.map(…)` | 1 | `CustomizationService.countMatches` | `packages/codometer-customization/src/modules/customization/customization.service.ts:54` |
 | `CustomizationService.buildSymbolCounters` | 1 | `CustomizationService.flatMap(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:72` |
 
 </details>

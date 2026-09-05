@@ -72,7 +72,7 @@ Call stacks traced through `packages/codometer-agents`, deepest first. Each fram
 | Measure | Value |
 | --- | --- |
 | Callables | 0 |
-| Files | 2 |
+| Files | 3 |
 | Calls traced | 0 |
 | Call stacks | 0 |
 | Deepest stack | 0 |

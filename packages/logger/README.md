@@ -87,7 +87,7 @@ Call stacks traced through `packages/logger`, deepest first. Each frame shows wh
 | Measure | Value |
 | --- | --- |
 | Callables | 24 |
-| Files | 8 |
+| Files | 9 |
 | Calls traced | 5 |
 | Call stacks | 1 |
 | Deepest stack | 4 |

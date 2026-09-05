@@ -56,7 +56,7 @@ Call stacks traced through `packages/conformetry-markdown`, deepest first. Each 
 | Measure | Value |
 | --- | --- |
 | Callables | 33 |
-| Files | 9 |
+| Files | 10 |
 | Calls traced | 46 |
 | Call stacks | 9 |
 | Deepest stack | 3 |

@@ -13,38 +13,16 @@ Call stacks traced through `packages/codometer-changes`, deepest first. Each fra
 | Measure | Value |
 | --- | --- |
 | Callables | 31 |
-| Files | 7 |
-| Calls traced | 27 |
-| Call stacks | 2 |
-| Deepest stack | 4 |
+| Files | 8 |
+| Calls traced | 30 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
 
 ### Call stacks (depth)
 
-**1. `ChangesService.collectProjectRows`** — depth 4 · orphan-root
-
-```text
-🚀 ChangesService.collectProjectRows(args: CollectProjectRowsArguments): MetricCollection [packages/codometer-changes/src/modules/changes/changes.service.ts:110]
-   ↳ Joins one project's current report to its baseline.
-  └─> ChangesService.readBaseline(args: CollectProjectRowsArguments): Map<string, ReportMetric> [packages/codometer-changes/src/modules/changes/changes.service.ts:154]
-     ↳ Reads a baseline report into a name-to-metric lookup.
-    └─> ChangesService.readReport(workingDirectory: string, reportPath: string): ProjectReport [packages/codometer-changes/src/modules/changes/changes.service.ts:240]
-       ↳ Parses a codometer report, tolerating an absent or malformed file.
-      └─> ChangesService.parseReport(workingDirectory: string, reportPath: string): CodometerReport | undefined [packages/codometer-changes/src/modules/changes/changes.service.ts:137]
-         ↳ Parses the report's JSON body, tolerating an absent or malformed file.
-```
-
-**2. `ChangesService.readMetrics`** — depth 4 · orphan-root
-
-```text
-🚀 ChangesService.readMetrics(target: ReportTarget): ReportMetric[] [packages/codometer-changes/src/modules/changes/changes.service.ts:222]
-   ↳ Pulls every metric a target produced out of the report.
-  └─> ChangesService.map(…)(…): { breach: MetricSeverity | undefined; empty: boolean; label: string; limit: number | undefined; name: string; unit: "bytes" | null; value: number; } [packages/codometer-changes/src/modules/changes/changes.service.ts:223]
-    └─> ChangesService.readBreach(limits: readonly ReportLimit[]): MetricSeverity | undefined [packages/codometer-changes/src/modules/changes/changes.service.ts:175]
-       ↳ The severity of the worst limit a metric breached, if it breached one.
-      └─> ChangesService.filter(…)(…): boolean [packages/codometer-changes/src/modules/changes/changes.service.ts:178]
-```
+None.
 
 ### Module spread
 
@@ -59,7 +37,7 @@ None.
 | `ChangesService.map(…)` | 3 | `ChangesService.readBreach`, `ChangesService.readLabel`, `ChangesService.readGoverningLimit` | `packages/codometer-changes/src/modules/changes/changes.service.ts:223` |
 
 <details>
-<summary>7 more callables</summary>
+<summary>10 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -68,8 +46,11 @@ None.
 | `ChangesService.readBreach` | 2 | `ChangesService.filter(…)`, `ChangesService.some(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:175` |
 | `ChangesService.readGoverningLimit` | 2 | `ChangesService.filter(…)`, `ChangesService.map(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:195` |
 | `ChangesService.readReport` | 2 | `ChangesService.parseReport`, `ChangesService.flatMap(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:240` |
+| `ChangesService.map(…)` | 1 | `ChangesService.buildMeasuredRow` | `packages/codometer-changes/src/modules/changes/changes.service.ts:120` |
 | `ChangesService.readLabel` | 1 | `ChangesService.find(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:206` |
 | `ChangesService.readMetrics` | 1 | `ChangesService.map(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:222` |
+| `ChangesService.flatMap(…)` | 1 | `ChangesService.readMetrics` | `packages/codometer-changes/src/modules/changes/changes.service.ts:256` |
+| `ChangesService.map(…)` | 1 | `ChangesService.collectProjectRows` | `packages/codometer-changes/src/modules/changes/changes.service.ts:290` |
 
 </details>
 

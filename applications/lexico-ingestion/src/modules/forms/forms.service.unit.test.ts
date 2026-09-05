@@ -8,7 +8,6 @@ import { Form, Lexeme, NominalForm, WordForm } from "@codebase/lexico-entities";
 import { createRepositoryMock } from "../../../testing/mocks";
 import { WordsService } from "../words/words.service";
 
-import { FormsBuilderOtherService } from "./forms-builder-other.service";
 import { FormsTransientWordsService } from "./forms-transient-words.service";
 import { FormsService } from "./forms.service";
 
@@ -20,7 +19,6 @@ describe(FormsService, () => {
   let formRepository: DeepMocked<Repository<Form>>;
   let wordFormRepository: DeepMocked<Repository<WordForm>>;
   let wordsService: Mocked<WordsService>;
-  let formsBuilderHelper: Mocked<FormsBuilderOtherService>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -47,15 +45,6 @@ describe(FormsService, () => {
               .mockResolvedValue(undefined),
           }),
         },
-        {
-          provide: FormsBuilderOtherService,
-          useValue: createMock<FormsBuilderOtherService>({
-            buildFormsForPartOfSpeech:
-              vi.fn<
-                (partOfSpeech: string, data: unknown, lexeme: Lexeme) => Form[]
-              >(),
-          }),
-        },
         FormsTransientWordsService,
       ],
     }).compile();
@@ -64,7 +53,6 @@ describe(FormsService, () => {
     formRepository = module.get(getRepositoryToken(Form));
     wordFormRepository = module.get(getRepositoryToken(WordForm));
     wordsService = module.get(WordsService);
-    formsBuilderHelper = module.get(FormsBuilderOtherService);
   });
 
   it("is defined", () => {
@@ -191,26 +179,6 @@ describe(FormsService, () => {
 
       expect(formsByWord.has("amo")).toBe(true);
       expect(formsByWord.has("-amo")).toBe(true);
-    });
-  });
-
-  describe("buildFormsForPartOfSpeech", () => {
-    it("should delegate to FormsBuilderHelper", () => {
-      const lexeme = new Lexeme();
-      const builtForms = [new NominalForm()];
-      formsBuilderHelper.buildFormsForPartOfSpeech.mockReturnValue(builtForms);
-
-      const result = service.buildFormsForPartOfSpeech(
-        "noun",
-        { any: "value" },
-        lexeme,
-      );
-
-      const buildFormsCall =
-        formsBuilderHelper.buildFormsForPartOfSpeech.mock.calls[0];
-
-      expect(buildFormsCall).toStrictEqual(["noun", { any: "value" }, lexeme]);
-      expect(result).toBe(builtForms);
     });
   });
 

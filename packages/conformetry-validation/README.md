@@ -110,7 +110,7 @@ Call stacks traced through `packages/conformetry-validation`, deepest first. Eac
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 3 |
+| Unfollowable calls | 4 |
 
 ### Call stacks (depth)
 

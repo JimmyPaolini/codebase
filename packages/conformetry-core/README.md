@@ -107,23 +107,16 @@ Call stacks traced through `packages/conformetry-core`, deepest first. Each fram
 | Measure | Value |
 | --- | --- |
 | Callables | 51 |
-| Files | 23 |
-| Calls traced | 41 |
-| Call stacks | 1 |
-| Deepest stack | 2 |
+| Files | 24 |
+| Calls traced | 43 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 1 |
 
 ### Call stacks (depth)
 
-**1. `InventoryService.describePairing`** — depth 2 · orphan-root
-
-```text
-🚀 InventoryService.describePairing(pairing: InventoriedPairing): string [packages/conformetry-core/src/modules/inventory/inventory.service.ts:49]
-   ↳ Renders one pairing as an indented line beneath its entry.
-  └─> InventoryService.formatRatio(matchRatio: number): string [packages/conformetry-core/src/modules/inventory/inventory.service.ts:63]
-     ↳ Renders a file-overlap ratio as a whole percentage.
-```
+None.
 
 ### Module spread
 
@@ -138,7 +131,7 @@ None.
 | `ReportingService.formatFileResult` | 3 | `ReportingService.formatFraction`, `ScoringService.sumWeights`, `ReportingService.flatMap(…)` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:97` |
 
 <details>
-<summary>23 more callables</summary>
+<summary>25 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -148,16 +141,18 @@ None.
 | `ReportingService.formatReport` | 2 | `ReportingService.formatScores`, `ReportingService.flatMap(…)` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:261` |
 | `DifferencesService.resolveDifferenceType` | 1 | `DifferencesService.find(…)` | `packages/conformetry-core/src/modules/differences/differences.service.ts:76` |
 | `DifferencesService.resolveErrorLanguage` | 1 | `DifferencesService.find(…)` | `packages/conformetry-core/src/modules/differences/differences.service.ts:89` |
-| `InventoryService.describePairing` | 1 | `InventoryService.formatRatio` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:49` |
-| `InventoryService.describeInstances` | 1 | `InventoryService.flatMap(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:78` |
-| `InventoryService.flatMap(…)` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:79` |
-| `InventoryService.describeTemplates` | 1 | `InventoryService.flatMap(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:95` |
-| `InventoryService.flatMap(…)` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:99` |
-| `InventoryService.shortenInstancePaths` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:125` |
-| `InventoryService.map(…)` | 1 | `InventoryService.shortenPath` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:129` |
-| `InventoryService.shortenTemplatePairings` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:141` |
-| `InventoryService.map(…)` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:145` |
-| `InventoryService.map(…)` | 1 | `InventoryService.shortenPath` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:148` |
+| `InventoryService.describePairing` | 1 | `InventoryService.formatRatio` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:48` |
+| `InventoryService.describeInstances` | 1 | `InventoryService.flatMap(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:77` |
+| `InventoryService.flatMap(…)` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:78` |
+| `InventoryService.map(…)` | 1 | `InventoryService.describePairing` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:82` |
+| `InventoryService.describeTemplates` | 1 | `InventoryService.flatMap(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:94` |
+| `InventoryService.flatMap(…)` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:98` |
+| `InventoryService.map(…)` | 1 | `InventoryService.describePairing` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:109` |
+| `InventoryService.shortenInstancePaths` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:120` |
+| `InventoryService.map(…)` | 1 | `InventoryService.shortenPath` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:124` |
+| `InventoryService.shortenTemplatePairings` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:136` |
+| `InventoryService.map(…)` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:140` |
+| `InventoryService.map(…)` | 1 | `InventoryService.shortenPath` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:143` |
 | `LanguageService.filter(…)` | 1 | `LanguageService.claimsDocument` | `packages/conformetry-core/src/modules/language/language.service.ts:85` |
 | `LanguageService.map(…)` | 1 | `LanguageService.validateDocument` | `packages/conformetry-core/src/modules/language/language.service.ts:88` |
 | `ScoringService.sumWeights` | 1 | `ScoringService.reduce(…)` | `packages/conformetry-core/src/modules/scoring/scoring.service.ts:53` |

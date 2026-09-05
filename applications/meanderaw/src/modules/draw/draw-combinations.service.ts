@@ -13,8 +13,11 @@ import {
 
 import {
   ALTERNATED_SWEEP_PERIODS,
+  COMB_SWEEP_UPWARD_VALUES,
   DOT_SWEEP_SHAPES,
   PLIED_SWEEP_STRAND_COUNTS,
+  RUNG_SWEEP_LEFTWARD_VALUES,
+  STAGGER_SWEEP_BRANCH_COUNTS,
 } from "./draw.constants";
 
 import type {
@@ -28,8 +31,9 @@ import type {
  * crossed with every modifier `COMPATIBLE_MODIFIERS` lists for it plus "no
  * modifier", crossed with every row count from that type's own
  * `STRUCTURAL_MINIMUM_ROWS` through the shared `MAXIMUM_VALUE`.
- * `alternated` and `dot` each expand to the representative values
- * `draw.constants.ts` names rather than their full range, and `repeatCount` is
+ * `alternated`, `comb`, `dot`, `plied`, `rung`, and `stagger` each expand
+ * to the representative values `draw.constants.ts` names rather than their
+ * full range, and `repeatCount` is
  * `DEFAULT_REPEAT_COUNT` except for the spin family, which is rounded up to
  * the nearest multiple of `SPIN_CYCLE_LENGTH` so the generation service
  * never rejects a cut-off rotation.
@@ -79,12 +83,30 @@ export class DrawCombinationsService {
       return ALTERNATED_SWEEP_PERIODS.map((period) => ({ name, period }));
     }
 
+    if (name === "comb") {
+      return COMB_SWEEP_UPWARD_VALUES.map((isUpward) => ({ isUpward, name }));
+    }
+
     if (name === "dot") {
       return DOT_SWEEP_SHAPES.map((shape) => ({ name, shape }));
     }
 
     if (name === "plied") {
       return PLIED_SWEEP_STRAND_COUNTS.map((strands) => ({ name, strands }));
+    }
+
+    if (name === "rung") {
+      return RUNG_SWEEP_LEFTWARD_VALUES.map((isLeftward) => ({
+        isLeftward,
+        name,
+      }));
+    }
+
+    if (name === "stagger") {
+      return STAGGER_SWEEP_BRANCH_COUNTS.map((branches) => ({
+        branches,
+        name,
+      }));
     }
 
     return [{ name }];

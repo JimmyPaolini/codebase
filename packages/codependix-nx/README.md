@@ -93,33 +93,17 @@ Call stacks traced through `packages/codependix-nx`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 33 |
-| Files | 11 |
-| Calls traced | 29 |
-| Call stacks | 2 |
-| Deepest stack | 2 |
+| Callables | 35 |
+| Files | 12 |
+| Calls traced | 37 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 0 |
+| Unfollowable calls | 1 |
 
 ### Call stacks (depth)
 
-**1. `NeighborhoodService.renderEdge`** — depth 2 · orphan-root
-
-```text
-🚀 NeighborhoodService.renderEdge(edge: NeighborhoodEdge): string [packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:152]
-   ↳ Renders one edge, dotted when Nx inferred it from configuration.
-  └─> NeighborhoodService.toNodeIdentifier(projectName: string): string [packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:199]
-     ↳ Turns a project name into an identifier mermaid accepts.
-```
-
-**2. `NeighborhoodService.renderNode`** — depth 2 · orphan-root
-
-```text
-🚀 NeighborhoodService.renderNode(projectName: string): string [packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:187]
-   ↳ Declares one node, labelled with the project name it stands for.
-  └─> NeighborhoodService.toNodeIdentifier(projectName: string): string [packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:199]
-     ↳ Turns a project name into an identifier mermaid accepts.
-```
+None.
 
 ### Module spread
 
@@ -129,20 +113,27 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `NeighborhoodService.buildNeighborhoods` | 8 | `NeighborhoodService.map(…)`, `NeighborhoodService.collectEdges`, `NeighborhoodService.sortNames`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)`, `NeighborhoodService.toSorted(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:55` |
-| `NeighborhoodService.renderMermaid` | 5 | `NeighborhoodService.sortNames`, `NeighborhoodService.map(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.toNodeIdentifier`, `NeighborhoodService.some(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:159` |
-| `WorkspaceGraphService.buildWorkspaceGraph` | 5 | `WorkspaceGraphService.map(…)`, `NeighborhoodService.collectEdges`, `WorkspaceGraphService.toSorted(…)`, `NeighborhoodService.sortNames`, `WorkspaceGraphService.map(…)` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:40` |
+| `NeighborhoodService.buildNeighborhoods` | 8 | `NeighborhoodService.map(…)`, `NeighborhoodService.collectEdges`, `NeighborhoodService.sortNames`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)`, `NeighborhoodService.toSorted(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:76` |
+| `NeighborhoodService.renderMermaid` | 5 | `NeighborhoodService.sortNames`, `NeighborhoodService.map(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.toNodeIdentifier`, `NeighborhoodService.some(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:205` |
+| `WorkspaceGraphService.buildWorkspaceGraph` | 5 | `WorkspaceGraphService.map(…)`, `NeighborhoodService.collectEdges`, `WorkspaceGraphService.toSorted(…)`, `NeighborhoodService.sortNames`, `WorkspaceGraphService.map(…)` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:42` |
 
 <details>
-<summary>5 more callables</summary>
+<summary>12 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `NeighborhoodService.readProjects` | 3 | `NeighborhoodService.toSorted(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:141` |
-| `WorkspaceGraphService.renderMermaid` | 3 | `WorkspaceGraphService.map(…)`, `WorkspaceGraphService.map(…)`, `WorkspaceGraphService.some(…)` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:58` |
-| `NeighborhoodService.renderEdge` | 1 | `NeighborhoodService.toNodeIdentifier` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:152` |
-| `NeighborhoodService.renderNode` | 1 | `NeighborhoodService.toNodeIdentifier` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:187` |
-| `NeighborhoodService.sortNames` | 1 | `NeighborhoodService.toSorted(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:192` |
+| `NeighborhoodService.readProjects` | 3 | `NeighborhoodService.toSorted(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:186` |
+| `WorkspaceGraphService.renderMermaid` | 3 | `WorkspaceGraphService.map(…)`, `WorkspaceGraphService.map(…)`, `WorkspaceGraphService.some(…)` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:60` |
+| `NeighborhoodService.readProjectGraph` | 2 | `NeighborhoodService.isProjectGraph`, `InvalidProjectGraphError.constructor` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:171` |
+| `NeighborhoodService.toSorted(…)` | 1 | `NeighborhoodService.compareEdges` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:97` |
+| `NeighborhoodService.renderEdge` | 1 | `NeighborhoodService.toNodeIdentifier` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:198` |
+| `NeighborhoodService.map(…)` | 1 | `NeighborhoodService.renderNode` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:218` |
+| `NeighborhoodService.map(…)` | 1 | `NeighborhoodService.renderEdge` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:219` |
+| `NeighborhoodService.renderNode` | 1 | `NeighborhoodService.toNodeIdentifier` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:233` |
+| `NeighborhoodService.sortNames` | 1 | `NeighborhoodService.toSorted(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:238` |
+| `WorkspaceGraphService.toSorted(…)` | 1 | `NeighborhoodService.compareEdges` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:50` |
+| `WorkspaceGraphService.map(…)` | 1 | `NeighborhoodService.renderNode` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:68` |
+| `WorkspaceGraphService.map(…)` | 1 | `NeighborhoodService.renderEdge` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:71` |
 
 </details>
 
