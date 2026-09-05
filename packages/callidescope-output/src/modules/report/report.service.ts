@@ -91,9 +91,9 @@ export class ReportService {
    * the frame's `file:line` is already the pointer to the rest.
    *
    * Cutting at the character instead throws away a sentence boundary that was
-   * usually right there. Across this repository that happens to more than a
-   * fifth of printed summaries, whose opening sentences run 67 characters at
-   * the median and 122 at the very longest.
+   * usually right there. Across this repository that happens to a fifth of
+   * printed summaries, whose opening sentences run about 64 characters at the
+   * median and 113 at the very longest.
    *
    * A single sentence longer than the limit has no boundary to find, so it is
    * cut on a word — half a word reads as a typo rather than as an elision —

@@ -104,10 +104,15 @@ export class ProjectsService {
    *
    * Dependencies, never dependents. A call stack runs downward — a command
    * calls into the service it was injected with, which lives in a package it
-   * depends on — so tracing a project without its dependencies truncates every
-   * stack at the first package boundary, which is the one measurement
-   * callidescope exists to take. Its dependents call *into* it and add no
-   * frames below it.
+   * depends on — and those packages are what a trace of one project has to
+   * carry. Its dependents call *into* it and add no frames below it.
+   *
+   * This widens what the run is *scoped to*, not how far a stack runs: core
+   * callidescope already builds the program of every project the named
+   * directories transitively import. A scoped project is the one whose
+   * `README.md` section a `--write` run publishes, and the Nx graph names
+   * edges the compiler never read — an implicit dependency, or one that
+   * exists only at run time.
    *
    * External `npm:` targets are dropped: they have no workspace directory to
    * trace, and following them would mean tracing `node_modules`.

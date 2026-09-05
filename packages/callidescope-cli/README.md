@@ -182,9 +182,9 @@ All the stacks are drawn as **one** flowchart, not one apiece. A single stack is
 a straight line, and a straight line is a list with extra steps. Drawn together
 the shared tails converge — every command reaching the same repository, every
 resolver ending in the same service — and that convergence is the thing a
-picture shows and an indented tree cannot. On this workspace the run's 48 deep
-stacks collapse to 276 callables with 14 of them called from more than one
-place.
+picture shows and an indented tree cannot. In this workspace's widest project,
+`caelundas`, 96 stacks collapse to 263 callables, 27 of them called from more
+than one place.
 
 Entry points are drawn as stadiums and everything below them as boxes. Shape
 rather than color, because the diagram is read in whichever theme the reader
@@ -193,9 +193,10 @@ callable's name alone: a diagram trying to also carry signatures is unreadable
 at any size, and the tree already has room for them.
 
 A diagram stops at 300 callables — GitHub refuses a mermaid block past 50,000
-characters, and the widest project here draws 263. Whole stacks are dropped
-rather than trimmed, so the diagram never contains an edge into something it
-did not draw, and it says how many it left out.
+characters, and that widest project's 263 is the closest anything here comes to
+the cap. Whole stacks are dropped rather than trimmed, so the diagram never
+contains an edge into something it did not draw, and it says how many it left
+out.
 
 `projectReadmes` is what puts a `## 🔭 Callidescope` section at the bottom of
 every package in this repository — every package, because the run that writes
@@ -412,10 +413,10 @@ plain number like any other.
 Every frame is annotated from the type checker, because a stack of bare names
 is a list of places to go look rather than something you can read:
 
-- **The signature** — parameter names and types, and the return type. On the
-  repository this covers 100% of reported frames.
-- **The documentation summary** — the JSDoc prose, collapsed to one line.
-  Around 90% of reported frames have one.
+- **The signature** — parameter names and types, and the return type. On this
+  repository that is all 1,338 reported frames.
+- **The documentation summary** — the JSDoc prose, collapsed to one line. 801
+  of those 1,338 have one.
 - **Tags**, including `@deprecated`, which marks the frame inline.
 
 Both come from the checker rather than the comment trivia, which is what makes
@@ -435,12 +436,12 @@ here state what a callable does and then explain why, and the first half is the
 half that orients someone reading a stack. It prints unmarked, because a whole
 sentence is a complete thought rather than an elision and the frame's
 `file:line` already points at the rest. Only a single sentence with no boundary
-to find is cut on a word and marked `…`, which across this repository is 30 of
-905 printed summaries.
+to find is cut on a word and marked `…`, which across this repository is 51 of
+those 801 summaries.
 
 **Shortening applies to the printed tree only.** The JSON report carries every
 comment in full, because a machine reading it has no line width to respect —
-the longest in the workspace runs 288 characters.
+the longest in the workspace runs 1,507 characters.
 
 Annotations are read only for the frames a report actually prints, not for all
 4,728 callables. Rendering a type is the one genuinely costly thing the checker
