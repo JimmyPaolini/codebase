@@ -248,4 +248,12 @@ export class MosaicTileService {
       row[column] = true;
     }
   }
+
+  /** The most direction bits any one point of a tile carries: 1 a dash end, 2 a corner, 3 a T-junction, 4 a crossing. */
+  maximumDegree(tile: MosaicTile): number {
+    return Math.max(
+      0,
+      ...tile.points.flatMap((row) => row.map((point) => this.degree(point))),
+    );
+  }
 }

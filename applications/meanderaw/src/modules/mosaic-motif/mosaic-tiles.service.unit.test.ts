@@ -23,17 +23,17 @@ const ADMITTED_SHAPES: readonly {
   readonly rows: number;
   readonly tiles: number;
 }[] = [
-  { columns: 1, matchings: 4, rows: 3, tiles: 4 },
-  { columns: 2, matchings: 6, rows: 3, tiles: 15 },
-  { columns: 3, matchings: 9, rows: 3, tiles: 41 },
-  { columns: 4, matchings: 20, rows: 3, tiles: 164 },
-  { columns: 5, matchings: 36, rows: 3, tiles: 665 },
-  { columns: 1, matchings: 8, rows: 4, tiles: 9 },
-  { columns: 2, matchings: 15, rows: 4, tiles: 85 },
-  { columns: 3, matchings: 33, rows: 4, tiles: 711 },
-  { columns: 1, matchings: 18, rows: 5, tiles: 21 },
-  { columns: 2, matchings: 50, rows: 5, tiles: 640 },
-  { columns: 1, matchings: 40, rows: 6, tiles: 51 },
+  { columns: 1, matchings: 4, rows: 3, tiles: 6 },
+  { columns: 2, matchings: 6, rows: 3, tiles: 21 },
+  { columns: 3, matchings: 9, rows: 3, tiles: 74 },
+  { columns: 4, matchings: 20, rows: 3, tiles: 354 },
+  { columns: 5, matchings: 36, rows: 3, tiles: 1884 },
+  { columns: 1, matchings: 8, rows: 4, tiles: 20 },
+  { columns: 2, matchings: 15, rows: 4, tiles: 204 },
+  { columns: 3, matchings: 33, rows: 4, tiles: 3100 },
+  { columns: 1, matchings: 18, rows: 5, tiles: 72 },
+  { columns: 2, matchings: 50, rows: 5, tiles: 2544 },
+  { columns: 1, matchings: 40, rows: 6, tiles: 272 },
 ];
 
 // 🧪 Tests
@@ -105,8 +105,29 @@ describe(MosaicTilesService, () => {
   });
 
   describe("enumerate", () => {
+    it("reaches every one of the sixteen direction-bit patterns a point can carry", () => {
+      const seen = new Set(
+        service
+          .enumerate(4, 3)
+          .flatMap((tile) =>
+            tile.points.flatMap((row) =>
+              row.map(
+                ({ east, north, south, west }) =>
+                  `${Number(north)}${Number(south)}${Number(east)}${Number(west)}`,
+              ),
+            ),
+          ),
+      );
+
+      // Four rows and three columns is the smallest shape a crossing fits
+      // in: a point needs a level above and below it for its northward and
+      // southward edges, and three columns for its eastward and westward
+      // ones to be two different edges rather than one wrapped pair.
+      expect(seen.size).toBe(16);
+    });
+
     it.each(ADMITTED_SHAPES)(
-      "carries no more than two direction bits at any point of any tile at $rows rows and $columns columns",
+      "draws a T-junction and a crossing somewhere in the space at $rows rows and $columns columns",
       ({ columns, rows }) => {
         const degrees = service
           .enumerate(rows, columns)
@@ -116,7 +137,7 @@ describe(MosaicTilesService, () => {
             ),
           );
 
-        expect(Math.max(...degrees)).toBeLessThanOrEqual(service.ceiling());
+        expect(Math.max(...degrees)).toBeGreaterThanOrEqual(3);
       },
     );
 
@@ -181,14 +202,14 @@ describe(MosaicTilesService, () => {
       },
     );
 
-    it("enumerates 2,406 tiles across the whole space the budget admits", () => {
+    it("enumerates 8,551 tiles across the whole space the budget admits", () => {
       const total = ADMITTED_SHAPES.reduce(
         (running, { columns, rows }) =>
           running + service.enumerate(rows, columns).length,
         0,
       );
 
-      expect(total).toBe(2406);
+      expect(total).toBe(8551);
     });
 
     /**
