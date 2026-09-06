@@ -1,6 +1,3 @@
-// cspell:ignore dvvxxd dvvxxvvxxvvxxd hxxhhx hxxhhxxhhxxhhx dldldld — mosaic
-// tile identifiers, one letter per point of the tile, from
-// MosaicSymmetryService.identify.
 import { Inject, Injectable } from "@nestjs/common";
 
 import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
@@ -31,11 +28,11 @@ import type {
  *
  * Ten of them, and they arrive two ways. Seven are one-column repeating
  * motifs read off {@link NEGATIVE_COLUMN_MOTIFS} and walked by
- * {@link columnEdges}; three are two-column tiles with a rule apiece —
- * `dvvxxd` → `dvvxxvvxxvvxxd`, `hxxhhx` → `hxxhhxxhhxxhhx`, and that same
- * running bond laid straight. Neither kind is looked up by identifier, so
- * every one keeps working at row counts nobody has enumerated, the same
- * choice {@link MosaicSubFamilyService} made for its sub-families.
+ * {@link columnEdges}; three are two-column tiles with a rule apiece — the
+ * staircase, the running bond, and that same bond laid straight. Neither
+ * kind is looked up by identifier, so every one keeps working at row counts
+ * nobody has enumerated, the same choice {@link MosaicNamingService} made
+ * for its rules.
  *
  * That the rules really produce the tiles they claim to is not a comment. At
  * every row count the survey covered, `negative-source.service.unit.test.ts`
@@ -163,7 +160,7 @@ export class NegativeSourceService {
   }
 
   /**
-   * `dvvxxd`'s edges: southward edges stacked two levels at a time, offset
+   * The staircase's edges: southward edges stacked two levels at a time, offset
    * by one level between the two columns so the pair reads as a staircase.
    * Column `0` starts one level down to create that offset, and whichever
    * column runs out of room for a last full edge simply stops — leaving that
