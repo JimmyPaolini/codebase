@@ -8,7 +8,7 @@ import { buildCallGraphResult, buildStackFrame } from "../../../testing/mocks";
 
 import { ReportFindingsService } from "./report-findings.service";
 
-import type { ReportFindingsArguments } from "../run-plan/run-plan.types";
+import type { ReportFindingsArguments } from "./report-findings.types";
 
 /** A run mode with every gate off, so a test opts into the one it checks. */
 const CLEAN_MODE: ReportFindingsArguments["mode"] = {
@@ -23,17 +23,6 @@ describe(ReportFindingsService, () => {
   let service: ReportFindingsService;
 
   beforeAll(async () => {
-    const module = await Test.createTestingModule({
-      providers: [
-        ReportFindingsService,
-        { provide: LoggerService, useValue: createMock<LoggerService>() },
-      ],
-    }).compile();
-
-    service = await module.resolve(ReportFindingsService);
-  });
-
-  beforeEach(async () => {
     logger = createMock<LoggerService>();
 
     const module = await Test.createTestingModule({
@@ -44,6 +33,12 @@ describe(ReportFindingsService, () => {
     }).compile();
 
     service = await module.resolve(ReportFindingsService);
+  });
+
+  // The service holds no state of its own, so one instance serves the suite;
+  // what each test needs fresh is the logger's record and the exit code.
+  beforeEach(() => {
+    logger.error.mockClear();
     process.exitCode = undefined;
   });
 

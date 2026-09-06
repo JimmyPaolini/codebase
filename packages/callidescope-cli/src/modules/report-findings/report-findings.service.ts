@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import type { ReportFindingsArguments } from "../run-plan/run-plan.types";
+import type { ReportFindingsArguments } from "./report-findings.types";
 
 /**
  * Weighs every finding a run can produce, and fails on the ones it was asked
