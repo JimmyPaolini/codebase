@@ -218,11 +218,13 @@ export class ProjectConfigurationService {
    * present with an empty one: it is configured entirely by the workspace file,
    * which is the behavior every project has today.
    *
-   * Nothing is merged. A project inherits by importing the workspace
-   * configuration and spreading it, exactly the way every `codometer.config.ts`
-   * in this repository already does. That is deliberate rather than unfinished:
-   * a deep merge here is what would take away a project's ability to say "no,
-   * actually, none of that".
+   * Nothing is merged at the file level, and a project must **never** spread
+   * the workspace configuration into its own: such an object carries fields
+   * only the workspace may set, and `findForbiddenField` below refuses the file
+   * for the first one it finds. A project writes the overrides it wants and
+   * nothing else. Inheritance happens one limit at a time, in `resolveLimits`,
+   * so a project that declares `limits.maximumDepth` still takes every other
+   * limit from the run.
    *
    * The file a run was pointed at is skipped, because it is already serving as
    * that run's workspace configuration. One file, one role per run — a package

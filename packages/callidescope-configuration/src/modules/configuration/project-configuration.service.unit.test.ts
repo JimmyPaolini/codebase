@@ -162,7 +162,8 @@ describe(ProjectConfigurationService, () => {
 
     // A field the project never wrote is absent from what it authored, and
     // resolves to the tool's own default rather than to anything a workspace
-    // file said. Inheriting is the project file's own spread to perform.
+    // file said. Inheritance happens one limit at a time, later, in
+    // `resolveLimits` — never by the project file spreading anything.
     expect(loaded?.authored.limits?.maximumDepth).toBe(3);
     expect(loaded?.authored.excludeFrom).toBeUndefined();
     expect(loaded?.configuration.limits.spreadThreshold).toBe(
@@ -170,7 +171,7 @@ describe(ProjectConfigurationService, () => {
     );
   });
 
-  it("keeps the values a project's own spread carried in", async () => {
+  it("keeps every limit a project declared for itself", async () => {
     const workspaceRoot = await writeWorkspace({
       "packages/gated": JSON.stringify({
         limits: { maximumBreadth: 9, maximumDepth: 3 },

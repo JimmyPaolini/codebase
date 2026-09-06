@@ -288,8 +288,12 @@ Three tools, for three different questions:
   counting it would move every other callable's numbers on a change that has
   nothing to do with them.
 
-`exclude` and `excludeFrom` remove _files_. `ignoreCallees` removes _edges_.
-Reaching for the first when you meant the second deletes real findings.
+`exclude` and `excludeFrom` drop _files_ from collection; `ignoreCallees` drops
+_edges_. Reaching for the first when you meant the second deletes real findings.
+Neither leaves the `ts.Program`: an excluded file is still compiled, a call into
+it becomes an unfollowable call rather than vanishing, and no `exclude` can
+un-project a directory holding a `tsconfig.json`. A project's own `exclude`
+behaves the same way.
 
 **`allowSpreadFor`** is narrower still: globs whose callables are exempt from
 the module-spread finding alone, defaulting to command files, module files, and
@@ -386,7 +390,8 @@ glob here matches nothing, and the files it meant to drop stay traced.
 
 The run's own `exclude` keeps its workspace-relative meaning and is layered
 underneath, so a project can leave more out and can never put back what the run
-left out. Noise spanning several projects still belongs in the workspace file.
+left out — and it filters collection only, exactly as the run's does. Noise
+spanning several projects still belongs in the workspace file.
 
 Every other field is refused **by name, before anything is traced**, and the
 message names the four above so it is actionable without opening this skill.

@@ -113,7 +113,8 @@ no configuration at all:
 
 Those two numbers are the `Files` rows in the two `## 🔭 Callidescope` sections,
 [this one](#-callidescope) and [that one](../inherited-limits/README.md#-callidescope),
-and `Callables` moves with them: 4 here and 5 there, for identical code. A glob
+and `Callables` moves with them: 4 here and 5 there. The generated twin is the
+same file in both places, and only the project that named it lost it — a glob
 written in one project's file reached that project's file and stopped.
 
 Anchoring it here rather than at the workspace root is what makes that true by
@@ -122,6 +123,15 @@ other file at a project root is already read — a `tsconfig.json`'s own `includ
 and `exclude` are project-relative too. The run's `exclude` keeps its
 workspace-relative meaning, and it is layered underneath: a project can leave
 more out, never put back what the run left out.
+
+What it drops is the **collection**, not the file. `gated-leaf.generated.ts` is
+still in the `ts.Program` and still type-checked; what changed is that its
+callables were never collected, so a call reaching into it would be an
+unfollowable call rather than one that vanished. That is the run-level
+`exclude`'s behavior too, not a per-project quirk — and it is why no `exclude`
+can un-project a directory. This project cannot exclude the `tsconfig.json` that
+makes it a project: discovery is settled from the run's own filter, long before
+a project file has been read at all.
 
 ## Why this project is named rather than reached
 

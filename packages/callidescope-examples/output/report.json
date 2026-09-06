@@ -1839,11 +1839,11 @@
             }
           ],
           "displayName": "ProjectConfigurationService.loadProjectConfigurations",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7659",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7814",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 233
+            "line": 235
           },
           "signature": {
             "parameters": [
@@ -1867,19 +1867,19 @@
             },
             {
               "displayName": "ProjectConfigurationService.map(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9535"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9690"
             },
             {
               "displayName": "ProjectConfigurationService.map(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9714"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9869"
             }
           ],
           "displayName": "ProjectConfigurationService.resolveLimits",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9308",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9463",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 280
+            "line": 282
           },
           "signature": {
             "parameters": [
@@ -2249,11 +2249,11 @@
             }
           ],
           "displayName": "ProjectConfigurationService.map(…)",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9714",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9869",
           "location": {
             "column": 27,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 293
+            "line": 295
           },
           "signature": {
             "parameters": [
@@ -2393,15 +2393,15 @@
               "displayName": "ProjectConfigurationService.loadProjectConfigurations",
               "documentation": {
                 "isDeprecated": false,
-                "summary": "Resolves the configuration file sitting at each project's own root — the directory holding the `tsconfig.json` that makes it a project. A project with no file of its own is absent from the result rather than present with an empty one: it is configured entirely by the workspace file, which is the behavior every project has today. Nothing is merged. A project inherits by importing the workspace configuration and spreading it, exactly the way every `codometer.config.ts` in this repository already does. That is deliberate rather than unfinished: a deep merge here is what would take away a project's ability to say \"no, actually, none of that\". The file a run was pointed at is skipped, because it is already serving as that run's workspace configuration. One file, one role per run — a package whose task names its own configuration and then traces itself would otherwise have that file read a second time and judged as a project's, which is a refusal for the workspace-only fields it legitimately sets.",
+                "summary": "Resolves the configuration file sitting at each project's own root — the directory holding the `tsconfig.json` that makes it a project. A project with no file of its own is absent from the result rather than present with an empty one: it is configured entirely by the workspace file, which is the behavior every project has today. Nothing is merged at the file level, and a project must **never** spread the workspace configuration into its own: such an object carries fields only the workspace may set, and `findForbiddenField` below refuses the file for the first one it finds. A project writes the overrides it wants and nothing else. Inheritance happens one limit at a time, in `resolveLimits`, so a project that declares `limits.maximumDepth` still takes every other limit from the run. The file a run was pointed at is skipped, because it is already serving as that run's workspace configuration. One file, one role per run — a package whose task names its own configuration and then traces itself would otherwise have that file read a second time and judged as a project's, which is a refusal for the workspace-only fields it legitimately sets.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7659",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7814",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 233
+                "line": 235
               },
               "signature": {
                 "parameters": [
@@ -2820,12 +2820,12 @@
                 "summary": "Resolves the depth and breadth limits every traced project is judged against, each carrying the file its number was written in. The workspace value is a default rather than a ceiling: a project declaring a higher limit than the workspace keeps its own, because a workspace number pinned by the single worst stack anywhere in it gates nothing for the projects that are nowhere near it. One resolver rather than one per reader. A gate and a listing that each worked the inheritance out for themselves could disagree about the same number, and a limit two answers can be given for is worse than no limit.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9308",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9463",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 280
+                "line": 282
               },
               "signature": {
                 "parameters": [
@@ -2842,12 +2842,12 @@
             },
             {
               "displayName": "ProjectConfigurationService.map(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9714",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9869",
               "isCycle": false,
               "location": {
                 "column": 27,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 293
+                "line": 295
               },
               "signature": {
                 "parameters": [

@@ -57,7 +57,7 @@ and `packages/logger`. See
 | A frame, a stack, or a per-project row in a package the run was not pointed at | [`dependency-closure`](examples/dependency-closure/README.md) | A scoped run traces the projects its imports reach. Not a leak — a call into a dependency lands on a frame instead of stopping at the package boundary |
 | A stack that ends at a call into another directory, with no frame for it | [`dependency-closure`](examples/dependency-closure/README.md) | The destination is refused: a project root holding no `package.json` is shared settings rather than a package, and the workspace root contains every project |
 | `A configured destination is stale` | [`callidescope.workspace.config.ts`](callidescope.workspace.config.ts) | Run the `write` configuration of whichever project owns the destination |
-| `--check` rejected a value | [README, "The two flags"](README.md#the-two-flags) | Only `depth` and `reports` are findings; an empty `--check` is refused |
+| `--check` rejected a value | [README, "The two flags"](README.md#the-two-flags) | The set is drawn from `breadth`, `depth`, and `reports`; an empty `--check` is refused |
 
 ## Layout
 

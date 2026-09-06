@@ -104,6 +104,25 @@ its own noise does not have to restate them.
 `excludeFrom` names gitignore-syntax files, which is how a long exclusion list
 stays out of the configuration file itself.
 
+### An exclusion drops the callables, not the file
+
+`exclude` decides what is **collected**, and nothing else. The file is still in
+the `ts.Program`, so it is still compiled and still type-checked — what changes
+is that its callables are never collected, and a call reaching into it becomes
+an unfollowable call rather than disappearing. A stack therefore stops at the
+excluded boundary instead of routing around it.
+
+Two consequences worth knowing before reaching for `exclude`:
+
+- **It cannot un-project a directory.** A project is the directory holding a
+  `tsconfig.json`, and discovery has already happened by the time collection is
+  filtered — so a project cannot exclude its own `tsconfig.json`, and excluding
+  every file it holds leaves it a project that traced nothing rather than no
+  project at all.
+- **A `tsconfig.json` that will not parse still ends the run**, because it is
+  opened before any of this. Use the run's `exclude` to drop such a project,
+  which is settled early enough to keep discovery from opening it at all.
+
 ## Output
 
 Every destination is optional, and unconfigured is the normal case: a run that
@@ -172,6 +191,11 @@ glob here matches nothing, and the files it meant to drop stay traced.
 The run's own `exclude` keeps its workspace-relative meaning and is layered
 underneath, so a project can leave more out and can never put back what the run
 left out. Noise spanning several projects still belongs in the workspace file.
+
+It also filters **collection** and nothing else, exactly as the run's own does —
+see [An exclusion drops the callables, not the file](#an-exclusion-drops-the-callables-not-the-file).
+A project cannot exclude its own `tsconfig.json`, and a call into a file it
+excluded becomes an unfollowable call rather than vanishing.
 
 Every other field is refused by name before anything is traced.
 
