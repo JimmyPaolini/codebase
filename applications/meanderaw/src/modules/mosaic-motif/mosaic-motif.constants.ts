@@ -43,31 +43,14 @@ export const MOSAIC_SUB_FAMILY_SHAPES: Record<
  * `mosaic-tiles.service.unit.test.ts` asserts, which is the point of making
  * it one number.
  *
- * It replaces a maximum column span, which was the knob when the degree
- * ceiling was doing most of the clamping. It no longer is: at 6 rows adding
- * one column multiplies the space by 2 ** 9, which is about what letting
- * every point turn a corner costs in total.
+ * It replaces a maximum column span, which was the knob while a degree
+ * ceiling was doing most of the clamping. There is no degree ceiling now —
+ * a point may carry any of the sixteen direction-bit patterns, junctions and
+ * crossings included — so this is the only thing bounding the family, and it
+ * has to be. At 6 rows adding one column multiplies the space by 2 ** 9,
+ * which is about what removing the degree ceiling costs in total.
  */
 export const MOSAIC_TILE_EDGE_BUDGET = 16;
-
-/**
- * The most direction bits one point of a `mosaic` tile may carry.
- *
- * Two, which is a corner — `1100` and its rotations — or a straight run
- * through. That is what every named meander is built from, and a ceiling of
- * one structurally excluded it: one bit is a dash end, and a figure of dash
- * ends cannot turn.
- *
- * A single column's wrapped edge counts twice, because the ink really does
- * leave that point both east and west, so the continuous rule `lines` draws
- * sits exactly at this ceiling rather than under it.
- *
- * The family's original rule was one *incident edge* per point — an exact
- * cover of cells, which on the lattice is a matching. That region is inside
- * this one and `MosaicTilesService.isMatching` still recovers it, which is
- * what makes the widening provably a widening rather than a replacement.
- */
-export const MOSAIC_TILE_MAXIMUM_DEGREE = 2;
 
 /**
  * The deepest band the `mosaic` family is drawn in, and so the highest

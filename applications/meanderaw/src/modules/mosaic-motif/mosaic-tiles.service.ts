@@ -2,7 +2,6 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import {
   MOSAIC_TILE_EDGE_BUDGET,
-  MOSAIC_TILE_MAXIMUM_DEGREE,
   OversizedMosaicTileError,
 } from "./mosaic-motif.constants";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
@@ -58,6 +57,17 @@ export class MosaicTilesService {
 
   // 🔐 Private Fields
 
+  /**
+   * Every shape already enumerated, keyed by `rows x columns`.
+   *
+   * Enumeration is a pure function of a shape and walks `2 ** edges`
+   * assignments, so at the budget's largest shapes it is 32,768 of them —
+   * and the sweep, the charter measurement, and several tests each ask for
+   * the same shapes more than once. Keeping the answer is what makes asking
+   * again free.
+   */
+  private readonly tilesByShape = new Map<string, MosaicTile[]>();
+
   // 🔑 Public Fields
 
   // 🔏 Private Methods
@@ -84,13 +94,13 @@ export class MosaicTilesService {
    * Decides the `ordinal`-th edge both ways, recording a tile once every
    * edge is decided.
    *
-   * Setting an edge is refused the moment it would push either of its points
-   * past the ceiling, so a partial assignment that cannot become a tile is
-   * abandoned rather than completed and discarded. That is the whole of the
-   * old backtracking search's cleverness, and it is one comparison here.
+   * Nothing prunes, because nothing can: every assignment of every edge is a
+   * tile now, so a partial one is never doomed. What used to be a
+   * backtracking search over covers is counting in binary, and what keeps it
+   * finite is that the budget refused the shape before the walk began.
    */
   private assign(ordinal: number, enumeration: MosaicEnumeration): void {
-    const { edges, incident, shape } = enumeration;
+    const { edges, shape } = enumeration;
 
     if (ordinal === this.edges(shape)) {
       this.record(enumeration);
@@ -99,24 +109,9 @@ export class MosaicTilesService {
     }
 
     this.assign(ordinal + 1, enumeration);
-
-    const points = this.endpoints(shape, ordinal);
-
-    if (points.some((point) => (incident[point] ?? 0) >= this.ceiling())) {
-      return;
-    }
-
-    for (const point of points) {
-      incident[point] = (incident[point] ?? 0) + 1;
-    }
-
     this.set(edges, shape, ordinal);
     this.assign(ordinal + 1, enumeration);
     this.clear(edges, shape, ordinal);
-
-    for (const point of points) {
-      incident[point] = (incident[point] ?? 1) - 1;
-    }
   }
 
   /** Clears the `ordinal`-th edge of a draft, undoing {@link set} on the way back out of the walk. */
@@ -131,30 +126,6 @@ export class MosaicTilesService {
     if (row !== undefined) {
       row[column] = false;
     }
-  }
-
-  /**
-   * The points the `ordinal`-th edge leaves a direction bit at, as
-   * `level * columns + column` indices.
-   *
-   * Always two of them, and at a single column both are the same point —
-   * which is right rather than a degeneracy to paper over: a wrapped edge
-   * really does leave that point east *and* west, so it costs two of its
-   * two-bit allowance and a point carrying one can carry nothing else.
-   */
-  private endpoints(shape: MosaicTileShape, ordinal: number): number[] {
-    const { columns, rows } = shape;
-    const horizontalCount = columns * (rows - 1);
-    const isHorizontal = ordinal < horizontalCount;
-    const local = isHorizontal ? ordinal : ordinal - horizontalCount;
-    const level = Math.floor(local / columns);
-    const column = local % columns;
-    const own = level * columns + column;
-    const reached = isHorizontal
-      ? level * columns + ((column + 1) % columns)
-      : (level + 1) * columns + column;
-
-    return [own, reached];
   }
 
   /** Keeps the tile the current assignment describes, unless a tile already found draws the same pattern. */
@@ -185,18 +156,6 @@ export class MosaicTilesService {
   // 🌎 Public Methods
 
   /**
-   * The most direction bits one point may carry, which is two — a corner, or
-   * a straight run through.
-   *
-   * A method rather than a bare constant read so the ceiling is one thing to
-   * move, and so a caller can see it is a property of a point rather than of
-   * a shape.
-   */
-  ceiling(): number {
-    return MOSAIC_TILE_MAXIMUM_DEGREE;
-  }
-
-  /**
    * How many edges a tile of this shape holds, which is both how many binary
    * decisions one tile is and what {@link MOSAIC_TILE_EDGE_BUDGET} bounds.
    */
@@ -219,18 +178,27 @@ export class MosaicTilesService {
       throw new OversizedMosaicTileError(shape, this.edges(shape));
     }
 
+    const cached = this.tilesByShape.get(`${rows}x${columns}`);
+
+    if (cached !== undefined) {
+      return [...cached];
+    }
+
     const enumeration: MosaicEnumeration = {
       edges: this.mosaicTileService.blankEdges(shape),
-      incident: Array.from({ length: columns * (rows - 1) }, () => 0),
       shape,
       tilesByIdentifier: new Map<string, MosaicTile>(),
     };
 
     this.assign(0, enumeration);
 
-    return [...enumeration.tilesByIdentifier.entries()]
+    const tiles = [...enumeration.tilesByIdentifier.entries()]
       .toSorted(([first], [second]) => first.localeCompare(second))
       .map(([, tile]) => tile);
+
+    this.tilesByShape.set(`${rows}x${columns}`, tiles);
+
+    return [...tiles];
   }
 
   /** Whether a shape is small enough to enumerate, which is the only thing that decides it. */

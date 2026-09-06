@@ -1,0 +1,9 @@
+<svg width="150" height="66" viewBox="0 0 150 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M-9 15H3M-9 27H3M-9 39H3" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M3 15V27M15 15H27M15 15V27M3 27V39M15 27H27M15 27V39M3 39V51M15 39H27M15 39V51M3 51H15M3 3H27M3 63H27" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M27 15V27M39 15H51M39 15V27M27 27V39M39 27H51M39 27V39M27 39V51M39 39H51M39 39V51M27 51H39M27 3H51M27 63H51" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M51 15V27M63 15H75M63 15V27M51 27V39M63 27H75M63 27V39M51 39V51M63 39H75M63 39V51M51 51H63M51 3H75M51 63H75" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M75 15V27M87 15H99M87 15V27M75 27V39M87 27H99M87 27V39M75 39V51M87 39H99M87 39V51M75 51H87M75 3H99M75 63H99" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M99 15V27M111 15H123M111 15V27M99 27V39M111 27H123M111 27V39M99 39V51M111 39H123M111 39V51M99 51H111M99 3H123M99 63H123" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M123 15V27M135 15H147M135 15V27M123 27V39M135 27H147M135 27V39M123 39V51M135 39H147M135 39V51M123 51H135M123 3H147M123 63H147" stroke="black" stroke-width="6" stroke-linecap="square"/>
+</svg>

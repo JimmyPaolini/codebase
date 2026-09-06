@@ -51,7 +51,7 @@ export interface JunctionCounts {
  * `channelWidthCompliant` is invariant 2: every interior white channel is
  * exactly one stroke width. It excludes the band's first and last lattice
  * column, which is invariant 7 — a band's termination is allowed a wider
- * gap, and 1,513 of the 3,797 committed documents have one there — a count
+ * gap, and 6,005 of the 9,942 committed documents have one there — a count
  * asserted in `meander-topology.service.integration.test.ts` rather than
  * carried in prose.
  *

@@ -7,10 +7,7 @@ import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { MosaicTileService } from "./mosaic-tile.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
 
-import type {
-  MosaicBuildableSubFamily,
-  MosaicTile,
-} from "./mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "./mosaic-motif.types";
 
 // 🔧 Configuration
 
@@ -47,7 +44,6 @@ const NAMED_SUB_FAMILIES: readonly MosaicBuildableSubFamily[] = [
 describe(MosaicSubFamilyService, () => {
   let service: MosaicSubFamilyService;
   let mosaicSymmetryService: MosaicSymmetryService;
-  let mosaicTileService: MosaicTileService;
   let mosaicTilesService: MosaicTilesService;
 
   beforeAll(async () => {
@@ -62,19 +58,8 @@ describe(MosaicSubFamilyService, () => {
 
     service = await module.resolve(MosaicSubFamilyService);
     mosaicSymmetryService = await module.resolve(MosaicSymmetryService);
-    mosaicTileService = await module.resolve(MosaicTileService);
     mosaicTilesService = await module.resolve(MosaicTilesService);
   });
-
-  /** Whether every point of a tile is inside the ceiling the enumeration currently walks under. */
-  const withinCeiling = (tile: MosaicTile): boolean =>
-    tile.points.every((row, level) =>
-      row.every(
-        (_point, column) =>
-          mosaicTileService.incidentEdges(tile, level, column) <=
-          mosaicTilesService.ceiling(),
-      ),
-    );
 
   it("is defined", () => {
     expect(service).toBeDefined();
@@ -121,15 +106,10 @@ describe(MosaicSubFamilyService, () => {
     });
 
     /**
-     * A named tile has to be a real member of the space, and "the space" is
-     * whatever the enumeration's own ceiling admits at the time.
-     *
-     * `bars` is the one that is not, and deliberately: an unbroken vertical
-     * run puts two edges on every interior point, which the family's
-     * original exact-cover rule forbids. It is a tile of the model rather
-     * than of this enumeration, and it joins both the moment that ceiling
-     * moves. Skipping it by measuring the ceiling rather than by naming it
-     * is what makes this test notice when that happens.
+     * A named tile has to be a real member of the space, which every one of
+     * them now is: nothing bounds a point any more, so the only thing that
+     * can put a buildable tile outside the enumeration is a shape the edge
+     * budget refuses.
      */
     it(
       "builds tiles the enumeration itself finds, so a named tile is a real member of the unit space",
@@ -142,8 +122,7 @@ describe(MosaicSubFamilyService, () => {
 
             if (
               !built ||
-              built.columns > mosaicTilesService.maximumColumns(rows) ||
-              !withinCeiling(built)
+              built.columns > mosaicTilesService.maximumColumns(rows)
             ) {
               continue;
             }

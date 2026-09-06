@@ -19,6 +19,16 @@ import type {
 // 🔧 Configuration
 
 /**
+ * How long the whole-space walks below are given.
+ *
+ * The budget admits 8,551 tiles and two of the assertions here visit every
+ * one of them, which is real work rather than a hang — so it is declared
+ * rather than left to the default five seconds, the same way the charter
+ * measurement declares its own.
+ */
+const SPACE_WALK_TIMEOUT_MILLISECONDS = 60_000;
+
+/**
  * Every shape the edge budget admits — the whole space, rather than a sample
  * of it. A name is a property of a tile, so the claims below are about the
  * space itself and not about what the sweep happens to commit.
@@ -152,42 +162,56 @@ describe(MosaicNamingService, () => {
   });
 
   describe("over the enumerated unit space", () => {
-    it("never lets a tile earn two names, which would be a defect in the rule set rather than a tie", () => {
-      const ambiguous: string[][] = [];
+    it("earns no name for a tile carrying a junction, since every rule requires the absence of the directions the others are about", () => {
+      expect(service.name(mosaicTile(["be", ".."]))).toBeUndefined();
+      expect(service.name(mosaicTile(["bs", ".."]))).toBeUndefined();
+    });
 
-      for (const { columns, rows } of ADMITTED_SHAPES) {
-        for (const tile of mosaicTilesService.enumerate(rows, columns)) {
-          const earned = service.matching(tile);
+    it(
+      "never lets a tile earn two names, which would be a defect in the rule set rather than a tie",
+      () => {
+        const ambiguous: string[][] = [];
 
-          if (earned.length > 1) {
-            ambiguous.push(earned);
+        for (const { columns, rows } of ADMITTED_SHAPES) {
+          for (const tile of mosaicTilesService.enumerate(rows, columns)) {
+            const earned = service.matching(tile);
+
+            if (earned.length > 1) {
+              ambiguous.push(earned);
+            }
           }
         }
-      }
 
-      expect(ambiguous).toStrictEqual([]);
-    });
+        expect(ambiguous).toStrictEqual([]);
+      },
+      SPACE_WALK_TIMEOUT_MILLISECONDS,
+    );
 
-    it("counts every named region of the space, leaving the rest unnamed", () => {
-      const counts = new Map<string, number>();
+    it(
+      "counts every named region of the space, leaving the rest unnamed",
+      () => {
+        const counts = new Map<string, number>();
 
-      for (const { columns, rows } of ADMITTED_SHAPES) {
-        for (const tile of mosaicTilesService.enumerate(rows, columns)) {
-          const earned = service.name(tile) ?? "unnamed";
+        for (const { columns, rows } of ADMITTED_SHAPES) {
+          for (const tile of mosaicTilesService.enumerate(rows, columns)) {
+            const earned = service.name(tile) ?? "unnamed";
 
-          counts.set(earned, (counts.get(earned) ?? 0) + 1);
+            counts.set(earned, (counts.get(earned) ?? 0) + 1);
+          }
         }
-      }
 
-      expect(Object.fromEntries(counts)).toStrictEqual({
-        bars: 11,
-        dashes: 69,
-        diamond: 4,
-        dots: 11,
-        lines: 11,
-        steps: 10,
-        unnamed: 2290,
-      });
-    });
+        expect(Object.fromEntries(counts)).toStrictEqual({
+          bars: 11,
+          dashes: 69,
+          diamond: 4,
+          dots: 11,
+          lines: 11,
+          mesh: 11,
+          steps: 10,
+          unnamed: 8424,
+        });
+      },
+      SPACE_WALK_TIMEOUT_MILLISECONDS,
+    );
   });
 });

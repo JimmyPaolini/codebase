@@ -74,17 +74,11 @@ export interface MosaicEdgesDraft {
 
 /**
  * The bookkeeping `MosaicTilesService.enumerate` carries through its walk:
- * the edges decided so far, how many of them each point is touched by, the
- * shape being enumerated, and the distinct tiles found, keyed by canonical
- * identifier.
- *
- * `incident` is indexed `level × columns + column`, and it is the whole
- * reason the walk is fast: it lets a partial assignment be refused the
- * moment it exceeds the ceiling, rather than completed and then discarded.
+ * the edges decided so far, the shape being enumerated, and the distinct
+ * tiles found, keyed by canonical identifier.
  */
 export interface MosaicEnumeration {
   readonly edges: MosaicEdgesDraft;
-  readonly incident: number[];
   readonly shape: MosaicTileShape;
   readonly tilesByIdentifier: Map<string, MosaicTile>;
 }

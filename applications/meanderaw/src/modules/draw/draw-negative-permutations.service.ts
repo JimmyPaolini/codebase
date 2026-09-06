@@ -3,8 +3,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import { STRUCTURAL_MINIMUM_ROWS } from "../meander-generation/meander-generation.constants";
 import { MOSAIC_TILE_MAXIMUM_ROWS } from "../mosaic-motif/mosaic-motif.constants";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import {
+  NEGATIVE_SOURCE_MAXIMUM_DEGREE,
   NEGATIVE_SOURCE_NAMES,
   NEGATIVE_SOURCE_ROW_OFFSET,
 } from "../negative-motif/negative-motif.constants";
@@ -64,6 +66,8 @@ export class DrawNegativePermutationsService {
   constructor(
     @Inject(MosaicSymmetryService)
     private readonly mosaicSymmetryService: MosaicSymmetryService,
+    @Inject(MosaicTileService)
+    private readonly mosaicTileService: MosaicTileService,
     @Inject(MosaicTilesService)
     private readonly mosaicTilesService: MosaicTilesService,
     @Inject(NegativeSourceService)
@@ -121,9 +125,15 @@ export class DrawNegativePermutationsService {
   /**
    * Enumerates and renders every one-column negative at one row count.
    *
+   * The sources are the `mosaic` tiles this family can invert, which is not
+   * all of them: a point carrying more than
+   * {@link NEGATIVE_SOURCE_MAXIMUM_DEGREE} bits can wall a cell on every
+   * side, and a cell with no corridor leaves the negative with a lattice
+   * point nothing paints.
+   *
    * A drawing whose source is one this family names carries that name after
-   * the source's identifier, exactly as a `mosaic` tile belonging to a
-   * sub-family does — so the six a reader already has a word for are legible
+   * the source's identifier, exactly as a `mosaic` tile earning a name
+   * does — so the six a reader already has a word for are legible
    * in the directory listing rather than lost among the hundreds that have
    * none.
    */
@@ -136,6 +146,11 @@ export class DrawNegativePermutationsService {
 
     return this.mosaicTilesService
       .enumerate(sourceRows, NEGATIVE_PERMUTATION_COLUMNS)
+      .filter(
+        (tile) =>
+          this.mosaicTileService.maximumDegree(tile) <=
+          NEGATIVE_SOURCE_MAXIMUM_DEGREE,
+      )
       .map((tile) => {
         const identifier = this.mosaicSymmetryService.canonicalIdentifier(tile);
         const source = this.classify(tile, rows);
