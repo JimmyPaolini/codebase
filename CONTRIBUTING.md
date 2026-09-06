@@ -11,19 +11,25 @@ Thank you for contributing! This guide covers the development workflow, code sta
   - [Getting Started](#getting-started)
     - [Option 1: Local Setup (macOS, Recommended)](#option-1-local-setup-macos-recommended)
     - [Option 2: Dev Container](#option-2-dev-container)
+    - [Commit Signing (Required)](#commit-signing-required)
     - [Workspace Structure](#workspace-structure)
   - [Development Workflow](#development-workflow)
     - [Basic Commands](#basic-commands)
+    - [Python Projects](#python-projects)
     - [The Gates](#the-gates)
   - [Code Standards](#code-standards)
+    - [Nx Boundaries](#nx-boundaries)
     - [Size Limits](#size-limits)
     - [Coverage Gates](#coverage-gates)
+  - [In-House Toolchains](#in-house-toolchains)
   - [Git Hooks (Husky)](#git-hooks-husky)
+  - [Working in a Git Worktree](#working-in-a-git-worktree)
   - [Branch Naming Guidelines](#branch-naming-guidelines)
   - [Commit Guidelines](#commit-guidelines)
     - [Types](#types)
     - [Scopes](#scopes)
   - [Release Significance](#release-significance)
+  - [Issues and Planning](#issues-and-planning)
   - [Pull Request Process](#pull-request-process)
   - [Release Process](#release-process)
   - [Code Ownership](#code-ownership)
@@ -132,6 +138,34 @@ pnpm is pinned by `packageManager` in the root `package.json`, so Corepack selec
 
 See [.devcontainer/README.md](.devcontainer/README.md) for detailed configuration and troubleshooting.
 
+### Commit Signing (Required)
+
+Every commit must be GPG-signed. The `pre-commit` hook refuses to run without a working signing configuration, `pre-push` verifies the signature on every commit being pushed, and `main` is protected against unsigned commits — so this is the first thing to get right, before your first commit.
+
+The local setup script installs `gnupg` and `pinentry-mac` and points `gpg-agent` at the latter, but it cannot create a key for you. If you do not already have one:
+
+```bash
+gpg --quick-generate-key "Your Name <you@example.com>" rsa4096 sign 0
+```
+
+Then point git at it and turn signing on:
+
+```bash
+git config --global user.signingkey "$(gpg --list-secret-keys --keyid-format=long | grep '^sec' | awk '{print $2}' | cut -d'/' -f2)"
+```
+
+```bash
+git config --global commit.gpgsign true
+```
+
+Finally, export the public key and add it to [your GitHub account](https://github.com/settings/keys) so GitHub marks the commits verified:
+
+```bash
+gpg --armor --export "$(git config --get user.signingkey)"
+```
+
+`scripts/git/check-commit-signing-configuration.sh` checks all of it — `commit.gpgsign`, `user.signingkey`, that a secret key exists for that key, and that signing actually succeeds. Husky runs it for you; never invoke it, or `check-push-commit-signatures.sh`, by hand during a normal commit or push.
+
 ### Workspace Structure
 
 ```text
@@ -204,6 +238,20 @@ pnpm exec nx affected --target=lint-codebase --base=main
 
 Always run tasks through Nx rather than the underlying tool, so caching and the task graph apply. Note there is **no `test` target** in this workspace — it is `vitest` for TypeScript projects and `pytest` for Python ones, both reachable through `test-coverage`.
 
+### Python Projects
+
+`affirmations` is a Python project and does not share the TypeScript tool names. It lives in the shared `uv` workspace at the repository root, so its dependencies come from the root `pyproject.toml` and `uv.lock` rather than a manifest of its own.
+
+| Concern   | TypeScript                   | Python          |
+| --------- | ---------------------------- | --------------- |
+| Format    | `oxfmt`                      | `ruff-format`   |
+| Lint      | `eslint`, `oxlint`           | `ruff-lint`     |
+| Types     | `typecheck`, `type-coverage` | `pyright`, `ty` |
+| Tests     | `vitest`                     | `pytest`        |
+| Dead code | `knip`                       | `vulture`       |
+
+The composite targets pick whichever set a project's `language:*` tag selects, so `lint-codebase` and `test-coverage` work unchanged either way — which is the reason to reach for those rather than a tool by name. See [write-python](.agents/skills/write-python/SKILL.md) for the full setup.
+
 ### The Gates
 
 Five workflows run on every pull request. Each maps to targets you can run locally before pushing. GitHub shows each with an emoji prefix — 🧑‍💻 Lint Codebase, 🧑‍🔬 Test Coverage, 🕵️ Scan Security, 👷 Make Projects, 🧑‍⚖️ Validate Conventions.
@@ -232,6 +280,20 @@ Five workflows run on every pull request. Each maps to targets you can run local
 
 See [configuration/eslint.config.ts](configuration/eslint.config.ts) for the complete rule set, and [configuration/codebase-structure.json](configuration/codebase-structure.json) for the folder and file placement rules — placement is a lint error here, not a preference.
 
+### Nx Boundaries
+
+`@nx/enforce-module-boundaries` derives import rules from the tags each project declares in its `project.json`. A violation fails `eslint`, not `typecheck`, so it surfaces later than you would expect — check these before adding a cross-project import.
+
+- **`type:application` may only import `type:package` projects.** Applications never import each other.
+- **`type:package` may never import a `type:application`.**
+- **`framework:react` may not import `framework:nestjs`.**
+- **`domain:lexico` and `domain:caelundas` may never import each other.**
+- **Each toolchain's packages form a strict layered graph** keyed on `name:*` tags, where every package declares exactly which siblings it may import. Read the `depConstraints` list in [configuration/eslint.config.ts](configuration/eslint.config.ts) before wiring a new dependency between them.
+
+`@nx/dependency-checks` additionally requires that every imported package is declared in that project's own `package.json` — which is why a dependency goes in through `pnpm add --filter <project>` rather than a hand edit.
+
+Cross-project imports use the workspace package name (`@codebase/logger`), never a relative path out of the project. Inside a project, prefer relative paths over path aliases.
+
 ### Size Limits
 
 Hard ESLint errors on source files. Test files and `*.config.*` files are exempt.
@@ -257,6 +319,25 @@ When a file nears 512 lines, split it along the module file suffixes instead of 
 
 Lowering a threshold to make a change pass is not an option — fix the code.
 
+## In-House Toolchains
+
+Four toolchains are developed in this repository and gate its own code. You are most likely to meet them as a failing check, so it is worth knowing which one is talking.
+
+| Toolchain      | What it does                                                                                                                   | What fails a pull request                                                    |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| `conformetry`  | Scaffolds projects, modules, and components from templates, then measures the generated instances back against those templates | `conformetry-validate`, inside `lint-codebase`                               |
+| `codometer`    | Measures a directory — languages, declared conventions, compressed size — against the limits its configuration declares        | that project's `codometer` target, inside Make Projects                      |
+| `codependix`   | Exports Nx, NestJS module, and file-level import graphs, and judges them against declared boundary rules                       | `codependix --check boundaries`, run beside `lint-codebase` in Lint Codebase |
+| `callidescope` | Traces call stacks through injected dependencies and flags stacks that are too deep or callables that reach too widely         | `callidescope --check depth`, run beside `lint-codebase` in Lint Codebase    |
+
+Each is documented in its command-line package — [conformetry-cli](packages/conformetry-cli/README.md), [codometer-cli](packages/codometer-cli/README.md), [codependix-cli](packages/codependix-cli/README.md), [callidescope-cli](packages/callidescope-cli/README.md) — and each has agent skills for the same three moments, which read just as well for a human: running it, configuring it, and acting on what it said (codependix adds a fourth, for reading a graph the repository already committed). They are the `conformetry-*`, `codometer-*`, `codependix-*`, and `callidescope-*` entries under [.agents/skills](.agents/skills).
+
+Conformetry is the one you should reach for deliberately rather than only meet as a failure: **generate rather than hand-craft**, because code written in a shape a template already describes starts life failing conformance. `nx g conformetry:` lists the generators, and `conformetry templates` describes what each one produces.
+
+Every configuration these four read lives in [configuration/](configuration), one file per toolchain, alongside per-project `codometer.config.ts` files that spread the shared object.
+
+> ⚠️ **Each toolchain ships an `*-examples` package that contains code which is deliberately wrong** — a breaching limit, a `tsconfig.json` the compiler cannot parse, a stack eight frames deep, an instance missing an export. Each is the reproduction of a failure you will hit, and "fixing" one deletes the only place that behavior is demonstrated. Every examples package's `AGENTS.md` lists its own, and maps "the tool said X" to the example that reproduces X in about a second.
+
 ## Git Hooks (Husky)
 
 Three Husky hooks enforce quality gates locally, from [configuration/.husky/](configuration/.husky). **Never bypass them with `--no-verify`** — fix the underlying issue instead.
@@ -270,6 +351,16 @@ Three Husky hooks enforce quality gates locally, from [configuration/.husky/](co
 If a hook fails, the git operation is blocked until you fix the error. `pre-commit` writes its full output to `last-lint-staged-output.log`, which is where to look when the terminal output is truncated.
 
 Both signing checks are run by Husky already — do not invoke `scripts/git/` signing scripts by hand in a normal commit or push.
+
+## Working in a Git Worktree
+
+Worktrees are the normal way to run several branches side by side here, and three traps are specific to this repository.
+
+- **`pnpm-lock.yaml` goes dirty on its own.** `pnpm install` or `lint-codebase --write` rewrites the `applications/JimmyPaolini` entry, because a placeholder `package.json` is inconsistently present across checkouts. Revert the lockfile rather than trying to reconcile it.
+- **Never run `git submodule update --init` for `applications/JimmyPaolini`.** That submodule is deliberately left uninitialized everywhere, locally and in CI. A `-` prefix in `git submodule status` is expected here, not broken.
+- **The stash stack is shared with every other worktree.** A bare `git stash pop` can take someone else's work. Prefer a temporary commit, or `git stash push -u -m "<unique-tag>"` and `git stash apply <sha>`.
+
+The branch name is not free-form in a worktree either — derive one from the tables below and validate it before creating anything, since an unvalidated branch cannot be pushed. If the branch already exists locally, attach a worktree to it rather than creating a second branch. See [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md).
 
 ## Branch Naming Guidelines
 
@@ -375,6 +466,28 @@ The `pull-request-release-significance` check reads the branch's commits and fai
 
 This is also why one project or module per pull request is the rule: the fewer concerns a branch carries, the less likely it accumulates a commit that outranks its title.
 
+## Issues and Planning
+
+Issues and specs live as GitHub issues in [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase/issues). Blank issues are disabled, so a human-filed issue goes through the single template, whose Type and Scope dropdowns are kept in step with `configuration/conventional.config.cjs` by a synchronization target:
+
+```bash
+gh issue create --template issue.yml
+```
+
+Issue titles follow the same `<type>(<scope>): <gitmoji> <subject>` convention as commits. Unlike a pull request title this is not enforced, so a quick backlog-idea title is a normal shape for an issue. Labels are the `type:*` and `scope:*` labels matching the title, one `source:*` label, and a triage label — `status:needs-triage`, `status:needs-info`, `status:ready-for-agent`, `status:ready-for-human`, or `wontfix`.
+
+The Audit Issues workflow checks issue metadata on `opened`, `edited`, `labeled`, and `unlabeled`, and on `opened` first reconciles the labels a submitted form implies. It has its own README badge, so a red one there means an issue and nothing else.
+
+Planned work is filed in three layers — a spec, one parent issue per pull request beneath it, and one sub-issue per planned commit beneath that:
+
+```text
+spec issue          the specification the work came from
+└── parent issue    one per pull request
+    └── sub-issue   one per planned commit
+```
+
+See [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) and [docs/agents/triage-labels.md](docs/agents/triage-labels.md) for the full conventions.
+
 ## Pull Request Process
 
 1. **Push and open**: `git push -u origin <branch>`, then `gh pr create` and fill in the template. Do not use `--fill` — it substitutes the commit message for the body and drops the four required headings
@@ -386,6 +499,8 @@ This is also why one project or module per pull request is the rule: the fewer c
 7. **Merge**: squash and merge, then delete the branch
 
 Validate Conventions creates any label missing from the vocabulary when a pull request is opened or reopened, so a fresh pull request already has the labels it needs. That vocabulary lives in [configuration/conventional.config.cjs](configuration/conventional.config.cjs) and is never hard-coded elsewhere.
+
+Merges go through a merge queue, and the check workflows run again on the queued merge commit — a pull request that was green on its own can still fail there once `main` has moved underneath it.
 
 A pull request with merge conflicts runs almost none of these workflows — a short list of green checks means nothing was validated. Resolve conflicts before reading the checks as a pass.
 
