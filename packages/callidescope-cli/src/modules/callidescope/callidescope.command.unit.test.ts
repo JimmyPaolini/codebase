@@ -4,6 +4,8 @@ import {
   ConfigurationService,
   InputError,
   InputService,
+  ProjectConfigurationError,
+  ProjectConfigurationFieldNotPermittedError,
 } from "@callidescope/configuration";
 import { ProgramConfigurationError } from "@callidescope/graph";
 import {
@@ -855,6 +857,85 @@ describe(CallidescopeCommand, () => {
 
     expect(outputJsonService.sync).not.toHaveBeenCalled();
     expect(process.exitCode).toBe(1);
+  });
+
+  // 🚧 A project configuration that was refused
+
+  /** Points the trace at a project configuration reading raised. */
+  function stubUnreadableProjectConfiguration(): void {
+    callidescopeService.trace.mockImplementation(() => {
+      throw new ProjectConfigurationError({
+        cause: new Error("Unexpected token"),
+        configurationPath: "packages/broken/callidescope.config.ts",
+        project: "broken",
+      });
+    });
+  }
+
+  /** Points the trace at a project configuration setting a workspace-only field. */
+  function stubDisallowedProjectConfigurationField(): void {
+    callidescopeService.trace.mockImplementation(() => {
+      throw new ProjectConfigurationFieldNotPermittedError({
+        field: "limits",
+        project: "broken",
+      });
+    });
+  }
+
+  it("fails a run whose trace hit a project configuration it could not read", async () => {
+    stubUnreadableProjectConfiguration();
+
+    await command.run([], { check: "depth" });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("names the project configuration it could not read", async () => {
+    stubUnreadableProjectConfiguration();
+
+    await command.run([], {});
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected a project configuration",
+      undefined,
+      {
+        reason:
+          "Failed to read the callidescope configuration for broken at packages/broken/callidescope.config.ts: Unexpected token",
+      },
+    );
+  });
+
+  it("writes no destination when a project configuration could not be read", async () => {
+    configureJsonDestination();
+    stubUnreadableProjectConfiguration();
+
+    await command.run([], { write: true });
+
+    expect(outputJsonService.sync).not.toHaveBeenCalled();
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("fails a run whose trace hit a project configuration setting a field it may not", async () => {
+    stubDisallowedProjectConfigurationField();
+
+    await command.run([], { check: "depth" });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("names the project configuration field it may not set", async () => {
+    stubDisallowedProjectConfigurationField();
+
+    await command.run([], {});
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected a project configuration",
+      undefined,
+      {
+        reason:
+          "broken sets limits, which only the workspace configuration may set. A project configuration may set entryPoints, limits.maximumDepth, limits.maximumBreadth, and exclude.",
+      },
+    );
   });
 
   it("reads no destination when only depth is checked", async () => {

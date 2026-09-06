@@ -256,7 +256,7 @@ const config: KnipConfig = {
     // them.
     "packages/callidescope-examples": {
       entry: [
-        "callidescope.config.ts",
+        "callidescope.workspace.config.ts",
         "examples/**/*.ts",
         "src/**/*.ts",
         "testing/**/*.test.ts",
@@ -266,7 +266,7 @@ const config: KnipConfig = {
       // it. Undeclared, `knip --fix` deletes it and the test stops running.
       ignoreDependencies: ["@swc-node/register"],
       project:
-        "{callidescope.config.ts,examples/**/*.ts,src/**/*.ts,testing/**/*.ts}",
+        "{callidescope.workspace.config.ts,examples/**/*.ts,src/**/*.ts,testing/**/*.ts}",
     },
     "packages/callidescope-graph": {
       entry: ["src/index.ts"],
