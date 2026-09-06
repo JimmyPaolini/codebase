@@ -1,6 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { MOSAIC_TILE_MAXIMUM_INCIDENT_EDGES } from "./mosaic-motif.constants";
+import {
+  MOSAIC_TILE_EDGE_BUDGET,
+  MOSAIC_TILE_MAXIMUM_DEGREE,
+  OversizedMosaicTileError,
+} from "./mosaic-motif.constants";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { MosaicTileService } from "./mosaic-tile.service";
 
@@ -23,13 +27,17 @@ import type {
  * arrangement, which is what makes the walk indifferent to what the tiles
  * mean.
  *
- * What used to be an exact cover of cells by dots and one-unit dashes is
- * that same walk under one ceiling: no point may be touched by more than
- * {@link MOSAIC_TILE_MAXIMUM_INCIDENT_EDGES} edges. A cover claimed every
- * cell exactly once, by a dot on its own or by one half of a dash, which is
- * exactly a matching — so the rule is now a property of a point rather than
- * a shape the search is built around, and it prunes as the walk goes rather
- * than being checked at the end.
+ * Two numbers bound it, and they bound different things.
+ * {@link MOSAIC_TILE_MAXIMUM_DEGREE} is a ceiling on one *point* — how many
+ * direction bits it may carry, which is what says whether the family can
+ * turn a corner. {@link MOSAIC_TILE_EDGE_BUDGET} is a ceiling on the whole
+ * *tile* — how many edges it may hold, which is what keeps the space small
+ * enough to look through, since the count is `2 ** edges` before folding. Raising the
+ * first without the second is what makes a lattice family explode.
+ *
+ * The point ceiling prunes as the walk goes rather than being checked at
+ * the end, which is the whole of the old backtracking search's cleverness
+ * restated as one comparison.
  *
  * Whatever the ceiling, the result is folded by symmetry class — a tile
  * repeats forever, so a shift or a mirror of one tile is not another — and
@@ -84,7 +92,7 @@ export class MosaicTilesService {
   private assign(ordinal: number, enumeration: MosaicEnumeration): void {
     const { edges, incident, shape } = enumeration;
 
-    if (ordinal === this.edgeCount(shape)) {
+    if (ordinal === this.edges(shape)) {
       this.record(enumeration);
 
       return;
@@ -125,16 +133,14 @@ export class MosaicTilesService {
     }
   }
 
-  /** How many edges a tile of this shape has, which is how many binary decisions one tile is. */
-  private edgeCount(shape: MosaicTileShape): number {
-    return shape.columns * (2 * shape.rows - 3);
-  }
-
   /**
-   * The points the `ordinal`-th edge touches, as `level × columns + column`
-   * indices, with a single-column eastward edge yielding one point rather
-   * than two — it wraps onto its own point, so it is one edge there however
-   * many directions its ink leaves by.
+   * The points the `ordinal`-th edge leaves a direction bit at, as
+   * `level * columns + column` indices.
+   *
+   * Always two of them, and at a single column both are the same point —
+   * which is right rather than a degeneracy to paper over: a wrapped edge
+   * really does leave that point east *and* west, so it costs two of its
+   * two-bit allowance and a point carrying one can carry nothing else.
    */
   private endpoints(shape: MosaicTileShape, ordinal: number): number[] {
     const { columns, rows } = shape;
@@ -148,7 +154,7 @@ export class MosaicTilesService {
       ? level * columns + ((column + 1) % columns)
       : (level + 1) * columns + column;
 
-    return own === reached ? [own] : [own, reached];
+    return [own, reached];
   }
 
   /** Keeps the tile the current assignment describes, unless a tile already found draws the same pattern. */
@@ -179,23 +185,40 @@ export class MosaicTilesService {
   // 🌎 Public Methods
 
   /**
-   * The most edges one point may be touched by. One, which is the family's
-   * original exact-cover rule: every cell claimed exactly once.
+   * The most direction bits one point may carry, which is two — a corner, or
+   * a straight run through.
    *
    * A method rather than a bare constant read so the ceiling is one thing to
    * move, and so a caller can see it is a property of a point rather than of
    * a shape.
    */
   ceiling(): number {
-    return MOSAIC_TILE_MAXIMUM_INCIDENT_EDGES;
+    return MOSAIC_TILE_MAXIMUM_DEGREE;
+  }
+
+  /**
+   * How many edges a tile of this shape holds, which is both how many binary
+   * decisions one tile is and what {@link MOSAIC_TILE_EDGE_BUDGET} bounds.
+   */
+  edges(shape: MosaicTileShape): number {
+    return shape.columns * (2 * shape.rows - 3);
   }
 
   /**
    * Every distinct tile of the given size, one per symmetry class, ordered
    * by canonical identifier so the sweep is stable across runs.
+   *
+   * A shape the budget does not admit is refused rather than enumerated
+   * slowly: the walk is `2 ** edges` wide, so one shape too many is not a
+   * long run but an unfinished one.
    */
   enumerate(rows: number, columns: number): MosaicTile[] {
     const shape: MosaicTileShape = { columns, rows };
+
+    if (!this.isAdmitted(shape)) {
+      throw new OversizedMosaicTileError(shape, this.edges(shape));
+    }
+
     const enumeration: MosaicEnumeration = {
       edges: this.mosaicTileService.blankEdges(shape),
       incident: Array.from({ length: columns * (rows - 1) }, () => 0),
@@ -208,5 +231,50 @@ export class MosaicTilesService {
     return [...enumeration.tilesByIdentifier.entries()]
       .toSorted(([first], [second]) => first.localeCompare(second))
       .map(([, tile]) => tile);
+  }
+
+  /** Whether a shape is small enough to enumerate, which is the only thing that decides it. */
+  isAdmitted(shape: MosaicTileShape): boolean {
+    return this.edges(shape) <= MOSAIC_TILE_EDGE_BUDGET;
+  }
+
+  /**
+   * Whether every point of a tile is touched by at most one edge — the
+   * family's original exact-cover rule, restated over the lattice.
+   *
+   * Each point claimed exactly once, by a dot on its own or by one half of a
+   * dash, is exactly a matching: no two edges meet. The single-column
+   * wrapped edge counts as the one edge it is, which is why the continuous
+   * rule `lines` draws sits inside this region rather than outside it, even
+   * though the ink really does leave that point in both directions.
+   *
+   * Nothing in the enumeration reads this. The ceiling on a point is on its
+   * direction bits now, and this region is strictly inside that one — so it
+   * is kept, and asserted shape by shape against the counts the old rule
+   * produced, because reproducing that set exactly is what says the wider
+   * space *contains* the narrower one rather than replacing it.
+   */
+  isMatching(tile: MosaicTile): boolean {
+    for (const [level, row] of tile.points.entries()) {
+      for (const [column] of row.entries()) {
+        if (this.mosaicTileService.incidentEdges(tile, level, column) > 1) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * The widest column span the budget admits at a row count, which is at
+   * least one at every row count the family draws in.
+   *
+   * The sweep asks per row rather than reading a column cap, which is what
+   * makes the budget the single knob: five columns at three rows, one at
+   * six, and the arithmetic between them says so rather than a table.
+   */
+  maximumColumns(rows: number): number {
+    return Math.max(Math.floor(MOSAIC_TILE_EDGE_BUDGET / (2 * rows - 3)), 1);
   }
 }

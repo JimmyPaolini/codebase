@@ -2,7 +2,6 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { mosaicTile } from "../../../testing/mosaic-tiles";
-import { MOSAIC_TILE_MAXIMUM_COLUMNS } from "../mosaic-motif/mosaic-motif.constants";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
@@ -14,22 +13,23 @@ import type {
   MosaicBuildableSubFamily,
   MosaicSubFamily,
   MosaicTile,
+  MosaicTileShape,
 } from "../mosaic-motif/mosaic-motif.types";
 
 // 🔧 Configuration
 
 /**
- * The row counts every naming claim below is checked against, rather than a
- * sample of them.
- *
- * Two rows deeper than `DrawPermutationsService.rowsSweep` writes, which
- * stops at `MOSAIC_TILE_MAXIMUM_ROWS`. A name is a property of a tile rather
- * than of the corpus — a rule reads direction bits and knows nothing about
- * what was committed — so checking the space past the sweep's own ceiling is
- * worth more here than matching it, and these are the counts README.md's
- * sub-family table publishes.
+ * Every shape the edge budget admits — the whole space, rather than a sample
+ * of it. A name is a property of a tile, so the claims below are about the
+ * space itself and not about what the sweep happens to commit.
  */
-const SWEPT_ROWS: readonly number[] = [4, 5, 6, 7, 8];
+const ADMITTED_SHAPES: readonly MosaicTileShape[] = [3, 4, 5, 6].flatMap(
+  (rows) =>
+    Array.from(
+      { length: Math.floor(16 / (2 * rows - 3)) },
+      (_column, index) => ({ columns: index + 1, rows }),
+    ),
+);
 
 /** Every name a rule can earn, typed rather than widened for the command line. */
 const NAMES: readonly MosaicSubFamily[] = [
@@ -155,18 +155,12 @@ describe(MosaicNamingService, () => {
     it("never lets a tile earn two names, which would be a defect in the rule set rather than a tie", () => {
       const ambiguous: string[][] = [];
 
-      for (const rows of SWEPT_ROWS) {
-        for (
-          let columns = 1;
-          columns <= MOSAIC_TILE_MAXIMUM_COLUMNS;
-          columns += 1
-        ) {
-          for (const tile of mosaicTilesService.enumerate(rows, columns)) {
-            const earned = service.matching(tile);
+      for (const { columns, rows } of ADMITTED_SHAPES) {
+        for (const tile of mosaicTilesService.enumerate(rows, columns)) {
+          const earned = service.matching(tile);
 
-            if (earned.length > 1) {
-              ambiguous.push(earned);
-            }
+          if (earned.length > 1) {
+            ambiguous.push(earned);
           }
         }
       }
@@ -177,26 +171,22 @@ describe(MosaicNamingService, () => {
     it("counts every named region of the space, leaving the rest unnamed", () => {
       const counts = new Map<string, number>();
 
-      for (const rows of SWEPT_ROWS) {
-        for (
-          let columns = 1;
-          columns <= MOSAIC_TILE_MAXIMUM_COLUMNS;
-          columns += 1
-        ) {
-          for (const tile of mosaicTilesService.enumerate(rows, columns)) {
-            const earned = service.name(tile) ?? "unnamed";
+      for (const { columns, rows } of ADMITTED_SHAPES) {
+        for (const tile of mosaicTilesService.enumerate(rows, columns)) {
+          const earned = service.name(tile) ?? "unnamed";
 
-            counts.set(earned, (counts.get(earned) ?? 0) + 1);
-          }
+          counts.set(earned, (counts.get(earned) ?? 0) + 1);
         }
       }
 
       expect(Object.fromEntries(counts)).toStrictEqual({
-        dashes: 75,
+        bars: 11,
+        dashes: 69,
         diamond: 4,
-        dots: 10,
-        lines: 5,
-        unnamed: 3085,
+        dots: 11,
+        lines: 11,
+        steps: 10,
+        unnamed: 2290,
       });
     });
   });

@@ -48,7 +48,7 @@ describe(DrawPermutationsService, () => {
 
   describe("rowsSweep", () => {
     it("covers the mosaic's own minimum row count through the shared sweep maximum", () => {
-      expect(service.rowsSweep()).toStrictEqual([4, 5, 6]);
+      expect(service.rowsSweep()).toStrictEqual([3, 4, 5, 6]);
     });
   });
 
@@ -61,11 +61,12 @@ describe(DrawPermutationsService, () => {
       expect([...directories]).toStrictEqual([
         "mosaic/4-rows/1-columns",
         "mosaic/4-rows/2-columns",
+        "mosaic/4-rows/3-columns",
       ]);
     });
 
     it("renders a document for every distinct tile in the family", () => {
-      expect(sweepPaths()).toHaveLength(290);
+      expect(sweepPaths()).toHaveLength(2406);
     });
 
     it("names every file after the tile it draws, so no two collide", () => {
@@ -84,7 +85,7 @@ describe(DrawPermutationsService, () => {
       // The tile whose only edge is a southward one over the lower two
       // levels earns no name, so nothing is appended to its identifier.
       expect(paths).toContain("mosaic/4-rows/1-columns/048.svg");
-      expect(named).toHaveLength(30);
+      expect(named).toHaveLength(116);
     });
 
     it("renders the tile itself, so the document is the drawing rather than a placeholder", () => {
