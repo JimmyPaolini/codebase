@@ -6,14 +6,34 @@ import {
 /**
  * What every project in this repository is held to unless it says otherwise.
  *
- * Exported by name so a project's own `callidescope.config.ts` writes its
- * override against a spread of these rather than in place of them. A spread
- * replaces a nested object wholesale rather than merging into it, so a project
- * writing `limits: { maximumDepth: 10 }` on its own would silently drop every
- * other limit here. `configuration/codometer.config.ts`'s
- * `compiledJavaScriptTarget` export is the precedent, and lexico's codometer
- * configuration replacing the shared object outright — and reporting none of
- * its counters for it — is the failure both exports exist to prevent.
+ * A project's own `callidescope.config.ts` writes only the limits it overrides
+ * — `limits: { maximumDepth: 10 }`, and nothing beside it. **Never spread this
+ * object into one.** `spreadThreshold` is a limit only a workspace may set, and
+ * a project file carrying it is refused outright before anything is traced.
+ *
+ * Writing the override alone drops nothing. `ProjectConfigurationService`
+ * resolves each limit on its own, falling back to the workspace's number per
+ * limit rather than per object, so a project that names one keeps every other
+ * one it inherits. And a spread has nothing left to contribute anyway:
+ * `maximumDepth` and `maximumBreadth` are the only two limits a project may
+ * set, so it would supply exactly the field being overridden, plus the one that
+ * gets the file rejected.
+ *
+ * `codometer.config.ts`'s `compiledJavaScriptTarget`, beside this file in this
+ * directory, is a precedent that does not transfer, and reasoning from it is
+ * what once wrote this rule inverted. That object is a target: one element of a
+ * list, `Omit`-typed because it is deliberately incomplete, with no per-field
+ * fallback anywhere behind it. A project replacing it wholesale really does
+ * lose every counter it did not restate, which is what lexico did. A limit is
+ * neither a list element nor incomplete, and does have that fallback.
+ *
+ * Still exported although nothing imports it, because a rule needs a name to
+ * be about, and narrowing it to the one limit a project may override was
+ * considered and rejected — that leaves an object whose only member every
+ * reader of it immediately replaces.
+ * `packages/callidescope-cli/testing/workspace-limits.integration.test.ts`
+ * fails if the workspace-only limit ever leaves this object, so the
+ * prohibition above cannot quietly stop being true.
  */
 export const workspaceLimits = {
   /**
