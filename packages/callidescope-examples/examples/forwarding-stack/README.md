@@ -33,4 +33,4 @@ Compare with [`deep-stack`](../deep-stack): identical depth, opposite remedy.
 
 ## Next
 
-[shared tail](../shared-tail/README.md).
+[project depth limit](../project-depth-limit/README.md).

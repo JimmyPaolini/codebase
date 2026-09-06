@@ -53,14 +53,18 @@ Each directory under [`examples/`](examples) is one example, carries its own
 callidescope's sense, which is the unit module spread and misplacement are
 measured against.
 
-**The package is traced as one unit, together with its dependency closure.** An
-example directory carries no `tsconfig.json` of its own, so it cannot be traced
-alone — which is why every example's `## Run it` names the same command and then
-says where in the committed output to look. The run reaches beyond this package
-in the other direction, though: a project's own `tsconfig.json` never lists the
-packages it imports, so a scoped run also traces every project its imports
-transitively reach — otherwise a call leaving the package would land in code no
-traced project owned. Four projects are traced here, and
+**The package is traced as one unit, together with its dependency closure.**
+Almost every example directory carries no `tsconfig.json` of its own, so it
+cannot be traced alone — which is why every example's `## Run it` names the same
+command and then says where in the committed output to look. The two exceptions
+are deliberate: [gated-leaf](examples/gated-leaf/README.md) and
+[inherited-limits](examples/inherited-limits/README.md) _are_ projects of their
+own, because what they demonstrate is per-project configuration and a limit
+resolves per project. The run reaches beyond this package in the other
+direction, too: a project's own `tsconfig.json` never lists the packages it
+imports, so a scoped run also traces every project its imports transitively
+reach — otherwise a call leaving the package would land in code no traced
+project owned. Six projects are traced here, and
 [dependency-closure](examples/dependency-closure/README.md) is where that is
 worked through. Read them in the order below for a walkthrough:
 [plain-call](examples/plain-call/README.md) →
@@ -74,8 +78,12 @@ worked through. Read them in the order below for a walkthrough:
 [implementation-fan-out](examples/implementation-fan-out/README.md) →
 [mutual-recursion](examples/mutual-recursion/README.md) →
 [entry-points](examples/entry-points/README.md) →
+[declared-entry-points](examples/declared-entry-points/README.md) →
 [deep-stack](examples/deep-stack/README.md) →
 [forwarding-stack](examples/forwarding-stack/README.md) →
+[project-depth-limit](examples/project-depth-limit/README.md) →
+[inherited-limits](examples/inherited-limits/README.md) →
+[gated-leaf](examples/gated-leaf/README.md) →
 [shared-tail](examples/shared-tail/README.md) →
 [module-spread](examples/module-spread/README.md) →
 [spread-near-miss](examples/spread-near-miss/README.md) →
@@ -117,20 +125,23 @@ as `injected-dependency` and lands in a different package —
 traces the projects that directory's imports transitively reach, rather than the
 directory alone.
 
-Pointed at this package, the run builds a program for four projects:
+Pointed at this package, the run builds a program for six projects — three it
+was named at, and three its imports reached:
 
 | Project | Reached because |
 | ------- | --------------- |
-| `packages/callidescope-examples` | The directory the run was pointed at |
+| `packages/callidescope-examples` | Named — the directory the run was pointed at |
+| `.../examples/gated-leaf` | Named — a nested project, for the reason [gated-leaf](examples/gated-leaf/README.md) gives |
+| `.../examples/inherited-limits` | Named, for the same reason |
 | `packages/callidescope-configuration` | Imported by the fixture, and by [`callidescope.workspace.config.ts`](callidescope.workspace.config.ts) |
 | `packages/codometer-configuration` | Reached through the shared configuration [`codometer.config.ts`](codometer.config.ts) spreads |
 | `packages/logger` | Reached through the shared `configuration/eslint.config.ts` |
 
 That is what the closure buys, and it is measurable: the fixture's stack is
 depth 4 as traced, and depth 2 when the same fixtures are traced again with
-`packages/callidescope-configuration` excluded. Two rules keep the set from
-growing past those four — a project root holding no `package.json` is not a
-destination, and neither is the workspace root — and the example's guide works
+`packages/callidescope-configuration` excluded. Two rules keep the reached set
+from growing past those three — a project root holding no `package.json` is not
+a destination, and neither is the workspace root — and the example's guide works
 through both, including the shared
 [`configuration/`](../../configuration) directory this package's program really
 reads and the closure deliberately refuses.
@@ -184,6 +195,7 @@ has a fixture:
 | `module-bootstrap` | `bootstrap` in [`src/main.ts`](src/main.ts) |
 | `exported-function` | `normalizeExampleLabel` in [`src/index.ts`](src/index.ts) |
 | `orphan-root` | [`summarizeOrphanedWork`](examples/entry-points/entry-points.ts), which nothing calls |
+| `declared` | [`DeclaredEntryPointsService.collect`](examples/declared-entry-points), whose address this package's own configuration names |
 
 The bootstrap and barrel rules key on the literal paths `src/main.ts` and
 `src/index.ts`, so those two fixtures are the only files in this package outside
@@ -202,6 +214,42 @@ fixtures have no framework to call them.
 as a warning on every run of this project. Two tools independently noticing the
 same file is the example working, not a lint failure to chase.
 
+### Per-project configuration
+
+Every limit callidescope gates on belongs to a **project** rather than to a run,
+and a project is a directory holding a `tsconfig.json`. Four examples cover what
+a project may say about itself and what happens when it says nothing:
+
+| Example | What it declares | What that changed |
+| ------- | ---------------- | ----------------- |
+| [`declared-entry-points`](examples/declared-entry-points) | `entryPoints.addresses`, in [`callidescope.config.ts`](callidescope.config.ts) at this package's root | A callable with a caller heads a stack of its own, under the `declared` kind |
+| [`project-depth-limit`](examples/project-depth-limit) | `limits.maximumDepth`, in the same file | A six-frame chain is a finding at five and would pass at the six it would inherit |
+| [`inherited-limits`](examples/inherited-limits) | Nothing — it has no configuration file | Seven frames are a finding against the six the run declares, and breadth gates it not at all |
+| [`gated-leaf`](examples/gated-leaf) | Both fields, plus `limits.maximumBreadth`, in its own nested project | Four frames and three direct callees become findings that no limit above them would ever have reported |
+
+They sit in the reading order above in that order, and one rule does all the
+work: **the workspace number is a default, not a ceiling.** A project that names a limit keeps it; a project
+that names none inherits, one limit at a time rather than as an object; and a
+project that names one limit still inherits every other.
+
+Which is why a project configuration is written as the override alone —
+
+```ts
+limits: { maximumDepth: 5 }
+```
+
+— and **never** as a spread of the workspace limits. Such an object carries
+limits that shape the graph itself, those are workspace-only, and a project file
+holding one is refused before anything is traced. Nothing is lost: `maximumDepth`
+and `maximumBreadth` are the only two a project may set, so a spread would supply
+the field being overridden plus the one that gets the file rejected.
+
+Two of the four are projects nested inside this one, the way
+[`codependix-examples`](../codependix-examples) nests the workspaces it graphs.
+That is what makes a per-project limit demonstrable at all: a limit belongs to a
+project, so a report showing three different ones takes more than one project to
+produce.
+
 ### Output
 
 All four destinations are configured in
@@ -213,15 +261,15 @@ committed:
 | `json` | [`output/report.json`](output/report.json) — the whole run, machine-readable |
 | `markdown` | [`output/report.md`](output/report.md) — the printed trees, between anchors |
 | `mermaid` | [`output/diagram.md`](output/diagram.md) — the same stacks, drawn |
-| `projectReadmes` | [The section at the bottom of this file](#-callidescope), and nothing else |
+| `projectReadmes` | [The section at the bottom of this file](#-callidescope), and one in each of the two nested projects' guides |
 
 `projectReadmes` writes one section per **scoped** project — the projects a run
 was pointed at, not the ones its closure reached. This run is scoped to this
-package alone, so the only section it writes is the one at the bottom of this
-file, even though it measures four projects. That is the rule the closure is
-read against: **measurement reaches into a package's dependencies, publishing
-does not.** A scoped run that also published would rewrite the section in three
-sibling packages that never asked for it, and fight
+package and to the two nested projects under `examples/`, so it writes three
+sections and no more, even though it measures six projects. That is the rule the
+closure is read against: **measurement reaches into a package's dependencies,
+publishing does not.** A scoped run that also published would rewrite the
+section in three sibling packages that never asked for it, and fight
 `nx run codebase:callidescope:write` — which sets different limits and ignores
 `LoggerService.*` — over the same three anchor blocks forever. The
 whole-workspace run still publishes every project's section, because a run that
@@ -383,7 +431,7 @@ longer name because it is a workspace configuration sitting at a project root,
 and only that name keeps it from also being read as this package's own project
 configuration. Its doc comment explains why that matters.
 
-Three decisions are worth making deliberately:
+Four decisions are worth making deliberately:
 
 1. **`limits.maximumDepth`.** Set it to your deepest stack today, not to the
    number you want. A limit that fails on arrival is a backlog rather than a
@@ -397,6 +445,15 @@ Three decisions are worth making deliberately:
    generated code, template sources, and — the reason it matters here — this
    package, whose fixtures exist to breach the limits the workspace gate
    enforces.
+4. **Which of your projects say something for themselves.** The workspace number
+   is a default rather than a ceiling, so a project low in your call graph can
+   carry a limit that describes it instead of one picked for the code above it.
+   Start with none: a project with no file of its own keeps working, which is
+   what [`inherited-limits`](examples/inherited-limits) is. Add one where the
+   default is telling you nothing, which is what
+   [`gated-leaf`](examples/gated-leaf) is. Write only the limits you override,
+   and never spread the workspace limits into a project file — see
+   [`project-depth-limit`](examples/project-depth-limit) for why that is refused.
 
 ## Why this package is shaped the way it is
 
@@ -411,6 +468,7 @@ whose entire content is deliberately-shaped fixture code. The answers:
 | `knip` and `fallow` | Every fixture is declared an entry point rather than ignored, so both keep checking dependencies while the orphan-root fixture stops being a finding |
 | `jscpd` | Scoped for this project. The resolution-table fixtures are near-identical by design |
 | `codometer` | No declared size limit: the package is private and never built, so there is no bundle to gate |
+| Nested projects | Two example directories hold a `tsconfig.json` and no `package.json`. The first is what makes them projects with limits of their own; the second is deliberate — Nx infers a project from a nested `package.json`, and the fixtures then fail `@nx/enforce-module-boundaries` for importing one another. They are named in the run's `--directories` instead |
 | Nx tags | `type:package`, `framework:nestjs`, `language:typescript`, `name:callidescope-examples`. The NestJS dependency is real — `injected-dependency` is the headline case |
 | Project layout | An `examples/` directory rather than `src/modules/`, matching the other `*-examples` packages. `configuration/codebase-structure.json` declares it; `workspaceStructure.rootModuleSegment` in this package's config is what keeps each directory a distinct module |
 | `conformetry` | Not an instance of any template, and nothing had to be suppressed to keep it that way — see below |
@@ -432,11 +490,19 @@ about a dependency that is genuinely real.
 
 ```text
 callidescope-examples/
-├── callidescope.workspace.config.ts   what traces this package, and every limit it sets
+├── callidescope.config.ts             what this package declares about itself
+├── callidescope.workspace.config.ts   what traces this package, and the limits it defaults to
 ├── examples/
-│   └── <name>/
-│       ├── README.md                  the guide for this example
-│       └── *.ts                       the fixture callables
+│   ├── <name>/
+│   │   ├── README.md                  the guide for this example
+│   │   └── *.ts                       the fixture callables
+│   ├── gated-leaf/                    a nested project, with its own limits
+│   │   ├── callidescope.config.ts     what that project declares about itself
+│   │   ├── tsconfig.json              what makes the directory a project
+│   │   └── README.md                  the guide, holding that project's own section
+│   └── inherited-limits/              a nested project that declares nothing
+│       ├── tsconfig.json              what makes the directory a project
+│       └── README.md                  the guide, holding that project's own section
 ├── output/
 │   ├── report.json                    the whole run, machine-readable
 │   ├── report.md                      the printed trees, between anchors
@@ -480,10 +546,10 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 
 | Measure | Value |
 | --- | --- |
-| Callables | 72 |
-| Files | 34 |
-| Calls traced | 55 |
-| Call stacks | 15 |
+| Callables | 81 |
+| Files | 37 |
+| Calls traced | 62 |
+| Call stacks | 18 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 2 |
@@ -554,7 +620,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 ```
 
 <details>
-<summary>12 more call stacks</summary>
+<summary>15 more call stacks</summary>
 
 **4. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
 
@@ -575,7 +641,24 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
                ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
-**5. `SpreadNearMissService.review`** — depth 5 · orphan-root
+**5. `ProjectDepthLimitService.judge`** — depth 6 · orphan-root
+
+```text
+🚀 ProjectDepthLimitService.judge(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:45]
+   ↳ Judges one project, through every stage a resolved limit passes.
+  └─> ProjectDepthLimitService.resolveConfiguration(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:38]
+     ↳ Names the configuration file the project is judged by.
+    └─> ProjectDepthLimitService.readLimit(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:28]
+       ↳ Reads the limit whichever configuration file the project settled on.
+      └─> ProjectDepthLimitService.applyLimit(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:18]
+         ↳ Applies the limit the resolved project turned out to declare.
+        └─> ProjectDepthLimitService.reportVerdict(verdict: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:33]
+           ↳ States the verdict, and where the number behind it came from.
+          └─> ProjectDepthLimitService.readDeclaringFile(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:23]
+             ↳ Reads the file the number the verdict used was written in.
+```
+
+**6. `SpreadNearMissService.review`** — depth 5 · orphan-root
 
 ```text
 🚀 SpreadNearMissService.review(label: string): string [packages/callidescope-examples/examples/spread-near-miss/spread-near-miss.ts:23]
@@ -589,7 +672,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
            ↳ Upper-cases one entry.
 ```
 
-**6. `DependencyClosureService.allowsDepth`** — depth 4 · orphan-root
+**7. `DependencyClosureService.allowsDepth`** — depth 4 · orphan-root
 
 ```text
 🚀 DependencyClosureService.allowsDepth(args: { configuration: CallidescopeConfiguration; depth: number; }): boolean [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:32]
@@ -602,7 +685,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
          ↳ Applies the default globs exempt from the module-spread finding.
 ```
 
-**7. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
+**8. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
 
 ```text
 🚀 FrameAnnotationsService.legacyRender(value: string): string ⚠ deprecated [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:74]
@@ -615,7 +698,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
          ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
-**8. `MutualRecursionService.traverse`** — depth 4 · orphan-root
+**9. `MutualRecursionService.traverse`** — depth 4 · orphan-root
 
 ```text
 🚀 MutualRecursionService.traverse(remaining: number): number [packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:45]
@@ -628,7 +711,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
          ↳ First of the three, and the way into the cycle.
 ```
 
-**9. `bootstrap`** — depth 3 · module-bootstrap
+**10. `bootstrap`** — depth 3 · module-bootstrap
 
 ```text
 🚀 bootstrap(): number [packages/callidescope-examples/src/main.ts:14]
@@ -639,7 +722,18 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
        ↳ Reserves one unit and reports the count left behind.
 ```
 
-**10. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
+**11. `DeclaredEntryPointsService.publish`** — depth 3 · orphan-root
+
+```text
+🚀 DeclaredEntryPointsService.publish(entries: string): string [packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:29]
+   ↳ Nothing calls this, so nothing had to declare it.
+  └─> DeclaredEntryPointsService.collect(entries: string): string [packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:24]
+     ↳ The surface this package declares, called from inside it all the same.
+    └─> DeclaredEntryPointsService.render(entries: string): string [packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:17]
+       ↳ Renders whatever was collected, and ends both stacks.
+```
+
+**12. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
 
 ```text
 🚀 EntryPointsService.onModuleInit(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:29]
@@ -648,7 +742,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ Does the work a lifecycle hook is called to do.
 ```
 
-**11. `EntryPointsService.readReport`** — depth 2 · decorated-method
+**13. `EntryPointsService.readReport`** — depth 2 · decorated-method
 
 ```text
 🚀 EntryPointsService.readReport(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:34]
@@ -657,7 +751,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ Builds the body a decorated request handler answers with.
 ```
 
-**12. `normalizeExampleLabel`** — depth 2 · exported-function
+**14. `normalizeExampleLabel`** — depth 2 · exported-function
 
 ```text
 🚀 normalizeExampleLabel(label: string): string [packages/callidescope-examples/src/index.ts:15]
@@ -666,7 +760,16 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ Trims a label and collapses the whitespace inside it.
 ```
 
-**13. `ReceiptService.renderLine`** — depth 2 · orphan-root
+**15. `DeclaredEntryPointsService.collect`** — depth 2 · declared
+
+```text
+🚀 DeclaredEntryPointsService.collect(entries: string): string [packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:24]
+   ↳ The surface this package declares, called from inside it all the same.
+  └─> DeclaredEntryPointsService.render(entries: string): string [packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:17]
+     ↳ Renders whatever was collected, and ends both stacks.
+```
+
+**16. `ReceiptService.renderLine`** — depth 2 · orphan-root
 
 ```text
 🚀 ReceiptService.renderLine(amount: number): string [packages/callidescope-examples/examples/receipt/receipt.ts:16]
@@ -675,7 +778,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ A helper filed in the wrong module, and the report says where it belongs.
 ```
 
-**14. `ReceiptService.renderTotal`** — depth 2 · orphan-root
+**17. `ReceiptService.renderTotal`** — depth 2 · orphan-root
 
 ```text
 🚀 ReceiptService.renderTotal(amount: number): string [packages/callidescope-examples/examples/receipt/receipt.ts:21]
@@ -684,7 +787,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ A helper filed in the wrong module, and the report says where it belongs.
 ```
 
-**15. `StructuralInterfaceService.ingestDocument`** — depth 2 · orphan-root
+**18. `StructuralInterfaceService.ingestDocument`** — depth 2 · orphan-root
 
 ```text
 🚀 StructuralInterfaceService.ingestDocument(provider: StructuralProvider, document: string): number [packages/callidescope-examples/examples/structural-interface/structural-interface.ts:17]
@@ -710,7 +813,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | `BaseClassService.run` | 1 | `BaseTaskService.run` | `packages/callidescope-examples/examples/base-class/base-class.ts:16` |
 
 <details>
-<summary>46 more callables</summary>
+<summary>53 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -724,6 +827,8 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | `ComputedMemberService.select` | 1 | `ComputedMemberService.prepare` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:53` |
 | `ComputedMemberService.dispatch` | 1 | `ComputedMemberService.read` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:60` |
 | `ConstructedClassService.count` | 1 | `ParserService.constructor` | `packages/callidescope-examples/examples/constructed-class/constructed-class.ts:17` |
+| `DeclaredEntryPointsService.collect` | 1 | `DeclaredEntryPointsService.render` | `packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:24` |
+| `DeclaredEntryPointsService.publish` | 1 | `DeclaredEntryPointsService.collect` | `packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:29` |
 | `DeepStackService.applyTax` | 1 | `DeepStackService.convertCurrency` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:18` |
 | `DeepStackService.convertCurrency` | 1 | `roundToCents` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:23` |
 | `DeepStackService.loadRate` | 1 | `DeepStackService.applyTax` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:28` |
@@ -755,6 +860,11 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | `MutualRecursionService.descend` | 1 | `MutualRecursionService.branch` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:33` |
 | `MutualRecursionService.leaf` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:38` |
 | `MutualRecursionService.traverse` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:45` |
+| `ProjectDepthLimitService.applyLimit` | 1 | `ProjectDepthLimitService.reportVerdict` | `packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:18` |
+| `ProjectDepthLimitService.readLimit` | 1 | `ProjectDepthLimitService.applyLimit` | `packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:28` |
+| `ProjectDepthLimitService.reportVerdict` | 1 | `ProjectDepthLimitService.readDeclaringFile` | `packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:33` |
+| `ProjectDepthLimitService.resolveConfiguration` | 1 | `ProjectDepthLimitService.readLimit` | `packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:38` |
+| `ProjectDepthLimitService.judge` | 1 | `ProjectDepthLimitService.resolveConfiguration` | `packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:45` |
 | `ReceiptService.renderLine` | 1 | `formatCurrency` | `packages/callidescope-examples/examples/receipt/receipt.ts:16` |
 | `ReceiptService.renderTotal` | 1 | `formatCurrency` | `packages/callidescope-examples/examples/receipt/receipt.ts:21` |
 | `SpreadNearMissService.review` | 1 | `ModuleSpreadService.orchestrate` | `packages/callidescope-examples/examples/spread-near-miss/spread-near-miss.ts:23` |

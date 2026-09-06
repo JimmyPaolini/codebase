@@ -13,18 +13,23 @@ one is defined by having no caller at all.
 
 ```bash
 nx run callidescope-examples:examples          # trace the fixtures, gate the committed reports
-nx run callidescope-examples:examples:write    # regenerate output/ and this README's section
+nx run callidescope-examples:examples:write    # regenerate output/ and the three published sections
 nx run callidescope-examples:vitest            # assert every documented finding
 ```
 
-There is no per-example command. An example directory carries no
+There is no per-example command. Almost every example directory carries no
 `tsconfig.json`, so the package traces as one unit — every example's `## Run it`
-names the command above and then says where in `output/` to look.
+names the command above and then says where in `output/` to look. Two
+directories are exceptions and are projects of their own,
+[`gated-leaf`](examples/gated-leaf/README.md) and
+[`inherited-limits`](examples/inherited-limits/README.md), because a limit
+resolves per project and that is what they demonstrate.
 
 The run is not confined to this package, though. A scoped run also traces every
-project its imports transitively reach, so this one covers four projects:
-`packages/callidescope-examples`, `packages/callidescope-configuration`,
-`packages/codometer-configuration`, and `packages/logger`. See
+project its imports transitively reach, so this one covers six projects: the
+three it is named at — `packages/callidescope-examples` and the two nested ones
+— plus `packages/callidescope-configuration`, `packages/codometer-configuration`,
+and `packages/logger`. See
 [`dependency-closure`](examples/dependency-closure/README.md).
 
 ## Callidescope said X — open this example
@@ -39,6 +44,12 @@ project its imports transitively reach, so this one covers four projects:
 | A `Possibly misplaced` row | [`misplaced-callable`](examples/misplaced-callable/README.md) | Move the callable to the module the report names, or fold it into its one caller |
 | `Stacks through recursion` above zero | [`mutual-recursion`](examples/mutual-recursion/README.md) | A cycle, collapsed before depth was measured. The depth is a floor |
 | A stack headed `· orphan-root` | [`entry-points`](examples/entry-points/README.md) | Nothing claimed the callable. Either dead code, or an entry-point rule your configuration is missing |
+| A stack headed `· declared` | [`declared-entry-points`](examples/declared-entry-points/README.md) | A project named that address in its own `callidescope.config.ts`. That is the surface it asked to be measured on |
+| `declares an entryPoints.addresses entry that resolves to nothing` | [`declared-entry-points`](examples/declared-entry-points/README.md) | A declared address names a callable that has moved or been renamed. Fix the address; the refusal exists so a rename cannot loosen a gate in silence |
+| `which only the workspace configuration may set` | [`project-depth-limit`](examples/project-depth-limit/README.md) | A project's `callidescope.config.ts` reached past `entryPoints`, `limits.maximumDepth`, `limits.maximumBreadth`, and `exclude` — most often by spreading the workspace limits, which carry a workspace-only one |
+| Two findings in one report judged against different limits | [`project-depth-limit`](examples/project-depth-limit/README.md), [`inherited-limits`](examples/inherited-limits/README.md) | Not a bug. A limit belongs to a project, so one finding's number can be a project's own while another's is the workspace default it fell back to |
+| A project reporting depth 0 while carrying a real chain | [`gated-leaf`](examples/gated-leaf/README.md) | It roots nothing, because everything it owns is called from above. Declare its entry points before giving it a limit |
+| `--check breadth requires at least one project in scope` | [`gated-leaf`](examples/gated-leaf/README.md) | Breadth has no default anywhere. Some project in scope has to declare `limits.maximumBreadth` before the gate can run |
 | A frame marked `⚠ deprecated`, or printed `(…): T` | [`frame-annotations`](examples/frame-annotations/README.md) | Annotation shortening in the printed tree. `output/report.json` carries the full text |
 | A call resolved to a class that never writes `implements` | [`structural-interface`](examples/structural-interface/README.md) | Structural matching, which is the only thing that works on an arrow-typed property |
 | A frame you did not expect, named for a declaration rather than the local name | [`plain-call`](examples/plain-call/README.md) | The checker unwraps the import alias. A report always names the declaration |
@@ -51,11 +62,17 @@ project its imports transitively reach, so this one covers four projects:
 
 ```text
 callidescope-examples/
-├── callidescope.workspace.config.ts   what traces this package, and every limit it sets
+├── callidescope.config.ts             what this package declares about itself
+├── callidescope.workspace.config.ts   what traces this package, and the limits it defaults to
 ├── examples/
-│   └── <name>/
-│       ├── README.md                  the guide for this example
-│       └── *.ts                       the fixture callables
+│   ├── <name>/
+│   │   ├── README.md                  the guide for this example
+│   │   └── *.ts                       the fixture callables
+│   ├── gated-leaf/                    a nested project, with its own limits
+│   │   ├── callidescope.config.ts     what that project declares about itself
+│   │   └── tsconfig.json              what makes the directory a project
+│   └── inherited-limits/              a nested project that declares nothing
+│       └── tsconfig.json              what makes the directory a project
 ├── output/
 │   ├── report.json                    the whole run, machine-readable
 │   ├── report.md                      the printed trees, between anchors
@@ -71,6 +88,17 @@ callidescope-examples/
   which is what module spread and misplacement are measured against. Splitting a
   fixture across two directories changes those findings, so do not move files
   between them casually.
+- **Two of them are also projects.** `gated-leaf` and `inherited-limits` hold a
+  `tsconfig.json`, which is what makes a directory a project and therefore what
+  lets a limit belong to it. They are named in the `examples` target's
+  `--directories` rather than reached through the closure, and neither may gain
+  a `package.json`: Nx infers a project from a nested one, after which the
+  relative import between the two fixtures fails
+  `@nx/enforce-module-boundaries`. `gated-leaf`'s guide says so in full.
+- **Both of their guides carry a generated block.** `projectReadmes` writes one
+  `## 🔭 Callidescope` section per scoped project, and those two are scoped, so
+  their `README.md` files each hold one between `<!-- CALL_STACKS_START -->` and
+  `<!-- CALL_STACKS_END -->`. Do not hand-edit inside those anchors — regenerate.
 - **`src/` is a requirement, not a leftover.** The `module-bootstrap` and
   `exported-function` entry-point rules key on the literal paths `src/main.ts`
   and `src/index.ts`, so those two fixtures cannot live under `examples/` with
@@ -88,7 +116,11 @@ callidescope-examples/
   claim, then `## Run it` with the trace command and where in `output/` to look,
   then the explanation, then `## Next` linking to the next example.
 - A link in the reading order in [README.md](README.md)'s `## The examples`, and
-  a `## Next` link from the example before it.
+  a `## Next` link from the example before it. Inserting into a reading order
+  changes its neighbor: the example you inserted after must now link to yours,
+  and yours to whatever it used to link to.
+- A row in the lookup table above, so an agent handed a finding can get here
+  from what the run printed rather than from the directory listing.
 - An assertion in `testing/examples.integration.test.ts` in the same change. A
   fixture with no assertion is a claim, not an example.
 - Regenerate `output/` — see [Changing a fixture](#changing-a-fixture) for the
@@ -112,13 +144,27 @@ the point:
   failure to chase.
 - `frame-annotations` carries a `@deprecated` member and a signature past 80
   characters on purpose.
+- `project-depth-limit` is six frames against the five this package declares for
+  itself, on purpose — it is a finding under this package's own limit and would
+  pass under the six it would otherwise inherit, which is the whole example.
+- `gated-leaf` breaches both of the limits its own `callidescope.config.ts`
+  declares, on purpose: four frames against three, and three direct callees
+  against two. It is the only project in this repository declaring a
+  `maximumBreadth`, so it is also the only reason `--check breadth` can run at
+  all — quieting it takes the gate away with it.
+- `inherited-limits` is seven frames against the six it inherits, on purpose. It
+  declares nothing, and that is the example: it exists to be judged by a number
+  written somewhere else.
 
-One finding is not a fixture at all. This package's `maximumDepth` is 6 — the
-tool's default, low enough to make the deep fixtures findings — and the closure
-now judges three real dependency packages by it, so a genuine stack in one of
-them is reported as too deep. Do not restructure a dependency to quiet this
-run: nothing here gates depth, and `configuration/callidescope.config.ts` is the
-limit that has a say over those packages.
+One finding is not a fixture at all. The run's default `maximumDepth` is 6 — the
+tool's own, low enough to make the deep fixtures findings — and the closure
+judges three real dependency packages by it, because none of the three declares a
+limit for itself, so a genuine stack in one of them is reported as too deep. Do
+not restructure a dependency to quiet this run: nothing here gates depth, and
+`configuration/callidescope.config.ts` is the limit that has a say over those
+packages. [`inherited-limits`](examples/inherited-limits/README.md) is the
+example that finding belongs to, and it names the real remedy — a
+`callidescope.config.ts` in the package being judged.
 
 **This package gates `reports`, not `depth`.** Adding `--check depth` to its
 `examples` target would fail by design.
@@ -133,7 +179,7 @@ no fixture. Any edit under `examples/` or `src/` therefore takes three steps:
 
 ```bash
 nx run callidescope-examples:lint-codebase --configuration=write   # first — see below
-nx run callidescope-examples:examples:write                        # regenerate output/ and this README's section
+nx run callidescope-examples:examples:write                        # regenerate output/ and the three published sections
 nx run callidescope-examples:vitest                                # update the expectations, then confirm
 ```
 
@@ -172,5 +218,6 @@ about fixtures.
 | ---- | ---------- |
 | [README.md](README.md) | The human guide — how to read a stack, and how to act on each finding |
 | [callidescope.workspace.config.ts](callidescope.workspace.config.ts) | Why this package's limits differ from the workspace's |
+| [callidescope.config.ts](callidescope.config.ts) | What this package declares about itself, and why a project never spreads the workspace limits |
 | [../callidescope-cli/README.md](../callidescope-cli/README.md) | The behavior being demonstrated |
 | [../callidescope-configuration/README.md](../callidescope-configuration/README.md) | Every configuration field |

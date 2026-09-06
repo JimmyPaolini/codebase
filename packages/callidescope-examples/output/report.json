@@ -222,7 +222,7 @@
         }
       ],
       "isLowerBound": true,
-      "limit": 6
+      "limit": 5
     },
     {
       "depth": 8,
@@ -458,7 +458,7 @@
         }
       ],
       "isLowerBound": false,
-      "limit": 6
+      "limit": 5
     },
     {
       "depth": 8,
@@ -682,7 +682,7 @@
         }
       ],
       "isLowerBound": false,
-      "limit": 6
+      "limit": 5
     },
     {
       "depth": 8,
@@ -1117,7 +1117,490 @@
         }
       ],
       "isLowerBound": false,
+      "limit": 5
+    },
+    {
+      "depth": 7,
+      "entryPointKind": "orphan-root",
+      "frames": [
+        {
+          "displayName": "InheritedLimitsService.request",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Asks the leaf about one key, through the two frames above it.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1297",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
+            "line": 38
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "displayName": "InheritedLimitsService.prepare",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Prepares the key the leaf is asked about.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1126",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
+            "line": 31
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "displayName": "InheritedLimitsService.forward",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Hands the key to the leaf, which is where this project's code stops.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#985",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
+            "line": 26
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "displayName": "GatedLeafService.read",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "The address this project declares as its entry point. Both findings are about this one method. It calls three things directly, which is the breadth finding, and the longest path below it runs four frames, which is the depth one.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#1219",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 40
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "displayName": "GatedLeafService.parse",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "First of the three, and the way into the chain.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#853",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 27
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "displayName": "GatedLeafService.normalize",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Second of the three, one hop from the end.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#719",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 22
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "displayName": "GatedLeafService.finish",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Ends the chain, which is where the fourth frame is.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#599",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 17
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        }
+      ],
+      "isLowerBound": false,
       "limit": 6
+    },
+    {
+      "depth": 6,
+      "entryPointKind": "orphan-root",
+      "frames": [
+        {
+          "displayName": "ProjectDepthLimitService.judge",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Judges one project, through every stage a resolved limit passes.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1546",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 45
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "project",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(project: string): string"
+          }
+        },
+        {
+          "displayName": "ProjectDepthLimitService.resolveConfiguration",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Names the configuration file the project is judged by.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1349",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 38
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "project",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(project: string): string"
+          }
+        },
+        {
+          "displayName": "ProjectDepthLimitService.readLimit",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Reads the limit whichever configuration file the project settled on.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1025",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 28
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "project",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(project: string): string"
+          }
+        },
+        {
+          "displayName": "ProjectDepthLimitService.applyLimit",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Applies the limit the resolved project turned out to declare.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#678",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 18
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "project",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(project: string): string"
+          }
+        },
+        {
+          "displayName": "ProjectDepthLimitService.reportVerdict",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "States the verdict, and where the number behind it came from.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1185",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 33
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "verdict",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(verdict: string): string"
+          }
+        },
+        {
+          "displayName": "ProjectDepthLimitService.readDeclaringFile",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Reads the file the number the verdict used was written in.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#850",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 23
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "project",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(project: string): string"
+          }
+        }
+      ],
+      "isLowerBound": false,
+      "limit": 5
+    },
+    {
+      "depth": 4,
+      "entryPointKind": "declared",
+      "frames": [
+        {
+          "displayName": "GatedLeafService.read",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "The address this project declares as its entry point. Both findings are about this one method. It calls three things directly, which is the breadth finding, and the longest path below it runs four frames, which is the depth one.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#1219",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 40
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "displayName": "GatedLeafService.parse",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "First of the three, and the way into the chain.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#853",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 27
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "displayName": "GatedLeafService.normalize",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Second of the three, one hop from the end.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#719",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 22
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "displayName": "GatedLeafService.finish",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Ends the chain, which is where the fourth frame is.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#599",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 17
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        }
+      ],
+      "isLowerBound": false,
+      "limit": 3
     }
   ],
   "misplacedCallables": [
@@ -3175,6 +3658,62 @@
           "breadth": 1,
           "callees": [
             {
+              "displayName": "DeclaredEntryPointsService.render",
+              "id": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts#642"
+            }
+          ],
+          "displayName": "DeclaredEntryPointsService.collect",
+          "id": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts#822",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts",
+            "line": 24
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "entries",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(entries: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "DeclaredEntryPointsService.collect",
+              "id": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts#822"
+            }
+          ],
+          "displayName": "DeclaredEntryPointsService.publish",
+          "id": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts#963",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts",
+            "line": 29
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "entries",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(entries: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
               "displayName": "DeepStackService.convertCurrency",
               "id": "packages/callidescope-examples/examples/deep-stack/deep-stack.ts#797"
             }
@@ -4047,6 +4586,146 @@
             ],
             "returnType": "number",
             "text": "(remaining: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ProjectDepthLimitService.reportVerdict",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1185"
+            }
+          ],
+          "displayName": "ProjectDepthLimitService.applyLimit",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#678",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 18
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "project",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(project: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ProjectDepthLimitService.applyLimit",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#678"
+            }
+          ],
+          "displayName": "ProjectDepthLimitService.readLimit",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1025",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 28
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "project",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(project: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ProjectDepthLimitService.readDeclaringFile",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#850"
+            }
+          ],
+          "displayName": "ProjectDepthLimitService.reportVerdict",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1185",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 33
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "verdict",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(verdict: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ProjectDepthLimitService.readLimit",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1025"
+            }
+          ],
+          "displayName": "ProjectDepthLimitService.resolveConfiguration",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1349",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 38
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "project",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(project: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ProjectDepthLimitService.resolveConfiguration",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1349"
+            }
+          ],
+          "displayName": "ProjectDepthLimitService.judge",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1546",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+            "line": 45
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "project",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(project: string): string"
           }
         },
         {
@@ -5124,6 +5803,175 @@
           "isLowerBound": false
         },
         {
+          "depth": 6,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ProjectDepthLimitService.judge",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Judges one project, through every stage a resolved limit passes.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1546",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+                "line": 45
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "project",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(project: string): string"
+              }
+            },
+            {
+              "displayName": "ProjectDepthLimitService.resolveConfiguration",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Names the configuration file the project is judged by.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1349",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+                "line": 38
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "project",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(project: string): string"
+              }
+            },
+            {
+              "displayName": "ProjectDepthLimitService.readLimit",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads the limit whichever configuration file the project settled on.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1025",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+                "line": 28
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "project",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(project: string): string"
+              }
+            },
+            {
+              "displayName": "ProjectDepthLimitService.applyLimit",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Applies the limit the resolved project turned out to declare.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#678",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+                "line": 18
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "project",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(project: string): string"
+              }
+            },
+            {
+              "displayName": "ProjectDepthLimitService.reportVerdict",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "States the verdict, and where the number behind it came from.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1185",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+                "line": 33
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "verdict",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(verdict: string): string"
+              }
+            },
+            {
+              "displayName": "ProjectDepthLimitService.readDeclaringFile",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads the file the number the verdict used was written in.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#850",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
+                "line": 23
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "project",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(project: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
           "depth": 5,
           "entryPointKind": "orphan-root",
           "frames": [
@@ -5701,6 +6549,94 @@
           "isLowerBound": false
         },
         {
+          "depth": 3,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "DeclaredEntryPointsService.publish",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Nothing calls this, so nothing had to declare it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts#963",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts",
+                "line": 29
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entries",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entries: string): string"
+              }
+            },
+            {
+              "displayName": "DeclaredEntryPointsService.collect",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "The surface this package declares, called from inside it all the same.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts#822",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts",
+                "line": 24
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entries",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entries: string): string"
+              }
+            },
+            {
+              "displayName": "DeclaredEntryPointsService.render",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Renders whatever was collected, and ends both stacks.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts#642",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts",
+                "line": 17
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entries",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entries: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
           "depth": 2,
           "entryPointKind": "lifecycle",
           "frames": [
@@ -5850,6 +6786,67 @@
                 ],
                 "returnType": "string",
                 "text": "(label: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "declared",
+          "frames": [
+            {
+              "displayName": "DeclaredEntryPointsService.collect",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "The surface this package declares, called from inside it all the same.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts#822",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts",
+                "line": 24
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entries",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entries: string): string"
+              }
+            },
+            {
+              "displayName": "DeclaredEntryPointsService.render",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Renders whatever was collected, and ends both stacks.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts#642",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts",
+                "line": 17
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entries",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entries: string): string"
               }
             }
           ],
@@ -6046,11 +7043,11 @@
         }
       ],
       "summary": {
-        "callableCount": 72,
+        "callableCount": 81,
         "cyclicComponentCount": 1,
-        "edgeCount": 55,
-        "entryPointCount": 15,
-        "fileCount": 34,
+        "edgeCount": 62,
+        "entryPointCount": 18,
+        "fileCount": 37,
         "maximumDepth": 8,
         "projectCount": 1,
         "unresolvedCallCount": 2
@@ -6085,6 +7082,13 @@
           "typeName": "FrameAnnotationsService"
         },
         {
+          "maximumDepth": 6,
+          "memberCount": 6,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:project-depth-limit",
+          "typeName": "ProjectDepthLimitService"
+        },
+        {
           "maximumDepth": 5,
           "memberCount": 2,
           "minimumDepth": 1,
@@ -6111,6 +7115,13 @@
           "minimumDepth": 1,
           "moduleId": "packages/callidescope-examples:callback-argument",
           "typeName": "CallbackArgumentService"
+        },
+        {
+          "maximumDepth": 3,
+          "memberCount": 3,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:declared-entry-points",
+          "typeName": "DeclaredEntryPointsService"
         },
         {
           "maximumDepth": 2,
@@ -6223,6 +7234,549 @@
           "minimumDepth": 2,
           "moduleId": "packages/callidescope-examples:structural-interface",
           "typeName": "StructuralInterfaceService"
+        }
+      ]
+    },
+    {
+      "callableBreadths": [
+        {
+          "breadth": 3,
+          "callees": [
+            {
+              "displayName": "GatedLeafService.parse",
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#853"
+            },
+            {
+              "displayName": "GatedLeafService.normalize",
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#719"
+            },
+            {
+              "displayName": "GatedLeafService.finish",
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#599"
+            }
+          ],
+          "displayName": "GatedLeafService.read",
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#1219",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 40
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "GatedLeafService.finish",
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#599"
+            }
+          ],
+          "displayName": "GatedLeafService.normalize",
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#719",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 22
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "GatedLeafService.normalize",
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#719"
+            }
+          ],
+          "displayName": "GatedLeafService.parse",
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#853",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+            "line": 27
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        }
+      ],
+      "misplacedCallables": [],
+      "moduleSpreads": [],
+      "projectName": "packages/callidescope-examples/examples/gated-leaf",
+      "stacks": [
+        {
+          "depth": 4,
+          "entryPointKind": "declared",
+          "frames": [
+            {
+              "displayName": "GatedLeafService.read",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "The address this project declares as its entry point. Both findings are about this one method. It calls three things directly, which is the breadth finding, and the longest path below it runs four frames, which is the depth one.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#1219",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+                "line": 40
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            },
+            {
+              "displayName": "GatedLeafService.parse",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "First of the three, and the way into the chain.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#853",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+                "line": 27
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            },
+            {
+              "displayName": "GatedLeafService.normalize",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Second of the three, one hop from the end.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#719",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+                "line": 22
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            },
+            {
+              "displayName": "GatedLeafService.finish",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Ends the chain, which is where the fourth frame is.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#599",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+                "line": 17
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        }
+      ],
+      "summary": {
+        "callableCount": 4,
+        "cyclicComponentCount": 0,
+        "edgeCount": 5,
+        "entryPointCount": 1,
+        "fileCount": 2,
+        "maximumDepth": 4,
+        "projectCount": 1,
+        "unresolvedCallCount": 0
+      },
+      "typeDepths": [
+        {
+          "maximumDepth": 4,
+          "memberCount": 4,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples/examples/gated-leaf:examples",
+          "typeName": "GatedLeafService"
+        }
+      ]
+    },
+    {
+      "callableBreadths": [
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "GatedLeafService.read",
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#1219"
+            }
+          ],
+          "displayName": "InheritedLimitsService.forward",
+          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#985",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
+            "line": 26
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InheritedLimitsService.forward",
+              "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#985"
+            }
+          ],
+          "displayName": "InheritedLimitsService.prepare",
+          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1126",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
+            "line": 31
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InheritedLimitsService.prepare",
+              "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1126"
+            }
+          ],
+          "displayName": "InheritedLimitsService.request",
+          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1297",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
+            "line": 38
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(key: string): string"
+          }
+        }
+      ],
+      "misplacedCallables": [],
+      "moduleSpreads": [],
+      "projectName": "packages/callidescope-examples/examples/inherited-limits",
+      "stacks": [
+        {
+          "depth": 7,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "InheritedLimitsService.request",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Asks the leaf about one key, through the two frames above it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1297",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
+                "line": 38
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            },
+            {
+              "displayName": "InheritedLimitsService.prepare",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Prepares the key the leaf is asked about.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1126",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
+                "line": 31
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            },
+            {
+              "displayName": "InheritedLimitsService.forward",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Hands the key to the leaf, which is where this project's code stops.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#985",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
+                "line": 26
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            },
+            {
+              "displayName": "GatedLeafService.read",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "The address this project declares as its entry point. Both findings are about this one method. It calls three things directly, which is the breadth finding, and the longest path below it runs four frames, which is the depth one.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#1219",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+                "line": 40
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            },
+            {
+              "displayName": "GatedLeafService.parse",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "First of the three, and the way into the chain.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#853",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+                "line": 27
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            },
+            {
+              "displayName": "GatedLeafService.normalize",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Second of the three, one hop from the end.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#719",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+                "line": 22
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            },
+            {
+              "displayName": "GatedLeafService.finish",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Ends the chain, which is where the fourth frame is.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#599",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+                "line": 17
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "key",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(key: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        }
+      ],
+      "summary": {
+        "callableCount": 4,
+        "cyclicComponentCount": 0,
+        "edgeCount": 3,
+        "entryPointCount": 1,
+        "fileCount": 1,
+        "maximumDepth": 7,
+        "projectCount": 1,
+        "unresolvedCallCount": 0
+      },
+      "typeDepths": [
+        {
+          "maximumDepth": 7,
+          "memberCount": 4,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples/examples/inherited-limits:examples",
+          "typeName": "InheritedLimitsService"
         }
       ]
     },
@@ -8764,13 +10318,13 @@
     }
   ],
   "summary": {
-    "callableCount": 200,
+    "callableCount": 217,
     "cyclicComponentCount": 1,
-    "edgeCount": 168,
-    "entryPointCount": 63,
-    "fileCount": 73,
+    "edgeCount": 183,
+    "entryPointCount": 69,
+    "fileCount": 79,
     "maximumDepth": 8,
-    "projectCount": 4,
+    "projectCount": 6,
     "unresolvedCallCount": 12
   },
   "typeDepths": [
@@ -8810,11 +10364,25 @@
       "typeName": "FrameAnnotationsService"
     },
     {
+      "maximumDepth": 7,
+      "memberCount": 4,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples/examples/inherited-limits:examples",
+      "typeName": "InheritedLimitsService"
+    },
+    {
       "maximumDepth": 6,
       "memberCount": 11,
       "minimumDepth": 1,
       "moduleId": "packages/callidescope-configuration:examples",
       "typeName": "ProjectConfigurationService"
+    },
+    {
+      "maximumDepth": 6,
+      "memberCount": 6,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:project-depth-limit",
+      "typeName": "ProjectDepthLimitService"
     },
     {
       "maximumDepth": 5,
@@ -8860,6 +10428,13 @@
     },
     {
       "maximumDepth": 4,
+      "memberCount": 4,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples/examples/gated-leaf:examples",
+      "typeName": "GatedLeafService"
+    },
+    {
+      "maximumDepth": 4,
       "memberCount": 11,
       "minimumDepth": 1,
       "moduleId": "packages/codometer-configuration:examples",
@@ -8871,6 +10446,13 @@
       "minimumDepth": 1,
       "moduleId": "packages/callidescope-examples:callback-argument",
       "typeName": "CallbackArgumentService"
+    },
+    {
+      "maximumDepth": 3,
+      "memberCount": 3,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:declared-entry-points",
+      "typeName": "DeclaredEntryPointsService"
     },
     {
       "maximumDepth": 3,
@@ -9048,5 +10630,43 @@
       "typeName": "InvalidLimitValueError"
     }
   ],
-  "wideCallables": []
+  "wideCallables": [
+    {
+      "breadth": 3,
+      "callees": [
+        {
+          "displayName": "GatedLeafService.parse",
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#853"
+        },
+        {
+          "displayName": "GatedLeafService.normalize",
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#719"
+        },
+        {
+          "displayName": "GatedLeafService.finish",
+          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#599"
+        }
+      ],
+      "displayName": "GatedLeafService.read",
+      "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#1219",
+      "location": {
+        "column": 3,
+        "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
+        "line": 40
+      },
+      "signature": {
+        "parameters": [
+          {
+            "isOptional": false,
+            "isRest": false,
+            "name": "key",
+            "type": "string"
+          }
+        ],
+        "returnType": "string",
+        "text": "(key: string): string"
+      },
+      "limit": 2
+    }
+  ]
 }
