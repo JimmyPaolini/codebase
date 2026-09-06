@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   ConfigurationService,
-  PROJECT_CONFIGURATION_FORBIDDEN_LIMITS,
+  PROJECT_CONFIGURATION_LIMIT_PERMISSIONS,
 } from "@callidescope/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -51,10 +51,14 @@ describe("workspace limits", () => {
       configurationPath: WORKSPACE_CONFIGURATION_PATH,
     });
 
-    const forbidden = PROJECT_CONFIGURATION_FORBIDDEN_LIMITS.filter(
-      (limit) => authored.limits?.[limit] !== undefined,
-    );
+    const forbidden = Object.entries(PROJECT_CONFIGURATION_LIMIT_PERMISSIONS)
+      .filter(([, permission]) => permission === "forbidden")
+      .map(([limit]) => limit)
+      .filter((limit) => Object.hasOwn(authored.limits ?? {}, limit));
 
-    expect(forbidden).not.toStrictEqual([]);
+    // Named rather than merely non-empty: an assertion that the list is not
+    // `[]` also passes for a list that is not a list at all, and says nothing
+    // about which limit is the one the comment in that file is about.
+    expect(forbidden).toContain("spreadThreshold");
   });
 });

@@ -1062,7 +1062,7 @@ describe(CallidescopeCommand, () => {
       undefined,
       {
         reason:
-          "broken sets limits, which only the workspace configuration may set. A project configuration may set entryPoints, limits.maximumDepth, limits.maximumBreadth, and exclude.",
+          "broken sets limits, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, limits.maximumBreadth, and limits.maximumDepth.",
       },
     );
   });

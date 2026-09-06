@@ -340,17 +340,22 @@ describe(ProjectConfigurationService, () => {
     ],
   ])(
     "refuses a project configuration that sets %s",
-    async (_field, configuration) => {
+    async (field, configuration) => {
       const workspaceRoot = await writeWorkspace({
         "packages/broken": JSON.stringify(configuration),
       });
+      const loading = service.loadProjectConfigurations({
+        projects: ["packages/broken"],
+        workspaceRoot,
+      });
 
-      await expect(
-        service.loadProjectConfigurations({
-          projects: ["packages/broken"],
-          workspaceRoot,
-        }),
-      ).rejects.toThrow(ProjectConfigurationFieldNotPermittedError);
+      await expect(loading).rejects.toThrow(
+        ProjectConfigurationFieldNotPermittedError,
+      );
+      // The name as the reader has to type it to fix the file, dot path and
+      // all: which field was refused is the user-facing half of the refusal,
+      // and the error class alone says nothing about it.
+      await expect(loading).rejects.toThrow(`sets ${field},`);
     },
   );
 
@@ -368,8 +373,8 @@ describe(ProjectConfigurationService, () => {
       }),
     ).rejects.toThrow(
       "packages/broken sets output, which only the workspace configuration " +
-        "may set. A project configuration may set entryPoints, " +
-        "limits.maximumDepth, limits.maximumBreadth, and exclude.",
+        "may set. A project configuration may set entryPoints, exclude, " +
+        "limits.maximumBreadth, and limits.maximumDepth.",
     );
   });
 

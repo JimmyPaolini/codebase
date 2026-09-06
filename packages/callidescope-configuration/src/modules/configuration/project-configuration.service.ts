@@ -3,8 +3,8 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 
 import {
-  PROJECT_CONFIGURATION_FORBIDDEN_FIELDS,
-  PROJECT_CONFIGURATION_FORBIDDEN_LIMITS,
+  PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES,
+  PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
 } from "./configuration.constants";
@@ -154,19 +154,37 @@ export class ProjectConfigurationService {
    * resolved configuration: resolution manufactures every field for every
    * project, so asking the resolved object whether it "has" a field can never
    * say no.
+   *
+   * The file's own fields are walked and each is asked whether it is
+   * permitted, rather than a list of forbidden ones being looked for. That is
+   * what makes the check fail closed: a field nothing classifies — a tenth one
+   * added upstream, a name somebody misspelled — is refused by name instead of
+   * being accepted and then quietly doing nothing.
    */
   private findForbiddenField(
     authored: CallidescopeConfiguration,
   ): string | undefined {
-    for (const field of PROJECT_CONFIGURATION_FORBIDDEN_FIELDS) {
-      if (authored[field] !== undefined) {
+    // Widened before it is walked, because a field name read off a file is a
+    // string and the interface has no index signature to read it through.
+    const fields: Readonly<Record<string, unknown>> = { ...authored };
+    const limits: Readonly<Record<string, unknown>> = { ...authored.limits };
+
+    for (const [field, value] of Object.entries(fields)) {
+      if (
+        value !== undefined &&
+        field !== "limits" &&
+        !PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES.has(field)
+      ) {
         return field;
       }
     }
 
-    for (const field of PROJECT_CONFIGURATION_FORBIDDEN_LIMITS) {
-      if (authored.limits?.[field] !== undefined) {
-        return `limits.${field}`;
+    for (const [limit, value] of Object.entries(limits)) {
+      if (
+        value !== undefined &&
+        !PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES.has(limit)
+      ) {
+        return `limits.${limit}`;
       }
     }
 

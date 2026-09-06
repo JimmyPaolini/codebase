@@ -164,43 +164,101 @@ export const DEFAULT_MARKDOWN_END_MARKER = "<!-- CALL_STACKS_END -->";
 
 // 🔒 Project Configuration
 
-/**
- * Run-level fields only a workspace configuration may set.
- *
- * Every one names where a run reads from, where it writes to, or how it
- * partitions the workspace — decisions one project cannot make differently
- * from the run tracing it.
- */
-export const PROJECT_CONFIGURATION_FORBIDDEN_FIELDS = [
-  "allowSpreadFor",
-  "directories",
-  "excludeFrom",
-  "ignoreCallees",
-  "output",
-  "workspaceStructure",
-] as const satisfies readonly (keyof CallidescopeConfiguration)[];
+/** Writes a list of names as an English sentence fragment. */
+const joinFieldNames = (names: readonly string[]): string => {
+  const last = names.at(-1);
+
+  if (last === undefined || names.length === 1) {
+    return last ?? "";
+  }
+
+  return `${names.slice(0, -1).join(", ")}, and ${last}`;
+};
 
 /**
- * Analysis-shaping limits only a workspace configuration may set.
+ * Every run-level field, and whether a project's own configuration may set it.
  *
- * `maximumDepth` and `maximumBreadth` are absent on purpose — a project gates
- * itself against those two. Every other limit shapes how the call graph
- * itself is built, which has to stay one answer for the whole workspace.
+ * A record keyed by the interface rather than a list of the forbidden ones,
+ * because a list only ever proves that what it names is a field — never that
+ * every field is named, which is the direction that fails open. A tenth field
+ * added to `CallidescopeConfiguration` fails to compile here until somebody
+ * classifies it, instead of silently becoming settable by any project with
+ * nothing in the output to say so.
+ *
+ * Every field marked `forbidden` names where a run reads from, where it writes
+ * to, or how it partitions the workspace — decisions one project cannot make
+ * differently from the run tracing it. `limits` is `delegated` because it is
+ * neither: its members are judged one at a time below.
  */
-export const PROJECT_CONFIGURATION_FORBIDDEN_LIMITS = [
-  "callerMajorityRatio",
-  "directSpreadThreshold",
-  "maximumImplementationCandidates",
-  "minimumCallers",
-  "spreadThreshold",
-] as const satisfies readonly (keyof CallidescopeLimits)[];
+export const PROJECT_CONFIGURATION_FIELD_PERMISSIONS = {
+  allowSpreadFor: "forbidden",
+  directories: "forbidden",
+  entryPoints: "permitted",
+  exclude: "permitted",
+  excludeFrom: "forbidden",
+  ignoreCallees: "forbidden",
+  limits: "delegated",
+  output: "forbidden",
+  workspaceStructure: "forbidden",
+} as const satisfies Record<
+  keyof CallidescopeConfiguration,
+  "delegated" | "forbidden" | "permitted"
+>;
+
+/**
+ * Every limit, and whether a project's own configuration may set it.
+ *
+ * `maximumDepth` and `maximumBreadth` are the two a project gates itself
+ * against. Every other limit shapes how the call graph itself is built, which
+ * has to stay one answer for the whole workspace.
+ */
+export const PROJECT_CONFIGURATION_LIMIT_PERMISSIONS = {
+  callerMajorityRatio: "forbidden",
+  directSpreadThreshold: "forbidden",
+  maximumBreadth: "permitted",
+  maximumDepth: "permitted",
+  maximumImplementationCandidates: "forbidden",
+  minimumCallers: "forbidden",
+  spreadThreshold: "forbidden",
+} as const satisfies Record<
+  keyof CallidescopeLimits,
+  "forbidden" | "permitted"
+>;
+
+/**
+ * The names a project may set, looked up by a field name read off a file.
+ *
+ * A set of strings rather than the record itself, because the name comes from
+ * an authored object rather than from the interface — so a field nothing here
+ * classifies is refused rather than waved through, which is the one direction
+ * a permission check may be wrong in.
+ */
+export const PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES = new Set(
+  Object.entries(PROJECT_CONFIGURATION_FIELD_PERMISSIONS)
+    .filter(([, permission]) => permission === "permitted")
+    .map(([field]) => field),
+);
+
+/** The limits a project may set, looked up the same way and for the reason. */
+export const PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES = new Set(
+  Object.entries(PROJECT_CONFIGURATION_LIMIT_PERMISSIONS)
+    .filter(([, permission]) => permission === "permitted")
+    .map(([limit]) => limit),
+);
 
 /**
  * The fields named in a refusal, so an agent can fix a project configuration
  * without opening the docs.
+ *
+ * Derived from the permissions above rather than written out, so the sentence
+ * a refusal prints cannot come to disagree with the rule that produced it.
  */
-export const PROJECT_CONFIGURATION_PERMITTED_FIELDS =
-  "entryPoints, limits.maximumDepth, limits.maximumBreadth, and exclude";
+export const PROJECT_CONFIGURATION_PERMITTED_FIELDS = joinFieldNames([
+  ...PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES,
+  ...[...PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES].map(
+    (limit) => `limits.${limit}`,
+  ),
+]);
 
 /** Raised when a configuration file has an extension nothing can read. */
 export class UnknownConfigurationFileTypeError extends Error {

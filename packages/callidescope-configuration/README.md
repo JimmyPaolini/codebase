@@ -297,7 +297,7 @@ file; nothing else was traced.
 **`🔭 Rejected a project configuration` — a workspace-only field.**
 
 ```text
-<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, limits.maximumDepth, limits.maximumBreadth, and exclude.
+<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, limits.maximumBreadth, and limits.maximumDepth.
 ```
 
 Move that field to the workspace file. `<field>` is printed as

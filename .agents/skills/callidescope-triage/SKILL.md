@@ -200,7 +200,7 @@ its range, an `addresses` entry that is not a string.
 **A field only the workspace may set.**
 
 ```text
-<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, limits.maximumDepth, limits.maximumBreadth, and exclude.
+<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, limits.maximumBreadth, and limits.maximumDepth.
 ```
 
 Move that field to the workspace file. `<field>` prints as `limits.<name>` for a
