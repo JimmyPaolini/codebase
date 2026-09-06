@@ -19,6 +19,7 @@ import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
 
+import { ReportFindingsModule } from "../report-findings/report-findings.module";
 import { RunPlanModule } from "../run-plan/run-plan.module";
 
 import { CallidescopeCommand } from "./callidescope.command";
@@ -44,6 +45,7 @@ import { CallidescopeService } from "./callidescope.service";
     OutputMarkdownModule,
     ProgramModule,
     ProjectReportsModule,
+    ReportFindingsModule,
     ReportModule,
     RunPlanModule,
     WorkspaceModule,

@@ -30,6 +30,7 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { buildCallGraphResult, buildStackFrame } from "../../../testing/mocks";
+import { ReportFindingsService } from "../report-findings/report-findings.service";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { CallidescopeCommand } from "./callidescope.command";
@@ -40,6 +41,7 @@ import type {
   ProjectReport,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
+import type { UnresolvedEntryPointAddress } from "@callidescope/graph";
 
 /** Builds a resolved configuration with no destinations configured. */
 function buildConfiguration(
@@ -210,6 +212,18 @@ describe(CallidescopeCommand, () => {
     });
   }
 
+  /** Points the trace at a result carrying declared addresses that did not resolve. */
+  function stubUnresolvedEntryPointAddresses(
+    unresolvedAddresses: readonly UnresolvedEntryPointAddress[],
+  ): void {
+    callidescopeService.trace.mockResolvedValue({
+      projectNames: ["example"],
+      result: buildCallGraphResult(),
+      startingProjectRoots: new Map([["example", "packages/example"]]),
+      unresolvedAddresses,
+    });
+  }
+
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
@@ -239,6 +253,7 @@ describe(CallidescopeCommand, () => {
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         InputService,
+        ReportFindingsService,
         RunPlanService,
       ],
     }).compile();
@@ -279,6 +294,7 @@ describe(CallidescopeCommand, () => {
         },
         { provide: LoggerService, useValue: logger },
         { provide: InputService, useValue: inputService },
+        ReportFindingsService,
         RunPlanService,
       ],
     }).compile();
@@ -316,6 +332,7 @@ describe(CallidescopeCommand, () => {
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         InputService,
+        ReportFindingsService,
         RunPlanService,
       ],
     }).compile();
@@ -936,6 +953,139 @@ describe(CallidescopeCommand, () => {
           "broken sets limits, which only the workspace configuration may set. A project configuration may set entryPoints, limits.maximumDepth, limits.maximumBreadth, and exclude.",
       },
     );
+  });
+
+  // 🚧 A declared entry point that failed to resolve
+
+  it("fails a run whose trace declared an address that resolved to nothing", async () => {
+    stubUnresolvedEntryPointAddresses([
+      {
+        address: "packages/broken/src/gone.service.ts#GoneService.run",
+        projectName: "broken",
+        resolution: { kind: "not-found" },
+      },
+    ]);
+
+    await command.run([], { check: "depth" });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("names the project and the address of a declared entry point that resolves to nothing", async () => {
+    stubUnresolvedEntryPointAddresses([
+      {
+        address: "packages/broken/src/gone.service.ts#GoneService.run",
+        projectName: "broken",
+        resolution: { kind: "not-found" },
+      },
+    ]);
+
+    await command.run([], {});
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected a project configuration",
+      undefined,
+      {
+        reason:
+          'broken declares an entry point that resolves to nothing: "packages/broken/src/gone.service.ts#GoneService.run". Check the file path and the qualified name callidescope prints for it in a stack.',
+      },
+    );
+  });
+
+  it("prints every candidate with its line for a declared address that names more than one callable", async () => {
+    stubUnresolvedEntryPointAddresses([
+      {
+        address: "packages/broken/src/handlers.ts#handle",
+        projectName: "broken",
+        resolution: {
+          candidates: [
+            {
+              id: "packages/broken/src/handlers.ts#120",
+              location: {
+                column: 3,
+                filePath: "packages/broken/src/handlers.ts",
+                line: 12,
+              },
+            },
+            {
+              id: "packages/broken/src/handlers.ts#340",
+              location: {
+                column: 3,
+                filePath: "packages/broken/src/handlers.ts",
+                line: 34,
+              },
+            },
+          ],
+          kind: "ambiguous",
+        },
+      },
+    ]);
+
+    await command.run([], {});
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected a project configuration",
+      undefined,
+      {
+        reason:
+          'broken declares an entry point that matches more than one declaration: "packages/broken/src/handlers.ts#handle". Candidates: packages/broken/src/handlers.ts#handle:12, packages/broken/src/handlers.ts#handle:34. Add ":<line>" to the address to pick one.',
+      },
+    );
+  });
+
+  it("names the workspace configuration for an invalid address it declared, alongside every other unresolved address", async () => {
+    stubUnresolvedEntryPointAddresses([
+      {
+        address: "not-an-address",
+        projectName: undefined,
+        resolution: {
+          kind: "invalid",
+          reason:
+            '"not-an-address" is not a callable address. It needs a file path and a qualified name joined by "#", as in "src/foo.service.ts#FooService.bar", optionally followed by ":<line>" to disambiguate.',
+        },
+      },
+      {
+        address: "packages/broken/src/gone.service.ts#GoneService.run",
+        projectName: "broken",
+        resolution: { kind: "not-found" },
+      },
+    ]);
+
+    await command.run([], {});
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected a project configuration",
+      undefined,
+      {
+        reason:
+          'the workspace configuration declares an invalid entry point. "not-an-address" is not a callable address. It needs a file path and a qualified name joined by "#", as in "src/foo.service.ts#FooService.bar", optionally followed by ":<line>" to disambiguate. broken declares an entry point that resolves to nothing: "packages/broken/src/gone.service.ts#GoneService.run". Check the file path and the qualified name callidescope prints for it in a stack.',
+      },
+    );
+  });
+
+  it("writes no destination when a declared entry point does not resolve", async () => {
+    configureJsonDestination();
+    stubUnresolvedEntryPointAddresses([
+      {
+        address: "packages/broken/src/gone.service.ts#GoneService.run",
+        projectName: "broken",
+        resolution: { kind: "not-found" },
+      },
+    ]);
+
+    await command.run([], { write: true });
+
+    expect(outputJsonService.sync).not.toHaveBeenCalled();
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("leaves a run whose declared addresses all resolve unaffected", async () => {
+    stubUnresolvedEntryPointAddresses([]);
+
+    await command.run([], { check: "depth" });
+
+    expect(process.exitCode).toBeUndefined();
+    expect(logger.error).not.toHaveBeenCalled();
   });
 
   it("reads no destination when only depth is checked", async () => {
