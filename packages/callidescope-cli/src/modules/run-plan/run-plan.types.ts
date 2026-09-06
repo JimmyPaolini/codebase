@@ -1,9 +1,20 @@
 // 🏷️ Types
 
-import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
+import type {
+  CallidescopeLimits,
+  ResolvedCallidescopeConfiguration,
+} from "@callidescope/configuration";
 
 /** What a command line and its configuration resolved to. */
 export interface PreparedRun {
+  /**
+   * The limits the workspace file itself wrote down, exactly as authored.
+   *
+   * Carried beside the resolved configuration because resolution manufactures
+   * a default for every limit, so only this can say which numbers that file
+   * really chose — and an inherited limit names a file only when one did.
+   */
+  readonly authoredLimits: CallidescopeLimits | undefined;
   readonly configuration: ResolvedCallidescopeConfiguration;
   /**
    * The file the configuration was read from, or `undefined` when the search

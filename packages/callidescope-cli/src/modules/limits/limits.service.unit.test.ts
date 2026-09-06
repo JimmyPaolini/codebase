@@ -281,9 +281,11 @@ describe(LimitsService, () => {
   });
 
   // A workspace that omits a depth still hands every project one, and that row
-  // is `inherited` from the file — the number is real, only its authorship is
-  // not. Nothing above may quietly turn a project's row blank too.
-  it("still names the workspace file on a project inheriting an un-authored limit", async () => {
+  // is `inherited` — the number is real, only its authorship is not, so the
+  // row keeps the number and names no file. The workspace's own row for the
+  // same limit says exactly the same thing, which is the point: two rows about
+  // one number cannot disagree about which file wrote it.
+  it("names no file on a project inheriting an un-authored limit", async () => {
     configurationService.loadConfigurationFile.mockResolvedValue(
       buildLoadedFile({ authored: {}, path: WORKSPACE_CONFIGURATION_PATH }),
     );
@@ -296,7 +298,7 @@ describe(LimitsService, () => {
       {
         limit: "maximumDepth",
         origin: "inherited",
-        path: "configuration/callidescope.config.ts",
+        path: undefined,
         project: INHERITING_PROJECT,
         value: DEFAULT_MAXIMUM_DEPTH,
       },

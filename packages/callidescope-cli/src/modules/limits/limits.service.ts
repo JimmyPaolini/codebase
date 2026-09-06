@@ -16,7 +16,6 @@ import type {
   ProjectLimitRow,
 } from "./limits.types";
 import type {
-  CallidescopeConfiguration,
   LimitProvenance,
   ProjectLimits,
   ResolvedCallidescopeConfiguration,
@@ -142,36 +141,25 @@ export class LimitsService {
   /**
    * Builds the one row for a limit the workspace file is the source of.
    *
-   * Neither field `resolveLimits` reports is enough on its own here.
+   * The path `resolveLimits` reports can be trusted — it names the workspace
+   * file only when that file really wrote the number — but the origin cannot.
    * `buildWorkspaceLimits` stamps every workspace limit `inherited`, which is
-   * right for what that object is for — what a project that declared nothing is
-   * handed — and wrong on this row, which is the file's own: rendering that
-   * origin would say the workspace inherited its own default, from itself. And
-   * its `path` is stamped unconditionally while `maximumDepth` is defaulted
-   * during resolution, so a path alone would name a file for a number that file
-   * never wrote — the same lie in the other direction, on the one row every
-   * other row inherits from.
+   * right for what that object is for, what a project that declared nothing is
+   * handed, and wrong on this row, which is the file's own: rendering that
+   * origin would say the workspace inherited its own default, from itself.
    *
-   * So presence is asked of `authored`, the file exactly as written, and the
-   * value still comes from the resolved configuration. That is the split
-   * `ProjectConfigurationService.declareLimit` already makes for a project; the
-   * workspace's own row is the case it does not cover, because `ProjectLimits`
-   * has no third origin to say "defaulted" with. An un-authored limit therefore
-   * renders exactly like a workspace with no configuration file at all: no
-   * origin, no file, and the effective number kept, because that number really
-   * is what everything is judged against.
+   * So the origin is read back off the path, the one thing that says whether a
+   * file wrote this number at all. `ProjectLimits` has no third origin to say
+   * "defaulted" with, so an un-authored limit renders exactly like a workspace
+   * with no configuration file: no origin, no file, and the effective number
+   * kept, because that number really is what everything is judged against.
    */
   private toWorkspaceRow(args: {
-    authored: CallidescopeConfiguration;
     limit: LimitName;
     provenance: LimitProvenance | undefined;
     workspaceRoot: string;
   }): ProjectLimitRow {
-    const { provenance } = args;
-    const declaredPath =
-      args.authored.limits?.[args.limit] === undefined
-        ? undefined
-        : provenance?.path;
+    const declaredPath = args.provenance?.path;
 
     return {
       limit: args.limit,
@@ -181,13 +169,12 @@ export class LimitsService {
           ? undefined
           : path.relative(args.workspaceRoot, declaredPath),
       project: undefined,
-      value: provenance?.value,
+      value: args.provenance?.value,
     };
   }
 
   /** Builds the two rows for the default every project falls back to. */
   private toWorkspaceRows(args: {
-    authored: CallidescopeConfiguration;
     limits: ProjectLimits;
     workspaceRoot: string;
   }): ProjectLimitRow[] {
@@ -195,13 +182,11 @@ export class LimitsService {
 
     return [
       this.toWorkspaceRow({
-        authored: args.authored,
         limit: "maximumDepth",
         provenance: maximumDepth,
         workspaceRoot: args.workspaceRoot,
       }),
       this.toWorkspaceRow({
-        authored: args.authored,
         limit: "maximumBreadth",
         provenance: maximumBreadth,
         workspaceRoot: args.workspaceRoot,
@@ -246,6 +231,7 @@ export class LimitsService {
     const limits = this.projectConfigurationService.resolveLimits({
       projectConfigurations,
       projects,
+      workspaceAuthoredLimits: authored.limits,
       workspaceConfiguration: configuration,
       workspaceConfigurationPath: configurationPath,
     });
@@ -256,11 +242,7 @@ export class LimitsService {
     });
 
     return [
-      ...this.toWorkspaceRows({
-        authored,
-        limits: limits.workspace,
-        workspaceRoot,
-      }),
+      ...this.toWorkspaceRows({ limits: limits.workspace, workspaceRoot }),
       ...[...limits.byProject].flatMap(([project, projectLimits]) =>
         this.toProjectRows({ limits: projectLimits, project, workspaceRoot }),
       ),

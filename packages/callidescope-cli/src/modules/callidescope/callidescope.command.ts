@@ -281,9 +281,16 @@ export class CallidescopeCommand extends CommandRunner {
       return;
     }
 
-    const { configuration, configurationPath, mode, workspaceRoot } = prepared;
+    const {
+      authoredLimits,
+      configuration,
+      configurationPath,
+      mode,
+      workspaceRoot,
+    } = prepared;
 
     const outcome = await this.callidescopeService.trace({
+      authoredLimits,
       configuration,
       configurationPath,
       directories: resolvedOptions.directories ?? configuration.directories,

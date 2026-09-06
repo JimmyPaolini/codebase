@@ -6,6 +6,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import {
+  DEFAULT_MAXIMUM_DEPTH,
   DEFAULT_SPREAD_THRESHOLD,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
@@ -41,6 +42,7 @@ async function resolveWrittenLimits(args: {
   return args.service.resolveLimits({
     projectConfigurations,
     projects: args.projects,
+    workspaceAuthoredLimits: workspace.authored.limits,
     workspaceConfiguration: workspace.configuration,
     workspaceConfigurationPath,
   });
@@ -473,6 +475,30 @@ describe(ProjectConfigurationService, () => {
       origin: "inherited",
       path: path.join(workspaceRoot, "callidescope.config.json"),
       value: 17,
+    });
+  });
+
+  // The other half of the same rule the workspace's own row obeys: a number
+  // resolution manufactured is still the number every project is judged
+  // against, and still belongs to no file. Naming one here would tell a reader
+  // to go and change a line that is not written anywhere.
+  it("names no file for a limit the workspace file never wrote", async () => {
+    const workspaceRoot = await writeWorkspace({
+      ".": JSON.stringify({ exclude: ["**/generated/**"] }),
+      "packages/plain": JSON.stringify({ exclude: ["**/generated/**"] }),
+    });
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      projects: ["packages/plain"],
+      service,
+      workspaceRoot,
+    });
+
+    expect(limits.byProject.get("packages/plain")?.maximumDepth).toStrictEqual({
+      origin: "inherited",
+      path: undefined,
+      value: DEFAULT_MAXIMUM_DEPTH,
     });
   });
 

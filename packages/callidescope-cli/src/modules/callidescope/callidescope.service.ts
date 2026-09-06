@@ -28,6 +28,7 @@ import type {
 import type {
   CallableId,
   CallGraphSummary,
+  CallidescopeLimits,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeEntryPoints,
@@ -91,6 +92,7 @@ export class CallidescopeService {
     // answer can be had: a project's own file sits at a root discovery is
     // what finds, and its `exclude` decides what collection may look at.
     const declarations = await this.loadProjectDeclarations({
+      authoredLimits: args.authoredLimits,
       configuration: args.configuration,
       configurationPath: args.configurationPath,
       projectNames,
@@ -218,7 +220,8 @@ export class CallidescopeService {
    * be printable per project whether or not the project chose it.
    *
    * Exclusions are read from the file exactly as authored rather than from the
-   * resolved configuration, which is the split `declareLimit` already makes for
+   * resolved configuration, which is the split `readDeclaredLimit` already makes
+   * for
    * a limit: resolution folds the tool's own default globs into every project's
    * `exclude`, so the resolved array can never say whether this project
    * excluded anything. A project that excluded nothing is left out of the map
@@ -226,6 +229,7 @@ export class CallidescopeService {
    * run's own filter untouched.
    */
   private async loadProjectDeclarations(args: {
+    authoredLimits: CallidescopeLimits | undefined;
     configuration: ResolvedCallidescopeConfiguration;
     configurationPath: string | undefined;
     projectNames: readonly string[];
@@ -259,6 +263,7 @@ export class CallidescopeService {
       projectLimits: this.projectConfigurationService.resolveLimits({
         projectConfigurations: loaded,
         projects: args.projectNames,
+        workspaceAuthoredLimits: args.authoredLimits,
         workspaceConfiguration: args.configuration,
         workspaceConfigurationPath: args.configurationPath,
       }),

@@ -406,6 +406,16 @@ export interface ResolveProjectLimitsArguments {
   projectConfigurations: readonly LoadedProjectConfiguration[];
   /** Workspace-relative root of every project the run reached. */
   projects: readonly string[];
+  /**
+   * The limits the workspace file itself wrote down, exactly as authored.
+   *
+   * Presence is what decides whether an inherited limit names a file: the
+   * resolved configuration below manufactures `maximumDepth` for every run, so
+   * a path stamped from it alone would name a file for a number that file
+   * never wrote. The same split `readDeclaredLimit` makes for a project, made for
+   * the row every project's inherits from.
+   */
+  workspaceAuthoredLimits: CallidescopeLimits | undefined;
   /** The run's own configuration, which a project inherits both limits from. */
   workspaceConfiguration: ResolvedCallidescopeConfiguration;
   /** The file that configuration was read from, when one was found. */

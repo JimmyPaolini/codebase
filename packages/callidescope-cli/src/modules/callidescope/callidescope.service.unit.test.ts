@@ -1,5 +1,6 @@
 import {
   type CallGraphResult,
+  type CallidescopeLimits,
   type ConfigurationService,
   type LoadedProjectConfiguration,
   ProjectConfigurationService,
@@ -146,6 +147,7 @@ function buildSubject(args: {
  */
 function resolveLimits(args: {
   projectConfigurations?: readonly LoadedProjectConfiguration[];
+  workspaceAuthoredLimits?: CallidescopeLimits | undefined;
   workspaceConfiguration?: ResolvedCallidescopeConfiguration;
 }): ProjectLimitsLookup {
   return new ProjectConfigurationService(
@@ -153,6 +155,7 @@ function resolveLimits(args: {
   ).resolveLimits({
     projectConfigurations: args.projectConfigurations ?? [],
     projects: ["example"],
+    workspaceAuthoredLimits: args.workspaceAuthoredLimits,
     workspaceConfiguration: args.workspaceConfiguration ?? buildConfiguration(),
     workspaceConfigurationPath: "callidescope.config.ts",
   });

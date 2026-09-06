@@ -15,6 +15,7 @@ import type { AddressCommandOptions } from "../address-lookup/address-lookup.typ
 import type { CallidescopeCommandOptions } from "../callidescope/callidescope.types";
 import type { PreparedRun, RunMode, RunModeSelection } from "./run-plan.types";
 import type {
+  CallidescopeLimits,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeMarkdownOutputConfiguration,
@@ -135,6 +136,7 @@ export class RunPlanService {
    * way `prepareRun` does.
    */
   public async prepareLookup(options: AddressCommandOptions): Promise<{
+    authoredLimits: CallidescopeLimits | undefined;
     configuration: ResolvedCallidescopeConfiguration;
     configurationPath: string | undefined;
     workspaceRoot: string;
@@ -147,13 +149,17 @@ export class RunPlanService {
     // sitting at some project's root has that file read a second time as that
     // project's — and refused for the workspace-only fields it legitimately
     // sets.
-    const { configuration: loaded, path: configurationPath } =
-      await this.configurationService.loadConfigurationFile({
-        configurationPath: options.config,
-        searchDirectory: workspaceRoot,
-      });
+    const {
+      authored,
+      configuration: loaded,
+      path: configurationPath,
+    } = await this.configurationService.loadConfigurationFile({
+      configurationPath: options.config,
+      searchDirectory: workspaceRoot,
+    });
 
     return {
+      authoredLimits: authored.limits,
       configuration: {
         ...loaded,
         output: {
@@ -199,11 +205,14 @@ export class RunPlanService {
     // The file-aware load rather than the plain one: the trace resolves a
     // configuration beside every project it reaches, and needs to know which
     // file it has already read as this run's own so it is not read twice.
-    const { configuration: loaded, path: configurationPath } =
-      await this.configurationService.loadConfigurationFile({
-        configurationPath: options.config,
-        searchDirectory: workspaceRoot,
-      });
+    const {
+      authored,
+      configuration: loaded,
+      path: configurationPath,
+    } = await this.configurationService.loadConfigurationFile({
+      configurationPath: options.config,
+      searchDirectory: workspaceRoot,
+    });
     const configuration: ResolvedCallidescopeConfiguration = {
       ...loaded,
       output: {
@@ -221,7 +230,13 @@ export class RunPlanService {
       },
     };
 
-    return { configuration, configurationPath, mode, workspaceRoot };
+    return {
+      authoredLimits: authored.limits,
+      configuration,
+      configurationPath,
+      mode,
+      workspaceRoot,
+    };
   }
 
   /**

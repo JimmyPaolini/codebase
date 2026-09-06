@@ -81,13 +81,13 @@ export class ProjectConfigurationService {
 
     return {
       maximumBreadth:
-        this.declareLimit({
+        this.readDeclaredLimit({
           authored: authored.limits?.maximumBreadth,
           path: configurationPath,
           resolved: configuration.limits.maximumBreadth,
         }) ?? args.workspace.maximumBreadth,
       maximumDepth:
-        this.declareLimit({
+        this.readDeclaredLimit({
           authored: authored.limits?.maximumDepth,
           path: configurationPath,
           resolved: configuration.limits.maximumDepth,
@@ -101,12 +101,18 @@ export class ProjectConfigurationService {
    * Stamped `inherited` rather than `declared` because this object is read
    * through a project: the workspace file is where the number is written, and
    * the project is where it was not.
+   *
+   * The file is named only when it really wrote the number. `maximumDepth` is
+   * defaulted during resolution, so a path stamped unconditionally would tell
+   * every project it inherits a number from a file that never mentions it —
+   * the same lie `readDeclaredLimit` already refuses to tell about a project, told
+   * about the row every project's falls back to.
    */
   private buildWorkspaceLimits(
     args: ResolveProjectLimitsArguments,
   ): ProjectLimits {
     const { maximumBreadth, maximumDepth } = args.workspaceConfiguration.limits;
-    const configurationPath = args.workspaceConfigurationPath;
+    const authored = args.workspaceAuthoredLimits;
 
     return {
       maximumBreadth:
@@ -114,36 +120,21 @@ export class ProjectConfigurationService {
           ? undefined
           : {
               origin: "inherited",
-              path: configurationPath,
+              path: this.readDeclaringPath({
+                authored: authored?.maximumBreadth,
+                path: args.workspaceConfigurationPath,
+              }),
               value: maximumBreadth,
             },
       maximumDepth: {
         origin: "inherited",
-        path: configurationPath,
+        path: this.readDeclaringPath({
+          authored: authored?.maximumDepth,
+          path: args.workspaceConfigurationPath,
+        }),
         value: maximumDepth,
       },
     };
-  }
-
-  /**
-   * Reads one limit a project set for itself, or nothing when it set none.
-   *
-   * Presence is asked of the file as authored and the value is taken from the
-   * resolved configuration, which is the split every other reader here makes:
-   * resolution manufactures a default for every project, so only `authored` can
-   * say whether this project chose the number, and only the resolved
-   * configuration is guaranteed to have been through the schema.
-   */
-  private declareLimit(args: {
-    authored: number | undefined;
-    path: string;
-    resolved: number | undefined;
-  }): LimitProvenance | undefined {
-    if (args.authored === undefined || args.resolved === undefined) {
-      return undefined;
-    }
-
-    return { origin: "declared", path: args.path, value: args.resolved };
   }
 
   /**
@@ -224,6 +215,35 @@ export class ProjectConfigurationService {
         project: args.project,
       });
     }
+  }
+
+  /**
+   * Reads one limit a project set for itself, or nothing when it set none.
+   *
+   * Presence is asked of the file as authored and the value is taken from the
+   * resolved configuration, which is the split every other reader here makes:
+   * resolution manufactures a default for every project, so only `authored` can
+   * say whether this project chose the number, and only the resolved
+   * configuration is guaranteed to have been through the schema.
+   */
+  private readDeclaredLimit(args: {
+    authored: number | undefined;
+    path: string;
+    resolved: number | undefined;
+  }): LimitProvenance | undefined {
+    if (args.authored === undefined || args.resolved === undefined) {
+      return undefined;
+    }
+
+    return { origin: "declared", path: args.path, value: args.resolved };
+  }
+
+  /** The file a number is written in, or nothing when no file wrote it. */
+  private readDeclaringPath(args: {
+    authored: number | undefined;
+    path: string | undefined;
+  }): string | undefined {
+    return args.authored === undefined ? undefined : args.path;
   }
 
   // 🌎 Public Methods

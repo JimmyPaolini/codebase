@@ -97,6 +97,7 @@ describe(AddressLookupService, () => {
     const located = buildLocated();
 
     runPlanService.prepareLookup.mockResolvedValue({
+      authoredLimits: undefined,
       configuration,
       configurationPath: undefined,
       workspaceRoot: "/workspace",
@@ -127,6 +128,7 @@ describe(AddressLookupService, () => {
     const located = buildLocated();
 
     runPlanService.prepareLookup.mockResolvedValue({
+      authoredLimits: undefined,
       configuration: buildConfiguration(),
       configurationPath: undefined,
       workspaceRoot: "/workspace",
@@ -145,6 +147,7 @@ describe(AddressLookupService, () => {
 
   it("scopes the trace to the directories a flag named", async () => {
     runPlanService.prepareLookup.mockResolvedValue({
+      authoredLimits: undefined,
       configuration: buildConfiguration(),
       configurationPath: undefined,
       workspaceRoot: "/workspace",

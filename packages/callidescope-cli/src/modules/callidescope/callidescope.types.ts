@@ -3,6 +3,7 @@
 import type {
   CallableId,
   CallGraphResult,
+  CallidescopeLimits,
   CallidescopeOutputFormat,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
@@ -110,6 +111,15 @@ export interface SyncDestinationsArguments {
 
 /** Arguments for one full trace of a workspace. */
 export interface TraceArguments {
+  /**
+   * The limits the workspace file itself wrote down, exactly as authored.
+   *
+   * Carried so an inherited limit names the workspace file only when that file
+   * really wrote the number: resolution defaults `maximumDepth` for every run,
+   * and a path stamped from the resolved object alone would name a file for a
+   * number it never mentions.
+   */
+  readonly authoredLimits?: CallidescopeLimits | undefined;
   readonly configuration: ResolvedCallidescopeConfiguration;
   /**
    * The file `configuration` was read from, when a file was found at all.
