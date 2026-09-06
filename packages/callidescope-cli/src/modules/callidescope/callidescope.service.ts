@@ -25,6 +25,7 @@ import type {
 import type {
   CallableId,
   CallGraphSummary,
+  ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeEntryPoints,
 } from "@callidescope/configuration";
@@ -144,7 +145,8 @@ export class CallidescopeService {
   }
 
   /**
-   * Reads the entry-point rules each traced project declared for itself.
+   * Reads what each traced project declared for itself: the callables that
+   * root its stacks, and the limits those stacks are judged against.
    *
    * Over the whole closure rather than the projects the run was pointed at: a
    * dependency's callables are measured by this run, and the project that owns
@@ -152,16 +154,25 @@ export class CallidescopeService {
    * scoped elsewhere would otherwise judge them by whoever happened to reach
    * them.
    *
-   * A project declaring no configuration is simply absent from the map, and
-   * `EntriesService` falls back to the run's own configuration for it — which
-   * is how every project in a workspace with no project configurations behaves,
-   * and why this returns rules rather than a whole configuration.
+   * One load for both, because the two answers come out of the same files, and
+   * reading those files twice is how a run ends up gating against limits from
+   * one read and rooting stacks from another.
+   *
+   * A project declaring no entry-point rules is simply absent from that map,
+   * and `EntriesService` falls back to the run's own configuration for it —
+   * which is why this returns rules rather than a whole configuration. Limits
+   * resolve the other way round, naming every project, because a limit has to
+   * be printable per project whether or not the project chose it.
    */
-  private async loadProjectEntryPoints(args: {
+  private async loadProjectDeclarations(args: {
+    configuration: ResolvedCallidescopeConfiguration;
     configurationPath: string | undefined;
     projectNames: readonly string[];
     workspaceRoot: string;
-  }): Promise<ReadonlyMap<string, ResolvedCallidescopeEntryPoints>> {
+  }): Promise<{
+    entryPointsByProject: ReadonlyMap<string, ResolvedCallidescopeEntryPoints>;
+    projectLimits: ProjectLimitsLookup;
+  }> {
     const loaded =
       await this.projectConfigurationService.loadProjectConfigurations({
         projects: args.projectNames,
@@ -169,12 +180,20 @@ export class CallidescopeService {
         workspaceRoot: args.workspaceRoot,
       });
 
-    return new Map(
-      loaded.map((projectConfiguration) => [
-        projectConfiguration.project,
-        projectConfiguration.configuration.entryPoints,
-      ]),
-    );
+    return {
+      entryPointsByProject: new Map(
+        loaded.map((projectConfiguration) => [
+          projectConfiguration.project,
+          projectConfiguration.configuration.entryPoints,
+        ]),
+      ),
+      projectLimits: this.projectConfigurationService.resolveLimits({
+        projectConfigurations: loaded,
+        projects: args.projectNames,
+        workspaceConfiguration: args.configuration,
+        workspaceConfigurationPath: args.configurationPath,
+      }),
+    };
   }
 
   /** Reads the deepest depth any component reached. */
@@ -196,6 +215,8 @@ export class CallidescopeService {
     fileCount: number;
     fileCountByProject: ReadonlyMap<string, number>;
     projectCount: number;
+    /** The depth and breadth limits each traced project is judged against. */
+    projectLimits: ProjectLimitsLookup;
     projectNames: readonly string[];
     workspaceRoot: string;
   }): AnalyzeOutcome {
@@ -268,7 +289,7 @@ export class CallidescopeService {
     return {
       result: {
         deepStacks: this.projectReportsService.findDeepStacks({
-          limit: args.configuration.limits.maximumDepth,
+          limits: args.projectLimits,
           reports: projects,
         }),
         misplacedCallables,
@@ -276,11 +297,8 @@ export class CallidescopeService {
         projects,
         summary,
         typeDepths,
-        // No default exists for `maximumBreadth`: until a project configures
-        // one, nothing can exceed it, so an unset limit reports nothing rather
-        // than picking a number nobody chose.
         wideCallables: this.projectReportsService.findWideCallables({
-          limit: args.configuration.limits.maximumBreadth ?? Infinity,
+          limits: args.projectLimits,
           reports: projects,
         }),
       },
@@ -319,11 +337,13 @@ export class CallidescopeService {
       this.discoverCallables(args);
     // After discovery, because the projects to look beside are the ones the
     // run turned out to reach rather than the ones it was pointed at.
-    const entryPointsByProject = await this.loadProjectEntryPoints({
-      configurationPath: args.configurationPath,
-      projectNames,
-      workspaceRoot: args.workspaceRoot,
-    });
+    const { entryPointsByProject, projectLimits } =
+      await this.loadProjectDeclarations({
+        configuration: args.configuration,
+        configurationPath: args.configurationPath,
+        projectNames,
+        workspaceRoot: args.workspaceRoot,
+      });
     const analyzed = this.analyze({
       callablesById: collection.byId,
       configuration: args.configuration,
@@ -331,6 +351,7 @@ export class CallidescopeService {
       fileCount: collection.fileCount,
       fileCountByProject: collection.fileCountByProject,
       projectCount: projectNames.length,
+      projectLimits,
       projectNames,
       workspaceRoot: args.workspaceRoot,
     });

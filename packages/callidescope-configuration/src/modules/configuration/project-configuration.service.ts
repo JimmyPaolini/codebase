@@ -12,8 +12,12 @@ import { ConfigurationService } from "./configuration.service";
 
 import type {
   CallidescopeConfiguration,
+  LimitProvenance,
   LoadedProjectConfiguration,
   LoadProjectConfigurationsArguments,
+  ProjectLimits,
+  ProjectLimitsLookup,
+  ResolveProjectLimitsArguments,
 } from "./configuration.types";
 
 /**
@@ -54,6 +58,92 @@ export class ProjectConfigurationService {
       field,
       project: loadedConfiguration.project,
     });
+  }
+
+  /**
+   * Reads one project's own limits, falling back to what it inherits.
+   *
+   * A project declaring neither is handed the inherited object itself rather
+   * than a copy of it, so the two can never come to disagree.
+   */
+  private buildProjectLimits(args: {
+    projectConfiguration: LoadedProjectConfiguration | undefined;
+    workspace: ProjectLimits;
+  }): ProjectLimits {
+    const { projectConfiguration } = args;
+
+    if (projectConfiguration === undefined) {
+      return args.workspace;
+    }
+
+    const { authored, configuration } = projectConfiguration;
+    const configurationPath = projectConfiguration.path;
+
+    return {
+      maximumBreadth:
+        this.declareLimit({
+          authored: authored.limits?.maximumBreadth,
+          path: configurationPath,
+          resolved: configuration.limits.maximumBreadth,
+        }) ?? args.workspace.maximumBreadth,
+      maximumDepth:
+        this.declareLimit({
+          authored: authored.limits?.maximumDepth,
+          path: configurationPath,
+          resolved: configuration.limits.maximumDepth,
+        }) ?? args.workspace.maximumDepth,
+    };
+  }
+
+  /**
+   * Reads the limits every project inherits when it declares none of its own.
+   *
+   * Stamped `inherited` rather than `declared` because this object is read
+   * through a project: the workspace file is where the number is written, and
+   * the project is where it was not.
+   */
+  private buildWorkspaceLimits(
+    args: ResolveProjectLimitsArguments,
+  ): ProjectLimits {
+    const { maximumBreadth, maximumDepth } = args.workspaceConfiguration.limits;
+    const configurationPath = args.workspaceConfigurationPath;
+
+    return {
+      maximumBreadth:
+        maximumBreadth === undefined
+          ? undefined
+          : {
+              origin: "inherited",
+              path: configurationPath,
+              value: maximumBreadth,
+            },
+      maximumDepth: {
+        origin: "inherited",
+        path: configurationPath,
+        value: maximumDepth,
+      },
+    };
+  }
+
+  /**
+   * Reads one limit a project set for itself, or nothing when it set none.
+   *
+   * Presence is asked of the file as authored and the value is taken from the
+   * resolved configuration, which is the split every other reader here makes:
+   * resolution manufactures a default for every project, so only `authored` can
+   * say whether this project chose the number, and only the resolved
+   * configuration is guaranteed to have been through the schema.
+   */
+  private declareLimit(args: {
+    authored: number | undefined;
+    path: string;
+    resolved: number | undefined;
+  }): LimitProvenance | undefined {
+    if (args.authored === undefined || args.resolved === undefined) {
+      return undefined;
+    }
+
+    return { origin: "declared", path: args.path, value: args.resolved };
   }
 
   /**
@@ -172,5 +262,43 @@ export class ProjectConfigurationService {
     }
 
     return loaded;
+  }
+
+  /**
+   * Resolves the depth and breadth limits every traced project is judged
+   * against, each carrying the file its number was written in.
+   *
+   * The workspace value is a default rather than a ceiling: a project
+   * declaring a higher limit than the workspace keeps its own, because a
+   * workspace number pinned by the single worst stack anywhere in it gates
+   * nothing for the projects that are nowhere near it.
+   *
+   * One resolver rather than one per reader. A gate and a listing that each
+   * worked the inheritance out for themselves could disagree about the same
+   * number, and a limit two answers can be given for is worse than no limit.
+   */
+  public resolveLimits(
+    args: ResolveProjectLimitsArguments,
+  ): ProjectLimitsLookup {
+    const workspace = this.buildWorkspaceLimits(args);
+    const configurationsByProject = new Map(
+      args.projectConfigurations.map((projectConfiguration) => [
+        projectConfiguration.project,
+        projectConfiguration,
+      ]),
+    );
+
+    return {
+      byProject: new Map(
+        args.projects.map((project) => [
+          project,
+          this.buildProjectLimits({
+            projectConfiguration: configurationsByProject.get(project),
+            workspace,
+          }),
+        ]),
+      ),
+      workspace,
+    };
   }
 }

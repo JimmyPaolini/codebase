@@ -13,6 +13,39 @@ import {
 import { ConfigurationService } from "./configuration.service";
 import { ProjectConfigurationService } from "./project-configuration.service";
 
+import type { ProjectLimitsLookup } from "./configuration.types";
+
+/**
+ * Resolves a written-out workspace's limits through the whole path a run
+ * takes: load the workspace file, load whatever the projects declared, resolve.
+ */
+async function resolveWrittenLimits(args: {
+  configurationService: ConfigurationService;
+  projects: readonly string[];
+  service: ProjectConfigurationService;
+  workspaceRoot: string;
+}): Promise<ProjectLimitsLookup> {
+  const workspaceConfigurationPath = path.join(
+    args.workspaceRoot,
+    "callidescope.config.json",
+  );
+  const workspace = await args.configurationService.loadConfigurationFile({
+    configurationPath: workspaceConfigurationPath,
+  });
+  const projectConfigurations = await args.service.loadProjectConfigurations({
+    projects: args.projects,
+    workspaceConfigurationPath,
+    workspaceRoot: args.workspaceRoot,
+  });
+
+  return args.service.resolveLimits({
+    projectConfigurations,
+    projects: args.projects,
+    workspaceConfiguration: workspace.configuration,
+    workspaceConfigurationPath,
+  });
+}
+
 /**
  * Writes a fresh workspace holding one configuration file per named project.
  *
@@ -413,5 +446,133 @@ describe(ProjectConfigurationService, () => {
     });
 
     expect(loaded).toStrictEqual([]);
+  });
+
+  // 📏 Limits resolved per project
+
+  it("hands a project declaring no limits the workspace's, marked inherited", async () => {
+    const workspaceRoot = await writeWorkspace({
+      ".": JSON.stringify({ limits: { maximumDepth: 17 } }),
+      "packages/plain": JSON.stringify({ exclude: ["**/generated/**"] }),
+    });
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      projects: ["packages/plain"],
+      service,
+      workspaceRoot,
+    });
+
+    expect(limits.byProject.get("packages/plain")?.maximumDepth).toStrictEqual({
+      origin: "inherited",
+      path: path.join(workspaceRoot, "callidescope.config.json"),
+      value: 17,
+    });
+  });
+
+  it("names the project's own file as the source of a limit it declared", async () => {
+    const workspaceRoot = await writeWorkspace({
+      ".": JSON.stringify({ limits: { maximumDepth: 17 } }),
+      "packages/gated": JSON.stringify({ limits: { maximumDepth: 4 } }),
+    });
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      projects: ["packages/gated"],
+      service,
+      workspaceRoot,
+    });
+
+    expect(limits.byProject.get("packages/gated")?.maximumDepth).toStrictEqual({
+      origin: "declared",
+      path: path.join(
+        workspaceRoot,
+        "packages",
+        "gated",
+        "callidescope.config.json",
+      ),
+      value: 4,
+    });
+  });
+
+  it("keeps a limit higher than the workspace's rather than clamping it", async () => {
+    const workspaceRoot = await writeWorkspace({
+      ".": JSON.stringify({ limits: { maximumDepth: 6 } }),
+      "packages/deep": JSON.stringify({ limits: { maximumDepth: 12 } }),
+    });
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      projects: ["packages/deep"],
+      service,
+      workspaceRoot,
+    });
+
+    expect(limits.byProject.get("packages/deep")?.maximumDepth.value).toBe(12);
+  });
+
+  it("inherits the limit a project left alone while keeping the one it set", async () => {
+    const workspaceRoot = await writeWorkspace({
+      ".": JSON.stringify({
+        limits: { maximumBreadth: 9, maximumDepth: 17 },
+      }),
+      "packages/gated": JSON.stringify({ limits: { maximumDepth: 4 } }),
+    });
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      projects: ["packages/gated"],
+      service,
+      workspaceRoot,
+    });
+
+    expect(
+      limits.byProject.get("packages/gated")?.maximumBreadth,
+    ).toStrictEqual({
+      origin: "inherited",
+      path: path.join(workspaceRoot, "callidescope.config.json"),
+      value: 9,
+    });
+  });
+
+  it("leaves breadth unset when neither the project nor the workspace set it", async () => {
+    const workspaceRoot = await writeWorkspace({
+      ".": JSON.stringify({ limits: { maximumDepth: 17 } }),
+      "packages/gated": JSON.stringify({ limits: { maximumDepth: 4 } }),
+    });
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      projects: ["packages/gated"],
+      service,
+      workspaceRoot,
+    });
+
+    expect(
+      limits.byProject.get("packages/gated")?.maximumBreadth,
+    ).toBeUndefined();
+  });
+
+  it("names every project the run reached, whether or not it declared a limit", async () => {
+    const workspaceRoot = await writeWorkspace({
+      ".": JSON.stringify({ limits: { maximumDepth: 17 } }),
+      "packages/gated": JSON.stringify({ limits: { maximumDepth: 4 } }),
+    });
+    await mkdir(path.join(workspaceRoot, "packages", "plain"), {
+      recursive: true,
+    });
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      projects: ["packages/gated", "packages/plain"],
+      service,
+      workspaceRoot,
+    });
+
+    expect([...limits.byProject.keys()]).toStrictEqual([
+      "packages/gated",
+      "packages/plain",
+    ]);
+    expect(limits.workspace.maximumDepth.value).toBe(17);
   });
 });

@@ -1,4 +1,12 @@
 import {
+  type CallGraphResult,
+  type ConfigurationService,
+  type LoadedProjectConfiguration,
+  ProjectConfigurationService,
+  type ProjectLimitsLookup,
+  type ResolvedCallidescopeConfiguration,
+} from "@callidescope/configuration";
+import {
   AddressService,
   BreadthService,
   CohesionService,
@@ -29,17 +37,13 @@ import {
 import { CallidescopeService } from "./callidescope.service";
 
 import type { FixtureServices } from "../../../testing/programs";
-import type {
-  CallGraphResult,
-  ProjectConfigurationService,
-  ResolvedCallidescopeConfiguration,
-} from "@callidescope/configuration";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** Analyzes in-memory files end to end, short of reading the disk. */
 function analyze(args: {
   configuration?: ResolvedCallidescopeConfiguration;
   files: Record<string, string>;
+  projectLimits?: ProjectLimitsLookup;
 }): CallGraphResult {
   const projectProgram = buildFixtureProgram(args.files);
   const fixture = buildFixtureServices({ projectProgram });
@@ -47,14 +51,18 @@ function analyze(args: {
     projectProgram,
     services: fixture,
   });
+  const configuration = args.configuration ?? buildConfiguration();
 
   return buildSubject({ fixture }).analyze({
     callablesById: collection.byId,
-    configuration: args.configuration ?? buildConfiguration(),
+    configuration,
     entryPointsByProject: new Map(),
     fileCount: collection.fileCount,
     fileCountByProject: collection.fileCountByProject,
     projectCount: 1,
+    projectLimits:
+      args.projectLimits ??
+      resolveLimits({ workspaceConfiguration: configuration }),
     projectNames: ["example"],
     workspaceRoot: FIXTURE_ROOT,
   }).result;
@@ -129,6 +137,26 @@ function buildSubject(args: {
   );
 }
 
+/**
+ * Resolves limits the way a real run does, through the real resolver.
+ *
+ * The one resolver rather than a second copy of the inheritance rules: a test
+ * that worked them out for itself could pass while the tool disagreed.
+ */
+function resolveLimits(args: {
+  projectConfigurations?: readonly LoadedProjectConfiguration[];
+  workspaceConfiguration?: ResolvedCallidescopeConfiguration;
+}): ProjectLimitsLookup {
+  return new ProjectConfigurationService(
+    createMock<ConfigurationService>(),
+  ).resolveLimits({
+    projectConfigurations: args.projectConfigurations ?? [],
+    projects: ["example"],
+    workspaceConfiguration: args.workspaceConfiguration ?? buildConfiguration(),
+    workspaceConfigurationPath: "callidescope.config.ts",
+  });
+}
+
 describe(CallidescopeService, () => {
   let service: CallidescopeService;
 
@@ -167,6 +195,7 @@ describe(CallidescopeService, () => {
       fileCount: collection.fileCount,
       fileCountByProject: collection.fileCountByProject,
       projectCount: 1,
+      projectLimits: resolveLimits({}),
       projectNames: ["example"],
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -208,6 +237,64 @@ describe(CallidescopeService, () => {
     });
 
     expect(result.deepStacks).toStrictEqual([]);
+  });
+
+  it("leaves a project alone when it declared a limit above the workspace's", () => {
+    const result = analyze({
+      files: {
+        "packages/example/src/index.ts": `
+          function three(): void {}
+          function two(): void { three(); }
+          export function one(): void { two(); }
+        `,
+      },
+      projectLimits: resolveLimits({
+        projectConfigurations: [
+          {
+            authored: { limits: { maximumDepth: 3 } },
+            configuration: buildConfiguration({
+              limits: {
+                ...buildConfiguration().limits,
+                maximumDepth: 3,
+              },
+            }),
+            path: "packages/example/callidescope.config.ts",
+            project: "example",
+          },
+        ],
+      }),
+    });
+
+    expect(result.deepStacks).toStrictEqual([]);
+  });
+
+  it("stamps a finding with the limit the project declared for itself", () => {
+    const result = analyze({
+      files: {
+        "packages/example/src/index.ts": `
+          function three(): void {}
+          function two(): void { three(); }
+          export function one(): void { two(); }
+        `,
+      },
+      projectLimits: resolveLimits({
+        projectConfigurations: [
+          {
+            authored: { limits: { maximumDepth: 1 } },
+            configuration: buildConfiguration({
+              limits: {
+                ...buildConfiguration().limits,
+                maximumDepth: 1,
+              },
+            }),
+            path: "packages/example/callidescope.config.ts",
+            project: "example",
+          },
+        ],
+      }),
+    });
+
+    expect(result.deepStacks[0]?.limit).toBe(1);
   });
 
   it("names every frame of a reported stack", () => {
@@ -355,6 +442,7 @@ describe(CallidescopeService, () => {
       fileCount: collection.fileCount,
       fileCountByProject: collection.fileCountByProject,
       projectCount: 1,
+      projectLimits: resolveLimits({}),
       projectNames: ["example"],
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -390,6 +478,7 @@ describe(CallidescopeService, () => {
       fileCount: collection.fileCount,
       fileCountByProject: collection.fileCountByProject,
       projectCount: 1,
+      projectLimits: resolveLimits({}),
       projectNames: ["example"],
       workspaceRoot: FIXTURE_ROOT,
     });

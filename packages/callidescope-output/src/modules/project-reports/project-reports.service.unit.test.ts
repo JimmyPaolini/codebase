@@ -10,7 +10,12 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 import { ProjectReportsService } from "./project-reports.service";
 
 import type { BuildProjectReportsArguments } from "./project-reports.types";
-import type { CallableId, ProjectReport } from "@callidescope/configuration";
+import type {
+  CallableId,
+  ProjectLimits,
+  ProjectLimitsLookup,
+  ProjectReport,
+} from "@callidescope/configuration";
 import type { DiscoveredCallable } from "@callidescope/graph";
 
 /**
@@ -87,6 +92,36 @@ function buildArguments(depth: number): BuildProjectReportsArguments {
     moduleSpreads: [],
     projectNames: ["alpha", "beta"],
     typeDepths: [],
+  };
+}
+
+/** One project's limits, carrying whichever provenance the case needs. */
+function buildLimits(args: {
+  breadth?: number | undefined;
+  depth?: number | undefined;
+  origin?: "declared" | "inherited" | undefined;
+  path?: string | undefined;
+}): ProjectLimits {
+  const origin = args.origin ?? "inherited";
+  const path = args.path ?? "callidescope.config.ts";
+
+  return {
+    maximumBreadth:
+      args.breadth === undefined
+        ? undefined
+        : { origin, path, value: args.breadth },
+    maximumDepth: { origin, path, value: args.depth ?? Infinity },
+  };
+}
+
+/** A lookup with a workspace default and whatever a project overrode. */
+function buildLookup(args: {
+  byProject?: Record<string, ProjectLimits> | undefined;
+  workspace: ProjectLimits;
+}): ProjectLimitsLookup {
+  return {
+    byProject: new Map(Object.entries(args.byProject ?? {})),
+    workspace: args.workspace,
   };
 }
 
@@ -188,14 +223,29 @@ describe(ProjectReportsService, () => {
   it("fails only on the stacks past the limit", () => {
     const reports = service.build(buildArguments(3));
 
-    expect(service.findDeepStacks({ limit: 2, reports })).toHaveLength(1);
-    expect(service.findDeepStacks({ limit: 3, reports })).toStrictEqual([]);
+    expect(
+      service.findDeepStacks({
+        limits: buildLookup({ workspace: buildLimits({ depth: 2 }) }),
+        reports,
+      }),
+    ).toHaveLength(1);
+    expect(
+      service.findDeepStacks({
+        limits: buildLookup({ workspace: buildLimits({ depth: 3 }) }),
+        reports,
+      }),
+    ).toStrictEqual([]);
   });
 
   it("stamps each finding with the limit it broke", () => {
     const reports = service.build(buildArguments(3));
 
-    expect(service.findDeepStacks({ limit: 1, reports })[0]?.limit).toBe(1);
+    expect(
+      service.findDeepStacks({
+        limits: buildLookup({ workspace: buildLimits({ depth: 1 }) }),
+        reports,
+      })[0]?.limit,
+    ).toBe(1);
   });
 
   it("reports the deepest stack first", () => {
@@ -203,11 +253,83 @@ describe(ProjectReportsService, () => {
     const shallow = service.build(buildArguments(2));
 
     const findings = service.findDeepStacks({
-      limit: 1,
+      limits: buildLookup({ workspace: buildLimits({ depth: 1 }) }),
       reports: [...reports, ...shallow],
     });
 
     expect(findings.map((finding) => finding.depth)).toStrictEqual([4, 2]);
+  });
+
+  // 🏘 Every project judged against its own limits
+
+  it("judges a stack against the limit of the project that roots it", () => {
+    const reports = service.build(buildArguments(3));
+
+    const findings = service.findDeepStacks({
+      limits: buildLookup({
+        byProject: { alpha: buildLimits({ depth: 2, origin: "declared" }) },
+        workspace: buildLimits({ depth: 9 }),
+      }),
+      reports,
+    });
+
+    expect(findings.map((finding) => finding.limit)).toStrictEqual([2]);
+  });
+
+  it("leaves a stack alone when only another project's limit would fail it", () => {
+    const reports = service.build(buildArguments(3));
+
+    expect(
+      service.findDeepStacks({
+        limits: buildLookup({
+          byProject: {
+            alpha: buildLimits({ depth: 3, origin: "declared" }),
+            beta: buildLimits({ depth: 1, origin: "declared" }),
+          },
+          workspace: buildLimits({ depth: 3 }),
+        }),
+        reports,
+      }),
+    ).toStrictEqual([]);
+  });
+
+  it("judges a project declaring no limit against the workspace's", () => {
+    const reports = service.build(buildArguments(3));
+
+    const findings = service.findDeepStacks({
+      limits: buildLookup({
+        byProject: { alpha: buildLimits({ depth: 2 }) },
+        workspace: buildLimits({ depth: 2 }),
+      }),
+      reports,
+    });
+
+    expect(findings.map((finding) => finding.limit)).toStrictEqual([2]);
+  });
+
+  it("does not clamp a project declaring a limit higher than the workspace's", () => {
+    const reports = service.build(buildArguments(3));
+
+    expect(
+      service.findDeepStacks({
+        limits: buildLookup({
+          byProject: { alpha: buildLimits({ depth: 8, origin: "declared" }) },
+          workspace: buildLimits({ depth: 1 }),
+        }),
+        reports,
+      }),
+    ).toStrictEqual([]);
+  });
+
+  it("judges a project the lookup never named against the workspace's limit", () => {
+    const reports = service.build(buildArguments(3));
+
+    const findings = service.findDeepStacks({
+      limits: buildLookup({ workspace: buildLimits({ depth: 2 }) }),
+      reports,
+    });
+
+    expect(findings.map((finding) => finding.limit)).toStrictEqual([2]);
   });
 
   // 🌐 The breadth gate
@@ -295,8 +417,61 @@ describe(ProjectReportsService, () => {
       },
     });
 
-    expect(service.findWideCallables({ limit: 1, reports })).toHaveLength(1);
-    expect(service.findWideCallables({ limit: 2, reports })).toStrictEqual([]);
+    expect(
+      service.findWideCallables({
+        limits: buildLookup({ workspace: buildLimits({ breadth: 1 }) }),
+        reports,
+      }),
+    ).toHaveLength(1);
+    expect(
+      service.findWideCallables({
+        limits: buildLookup({ workspace: buildLimits({ breadth: 2 }) }),
+        reports,
+      }),
+    ).toStrictEqual([]);
+  });
+
+  it("reports nothing when no configuration declared a breadth limit", () => {
+    const base = buildArguments(3);
+    const [alpha0Id, alpha1Id] = [...base.callablesById.keys()];
+    const reports = service.build({
+      ...base,
+      breadthMeasurement: {
+        byCallable: new Map([
+          [alpha0Id ?? "", { breadth: 1, calleeIds: [alpha1Id ?? ""] }],
+        ]),
+      },
+    });
+
+    expect(
+      service.findWideCallables({
+        limits: buildLookup({ workspace: buildLimits({}) }),
+        reports,
+      }),
+    ).toStrictEqual([]);
+  });
+
+  it("judges a callable against the limit of the project declaring it", () => {
+    const base = buildArguments(3);
+    const [alpha0Id, alpha1Id] = [...base.callablesById.keys()];
+    const reports = service.build({
+      ...base,
+      breadthMeasurement: {
+        byCallable: new Map([
+          [alpha0Id ?? "", { breadth: 1, calleeIds: [alpha1Id ?? ""] }],
+        ]),
+      },
+    });
+
+    const findings = service.findWideCallables({
+      limits: buildLookup({
+        byProject: { alpha: buildLimits({ breadth: 0, origin: "declared" }) },
+        workspace: buildLimits({ breadth: 9 }),
+      }),
+      reports,
+    });
+
+    expect(findings.map((finding) => finding.limit)).toStrictEqual([0]);
   });
 
   it("stamps each wide-callable finding with the limit it broke", () => {
@@ -311,7 +486,12 @@ describe(ProjectReportsService, () => {
       },
     });
 
-    expect(service.findWideCallables({ limit: 0, reports })[0]?.limit).toBe(0);
+    expect(
+      service.findWideCallables({
+        limits: buildLookup({ workspace: buildLimits({ breadth: 0 }) }),
+        reports,
+      })[0]?.limit,
+    ).toBe(0);
   });
 
   it("reports the widest callable first", () => {
@@ -330,7 +510,10 @@ describe(ProjectReportsService, () => {
       },
     });
 
-    const findings = service.findWideCallables({ limit: 0, reports });
+    const findings = service.findWideCallables({
+      limits: buildLookup({ workspace: buildLimits({ breadth: 0 }) }),
+      reports,
+    });
 
     expect(findings.map((finding) => finding.breadth)).toStrictEqual([2, 1]);
   });

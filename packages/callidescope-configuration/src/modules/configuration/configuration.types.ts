@@ -159,6 +159,25 @@ export interface CallidescopeWorkspaceStructure {
   rootModuleSegment?: string | undefined;
 }
 
+/**
+ * One resolved limit, its value, and where that value was written.
+ *
+ * The provenance is carried rather than dropped once the number is known,
+ * because a run judging every project against a different limit has to be able
+ * to say which file each number came from — and a bare number cannot tell a
+ * limit a project chose apart from one it merely inherited.
+ */
+export interface LimitProvenance {
+  /**
+   * `declared` when the project's own configuration set this limit,
+   * `inherited` when it took the workspace's.
+   */
+  origin: "declared" | "inherited";
+  /** The file the value was read from, absent when no file was found. */
+  path: string | undefined;
+  value: number;
+}
+
 /** Arguments accepted by the configuration loader. */
 export interface LoadConfigurationArguments {
   configurationPath?: string | undefined;
@@ -241,6 +260,32 @@ export interface MarkdownAnchorHelpers {
   }) => boolean;
   /** The content wrapped in the configured markers, ready to place anywhere. */
   wrapInAnchors: (content?: string) => string;
+}
+
+/**
+ * The two limits one project is gated by, each with the file it came from.
+ *
+ * Only depth and breadth: every other limit shapes how the call graph itself is
+ * built, which has to stay one answer for the whole workspace.
+ */
+export interface ProjectLimits {
+  /** Absent when neither the project nor the workspace declared one. */
+  maximumBreadth: LimitProvenance | undefined;
+  maximumDepth: LimitProvenance;
+}
+
+/**
+ * The limits every traced project is judged against.
+ *
+ * `byProject` holds an entry for every project a run reached, whether or not it
+ * declared anything, so a caller listing the workspace's limits reads this and
+ * nothing else. `workspace` is what an unlisted project falls back to, which is
+ * also the object a project inheriting both limits is given.
+ */
+export interface ProjectLimitsLookup {
+  /** Keyed by workspace-relative project root. */
+  byProject: ReadonlyMap<string, ProjectLimits>;
+  workspace: ProjectLimits;
 }
 
 /** What a `render` function is handed. */
@@ -353,6 +398,18 @@ export interface ResolvedCallidescopeProjectReadmeConfiguration {
 export interface ResolvedCallidescopeWorkspaceStructure {
   modulesDirectory: string;
   rootModuleSegment: string;
+}
+
+/** Arguments accepted by the per-project limit resolver. */
+export interface ResolveProjectLimitsArguments {
+  /** The configuration files projects declared for themselves. */
+  projectConfigurations: readonly LoadedProjectConfiguration[];
+  /** Workspace-relative root of every project the run reached. */
+  projects: readonly string[];
+  /** The run's own configuration, which a project inherits both limits from. */
+  workspaceConfiguration: ResolvedCallidescopeConfiguration;
+  /** The file that configuration was read from, when one was found. */
+  workspaceConfigurationPath: string | undefined;
 }
 
 /** What a `write` function is handed. */
