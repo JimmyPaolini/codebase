@@ -42,6 +42,11 @@ export class AddressLookupService {
    * invalid address, an address matching nothing, and an address matching
    * several declarations are each fixed a different way, and only the message
    * for the one that actually happened tells the caller which.
+   *
+   * The candidates of an ambiguous address are rendered by `AddressService`,
+   * the same renderer the workspace run's own refusal prints, so one concept
+   * reaches a reader one way — as an address they can paste back, rather than
+   * a file location they cannot.
    */
   public describeProblem(args: {
     address: string;
@@ -61,14 +66,9 @@ export class AddressLookupService {
       return `No callable matches "${args.address}". Check the file path and the qualified name callidescope prints for it in a stack.`;
     }
 
-    const candidates = resolution.candidates
-      .map(
-        (candidate) =>
-          `${candidate.location.filePath}:${String(candidate.location.line)}`,
-      )
-      .join(", ");
-
-    return `"${args.address}" matches more than one declaration: ${candidates}. Add ":<line>" to the address to pick one.`;
+    return `"${args.address}" matches more than one declaration. ${this.addressService.describeCandidates(
+      { address: args.address, candidates: resolution.candidates },
+    )}`;
   }
 
   /**

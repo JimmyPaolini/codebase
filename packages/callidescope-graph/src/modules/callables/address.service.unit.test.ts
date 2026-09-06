@@ -241,4 +241,94 @@ describe(AddressService, () => {
       kind: "resolved",
     });
   });
+
+  // 🗣️ Describing what an ambiguous address could have meant
+
+  it("writes each candidate as the address that would have picked it", () => {
+    expect(
+      service.describeCandidates({
+        address: "packages/example/src/foo.service.ts#FooService.bar",
+        candidates: [
+          {
+            id: "packages/example/src/foo.service.ts#0",
+            location: {
+              column: 3,
+              filePath: "packages/example/src/foo.service.ts",
+              line: 3,
+            },
+          },
+          {
+            id: "packages/example/src/foo.service.ts#1",
+            location: {
+              column: 3,
+              filePath: "packages/example/src/foo.service.ts",
+              line: 8,
+            },
+          },
+        ],
+      }),
+    ).toBe(
+      'Candidates: packages/example/src/foo.service.ts#FooService.bar:3, packages/example/src/foo.service.ts#FooService.bar:8. Add ":<line>" to the address to pick one.',
+    );
+  });
+
+  // A declared address may already carry a disambiguator that did not narrow
+  // far enough, and doubling it up would print an address nothing resolves.
+  it("replaces a ':<line>' already on the declared address", () => {
+    expect(
+      service.describeCandidates({
+        address: "packages/example/src/foo.service.ts#FooService.bar:3",
+        candidates: [
+          {
+            id: "packages/example/src/foo.service.ts#0",
+            location: {
+              column: 3,
+              filePath: "packages/example/src/foo.service.ts",
+              line: 3,
+            },
+          },
+          {
+            id: "packages/example/src/foo.service.ts#1",
+            location: {
+              column: 3,
+              filePath: "packages/example/src/foo.service.ts",
+              line: 8,
+            },
+          },
+        ],
+      }),
+    ).toContain(
+      "packages/example/src/foo.service.ts#FooService.bar:3, packages/example/src/foo.service.ts#FooService.bar:8.",
+    );
+  });
+
+  // Two declarations on one line is the case no address can separate: the
+  // matcher filters on the line, so both candidates carry the same one.
+  it("names the column, and says no line can separate them, when candidates share a line", () => {
+    expect(
+      service.describeCandidates({
+        address: "packages/example/src/foo.service.ts#FooService.bar:3",
+        candidates: [
+          {
+            id: "packages/example/src/foo.service.ts#0",
+            location: {
+              column: 3,
+              filePath: "packages/example/src/foo.service.ts",
+              line: 3,
+            },
+          },
+          {
+            id: "packages/example/src/foo.service.ts#1",
+            location: {
+              column: 41,
+              filePath: "packages/example/src/foo.service.ts",
+              line: 3,
+            },
+          },
+        ],
+      }),
+    ).toBe(
+      'Candidates: packages/example/src/foo.service.ts#FooService.bar:3 (column 3), packages/example/src/foo.service.ts#FooService.bar:3 (column 41). Two declarations on one line cannot be told apart by ":<line>" — rename one, or name a different callable.',
+    );
+  });
 });
