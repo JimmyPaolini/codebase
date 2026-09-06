@@ -1,6 +1,6 @@
 ---
 name: callidescope-configure
-description: Tell callidescope what to do — the command-line flags (--check, --write, --addresses, --directories, --format, --config, --json, --markdown) and the callidescope.config.ts they read alongside, covering depth, breadth, and spread limits, call-stack entry points, exclusions and ignored callees, the workspace's module layout, and where a run writes its JSON, markdown, mermaid, and per-project reports. Use when wiring a depth gate into CI or a commit hook, when a whole-workspace run is too slow, when choosing between --check and --write, when a repository has no callidescope configuration yet, when a trace judges code it should not be judging, when everything is reported as an orphan root, or when deciding where a committed report should live.
+description: Tell callidescope what to do — the command-line flags (--check, --write, --addresses, --directories, --format, --config, --json, --markdown) and the callidescope.config.ts they read alongside, covering depth, breadth, and spread limits, declared and rule-based call-stack entry points, exclusions and ignored callees, the workspace's module layout, where a run writes its JSON, markdown, mermaid, and per-project reports, and the much smaller surface a project's own configuration file may set. Use when wiring a depth gate into CI or a commit hook, when a whole-workspace run is too slow, when choosing between --check and --write, when a repository has no callidescope configuration yet, when a project needs its own depth or breadth limit, when a package low in the graph measures nothing, when a trace judges code it should not be judging, when everything is reported as an orphan root, when reading callidescope limits, or when deciding where a committed report should live.
 license: MIT
 ---
 
@@ -60,10 +60,12 @@ Three refusals to expect, all deliberate:
   variable unset would then pass forever over a stack twice as deep as anything
   allowed — worse than no gate, because it looks like protection.
 - **An unrecognized value is refused**, and the message lists what is accepted.
-- **`--check breadth` with no `limits.maximumBreadth` configured is refused.**
-  Breadth is the one limit with no default: until a repository picks a number,
+- **`--check breadth` with no project in scope declaring `limits.maximumBreadth`
+  is refused.** Breadth is the one limit with no default, and the one limit a
+  workspace cannot usefully pick alone: until a **project** picks a number,
   nothing can exceed it, and falling back to an unbounded limit would look
-  exactly like passing.
+  exactly like passing. This one is checked after the trace rather than before
+  it, because which projects were in scope is something only the trace knows.
 
 ### Why `depth` and `reports` belong on opposite sides of a pull request
 
@@ -198,10 +200,15 @@ and `workspaceStructure`.
 
 Four are worth understanding rather than copying:
 
-- **`maximumBreadth` has no default, on purpose.** Until a repository picks a
+- **`maximumBreadth` has no default, on purpose.** Until something picks a
   number, nothing exceeds it and breadth is reported without being gated.
-  `--check breadth` with none set is refused rather than falling back to an
-  unbounded limit, because an unbounded limit looks exactly like passing.
+  `--check breadth` is refused rather than falling back to an unbounded limit,
+  because an unbounded limit looks exactly like passing — and it takes a
+  **project's own** number: a `maximumBreadth` in the workspace file is
+  inherited by every project rather than declared by one, so it produces breadth
+  findings without satisfying the gate. A single breadth number was never
+  something anybody could pick for a whole workspace, which is why breadth has
+  no gate at all until some project picks its own.
 - **`directSpreadThreshold` is what makes module spread mean anything.**
   Transitive reach alone flags every entry point, since an entry point
   legitimately reaches the whole program. Requiring direct breadth as well is
@@ -223,10 +230,34 @@ currently is. A limit set to today's worst number gates nothing.
 
 | Option | Default | Meaning |
 | ------ | ------- | ------- |
+| `addresses` | none | Callables named outright as roots, each `<file>#<qualified-name>` |
 | `decorators` | 13 framework decorators | Decorators whose methods a framework invokes |
 | `includeExportedFunctions` | `true` | Treat every `src/index.ts` export as a root |
 | `includeOrphans` | `true` | Promote callables nothing in the repository calls |
 | `includeTests` | `false` | Trace test files too |
+
+**`addresses` is how a package states the surface it means to be measured on**,
+in the same `<file>#<qualified-name>` form `depth` and `breadth` accept and every
+frame prints — so an address is copied out of a report straight into the
+configuration, with a trailing `:<line>` when one file declares the name twice:
+
+```ts
+entryPoints: {
+  addresses: ["packages/foo/src/modules/read/read.service.ts#ReadService.read"],
+},
+```
+
+Declared addresses **add** roots and take none away: the rules below still run
+first and keep the kind saying _why_ something calls a callable, orphan
+promotion still catches whatever nobody named, and an address landing on a
+callable a rule already rooted is one root rather than two.
+
+Reach for it when a package sits low in the graph. A stack is filed under the
+project owning its **root**, and most of what such a package publishes is called
+from above — so it roots nothing, measures zero however deep its code runs, and
+any limit on it gates nothing. **An address that resolves to nothing, to more
+than one declaration, or to nothing parseable fails the whole run**; the
+`callidescope-triage` skill carries each message and its fix.
 
 `decorators` **replaces** the built-in list rather than adding to it, so a
 configuration naming its own framework's decorator should restate the ones it
@@ -320,6 +351,125 @@ tables, or `write`, to place the block itself. A `write` function is handed
 `syncAnchoredBlock` and `wrapInAnchors`, so a custom writer reuses the same
 splice rather than reimplementing it. **Returning `false` reports the
 destination as stale**; anything else, `undefined` included, counts as current.
+
+## A project's own configuration file
+
+Everything above describes the file a run is pointed at — the **workspace**
+configuration. A second `callidescope.config.ts` may also sit at any traced
+project's own root, the directory holding the `tsconfig.json` that makes it a
+project. It is looked for by name in that directory alone, with no upward walk,
+and may use any of the same eight extensions.
+
+A project with no file of its own is configured entirely by the run, which is
+what most projects should keep doing. Add one when a project needs a limit or a
+root the run cannot pick for it, not as a matter of course.
+
+The file a run was pointed at is never also read as a project's — one file, one
+role per run. A package whose task names its own configuration and then traces
+itself would otherwise have that file refused for the workspace-only fields it
+legitimately sets, so a package needing both keeps two files under two names.
+
+### What a project may set, and nothing else
+
+| Field | What it does |
+| ----- | ------------ |
+| `entryPoints` | Which of that project's callables root a stack, `addresses` included |
+| `limits.maximumDepth` | The depth every stack rooted in that project is judged against |
+| `limits.maximumBreadth` | The breadth every callable that project declares is judged against |
+| `exclude` | Accepted, and read by nothing today |
+
+`exclude` is permitted rather than refused, but no run consults it: which files
+are traced is settled from the workspace configuration during discovery, and
+project configurations are loaded only afterwards, from the projects discovery
+turned out to reach. Keep a project's noise in the workspace file.
+
+Every other field is refused **by name, before anything is traced**, and the
+message names the four above so it is actionable without opening this skill.
+
+### Write the override, never a spread
+
+```ts
+import { type CallidescopeConfiguration } from "@callidescope/configuration";
+
+const projectConfiguration: CallidescopeConfiguration = {
+  limits: { maximumDepth: 10 },
+};
+
+export default projectConfiguration;
+```
+
+**Never spread a workspace limits object into a project's `limits`.** Such an
+object carries `spreadThreshold` and the rest of the graph-shaping limits, every
+one of which only a workspace may set, so a project file holding one is rejected
+before anything is traced. If a repository's own documentation tells you to
+spread, it is out of date — the tool refuses it.
+
+Nothing is lost by writing the override alone, because **a project inherits per
+limit rather than per object**. Each limit falls back to the workspace's number
+on its own, so a project naming `maximumDepth` still inherits `maximumBreadth`,
+and a project naming neither is handed the workspace's object itself. A spread
+has nothing left to contribute either: depth and breadth are the only two limits
+a project may set, so it would supply exactly the field being overridden plus
+the one that gets the file rejected.
+
+A "spread or you will clobber the rest" rule elsewhere in a repository is worth
+checking rather than copying. It is the right rule for a configuration object
+that is one element of a list and deliberately incomplete, with no per-field
+fallback behind it — codometer's measured targets are that shape. A limit is
+neither, and does have that fallback.
+
+The workspace number is a **default rather than a ceiling**. A project declaring
+a higher limit than the workspace keeps its own, because a workspace number
+pinned by the single worst stack anywhere in it gates nothing for the projects
+nowhere near it.
+
+`entryPoints` does not inherit that way. A project declaring any entry-point
+rule replaces the rule set for its own callables outright, and the fields it
+leaves out fall back to the tool's defaults rather than to the workspace file's
+— so a project that declares `addresses` and wants a decorator list the
+workspace customized has to restate that list too.
+
+### Why the other limits cannot vary per project
+
+Not an oversight, and not a rule to argue with:
+
+- `maximumDepth` and `maximumBreadth` **judge** a call graph. The graph is built
+  once and each project asks a different question of the same edges, which is
+  two opinions about one artifact — coherent.
+- Every other limit **shapes what the graph is**. `spreadThreshold` and
+  `directSpreadThreshold` decide which callables become findings,
+  `maximumImplementationCandidates` decides which structural matches become
+  edges at all, and `minimumCallers` with `callerMajorityRatio` decides what
+  counts as a misplacement. Two projects disagreeing about any of them would
+  each be describing a **different graph over the same shared code**, and a run
+  measures one graph — so there is one set of those.
+
+The same reasoning keeps `ignoreCallees`, `allowSpreadFor`, `directories`,
+`excludeFrom`, `output`, and `workspaceStructure` in the workspace file: they
+name what a run reads, what it writes, or how it partitions the workspace, and a
+project cannot answer those differently from the run tracing it.
+
+### Reading the whole set back
+
+A ratchet written one file per project is no longer reviewable in the single
+file it used to live in. The `limits` command is where it is reviewable as a set
+instead:
+
+```bash
+npx callidescope limits
+```
+
+A markdown table, one row per project per limit, with an `Origin` column saying
+`declared` for a project's own number and `inherited` for the workspace default
+it fell back to, and a `Declared in` column naming the file. `none` in the value
+column means nothing anywhere declares that limit — the usual case for breadth.
+The workspace's own row comes first and is the only one that may carry no origin
+at all: a limit that file never wrote is still what everything is judged
+against.
+
+It resolves configuration and measures nothing, so it costs milliseconds rather
+than a trace, takes `--config` and nothing else, and can fail on nothing but a
+configuration it cannot read.
 
 ## After changing any of this
 
