@@ -114,6 +114,16 @@ export class CallidescopeService {
         projects,
       }),
       includeTests: args.configuration.entryPoints.includeTests,
+      // The fifth `entryPoints` field, read here rather than beside the other
+      // four: the rest decide which of the collected callables root a stack,
+      // and this one decides whether a file is collected at all — so it is
+      // spent at collection, the same layer a project's `exclude` is.
+      includeTestsByProject: new Map(
+        [...declarations.entryPointsByProject].map(([project, entryPoints]) => [
+          project,
+          entryPoints.includeTests,
+        ]),
+      ),
       ownerByFilePath: programSet.ownerByFilePath,
       workspaceRoot: args.workspaceRoot,
     });

@@ -78,6 +78,12 @@ export class CallablesService {
     args: CollectCallablesArguments & { projectProgram: ProjectProgram },
   ): { callables: DiscoveredCallable[] }[] {
     const walked: { callables: DiscoveredCallable[] }[] = [];
+    // The owning project's answer, not the run's: this walk only ever reaches
+    // files this program owns, so the project asked is the project the file
+    // belongs to.
+    const includeTests =
+      args.includeTestsByProject.get(args.projectProgram.project.name) ??
+      args.includeTests;
 
     for (const sourceFile of args.projectProgram.program.getSourceFiles()) {
       if (sourceFile.isDeclarationFile) {
@@ -94,7 +100,7 @@ export class CallablesService {
       if (
         workspaceRelativePath === undefined ||
         args.fileFilter.isExcluded(workspaceRelativePath) ||
-        (!args.includeTests &&
+        (!includeTests &&
           this.workspaceService.isTestFile(workspaceRelativePath))
       ) {
         continue;

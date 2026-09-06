@@ -346,6 +346,23 @@ async function writeProject(args: {
   }
 }
 
+/** Adds one test file to the traced workspace, inside the project's own tree. */
+async function writeTestFile(workspaceRoot: string): Promise<void> {
+  await writeFile(
+    path.join(
+      workspaceRoot,
+      "packages",
+      "example",
+      "src",
+      "modules",
+      "example",
+      "example.service.unit.test.ts",
+    ),
+    "export function assertLoads(): void { assertLoads(); }\n",
+    "utf8",
+  );
+}
+
 describe(`${CallidescopeService.name} (integration)`, () => {
   let result: CallGraphResult;
   let frames: string[];
@@ -499,6 +516,46 @@ describe(`${CallidescopeService.name} (integration)`, () => {
       }),
       "utf8",
     );
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(outcome.result.summary.fileCount).toBe(2);
+  });
+
+  // 🧪 A project's own test files
+
+  it("walks a project's test files when that project asked for them", async () => {
+    // The fifth `entryPoints` field, and the one that is spent at collection
+    // rather than when roots are chosen: a project that asks for its tests
+    // gets them walked even though the run said no.
+    const workspaceRoot = await realpath(await buildWorkspace());
+
+    await writeTestFile(workspaceRoot);
+    await writeFile(
+      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
+      JSON.stringify({ entryPoints: { includeTests: true } }),
+      "utf8",
+    );
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(outcome.result.summary.fileCount).toBe(3);
+  });
+
+  it("leaves a project's test files out when the run said so", async () => {
+    // The same workspace with nothing declared, which is what makes the
+    // count above the project's own answer rather than the run's.
+    const workspaceRoot = await realpath(await buildWorkspace());
+
+    await writeTestFile(workspaceRoot);
 
     const outcome = await service.trace({
       configuration: buildConfiguration(),

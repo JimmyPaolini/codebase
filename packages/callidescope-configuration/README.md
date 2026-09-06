@@ -235,6 +235,12 @@ out fall back to this package's defaults rather than to the workspace file's.
 A project that declares `addresses` and wants a decorator list the workspace
 customized has to restate that list too.
 
+`includeTests` is the one field in that set that decides which of a project's
+files are **collected** rather than which of its callables root a stack, so it
+takes effect at the same layer `exclude` does: a project that asks for its test
+files gets them walked in a run that left every other project's out, and a
+project that refuses them keeps them out of a run that asked for everyone's.
+
 ### Why the other limits cannot vary per project
 
 `maximumDepth` and `maximumBreadth` **judge** a call graph: the graph is built
