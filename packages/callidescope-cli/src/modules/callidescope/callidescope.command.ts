@@ -3,12 +3,9 @@ import path from "node:path";
 import {
   DEFAULT_JSON_INDENTATION,
   DEFAULT_PREVIEW_COUNT,
-  InputError,
   InputService,
-  ProjectConfigurationError,
-  ProjectConfigurationFieldNotPermittedError,
 } from "@callidescope/configuration";
-import { AddressService, ProgramConfigurationError } from "@callidescope/graph";
+import { AddressService } from "@callidescope/graph";
 import {
   MarkdownReportService,
   OutputJsonService,
@@ -26,6 +23,9 @@ import { RunPlanService } from "../run-plan/run-plan.service";
 import {
   buildUnknownCommandMessage,
   PROJECT_README_NAME,
+  readRefusalHeadline,
+  REJECTED_COMMAND_LINE,
+  REJECTED_CONFIGURATION,
   UnresolvedEntryPointAddressError,
 } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
@@ -42,6 +42,7 @@ import type {
 } from "@callidescope/configuration";
 import type { UnresolvedEntryPointAddress } from "@callidescope/graph";
 import type { ProjectSection } from "@callidescope/output";
+import type { LogData } from "@codebase/logger";
 
 /**
  * CLI entry point for the call-stack tracing workflow.
@@ -158,56 +159,17 @@ export class CallidescopeCommand extends CommandRunner {
     );
   }
 
-  /** Logs a command line the input service refused, and fails the run. */
-  private rejectCommandLine(error: InputError): void {
-    this.logger.error("🔭 Rejected the command line", undefined, {
-      reason: error.message,
-    });
-    process.exitCode = 1;
-  }
-
   /**
-   * Logs a project whose configuration could not be read, and fails the run.
+   * Logs one refusal under its own headline, and fails the run.
    *
-   * Reached only by an exception, because that failure ends the trace where it
-   * happens — which is the point of it. Nothing has been printed and no
-   * destination has been touched by the time this runs, so the checkout is
-   * left exactly as the run found it.
+   * One method for four refusal channels, because they are one act: a message
+   * rather than a stack trace, because every one of them is about a file
+   * somebody wrote or a command line somebody typed. Each is reached before
+   * anything has been printed and before any destination has been touched, so
+   * a refused run leaves the checkout exactly as it found it.
    */
-  private rejectProject(error: ProgramConfigurationError): void {
-    this.logger.error("🔭 Rejected a project it could not read", undefined, {
-      reason: error.message,
-    });
-    process.exitCode = 1;
-  }
-
-  /**
-   * Logs a project whose own configuration was refused, and fails the run.
-   *
-   * A message rather than a stack trace: the file is one a person wrote, and
-   * every refusal it can earn already names the project and the field. The
-   * trace ends where it happens, so no destination has been touched.
-   */
-  private rejectProjectConfiguration(error: Error): void {
-    this.logger.error("🔭 Rejected a project configuration", undefined, {
-      reason: error.message,
-    });
-    process.exitCode = 1;
-  }
-
-  /**
-   * Logs what every project in scope failed to declare between them, and
-   * fails the run.
-   *
-   * Reached only once a trace has resolved which projects were even in
-   * scope: whether any of them declared `limits.maximumBreadth` cannot be
-   * answered any earlier than that, unlike a command-line mistake.
-   */
-  private rejectProjectLimits(errors: string[], workspaceRoot: string): void {
-    this.logger.error(`🔭 Rejected the configuration`, undefined, {
-      reasons: errors,
-      workspaceRoot,
-    });
+  private reject(headline: string, data: LogData): void {
+    this.logger.error(headline, undefined, data);
     process.exitCode = 1;
   }
 
@@ -338,7 +300,10 @@ export class CallidescopeCommand extends CommandRunner {
     });
 
     if (projectLimitErrors.length > 0) {
-      this.rejectProjectLimits(projectLimitErrors, workspaceRoot);
+      this.reject(REJECTED_CONFIGURATION, {
+        reasons: projectLimitErrors,
+        workspaceRoot,
+      });
       return;
     }
 
@@ -477,34 +442,22 @@ export class CallidescopeCommand extends CommandRunner {
     const [unexpected] = passedParameters;
 
     if (unexpected !== undefined) {
-      this.rejectCommandLine(
-        new InputError(buildUnknownCommandMessage(unexpected)),
-      );
+      this.reject(REJECTED_COMMAND_LINE, {
+        reason: buildUnknownCommandMessage(unexpected),
+      });
       return;
     }
 
     try {
       await this.traceWorkspace(options);
     } catch (error) {
-      if (error instanceof ProgramConfigurationError) {
-        this.rejectProject(error);
-        return;
-      }
+      const headline = readRefusalHeadline(error);
 
-      if (
-        error instanceof ProjectConfigurationError ||
-        error instanceof ProjectConfigurationFieldNotPermittedError ||
-        error instanceof UnresolvedEntryPointAddressError
-      ) {
-        this.rejectProjectConfiguration(error);
-        return;
-      }
-
-      if (!(error instanceof InputError)) {
+      if (headline === undefined || !(error instanceof Error)) {
         throw error;
       }
 
-      this.rejectCommandLine(error);
+      this.reject(headline, { reason: error.message });
     }
   }
 }

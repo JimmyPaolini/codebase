@@ -1,4 +1,5 @@
 import {
+  InputError,
   InputService,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
@@ -131,6 +132,9 @@ describe(LimitsCommand, () => {
     expect(command.parseConfig(undefined)).toBeUndefined();
   });
 
+  // The headline is per refusal class rather than one word for all three, so a
+  // listing says which kind of file it could not read — the same headlines a
+  // trace, a depth, and a breadth print, because all four read one classifier.
   it.each([
     [
       "a project configuration that could not be read",
@@ -139,6 +143,7 @@ describe(LimitsCommand, () => {
         configurationPath: "packages/alpha/callidescope.config.ts",
         project: "packages/alpha",
       }),
+      "🔭 Rejected a project configuration",
     ],
     [
       "a project configuration setting a workspace-only field",
@@ -146,6 +151,7 @@ describe(LimitsCommand, () => {
         field: "output",
         project: "packages/alpha",
       }),
+      "🔭 Rejected a project configuration",
     ],
     [
       "a project directory holding no tsconfig",
@@ -153,20 +159,27 @@ describe(LimitsCommand, () => {
         configurationPath: "packages/alpha/tsconfig.json",
         messages: ["missing"],
       }),
+      "🔭 Rejected a project it could not read",
     ],
-  ])("fails the run and prints nothing for %s", async (_name, error) => {
-    vi.mocked(limitsService.list).mockRejectedValue(error);
+    [
+      "a command line the input service refused",
+      new InputError("not a format"),
+      "🔭 Rejected the command line",
+    ],
+  ])(
+    "fails the run and prints nothing for %s",
+    async (_name, error, headline) => {
+      vi.mocked(limitsService.list).mockRejectedValue(error);
 
-    await command.run([], {});
+      await command.run([], {});
 
-    expect(write).not.toHaveBeenCalled();
-    expect(process.exitCode).toBe(1);
-    expect(logger.error).toHaveBeenCalledWith(
-      "🔭 Rejected a configuration",
-      undefined,
-      { reason: error.message },
-    );
-  });
+      expect(write).not.toHaveBeenCalled();
+      expect(process.exitCode).toBe(1);
+      expect(logger.error).toHaveBeenCalledWith(headline, undefined, {
+        reason: error.message,
+      });
+    },
+  );
 
   it("lets an unexpected failure through rather than reporting it as a refusal", async () => {
     vi.mocked(limitsService.list).mockRejectedValue(new Error("boom"));

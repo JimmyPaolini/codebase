@@ -19,6 +19,9 @@ import {
  * Deliberately narrow. Anything else is callidescope's own fault and must keep
  * its stack rather than be reported as a file somebody wrote.
  */
+/** Headline an address a lookup could not act on is reported under. */
+export const REJECTED_ADDRESS = "🔭 Rejected a callable address";
+
 export const isRefusedProjectConfiguration = (
   error: unknown,
 ): error is

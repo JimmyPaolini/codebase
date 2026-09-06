@@ -1,5 +1,10 @@
 // ♟️ Constants
 
+import { InputError } from "@callidescope/configuration";
+import { ProgramConfigurationError } from "@callidescope/graph";
+
+import { isRefusedProjectConfiguration } from "../address-lookup/address-lookup.constants";
+
 /**
  * Whether a `new` expression pushes a frame.
  *
@@ -11,6 +16,28 @@ export const INCLUDE_CONSTRUCTOR_EDGES = true;
 
 /** File a project's embedded section is spliced into. */
 export const PROJECT_README_NAME = "README.md";
+
+// 🚫 Refusals
+
+/** Headline a command line the input service refused is reported under. */
+export const REJECTED_COMMAND_LINE = "🔭 Rejected the command line";
+
+/**
+ * Headline a resolved configuration a run cannot proceed under is reported
+ * under.
+ *
+ * The one refusal here that is not an exception: whether any project in scope
+ * declared `limits.maximumBreadth` is answered by a trace rather than thrown
+ * out of one, so it names no single file and carries a list of reasons.
+ */
+export const REJECTED_CONFIGURATION = "🔭 Rejected the configuration";
+
+/** Headline a project whose `tsconfig.json` could not be read is reported under. */
+export const REJECTED_PROJECT = "🔭 Rejected a project it could not read";
+
+/** Headline a project's own refused configuration file is reported under. */
+export const REJECTED_PROJECT_CONFIGURATION =
+  "🔭 Rejected a project configuration";
 
 /**
  * Says a bare argument named no command, and lists the ones that exist.
@@ -24,6 +51,37 @@ export const PROJECT_README_NAME = "README.md";
  */
 export const buildUnknownCommandMessage = (name: string): string =>
   `${name} is not a callidescope command, and the trace takes no positional arguments. Run one of depth, breadth, or limits, or drop the argument to trace the workspace.`;
+
+/**
+ * The headline an error a command may refuse is reported under, or nothing
+ * when it is not one of them.
+ *
+ * Every command asks this one question, so a fourth refusal class is
+ * remembered once rather than in each command's `catch`. Two of them forgot
+ * the third and crashed with a raw stack instead of naming a file somebody
+ * wrote, which is the failure this exists to make unrepeatable.
+ *
+ * Deliberately narrow, the same way `isRefusedProjectConfiguration` is:
+ * anything absent here is callidescope's own fault and keeps its stack.
+ *
+ * A free function rather than a service method, for the reason the predicate
+ * it calls gives — the commands mock their services, and a classification
+ * reached through a mock decides nothing.
+ */
+export const readRefusalHeadline = (error: unknown): string | undefined => {
+  if (error instanceof ProgramConfigurationError) {
+    return REJECTED_PROJECT;
+  }
+
+  if (
+    isRefusedProjectConfiguration(error) ||
+    error instanceof UnresolvedEntryPointAddressError
+  ) {
+    return REJECTED_PROJECT_CONFIGURATION;
+  }
+
+  return error instanceof InputError ? REJECTED_COMMAND_LINE : undefined;
+};
 
 // 🚨 Errors
 

@@ -1,18 +1,16 @@
-import {
-  InputService,
-  ProjectConfigurationError,
-  ProjectConfigurationFieldNotPermittedError,
-} from "@callidescope/configuration";
-import { ProgramConfigurationError } from "@callidescope/graph";
+import { InputService } from "@callidescope/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { readRefusalHeadline } from "../callidescope/callidescope.constants";
+
 import { LimitsService } from "./limits.service";
 import { RenderLimitsService } from "./render-limits.service";
 
 import type { LimitsCommandOptions } from "./limits.types";
+import type { LogData } from "@codebase/logger";
 
 /**
  * CLI entry point that lists what every project in scope is gated by.
@@ -54,17 +52,15 @@ export class LimitsCommand extends CommandRunner {
   // 🔏 Private Methods
 
   /**
-   * Logs a configuration the listing could not read, and fails the run.
+   * Logs one refusal under its own headline, and fails the run.
    *
    * A message rather than a stack trace: every refusal here names the project
    * and the field, and each is about a file a person wrote. Nothing has been
    * printed by the time this runs, so a refused listing prints a reason and
    * nothing that looks like an answer.
    */
-  private rejectConfiguration(error: Error): void {
-    this.logger.error("🔭 Rejected a configuration", undefined, {
-      reason: error.message,
-    });
+  private reject(headline: string, data: LogData): void {
+    this.logger.error(headline, undefined, data);
     process.exitCode = 1;
   }
 
@@ -95,16 +91,13 @@ export class LimitsCommand extends CommandRunner {
 
       process.stdout.write(`${this.renderLimitsService.render(rows)}\n`);
     } catch (error) {
-      if (
-        error instanceof ProgramConfigurationError ||
-        error instanceof ProjectConfigurationError ||
-        error instanceof ProjectConfigurationFieldNotPermittedError
-      ) {
-        this.rejectConfiguration(error);
-        return;
+      const headline = readRefusalHeadline(error);
+
+      if (headline === undefined || !(error instanceof Error)) {
+        throw error;
       }
 
-      throw error;
+      this.reject(headline, { reason: error.message });
     }
   }
 }

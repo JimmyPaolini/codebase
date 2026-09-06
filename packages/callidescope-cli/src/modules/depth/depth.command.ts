@@ -1,16 +1,14 @@
-import { InputError, InputService } from "@callidescope/configuration";
-import {
-  AddressDepthService,
-  ProgramConfigurationError,
-} from "@callidescope/graph";
+import { InputService } from "@callidescope/configuration";
+import { AddressDepthService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { isRefusedProjectConfiguration } from "../address-lookup/address-lookup.constants";
+import { REJECTED_ADDRESS } from "../address-lookup/address-lookup.constants";
 import { AddressLookupService } from "../address-lookup/address-lookup.service";
 import { AddressReportService } from "../address-report/address-report.service";
+import { readRefusalHeadline } from "../callidescope/callidescope.constants";
 
 import type {
   AddressCommandOptions,
@@ -20,6 +18,7 @@ import type {
   CallableId,
   CallidescopeOutputFormat,
 } from "@callidescope/configuration";
+import type { LogData } from "@codebase/logger";
 
 /**
  * CLI entry point that prints the call stacks above and below one callable.
@@ -84,7 +83,7 @@ export class DepthCommand extends CommandRunner {
     }
 
     if (problems.length > 0) {
-      this.rejectAddresses(problems);
+      this.reject(REJECTED_ADDRESS, { problems });
       return undefined;
     }
 
@@ -129,50 +128,16 @@ export class DepthCommand extends CommandRunner {
     );
   }
 
-  /** Logs why one or more addresses could not be acted on, and fails the run. */
-  private rejectAddresses(problems: readonly string[]): void {
-    this.logger.error("🔭 Rejected a callable address", undefined, {
-      problems,
-    });
-    process.exitCode = 1;
-  }
-
-  /** Logs a command line the input service refused, and fails the run. */
-  private rejectCommandLine(error: InputError): void {
-    this.logger.error("🔭 Rejected the command line", undefined, {
-      reason: error.message,
-    });
-    process.exitCode = 1;
-  }
-
   /**
-   * Logs a project whose configuration could not be read, and fails the run.
+   * Logs one refusal under its own headline, and fails the run.
    *
-   * A message rather than a stack trace, and the same headline a full trace
-   * prints: a lookup traces before it matches, so it can reach a project
-   * whose `tsconfig.json` is missing or will not parse exactly the way a
-   * whole-workspace trace already can. Nothing has been printed and no
-   * destination has been touched by the time this runs.
+   * One method for every refusal channel, because they are one act: a message
+   * rather than a stack trace, because each is about a file somebody wrote or
+   * a command line somebody typed. Nothing has been printed and no destination
+   * has been touched by the time any of them runs.
    */
-  private rejectProject(error: ProgramConfigurationError): void {
-    this.logger.error("🔭 Rejected a project it could not read", undefined, {
-      reason: error.message,
-    });
-    process.exitCode = 1;
-  }
-
-  /**
-   * Logs a project whose own configuration was refused, and fails the run.
-   *
-   * A message rather than a stack trace, and the same headline a full trace
-   * prints: a lookup traces before it matches, so it reaches the same project
-   * files and can earn the same two refusals. Nothing has been printed and no
-   * destination has been touched by the time this runs.
-   */
-  private rejectProjectConfiguration(error: Error): void {
-    this.logger.error("🔭 Rejected a project configuration", undefined, {
-      reason: error.message,
-    });
+  private reject(headline: string, data: LogData): void {
+    this.logger.error(headline, undefined, data);
     process.exitCode = 1;
   }
 
@@ -258,21 +223,13 @@ export class DepthCommand extends CommandRunner {
     try {
       await this.printDepth(options);
     } catch (error) {
-      if (error instanceof ProgramConfigurationError) {
-        this.rejectProject(error);
-        return;
-      }
+      const headline = readRefusalHeadline(error);
 
-      if (isRefusedProjectConfiguration(error)) {
-        this.rejectProjectConfiguration(error);
-        return;
-      }
-
-      if (!(error instanceof InputError)) {
+      if (headline === undefined || !(error instanceof Error)) {
         throw error;
       }
 
-      this.rejectCommandLine(error);
+      this.reject(headline, { reason: error.message });
     }
   }
 }
