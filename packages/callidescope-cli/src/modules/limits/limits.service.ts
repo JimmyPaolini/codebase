@@ -16,6 +16,7 @@ import type {
   ProjectLimitRow,
 } from "./limits.types";
 import type {
+  CallidescopeConfiguration,
   LimitProvenance,
   ProjectLimits,
   ResolvedCallidescopeConfiguration,
@@ -132,45 +133,69 @@ export class LimitsService {
   }
 
   /**
-   * Whether the workspace file really declared a limit, or merely defaulted it.
+   * Builds the one row for a limit the workspace file is the source of.
    *
-   * A workspace with no configuration file anywhere is running on the tool's
-   * own defaults, which nothing wrote down and no row should claim a file for.
+   * Neither field `resolveLimits` reports is enough on its own here.
+   * `buildWorkspaceLimits` stamps every workspace limit `inherited`, which is
+   * right for what that object is for — what a project that declared nothing is
+   * handed — and wrong on this row, which is the file's own: rendering that
+   * origin would say the workspace inherited its own default, from itself. And
+   * its `path` is stamped unconditionally while `maximumDepth` is defaulted
+   * during resolution, so a path alone would name a file for a number that file
+   * never wrote — the same lie in the other direction, on the one row every
+   * other row inherits from.
+   *
+   * So presence is asked of `authored`, the file exactly as written, and the
+   * value still comes from the resolved configuration. That is the split
+   * `ProjectConfigurationService.declareLimit` already makes for a project; the
+   * workspace's own row is the case it does not cover, because `ProjectLimits`
+   * has no third origin to say "defaulted" with. An un-authored limit therefore
+   * renders exactly like a workspace with no configuration file at all: no
+   * origin, no file, and the effective number kept, because that number really
+   * is what everything is judged against.
    */
-  private toWorkspaceOrigin(
-    provenance: LimitProvenance | undefined,
-  ): LimitOrigin | undefined {
-    return provenance?.path === undefined ? undefined : "declared";
+  private toWorkspaceRow(args: {
+    authored: CallidescopeConfiguration;
+    limit: LimitName;
+    provenance: LimitProvenance | undefined;
+    workspaceRoot: string;
+  }): ProjectLimitRow {
+    const { provenance } = args;
+    const declaredPath =
+      args.authored.limits?.[args.limit] === undefined
+        ? undefined
+        : provenance?.path;
+
+    return {
+      limit: args.limit,
+      origin: declaredPath === undefined ? undefined : "declared",
+      path:
+        declaredPath === undefined
+          ? undefined
+          : path.relative(args.workspaceRoot, declaredPath),
+      project: undefined,
+      value: provenance?.value,
+    };
   }
 
-  /**
-   * Builds the two rows for the default every project falls back to.
-   *
-   * Read from the path rather than from the origin. `resolveLimits` stamps the
-   * workspace object `inherited`, which is right for what that object is for —
-   * what a project that declared nothing is handed — and wrong here: the
-   * workspace declared this number, in the file this row names. A row rendered
-   * straight from that origin would say the workspace inherited its own
-   * default, from itself.
-   */
+  /** Builds the two rows for the default every project falls back to. */
   private toWorkspaceRows(args: {
+    authored: CallidescopeConfiguration;
     limits: ProjectLimits;
     workspaceRoot: string;
   }): ProjectLimitRow[] {
     const { maximumBreadth, maximumDepth } = args.limits;
 
     return [
-      this.toRow({
+      this.toWorkspaceRow({
+        authored: args.authored,
         limit: "maximumDepth",
-        origin: this.toWorkspaceOrigin(maximumDepth),
-        project: undefined,
         provenance: maximumDepth,
         workspaceRoot: args.workspaceRoot,
       }),
-      this.toRow({
+      this.toWorkspaceRow({
+        authored: args.authored,
         limit: "maximumBreadth",
-        origin: this.toWorkspaceOrigin(maximumBreadth),
-        project: undefined,
         provenance: maximumBreadth,
         workspaceRoot: args.workspaceRoot,
       }),
@@ -191,14 +216,19 @@ export class LimitsService {
    */
   public async list(options: LimitsCommandOptions): Promise<ProjectLimitRow[]> {
     const workspaceRoot = process.cwd();
-    // The file-aware load rather than the plain one: the listing names the file
-    // each number was written in, and has to know which file it already read as
-    // the workspace's own so that file is never also read as a project's.
-    const { configuration, path: configurationPath } =
-      await this.configurationService.loadConfigurationFile({
-        configurationPath: options.config,
-        searchDirectory: workspaceRoot,
-      });
+    // The file-aware load rather than the plain one, and `authored` alongside
+    // the resolved object: the listing names the file each number was written
+    // in, so it has to know which file it already read as the workspace's own —
+    // so that file is never also read as a project's — and which numbers that
+    // file actually wrote, which only the authored object can still say.
+    const {
+      authored,
+      configuration,
+      path: configurationPath,
+    } = await this.configurationService.loadConfigurationFile({
+      configurationPath: options.config,
+      searchDirectory: workspaceRoot,
+    });
     const projects = this.discoverProjects({ configuration, workspaceRoot });
     const projectConfigurations =
       await this.projectConfigurationService.loadProjectConfigurations({
@@ -219,7 +249,11 @@ export class LimitsService {
     });
 
     return [
-      ...this.toWorkspaceRows({ limits: limits.workspace, workspaceRoot }),
+      ...this.toWorkspaceRows({
+        authored,
+        limits: limits.workspace,
+        workspaceRoot,
+      }),
       ...[...limits.byProject].flatMap(([project, projectLimits]) =>
         this.toProjectRows({ limits: projectLimits, project, workspaceRoot }),
       ),

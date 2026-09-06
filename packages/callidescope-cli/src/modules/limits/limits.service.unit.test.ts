@@ -4,6 +4,7 @@ import {
   type CallidescopeConfiguration,
   type CallidescopeLimits,
   ConfigurationService,
+  DEFAULT_MAXIMUM_DEPTH,
   ProjectConfigurationService,
   type ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
@@ -55,7 +56,7 @@ function buildConfiguration(
     limits: {
       callerMajorityRatio: 0.8,
       directSpreadThreshold: 3,
-      maximumDepth: 17,
+      maximumDepth: DEFAULT_MAXIMUM_DEPTH,
       maximumImplementationCandidates: 8,
       minimumCallers: 2,
       spreadThreshold: 4,
@@ -75,25 +76,32 @@ function buildConfiguration(
   };
 }
 
-/** One loaded configuration file, as the loader answers with it. */
+/**
+ * One loaded configuration file, as the loader answers with it.
+ *
+ * The resolved limits are derived from the authored ones rather than supplied
+ * beside them, so a fixture cannot pair a number a file wrote with a different
+ * number resolution reports — which is the very disagreement the workspace row
+ * is built to survive. `maximumDepth` is defaulted exactly as resolution
+ * defaults it; `maximumBreadth` has no default and stays absent.
+ */
 function buildLoadedFile(args: {
   authored: CallidescopeConfiguration;
-  limits: CallidescopeLimits;
   path: string | undefined;
 }): {
   authored: CallidescopeConfiguration;
   configuration: ResolvedCallidescopeConfiguration;
   path: string | undefined;
 } {
-  const resolved = buildConfiguration().limits;
+  const authoredLimits: CallidescopeLimits = args.authored.limits ?? {};
 
   return {
     authored: args.authored,
     configuration: buildConfiguration({
       limits: {
-        ...resolved,
-        maximumBreadth: args.limits.maximumBreadth,
-        maximumDepth: args.limits.maximumDepth ?? resolved.maximumDepth,
+        ...buildConfiguration().limits,
+        maximumBreadth: authoredLimits.maximumBreadth,
+        maximumDepth: authoredLimits.maximumDepth ?? DEFAULT_MAXIMUM_DEPTH,
       },
     }),
     path: args.path,
@@ -156,7 +164,6 @@ describe(LimitsService, () => {
     configurationService.loadConfigurationFile.mockResolvedValue(
       buildLoadedFile({
         authored: { limits: { maximumDepth: 17 } },
-        limits: {},
         path: WORKSPACE_CONFIGURATION_PATH,
       }),
     );
@@ -174,14 +181,12 @@ describe(LimitsService, () => {
       .mockResolvedValueOnce(
         buildLoadedFile({
           authored: { limits: { maximumDepth: 17 } },
-          limits: {},
           path: WORKSPACE_CONFIGURATION_PATH,
         }),
       )
       .mockResolvedValueOnce(
         buildLoadedFile({
           authored: { limits },
-          limits,
           path: DECLARING_PROJECT_CONFIGURATION_PATH,
         }),
       );
@@ -217,7 +222,7 @@ describe(LimitsService, () => {
   it("claims no file for a workspace that has no configuration at all", async () => {
     discover([]);
     configurationService.loadConfigurationFile.mockResolvedValue(
-      buildLoadedFile({ authored: {}, limits: {}, path: undefined }),
+      buildLoadedFile({ authored: {}, path: undefined }),
     );
 
     const rows = await service.list({});
@@ -228,13 +233,75 @@ describe(LimitsService, () => {
         origin: undefined,
         path: undefined,
         project: undefined,
-        value: 17,
+        value: DEFAULT_MAXIMUM_DEPTH,
       },
       {
         limit: "maximumBreadth",
         origin: undefined,
         path: undefined,
         project: undefined,
+        value: undefined,
+      },
+    ]);
+  });
+
+  // The row every other row inherits from, and the one case where a path alone
+  // would lie: `resolveLimits` stamps the workspace file's path on a depth that
+  // file never wrote, because resolution defaults it for everyone.
+  it("claims no file for a limit the workspace file never wrote itself", async () => {
+    discover([]);
+    configurationService.loadConfigurationFile.mockResolvedValue(
+      buildLoadedFile({
+        authored: { excludeFrom: ["configuration/.callidescopeignore"] },
+        path: WORKSPACE_CONFIGURATION_PATH,
+      }),
+    );
+
+    const rows = await service.list({});
+
+    expect(rows).toStrictEqual([
+      {
+        limit: "maximumDepth",
+        origin: undefined,
+        path: undefined,
+        project: undefined,
+        value: DEFAULT_MAXIMUM_DEPTH,
+      },
+      {
+        limit: "maximumBreadth",
+        origin: undefined,
+        path: undefined,
+        project: undefined,
+        value: undefined,
+      },
+    ]);
+  });
+
+  // A workspace that omits a depth still hands every project one, and that row
+  // is `inherited` from the file — the number is real, only its authorship is
+  // not. Nothing above may quietly turn a project's row blank too.
+  it("still names the workspace file on a project inheriting an un-authored limit", async () => {
+    configurationService.loadConfigurationFile.mockResolvedValue(
+      buildLoadedFile({ authored: {}, path: WORKSPACE_CONFIGURATION_PATH }),
+    );
+
+    const rows = await service.list({});
+
+    expect(
+      rows.filter((row) => row.project === INHERITING_PROJECT),
+    ).toStrictEqual([
+      {
+        limit: "maximumDepth",
+        origin: "inherited",
+        path: "configuration/callidescope.config.ts",
+        project: INHERITING_PROJECT,
+        value: DEFAULT_MAXIMUM_DEPTH,
+      },
+      {
+        limit: "maximumBreadth",
+        origin: undefined,
+        path: undefined,
+        project: INHERITING_PROJECT,
         value: undefined,
       },
     ]);
