@@ -42,7 +42,7 @@ const TILE_COUNTS: readonly number[] = [8, 18, 40, 93];
 const NAMED_COUNTS: readonly number[] = [7, 6, 7, 6];
 
 /** The label a permutation filename carries after its source's identifier, where it carries one. */
-const SOURCE_LABEL = /^[a-z]+-([a-z-]+)\.svg$/u;
+const SOURCE_LABEL = /^[0-9a-f]+-([a-z-]+)\.svg$/u;
 
 // 🧪 Tests
 

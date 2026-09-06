@@ -1,6 +1,3 @@
-// cspell:ignore dldldl ddddd — mosaic tile identifiers, one letter per cell
-// of the tile, from MOSAIC_MARK_LETTERS in
-// src/modules/mosaic-motif/mosaic-motif.constants.ts.
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -10,12 +7,13 @@ import { LoggerService } from "@codebase/logger";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
+import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
 import { NegativeTileGenerationService } from "../negative-motif/negative-tile-generation.service";
@@ -29,6 +27,7 @@ import { DrawNegativePermutationsService } from "./draw-negative-permutations.se
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
 import { DrawCommand } from "./draw.command";
+import { COLUMN_SPAN_PATTERN } from "./draw.constants";
 
 const { mockMkdir, mockWriteFile } = vi.hoisted(() => ({
   mockMkdir: vi
@@ -64,7 +63,7 @@ describe(DrawCommand, () => {
         },
         OutputPathService,
         GridGeometryService,
-        MosaicSubFamilyService,
+        MosaicNamingService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
         MosaicTileService,
@@ -113,7 +112,7 @@ describe(DrawCommand, () => {
         },
         OutputPathService,
         GridGeometryService,
-        MosaicSubFamilyService,
+        MosaicNamingService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
         MosaicTileService,
@@ -200,7 +199,7 @@ describe(DrawCommand, () => {
         .mock.calls.map(([filePath]) => filePath);
       const namedTypeFiles = writtenFileNames.filter(
         (filePath) =>
-          filePath.endsWith(".svg") && !filePath.includes("permutations"),
+          filePath.endsWith(".svg") && !COLUMN_SPAN_PATTERN.test(filePath),
       );
 
       expect(namedTypeFiles).toHaveLength(expectedNamedTypeCount);
@@ -213,14 +212,18 @@ describe(DrawCommand, () => {
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
+      // 🎯 An enumerated tile is one filed under a column span, whichever
+      // family wrote it. Only `negative` still nests its enumerated half
+      // under a `permutations/` level; `mosaic` files its directly beside
+      // the named drawings, since every tile it draws is a member of one
+      // space.
       const permutations = writtenFileNames.filter((filePath) =>
-        filePath.includes("permutations"),
+        COLUMN_SPAN_PATTERN.test(filePath),
       );
 
-      expect(mockMkdir).toHaveBeenCalledWith(
-        "output/mosaic/4-rows/permutations/1-columns",
-        { recursive: true },
-      );
+      expect(mockMkdir).toHaveBeenCalledWith("output/mosaic/4-rows/1-columns", {
+        recursive: true,
+      });
       expect(mockMkdir).toHaveBeenCalledWith(
         "output/negative/3-rows/permutations/1-columns",
         { recursive: true },
@@ -233,10 +236,10 @@ describe(DrawCommand, () => {
       // rather than sampling it.
       expect(permutations).toHaveLength(290 + 159);
       expect(permutations).toContain(
-        "output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg",
+        "output/mosaic/6-rows/1-columns/00000-dots.svg",
       );
       expect(permutations).toContain(
-        "output/negative/6-rows/permutations/1-columns/dldldl-ruled.svg",
+        "output/negative/6-rows/permutations/1-columns/030303-ruled.svg",
       );
     });
 
@@ -251,7 +254,7 @@ describe(DrawCommand, () => {
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
       expect(index?.[1]).toContain("1632 drawings");
       expect(index?.[1]).toContain(
-        'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
+        'src="mosaic/6-rows/1-columns/00000-dots.svg"',
       );
       expect(index?.[1]).toContain('src="boxes/3-rows/spin-8-repeats.svg"');
     });
@@ -624,7 +627,7 @@ describe(DrawCommand, () => {
   describe("real generation integration", () => {
     it("generates every enumerated combination through the real generation service without throwing", async () => {
       const module = await Test.createTestingModule({
-        imports: [MeanderGenerationModule],
+        imports: [MeanderGenerationModule, MosaicNamingModule],
         providers: [
           DrawCombinationsService,
           GridGeometryService,

@@ -102,13 +102,30 @@ export const INDEX_FILE_NAME = "index.html";
 export const NEGATIVE_PERMUTATION_COLUMNS = 1;
 
 /**
- * Subdirectory of a row count's own directory that the mosaic permutations
- * are written under, one column-span directory deep. They are nested rather
- * than left beside the named-type sweep because the enumeration runs to
- * thousands of files — the named-type sweep beside them is a reviewable
- * hundred.
+ * Subdirectory of a row count's own directory that the `negative`
+ * permutations are written under, one column-span directory deep. They are
+ * nested rather than left beside that family's named sweep because the two
+ * halves are different things: the named half draws ten sources built by
+ * rule, and this half inverts every `mosaic` tile it can.
+ *
+ * `mosaic` used to nest its own enumerated half here too and no longer does.
+ * The level separated an enumerated half from a named one, and for that
+ * family the separation stopped meaning anything: its named drawings are
+ * tiles as well, at column spans the edge budget refuses rather than at some
+ * other kind of thing.
  */
 export const PERMUTATIONS_SUBDIRECTORY = "permutations";
+
+/**
+ * Matches the directory segment an enumerated tile is filed under, which is
+ * the column span of its shape.
+ *
+ * It is how a committed document is told to be an enumerated one rather than
+ * a named one, now that only `negative` puts its enumerated half under a
+ * `permutations/` level. Every enumerated document of either family is
+ * filed under a column span, and no named one is.
+ */
+export const COLUMN_SPAN_PATTERN = /\/\d+-columns\//u;
 
 /** `repeatCount` every swept mosaic is drawn at, wide enough to read the tile's rhythm without dominating the index page. */
 export const PERMUTATION_REPEAT_COUNT = 6;

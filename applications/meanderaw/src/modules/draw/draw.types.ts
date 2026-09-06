@@ -6,7 +6,7 @@ import type {
   Modifier,
   SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
-import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
 
 /**
  * Parsed `draw` options, in the shape nest-commander leaves them.
@@ -42,7 +42,7 @@ export interface DrawCommandOptions {
   rows?: number;
   shape?: DotShape;
   strands?: number;
-  subFamily?: MosaicSubFamily;
+  subFamily?: MosaicBuildableSubFamily;
   type?: MeanderType;
   upward?: boolean;
 }

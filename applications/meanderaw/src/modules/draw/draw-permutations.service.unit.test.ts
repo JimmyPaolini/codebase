@@ -2,12 +2,12 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
@@ -28,7 +28,7 @@ describe(DrawPermutationsService, () => {
       providers: [
         DrawPermutationsService,
         GridGeometryService,
-        MosaicSubFamilyService,
+        MosaicNamingService,
         MosaicSymmetryService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
@@ -59,8 +59,8 @@ describe(DrawPermutationsService, () => {
       );
 
       expect([...directories]).toStrictEqual([
-        "mosaic/4-rows/permutations/1-columns",
-        "mosaic/4-rows/permutations/2-columns",
+        "mosaic/4-rows/1-columns",
+        "mosaic/4-rows/2-columns",
       ]);
     });
 
@@ -72,20 +72,18 @@ describe(DrawPermutationsService, () => {
       const paths = sweepPaths();
 
       expect(new Set(paths).size).toBe(paths.length);
-      expect(paths).toContain(
-        "mosaic/6-rows/permutations/1-columns/ddddd-dots.svg",
-      );
+      expect(paths).toContain("mosaic/6-rows/1-columns/00000-dots.svg");
     });
 
     it("carries the sub-family in the filename where a tile has one, and only the identifier where it has none", () => {
       const paths = sweepPaths();
       const named = paths.filter((filePath) =>
-        /-(?:dashes|diamond|dots|lines)\.svg$/.test(filePath),
+        /-(?:bars|dashes|diamond|dots|lines|mesh|steps)\.svg$/.test(filePath),
       );
 
-      // The mixed dot-and-vertical-dash tile at the smallest size there is
-      // belongs to no sub-family, so nothing is appended to its identifier.
-      expect(paths).toContain("mosaic/4-rows/permutations/1-columns/dvx.svg");
+      // The tile whose only edge is a southward one over the lower two
+      // levels earns no name, so nothing is appended to its identifier.
+      expect(paths).toContain("mosaic/4-rows/1-columns/048.svg");
       expect(named).toHaveLength(30);
     });
 

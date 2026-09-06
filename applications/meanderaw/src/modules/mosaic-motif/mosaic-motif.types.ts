@@ -1,6 +1,23 @@
 // 🏷️ Types
 
 /**
+ * The sub-families `MosaicSubFamilyService` can build the aligned tile for,
+ * and so the ones `--sub-family` offers.
+ *
+ * Fewer than {@link MosaicSubFamily} names, because a name is a predicate
+ * over the space and only some predicates have an obvious representative to
+ * construct. `mesh` has one tile per shape and could gain a constructor
+ * whenever one is wanted; `steps` has no tile at all at a single column, so
+ * what it would build is a question rather than a formality.
+ */
+export type MosaicBuildableSubFamily =
+  | "bars"
+  | "dashes"
+  | "diamond"
+  | "dots"
+  | "lines";
+
+/**
  * The four bits one point of a {@link MosaicTile} carries: whether ink
  * leaves it north, south, east, or west. `0000` is a dot, `1100` a corner,
  * `1110` a T-junction, `1111` a crossing.
@@ -78,9 +95,6 @@ export interface MosaicLatticePoint {
   readonly y: number;
 }
 
-/** The letter `MosaicSymmetryService.identify` writes for each {@link MosaicPointRank}, in rank order. */
-export type MosaicPointLetters = readonly [string, string, string, string];
-
 /**
  * How a point is reached, ranked in the order the family's original
  * exact-cover search discovered covers in: `0` a bare point, `1` one
@@ -97,20 +111,36 @@ export type MosaicPointRank = 0 | 1 | 2 | 3;
  * A named, recognizable region of the `mosaic` family's unit space — a
  * **sub-family** in the repository glossary's sense, arrived at by
  * recognizing a structural property of a tile rather than by applying a
- * modifier. Each one is the set of tiles whose every point is reached the
- * same way: `dots` where no point carries ink at all, `lines` where a
- * single column's points all carry the wrapped east–west rule, `dashes`
- * where every point anchors or receives an eastward step, and `diamond`
- * where every point anchors or receives a southward one. A tile mixing them
- * belongs to no sub-family and is left unnamed rather than forced into the
- * nearest one.
+ * modifier.
  *
- * `diamond` names the same shape the `split` **modifier** constructs, and
- * both names survive because they play different roles: `split` is a
- * constructor into the unit space, `diamond` a predicate over it. Nothing
- * about the `split` modifier or its reference asset changes.
+ * Seven of them, and six come in pairs. Ink running **across** the band is
+ * either unbroken at every level (`lines`) or broken somewhere (`dashes`);
+ * ink running **down** it is either unbroken in every column (`bars`) or
+ * broken somewhere (`diamond`) — a `diamond` being a *dashed* bar, which is
+ * the distinction that makes those two different names rather than one.
+ * `dots` and `mesh` are the two ends of the space, the tile with no edge and
+ * the tile with every edge. `steps` is the odd one: every point turning a
+ * corner, which is a staircase and the closest thing here to the fret the
+ * project is named after.
+ *
+ * A tile matching none of them is left unnamed rather than forced into the
+ * nearest, which is nearly all of them.
+ *
+ * Four have a constructor as well as a predicate — see
+ * {@link MosaicBuildableSubFamily}. `diamond` names the same shape the
+ * `split` **modifier** constructs, and both names survive because they play
+ * different roles: `split` is a constructor into the unit space, `diamond` a
+ * predicate over it. Nothing about the `split` modifier or its reference
+ * asset changes.
  */
-export type MosaicSubFamily = "dashes" | "diamond" | "dots" | "lines";
+export type MosaicSubFamily =
+  | "bars"
+  | "dashes"
+  | "diamond"
+  | "dots"
+  | "lines"
+  | "mesh"
+  | "steps";
 
 /**
  * How to build the tile a {@link MosaicSubFamily} is named for: the column

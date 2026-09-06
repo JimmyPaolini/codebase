@@ -49,14 +49,23 @@ output/
   <family>/
     <rows>-rows/
       <variant>-<repeatCount>-repeats.svg           `plain` where there is no modifier
-      permutations/                                 `mosaic` and `negative` only
+      <columns>-columns/                            `mosaic`'s enumerated tiles
+        <identifier>[-<name>].svg
+      permutations/                                 `negative` only
         <columns>-columns/
           <identifier>[-<name>].svg
 ```
 
 So `output/chain/7-rows/edge-flip-6-repeats.svg`,
-`output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg`, and
-`output/negative/6-rows/permutations/1-columns/dldldl-ruled.svg`. A modifier carrying a
+`output/mosaic/6-rows/1-columns/00000-dots.svg`, and
+`output/negative/6-rows/permutations/1-columns/030303-ruled.svg`.
+
+`mosaic` has no `permutations/` level. That level separated an enumerated half from a
+named one, and for this family the separation stopped meaning anything: the named
+drawings beside those directories are tiles too — at column spans the edge budget refuses
+rather than at some other kind of thing. `negative` keeps its own, because there the two
+halves really are different: its named half draws ten sources built by rule, and its
+enumerated half inverts `mosaic` tiles. A modifier carrying a
 parameter puts it in the variant too, or two of its own drawings would collide on one
 path: `output/branch/7-rows/stagger-branches-4-6-repeats.svg` and
 `output/branch/7-rows/comb-upward-6-repeats.svg`. A directory listing is
@@ -232,26 +241,50 @@ change and is not worth making for a vocabulary correction.
 
 ## 🔤 Naming a Mosaic Sub-family
 
-<!-- cspell:ignore ddd lll hxhxhx vxvx ddddd — mosaic tile identifiers, one
-letter per cell of the tile, from MOSAIC_MARK_LETTERS in
-src/modules/mosaic-motif/mosaic-motif.constants.ts. -->
-
 `mosaic`'s unit space is materialized, so a region of it can be **recognized** rather
-than listed. Four regions have names, and all four are the same predicate over a tile's
-own pieces: every mark in the tile is the same kind.
+than listed. Seven regions have names, and six of them come in pairs.
 
-| Sub-family | Every mark is | Smallest tile | Reads as |
+| Sub-family | Every point | Smallest tile | Reads as |
 | --- | --- | --- | --- |
-| `dots` | a dot | `ddd` | a field of square marks |
-| `lines` | the single-column continuous rule | `lll` | unbroken horizontal rules |
-| `dashes` | a horizontal dash | `hxhxhx` | broken horizontal rules |
-| `diamond` | a vertical dash | `vxvx` | a dashed vertical bar |
+| `dots` | is on no edge at all | `00` | a field of square marks |
+| `mesh` | is on every edge there is | `7b` | the full lattice |
+| `lines` | is on a run across the band, unbroken | `33` | unbroken horizontal rules |
+| `dashes` | is on a run across the band, broken somewhere | `2121` | broken horizontal rules |
+| `bars` | is on a run down the band, unbroken | `4c8` | unbroken vertical rules |
+| `diamond` | is on a run down the band, broken somewhere | `4848` | a dashed vertical bar |
+| `steps` | turns a corner | `56a9` | a staircase |
 
-Recognition lives in `MosaicSubFamilyService.classify`, which reads `MosaicTile.pieces`
-and never the canonical identifier. That is deliberate: the names keep working at row
-and column counts nobody has enumerated, and survive any change to the enumeration's
-bounds. A tile that mixes mark kinds — which is nearly all of them — belongs to no
-sub-family and is left **unnamed** rather than pushed into the nearest one.
+**Unbroken or broken is the question**, and it is asked of the edges rather than of the
+points. A point in the middle of a rule and a point at the end of a dash both carry ink
+running across the band; only the edge that would join it to its neighbor says which it
+is. Asking only "is every point reached the same way" cannot tell them apart, which is
+how a solid bar came to be called a `diamond` — a `diamond` being a _dashed_ bar — and a
+two-column tile of unbroken rules came to be called `dashes`.
+
+`dots` and `mesh` are the two ends of the space rather than a pair: the tile with no edge
+and the tile with every edge, one of each per shape. `steps` is the only rule about a
+point's own shape rather than about which directions a tile uses, and it is empty at a
+single column, where a point's eastward edge wraps onto itself and gives it two
+horizontal bits rather than one.
+
+A tile is identified by its **hexadecimal string**: one character per point in reading
+order, worth `8` for `north`, `4` for `south`, `2` for `east` and `1` for `west`. So `0`
+is a dot, `3` a point on a horizontal run, `c` one on a vertical run, `6` a corner
+turning south and east, `e` a T-junction, and `f` a crossing — and a filename can be
+decoded point by point without a table.
+
+It names a tile completely, because the points determine every edge: each one owns its
+`east` and its `south`. It is deliberately redundant, writing every edge twice — once at
+each end — which is the same redundancy `MosaicTileService.assertWellFormed` checks, and
+paying it buys a filename whose characters are the tile's own points rather than a packed
+edge list nobody can read. The directory a drawing is filed under carries the shape, so
+two tiles of different shapes may share a string.
+
+Recognition lives in `MosaicNamingService.name`, which reads those bits and never the
+identifier. That is deliberate: the names keep working at row and column counts nobody
+has enumerated, and survive any change to the enumeration's bounds. A tile mixing them —
+which is nearly all of them — belongs to no sub-family and is left **unnamed** rather
+than pushed into the nearest one.
 
 Across the 3,179 tiles the enumeration admits at 4–8 rows and 1–2 columns — the range
 this table was measured over, and two rows deeper than the 290 the sweep commits today:
@@ -280,7 +313,7 @@ nx run meanderaw:start --args="--type mosaic --sub-family dots --rows 6"
 
 The name lands in the output path — `output/mosaic/6-rows/dots-6-repeats.svg` — and in
 the sweep's own, where a tile with a name carries it after its identifier
-(`output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg`) and a tile without one
+(`output/mosaic/6-rows/1-columns/00000-dots.svg`) and a tile without one
 carries the identifier alone.
 
 ### `diamond` and `split` are one shape under two names
@@ -309,8 +342,6 @@ One name worth reading twice: the **`dot` modifier** (singular, carrying a `boun
 `up` shape) and the **`dots` sub-family** (plural) are different things one letter apart.
 
 ## 🕳️ Negative Space Survey
-
-<!-- The tile identifiers below are canonical MosaicSymmetryService output (one letter per cell, see mosaic-symmetry.service.ts), not words. cspell:ignore dvvxxd dvvxxvvxxvvxxd dvvxxvdx dvvxxvvxxd dvvxxvvxxvdx hxxhhx hxxhhxxhhxxhhx hxxhhxxh hxxhhxxhhx hxxhhxxhhxxh dldldld dldl dldld dldldl -->
 
 [#340](https://github.com/JimmyPaolini/codebase/issues/340) found genuine four-way
 crossings in the negative space of `mosaic split` and `mosaic alternated period-3`, and
@@ -413,23 +444,23 @@ above, not asserted separately — so drawing them relaxes invariant 3 and nothi
 exactly what issues #415 and #416 need. A fourth candidate was cut after review found it
 crosses; see below.
 
-1. **`dvvxxd` → `dvvxxvvxxvvxxd`** (`mosaic`, columns 2, rows 4–8: `dvvxxd`, `dvvxxvdx`,
-   `dvvxxvvxxd`, `dvvxxvvxxvdx`, `dvvxxvvxxvvxxd`). Negative T-junctions
+1. **The stair** (`mosaic`, columns 2, rows 4–8: `044880`, `04488408`,
+   `0448844880`, `044884488408`, `04488448844880`). Negative T-junctions
    38 / 48 / 58 / 68 / 78 (rows 4–8 respectively), X-junctions 0 / 0 / 0 / 0 / 0. The
    highest-branching non-crossing family found, at every row count.
-2. **`hxxhhx` → `hxxhhxxhhxxhhx`** (`mosaic`, columns 2, rows 4–8: `hxxhhx`, `hxxhhxxh`,
-   `hxxhhxxhhx`, `hxxhhxxhhxxh`, `hxxhhxxhhxxhhx`). T-junctions 30 / 40 / 50 / 60 / 70,
-   X-junctions 0 / 0 / 0 / 0 / 0. Structurally the simplest of the three — built from
-   one mark kind, the horizontal dash, repeated.
-3. **`dld` → `dldldld`** (`mosaic`, columns 1, rows 4–8: `dld`, `dldl`, `dldld`,
-   `dldldl`, `dldldld`). T-junctions 16 / 16 / 24 / 24 / 32, X-junctions
-   0 / 0 / 0 / 0 / 0. One column of alternating dots and lines, and the
+2. **The running bond** (`mosaic`, columns 2, rows 4–8: `211221`, `21122112`,
+   `2112211221`, `211221122112`, `21122112211221`). T-junctions 30 / 40 / 50 / 60 / 70,
+   X-junctions 0 / 0 / 0 / 0 / 0. Structurally the simplest of the three — one
+   eastward edge per level, its column alternating.
+3. **The ruled band** (`mosaic`, columns 1, rows 4–8: `030`, `0303`, `03030`,
+   `030303`, `0303030`). T-junctions 16 / 16 / 24 / 24 / 32,
+   X-junctions 0 / 0 / 0 / 0 / 0. One column alternating bare points with the
+   wrapped rule, and the
    highest-branching candidate at the cheaper-to-verify column 1 width — checked
    against every columns-1 branches-only tile in the corpus, not just this family.
 
-**Cut after review, not shortlisted:** all-dots (`ddd`/`dddd`/`ddddd`/`dddddd`/`ddddddd`
-at columns 1, `dddddd`/`dddddddd`/`dddddddddd`/`dddddddddddd`/`dddddddddddddd` at
-columns 2) was drafted as a fourth, lowest-branching candidate on the mistaken belief
+**Cut after review, not shortlisted:** all-dots — every point bare, so every bit `0` at
+either column width — was drafted as a fourth, lowest-branching candidate on the mistaken belief
 that only its columns-2 form crosses. Re-measured against the same data: it crosses **at
 every row count and both column widths** — X-junctions 6 / 9 / 12 / 15 / 18 at columns 1
 and 18 / 27 / 36 / 45 / 54 at columns 2 (rows 4–8), the columns-2, 8-row tile being the
@@ -805,10 +836,6 @@ document's negative junctions. `negative` puts one lattice point on every cell a
 stroke along every corridor. The shapes were already produced, already orthogonal, and
 already on this grid; what is new is treating white as black.
 
-<!-- The source tile identifiers below are canonical MosaicSymmetryService
-output (one letter per cell, see mosaic-symmetry.service.ts), not words.
-cspell:ignore ldldldl dlldlld lvxlvxl -->
-
 ### The ten it inverts
 
 Ten sources, in three groups. Three come from the shortlist in "Negative Space Survey"
@@ -819,15 +846,15 @@ which the next section is about.
 
 | Mode | Source tile | Reads as | Relaxes |
 | --- | --- | --- | --- |
-| `stair` (no modifier) | `dvvxxd` → `dvvxxvvxxvvxxd` | the shortlist's highest-branching entry: dots capping a staircase of vertical dashes | 3 |
-| `brick-staggered` | `hxxhhx` → `hxxhhxxhhxxhhx` | the shortlist's simplest entry: horizontal dashes in running bond | 3 |
+| `stair` (no modifier) | the shortlist's stair | the shortlist's highest-branching entry: dots capping a staircase of vertical dashes | 3 |
+| `brick-staggered` | the shortlist's running bond | the shortlist's simplest entry: horizontal dashes in running bond | 3 |
 | `brick-straight` | the `dashes` sub-family | the same wall in stack bond, every course anchored in one column | 3, 4 |
 | `brick-upright` | the `diamond` sub-family | that wall turned upright, bricks set on end | 3, 4 |
 | `grid` | the `dots` sub-family | every corridor open at once: the full lattice | 3, 4 |
-| `ruled` | `dld` → `dldldld` | the shortlist's columns-1 entry: dot levels alternating with the continuous rule | 3 |
-| `ruled-raised` | `ldl` → `ldldldl` | the same, with the rule raised one level | 3 |
-| `ruled-spaced` | `dll` → `dlldlld` | openings every third level, over a wider band of rule | 3 |
-| `ruled-tall` | `lvx` → `lvxlvxl` | two-level openings: tall windows between the rules | 3 |
+| `ruled` | the shortlist's ruled band | the shortlist's columns-1 entry: dot levels alternating with the continuous rule | 3 |
+| `ruled-raised` | the same band, rule raised | the same, with the rule raised one level | 3 |
+| `ruled-spaced` | a wider band of rule | openings every third level, over a wider band of rule | 3 |
+| `ruled-tall` | two-level openings | two-level openings: tall windows between the rules | 3 |
 | `ruled-closed` | the `lines` sub-family | no opening at all: the band's own rules and nothing between them | none |
 
 `brick-staggered` was called `brick` until the straight bond joined it, and the rename is
@@ -918,7 +945,7 @@ Three things that table says, none of which the six named modes could have.
   at the directory rather than by reasoning about motifs.
 
 A source the family has a name for carries that name after its identifier, so
-`dldldl-ruled.svg` sits among the anonymous ones — the same courtesy `mosaic` extends to a
+`030303-ruled.svg` sits among the anonymous ones — the same courtesy `mosaic` extends to a
 tile belonging to a sub-family. A name marks a **symmetry class**, and one class carries
 two names: at an even row count `ruled` and `ruled-raised` is the same class re-phased,
 so those drawings are filed under `ruled`. That is the only collision at any swept row

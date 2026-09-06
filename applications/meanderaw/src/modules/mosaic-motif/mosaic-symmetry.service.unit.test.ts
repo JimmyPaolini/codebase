@@ -1,5 +1,3 @@
-// cspell:ignore vxdld hxdd dldvx — mosaic tile identifiers, one letter per
-// point of the tile, from MosaicSymmetryService.identify.
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -29,17 +27,30 @@ describe(MosaicSymmetryService, () => {
   });
 
   describe("identify", () => {
-    it("names every point, writing x where a neighbor's edge is what reaches it", () => {
-      expect(service.identify(singleColumn)).toBe("vxdld");
+    it("writes one hexadecimal character per point, worth 8 north, 4 south, 2 east and 1 west", () => {
+      // A point sending a southward edge, the point below it receiving one,
+      // two bare points, and one carrying the wrapped east-west rule.
+      expect(service.identify(singleColumn)).toBe("48030");
     });
 
     it("reads row-major, so a two-column tile interleaves its columns", () => {
-      expect(service.identify(mosaicTile(["e.", ".."]))).toBe("hxdd");
+      expect(service.identify(mosaicTile(["e.", ".."]))).toBe("2100");
+      expect(service.identify(mosaicTile([".e", ".."]))).toBe("1200");
     });
 
-    it("writes l rather than h where a single column's eastward edge wraps onto its own point", () => {
-      expect(service.identify(mosaicTile(["e"]))).toBe("l");
-      expect(service.identify(mosaicTile(["e."]))).toBe("hx");
+    it("writes a single column's wrapped edge as both east and west, which is what its ink does", () => {
+      expect(service.identify(mosaicTile(["e"]))).toBe("3");
+      expect(service.identify(mosaicTile(["e."]))).toBe("21");
+    });
+
+    it("writes a point owning both its edges as one character, which a per-mark letter had none for", () => {
+      expect(service.identify(mosaicTile(["b.", "..", ".."]))).toBe("618000");
+    });
+
+    it("names a tile completely, so two tiles of one shape share it only when they are the same tile", () => {
+      expect(service.identify(mosaicTile(["e.", "e.", ".."]))).not.toBe(
+        service.identify(mosaicTile(["e.", ".e", ".."])),
+      );
     });
   });
 
@@ -47,7 +58,6 @@ describe(MosaicSymmetryService, () => {
     it("gives a tile and its own top-to-bottom mirror the same name", () => {
       const flipped = mosaicTile([".", "e", ".", "s", "."]);
 
-      expect(service.identify(flipped)).toBe("dldvx");
       expect(service.canonicalIdentifier(flipped)).toBe(
         service.canonicalIdentifier(singleColumn),
       );
@@ -59,19 +69,17 @@ describe(MosaicSymmetryService, () => {
       );
     });
 
-    it("prefers the name that anchors its edges earliest, since x sorts after every other letter", () => {
-      // One interior level, whose single eastward edge reaches the point
-      // beside it.
-      expect(service.canonicalIdentifier(mosaicTile(["e."]))).toBe("hx");
+    it("is the representative's own bit string, so a filename describes the tile that drew it", () => {
+      expect(service.canonicalIdentifier(singleColumn)).toBe(
+        service.identify(service.canonicalTile(singleColumn)),
+      );
+      expect(service.canonicalIdentifier(singleColumn)).toBe("03048");
     });
 
     it("keeps two genuinely different tiles apart", () => {
-      const aligned = mosaicTile(["e.", "e.", ".."]);
-      const offset = mosaicTile(["e.", ".e", ".."]);
-
-      expect(service.canonicalIdentifier(aligned)).not.toBe(
-        service.canonicalIdentifier(offset),
-      );
+      expect(
+        service.canonicalIdentifier(mosaicTile(["e.", "e.", ".."])),
+      ).not.toBe(service.canonicalIdentifier(mosaicTile(["e.", ".e", ".."])));
     });
   });
 
@@ -92,14 +100,33 @@ describe(MosaicSymmetryService, () => {
       );
     });
 
-    it("picks the member that anchors its edges earliest, which is not always the one the name is taken from", () => {
-      // `lvx` names the class, because `l` sorts before `v`; the tile the
-      // corpus draws is the one whose southward edge is anchored first,
-      // which the old exact-cover search reached first for the same reason.
+    it("picks the member that anchors its edges earliest, which is not always the one written down", () => {
+      // A bare point followed by a southward edge is reached earlier than
+      // the wrapped rule, so the mirror of this tile is what the corpus
+      // draws — the same order the old exact-cover search found covers in.
       const tile = mosaicTile(["e", "s", "."]);
 
-      expect(service.canonicalIdentifier(tile)).toBe("lvx");
-      expect(service.identify(service.canonicalTile(tile))).toBe("vxl");
+      expect(service.identify(tile)).toBe("348");
+      expect(service.identify(service.canonicalTile(tile))).toBe("483");
+    });
+  });
+
+  describe("variants", () => {
+    it("holds every distinct tile that draws the same pattern, itself included", () => {
+      const variants = service.variants(singleColumn);
+
+      expect(variants).toContainEqual(singleColumn);
+      expect(new Set(variants.map((tile) => service.identify(tile))).size).toBe(
+        variants.length,
+      );
+    });
+
+    it("is smaller than the group where a tile is symmetric under one of its elements", () => {
+      // Every point bare is fixed by every element of the group.
+      expect(service.variants(mosaicTile([".", ".", "."]))).toHaveLength(1);
+      expect(
+        service.variants(mosaicTile(["e.", ".e", ".."])).length,
+      ).toBeGreaterThan(1);
     });
   });
 });
