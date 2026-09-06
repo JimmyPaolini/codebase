@@ -30,6 +30,18 @@ import type { MosaicSubFamily, MosaicTile } from "./mosaic-motif.types";
  */
 const SWEPT_ROWS: readonly number[] = [4, 5, 6, 7, 8];
 
+/**
+ * How long the assertions that walk the deeper end of the space are given.
+ *
+ * Eight rows at two columns is 2 ** 26 edge assignments to walk before the
+ * matching filter cuts them to 11,275, which is real work rather than a hang
+ * — so it is declared rather than left to the default five seconds, the same
+ * way the charter measurement declares its own. It passes locally in about
+ * five and fails on a slower runner, which is exactly the kind of flake a
+ * declared timeout exists to prevent.
+ */
+const SPACE_WALK_TIMEOUT_MILLISECONDS = 60_000;
+
 /** Every named sub-family, typed rather than widened for the command line. */
 const NAMED_SUB_FAMILIES: readonly MosaicSubFamily[] = [
   "dashes",
@@ -143,73 +155,85 @@ describe(MosaicSubFamilyService, () => {
       expect(service.tile("lines", 6)?.columns).toBe(1);
     });
 
-    it("builds tiles the enumeration itself finds, so a named tile is a real member of the unit space", () => {
-      for (const rows of SWEPT_ROWS) {
-        for (const subFamily of NAMED_SUB_FAMILIES) {
-          const built = service.tile(subFamily, rows);
+    it(
+      "builds tiles the enumeration itself finds, so a named tile is a real member of the unit space",
+      () => {
+        for (const rows of SWEPT_ROWS) {
+          for (const subFamily of NAMED_SUB_FAMILIES) {
+            const built = service.tile(subFamily, rows);
 
-          if (!built) {
-            continue;
-          }
+            if (!built) {
+              continue;
+            }
 
-          const enumerated: string[] = [];
+            const enumerated: string[] = [];
 
-          for (const tile of mosaicTilesService.enumerate(
-            rows,
-            built.columns,
-          )) {
-            enumerated.push(mosaicSymmetryService.canonicalIdentifier(tile));
-          }
+            for (const tile of mosaicTilesService.enumerate(
+              rows,
+              built.columns,
+            )) {
+              enumerated.push(mosaicSymmetryService.canonicalIdentifier(tile));
+            }
 
-          expect(enumerated).toContain(
-            mosaicSymmetryService.canonicalIdentifier(built),
-          );
-        }
-      }
-    });
-  });
-
-  describe("over the enumerated unit space", () => {
-    it("names a tile exactly when every one of its points is reached the same way, and leaves every other tile unnamed", () => {
-      for (const rows of SWEPT_ROWS) {
-        for (
-          let columns = 1;
-          columns <= MOSAIC_TILE_MAXIMUM_COLUMNS;
-          columns += 1
-        ) {
-          for (const tile of mosaicTilesService.enumerate(rows, columns)) {
-            expect(service.classify(tile) === undefined).toBe(
-              reach(tile).size > 1,
+            expect(enumerated).toContain(
+              mosaicSymmetryService.canonicalIdentifier(built),
             );
           }
         }
-      }
-    });
+      },
+      SPACE_WALK_TIMEOUT_MILLISECONDS,
+    );
+  });
 
-    it("counts every named region of the space, leaving the rest unnamed", () => {
-      const counts = new Map<string, number>();
-
-      for (const rows of SWEPT_ROWS) {
-        for (
-          let columns = 1;
-          columns <= MOSAIC_TILE_MAXIMUM_COLUMNS;
-          columns += 1
-        ) {
-          for (const tile of mosaicTilesService.enumerate(rows, columns)) {
-            const name = service.classify(tile) ?? "unnamed";
-
-            counts.set(name, (counts.get(name) ?? 0) + 1);
+  describe("over the enumerated unit space", () => {
+    it(
+      "names a tile exactly when every one of its points is reached the same way, and leaves every other tile unnamed",
+      () => {
+        for (const rows of SWEPT_ROWS) {
+          for (
+            let columns = 1;
+            columns <= MOSAIC_TILE_MAXIMUM_COLUMNS;
+            columns += 1
+          ) {
+            for (const tile of mosaicTilesService.enumerate(rows, columns)) {
+              expect(service.classify(tile) === undefined).toBe(
+                reach(tile).size > 1,
+              );
+            }
           }
         }
-      }
+      },
+      SPACE_WALK_TIMEOUT_MILLISECONDS,
+    );
 
-      expect(Object.fromEntries(counts)).toStrictEqual({
-        dashes: 75,
-        diamond: 4,
-        dots: 10,
-        lines: 5,
-        unnamed: 3085,
-      });
-    });
+    it(
+      "counts every named region of the space, leaving the rest unnamed",
+      () => {
+        const counts = new Map<string, number>();
+
+        for (const rows of SWEPT_ROWS) {
+          for (
+            let columns = 1;
+            columns <= MOSAIC_TILE_MAXIMUM_COLUMNS;
+            columns += 1
+          ) {
+            for (const tile of mosaicTilesService.enumerate(rows, columns)) {
+              const name = service.classify(tile) ?? "unnamed";
+
+              counts.set(name, (counts.get(name) ?? 0) + 1);
+            }
+          }
+        }
+
+        expect(Object.fromEntries(counts)).toStrictEqual({
+          dashes: 75,
+          diamond: 4,
+          dots: 10,
+          lines: 5,
+          unnamed: 3085,
+        });
+      },
+      SPACE_WALK_TIMEOUT_MILLISECONDS,
+    );
   });
 });
