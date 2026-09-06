@@ -1,12 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { MeanderLatticeService } from "./meander-lattice.service";
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 
+import type {
+  LatticeGraph,
+  LatticePoint,
+} from "../meander-lattice/meander-lattice.types";
 import type {
   InkConnectivity,
   JunctionCounts,
-  LatticeGraph,
-  LatticePoint,
   MeanderTopology,
 } from "./meander-topology.types";
 

@@ -13,7 +13,7 @@ import {
   SVG_WIDTH_PATTERN,
   UnmeasurableDocumentError,
   UnsupportedPathCommandError,
-} from "./meander-topology.constants";
+} from "./meander-lattice.constants";
 
 import type {
   LatticeDraft,
@@ -22,7 +22,7 @@ import type {
   LatticeSpan,
   PathCommand,
   PathCommandGroup,
-} from "./meander-topology.types";
+} from "./meander-lattice.types";
 
 /**
  * Reads a rendered meander back onto the grid it was drawn on.
