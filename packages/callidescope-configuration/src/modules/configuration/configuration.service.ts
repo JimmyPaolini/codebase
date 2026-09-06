@@ -212,6 +212,7 @@ export class ConfigurationService {
     const authored = entryPoints ?? {};
 
     return {
+      addresses: authored.addresses ?? [],
       decorators: authored.decorators ?? [...DEFAULT_ENTRY_POINT_DECORATORS],
       includeExportedFunctions: authored.includeExportedFunctions ?? true,
       includeOrphans: authored.includeOrphans ?? true,

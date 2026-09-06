@@ -236,6 +236,7 @@ const limitsSchema = z
 
 const entryPointsSchema = z
   .object({
+    addresses: z.array(z.string()).optional(),
     decorators: z.array(z.string()).optional(),
     includeExportedFunctions: z.boolean().optional(),
     includeOrphans: z.boolean().optional(),

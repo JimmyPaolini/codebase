@@ -6,7 +6,24 @@ import type {
   CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
-import type { CallGraph, DiscoveredCallable } from "@callidescope/graph";
+import type {
+  CallGraph,
+  DiscoveredCallable,
+  UnresolvedEntryPointAddress,
+} from "@callidescope/graph";
+
+/** What analyzing one run's callables produced. */
+export interface AnalyzeOutcome {
+  readonly result: CallGraphResult;
+  /**
+   * Declared entry-point addresses that named no callable, or more than one.
+   *
+   * Held beside the result rather than inside it: the report shape is what
+   * gets written to every destination, and an address that stopped resolving
+   * is a fact about the configuration rather than about the code it traced.
+   */
+  readonly unresolvedAddresses: readonly UnresolvedEntryPointAddress[];
+}
 
 /** Options the CLI accepts. */
 export interface CallidescopeCommandOptions {
@@ -56,10 +73,9 @@ export interface TraceArguments {
 }
 
 /** What one trace produced, alongside the projects it covered. */
-export interface TraceOutcome {
+export interface TraceOutcome extends AnalyzeOutcome {
   /** Every project the run measured, its dependency closure included. */
   readonly projectNames: readonly string[];
-  readonly result: CallGraphResult;
   /**
    * Workspace-relative root of each project the run was scoped to, keyed by
    * name — the starting projects, not the closure they reached.

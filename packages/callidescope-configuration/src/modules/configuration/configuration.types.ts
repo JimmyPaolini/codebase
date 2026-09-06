@@ -37,6 +37,18 @@ export interface CallidescopeConfiguration {
 /** Which callables are treated as the roots of a call stack. */
 export interface CallidescopeEntryPoints {
   /**
+   * Callables this configuration declares as roots, written as
+   * `<file>#<qualified-name>` — the same address the `depth` and `breadth`
+   * commands accept and every stack frame prints, so one can be copied out of
+   * a report straight into here. A trailing `:<line>` disambiguates a file
+   * holding two declarations under one qualified name.
+   *
+   * Declared roots are additive: the rules below keep running, and orphan
+   * promotion still catches whatever nobody named. An address naming a
+   * callable a rule already rooted is one root, not two.
+   */
+  addresses?: string[] | undefined;
+  /**
    * Decorators whose methods a framework invokes.
    *
    * Matched against the decorator's own name, then confirmed against the
@@ -267,6 +279,7 @@ export interface ResolvedCallidescopeConfiguration {
 
 /** Entry-point rules with defaults applied. */
 export interface ResolvedCallidescopeEntryPoints {
+  addresses: string[];
   decorators: string[];
   includeExportedFunctions: boolean;
   includeOrphans: boolean;

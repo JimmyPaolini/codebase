@@ -341,6 +341,14 @@ describe(ProjectConfigurationService, () => {
 
   it.each([
     ["entryPoints", { entryPoints: { includeTests: true } }],
+    [
+      "entryPoints.addresses",
+      {
+        entryPoints: {
+          addresses: ["packages/allowed/src/index.ts#publicApi"],
+        },
+      },
+    ],
     ["limits.maximumDepth", { limits: { maximumDepth: 5 } }],
     ["limits.maximumBreadth", { limits: { maximumBreadth: 10 } }],
     ["exclude", { exclude: ["**/*.spec.ts"] }],
@@ -359,6 +367,25 @@ describe(ProjectConfigurationService, () => {
       expect(loaded).toHaveLength(1);
     },
   );
+
+  it("resolves the addresses a project declared as its own entry points", async () => {
+    const workspaceRoot = await writeWorkspace({
+      "packages/allowed": JSON.stringify({
+        entryPoints: {
+          addresses: ["packages/allowed/src/index.ts#publicApi"],
+        },
+      }),
+    });
+
+    const [loaded] = await service.loadProjectConfigurations({
+      projects: ["packages/allowed"],
+      workspaceRoot,
+    });
+
+    expect(loaded?.configuration.entryPoints.addresses).toStrictEqual([
+      "packages/allowed/src/index.ts#publicApi",
+    ]);
+  });
 
   it("never refuses the run's own workspace configuration for the fields it legitimately sets", async () => {
     const workspaceRoot = await writeWorkspace({

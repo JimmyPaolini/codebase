@@ -64,6 +64,7 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
     allowSpreadFor: [],
     directories: [],
     entryPoints: {
+      addresses: [],
       decorators: ["Command"],
       includeExportedFunctions: true,
       includeOrphans: true,

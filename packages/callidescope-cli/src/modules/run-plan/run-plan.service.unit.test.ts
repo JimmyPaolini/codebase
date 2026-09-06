@@ -23,6 +23,7 @@ function buildConfiguration(
     allowSpreadFor: [],
     directories: [],
     entryPoints: {
+      addresses: [],
       decorators: [],
       includeExportedFunctions: true,
       includeOrphans: true,

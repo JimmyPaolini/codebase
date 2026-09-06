@@ -127,6 +127,7 @@ describe(ConfigurationService, () => {
     const configuration = service.resolveConfiguration({});
 
     expect(configuration.entryPoints).toStrictEqual({
+      addresses: [],
       decorators: [...DEFAULT_ENTRY_POINT_DECORATORS],
       includeExportedFunctions: true,
       includeOrphans: true,
@@ -176,6 +177,7 @@ describe(ConfigurationService, () => {
   it("keeps authored entry-point rules, including disabling them", () => {
     const configuration = service.resolveConfiguration({
       entryPoints: {
+        addresses: ["packages/example/src/index.ts#publicApi"],
         decorators: ["Get"],
         includeExportedFunctions: false,
         includeOrphans: false,
@@ -184,6 +186,7 @@ describe(ConfigurationService, () => {
     });
 
     expect(configuration.entryPoints).toStrictEqual({
+      addresses: ["packages/example/src/index.ts#publicApi"],
       decorators: ["Get"],
       includeExportedFunctions: false,
       includeOrphans: false,

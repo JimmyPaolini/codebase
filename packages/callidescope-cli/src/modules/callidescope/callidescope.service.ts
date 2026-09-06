@@ -13,18 +13,22 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import { INCLUDE_CONSTRUCTOR_EDGES } from "./callidescope.constants";
+import {
+  INCLUDE_CONSTRUCTOR_EDGES,
+  NO_PROJECT_ENTRY_POINTS,
+} from "./callidescope.constants";
 
 import type {
+  AnalyzeOutcome,
   LocateOutcome,
   TraceArguments,
   TraceOutcome,
 } from "./callidescope.types";
 import type {
   CallableId,
-  CallGraphResult,
   CallGraphSummary,
   ResolvedCallidescopeConfiguration,
+  ResolvedCallidescopeEntryPoints,
 } from "@callidescope/configuration";
 import type {
   CallableCollection,
@@ -154,12 +158,14 @@ export class CallidescopeService {
   public analyze(args: {
     callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
     configuration: ResolvedCallidescopeConfiguration;
+    /** Entry-point rules a project declared for itself, keyed by project name. */
+    entryPointsByProject: ReadonlyMap<string, ResolvedCallidescopeEntryPoints>;
     fileCount: number;
     fileCountByProject: ReadonlyMap<string, number>;
     projectCount: number;
     projectNames: readonly string[];
     workspaceRoot: string;
-  }): CallGraphResult {
+  }): AnalyzeOutcome {
     const { breadthMeasurement, condensed, graph, measurement } =
       this.graphAssemblyService.assemble({
         callablesById: args.callablesById,
@@ -169,11 +175,10 @@ export class CallidescopeService {
       });
     const entryPoints = this.entryPointsService.resolve({
       callablesById: args.callablesById,
-      decorators: new Set(args.configuration.entryPoints.decorators),
+      entryPoints: args.configuration.entryPoints,
+      entryPointsByProject: args.entryPointsByProject,
       graph,
-      includeExportedFunctions:
-        args.configuration.entryPoints.includeExportedFunctions,
-      includeOrphans: args.configuration.entryPoints.includeOrphans,
+      workspaceRoot: args.workspaceRoot,
     });
     const cohesionArguments = {
       allowSpreadFor: args.configuration.allowSpreadFor,
@@ -228,22 +233,25 @@ export class CallidescopeService {
     });
 
     return {
-      deepStacks: this.projectReportsService.findDeepStacks({
-        limit: args.configuration.limits.maximumDepth,
-        reports: projects,
-      }),
-      misplacedCallables,
-      moduleSpreads,
-      projects,
-      summary,
-      typeDepths,
-      // No default exists for `maximumBreadth`: until a project configures
-      // one, nothing can exceed it, so an unset limit reports nothing rather
-      // than picking a number nobody chose.
-      wideCallables: this.projectReportsService.findWideCallables({
-        limit: args.configuration.limits.maximumBreadth ?? Infinity,
-        reports: projects,
-      }),
+      result: {
+        deepStacks: this.projectReportsService.findDeepStacks({
+          limit: args.configuration.limits.maximumDepth,
+          reports: projects,
+        }),
+        misplacedCallables,
+        moduleSpreads,
+        projects,
+        summary,
+        typeDepths,
+        // No default exists for `maximumBreadth`: until a project configures
+        // one, nothing can exceed it, so an unset limit reports nothing rather
+        // than picking a number nobody chose.
+        wideCallables: this.projectReportsService.findWideCallables({
+          limit: args.configuration.limits.maximumBreadth ?? Infinity,
+          reports: projects,
+        }),
+      },
+      unresolvedAddresses: entryPoints.unresolvedAddresses,
     };
   }
 
@@ -276,19 +284,17 @@ export class CallidescopeService {
 
     const { collection, projectNames, startingProjectRoots } =
       this.discoverCallables(args);
-
-    return {
+    const analyzed = this.analyze({
+      callablesById: collection.byId,
+      configuration: args.configuration,
+      entryPointsByProject: NO_PROJECT_ENTRY_POINTS,
+      fileCount: collection.fileCount,
+      fileCountByProject: collection.fileCountByProject,
+      projectCount: projectNames.length,
       projectNames,
-      result: this.analyze({
-        callablesById: collection.byId,
-        configuration: args.configuration,
-        fileCount: collection.fileCount,
-        fileCountByProject: collection.fileCountByProject,
-        projectCount: projectNames.length,
-        projectNames,
-        workspaceRoot: args.workspaceRoot,
-      }),
-      startingProjectRoots,
-    };
+      workspaceRoot: args.workspaceRoot,
+    });
+
+    return { ...analyzed, projectNames, startingProjectRoots };
   }
 }

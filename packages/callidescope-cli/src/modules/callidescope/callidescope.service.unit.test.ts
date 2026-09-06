@@ -1,4 +1,5 @@
 import {
+  AddressService,
   BreadthService,
   CohesionService,
   ComponentsService,
@@ -49,12 +50,13 @@ function analyze(args: {
   return buildSubject({ fixture }).analyze({
     callablesById: collection.byId,
     configuration: args.configuration ?? buildConfiguration(),
+    entryPointsByProject: new Map(),
     fileCount: collection.fileCount,
     fileCountByProject: collection.fileCountByProject,
     projectCount: 1,
     projectNames: ["example"],
     workspaceRoot: FIXTURE_ROOT,
-  });
+  }).result;
 }
 
 /** Builds a resolved configuration with the defaults this suite assumes. */
@@ -65,6 +67,7 @@ function buildConfiguration(
     allowSpreadFor: [],
     directories: [],
     entryPoints: {
+      addresses: [],
       decorators: ["Command", "Get"],
       includeExportedFunctions: true,
       includeOrphans: true,
@@ -105,7 +108,7 @@ function buildSubject(args: {
     args.fixture.callables,
     args.fixture.hierarchy,
     new CohesionService(),
-    new EntriesService(createMock<LoggerService>()),
+    new EntriesService(new AddressService(), createMock<LoggerService>()),
     args.fixture.external,
     new GraphAssemblyService(
       new BreadthService(),
@@ -158,6 +161,7 @@ describe(CallidescopeService, () => {
     buildSubject({ fixture, logger }).analyze({
       callablesById: collection.byId,
       configuration: buildConfiguration(),
+      entryPointsByProject: new Map(),
       fileCount: collection.fileCount,
       fileCountByProject: collection.fileCountByProject,
       projectCount: 1,
@@ -314,5 +318,86 @@ describe(CallidescopeService, () => {
       memberCount: 2,
       minimumDepth: 1,
     });
+  });
+  // 📮 Roots a callable the configuration declared by address
+
+  it("roots a callable the configuration declared as an entry point", () => {
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/modules/a/a.service.ts": `
+        export class Service {
+          public read(): void { this.parse(); }
+          private parse(): void {}
+        }
+      `,
+    });
+    const fixture = buildFixtureServices({ projectProgram });
+    const collection = collectFixtureCallables({
+      projectProgram,
+      services: fixture,
+    });
+
+    const { result } = buildSubject({ fixture }).analyze({
+      callablesById: collection.byId,
+      configuration: buildConfiguration({
+        entryPoints: {
+          addresses: [
+            "packages/example/src/modules/a/a.service.ts#Service.read",
+          ],
+          decorators: [],
+          includeExportedFunctions: false,
+          includeOrphans: false,
+          includeTests: true,
+        },
+      }),
+      entryPointsByProject: new Map(),
+      fileCount: collection.fileCount,
+      fileCountByProject: collection.fileCountByProject,
+      projectCount: 1,
+      projectNames: ["example"],
+      workspaceRoot: FIXTURE_ROOT,
+    });
+
+    expect(result.projects[0]?.stacks).toStrictEqual([
+      expect.objectContaining({ entryPointKind: "declared" }),
+    ]);
+  });
+
+  it("reports a declared address that named no callable", () => {
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/modules/a/a.service.ts":
+        "export class Service { public read(): void {} }",
+    });
+    const fixture = buildFixtureServices({ projectProgram });
+    const collection = collectFixtureCallables({
+      projectProgram,
+      services: fixture,
+    });
+
+    const { unresolvedAddresses } = buildSubject({ fixture }).analyze({
+      callablesById: collection.byId,
+      configuration: buildConfiguration({
+        entryPoints: {
+          addresses: ["packages/example/src/modules/a/a.service.ts#Gone.away"],
+          decorators: [],
+          includeExportedFunctions: false,
+          includeOrphans: false,
+          includeTests: true,
+        },
+      }),
+      entryPointsByProject: new Map(),
+      fileCount: collection.fileCount,
+      fileCountByProject: collection.fileCountByProject,
+      projectCount: 1,
+      projectNames: ["example"],
+      workspaceRoot: FIXTURE_ROOT,
+    });
+
+    expect(unresolvedAddresses).toStrictEqual([
+      {
+        address: "packages/example/src/modules/a/a.service.ts#Gone.away",
+        projectName: undefined,
+        resolution: { kind: "not-found" },
+      },
+    ]);
   });
 });

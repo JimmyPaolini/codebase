@@ -1172,35 +1172,35 @@
             },
             {
               "displayName": "ConfigurationService.resolveExclude",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7018"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7061"
             },
             {
               "displayName": "ConfigurationService.resolveLimits",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7631"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7674"
             },
             {
               "displayName": "ConfigurationService.resolveJsonOutput",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7240"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7283"
             },
             {
               "displayName": "ConfigurationService.resolveMarkdownDestination",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#8630"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#8673"
             },
             {
               "displayName": "ConfigurationService.resolveProjectReadmes",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#9421"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#9464"
             },
             {
               "displayName": "ConfigurationService.resolveWorkspaceStructure",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10232"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10275"
             }
           ],
           "displayName": "ConfigurationService.resolveConfiguration",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14030",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14073",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 430
+            "line": 431
           },
           "signature": {
             "parameters": [
@@ -1228,7 +1228,7 @@
             },
             {
               "displayName": "ConfigurationService.resolveConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14030"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14073"
             },
             {
               "displayName": "UnknownConfigurationFileTypeError.constructor",
@@ -1240,11 +1240,11 @@
             }
           ],
           "displayName": "ConfigurationService.loadConfigurationFile",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12770",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12813",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 387
+            "line": 388
           },
           "signature": {
             "parameters": [
@@ -1344,7 +1344,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findConfigurationFileAt",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10912"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10955"
             },
             {
               "displayName": "ProjectConfigurationService.loadProjectConfiguration",
@@ -1384,7 +1384,7 @@
             },
             {
               "displayName": "ConfigurationFileNotFoundError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9517"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9564"
             }
           ],
           "displayName": "ConfigurationService.resolveConfigurationPath",
@@ -1416,7 +1416,7 @@
             },
             {
               "displayName": "ProjectConfigurationFieldNotPermittedError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10800"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10847"
             }
           ],
           "displayName": "ProjectConfigurationService.assertNoForbiddenFields",
@@ -1444,11 +1444,11 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12770"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12813"
             },
             {
               "displayName": "ProjectConfigurationError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10041"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10088"
             }
           ],
           "displayName": "ProjectConfigurationService.loadProjectConfiguration",
@@ -1593,7 +1593,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findConfigurationFileAt",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10912"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10955"
             }
           ],
           "displayName": "ConfigurationService.findConfigurationFile",
@@ -1670,15 +1670,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12770"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12813"
             }
           ],
           "displayName": "ConfigurationService.loadConfiguration",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11548",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11591",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 359
+            "line": 360
           },
           "signature": {
             "parameters": [
@@ -1875,12 +1875,12 @@
                 "summary": "Loads a configuration, and says what the file itself declared and which file answered. The same work as `loadConfiguration`, keeping two facts it throws away. The path is what tells a caller resolving a configuration beside every project which file it has already read as the run's own, so that one file is never given two roles. The authored object is what a refusal has to name fields from, since resolution manufactures the rest. Naming a path guarantees one back, which is why that case has an overload of its own: the alternative is every caller of the narrow case carrying a fallback that can never fire, and picking its own path when it does.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12770",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12813",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 387
+                "line": 388
               },
               "signature": {
                 "parameters": [
@@ -1978,12 +1978,12 @@
                 "summary": "Loads and validates a callidescope configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly trace the repository with defaults it never asked for. A path that was not named is searched for, and its absence is legal.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11548",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11591",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 359
+                "line": 360
               },
               "signature": {
                 "parameters": [
@@ -2005,12 +2005,12 @@
                 "summary": "Loads a configuration, and says what the file itself declared and which file answered. The same work as `loadConfiguration`, keeping two facts it throws away. The path is what tells a caller resolving a configuration beside every project which file it has already read as the run's own, so that one file is never given two roles. The authored object is what a refusal has to name fields from, since resolution manufactures the rest. Naming a path guarantees one back, which is why that case has an overload of its own: the alternative is every caller of the narrow case carrying a fallback that can never fire, and picking its own path when it does.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12770",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12813",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 387
+                "line": 388
               },
               "signature": {
                 "parameters": [
@@ -3182,7 +3182,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.resolveConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14030"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14073"
             }
           ],
           "displayName": "DependencyClosureService.readDepthLimit",
@@ -5123,12 +5123,12 @@
                 "summary": "Fills in every field a configuration file may leave out. Exposed so a host embedding callidescope can hand over a configuration object it assembled itself and get the same shape a configuration file produces.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14030",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14073",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 430
+                "line": 431
               },
               "signature": {
                 "parameters": [

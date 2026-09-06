@@ -53,6 +53,7 @@ function buildArguments(depth: number): BuildProjectReportsArguments {
         { callableId: chainIds[0] ?? "", kind: "decorated-method" },
         { callableId: betaId, kind: "exported-function" },
       ],
+      unresolvedAddresses: [],
     },
     fileCountByProject: new Map([
       ["alpha", depth],
@@ -345,6 +346,7 @@ describe(ProjectReportsService, () => {
           ...base.entryPoints.entryPoints,
           { callableId: "nowhere.ts#0", kind: "orphan-root" },
         ],
+        unresolvedAddresses: [],
       },
     });
 

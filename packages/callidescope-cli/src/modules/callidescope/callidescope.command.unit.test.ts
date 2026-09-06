@@ -47,6 +47,7 @@ function buildConfiguration(
     allowSpreadFor: [],
     directories: [],
     entryPoints: {
+      addresses: [],
       decorators: [],
       includeExportedFunctions: true,
       includeOrphans: true,
@@ -186,6 +187,7 @@ describe(CallidescopeCommand, () => {
       projectNames: ["example"],
       result,
       startingProjectRoots: new Map([["example", "packages/example"]]),
+      unresolvedAddresses: [],
     });
   }
 
