@@ -5,6 +5,7 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { isRefusedProjectConfiguration } from "../address-lookup/address-lookup.constants";
 import { AddressLookupService } from "../address-lookup/address-lookup.service";
 import { AddressReportService } from "../address-report/address-report.service";
 
@@ -142,6 +143,21 @@ export class DepthCommand extends CommandRunner {
   }
 
   /**
+   * Logs a project whose own configuration was refused, and fails the run.
+   *
+   * A message rather than a stack trace, and the same headline a full trace
+   * prints: a lookup traces before it matches, so it reaches the same project
+   * files and can earn the same two refusals. Nothing has been printed and no
+   * destination has been touched by the time this runs.
+   */
+  private rejectProjectConfiguration(error: Error): void {
+    this.logger.error("🔭 Rejected a project configuration", undefined, {
+      reason: error.message,
+    });
+    process.exitCode = 1;
+  }
+
+  /**
    * Reads `--addresses`, completing it against what the trace found when the
    * flag was left off.
    *
@@ -210,9 +226,10 @@ export class DepthCommand extends CommandRunner {
    * Resolves the addresses, traces every path above and below each, and
    * prints them.
    *
-   * Only a refused command line is caught: it is the reader's own typing to
-   * fix, so it is reported as such rather than as a crash. Anything else
-   * propagates with its stack intact.
+   * Two failures are caught, both because they are a file a person wrote
+   * rather than a fault in callidescope: a refused command line, and a
+   * project configuration refused for a field it may not set or for not
+   * loading at all. Anything else propagates with its stack intact.
    */
   public async run(
     _passedParameters: string[],
@@ -221,6 +238,11 @@ export class DepthCommand extends CommandRunner {
     try {
       await this.printDepth(options);
     } catch (error) {
+      if (isRefusedProjectConfiguration(error)) {
+        this.rejectProjectConfiguration(error);
+        return;
+      }
+
       if (!(error instanceof InputError)) {
         throw error;
       }

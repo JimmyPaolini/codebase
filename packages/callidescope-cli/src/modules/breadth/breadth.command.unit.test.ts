@@ -1,4 +1,7 @@
-import { InputService } from "@callidescope/configuration";
+import {
+  InputService,
+  ProjectConfigurationFieldNotPermittedError,
+} from "@callidescope/configuration";
 import { BreadthService } from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -414,6 +417,28 @@ describe(BreadthCommand, () => {
     await expect(
       command.run([], { addresses: ["a.ts#Foo.bar"], format: "markdown" }),
     ).rejects.toThrow("Trace failed.");
+  });
+
+  // A lookup traces before it matches, so it loads the configuration of every
+  // project it reaches — and a file somebody wrote is reported as such, under
+  // the same headline a full trace prints, rather than as a crash.
+  it("reports a refused project configuration instead of crashing", async () => {
+    const error = new ProjectConfigurationFieldNotPermittedError({
+      field: "excludeFrom",
+      project: "packages/thing",
+    });
+
+    addressLookupService.locate.mockRejectedValue(error);
+
+    await command.run([], { addresses: ["a.ts#Foo.bar"], format: "markdown" });
+
+    expect(logger.error).toHaveBeenCalledExactlyOnceWith(
+      "🔭 Rejected a project configuration",
+      undefined,
+      { reason: error.message },
+    );
+    expect(process.exitCode).toBe(1);
+    expect(process.stdout.write).not.toHaveBeenCalled();
   });
 
   // 📚 Several addresses
