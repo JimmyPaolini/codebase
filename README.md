@@ -48,18 +48,6 @@
 
 A modern TypeScript codebase with Nx, featuring automated releases, comprehensive code quality tools, and strict type safety.
 
-## 🚀 Quick Start
-
-### 💻 Local Setup (macOS, Recommended)
-
-```bash
-./scripts/local/setup.sh
-```
-
-### 🐳 Dev Container Setup
-
-Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCode](https://code.visualstudio.com), and the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers), then open this repository and run the command **Reopen in Container** (it should prompt the command)
-
 ## 💽 Projects
 
 - **🤲 [affirmations](applications/affirmations)** - Python LangChain + Ollama affirmation generator (LangGraph ReAct agent, SearxNG)
@@ -124,7 +112,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 
 ### Getting Started & Workflow
 
-- [Contributing Guide](CONTRIBUTING.md) - Local setup, PR conventions, and workflows
+- [Contributing Guide](CONTRIBUTING.md) - **Start here.** Local and dev container setup, the commands to run, code standards, branch and commit conventions, pull requests, and releases
 - [AGENTS.md](AGENTS.md) - Commands, project layout, conventions, code quality gates, and git workflow
 - [Release Process](documentation/development/release-process.md) - Automated semantic versioning and changelogs
 
