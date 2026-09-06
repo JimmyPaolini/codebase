@@ -265,10 +265,9 @@ worded for that context and rendered by the same code.
 ### A project configuration that is refused by nothing and does nothing
 
 A misspelled key is not a refusal. The schema strips what it does not
-recognize, so `limits: { maxDepth: 10 }` loads cleanly and changes
-nothing — and `exclude` is accepted outright while no run reads it. If a
-project's limit seems not to be taking effect, ask what it actually resolved
-to rather than re-reading the file:
+recognize, so `limits: { maxDepth: 10 }` loads cleanly and changes nothing. If a
+project's limit seems not to be taking effect, ask what it actually resolved to
+rather than re-reading the file:
 
 ```bash
 npx callidescope limits
@@ -276,6 +275,14 @@ npx callidescope limits
 
 The row for that project says the number and the file it came from, and an
 `Origin` of `inherited` where you expected `declared` is the misspelling.
+
+**A project's `exclude` goes quiet the same way, for a different reason.** Its
+globs are anchored to that project's own root, so a workspace-relative one —
+`packages/thing/src/generated/**` written in `packages/thing`'s own file —
+matches nothing and those files stay traced. Drop the project root from the
+front of it: `src/generated/**`. A glob that would reach into another project
+cannot be written here at all, and noise spanning several projects belongs in
+the run's own `exclude` instead.
 
 ## A rejected configuration
 

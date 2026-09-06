@@ -7,6 +7,26 @@ export interface BuildExclusionsArguments {
   readonly workspaceRoot: string;
 }
 
+/** Arguments for layering each project's own exclusions over a run's. */
+export interface BuildProjectFileFilterArguments {
+  /**
+   * The globs each project declared for itself, keyed by project name, exactly
+   * as that project's own configuration file wrote them.
+   *
+   * A project that declared none is absent rather than present with an empty
+   * array, so an empty map means no project in the run excludes anything and
+   * the run's own filter is handed straight back.
+   */
+  readonly excludeByProject: ReadonlyMap<string, readonly string[]>;
+  /** The run's own filter, which every project's globs are layered over. */
+  readonly fileFilter: FileFilter;
+  /**
+   * Every project the run reached, so a file is judged by the project that
+   * owns it rather than by whichever declaring root happens to contain it.
+   */
+  readonly projects: readonly WorkspaceProject[];
+}
+
 /** Arguments for discovering the projects a run will trace. */
 export interface DiscoverProjectsArguments {
   /**

@@ -225,7 +225,7 @@ a project may say about itself and what happens when it says nothing:
 | [`declared-entry-points`](examples/declared-entry-points) | `entryPoints.addresses`, in [`callidescope.config.ts`](callidescope.config.ts) at this package's root | A callable with a caller heads a stack of its own, under the `declared` kind |
 | [`project-depth-limit`](examples/project-depth-limit) | `limits.maximumDepth`, in the same file | A six-frame chain is a finding at five and would pass at the six it would inherit |
 | [`inherited-limits`](examples/inherited-limits) | Nothing — it has no configuration file | Seven frames are a finding against the six the run declares, and breadth gates it not at all |
-| [`gated-leaf`](examples/gated-leaf) | Both fields, plus `limits.maximumBreadth`, in its own nested project | Four frames and three direct callees become findings that no limit above them would ever have reported |
+| [`gated-leaf`](examples/gated-leaf) | Both fields, plus `limits.maximumBreadth` and `exclude`, in its own nested project | Four frames and three direct callees become findings that no limit above them would ever have reported, and one generated file goes untraced while its twin next door does not |
 
 They sit in the reading order above in that order, and one rule does all the
 work: **the workspace number is a default, not a ceiling.** A project that names
@@ -499,9 +499,11 @@ callidescope-examples/
 │   │   └── *.ts                       the fixture callables
 │   ├── gated-leaf/                    a nested project, with its own limits
 │   │   ├── callidescope.config.ts     what that project declares about itself
+│   │   ├── *.generated.ts             the file this project's own exclude drops
 │   │   ├── tsconfig.json              what makes the directory a project
 │   │   └── README.md                  the guide, holding that project's own section
 │   └── inherited-limits/              a nested project that declares nothing
+│       ├── *.generated.ts             its twin, which nothing excludes
 │       ├── tsconfig.json              what makes the directory a project
 │       └── README.md                  the guide, holding that project's own section
 ├── output/

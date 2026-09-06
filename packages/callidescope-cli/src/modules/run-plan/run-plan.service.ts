@@ -136,13 +136,22 @@ export class RunPlanService {
    */
   public async prepareLookup(options: AddressCommandOptions): Promise<{
     configuration: ResolvedCallidescopeConfiguration;
+    configurationPath: string | undefined;
     workspaceRoot: string;
   }> {
     const workspaceRoot = process.cwd();
-    const loaded = await this.configurationService.loadConfiguration({
-      configurationPath: options.config,
-      searchDirectory: workspaceRoot,
-    });
+    // The file-aware load rather than the plain one, for the same reason
+    // `prepareRun` uses it: a lookup resolves a configuration beside every
+    // project it reaches, so it has to know which file it has already read as
+    // this run's own. Without the path, a run pointed at a configuration
+    // sitting at some project's root has that file read a second time as that
+    // project's — and refused for the workspace-only fields it legitimately
+    // sets.
+    const { configuration: loaded, path: configurationPath } =
+      await this.configurationService.loadConfigurationFile({
+        configurationPath: options.config,
+        searchDirectory: workspaceRoot,
+      });
 
     return {
       configuration: {
@@ -152,6 +161,7 @@ export class RunPlanService {
           format: options.format ?? loaded.output.format,
         },
       },
+      configurationPath,
       workspaceRoot,
     };
   }

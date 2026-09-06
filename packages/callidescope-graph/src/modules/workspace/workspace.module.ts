@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
 
+import { FileFilterService } from "./file-filter.service";
 import { WorkspaceService } from "./workspace.service";
 
 /**
@@ -9,8 +10,8 @@ import { WorkspaceService } from "./workspace.service";
  */
 @Module({
   controllers: [],
-  exports: [WorkspaceService],
+  exports: [FileFilterService, WorkspaceService],
   imports: [LoggerModule],
-  providers: [WorkspaceService],
+  providers: [FileFilterService, WorkspaceService],
 })
 export class WorkspaceModule {}

@@ -85,10 +85,11 @@ export class AddressLookupService {
   public async locate(
     options: AddressCommandOptions,
   ): Promise<LocatedWorkspace> {
-    const { configuration, workspaceRoot } =
+    const { configuration, configurationPath, workspaceRoot } =
       await this.runPlanService.prepareLookup(options);
-    const located = this.callidescopeService.locate({
+    const located = await this.callidescopeService.locate({
       configuration,
+      configurationPath,
       directories: options.directories ?? configuration.directories,
       workspaceRoot,
     });

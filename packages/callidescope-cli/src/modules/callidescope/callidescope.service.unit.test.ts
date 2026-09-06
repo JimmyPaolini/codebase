@@ -119,6 +119,7 @@ function buildSubject(args: {
     new CohesionService(),
     new EntriesService(new AddressService(), createMock<LoggerService>()),
     args.fixture.external,
+    args.fixture.fileFilter,
     new GraphAssemblyService(
       new BreadthService(),
       new ComponentsService(),

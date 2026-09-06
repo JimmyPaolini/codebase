@@ -114,6 +114,7 @@ export { SIGNATURE_FORMAT_FLAGS } from "./modules/signatures/signatures.constant
 export { SignaturesModule } from "./modules/signatures/signatures.module";
 export { SignaturesService } from "./modules/signatures/signatures.service";
 export type { ReadSignatureArguments } from "./modules/signatures/signatures.types";
+export { FileFilterService } from "./modules/workspace/file-filter.service";
 export {
   DEFAULT_MODULES_DIRECTORY,
   DEFAULT_ROOT_MODULE_SEGMENT,
@@ -126,6 +127,7 @@ export { WorkspaceModule } from "./modules/workspace/workspace.module";
 export { WorkspaceService } from "./modules/workspace/workspace.service";
 export type {
   BuildExclusionsArguments,
+  BuildProjectFileFilterArguments,
   DiscoverProjectsArguments,
   FileFilter,
   WorkspaceProject,

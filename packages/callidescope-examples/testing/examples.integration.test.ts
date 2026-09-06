@@ -164,12 +164,20 @@ function readNextLink(exampleName: string): string {
  * assertions exist to prevent.
  */
 function readOwnReport(result: CallGraphResult): ProjectReport {
+  return readProjectReport(result, EXAMPLES_DIRECTORY);
+}
+
+/** Reads one project's report, failing loudly when the run reached no such project. */
+function readProjectReport(
+  result: CallGraphResult,
+  projectName: string,
+): ProjectReport {
   const report = result.projects.find(
-    (project) => project.projectName === EXAMPLES_DIRECTORY,
+    (project) => project.projectName === projectName,
   );
 
   if (report === undefined) {
-    throw new Error(`The run reported no project named ${EXAMPLES_DIRECTORY}`);
+    throw new Error(`The run reported no project named ${projectName}`);
   }
 
   return report;
@@ -390,8 +398,33 @@ describe("callidescope examples (integration)", () => {
           .map((project) => [project.projectName, project.summary.fileCount]),
       ).toStrictEqual([
         [GATED_LEAF_DIRECTORY, 2],
-        [INHERITED_LIMITS_DIRECTORY, 1],
+        [INHERITED_LIMITS_DIRECTORY, 2],
       ]);
+    });
+
+    it("leaves out the file a project excluded, and only in that project", () => {
+      // The same generated file was written into both nested projects, and
+      // only `gated-leaf` declares `exclude: ["*.generated.ts"]`. Counting
+      // what is on disk against what the run traced is what makes this an
+      // assertion about the exclusion rather than about two fixed numbers: a
+      // glob anchored to the workspace instead of to the project would match
+      // neither file and both counts would move, and one that reached across
+      // the boundary would drop both.
+      const traced = (directory: string): Record<string, number> => ({
+        onDisk: readdirSync(path.join(WORKSPACE_ROOT, directory)).filter(
+          (name) => name.endsWith(".ts"),
+        ).length,
+        traced: readProjectReport(result, directory).summary.fileCount,
+      });
+
+      expect(traced(GATED_LEAF_DIRECTORY)).toStrictEqual({
+        onDisk: 3,
+        traced: 2,
+      });
+      expect(traced(INHERITED_LIMITS_DIRECTORY)).toStrictEqual({
+        onDisk: 2,
+        traced: 2,
+      });
     });
 
     it("drops the over-cap structural expansion, and only that", () => {

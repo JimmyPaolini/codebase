@@ -7761,11 +7761,11 @@
         }
       ],
       "summary": {
-        "callableCount": 4,
+        "callableCount": 5,
         "cyclicComponentCount": 0,
         "edgeCount": 3,
         "entryPointCount": 1,
-        "fileCount": 1,
+        "fileCount": 2,
         "maximumDepth": 7,
         "projectCount": 1,
         "unresolvedCallCount": 0
@@ -10318,11 +10318,11 @@
     }
   ],
   "summary": {
-    "callableCount": 217,
+    "callableCount": 218,
     "cyclicComponentCount": 1,
     "edgeCount": 183,
-    "entryPointCount": 69,
-    "fileCount": 79,
+    "entryPointCount": 70,
+    "fileCount": 80,
     "maximumDepth": 8,
     "projectCount": 6,
     "unresolvedCallCount": 12

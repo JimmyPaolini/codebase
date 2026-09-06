@@ -4,10 +4,10 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 217 |
-| Files | 79 |
+| Callables | 218 |
+| Files | 80 |
 | Calls traced | 183 |
-| Call stacks | 69 |
+| Call stacks | 70 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 12 |

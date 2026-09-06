@@ -95,6 +95,34 @@ that project's callidescope.config.ts before running --check breadth."]}
 Both exit non-zero, for opposite reasons: the first found the finding it was
 asked to look for, the second had no limit to look with.
 
+## And it excludes one file, which is the whole of what `exclude` does
+
+A project's own configuration may name globs to leave untraced, and this one
+names `*.generated.ts`. **The glob is anchored to this project's root**, never
+to the workspace: it names `gated-leaf.generated.ts` beside it and there is no
+spelling of it that could name anything outside this directory.
+
+The proof is a pair. The same file was written into this project and into
+[`inherited-limits`](../inherited-limits/README.md) next door, which declares
+no configuration at all:
+
+| Project | Files it holds | Files the run traced |
+| ------- | -------------- | -------------------- |
+| this one | `gated-leaf.ts`, `callidescope.config.ts`, `gated-leaf.generated.ts` | 2 — the generated one is gone |
+| [`inherited-limits`](../inherited-limits/README.md) | `inherited-limits.ts`, `inherited-limits.generated.ts` | 2 — both of them |
+
+Those two numbers are the `Files` rows in the two `## 🔭 Callidescope` sections,
+[this one](#-callidescope) and [that one](../inherited-limits/README.md#-callidescope),
+and `Callables` moves with them: 4 here and 5 there, for identical code. A glob
+written in one project's file reached that project's file and stopped.
+
+Anchoring it here rather than at the workspace root is what makes that true by
+construction instead of by a rule somebody has to enforce, and it is how every
+other file at a project root is already read — a `tsconfig.json`'s own `include`
+and `exclude` are project-relative too. The run's `exclude` keeps its
+workspace-relative meaning, and it is layered underneath: a project can leave
+more out, never put back what the run left out.
+
 ## Why this project is named rather than reached
 
 Every other project this run measures arrives through the dependency closure,

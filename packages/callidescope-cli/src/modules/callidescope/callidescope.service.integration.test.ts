@@ -292,6 +292,9 @@ async function buildWorkspace(): Promise<string> {
   return workspaceRoot;
 }
 
+/** The configuration file name a project declares itself through. */
+const PROJECT_CONFIGURATION = "callidescope.config.json";
+
 /** Reads the deepest depth a project's report measured for one type. */
 function readTypeDepth(args: {
   projectName: string;
@@ -432,8 +435,8 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
   // 🔍 Locating callables
 
-  it("collects the same callables locate would need to resolve an address", () => {
-    const located = service.locate({
+  it("collects the same callables locate would need to resolve an address", async () => {
+    const located = await service.locate({
       configuration: buildConfiguration(),
       directories: [],
       workspaceRoot: tracedWorkspaceRoot,
@@ -457,6 +460,53 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     const projectRoot = path.join("packages", "example");
 
     expect(located.startingProjectRoots.get(projectRoot)).toBe(projectRoot);
+  });
+
+  // 🙈 A project's own exclusions
+
+  it("leaves out the files a project's own configuration excluded", async () => {
+    // The whole wiring in one run: a file sitting at a project root, read
+    // only after discovery has found that root, deciding what the run's own
+    // filter had no way to decide. Resolved through the symlink `mkdtemp`
+    // hands back on macOS, for the reason `buildConfiguredWorkspace` gives.
+    const workspaceRoot = await realpath(await buildWorkspace());
+
+    await writeFile(
+      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
+      JSON.stringify({ exclude: ["src/modules/example/example.command.ts"] }),
+      "utf8",
+    );
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(outcome.result.summary.fileCount).toBe(1);
+  });
+
+  it("matches a project's globs against its root rather than the workspace", async () => {
+    // The same glob written the other way round. A path that would be right
+    // in the run's own configuration names nothing from inside the project,
+    // which is what "anchored to the project" costs and buys.
+    const workspaceRoot = await realpath(await buildWorkspace());
+
+    await writeFile(
+      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
+      JSON.stringify({
+        exclude: ["packages/example/src/modules/example/example.command.ts"],
+      }),
+      "utf8",
+    );
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(outcome.result.summary.fileCount).toBe(2);
   });
 
   // 🚧 A project that cannot be read
@@ -780,8 +830,8 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     });
   });
 
-  it("builds the same graph a full trace would, without any analysis", () => {
-    const located = service.locate({
+  it("builds the same graph a full trace would, without any analysis", async () => {
+    const located = await service.locate({
       configuration: buildConfiguration(),
       directories: [],
       workspaceRoot: tracedWorkspaceRoot,

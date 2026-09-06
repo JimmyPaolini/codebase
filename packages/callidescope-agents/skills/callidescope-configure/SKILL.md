@@ -376,12 +376,17 @@ legitimately sets, so a package needing both keeps two files under two names.
 | `entryPoints` | Which of that project's callables root a stack, `addresses` included |
 | `limits.maximumDepth` | The depth every stack rooted in that project is judged against |
 | `limits.maximumBreadth` | The breadth every callable that project declares is judged against |
-| `exclude` | Accepted, and read by nothing today |
+| `exclude` | Globs naming that project's own files to leave untraced |
 
-`exclude` is permitted rather than refused, but no run consults it: which files
-are traced is settled from the workspace configuration during discovery, and
-project configurations are loaded only afterwards, from the projects discovery
-turned out to reach. Keep a project's noise in the workspace file.
+**A project's `exclude` globs are anchored to that project's root**, never to
+the workspace: `exclude: ["src/generated/**"]` in `packages/thing`'s own file
+names `packages/thing/src/generated/**`, and there is no spelling of it that
+reaches a sibling. Write the path as the project sees it — a workspace-relative
+glob here matches nothing, and the files it meant to drop stay traced.
+
+The run's own `exclude` keeps its workspace-relative meaning and is layered
+underneath, so a project can leave more out and can never put back what the run
+left out. Noise spanning several projects still belongs in the workspace file.
 
 Every other field is refused **by name, before anything is traced**, and the
 message names the four above so it is actionable without opening this skill.

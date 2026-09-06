@@ -70,8 +70,8 @@ Call stacks traced through `packages/callidescope-examples/examples/inherited-li
 
 | Measure | Value |
 | --- | --- |
-| Callables | 4 |
-| Files | 1 |
+| Callables | 5 |
+| Files | 2 |
 | Calls traced | 3 |
 | Call stacks | 1 |
 | Deepest stack | 7 |

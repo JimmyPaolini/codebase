@@ -5,6 +5,7 @@ import {
   CohesionService,
   EntriesService,
   ExternalService,
+  FileFilterService,
   GraphAssemblyService,
   ProgramService,
   WorkspaceService,
@@ -18,7 +19,9 @@ import { INCLUDE_CONSTRUCTOR_EDGES } from "./callidescope.constants";
 
 import type {
   AnalyzeOutcome,
+  DiscoveredWorkspace,
   LocateOutcome,
+  ProjectDeclarations,
   TraceArguments,
   TraceOutcome,
 } from "./callidescope.types";
@@ -30,9 +33,11 @@ import type {
   ResolvedCallidescopeEntryPoints,
 } from "@callidescope/configuration";
 import type {
-  CallableCollection,
   DepthMeasurement,
   DiscoveredCallable,
+  FileFilter,
+  ProgramSet,
+  WorkspaceProject,
 } from "@callidescope/graph";
 
 /**
@@ -48,6 +53,7 @@ export class CallidescopeService {
     private readonly cohesionService: CohesionService,
     private readonly entryPointsService: EntriesService,
     private readonly externalService: ExternalService,
+    private readonly fileFilterService: FileFilterService,
     private readonly graphAssemblyService: GraphAssemblyService,
     private readonly programService: ProgramService,
     private readonly projectConfigurationService: ProjectConfigurationService,
@@ -70,19 +76,79 @@ export class CallidescopeService {
    * Shared by `trace`, which goes on to run the full analysis, and `locate`,
    * which only needs the collected callables and their graph to resolve one
    * address — cohesion, entry points, and project reports are work `locate`'s
-   * callers never asked for.
+   * callers never asked for. Both read the same declarations, because a
+   * project's own `exclude` decides which files exist to be collected at all,
+   * and an address resolved against a different set of files from the one a
+   * gated run measures would be an address about a different codebase.
    */
-  private discoverCallables(args: TraceArguments): {
-    collection: CallableCollection;
-    projectNames: string[];
-    startingProjectRoots: ReadonlyMap<string, string>;
+  private async discoverCallables(
+    args: TraceArguments,
+  ): Promise<DiscoveredWorkspace> {
+    const { fileFilter, programSet, projects, startingProjects } =
+      this.discoverPrograms(args);
+    const projectNames = projects.map((project) => project.name);
+    // Between discovery and collection, which is the only moment either
+    // answer can be had: a project's own file sits at a root discovery is
+    // what finds, and its `exclude` decides what collection may look at.
+    const declarations = await this.loadProjectDeclarations({
+      configuration: args.configuration,
+      configurationPath: args.configurationPath,
+      projectNames,
+      workspaceRoot: args.workspaceRoot,
+    });
+
+    this.externalService.configure({
+      ownedFilePaths: new Set(programSet.ownerByFilePath.keys()),
+      workspaceRoot: args.workspaceRoot,
+    });
+    this.classHierarchyService.build({
+      maximumCandidates:
+        args.configuration.limits.maximumImplementationCandidates,
+      programs: programSet.programs,
+    });
+
+    const collection = this.callablesService.collect({
+      fileFilter: this.fileFilterService.buildProjectFileFilter({
+        excludeByProject: declarations.excludeByProject,
+        fileFilter,
+        projects,
+      }),
+      includeTests: args.configuration.entryPoints.includeTests,
+      ownerByFilePath: programSet.ownerByFilePath,
+      workspaceRoot: args.workspaceRoot,
+    });
+
+    return {
+      ...declarations,
+      collection,
+      projectNames,
+      // The starting projects rather than the closure: measurement reaches
+      // into a project's dependencies, publishing does not. A run scoped to
+      // one package would otherwise rewrite a section in every README its
+      // imports happened to reach, which is a whole-workspace run's job.
+      startingProjectRoots: new Map(
+        startingProjects.map((project) => [project.name, project.root]),
+      ),
+    };
+  }
+
+  /**
+   * Finds the projects a run covers and builds a program for each.
+   *
+   * Split from `discoverCallables` because the projects have to exist before
+   * anything can be read from beside them, and the run's own filter has to
+   * exist before the projects: a project the run excludes must be dropped
+   * before its `tsconfig.json` is opened, since opening it is what fails.
+   */
+  private discoverPrograms(args: TraceArguments): {
+    fileFilter: FileFilter;
+    programSet: ProgramSet;
+    projects: WorkspaceProject[];
+    startingProjects: WorkspaceProject[];
   } {
     this.workspaceService.configure(args.configuration.workspaceStructure);
 
-    // Built before discovery rather than beside the collection it filters: a
-    // project the exclusions name has to be dropped before its
-    // `tsconfig.json` is opened, since opening it is what fails.
-    const fileFilter = this.workspaceService.buildFileFilter({
+    const fileFilter = this.fileFilterService.buildFileFilter({
       exclude: args.configuration.exclude,
       excludeFrom: args.configuration.excludeFrom,
       workspaceRoot: args.workspaceRoot,
@@ -107,40 +173,17 @@ export class CallidescopeService {
       workspaceProjects,
       workspaceRoot: args.workspaceRoot,
     });
-    // The closure rather than the starting roots: a scoped run traces the
-    // projects its imports reach as well, so a call into a dependency lands on
-    // a frame instead of stopping at the package boundary.
-    const projects = programSet.programs.map(
-      (projectProgram) => projectProgram.project,
-    );
-
-    this.externalService.configure({
-      ownedFilePaths: new Set(programSet.ownerByFilePath.keys()),
-      workspaceRoot: args.workspaceRoot,
-    });
-    this.classHierarchyService.build({
-      maximumCandidates:
-        args.configuration.limits.maximumImplementationCandidates,
-      programs: programSet.programs,
-    });
-
-    const collection = this.callablesService.collect({
-      fileFilter,
-      includeTests: args.configuration.entryPoints.includeTests,
-      ownerByFilePath: programSet.ownerByFilePath,
-      workspaceRoot: args.workspaceRoot,
-    });
 
     return {
-      collection,
-      projectNames: projects.map((project) => project.name),
-      // The starting projects rather than the closure: measurement reaches
-      // into a project's dependencies, publishing does not. A run scoped to
-      // one package would otherwise rewrite a section in every README its
-      // imports happened to reach, which is a whole-workspace run's job.
-      startingProjectRoots: new Map(
-        startingProjects.map((project) => [project.name, project.root]),
+      fileFilter,
+      programSet,
+      // The closure rather than the starting roots: a scoped run traces the
+      // projects its imports reach as well, so a call into a dependency lands
+      // on a frame instead of stopping at the package boundary.
+      projects: programSet.programs.map(
+        (projectProgram) => projectProgram.project,
       ),
+      startingProjects,
     };
   }
 
@@ -163,16 +206,21 @@ export class CallidescopeService {
    * which is why this returns rules rather than a whole configuration. Limits
    * resolve the other way round, naming every project, because a limit has to
    * be printable per project whether or not the project chose it.
+   *
+   * Exclusions are read from the file exactly as authored rather than from the
+   * resolved configuration, which is the split `declareLimit` already makes for
+   * a limit: resolution folds the tool's own default globs into every project's
+   * `exclude`, so the resolved array can never say whether this project
+   * excluded anything. A project that excluded nothing is left out of the map
+   * entirely, so a run in which no project excludes anything is handed back the
+   * run's own filter untouched.
    */
   private async loadProjectDeclarations(args: {
     configuration: ResolvedCallidescopeConfiguration;
     configurationPath: string | undefined;
     projectNames: readonly string[];
     workspaceRoot: string;
-  }): Promise<{
-    entryPointsByProject: ReadonlyMap<string, ResolvedCallidescopeEntryPoints>;
-    projectLimits: ProjectLimitsLookup;
-  }> {
+  }): Promise<ProjectDeclarations> {
     const loaded =
       await this.projectConfigurationService.loadProjectConfigurations({
         projects: args.projectNames,
@@ -186,6 +234,17 @@ export class CallidescopeService {
           projectConfiguration.project,
           projectConfiguration.configuration.entryPoints,
         ]),
+      ),
+      excludeByProject: new Map(
+        loaded
+          .filter(
+            (projectConfiguration) =>
+              (projectConfiguration.authored.exclude ?? []).length > 0,
+          )
+          .map((projectConfiguration) => [
+            projectConfiguration.project,
+            projectConfiguration.authored.exclude ?? [],
+          ]),
       ),
       projectLimits: this.projectConfigurationService.resolveLimits({
         projectConfigurations: loaded,
@@ -315,9 +374,16 @@ export class CallidescopeService {
    * the collected callables and then walk the graph from it — neither needs
    * cohesion, entry points, or project reports, all of which `analyze` builds
    * unconditionally.
+   *
+   * Asynchronous because discovery is: every project's own configuration is
+   * read before a callable is collected, since a project's `exclude` decides
+   * which files there are to collect. The limits those same files declare are
+   * loaded and thrown away here, which is the price of one answer about what a
+   * run's callables are rather than two.
    */
-  public locate(args: TraceArguments): LocateOutcome {
-    const { collection, startingProjectRoots } = this.discoverCallables(args);
+  public async locate(args: TraceArguments): Promise<LocateOutcome> {
+    const { collection, startingProjectRoots } =
+      await this.discoverCallables(args);
     const { graph } = this.graphAssemblyService.assemble({
       callablesById: collection.byId,
       ignoreCallees: args.configuration.ignoreCallees,
@@ -334,17 +400,13 @@ export class CallidescopeService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    const { collection, projectNames, startingProjectRoots } =
-      this.discoverCallables(args);
-    // After discovery, because the projects to look beside are the ones the
-    // run turned out to reach rather than the ones it was pointed at.
-    const { entryPointsByProject, projectLimits } =
-      await this.loadProjectDeclarations({
-        configuration: args.configuration,
-        configurationPath: args.configurationPath,
-        projectNames,
-        workspaceRoot: args.workspaceRoot,
-      });
+    const {
+      collection,
+      entryPointsByProject,
+      projectLimits,
+      projectNames,
+      startingProjectRoots,
+    } = await this.discoverCallables(args);
     const analyzed = this.analyze({
       callablesById: collection.byId,
       configuration: args.configuration,

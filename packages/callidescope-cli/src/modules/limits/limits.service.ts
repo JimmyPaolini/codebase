@@ -4,7 +4,7 @@ import {
   ConfigurationService,
   ProjectConfigurationService,
 } from "@callidescope/configuration";
-import { WorkspaceService } from "@callidescope/graph";
+import { FileFilterService, WorkspaceService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
@@ -43,6 +43,7 @@ export class LimitsService {
 
   constructor(
     private readonly configurationService: ConfigurationService,
+    private readonly fileFilterService: FileFilterService,
     private readonly projectConfigurationService: ProjectConfigurationService,
     private readonly workspaceService: WorkspaceService,
     private readonly logger: LoggerService,
@@ -64,12 +65,18 @@ export class LimitsService {
    * starting project and every starting project gets a program. Building those
    * programs to arrive at the same answer would cost the listing the very thing
    * that makes it worth having.
+   *
+   * The run's own filter and no project's. A project's `exclude` says which of
+   * its files are traced, and nothing here traces a file — a project that
+   * excluded every file it has still declares the limits it declares, and
+   * leaving it off this listing would hide the one place they are written
+   * down.
    */
   private discoverProjects(args: {
     configuration: ResolvedCallidescopeConfiguration;
     workspaceRoot: string;
   }): string[] {
-    const fileFilter = this.workspaceService.buildFileFilter({
+    const fileFilter = this.fileFilterService.buildFileFilter({
       exclude: args.configuration.exclude,
       excludeFrom: args.configuration.excludeFrom,
       workspaceRoot: args.workspaceRoot,

@@ -98,9 +98,10 @@ describe(AddressLookupService, () => {
 
     runPlanService.prepareLookup.mockResolvedValue({
       configuration,
+      configurationPath: undefined,
       workspaceRoot: "/workspace",
     });
-    callidescopeService.locate.mockReturnValue(located);
+    callidescopeService.locate.mockResolvedValue(located);
     addressService.resolve.mockReturnValue({ id: "a#0", kind: "resolved" });
 
     const workspace = await service.locate({});
@@ -127,9 +128,10 @@ describe(AddressLookupService, () => {
 
     runPlanService.prepareLookup.mockResolvedValue({
       configuration: buildConfiguration(),
+      configurationPath: undefined,
       workspaceRoot: "/workspace",
     });
-    callidescopeService.locate.mockReturnValue(located);
+    callidescopeService.locate.mockResolvedValue(located);
     addressService.listAddresses.mockReturnValue(["a.ts#Foo.bar"]);
 
     const workspace = await service.locate({});
@@ -144,9 +146,10 @@ describe(AddressLookupService, () => {
   it("scopes the trace to the directories a flag named", async () => {
     runPlanService.prepareLookup.mockResolvedValue({
       configuration: buildConfiguration(),
+      configurationPath: undefined,
       workspaceRoot: "/workspace",
     });
-    callidescopeService.locate.mockReturnValue(buildLocated());
+    callidescopeService.locate.mockResolvedValue(buildLocated());
     addressService.resolve.mockReturnValue({ kind: "not-found" });
 
     await service.locate({ directories: ["alpha"] });

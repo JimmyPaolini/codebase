@@ -6,8 +6,10 @@ import type {
   CallidescopeOutputFormat,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
+  ResolvedCallidescopeEntryPoints,
 } from "@callidescope/configuration";
 import type {
+  CallableCollection,
   CallGraph,
   DiscoveredCallable,
   UnresolvedEntryPointAddress,
@@ -53,12 +55,44 @@ export interface CallidescopeCommandOptions {
   readonly write?: boolean | undefined;
 }
 
+/** Everything one walk of the workspace produced, before any analysis. */
+export interface DiscoveredWorkspace extends ProjectDeclarations {
+  readonly collection: CallableCollection;
+  /** Every project the walk reached, its dependency closure included. */
+  readonly projectNames: string[];
+  /**
+   * Workspace-relative root of each project the run was scoped to, keyed by
+   * name — the starting projects, not the closure they reached.
+   */
+  readonly startingProjectRoots: ReadonlyMap<string, string>;
+}
+
 /** The collected callables and their graph, without any analysis run over them. */
 export interface LocateOutcome {
   readonly callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
   readonly graph: CallGraph;
   /** Workspace-relative root of each project the run was scoped to, keyed by name. */
   readonly startingProjectRoots: ReadonlyMap<string, string>;
+}
+
+/** What every traced project declared about itself in its own configuration. */
+export interface ProjectDeclarations {
+  /** Entry-point rules a project declared for itself, keyed by project name. */
+  readonly entryPointsByProject: ReadonlyMap<
+    string,
+    ResolvedCallidescopeEntryPoints
+  >;
+  /**
+   * Exclusion globs a project declared for itself, keyed by project name and
+   * matched against paths relative to that project's own root.
+   *
+   * A project that declared none is absent rather than present with an empty
+   * array, so an empty map is what says no project in the run excludes
+   * anything.
+   */
+  readonly excludeByProject: ReadonlyMap<string, readonly string[]>;
+  /** The depth and breadth limits each traced project is judged against. */
+  readonly projectLimits: ProjectLimitsLookup;
 }
 
 /** Arguments for writing every configured destination. */

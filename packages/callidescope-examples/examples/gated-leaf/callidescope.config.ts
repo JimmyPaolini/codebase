@@ -15,6 +15,17 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
  * chose and every other one still comes from the run.
  */
 const callidescopeConfiguration: CallidescopeConfiguration = {
+  /**
+   * One glob, naming the generated file this project does not want measured.
+   *
+   * Read relative to this project's own root, which is what keeps it here:
+   * `gated-leaf.generated.ts` is named and
+   * `../inherited-limits/inherited-limits.generated.ts` — the identical file
+   * one directory over — is not, because a project-relative glob has no
+   * spelling that reaches out of the project that wrote it.
+   */
+  exclude: ["*.generated.ts"],
+
   entryPoints: {
     /**
      * The one address this project publishes.

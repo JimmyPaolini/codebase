@@ -8,7 +8,7 @@ import {
   ProjectConfigurationService,
   type ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
-import { WorkspaceService } from "@callidescope/graph";
+import { FileFilterService, WorkspaceService } from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -112,6 +112,7 @@ describe(LimitsService, () => {
   let configurationService: ReturnType<typeof createMock<ConfigurationService>>;
   let logger: ReturnType<typeof createMock<LoggerService>>;
   let service: LimitsService;
+  let fileFilterService: ReturnType<typeof createMock<FileFilterService>>;
   let workspaceService: ReturnType<typeof createMock<WorkspaceService>>;
 
   /** Declares which projects the walk finds, in the order it finds them. */
@@ -132,6 +133,7 @@ describe(LimitsService, () => {
   beforeAll(async () => {
     configurationService = createMock<ConfigurationService>();
     logger = createMock<LoggerService>();
+    fileFilterService = createMock<FileFilterService>();
     workspaceService = createMock<WorkspaceService>();
 
     const module = await Test.createTestingModule({
@@ -140,6 +142,7 @@ describe(LimitsService, () => {
         ProjectConfigurationService,
         { provide: ConfigurationService, useValue: configurationService },
         { provide: LoggerService, useValue: logger },
+        { provide: FileFilterService, useValue: fileFilterService },
         { provide: WorkspaceService, useValue: workspaceService },
       ],
     }).compile();
@@ -153,10 +156,10 @@ describe(LimitsService, () => {
     configurationService.findConfigurationFileAt.mockReset();
     configurationService.loadConfigurationFile.mockReset();
     logger.info.mockClear();
-    workspaceService.buildFileFilter.mockReset();
+    fileFilterService.buildFileFilter.mockReset();
     workspaceService.discoverProjects.mockReset();
 
-    workspaceService.buildFileFilter.mockReturnValue({
+    fileFilterService.buildFileFilter.mockReturnValue({
       isExcluded: () => false,
     });
     discover([DECLARING_PROJECT, INHERITING_PROJECT]);
@@ -404,7 +407,7 @@ describe(LimitsService, () => {
 
     await service.list({});
 
-    expect(workspaceService.buildFileFilter).toHaveBeenCalledWith({
+    expect(fileFilterService.buildFileFilter).toHaveBeenCalledWith({
       exclude: ["packages/ignored/**"],
       excludeFrom: ["configuration/.callidescopeignore"],
       workspaceRoot: process.cwd(),

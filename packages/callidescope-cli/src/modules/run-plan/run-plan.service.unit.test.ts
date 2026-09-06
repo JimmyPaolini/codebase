@@ -405,9 +405,11 @@ describe(RunPlanService, () => {
     it("resolves the workspace root to the working directory", async () => {
       const configurationService = createMock<ConfigurationService>();
 
-      configurationService.loadConfiguration.mockResolvedValue(
-        buildConfiguration(),
-      );
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration(),
+        path: undefined,
+      });
 
       const subject = new RunPlanService(
         configurationService,
@@ -417,7 +419,7 @@ describe(RunPlanService, () => {
       const prepared = await subject.prepareLookup({});
 
       expect(prepared.workspaceRoot).toBe(process.cwd());
-      expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
+      expect(configurationService.loadConfigurationFile).toHaveBeenCalledWith({
         configurationPath: undefined,
         searchDirectory: process.cwd(),
       });
@@ -426,9 +428,11 @@ describe(RunPlanService, () => {
     it("prefers the format a flag named over the configured one", async () => {
       const configurationService = createMock<ConfigurationService>();
 
-      configurationService.loadConfiguration.mockResolvedValue(
-        buildConfiguration(),
-      );
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration(),
+        path: undefined,
+      });
 
       const subject = new RunPlanService(
         configurationService,
@@ -443,8 +447,9 @@ describe(RunPlanService, () => {
     it("falls back to the configured format when a flag names none", async () => {
       const configurationService = createMock<ConfigurationService>();
 
-      configurationService.loadConfiguration.mockResolvedValue(
-        buildConfiguration({
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration({
           output: {
             format: "mermaid",
             json: undefined,
@@ -453,7 +458,8 @@ describe(RunPlanService, () => {
             projectReadmes: undefined,
           },
         }),
-      );
+        path: undefined,
+      });
 
       const subject = new RunPlanService(
         configurationService,
@@ -463,6 +469,30 @@ describe(RunPlanService, () => {
       const prepared = await subject.prepareLookup({});
 
       expect(prepared.configuration.output.format).toBe("mermaid");
+    });
+
+    // Without the path a lookup pointed at a configuration sitting at some
+    // project's root reads that same file again as that project's own, and
+    // refuses it for the workspace-only fields it legitimately sets.
+    it("reports the file the configuration was read from", async () => {
+      const configurationService = createMock<ConfigurationService>();
+
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration(),
+        path: "/workspace/configuration/callidescope.config.ts",
+      });
+
+      const subject = new RunPlanService(
+        configurationService,
+        createMock<LoggerService>(),
+      );
+
+      const prepared = await subject.prepareLookup({});
+
+      expect(prepared.configurationPath).toBe(
+        "/workspace/configuration/callidescope.config.ts",
+      );
     });
   });
 });

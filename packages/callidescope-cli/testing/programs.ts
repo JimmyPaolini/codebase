@@ -6,6 +6,7 @@ import {
   CompilerHostService,
   EdgesService,
   ExternalService,
+  FileFilterService,
   ProgramService,
   SymbolResolutionService,
   WorkspaceService,
@@ -32,6 +33,7 @@ export interface FixtureServices {
   readonly callables: CallablesService;
   readonly edges: EdgesService;
   readonly external: ExternalService;
+  readonly fileFilter: FileFilterService;
   readonly hierarchy: ClassesService;
   readonly identity: CallableIdentityService;
   readonly programService: ProgramService;
@@ -138,6 +140,7 @@ export function buildFixtureServices(args: {
       createMock<LoggerService>(),
     ),
     external,
+    fileFilter: new FileFilterService(workspace, createMock<LoggerService>()),
     hierarchy,
     identity,
     programService,

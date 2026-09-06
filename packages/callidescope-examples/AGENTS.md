@@ -50,6 +50,7 @@ and `packages/logger`. See
 | Two findings in one report judged against different limits | [`project-depth-limit`](examples/project-depth-limit/README.md), [`inherited-limits`](examples/inherited-limits/README.md) | Not a bug. A limit belongs to a project, so one finding's number can be a project's own while another's is the workspace default it fell back to |
 | A project reporting depth 0 while carrying a real chain | [`gated-leaf`](examples/gated-leaf/README.md) | It roots nothing, because everything it owns is called from above. Declare its entry points before giving it a limit |
 | `--check breadth requires at least one project in scope` | [`gated-leaf`](examples/gated-leaf/README.md) | Breadth has no default anywhere. Some project in scope has to declare `limits.maximumBreadth` before the gate can run |
+| A file a project's own `exclude` names, still traced | [`gated-leaf`](examples/gated-leaf/README.md) | A project's globs are anchored to that project's root. A workspace-relative glob in a project file matches nothing; drop the leading path, or move the glob to the run's own configuration |
 | A frame marked `⚠ deprecated`, or printed `(…): T` | [`frame-annotations`](examples/frame-annotations/README.md) | Annotation shortening in the printed tree. `output/report.json` carries the full text |
 | A call resolved to a class that never writes `implements` | [`structural-interface`](examples/structural-interface/README.md) | Structural matching, which is the only thing that works on an arrow-typed property |
 | A frame you did not expect, named for a declaration rather than the local name | [`plain-call`](examples/plain-call/README.md) | The checker unwraps the import alias. A report always names the declaration |
@@ -70,8 +71,10 @@ callidescope-examples/
 │   │   └── *.ts                       the fixture callables
 │   ├── gated-leaf/                    a nested project, with its own limits
 │   │   ├── callidescope.config.ts     what that project declares about itself
+│   │   ├── *.generated.ts             the file this project's own exclude drops
 │   │   └── tsconfig.json              what makes the directory a project
 │   └── inherited-limits/              a nested project that declares nothing
+│       ├── *.generated.ts             its twin, which nothing excludes
 │       └── tsconfig.json              what makes the directory a project
 ├── output/
 │   ├── report.json                    the whole run, machine-readable
@@ -154,7 +157,9 @@ the point:
   all — quieting it takes the gate away with it.
 - `inherited-limits` is seven frames against the six it inherits, on purpose. It
   declares nothing, and that is the example: it exists to be judged by a number
-  written somewhere else.
+  written somewhere else. Its `inherited-limits.generated.ts` is traced on
+  purpose too — it is the twin of the file `gated-leaf` excludes, and a run that
+  dropped both would prove nothing about where a project's globs reach.
 
 One finding is not a fixture at all. The run's default `maximumDepth` is 6 — the
 tool's own, low enough to make the deep fixtures findings — and the closure
