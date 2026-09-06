@@ -68,6 +68,7 @@ export type {
   CallidescopeWorkspaceStructure,
   LoadConfigurationArguments,
   LoadedCallidescopeConfiguration,
+  LoadedCallidescopeConfigurationFile,
   LoadedProjectConfiguration,
   LoadProjectConfigurationsArguments,
   MarkdownAnchorHelpers,

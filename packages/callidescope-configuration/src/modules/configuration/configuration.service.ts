@@ -42,6 +42,7 @@ import type {
   CallidescopeWorkspaceStructure,
   LoadConfigurationArguments,
   LoadedCallidescopeConfiguration,
+  LoadedCallidescopeConfigurationFile,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeEntryPoints,
   ResolvedCallidescopeJsonOutputConfiguration,
@@ -372,7 +373,17 @@ export class ConfigurationService {
    * which file it has already read as the run's own, so that one file is never
    * given two roles. The authored object is what a refusal has to name fields
    * from, since resolution manufactures the rest.
+   *
+   * Naming a path guarantees one back, which is why that case has an overload
+   * of its own: the alternative is every caller of the narrow case carrying a
+   * fallback that can never fire, and picking its own path when it does.
    */
+  public loadConfigurationFile(
+    args: LoadConfigurationArguments & { configurationPath: string },
+  ): Promise<LoadedCallidescopeConfigurationFile>;
+  public loadConfigurationFile(
+    args?: LoadConfigurationArguments,
+  ): Promise<LoadedCallidescopeConfiguration>;
   public async loadConfigurationFile(
     args: LoadConfigurationArguments = {},
   ): Promise<LoadedCallidescopeConfiguration> {

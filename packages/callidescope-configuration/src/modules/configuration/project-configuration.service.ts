@@ -51,7 +51,10 @@ export class ProjectConfigurationService {
       return {
         authored: loaded.authored,
         configuration: loaded.configuration,
-        path: args.configurationPath,
+        // The path the loader settled on, never the one it was handed: a named
+        // path is resolved before it is read, and the file that was read is the
+        // one every later rule has to be talking about.
+        path: loaded.path,
         project: args.project,
       };
     } catch (error) {
@@ -91,7 +94,7 @@ export class ProjectConfigurationService {
     const workspaceConfigurationPath =
       args.workspaceConfigurationPath === undefined
         ? undefined
-        : path.resolve(args.workspaceConfigurationPath);
+        : path.resolve(args.workspaceRoot, args.workspaceConfigurationPath);
 
     const loaded: LoadedProjectConfiguration[] = [];
 

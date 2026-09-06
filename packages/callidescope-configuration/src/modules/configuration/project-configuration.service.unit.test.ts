@@ -40,6 +40,7 @@ async function writeWorkspace(
 }
 
 describe(ProjectConfigurationService, () => {
+  let configurationService: ConfigurationService;
   let service: ProjectConfigurationService;
 
   beforeAll(async () => {
@@ -47,6 +48,7 @@ describe(ProjectConfigurationService, () => {
       providers: [ConfigurationService, ProjectConfigurationService],
     }).compile();
 
+    configurationService = await module.resolve(ConfigurationService);
     service = await module.resolve(ProjectConfigurationService);
   });
 
@@ -158,10 +160,41 @@ describe(ProjectConfigurationService, () => {
       }),
     });
 
+    // Round-tripped through the loader rather than rebuilt by hand: the rule is
+    // an equality against the path a run really loaded, and a test constructing
+    // both sides the same way cannot fail for the reason the rule can.
+    const { path: workspaceConfigurationPath } =
+      await configurationService.loadConfigurationFile({
+        configurationPath: path.join(
+          workspaceRoot,
+          "packages",
+          "examples",
+          "callidescope.config.json",
+        ),
+      });
+
+    const loaded = await service.loadProjectConfigurations({
+      projects: ["packages/examples"],
+      workspaceConfigurationPath,
+      workspaceRoot,
+    });
+
+    expect(loaded).toStrictEqual([]);
+  });
+
+  it("skips the run's own configuration named relative to the workspace root", async () => {
+    const workspaceRoot = await writeWorkspace({
+      "packages/examples": JSON.stringify({
+        output: { json: { path: "report.json" } },
+      }),
+    });
+
+    // A command line names its configuration relative to the workspace root, so
+    // the skip has to resolve it against that root — the same root every project
+    // path here is resolved against, and not the process cwd.
     const loaded = await service.loadProjectConfigurations({
       projects: ["packages/examples"],
       workspaceConfigurationPath: path.join(
-        workspaceRoot,
         "packages",
         "examples",
         "callidescope.config.json",

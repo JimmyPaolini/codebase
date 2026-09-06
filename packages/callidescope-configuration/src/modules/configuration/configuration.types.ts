@@ -171,6 +171,16 @@ export interface LoadedCallidescopeConfiguration {
   path: string | undefined;
 }
 
+/**
+ * What a load reports when the caller named the file, so a path is certain.
+ *
+ * The search may find nothing and legally say so; a named path either resolves
+ * or refuses, and never comes back as `undefined`.
+ */
+export interface LoadedCallidescopeConfigurationFile extends LoadedCallidescopeConfiguration {
+  path: string;
+}
+
 /** One project's own configuration file, and the project it configures. */
 export interface LoadedProjectConfiguration {
   /** The file's own object, before a single default was applied. */
@@ -186,8 +196,10 @@ export interface LoadProjectConfigurationsArguments {
   /** Workspace-relative project roots to look beside. */
   projects: readonly string[];
   /**
-   * Absolute path already loaded as the run's own workspace configuration, as
-   * `loadConfigurationFile` reports it.
+   * The file already loaded as the run's own workspace configuration, either
+   * absolute or relative to `workspaceRoot` — resolved against that root, the
+   * same way every project path here is, so the two are comparable by
+   * construction rather than by convention.
    *
    * One file, one role per run: a configuration that a run was pointed at is
    * not additionally read as the configuration of whichever project happens to
