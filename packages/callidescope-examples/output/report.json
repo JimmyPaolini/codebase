@@ -1232,7 +1232,7 @@
             },
             {
               "displayName": "UnknownConfigurationFileTypeError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#4834"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6190"
             },
             {
               "displayName": "ConfigurationService.loadConfigurationModule",
@@ -1340,6 +1340,42 @@
           }
         },
         {
+          "breadth": 3,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.findConfigurationFileAt",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10912"
+            },
+            {
+              "displayName": "ProjectConfigurationService.loadProjectConfiguration",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2745"
+            },
+            {
+              "displayName": "ProjectConfigurationService.assertNoForbiddenFields",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1260"
+            }
+          ],
+          "displayName": "ProjectConfigurationService.loadProjectConfigurations",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#4743",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
+            "line": 143
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "LoadProjectConfigurationsArguments"
+              }
+            ],
+            "returnType": "Promise<LoadedProjectConfiguration[]>",
+            "text": "(args: LoadProjectConfigurationsArguments): Promise<LoadedProjectConfiguration[]>"
+          }
+        },
+        {
           "breadth": 2,
           "callees": [
             {
@@ -1348,7 +1384,7 @@
             },
             {
               "displayName": "ConfigurationFileNotFoundError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#8161"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9517"
             }
           ],
           "displayName": "ConfigurationService.resolveConfigurationPath",
@@ -1375,20 +1411,52 @@
           "breadth": 2,
           "callees": [
             {
+              "displayName": "ProjectConfigurationService.findForbiddenField",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1993"
+            },
+            {
+              "displayName": "ProjectConfigurationFieldNotPermittedError.constructor",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10800"
+            }
+          ],
+          "displayName": "ProjectConfigurationService.assertNoForbiddenFields",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1260",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
+            "line": 44
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "loadedConfiguration",
+                "type": "LoadedProjectConfiguration"
+              }
+            ],
+            "returnType": "void",
+            "text": "(loadedConfiguration: LoadedProjectConfiguration): void"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
               "displayName": "ConfigurationService.loadConfigurationFile",
               "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12770"
             },
             {
               "displayName": "ProjectConfigurationError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#8685"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10041"
             }
           ],
           "displayName": "ProjectConfigurationService.loadProjectConfiguration",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1299",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2745",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 42
+            "line": 94
           },
           "signature": {
             "parameters": [
@@ -1401,38 +1469,6 @@
             ],
             "returnType": "Promise<LoadedProjectConfiguration>",
             "text": "(args: { configurationPath: string; project: string; }): Promise<LoadedProjectConfiguration>"
-          }
-        },
-        {
-          "breadth": 2,
-          "callees": [
-            {
-              "displayName": "ConfigurationService.findConfigurationFileAt",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10912"
-            },
-            {
-              "displayName": "ProjectConfigurationService.loadProjectConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1299"
-            }
-          ],
-          "displayName": "ProjectConfigurationService.loadProjectConfigurations",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#3297",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 91
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "args",
-                "type": "LoadProjectConfigurationsArguments"
-              }
-            ],
-            "returnType": "Promise<LoadedProjectConfiguration[]>",
-            "text": "(args: LoadProjectConfigurationsArguments): Promise<LoadedProjectConfiguration[]>"
           }
         },
         {
@@ -1536,15 +1572,15 @@
           "callees": [
             {
               "displayName": "custom(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#5359"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6715"
             }
           ],
           "displayName": "callbackSchema",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#5298",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6654",
           "location": {
             "column": 24,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 178
+            "line": 220
           },
           "signature": {
             "parameters": [],
@@ -1785,12 +1821,12 @@
                 "summary": "Resolves the configuration file sitting at each project's own root — the directory holding the `tsconfig.json` that makes it a project. A project with no file of its own is absent from the result rather than present with an empty one: it is configured entirely by the workspace file, which is the behavior every project has today. Nothing is merged. A project inherits by importing the workspace configuration and spreading it, exactly the way every `codometer.config.ts` in this repository already does. That is deliberate rather than unfinished: a deep merge here is what would take away a project's ability to say \"no, actually, none of that\". The file a run was pointed at is skipped, because it is already serving as that run's workspace configuration. One file, one role per run — a package whose task names its own configuration and then traces itself would otherwise have that file read a second time and judged as a project's, which is a refusal for the workspace-only fields it legitimately sets.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#3297",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#4743",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 91
+                "line": 143
               },
               "signature": {
                 "parameters": [
@@ -1812,12 +1848,12 @@
                 "summary": "Reads one project's configuration file. Every failure the read can produce — a file nothing can parse, a shape the schema rejects — is rethrown naming the project, because a run resolves a file per project and a bare parse error says nothing about which one to go and fix.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1299",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2745",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 42
+                "line": 94
               },
               "signature": {
                 "parameters": [
@@ -2397,12 +2433,12 @@
                 "summary": "Accepts a function-valued option without inspecting its signature. Zod cannot describe a callback's parameters, and parsing one would replace the caller's function with a wrapper. Checking that it is callable is the whole of what validation can honestly assert here.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#5298",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6654",
               "isCycle": false,
               "location": {
                 "column": 24,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 178
+                "line": 220
               },
               "signature": {
                 "parameters": [],
@@ -2412,12 +2448,12 @@
             },
             {
               "displayName": "custom(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#5359",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6715",
               "isCycle": false,
               "location": {
                 "column": 23,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 179
+                "line": 221
               },
               "signature": {
                 "parameters": [
@@ -2493,19 +2529,19 @@
         }
       ],
       "summary": {
-        "callableCount": 48,
+        "callableCount": 51,
         "cyclicComponentCount": 0,
-        "edgeCount": 46,
+        "edgeCount": 49,
         "entryPointCount": 7,
         "fileCount": 14,
         "maximumDepth": 6,
         "projectCount": 1,
-        "unresolvedCallCount": 4
+        "unresolvedCallCount": 5
       },
       "typeDepths": [
         {
           "maximumDepth": 6,
-          "memberCount": 3,
+          "memberCount": 5,
           "minimumDepth": 1,
           "moduleId": "packages/callidescope-configuration:examples",
           "typeName": "ProjectConfigurationService"
@@ -2544,6 +2580,13 @@
           "minimumDepth": 1,
           "moduleId": "packages/callidescope-configuration:examples",
           "typeName": "ProjectConfigurationError"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-configuration:examples",
+          "typeName": "ProjectConfigurationFieldNotPermittedError"
         },
         {
           "maximumDepth": 1,
@@ -8519,14 +8562,14 @@
     }
   ],
   "summary": {
-    "callableCount": 191,
+    "callableCount": 194,
     "cyclicComponentCount": 1,
-    "edgeCount": 159,
+    "edgeCount": 162,
     "entryPointCount": 62,
     "fileCount": 73,
     "maximumDepth": 8,
     "projectCount": 4,
-    "unresolvedCallCount": 11
+    "unresolvedCallCount": 12
   },
   "typeDepths": [
     {
@@ -8566,7 +8609,7 @@
     },
     {
       "maximumDepth": 6,
-      "memberCount": 3,
+      "memberCount": 5,
       "minimumDepth": 1,
       "moduleId": "packages/callidescope-configuration:examples",
       "typeName": "ProjectConfigurationService"
@@ -8675,6 +8718,13 @@
       "minimumDepth": 1,
       "moduleId": "packages/callidescope-configuration:examples",
       "typeName": "ProjectConfigurationError"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-configuration:examples",
+      "typeName": "ProjectConfigurationFieldNotPermittedError"
     },
     {
       "maximumDepth": 1,

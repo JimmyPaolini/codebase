@@ -2,10 +2,16 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { ProjectConfigurationError } from "./configuration.constants";
+import {
+  PROJECT_CONFIGURATION_FORBIDDEN_FIELDS,
+  PROJECT_CONFIGURATION_FORBIDDEN_LIMITS,
+  ProjectConfigurationError,
+  ProjectConfigurationFieldNotPermittedError,
+} from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 
 import type {
+  CallidescopeConfiguration,
   LoadedProjectConfiguration,
   LoadProjectConfigurationsArguments,
 } from "./configuration.types";
@@ -30,6 +36,52 @@ export class ProjectConfigurationService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Refuses a project configuration that sets a field only the workspace
+   * configuration may set.
+   */
+  private assertNoForbiddenFields(
+    loadedConfiguration: LoadedProjectConfiguration,
+  ): void {
+    const field = this.findForbiddenField(loadedConfiguration.authored);
+
+    if (field === undefined) {
+      return;
+    }
+
+    throw new ProjectConfigurationFieldNotPermittedError({
+      field,
+      project: loadedConfiguration.project,
+    });
+  }
+
+  /**
+   * Finds the first field a project's own configuration sets that only the
+   * workspace configuration may set.
+   *
+   * Checked against `authored`, the file exactly as written, never against the
+   * resolved configuration: resolution manufactures every field for every
+   * project, so asking the resolved object whether it "has" a field can never
+   * say no.
+   */
+  private findForbiddenField(
+    authored: CallidescopeConfiguration,
+  ): string | undefined {
+    for (const field of PROJECT_CONFIGURATION_FORBIDDEN_FIELDS) {
+      if (authored[field] !== undefined) {
+        return field;
+      }
+    }
+
+    for (const field of PROJECT_CONFIGURATION_FORBIDDEN_LIMITS) {
+      if (authored.limits?.[field] !== undefined) {
+        return `limits.${field}`;
+      }
+    }
+
+    return undefined;
+  }
 
   /**
    * Reads one project's configuration file.
@@ -111,9 +163,12 @@ export class ProjectConfigurationService {
         continue;
       }
 
-      loaded.push(
-        await this.loadProjectConfiguration({ configurationPath, project }),
-      );
+      const projectConfiguration = await this.loadProjectConfiguration({
+        configurationPath,
+        project,
+      });
+      this.assertNoForbiddenFields(projectConfiguration);
+      loaded.push(projectConfiguration);
     }
 
     return loaded;

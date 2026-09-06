@@ -3,6 +3,8 @@
 import { z } from "zod";
 
 import type {
+  CallidescopeConfiguration,
+  CallidescopeLimits,
   RenderMarkdownOutput,
   WriteMarkdownOutput,
 } from "./configuration.types";
@@ -160,6 +162,46 @@ export const DEFAULT_MARKDOWN_START_MARKER = "<!-- CALL_STACKS_START -->";
 /** Closing anchor of the generated markdown block. */
 export const DEFAULT_MARKDOWN_END_MARKER = "<!-- CALL_STACKS_END -->";
 
+// 🔒 Project Configuration
+
+/**
+ * Run-level fields only a workspace configuration may set.
+ *
+ * Every one names where a run reads from, where it writes to, or how it
+ * partitions the workspace — decisions one project cannot make differently
+ * from the run tracing it.
+ */
+export const PROJECT_CONFIGURATION_FORBIDDEN_FIELDS = [
+  "allowSpreadFor",
+  "directories",
+  "excludeFrom",
+  "ignoreCallees",
+  "output",
+  "workspaceStructure",
+] as const satisfies readonly (keyof CallidescopeConfiguration)[];
+
+/**
+ * Analysis-shaping limits only a workspace configuration may set.
+ *
+ * `maximumDepth` and `maximumBreadth` are absent on purpose — a project gates
+ * itself against those two. Every other limit shapes how the call graph
+ * itself is built, which has to stay one answer for the whole workspace.
+ */
+export const PROJECT_CONFIGURATION_FORBIDDEN_LIMITS = [
+  "callerMajorityRatio",
+  "directSpreadThreshold",
+  "maximumImplementationCandidates",
+  "minimumCallers",
+  "spreadThreshold",
+] as const satisfies readonly (keyof CallidescopeLimits)[];
+
+/**
+ * The fields named in a refusal, so an agent can fix a project configuration
+ * without opening the docs.
+ */
+export const PROJECT_CONFIGURATION_PERMITTED_FIELDS =
+  "entryPoints, limits.maximumDepth, limits.maximumBreadth, and exclude";
+
 /** Raised when a configuration file has an extension nothing can read. */
 export class UnknownConfigurationFileTypeError extends Error {
   constructor(filePath: string) {
@@ -293,5 +335,22 @@ export class ProjectConfigurationError extends Error {
       { cause: args.cause },
     );
     this.name = "ProjectConfigurationError";
+  }
+}
+
+/**
+ * Raised when a project's own configuration sets a field only the workspace
+ * configuration may set.
+ *
+ * Names the project, the offending field, and the four fields a project
+ * configuration may set, so the message is actionable without opening a
+ * README.
+ */
+export class ProjectConfigurationFieldNotPermittedError extends Error {
+  constructor(args: { field: string; project: string }) {
+    super(
+      `${args.project} sets ${args.field}, which only the workspace configuration may set. A project configuration may set ${PROJECT_CONFIGURATION_PERMITTED_FIELDS}.`,
+    );
+    this.name = "ProjectConfigurationFieldNotPermittedError";
   }
 }

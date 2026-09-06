@@ -8,6 +8,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import {
   DEFAULT_SPREAD_THRESHOLD,
   ProjectConfigurationError,
+  ProjectConfigurationFieldNotPermittedError,
 } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 import { ProjectConfigurationService } from "./project-configuration.service";
@@ -139,7 +140,7 @@ describe(ProjectConfigurationService, () => {
   it("keeps the values a project's own spread carried in", async () => {
     const workspaceRoot = await writeWorkspace({
       "packages/gated": JSON.stringify({
-        limits: { maximumDepth: 3, spreadThreshold: 9 },
+        limits: { maximumBreadth: 9, maximumDepth: 3 },
       }),
     });
 
@@ -148,7 +149,7 @@ describe(ProjectConfigurationService, () => {
       workspaceRoot,
     });
 
-    expect(loaded?.configuration.limits.spreadThreshold).toBe(9);
+    expect(loaded?.configuration.limits.maximumBreadth).toBe(9);
   });
 
   // 🎭 One File, One Role
@@ -281,5 +282,109 @@ describe(ProjectConfigurationService, () => {
         workspaceRoot,
       }),
     ).rejects.toThrow(`packages/broken at ${configurationPath}`);
+  });
+
+  // 🔒 Permitted Fields
+
+  it.each([
+    ["directories", { directories: ["packages/other"] }],
+    ["output", { output: { json: { path: "report.json" } } }],
+    [
+      "workspaceStructure",
+      { workspaceStructure: { rootModuleSegment: "app" } },
+    ],
+    ["excludeFrom", { excludeFrom: [".callidescopeignore"] }],
+    ["ignoreCallees", { ignoreCallees: ["Logger.log"] }],
+    ["allowSpreadFor", { allowSpreadFor: ["**/*.command.ts"] }],
+    ["limits.spreadThreshold", { limits: { spreadThreshold: 2 } }],
+    ["limits.directSpreadThreshold", { limits: { directSpreadThreshold: 2 } }],
+    ["limits.callerMajorityRatio", { limits: { callerMajorityRatio: 0.5 } }],
+    ["limits.minimumCallers", { limits: { minimumCallers: 3 } }],
+    [
+      "limits.maximumImplementationCandidates",
+      { limits: { maximumImplementationCandidates: 4 } },
+    ],
+  ])(
+    "refuses a project configuration that sets %s",
+    async (_field, configuration) => {
+      const workspaceRoot = await writeWorkspace({
+        "packages/broken": JSON.stringify(configuration),
+      });
+
+      await expect(
+        service.loadProjectConfigurations({
+          projects: ["packages/broken"],
+          workspaceRoot,
+        }),
+      ).rejects.toThrow(ProjectConfigurationFieldNotPermittedError);
+    },
+  );
+
+  it("names the project, the field, and the fields a project may set", async () => {
+    const workspaceRoot = await writeWorkspace({
+      "packages/broken": JSON.stringify({
+        output: { json: { path: "report.json" } },
+      }),
+    });
+
+    await expect(
+      service.loadProjectConfigurations({
+        projects: ["packages/broken"],
+        workspaceRoot,
+      }),
+    ).rejects.toThrow(
+      "packages/broken sets output, which only the workspace configuration " +
+        "may set. A project configuration may set entryPoints, " +
+        "limits.maximumDepth, limits.maximumBreadth, and exclude.",
+    );
+  });
+
+  it.each([
+    ["entryPoints", { entryPoints: { includeTests: true } }],
+    ["limits.maximumDepth", { limits: { maximumDepth: 5 } }],
+    ["limits.maximumBreadth", { limits: { maximumBreadth: 10 } }],
+    ["exclude", { exclude: ["**/*.spec.ts"] }],
+  ])(
+    "accepts a project configuration that sets %s",
+    async (_field, configuration) => {
+      const workspaceRoot = await writeWorkspace({
+        "packages/allowed": JSON.stringify(configuration),
+      });
+
+      const loaded = await service.loadProjectConfigurations({
+        projects: ["packages/allowed"],
+        workspaceRoot,
+      });
+
+      expect(loaded).toHaveLength(1);
+    },
+  );
+
+  it("never refuses the run's own workspace configuration for the fields it legitimately sets", async () => {
+    const workspaceRoot = await writeWorkspace({
+      "packages/examples": JSON.stringify({
+        limits: { maximumImplementationCandidates: 4 },
+        output: { json: { path: "report.json" } },
+        workspaceStructure: { rootModuleSegment: "app" },
+      }),
+    });
+
+    const { path: workspaceConfigurationPath } =
+      await configurationService.loadConfigurationFile({
+        configurationPath: path.join(
+          workspaceRoot,
+          "packages",
+          "examples",
+          "callidescope.config.json",
+        ),
+      });
+
+    const loaded = await service.loadProjectConfigurations({
+      projects: ["packages/examples"],
+      workspaceConfigurationPath,
+      workspaceRoot,
+    });
+
+    expect(loaded).toStrictEqual([]);
   });
 });
