@@ -8,7 +8,7 @@ import {
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
 } from "@callidescope/configuration";
-import { ProgramConfigurationError } from "@callidescope/graph";
+import { AddressService, ProgramConfigurationError } from "@callidescope/graph";
 import {
   MarkdownReportService,
   OutputJsonService,
@@ -39,6 +39,7 @@ import type {
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeProjectReadmeConfiguration,
 } from "@callidescope/configuration";
+import type { UnresolvedEntryPointAddress } from "@callidescope/graph";
 import type { ProjectSection } from "@callidescope/output";
 
 /**
@@ -53,6 +54,7 @@ export class CallidescopeCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly addressService: AddressService,
     private readonly callidescopeService: CallidescopeService,
     private readonly inputService: InputService,
     private readonly outputJsonService: OutputJsonService,
@@ -103,6 +105,39 @@ export class CallidescopeCommand extends CommandRunner {
             },
           ];
     });
+  }
+
+  /**
+   * States why one declared address failed to resolve, naming the project and
+   * the field that declared it.
+   *
+   * The field is named rather than left to be inferred, matching the sibling
+   * refusal this shares a catch with — which says outright which fields a
+   * project configuration may set instead of leaving the reader to guess.
+   *
+   * An ambiguous address's candidates are rendered by `AddressService`, the
+   * same renderer `depth` and `breadth` print, so what a reader is handed for
+   * a declared entry point and what they are handed for an address they typed
+   * are one thing said one way.
+   */
+  private describeUnresolvedAddress(
+    unresolvedAddress: UnresolvedEntryPointAddress,
+  ): string {
+    const label =
+      unresolvedAddress.projectName ?? "the workspace configuration";
+    const { address, resolution } = unresolvedAddress;
+
+    if (resolution.kind === "not-found") {
+      return `${label} declares an entryPoints.addresses entry that resolves to nothing: "${address}". Check the file path and the qualified name callidescope prints for it in a stack.`;
+    }
+
+    if (resolution.kind === "invalid") {
+      return `${label} declares an invalid entryPoints.addresses entry. ${resolution.reason}`;
+    }
+
+    return `${label} declares an entryPoints.addresses entry that matches more than one declaration: "${address}". ${this.addressService.describeCandidates(
+      { address, candidates: resolution.candidates },
+    )}`;
   }
 
   /** How many stacks a section shows before the rest are folded away. */
@@ -270,7 +305,11 @@ export class CallidescopeCommand extends CommandRunner {
 
     // Checked before anything is printed or written, like every other refusal.
     if (outcome.unresolvedAddresses.length > 0) {
-      throw new UnresolvedEntryPointAddressError(outcome.unresolvedAddresses);
+      throw new UnresolvedEntryPointAddressError(
+        outcome.unresolvedAddresses.map((unresolvedAddress) =>
+          this.describeUnresolvedAddress(unresolvedAddress),
+        ),
+      );
     }
 
     this.report({ configuration, result: outcome.result });

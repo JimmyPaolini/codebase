@@ -1,10 +1,5 @@
 // ♟️ Constants
 
-import type {
-  CallableAddressCandidate,
-  UnresolvedEntryPointAddress,
-} from "@callidescope/graph";
-
 /**
  * Whether a `new` expression pushes a frame.
  *
@@ -30,66 +25,38 @@ export const PROJECT_README_NAME = "README.md";
  * shipped from names it the single highest-value refusal in it. One error
  * covers every unresolved address a run found, so a run with several
  * problems is fixed from one message rather than one refusal at a time.
+ *
+ * Takes the sentences already written rather than the addresses themselves:
+ * wording one of them needs `AddressService` to render an ambiguous address's
+ * candidates, and a `*.constants.ts` that reaches a service is not holding
+ * constants. `CallidescopeCommand` writes them; this only joins them.
  */
 export class UnresolvedEntryPointAddressError extends Error {
-  constructor(unresolvedAddresses: readonly UnresolvedEntryPointAddress[]) {
-    super(
-      unresolvedAddresses
-        .map((unresolvedAddress) =>
-          UnresolvedEntryPointAddressError.describeUnresolvedAddress(
-            unresolvedAddress,
-          ),
-        )
-        .join(" "),
-    );
+  constructor(descriptions: readonly string[]) {
+    super(UnresolvedEntryPointAddressError.joinDescriptions(descriptions));
     this.name = "UnresolvedEntryPointAddressError";
   }
 
   /**
-   * Writes one ambiguous candidate as the address that would have picked it,
-   * so the fix is a copy away rather than a location to go translate back
-   * into one.
+   * Joins one sentence per unresolved address into one refusal.
    *
-   * Built from the declared address rather than the candidate's own display
-   * name: every candidate matched the same file and the same qualified name —
-   * that agreement is what "ambiguous" means — so only the line varies, and a
-   * `:<line>` already on the declared address (from a disambiguator that
-   * still matched more than one line) is replaced rather than doubled up.
+   * Numbered and counted rather than run together: these reach a log line the
+   * logger prints on a single line, so six sentences with nothing between them
+   * arrive as a paragraph with no way to see where one problem ends and the
+   * next begins. A lone problem is left as the sentence it is, since numbering
+   * a list of one is noise.
    */
-  private static describeCandidate(args: {
-    address: string;
-    candidate: CallableAddressCandidate;
-  }): string {
-    const baseAddress = args.address.replace(/:\d+$/, "");
+  private static joinDescriptions(descriptions: readonly string[]): string {
+    const [only] = descriptions;
 
-    return `${baseAddress}:${String(args.candidate.location.line)}`;
-  }
-
-  /** States why one declared address failed to resolve, naming its project. */
-  private static describeUnresolvedAddress(
-    unresolvedAddress: UnresolvedEntryPointAddress,
-  ): string {
-    const label =
-      unresolvedAddress.projectName ?? "the workspace configuration";
-    const { address, resolution } = unresolvedAddress;
-
-    if (resolution.kind === "not-found") {
-      return `${label} declares an entry point that resolves to nothing: "${address}". Check the file path and the qualified name callidescope prints for it in a stack.`;
+    if (only !== undefined && descriptions.length === 1) {
+      return only;
     }
 
-    if (resolution.kind === "invalid") {
-      return `${label} declares an invalid entry point. ${resolution.reason}`;
-    }
+    const numbered = descriptions
+      .map((description, index) => `(${String(index + 1)}) ${description}`)
+      .join(" ");
 
-    const candidates = resolution.candidates
-      .map((candidate) =>
-        UnresolvedEntryPointAddressError.describeCandidate({
-          address,
-          candidate,
-        }),
-      )
-      .join(", ");
-
-    return `${label} declares an entry point that matches more than one declaration: "${address}". Candidates: ${candidates}. Add ":<line>" to the address to pick one.`;
+    return `${String(descriptions.length)} declared entry points did not resolve. ${numbered}`;
   }
 }

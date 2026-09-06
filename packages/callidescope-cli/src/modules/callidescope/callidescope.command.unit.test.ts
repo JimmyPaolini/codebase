@@ -7,7 +7,7 @@ import {
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
 } from "@callidescope/configuration";
-import { ProgramConfigurationError } from "@callidescope/graph";
+import { AddressService, ProgramConfigurationError } from "@callidescope/graph";
 import {
   MarkdownReportService,
   MermaidReportService,
@@ -252,6 +252,7 @@ describe(CallidescopeCommand, () => {
           ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        AddressService,
         InputService,
         ReportFindingsService,
         RunPlanService,
@@ -294,6 +295,7 @@ describe(CallidescopeCommand, () => {
         },
         { provide: LoggerService, useValue: logger },
         { provide: InputService, useValue: inputService },
+        AddressService,
         ReportFindingsService,
         RunPlanService,
       ],
@@ -331,6 +333,7 @@ describe(CallidescopeCommand, () => {
           ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        AddressService,
         InputService,
         ReportFindingsService,
         RunPlanService,
@@ -987,7 +990,7 @@ describe(CallidescopeCommand, () => {
       undefined,
       {
         reason:
-          'broken declares an entry point that resolves to nothing: "packages/broken/src/gone.service.ts#GoneService.run". Check the file path and the qualified name callidescope prints for it in a stack.',
+          'broken declares an entryPoints.addresses entry that resolves to nothing: "packages/broken/src/gone.service.ts#GoneService.run". Check the file path and the qualified name callidescope prints for it in a stack.',
       },
     );
   });
@@ -1028,7 +1031,69 @@ describe(CallidescopeCommand, () => {
       undefined,
       {
         reason:
-          'broken declares an entry point that matches more than one declaration: "packages/broken/src/handlers.ts#handle". Candidates: packages/broken/src/handlers.ts#handle:12, packages/broken/src/handlers.ts#handle:34. Add ":<line>" to the address to pick one.',
+          'broken declares an entryPoints.addresses entry that matches more than one declaration: "packages/broken/src/handlers.ts#handle". Candidates: packages/broken/src/handlers.ts#handle:12, packages/broken/src/handlers.ts#handle:34. Add ":<line>" to the address to pick one.',
+      },
+    );
+  });
+
+  it("names the column of each candidate when an ambiguous address's candidates share a line", async () => {
+    stubUnresolvedEntryPointAddresses([
+      {
+        address: "packages/broken/src/handlers.ts#handle:12",
+        projectName: "broken",
+        resolution: {
+          candidates: [
+            {
+              id: "packages/broken/src/handlers.ts#120",
+              location: {
+                column: 3,
+                filePath: "packages/broken/src/handlers.ts",
+                line: 12,
+              },
+            },
+            {
+              id: "packages/broken/src/handlers.ts#148",
+              location: {
+                column: 31,
+                filePath: "packages/broken/src/handlers.ts",
+                line: 12,
+              },
+            },
+          ],
+          kind: "ambiguous",
+        },
+      },
+    ]);
+
+    await command.run([], {});
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected a project configuration",
+      undefined,
+      {
+        reason:
+          'broken declares an entryPoints.addresses entry that matches more than one declaration: "packages/broken/src/handlers.ts#handle:12". Candidates: packages/broken/src/handlers.ts#handle:12 (column 3), packages/broken/src/handlers.ts#handle:12 (column 31). Two declarations on one line cannot be told apart by ":<line>" — rename one, or name a different callable.',
+      },
+    );
+  });
+
+  it("names the project for an invalid address that project declared", async () => {
+    stubUnresolvedEntryPointAddresses([
+      {
+        address: "not-an-address",
+        projectName: "broken",
+        resolution: { kind: "invalid", reason: 'It needs a "#".' },
+      },
+    ]);
+
+    await command.run([], {});
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected a project configuration",
+      undefined,
+      {
+        reason:
+          'broken declares an invalid entryPoints.addresses entry. It needs a "#".',
       },
     );
   });
@@ -1058,7 +1123,7 @@ describe(CallidescopeCommand, () => {
       undefined,
       {
         reason:
-          'the workspace configuration declares an invalid entry point. "not-an-address" is not a callable address. It needs a file path and a qualified name joined by "#", as in "src/foo.service.ts#FooService.bar", optionally followed by ":<line>" to disambiguate. broken declares an entry point that resolves to nothing: "packages/broken/src/gone.service.ts#GoneService.run". Check the file path and the qualified name callidescope prints for it in a stack.',
+          '2 declared entry points did not resolve. (1) the workspace configuration declares an invalid entryPoints.addresses entry. "not-an-address" is not a callable address. It needs a file path and a qualified name joined by "#", as in "src/foo.service.ts#FooService.bar", optionally followed by ":<line>" to disambiguate. (2) broken declares an entryPoints.addresses entry that resolves to nothing: "packages/broken/src/gone.service.ts#GoneService.run". Check the file path and the qualified name callidescope prints for it in a stack.',
       },
     );
   });
