@@ -187,6 +187,22 @@ export class CallidescopeCommand extends CommandRunner {
   }
 
   /**
+   * Logs what every project in scope failed to declare between them, and
+   * fails the run.
+   *
+   * Reached only once a trace has resolved which projects were even in
+   * scope: whether any of them declared `limits.maximumBreadth` cannot be
+   * answered any earlier than that, unlike a command-line mistake.
+   */
+  private rejectProjectLimits(errors: string[], workspaceRoot: string): void {
+    this.logger.error(`🔭 Rejected the configuration`, undefined, {
+      reasons: errors,
+      workspaceRoot,
+    });
+    process.exitCode = 1;
+  }
+
+  /**
    * Prints the run in the requested format.
    *
    * Markdown unless asked otherwise: it is the one rendering that reads well
@@ -302,6 +318,20 @@ export class CallidescopeCommand extends CommandRunner {
       directories: resolvedOptions.directories ?? configuration.directories,
       workspaceRoot,
     });
+
+    // Checked only now, and not inside `prepareRun`: whether any project in
+    // scope declared `limits.maximumBreadth` is a question the trace above
+    // just answered, and `prepareRun` runs before a single project has been
+    // reached.
+    const projectLimitErrors = this.runPlanService.validateProjectLimits({
+      mode,
+      projectLimits: outcome.projectLimits,
+    });
+
+    if (projectLimitErrors.length > 0) {
+      this.rejectProjectLimits(projectLimitErrors, workspaceRoot);
+      return;
+    }
 
     // Checked before anything is printed or written, like every other refusal.
     if (outcome.unresolvedAddresses.length > 0) {

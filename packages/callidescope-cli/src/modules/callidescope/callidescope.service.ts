@@ -287,6 +287,7 @@ export class CallidescopeService {
     });
 
     return {
+      projectLimits: args.projectLimits,
       result: {
         deepStacks: this.projectReportsService.findDeepStacks({
           limits: args.projectLimits,

@@ -38,6 +38,8 @@ import { CallidescopeService } from "./callidescope.service";
 
 import type {
   CallGraphResult,
+  ProjectLimits,
+  ProjectLimitsLookup,
   ProjectReport,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
@@ -95,6 +97,24 @@ function buildEmptySummary(): CallGraphResult["summary"] {
     projectCount: 0,
     unresolvedCallCount: 0,
   };
+}
+
+/** A project's own limits, inheriting depth and declaring no breadth. */
+function buildProjectLimits(
+  overrides: Partial<ProjectLimits> = {},
+): ProjectLimits {
+  return {
+    maximumBreadth: undefined,
+    maximumDepth: { origin: "inherited", path: undefined, value: 6 },
+    ...overrides,
+  };
+}
+
+/** A lookup naming every project a run reached, declaring no breadth anywhere. */
+function buildProjectLimitsLookup(
+  byProject: ReadonlyMap<string, ProjectLimits> = new Map(),
+): ProjectLimitsLookup {
+  return { byProject, workspace: buildProjectLimits() };
 }
 
 /** Builds an empty report for one named project. */
@@ -179,7 +199,10 @@ describe(CallidescopeCommand, () => {
     );
   }
 
-  /** Points the trace at a result holding one callable past the breadth limit. */
+  /**
+   * Points the trace at a result holding one callable past the breadth
+   * limit, and at the "example" project having declared that limit itself.
+   */
   function stubWideCallable(): void {
     stubTrace(
       buildCallGraphResult({
@@ -199,12 +222,30 @@ describe(CallidescopeCommand, () => {
           },
         ],
       }),
+      buildProjectLimitsLookup(
+        new Map([
+          [
+            "example",
+            buildProjectLimits({
+              maximumBreadth: {
+                origin: "declared",
+                path: "packages/example/callidescope.config.ts",
+                value: 3,
+              },
+            }),
+          ],
+        ]),
+      ),
     );
   }
 
   /** Points the trace at a prepared result. */
-  function stubTrace(result: CallGraphResult = buildCallGraphResult()): void {
+  function stubTrace(
+    result: CallGraphResult = buildCallGraphResult(),
+    projectLimits: ProjectLimitsLookup = buildProjectLimitsLookup(),
+  ): void {
     callidescopeService.trace.mockResolvedValue({
+      projectLimits,
       projectNames: ["example"],
       result,
       startingProjectRoots: new Map([["example", "packages/example"]]),
@@ -217,6 +258,7 @@ describe(CallidescopeCommand, () => {
     unresolvedAddresses: readonly UnresolvedEntryPointAddress[],
   ): void {
     callidescopeService.trace.mockResolvedValue({
+      projectLimits: buildProjectLimitsLookup(),
       projectNames: ["example"],
       result: buildCallGraphResult(),
       startingProjectRoots: new Map([["example", "packages/example"]]),
@@ -727,11 +769,6 @@ describe(CallidescopeCommand, () => {
 
   it("fails when a callable exceeded the breadth limit", async () => {
     stubWideCallable();
-    stubConfiguration(
-      buildConfiguration({
-        limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
-      }),
-    );
 
     await command.run([], { check: "breadth" });
 
@@ -740,11 +777,6 @@ describe(CallidescopeCommand, () => {
 
   it("names a callable that calls too much directly as its own finding", async () => {
     stubWideCallable();
-    stubConfiguration(
-      buildConfiguration({
-        limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
-      }),
-    );
 
     await command.run([], { check: "breadth" });
 
@@ -757,45 +789,105 @@ describe(CallidescopeCommand, () => {
 
   it("passes over a wide callable when only depth is checked", async () => {
     stubWideCallable();
-    stubConfiguration(
-      buildConfiguration({
-        limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
-      }),
-    );
 
     await command.run([], { check: "depth" });
 
     expect(process.exitCode).toBeUndefined();
   });
 
-  it("refuses to check breadth when no limit is configured", async () => {
+  it("refuses to check breadth when no project in scope declares a limit", async () => {
+    // The default from `stubTrace` in `beforeEach`: a trace that reached one
+    // project, and that project declared no breadth limit of its own.
     await command.run([], { check: "breadth" });
 
     expect(process.exitCode).toBe(1);
-    expect(callidescopeService.trace).not.toHaveBeenCalled();
+    // Unlike a command-line mistake, this is only known once the trace has
+    // resolved which projects were even reached.
+    expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenCalledWith(
       "🔭 Rejected the configuration",
       undefined,
       {
         reasons: [
-          "--check breadth requires limits.maximumBreadth to be set. Add `limits: { maximumBreadth: <number> }` to your callidescope.config.ts before running --check breadth.",
+          "--check breadth requires at least one project in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <number> }` to that project's callidescope.config.ts before running --check breadth.",
         ],
         workspaceRoot: path.resolve("."),
       },
     );
   });
 
-  it("traces normally when breadth is configured but not checked", async () => {
-    stubConfiguration(
-      buildConfiguration({
-        limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
-      }),
+  it("does not let a project's own breadth limit gate a run that never asked for it", async () => {
+    stubTrace(
+      buildCallGraphResult(),
+      buildProjectLimitsLookup(
+        new Map([
+          [
+            "example",
+            buildProjectLimits({
+              maximumBreadth: {
+                origin: "declared",
+                path: "packages/example/callidescope.config.ts",
+                value: 3,
+              },
+            }),
+          ],
+        ]),
+      ),
     );
 
     await command.run([], {});
 
     expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
     expect(process.exitCode).toBeUndefined();
+  });
+
+  it("gates breadth for a project that declared a limit alongside one that did not", async () => {
+    // The easy way to get this wrong: refusing the whole run because
+    // "packages/undeclared" named no limit, instead of noticing that
+    // "example" named one and letting the run through to judge it.
+    stubTrace(
+      buildCallGraphResult({
+        wideCallables: [
+          {
+            breadth: 5,
+            callees: [],
+            displayName: "example",
+            id: "packages/example/src/example.ts#0",
+            limit: 3,
+            location: {
+              column: 1,
+              filePath: "packages/example/src/example.ts",
+              line: 1,
+            },
+            signature: undefined,
+          },
+        ],
+      }),
+      buildProjectLimitsLookup(
+        new Map([
+          [
+            "example",
+            buildProjectLimits({
+              maximumBreadth: {
+                origin: "declared",
+                path: "packages/example/callidescope.config.ts",
+                value: 3,
+              },
+            }),
+          ],
+          ["packages/undeclared", buildProjectLimits()],
+        ]),
+      ),
+    );
+
+    await command.run([], { check: "breadth" });
+
+    expect(process.exitCode).toBe(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Found callables calling too much directly",
+      undefined,
+      expect.objectContaining({ count: 1, widest: 5 }),
+    );
   });
 
   // 🕳️ A run that traced nothing

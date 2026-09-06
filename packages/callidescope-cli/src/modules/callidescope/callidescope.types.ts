@@ -4,6 +4,7 @@ import type {
   CallableId,
   CallGraphResult,
   CallidescopeOutputFormat,
+  ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 import type {
@@ -14,6 +15,15 @@ import type {
 
 /** What analyzing one run's callables produced. */
 export interface AnalyzeOutcome {
+  /**
+   * The depth and breadth limits each traced project is judged against.
+   *
+   * Held beside the result rather than inside it, the same as
+   * `unresolvedAddresses`: whether `--check breadth` even has a limit to gate
+   * on is a fact about the projects a run reached, not part of the report
+   * every destination writes.
+   */
+  readonly projectLimits: ProjectLimitsLookup;
   readonly result: CallGraphResult;
   /**
    * Declared entry-point addresses that named no callable, or more than one.
