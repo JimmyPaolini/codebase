@@ -165,7 +165,15 @@ describe(ReportFindingsService, () => {
       stalePaths: [],
     });
 
+    // Named as well as not fatal: a run that does not gate on breadth still
+    // reports what it found, which is the half of "names a wide callable" an
+    // exit code cannot show.
     expect(process.exitCode).toBeUndefined();
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Found callables calling too much directly",
+      undefined,
+      { callables: ["Example.run"], count: 1, widest: 5 },
+    );
   });
 
   it("fails on a stale report regardless of what is checked", () => {

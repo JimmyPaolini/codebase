@@ -16,6 +16,7 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { ADDRESS_NOT_FOUND_ADVICE } from "../address-lookup/address-lookup.constants";
 import { ReportFindingsService } from "../report-findings/report-findings.service";
 import { CHECK_NAMES } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
@@ -138,7 +139,7 @@ export class CallidescopeCommand extends CommandRunner {
     const { address, resolution } = unresolvedAddress;
 
     if (resolution.kind === "not-found") {
-      return `${label} declares an entryPoints.addresses entry that resolves to nothing: "${address}". Check the file path and the qualified name callidescope prints for it in a stack.`;
+      return `${label} declares an entryPoints.addresses entry that resolves to nothing: "${address}". ${ADDRESS_NOT_FOUND_ADVICE}`;
     }
 
     if (resolution.kind === "invalid") {

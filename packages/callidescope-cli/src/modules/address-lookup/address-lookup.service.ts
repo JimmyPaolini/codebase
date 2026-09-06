@@ -4,6 +4,8 @@ import { Injectable } from "@nestjs/common";
 import { CallidescopeService } from "../callidescope/callidescope.service";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
+import { ADDRESS_NOT_FOUND_ADVICE } from "./address-lookup.constants";
+
 import type {
   AddressCommandOptions,
   LocatedWorkspace,
@@ -63,7 +65,7 @@ export class AddressLookupService {
     }
 
     if (resolution.kind === "not-found") {
-      return `No callable matches "${args.address}". Check the file path and the qualified name callidescope prints for it in a stack.`;
+      return `No callable matches "${args.address}". ${ADDRESS_NOT_FOUND_ADVICE}`;
     }
 
     return `"${args.address}" matches more than one declaration. ${this.addressService.describeCandidates(
