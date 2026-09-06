@@ -9,7 +9,7 @@ import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { DrawCombinationsService } from "../draw/draw-combinations.service";
-import { PERMUTATIONS_SUBDIRECTORY } from "../draw/draw.constants";
+import { COLUMN_SPAN_PATTERN } from "../draw/draw.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { FAMILY_MAXIMUM_ROWS } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
@@ -481,7 +481,7 @@ const NEGATIVE_SOURCE_DOCUMENTS: readonly {
         type: "negative" as const,
         ...(modifier ? { modifier } : {}),
       },
-      sourceName: `mosaic/${tile.rows}-rows/permutations/${tile.columns}-columns/${stem}.svg`,
+      sourceName: `mosaic/${tile.rows}-rows/${tile.columns}-columns/${stem}.svg`,
     };
   }),
 );
@@ -780,7 +780,7 @@ describe(MeanderTopologyService, () => {
     it("branches in exactly the families the charter names, measured from disk", async () => {
       const corpus = await readCommittedCorpus();
       const documents = corpus.filter(
-        ({ name }) => !name.includes(`/${PERMUTATIONS_SUBDIRECTORY}/`),
+        ({ name }) => !COLUMN_SPAN_PATTERN.test(name),
       );
       const branching: string[] = [];
       let tJunctions = 0;
@@ -862,8 +862,7 @@ describe(MeanderTopologyService, () => {
         // even if somebody updated that table to match it.
         const namedCrossing = crossing.filter(
           ({ name }) =>
-            familyOf(name) === "negative" &&
-            !name.includes(`/${PERMUTATIONS_SUBDIRECTORY}/`),
+            familyOf(name) === "negative" && !COLUMN_SPAN_PATTERN.test(name),
         );
 
         expect(
@@ -887,8 +886,7 @@ describe(MeanderTopologyService, () => {
         expect(
           crossing.filter(
             ({ name }) =>
-              familyOf(name) === "negative" &&
-              name.includes(`/${PERMUTATIONS_SUBDIRECTORY}/`),
+              familyOf(name) === "negative" && COLUMN_SPAN_PATTERN.test(name),
           ),
         ).toHaveLength(106);
       },

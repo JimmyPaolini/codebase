@@ -11,6 +11,7 @@ import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { MosaicNamingService } from "./mosaic-naming.service";
 
 import type {
+  MosaicBuildableSubFamily,
   MosaicSubFamily,
   MosaicTile,
 } from "../mosaic-motif/mosaic-motif.types";
@@ -32,6 +33,18 @@ const SWEPT_ROWS: readonly number[] = [4, 5, 6, 7, 8];
 
 /** Every name a rule can earn, typed rather than widened for the command line. */
 const NAMES: readonly MosaicSubFamily[] = [
+  "bars",
+  "dashes",
+  "diamond",
+  "dots",
+  "lines",
+  "mesh",
+  "steps",
+];
+
+/** The names that also have a builder, which is what the round trip below can go through. */
+const BUILDABLE_NAMES: readonly MosaicBuildableSubFamily[] = [
+  "bars",
   "dashes",
   "diamond",
   "dots",
@@ -40,10 +53,13 @@ const NAMES: readonly MosaicSubFamily[] = [
 
 /** One canonical tile per name, written out by hand so a rule is checked against a shape rather than against its own builder. */
 const CANONICAL_TILES: readonly (readonly [MosaicSubFamily, MosaicTile])[] = [
+  ["bars", mosaicTile(["s", "s", "."])],
   ["dashes", mosaicTile(["e.", "e.", "e."])],
   ["diamond", mosaicTile(["s", ".", "s", "."])],
   ["dots", mosaicTile([".", ".", "."])],
-  ["lines", mosaicTile(["e", "e", "e"])],
+  ["lines", mosaicTile(["ee", "ee", "ee"])],
+  ["mesh", mosaicTile(["bb", "bb", "ee"])],
+  ["steps", mosaicTile(["sb", "e."])],
 ];
 
 // 🧪 Tests
@@ -89,9 +105,19 @@ describe(MosaicNamingService, () => {
       expect(service.name(mosaicTile([".", "."]))).toBe("dots");
     });
 
-    it("tells lines from dashes by the column span, since a single column's edge wraps onto its own point", () => {
-      expect(service.name(mosaicTile(["e", "e"]))).toBe("lines");
+    it("tells an unbroken run from a broken one, which is the difference between lines and dashes", () => {
+      expect(service.name(mosaicTile(["ee", "ee"]))).toBe("lines");
       expect(service.name(mosaicTile(["e.", "e."]))).toBe("dashes");
+    });
+
+    it("tells an unbroken bar from a dashed one, which is the difference between bars and diamond", () => {
+      expect(service.name(mosaicTile(["s", "s", "."]))).toBe("bars");
+      expect(service.name(mosaicTile(["s", ".", "s", "."]))).toBe("diamond");
+    });
+
+    it("names the two ends of the space, the tile with no edge and the tile with every edge", () => {
+      expect(service.name(mosaicTile([".", "."]))).toBe("dots");
+      expect(service.name(mosaicTile(["bb", "ee"]))).toBe("mesh");
     });
 
     it("names a tile the same as every re-phasing and mirror of it, since a rule reads structure rather than position", () => {
@@ -110,7 +136,7 @@ describe(MosaicNamingService, () => {
       ).toStrictEqual([...NAMES].toSorted());
     });
 
-    it.each(NAMES)(
+    it.each(BUILDABLE_NAMES)(
       "names back every %s tile the sub-family builder constructs, at every row count it exists at",
       (earned) => {
         const built = [4, 5, 6, 7, 8, 9, 10, 11, 12]

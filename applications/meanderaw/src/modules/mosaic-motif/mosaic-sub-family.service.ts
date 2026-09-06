@@ -3,7 +3,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import { MOSAIC_SUB_FAMILY_SHAPES } from "./mosaic-motif.constants";
 import { MosaicTileService } from "./mosaic-tile.service";
 
-import type { MosaicSubFamily, MosaicTile } from "./mosaic-motif.types";
+import type {
+  MosaicBuildableSubFamily,
+  MosaicTile,
+} from "./mosaic-motif.types";
 
 /**
  * Builds the tile each named region of the `mosaic` family's unit space is
@@ -48,7 +51,10 @@ export class MosaicSubFamilyService {
    * is the one the region is named after. `MosaicNamingService.name` names
    * it back.
    */
-  tile(subFamily: MosaicSubFamily, rows: number): MosaicTile | undefined {
+  tile(
+    subFamily: MosaicBuildableSubFamily,
+    rows: number,
+  ): MosaicTile | undefined {
     const { columns, direction, levelStep } =
       MOSAIC_SUB_FAMILY_SHAPES[subFamily];
     const levels = rows - 1;

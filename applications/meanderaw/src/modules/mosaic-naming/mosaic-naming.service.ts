@@ -7,7 +7,10 @@ import type {
   MosaicSubFamily,
   MosaicTile,
 } from "../mosaic-motif/mosaic-motif.types";
-import type { MosaicNamingRule } from "./mosaic-naming.types";
+import type {
+  MosaicNamingRule,
+  MosaicUnbrokenRuns,
+} from "./mosaic-naming.types";
 
 /**
  * Names the recognizable regions of the `mosaic` family's unit space.
@@ -56,6 +59,20 @@ export class MosaicNamingService {
     return tile.points.every((row) => row.every((point) => predicate(point)));
   }
 
+  /** Whether a point turns a corner: two bits, one of them running across the band and one down it. */
+  private isCorner(directions: MosaicDirections): boolean {
+    return (
+      this.mosaicTileService.degree(directions) === 2 &&
+      (directions.east || directions.west) &&
+      (directions.north || directions.south)
+    );
+  }
+
+  /** Whether every edge of one direction's grid is drawn, so its runs are unbroken. */
+  private isEveryEdgeDrawn(grid: readonly (readonly boolean[])[]): boolean {
+    return grid.every((row) => row.every(Boolean));
+  }
+
   /** Whether a point carries ink running across the band and none running down it. */
   private isHorizontal(directions: MosaicDirections): boolean {
     return (
@@ -63,6 +80,25 @@ export class MosaicNamingService {
       !directions.north &&
       !directions.south
     );
+  }
+
+  /**
+   * Whether a tile's runs are unbroken in each direction: `across` when every
+   * eastward edge is drawn, so each level is one continuous rule, and `down`
+   * when every southward edge is, so each column is one continuous bar.
+   *
+   * This is asked of the edges rather than of the points because a point
+   * cannot tell: a point in the middle of a rule and a point at the end of a
+   * dash both carry ink running across the band, and only the edge that
+   * would join it to its neighbor says which it is.
+   */
+  private isUnbroken(tile: MosaicTile): MosaicUnbrokenRuns {
+    const { horizontal, vertical } = this.mosaicTileService.edges(tile);
+
+    return {
+      across: this.isEveryEdgeDrawn(horizontal),
+      down: this.isEveryEdgeDrawn(vertical),
+    };
   }
 
   /** Whether a point carries ink running down the band and none running across it. */
@@ -98,11 +134,26 @@ export class MosaicNamingService {
    * tile satisfying two of them is a defect rather than a precedence
    * question.
    *
-   * `lines` and `dashes` are one predicate at two column spans, because at a
-   * single column an eastward edge wraps onto its own point and draws a
-   * continuous rule rather than a dash reaching the point beside it. That is
-   * the one place a name depends on the tile's shape rather than only on how
-   * its points are reached.
+   * Six of the seven come in pairs, and the pairing is what the earlier rule
+   * set got wrong. Ink running **across** the band is either a continuous
+   * rule at every level (`lines`) or broken somewhere (`dashes`); ink
+   * running **down** it is either a continuous bar in every column (`bars`)
+   * or broken somewhere (`diamond`). Asking only "is every point reached the
+   * same way" cannot tell those apart, so a solid bar was called a
+   * `diamond` — which is a *dashed* bar — and a two-column tile of unbroken
+   * rules was called `dashes`. Whether the run is broken is the question,
+   * and it is asked of the edges rather than of the points.
+   *
+   * The other two are the ends of the space rather than a pair. `dots` is
+   * the tile with no edge at all and `mesh` the tile with every edge; each
+   * is one tile per shape, and between them they are what the family looks
+   * like at its two extremes.
+   *
+   * `steps` is the only rule about a point's *shape* rather than about which
+   * directions a tile uses. Every point turning a corner is a staircase, and
+   * it is the closest thing in the space to the fret the project is named
+   * after. It is empty at a single column, where a point's eastward edge
+   * wraps onto itself and gives it two horizontal bits rather than one.
    */
   rules(): readonly MosaicNamingRule[] {
     const bare = (tile: MosaicTile): boolean =>
@@ -115,14 +166,34 @@ export class MosaicNamingService {
     return [
       { matches: (tile) => bare(tile), name: "dots" },
       {
-        matches: (tile) => tile.columns === 1 && horizontal(tile),
+        matches: (tile) => horizontal(tile) && this.isUnbroken(tile).across,
         name: "lines",
       },
       {
-        matches: (tile) => tile.columns > 1 && horizontal(tile),
+        matches: (tile) => horizontal(tile) && !this.isUnbroken(tile).across,
         name: "dashes",
       },
-      { matches: (tile) => vertical(tile), name: "diamond" },
+      {
+        matches: (tile) => vertical(tile) && this.isUnbroken(tile).down,
+        name: "bars",
+      },
+      {
+        matches: (tile) => vertical(tile) && !this.isUnbroken(tile).down,
+        name: "diamond",
+      },
+      {
+        matches: (tile) => {
+          const unbroken = this.isUnbroken(tile);
+
+          return unbroken.across && unbroken.down;
+        },
+        name: "mesh",
+      },
+      {
+        matches: (tile) =>
+          this.everyPoint(tile, (point) => this.isCorner(point)),
+        name: "steps",
+      },
     ];
   }
 }

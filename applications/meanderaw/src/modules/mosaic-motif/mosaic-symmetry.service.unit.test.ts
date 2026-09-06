@@ -27,20 +27,24 @@ describe(MosaicSymmetryService, () => {
   });
 
   describe("identify", () => {
-    it("writes one character per edge, every eastward one and then every southward one", () => {
-      // Five levels of eastward edges, only the fourth drawn, then four
-      // levels of southward ones, only the first.
-      expect(service.identify(singleColumn)).toBe("000101000");
+    it("writes one hexadecimal character per point, worth 8 north, 4 south, 2 east and 1 west", () => {
+      // A point sending a southward edge, the point below it receiving one,
+      // two bare points, and one carrying the wrapped east-west rule.
+      expect(service.identify(singleColumn)).toBe("48030");
     });
 
     it("reads row-major, so a two-column tile interleaves its columns", () => {
-      expect(service.identify(mosaicTile(["e.", ".."]))).toBe("100000");
-      expect(service.identify(mosaicTile([".e", ".."]))).toBe("010000");
+      expect(service.identify(mosaicTile(["e.", ".."]))).toBe("2100");
+      expect(service.identify(mosaicTile([".e", ".."]))).toBe("1200");
     });
 
-    it("writes one bit for a single column's wrapped edge, which is one edge however many directions its ink leaves by", () => {
-      expect(service.identify(mosaicTile(["e"]))).toBe("1");
-      expect(service.identify(mosaicTile(["e."]))).toBe("10");
+    it("writes a single column's wrapped edge as both east and west, which is what its ink does", () => {
+      expect(service.identify(mosaicTile(["e"]))).toBe("3");
+      expect(service.identify(mosaicTile(["e."]))).toBe("21");
+    });
+
+    it("writes a point owning both its edges as one character, which a per-mark letter had none for", () => {
+      expect(service.identify(mosaicTile(["b.", "..", ".."]))).toBe("618000");
     });
 
     it("names a tile completely, so two tiles of one shape share it only when they are the same tile", () => {
@@ -69,7 +73,7 @@ describe(MosaicSymmetryService, () => {
       expect(service.canonicalIdentifier(singleColumn)).toBe(
         service.identify(service.canonicalTile(singleColumn)),
       );
-      expect(service.canonicalIdentifier(singleColumn)).toBe("010000001");
+      expect(service.canonicalIdentifier(singleColumn)).toBe("03048");
     });
 
     it("keeps two genuinely different tiles apart", () => {
@@ -102,8 +106,8 @@ describe(MosaicSymmetryService, () => {
       // draws — the same order the old exact-cover search found covers in.
       const tile = mosaicTile(["e", "s", "."]);
 
-      expect(service.identify(tile)).toBe("10001");
-      expect(service.identify(service.canonicalTile(tile))).toBe("00110");
+      expect(service.identify(tile)).toBe("348");
+      expect(service.identify(service.canonicalTile(tile))).toBe("483");
     });
   });
 

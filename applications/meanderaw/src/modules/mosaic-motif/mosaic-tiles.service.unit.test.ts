@@ -94,13 +94,13 @@ describe(MosaicTilesService, () => {
         .enumerate(6, 2)
         .map((tile) => mosaicSymmetryService.canonicalIdentifier(tile));
 
-      // `dots` is a bare point on every level, so no edge at all;
-      // `lines` is the single column's wrapped rule on every level, so
-      // every eastward edge and no southward one; `dashes` is the same
-      // across the first column of a two-column tile.
-      expect(singleColumn).toContain("000000000");
-      expect(singleColumn).toContain("111110000");
-      expect(twoColumn).toContain("101010101000000000");
+      // `dots` is a bare point on every level, so `0` throughout;
+      // `lines` is the single column's wrapped rule on every level, so `3`
+      // — east and west — throughout; `dashes` alternates the anchor `2`
+      // with the point `1` it reaches across a two-column tile.
+      expect(singleColumn).toContain("00000");
+      expect(singleColumn).toContain("33333");
+      expect(twoColumn).toContain("2121212121");
     });
 
     it("finds only the dot and the line at the smallest tile there is", () => {
@@ -108,13 +108,13 @@ describe(MosaicTilesService, () => {
         .enumerate(4, 1)
         .map((tile) => mosaicSymmetryService.canonicalIdentifier(tile));
 
-      // Three interior levels, one column, so five edges: three eastward
-      // and two southward. Every point bare, every point on the wrapped
-      // rule, and a southward edge over the lower two levels — the last
-      // being the representative its own top-to-bottom mirror folds onto.
-      expect(identifiers).toContain("00000");
-      expect(identifiers).toContain("11100");
-      expect(identifiers).toContain("00001");
+      // Three interior levels, one column. Every point bare, every point on
+      // the wrapped rule, and a southward edge over the lower two levels —
+      // the last being the representative its own top-to-bottom mirror
+      // folds onto.
+      expect(identifiers).toContain("000");
+      expect(identifiers).toContain("333");
+      expect(identifiers).toContain("048");
     });
 
     it.each`

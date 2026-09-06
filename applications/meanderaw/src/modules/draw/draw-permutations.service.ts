@@ -11,10 +11,7 @@ import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 
-import {
-  PERMUTATION_REPEAT_COUNT,
-  PERMUTATIONS_SUBDIRECTORY,
-} from "./draw.constants";
+import { PERMUTATION_REPEAT_COUNT } from "./draw.constants";
 
 import type { RenderedDocument } from "./draw.types";
 
@@ -32,10 +29,19 @@ import type { RenderedDocument } from "./draw.types";
  * `rows`.
  *
  * Thousands of files is what makes the directories load-bearing rather than
- * decorative: nested under `<rows>-rows/permutations/<columns>-columns/`,
- * each one holds a few hundred tiles named by nothing but the identifier
- * that distinguishes them, and the attributes they share are read off the
- * path instead of repeated in every name.
+ * decorative: nested under `<rows>-rows/<columns>-columns/`, each one holds
+ * the tiles of one shape named by nothing but the identifier that
+ * distinguishes them, and the attributes they share are read off the path
+ * instead of repeated in every name.
+ *
+ * There is no `permutations/` level any more. It separated this half from a
+ * named one, and the separation stopped meaning anything when every tile the
+ * family draws became a member of one enumerated space — the named drawings
+ * beside these directories are tiles too, at column spans the edge budget
+ * refuses rather than at some other kind of thing. `negative` keeps its own
+ * `permutations/` level, because there the two halves really are different:
+ * its named half draws ten sources by rule, and its enumerated half inverts
+ * `mosaic` tiles.
  */
 @Injectable()
 export class DrawPermutationsService {
@@ -90,7 +96,7 @@ export class DrawPermutationsService {
         const name = earned ? `${identifier}-${earned}` : identifier;
 
         mosaics.push({
-          directory: `${familyDirectory}/${PERMUTATIONS_SUBDIRECTORY}/${columns}-columns`,
+          directory: `${familyDirectory}/${columns}-columns`,
           fileName: `${name}.svg`,
           svg: this.mosaicGenerationService.generate(
             tile,

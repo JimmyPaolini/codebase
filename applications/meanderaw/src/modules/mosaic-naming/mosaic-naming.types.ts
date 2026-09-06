@@ -18,3 +18,17 @@ export interface MosaicNamingRule {
   readonly matches: (tile: MosaicTile) => boolean;
   readonly name: MosaicSubFamily;
 }
+
+/**
+ * Whether a tile's runs are unbroken in each direction: `across` when every
+ * eastward edge is drawn, so each level is one continuous rule, and `down`
+ * when every southward edge is, so each column is one continuous bar.
+ *
+ * It is the question `lines` and `dashes` differ on, and `bars` and
+ * `diamond` differ on, which is why it is one answer with two halves rather
+ * than two predicates.
+ */
+export interface MosaicUnbrokenRuns {
+  readonly across: boolean;
+  readonly down: boolean;
+}

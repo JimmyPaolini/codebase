@@ -59,8 +59,8 @@ describe(DrawPermutationsService, () => {
       );
 
       expect([...directories]).toStrictEqual([
-        "mosaic/4-rows/permutations/1-columns",
-        "mosaic/4-rows/permutations/2-columns",
+        "mosaic/4-rows/1-columns",
+        "mosaic/4-rows/2-columns",
       ]);
     });
 
@@ -72,20 +72,18 @@ describe(DrawPermutationsService, () => {
       const paths = sweepPaths();
 
       expect(new Set(paths).size).toBe(paths.length);
-      expect(paths).toContain(
-        "mosaic/6-rows/permutations/1-columns/000000000-dots.svg",
-      );
+      expect(paths).toContain("mosaic/6-rows/1-columns/00000-dots.svg");
     });
 
     it("carries the sub-family in the filename where a tile has one, and only the identifier where it has none", () => {
       const paths = sweepPaths();
       const named = paths.filter((filePath) =>
-        /-(?:dashes|diamond|dots|lines)\.svg$/.test(filePath),
+        /-(?:bars|dashes|diamond|dots|lines|mesh|steps)\.svg$/.test(filePath),
       );
 
       // The tile whose only edge is a southward one over the lower two
-      // levels earns no name, so nothing is appended to its bit string.
-      expect(paths).toContain("mosaic/4-rows/permutations/1-columns/00001.svg");
+      // levels earns no name, so nothing is appended to its identifier.
+      expect(paths).toContain("mosaic/4-rows/1-columns/048.svg");
       expect(named).toHaveLength(30);
     });
 

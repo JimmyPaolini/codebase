@@ -33,7 +33,7 @@ import {
 import { MotifRegistryService } from "./motif-registry.service";
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
-import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type {
   GenerationParameters,
   MeanderType,
@@ -116,7 +116,7 @@ export class MeanderGenerationService {
    */
   private generateSubFamily(
     parameters: GenerationParameters,
-    subFamily: MosaicSubFamily,
+    subFamily: MosaicBuildableSubFamily,
   ): string {
     const subFamilyNames = SUB_FAMILIES[parameters.type];
 

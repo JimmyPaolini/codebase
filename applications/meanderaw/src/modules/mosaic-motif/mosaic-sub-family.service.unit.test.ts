@@ -10,7 +10,10 @@ import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { MosaicTileService } from "./mosaic-tile.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
 
-import type { MosaicSubFamily } from "./mosaic-motif.types";
+import type {
+  MosaicBuildableSubFamily,
+  MosaicTile,
+} from "./mosaic-motif.types";
 
 // 🔧 Configuration
 
@@ -36,7 +39,8 @@ const SWEPT_ROWS: readonly number[] = [4, 5, 6, 7, 8];
 const SPACE_WALK_TIMEOUT_MILLISECONDS = 60_000;
 
 /** Every named sub-family, typed rather than widened for the command line. */
-const NAMED_SUB_FAMILIES: readonly MosaicSubFamily[] = [
+const NAMED_SUB_FAMILIES: readonly MosaicBuildableSubFamily[] = [
+  "bars",
   "dashes",
   "diamond",
   "dots",
@@ -48,6 +52,7 @@ const NAMED_SUB_FAMILIES: readonly MosaicSubFamily[] = [
 describe(MosaicSubFamilyService, () => {
   let service: MosaicSubFamilyService;
   let mosaicSymmetryService: MosaicSymmetryService;
+  let mosaicTileService: MosaicTileService;
   let mosaicTilesService: MosaicTilesService;
 
   beforeAll(async () => {
@@ -62,8 +67,19 @@ describe(MosaicSubFamilyService, () => {
 
     service = await module.resolve(MosaicSubFamilyService);
     mosaicSymmetryService = await module.resolve(MosaicSymmetryService);
+    mosaicTileService = await module.resolve(MosaicTileService);
     mosaicTilesService = await module.resolve(MosaicTilesService);
   });
+
+  /** Whether every point of a tile is inside the ceiling the enumeration currently walks under. */
+  const withinCeiling = (tile: MosaicTile): boolean =>
+    tile.points.every((row, level) =>
+      row.every(
+        (_point, column) =>
+          mosaicTileService.incidentEdges(tile, level, column) <=
+          mosaicTilesService.ceiling(),
+      ),
+    );
 
   it("is defined", () => {
     expect(service).toBeDefined();
@@ -74,6 +90,14 @@ describe(MosaicSubFamilyService, () => {
       expect([...SUPPORTED_SUB_FAMILIES].toSorted()).toStrictEqual(
         [...NAMED_SUB_FAMILIES].toSorted(),
       );
+    });
+
+    it("builds an unbroken bar where diamond builds a dashed one, which is the whole difference between the two names", () => {
+      const bars = service.tile("bars", 5);
+      const diamond = service.tile("diamond", 5);
+
+      expect(bars && mosaicSymmetryService.identify(bars)).toBe("4cc8");
+      expect(diamond && mosaicSymmetryService.identify(diamond)).toBe("4848");
     });
 
     it("has no diamond tile where the interior has an odd number of levels, since southward edges cover levels in pairs", () => {
@@ -88,6 +112,7 @@ describe(MosaicSubFamilyService, () => {
     });
 
     it("spans two columns for dashes, whose edge reaches into the column beside it, and one for the rest", () => {
+      expect(service.tile("bars", 6)?.columns).toBe(1);
       expect(service.tile("dashes", 6)?.columns).toBe(2);
       expect(service.tile("diamond", 5)?.columns).toBe(1);
       expect(service.tile("dots", 6)?.columns).toBe(1);
@@ -97,21 +122,34 @@ describe(MosaicSubFamilyService, () => {
     it("anchors every edge in the tile's first column, which is the representative the region is named after", () => {
       const dashes = service.tile("dashes", 4);
 
-      expect(dashes && mosaicSymmetryService.identify(dashes)).toBe(
-        "1010100000",
-      );
+      expect(dashes && mosaicSymmetryService.identify(dashes)).toBe("212121");
     });
 
+    /**
+     * A named tile has to be a real member of the space, and "the space" is
+     * whatever the enumeration's own ceiling admits at the time.
+     *
+     * `bars` is the one that is not, and deliberately: an unbroken vertical
+     * run puts two edges on every interior point, which the family's
+     * original exact-cover rule forbids. It is a tile of the model rather
+     * than of this enumeration, and it joins both the moment that ceiling
+     * moves. Skipping it by measuring the ceiling rather than by naming it
+     * is what makes this test notice when that happens.
+     */
     it(
       "builds tiles the enumeration itself finds, so a named tile is a real member of the unit space",
       () => {
+        let checked = 0;
+
         for (const rows of SWEPT_ROWS) {
           for (const subFamily of NAMED_SUB_FAMILIES) {
             const built = service.tile(subFamily, rows);
 
-            if (!built) {
+            if (!built || !withinCeiling(built)) {
               continue;
             }
+
+            checked += 1;
 
             const enumerated: string[] = [];
 
@@ -127,6 +165,8 @@ describe(MosaicSubFamilyService, () => {
             );
           }
         }
+
+        expect(checked).toBeGreaterThan(0);
       },
       SPACE_WALK_TIMEOUT_MILLISECONDS,
     );

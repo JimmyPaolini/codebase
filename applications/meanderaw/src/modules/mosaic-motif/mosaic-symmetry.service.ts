@@ -45,6 +45,25 @@ export class MosaicSymmetryService {
   // 🔏 Private Methods
 
   /**
+   * A tile's edges as a bit string, one character each, every eastward edge
+   * in reading order and then every southward one.
+   *
+   * It is not what a drawing is named — {@link identify} is, and it writes
+   * points rather than edges — and the two are kept apart deliberately.
+   * This one is the tile's own degrees of freedom with nothing counted
+   * twice, which is what a tie-break wants; how a filename is spelled is a
+   * separate question, and changing the spelling must not move which member
+   * of a symmetry class the corpus draws.
+   */
+  private edgeKey(tile: MosaicTile): string {
+    const { horizontal, vertical } = this.mosaicTileService.edges(tile);
+
+    return [...horizontal, ...vertical]
+      .flatMap((row) => row.map((isSet) => (isSet ? "1" : "0")))
+      .join("");
+  }
+
+  /**
    * Where an edge's column lands under one group element. A horizontal
    * mirror reflects the lattice about a vertical line, so a southward edge
    * simply follows its own point while an eastward edge — which spans the
@@ -138,7 +157,7 @@ export class MosaicSymmetryService {
       .flatMap((row) => row.map((directions) => this.rank(directions)))
       .join("");
 
-    return `${ranks}|${this.identify(tile)}`;
+    return `${ranks}|${this.edgeKey(tile)}`;
   }
 
   /** The tile one group element maps `tile` to. */
@@ -206,25 +225,41 @@ export class MosaicSymmetryService {
   }
 
   /**
-   * Names a tile by its own edges: one character per edge, `1` where the
-   * edge is drawn and `0` where it is not, every eastward edge in reading
-   * order and then every southward one.
+   * Names a tile by its own points: one hexadecimal character each, in
+   * reading order, worth `8` for `north`, `4` for `south`, `2` for `east`
+   * and `1` for `west`.
    *
-   * The string is a complete description of the tile — the edges *are* its
-   * degrees of freedom, so nothing about it is left unsaid — and it is safe
-   * to use as a filename. It replaces the per-point letter the family used
-   * to be named by, which could say a point anchored an eastward edge or a
-   * southward one but had no letter for a point anchoring both.
+   * So `0` is a dot, `3` a point on a horizontal run, `c` one on a vertical
+   * run, `6` a corner turning south and east, `e` a T-junction, and `f` a
+   * crossing. A reader can decode a filename point by point without a table,
+   * which is the whole reason the identifier exists.
    *
-   * It does not name the *shape*: two tiles of different shapes can share a
-   * bit string, and the sweep tells them apart by the directory it files
-   * them under, which already carries the row count and the column span.
+   * It names a tile completely — the points determine every edge, since each
+   * one owns its `east` and its `south` — so two tiles of one shape share a
+   * string only when they are the same tile. It does *not* name the shape:
+   * the directory a drawing is filed under carries the row count and the
+   * column span, so two tiles of different shapes may share a string.
+   *
+   * The string is deliberately redundant. Four bits per point describes
+   * `4 * columns * (rows - 1)` bits where the tile has only
+   * `columns * (2 * rows - 3)` degrees of freedom, because every edge is
+   * written twice — once at each end. That is the same redundancy
+   * `MosaicTileService.assertWellFormed` checks, and paying it here buys a
+   * filename whose characters are the tile's own points rather than a packed
+   * edge list nobody can read.
    */
   identify(tile: MosaicTile): string {
-    const { horizontal, vertical } = this.mosaicTileService.edges(tile);
-
-    return [...horizontal, ...vertical]
-      .flatMap((row) => row.map((isSet) => (isSet ? "1" : "0")))
+    return tile.points
+      .flatMap((row) =>
+        row.map((point) =>
+          (
+            (point.north ? 8 : 0) +
+            (point.south ? 4 : 0) +
+            (point.east ? 2 : 0) +
+            (point.west ? 1 : 0)
+          ).toString(16),
+        ),
+      )
       .join("");
   }
 
@@ -241,7 +276,7 @@ export class MosaicSymmetryService {
     const distinct = new Map<string, MosaicTile>();
 
     for (const variant of this.orbit(tile)) {
-      distinct.set(this.identify(variant), variant);
+      distinct.set(this.edgeKey(variant), variant);
     }
 
     return [...distinct.values()];

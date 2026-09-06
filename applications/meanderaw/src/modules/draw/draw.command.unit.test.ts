@@ -27,6 +27,7 @@ import { DrawNegativePermutationsService } from "./draw-negative-permutations.se
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
 import { DrawCommand } from "./draw.command";
+import { COLUMN_SPAN_PATTERN } from "./draw.constants";
 
 const { mockMkdir, mockWriteFile } = vi.hoisted(() => ({
   mockMkdir: vi
@@ -198,7 +199,7 @@ describe(DrawCommand, () => {
         .mock.calls.map(([filePath]) => filePath);
       const namedTypeFiles = writtenFileNames.filter(
         (filePath) =>
-          filePath.endsWith(".svg") && !filePath.includes("permutations"),
+          filePath.endsWith(".svg") && !COLUMN_SPAN_PATTERN.test(filePath),
       );
 
       expect(namedTypeFiles).toHaveLength(expectedNamedTypeCount);
@@ -211,14 +212,18 @@ describe(DrawCommand, () => {
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
+      // 🎯 An enumerated tile is one filed under a column span, whichever
+      // family wrote it. Only `negative` still nests its enumerated half
+      // under a `permutations/` level; `mosaic` files its directly beside
+      // the named drawings, since every tile it draws is a member of one
+      // space.
       const permutations = writtenFileNames.filter((filePath) =>
-        filePath.includes("permutations"),
+        COLUMN_SPAN_PATTERN.test(filePath),
       );
 
-      expect(mockMkdir).toHaveBeenCalledWith(
-        "output/mosaic/4-rows/permutations/1-columns",
-        { recursive: true },
-      );
+      expect(mockMkdir).toHaveBeenCalledWith("output/mosaic/4-rows/1-columns", {
+        recursive: true,
+      });
       expect(mockMkdir).toHaveBeenCalledWith(
         "output/negative/3-rows/permutations/1-columns",
         { recursive: true },
@@ -231,10 +236,10 @@ describe(DrawCommand, () => {
       // rather than sampling it.
       expect(permutations).toHaveLength(290 + 159);
       expect(permutations).toContain(
-        "output/mosaic/6-rows/permutations/1-columns/000000000-dots.svg",
+        "output/mosaic/6-rows/1-columns/00000-dots.svg",
       );
       expect(permutations).toContain(
-        "output/negative/6-rows/permutations/1-columns/01010100000-ruled.svg",
+        "output/negative/6-rows/permutations/1-columns/030303-ruled.svg",
       );
     });
 
@@ -249,7 +254,7 @@ describe(DrawCommand, () => {
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
       expect(index?.[1]).toContain("1632 drawings");
       expect(index?.[1]).toContain(
-        'src="mosaic/6-rows/permutations/1-columns/000000000-dots.svg"',
+        'src="mosaic/6-rows/1-columns/00000-dots.svg"',
       );
       expect(index?.[1]).toContain('src="boxes/3-rows/spin-8-repeats.svg"');
     });
