@@ -53,16 +53,23 @@ Each directory under [`examples/`](examples) is one example, carries its own
 callidescope's sense, which is the unit module spread and misplacement are
 measured against.
 
-**The whole package is traced as one unit.** An example directory carries no
-`tsconfig.json` of its own, so it cannot be traced alone — which is why every
-example's `## Run it` names the same command and then says where in the
-committed output to look. Read them in the order below for a walkthrough:
+**The package is traced as one unit, together with its dependency closure.** An
+example directory carries no `tsconfig.json` of its own, so it cannot be traced
+alone — which is why every example's `## Run it` names the same command and then
+says where in the committed output to look. The run reaches beyond this package
+in the other direction, though: a project's own `tsconfig.json` never lists the
+packages it imports, so a scoped run also traces every project its imports
+transitively reach — otherwise a call leaving the package would land in code no
+traced project owned. Four projects are traced here, and
+[dependency-closure](examples/dependency-closure/README.md) is where that is
+worked through. Read them in the order below for a walkthrough:
 [plain-call](examples/plain-call/README.md) →
 [injected-dependency](examples/injected-dependency/README.md) →
 [structural-interface](examples/structural-interface/README.md) →
 [base-class](examples/base-class/README.md) →
 [constructed-class](examples/constructed-class/README.md) →
 [callback-argument](examples/callback-argument/README.md) →
+[dependency-closure](examples/dependency-closure/README.md) →
 [computed-member](examples/computed-member/README.md) →
 [implementation-fan-out](examples/implementation-fan-out/README.md) →
 [mutual-recursion](examples/mutual-recursion/README.md) →
@@ -98,6 +105,36 @@ selected handler adds — unknowable from the source. A floor is the honest
 answer: reporting `8` would claim a ceiling that does not exist, and reporting
 nothing would hide a stack that is already too deep at the point it goes dark.
 
+Every row above resolves inside one package. A workspace adds one more case — a
+call that leaves the package it was written in — which is the next section.
+
+### The dependency closure
+
+[`dependency-closure`](examples/dependency-closure) makes the same injected hop
+as `injected-dependency` and lands in a different package —
+`ConfigurationService.resolveConfiguration`, declared in
+`@callidescope/configuration`. It resolves because a run scoped to one directory
+traces the projects that directory's imports transitively reach, rather than the
+directory alone.
+
+Pointed at this package, the run builds a program for four projects:
+
+| Project | Reached because |
+| ------- | --------------- |
+| `packages/callidescope-examples` | The directory the run was pointed at |
+| `packages/callidescope-configuration` | Imported by the fixture, and by [`callidescope.config.ts`](callidescope.config.ts) |
+| `packages/codometer-configuration` | Reached through the shared configuration [`codometer.config.ts`](codometer.config.ts) spreads |
+| `packages/logger` | Reached through the shared `configuration/eslint.config.ts` |
+
+That is what the closure buys, and it is measurable: the fixture's stack is
+depth 4 as traced, and depth 2 when the same fixtures are traced again with
+`packages/callidescope-configuration` excluded. Two rules keep the set from
+growing past those four — a project root holding no `package.json` is not a
+destination, and neither is the workspace root — and the example's guide works
+through both, including the shared
+[`configuration/`](../../configuration) directory this package's program really
+reads and the closure deliberately refuses.
+
 ### The cap on structural matching
 
 [`implementation-fan-out`](examples/implementation-fan-out) declares three
@@ -108,8 +145,12 @@ call stack no execution ever takes. A member named `emit`, `run`, or `sync`
 matches dozens of unrelated classes in a real workspace, and that is the noise
 the cap exists to stop.
 
-This package's run reports exactly two unfollowable calls: the computed member
-name, and this dropped expansion.
+This package's own fixtures account for exactly two unfollowable calls: the
+computed member name, and this dropped expansion. The run's total is higher,
+because the closure's real dependency code contributes its own — the per-project
+report for `packages/callidescope-examples` in
+[`output/report.json`](output/report.json) is where the two are counted apart
+from the rest.
 
 ### Recursion
 
@@ -172,7 +213,19 @@ committed:
 | `json` | [`output/report.json`](output/report.json) — the whole run, machine-readable |
 | `markdown` | [`output/report.md`](output/report.md) — the printed trees, between anchors |
 | `mermaid` | [`output/diagram.md`](output/diagram.md) — the same stacks, drawn |
-| `projectReadmes` | [The section at the bottom of this file](#-callidescope) |
+| `projectReadmes` | [The section at the bottom of this file](#-callidescope), and nothing else |
+
+`projectReadmes` writes one section per **scoped** project — the projects a run
+was pointed at, not the ones its closure reached. This run is scoped to this
+package alone, so the only section it writes is the one at the bottom of this
+file, even though it measures four projects. That is the rule the closure is
+read against: **measurement reaches into a package's dependencies, publishing
+does not.** A scoped run that also published would rewrite the section in three
+sibling packages that never asked for it, and fight
+`nx run codebase:callidescope:write` — which sets different limits and ignores
+`LoggerService.*` — over the same three anchor blocks forever. The
+whole-workspace run still publishes every project's section, because a run that
+names no directory has every project as a scoped one.
 
 `--format` is separate from all four: it decides what reaches the terminal
 rather than a file. All three of its values are committed here too, because each
@@ -204,14 +257,32 @@ why, because it uses the opposite one from the workspace around it:
 | Run | Flag | Why |
 | --- | ---- | --- |
 | `nx run codebase:callidescope` | `--check depth` | A stack got longer in this change, and this change is what fixes it |
-| `nx run callidescope-examples:examples` | `--check reports` | The traced source is frozen fixture code, so a stale report means a fixture or the resolver moved |
+| `nx run callidescope-examples:examples` | `--check reports` | The fixtures are frozen, so a stale report means a fixture, a dependency, or the resolver moved |
 
 The workspace cannot check its own report on a branch: the call graph moves on
 nearly every change, so freshness would fail pull requests for being behind
 `main` rather than for anything they did. It publishes on `main` instead. Here
-the opposite holds — nothing but a deliberate edit moves these numbers — so
-freshness is exactly the right gate, and depth is not gated at all, because
-these fixtures are _meant_ to breach it.
+the opposite mostly holds — the fixtures move only on a deliberate edit — so
+freshness is the right gate, and depth is not gated at all, because these
+fixtures are _meant_ to breach it.
+
+The closure qualifies that "mostly". Three dependency packages are traced
+alongside the fixtures now, and they are ordinary code that changes for ordinary
+reasons, so a change to one of them makes this report stale too. That is the
+gate working rather than misfiring — the report really did change — but it means
+the fix is `nx run callidescope-examples:examples:write` in whichever change
+moved the dependency, and the `examples` target names those packages' sources in
+its `inputs` so a cached run is never replayed over them. Their READMEs are not
+named there, because this run does not write into them.
+
+`{workspaceRoot}/configuration/*.config.ts` is in those `inputs` too, and it is
+not redundant with `shared-globals` — which holds `configuration/tsconfig.json`
+and nothing else. Two of the three dependency packages are in the closure only
+because this package's own `eslint.config.ts` and `codometer.config.ts` spread
+the root ones, and the root ones import `@codebase/logger/eslint` and
+`@codometer/configuration`. Delete an import there and these reports lose a
+whole project, with nothing else in `inputs` changed — a cached green replayed
+over exactly the drift this gate exists to catch.
 
 Two command lines are refused outright:
 
@@ -405,10 +476,10 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 
 | Measure | Value |
 | --- | --- |
-| Callables | 69 |
-| Files | 33 |
-| Calls traced | 53 |
-| Call stacks | 14 |
+| Callables | 72 |
+| Files | 34 |
+| Calls traced | 55 |
+| Call stacks | 15 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 2 |
@@ -479,7 +550,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 ```
 
 <details>
-<summary>11 more call stacks</summary>
+<summary>12 more call stacks</summary>
 
 **4. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
 
@@ -514,7 +585,20 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
            ↳ Upper-cases one entry.
 ```
 
-**6. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
+**6. `DependencyClosureService.allowsDepth`** — depth 4 · orphan-root
+
+```text
+🚀 DependencyClosureService.allowsDepth(args: { configuration: CallidescopeConfiguration; depth: number; }): boolean [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:32]
+   ↳ Whether a configuration allows a stack as deep as the one asked about.
+  └─> DependencyClosureService.readDepthLimit(configuration: CallidescopeConfiguration): number [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:24]
+     ↳ Reads the depth limit the dependency's own defaulting settles on.
+    └─> ConfigurationService.resolveConfiguration(configuration: CallidescopeConfiguration): ResolvedCallidescopeConfiguration [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:375]
+       ↳ Fills in every field a configuration file may leave out.
+      └─> ConfigurationService.resolveAllowSpreadFor(allowSpreadFor: string[] | undefined): string[] [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:170]
+         ↳ Applies the default globs exempt from the module-spread finding.
+```
+
+**7. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
 
 ```text
 🚀 FrameAnnotationsService.legacyRender(value: string): string ⚠ deprecated [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:74]
@@ -527,7 +611,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
          ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
-**7. `MutualRecursionService.traverse`** — depth 4 · orphan-root
+**8. `MutualRecursionService.traverse`** — depth 4 · orphan-root
 
 ```text
 🚀 MutualRecursionService.traverse(remaining: number): number [packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:45]
@@ -540,7 +624,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
          ↳ First of the three, and the way into the cycle.
 ```
 
-**8. `bootstrap`** — depth 3 · module-bootstrap
+**9. `bootstrap`** — depth 3 · module-bootstrap
 
 ```text
 🚀 bootstrap(): number [packages/callidescope-examples/src/main.ts:14]
@@ -551,7 +635,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
        ↳ Reserves one unit and reports the count left behind.
 ```
 
-**9. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
+**10. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
 
 ```text
 🚀 EntryPointsService.onModuleInit(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:29]
@@ -560,7 +644,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ Does the work a lifecycle hook is called to do.
 ```
 
-**10. `EntryPointsService.readReport`** — depth 2 · decorated-method
+**11. `EntryPointsService.readReport`** — depth 2 · decorated-method
 
 ```text
 🚀 EntryPointsService.readReport(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:34]
@@ -569,7 +653,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ Builds the body a decorated request handler answers with.
 ```
 
-**11. `normalizeExampleLabel`** — depth 2 · exported-function
+**12. `normalizeExampleLabel`** — depth 2 · exported-function
 
 ```text
 🚀 normalizeExampleLabel(label: string): string [packages/callidescope-examples/src/index.ts:15]
@@ -578,7 +662,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ Trims a label and collapses the whitespace inside it.
 ```
 
-**12. `ReceiptService.renderLine`** — depth 2 · orphan-root
+**13. `ReceiptService.renderLine`** — depth 2 · orphan-root
 
 ```text
 🚀 ReceiptService.renderLine(amount: number): string [packages/callidescope-examples/examples/receipt/receipt.ts:16]
@@ -587,7 +671,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ A helper filed in the wrong module, and the report says where it belongs.
 ```
 
-**13. `ReceiptService.renderTotal`** — depth 2 · orphan-root
+**14. `ReceiptService.renderTotal`** — depth 2 · orphan-root
 
 ```text
 🚀 ReceiptService.renderTotal(amount: number): string [packages/callidescope-examples/examples/receipt/receipt.ts:21]
@@ -596,7 +680,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ A helper filed in the wrong module, and the report says where it belongs.
 ```
 
-**14. `StructuralInterfaceService.ingestDocument`** — depth 2 · orphan-root
+**15. `StructuralInterfaceService.ingestDocument`** — depth 2 · orphan-root
 
 ```text
 🚀 StructuralInterfaceService.ingestDocument(provider: StructuralProvider, document: string): number [packages/callidescope-examples/examples/structural-interface/structural-interface.ts:17]
@@ -622,7 +706,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | `BaseClassService.run` | 1 | `BaseTaskService.run` | `packages/callidescope-examples/examples/base-class/base-class.ts:16` |
 
 <details>
-<summary>44 more callables</summary>
+<summary>46 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -643,6 +727,8 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | `DeepStackService.resolveTier` | 1 | `DeepStackService.loadRate` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:38` |
 | `DeepStackService.validate` | 1 | `DeepStackService.removeDiscount` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:43` |
 | `DeepStackService.quote` | 1 | `DeepStackService.validate` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:50` |
+| `DependencyClosureService.readDepthLimit` | 1 | `ConfigurationService.resolveConfiguration` | `packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:24` |
+| `DependencyClosureService.allowsDepth` | 1 | `DependencyClosureService.readDepthLimit` | `packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:32` |
 | `EntryPointsService.onModuleInit` | 1 | `EntryPointsService.prepareCache` | `packages/callidescope-examples/examples/entry-points/entry-points.ts:29` |
 | `EntryPointsService.readReport` | 1 | `EntryPointsService.buildReport` | `packages/callidescope-examples/examples/entry-points/entry-points.ts:34` |
 | `ForwardingStackService.execute` | 1 | `ForwardingStackService.forward` | `packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:21` |

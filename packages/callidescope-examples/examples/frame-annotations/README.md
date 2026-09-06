@@ -9,7 +9,13 @@ shorten**
 nx run callidescope-examples:examples
 ```
 
-Then read the two `FrameAnnotationsService` stacks in [`output/report.md`](../../output/report.md), and the same comments in full in [`output/report.json`](../../output/report.json).
+Then read the `FrameAnnotationsService.trace` stack in [`output/report.md`](../../output/report.md), and the same comments in full in [`output/report.json`](../../output/report.json).
+
+The second stack is not there. `output/report.md` prints only the stacks over
+the depth limit, and `legacyRender` is two frames — both stacks are printed
+together in
+[the section at the bottom of the package guide](../../README.md#-callidescope),
+which is where to read them side by side.
 
 Every frame is annotated from the **type checker**, not from the comment trivia
 attached to the node the graph points at. That distinction is what makes these

@@ -3,9 +3,19 @@
 import type { WorkspaceProject } from "../workspace/workspace.types";
 import type ts from "typescript";
 
-/** Arguments for building every project's program. */
+/** Arguments for building a program for every project in a closure. */
 export interface BuildProgramsArguments {
-  readonly projects: readonly WorkspaceProject[];
+  /**
+   * The projects a run was asked to trace. Every one of them gets a program,
+   * and so does every project their imports transitively reach.
+   */
+  readonly startingProjects: readonly WorkspaceProject[];
+  /**
+   * Every project the workspace holds, which is what lets a file one program
+   * pulled in name the project that owns it — including a project no starting
+   * root mentions. Nothing here is built unless the closure reaches it.
+   */
+  readonly workspaceProjects: readonly WorkspaceProject[];
   readonly workspaceRoot: string;
 }
 

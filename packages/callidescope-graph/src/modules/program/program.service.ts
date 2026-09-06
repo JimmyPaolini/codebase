@@ -5,8 +5,13 @@ import ts from "typescript";
 
 import { LoggerService } from "@codebase/logger";
 
+import { WorkspaceService } from "../workspace/workspace.service";
+
 import { CompilerHostService } from "./compiler-host.service";
-import { ProgramConfigurationError } from "./program.constants";
+import {
+  DEPENDENCY_DIRECTORY_NAME,
+  ProgramConfigurationError,
+} from "./program.constants";
 
 import type { WorkspaceProject } from "../workspace/workspace.types";
 import type {
@@ -32,6 +37,7 @@ export class ProgramService {
   constructor(
     private readonly compilerHostService: CompilerHostService,
     private readonly logger: LoggerService,
+    private readonly workspaceService: WorkspaceService,
   ) {
     this.logger.setContext(ProgramService.name);
   }
@@ -43,24 +49,63 @@ export class ProgramService {
   // 🔏 Private Methods
 
   /**
-   * Assigns each file to exactly one owning program.
+   * Assigns each file to the program whose project root contains it.
    *
-   * Projects overlap: a shared package appears in the file list of everything
-   * that imports it. Whichever program is asked first keeps it, and because the
-   * project list arrives sorted by name, that choice is the same on every run —
-   * which is what stops a reported depth from moving between runs.
+   * Projects overlap: a project that nests a second `tsconfig.json` beneath
+   * it can list the same file as its parent, when the parent's own `include`
+   * is broad enough to reach it too. Containment settles that overlap by the
+   * file's location on disk rather than by which program asked first, which
+   * is what keeps a reported depth the same however a run is scoped — a
+   * closure that starts programs in a different order reaches the same
+   * answer. A file none of `programs`' projects contains is left out of the
+   * map rather than guessed at; `readOwnedPath` in `CallablesService` then
+   * walks it through no program at all.
    */
-  private assignOwnership(
-    programs: readonly ProjectProgram[],
-  ): Map<string, ProjectProgram> {
+  private assignOwnership(args: {
+    programs: readonly ProjectProgram[];
+    workspaceRoot: string;
+  }): Map<string, ProjectProgram> {
+    // Resolved through `toRealPath` too, so it lines up with `filePath`
+    // below, which every owned path already went through to reach — a
+    // workspace reached through a symlink would otherwise turn every
+    // relative path into a string of `../` that contains nothing.
+    const workspaceRoot = this.toRealPath(args.workspaceRoot);
+    const projects = args.programs.map(
+      (projectProgram) => projectProgram.project,
+    );
+    const filePaths = new Set<string>();
+
+    for (const projectProgram of args.programs) {
+      for (const filePath of projectProgram.ownedFilePaths) {
+        filePaths.add(filePath);
+      }
+    }
+
     const ownerByFilePath = new Map<string, ProjectProgram>();
 
-    for (const projectProgram of programs) {
-      for (const filePath of projectProgram.ownedFilePaths) {
-        if (!ownerByFilePath.has(filePath)) {
-          ownerByFilePath.set(filePath, projectProgram);
-        }
+    for (const filePath of filePaths) {
+      const workspaceRelativePath = this.workspaceService.toWorkspaceRelative({
+        absolutePath: filePath,
+        workspaceRoot,
+      });
+      const owningProject = this.workspaceService.resolveOwningProject({
+        projects,
+        workspaceRelativePath,
+      });
+      const projectProgram = args.programs.find(
+        (candidate) => candidate.project === owningProject,
+      );
+
+      if (projectProgram === undefined) {
+        this.logger.warn(
+          "🔭 Skipped a file no traced project contains",
+          undefined,
+          { workspaceRelativePath },
+        );
+        continue;
       }
+
+      ownerByFilePath.set(filePath, projectProgram);
     }
 
     return ownerByFilePath;
@@ -130,30 +175,130 @@ export class ProgramService {
     return parsed;
   }
 
+  /**
+   * Reports the workspace-relative paths one program pulled in.
+   *
+   * `getSourceFiles()` rather than the parsed configuration's `fileNames`,
+   * and the difference is the whole point: `fileNames` is what a project's own
+   * `tsconfig.json` listed, which by definition never mentions the packages it
+   * imports. `getSourceFiles()` is what the compiler actually had to read to
+   * type the project, so a workspace package reached through an import is in
+   * there — and in a pnpm workspace it is reached through a symlink, which is
+   * why every path goes through `toRealPath` before it is made relative.
+   *
+   * A path under `node_modules` is dropped rather than reported. It is a real
+   * dependency rather than workspace code, and the workspace root is itself a
+   * project whose root contains every such path — so reporting one would walk
+   * `lib.es5.d.ts` back to the root project and pull the entire workspace into
+   * every closure.
+   */
+  private readPulledInPaths(args: {
+    program: ts.Program;
+    workspaceRoot: string;
+  }): string[] {
+    const workspaceRoot = this.toRealPath(args.workspaceRoot);
+    const pulledIn: string[] = [];
+
+    for (const sourceFile of args.program.getSourceFiles()) {
+      const workspaceRelativePath = this.workspaceService.toWorkspaceRelative({
+        absolutePath: this.toRealPath(sourceFile.fileName),
+        workspaceRoot,
+      });
+      const segments = workspaceRelativePath.split("/");
+
+      if (
+        segments[0] !== ".." &&
+        !segments.includes(DEPENDENCY_DIRECTORY_NAME)
+      ) {
+        pulledIn.push(workspaceRelativePath);
+      }
+    }
+
+    return pulledIn;
+  }
+
   // 🌎 Public Methods
 
   /**
-   * Builds every project's program and decides which one owns each file.
+   * Builds a program for every project in the starting projects' dependency
+   * closure, and decides which one owns each file.
+   *
+   * The apparent circularity — the closure names the projects to build, but
+   * naming them means asking what each one pulled in, which means building it
+   * — is only apparent. Finding project *roots* is a filesystem walk that
+   * builds nothing; finding what a project *reaches* is what needs a program.
+   * So the closure walk is driven from here, and the callback it asks for a
+   * project's files is what builds that project's program. The traversal asks
+   * exactly once per project it reaches, and the programs built along the way
+   * are kept rather than discarded — they are precisely the set the run goes
+   * on to trace with, so rebuilding them afterwards would build the whole
+   * closure twice.
+   *
+   * A project nothing reaches is never asked about and so never built, which
+   * is what keeps a run scoped to one package from compiling the workspace.
+   * Neither is a project reached only as a directory of shared settings, nor
+   * the workspace root itself — `WorkspaceService.isClosureDestination`
+   * refuses those and holds the reasoning. An unscoped run passes every
+   * project as a
+   * starting project, so its closure is every project, both rules are moot,
+   * and nothing about it changes.
    *
    * A project whose configuration cannot be parsed ends the run rather than
    * being stepped over — see `ProgramConfigurationError` for why a partial
    * graph is the worse outcome. A project that should not be read at all is
    * kept out by an exclusion, which `WorkspaceService.discoverProjects`
-   * applies before this ever sees it.
+   * applies to both lists before this ever sees them, so an unreadable
+   * fixture an ignore file names is not in `workspaceProjects` and no closure
+   * can reach it.
    */
   public buildPrograms(args: BuildProgramsArguments): ProgramSet {
-    const programs: ProjectProgram[] = [];
+    const built: ProjectProgram[] = [];
 
-    for (const project of args.projects) {
-      this.logger.debug("🔭 Reading a project", undefined, {
-        projectName: project.name,
-      });
-      programs.push(
-        this.buildProgram({ project, workspaceRoot: args.workspaceRoot }),
-      );
-    }
+    // The traversal returns nothing, by design: the projects it reached are
+    // exactly the ones it asked for files, so `built` is the only
+    // representation of the closure there is and the count logged below
+    // cannot describe anything other than what was really built.
+    this.workspaceService.walkImportedProjectClosure({
+      resolveProjectFiles: (project): readonly string[] => {
+        this.logger.debug("🔭 Reading a project", undefined, {
+          projectName: project.name,
+        });
 
-    return { ownerByFilePath: this.assignOwnership(programs), programs };
+        const projectProgram = this.buildProgram({
+          project,
+          workspaceRoot: args.workspaceRoot,
+        });
+
+        built.push(projectProgram);
+
+        return this.readPulledInPaths({
+          program: projectProgram.program,
+          workspaceRoot: args.workspaceRoot,
+        });
+      },
+      startingProjects: args.startingProjects,
+      workspaceProjects: args.workspaceProjects,
+    });
+
+    this.logger.debug("🔭 Resolved a dependency closure", undefined, {
+      projectCount: built.length,
+      startingProjectCount: args.startingProjects.length,
+    });
+
+    // Ordered by project name rather than by the order the closure happened to
+    // reach them, so a report's per-project rows read the same whichever
+    // starting root a run was pointed at.
+    const programs = built.toSorted((first, second) =>
+      first.project.name.localeCompare(second.project.name),
+    );
+
+    return {
+      ownerByFilePath: this.assignOwnership({
+        programs,
+        workspaceRoot: args.workspaceRoot,
+      }),
+      programs,
+    };
   }
 
   /** Resolves a path through symlinks, which is how pnpm workspaces link. */

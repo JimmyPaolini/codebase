@@ -12,8 +12,8 @@ It adds two things the core CLI cannot know about:
 
 - **A target on every project**, so the workspace's task runner does the
   selecting — `nx affected`, `--projects=tag:…`, caching, and all.
-- **Dependency-aware scope**, so tracing one project does not truncate its call
-  stacks at the first package boundary.
+- **Dependency-aware scope**, so a run over one project is scoped to everything
+  that project depends on rather than to the project alone.
 
 ## Install
 
@@ -97,17 +97,39 @@ targets would trace everything under one uncacheable task, and any project with
 `nx run callidescope-cli:trace` traces `callidescope-cli` **and
 everything it depends on**, resolved transitively from the Nx project graph.
 
-That is the whole point of the plugin. A call stack runs downward — a command
-calls into the service it was injected with, which lives in a package it
-depends on — so tracing a project alone truncates every stack at the first
-package boundary, which is the one measurement callidescope exists to take.
-Tracing `callidescope-nx` on its own finds 17 callables; tracing it with its
-dependencies finds 469.
+A call stack runs downward — a command calls into the service it was injected
+with, which lives in a package it depends on — so a trace that stopped at a
+project's own boundary would measure the wrong thing.
+
+**A trace does not stop there without this plugin.**
+[`@callidescope/cli`](../callidescope-cli/README.md) builds a TypeScript
+program for every project the directories it was given transitively import, so
+a call into a dependency resolves to a real frame whether or not Nx is
+involved. Measured on this package,
+`callidescope --directories packages/callidescope-nx` and
+`nx run callidescope-nx:trace` report the same 575 callables across 185 files
+in 7 projects.
+
+What the Nx graph decides is which projects the run is **scoped to** rather
+than merely reaches. This executor writes nothing anywhere — it renders one
+report and prints it — so the distinction costs nothing here, and widening the
+selection changes only which projects seed the closure. It is the command-line
+host that acts on it: a `--write` run there publishes a `## 🔭 Callidescope`
+section into a scoped project's `README.md` and leaves a reached one's to the
+run that is scoped to it. The graph also names dependencies no import closure
+can find — an implicit dependency, or an edge that exists only at run time.
+
+The two sets are not the same. The Nx graph gives `callidescope-nx` six
+projects; the import closure reaches seven, adding `codometer-configuration`,
+which this project's `tsconfig.json` pulls in through its own
+`codometer.config.ts` — a file the manifest has no reason to mention.
 
 Dependencies, never dependents: a project's dependents call _into_ it and add
 no frames below it.
 
-Pass `--withDependencies=false` for the narrow reading.
+Pass `--withDependencies=false` to scope the run to the selected projects
+alone. The closure below them is built either way, so what changes is which
+projects the run calls its own — not how far a stack runs.
 
 ### Executor options
 
