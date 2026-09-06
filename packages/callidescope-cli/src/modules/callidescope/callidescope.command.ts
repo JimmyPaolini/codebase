@@ -24,6 +24,7 @@ import { CHECK_NAMES } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
 import {
+  buildUnknownCommandMessage,
   PROJECT_README_NAME,
   UnresolvedEntryPointAddressError,
 } from "./callidescope.constants";
@@ -44,10 +45,18 @@ import type { ProjectSection } from "@callidescope/output";
 
 /**
  * CLI entry point for the call-stack tracing workflow.
+ *
+ * `isDefault` is what makes `callidescope --check depth` work, which is the
+ * invocation every piece of documentation here has always shown and the only
+ * one a reader would think to type — the honest alternative was
+ * `callidescope callidescope`. It stays a named command as well, so the Nx
+ * targets that spell it out keep working unchanged, and `depth`, `breadth`,
+ * and `limits` are still matched by name before anything falls through here.
  */
 @Command({
   description: "Run the callidescope command",
   name: "callidescope",
+  options: { isDefault: true },
 })
 @Injectable()
 export class CallidescopeCommand extends CommandRunner {
@@ -454,11 +463,26 @@ export class CallidescopeCommand extends CommandRunner {
    * stale report, `--check depth` fails on a stack that ran too deep, and none
    * of them turns another on. A run given neither `--write` nor
    * `--check reports` leaves every file alone.
+   *
+   * A positional argument is refused rather than ignored. This command is the
+   * default one, so anything commander could not match as a subcommand arrives
+   * here as an operand instead of as `unknown command` — and a `deep` typed
+   * where `depth` was meant, quietly tracing the whole workspace and passing,
+   * would be a worse answer than the error it replaced.
    */
   public async run(
-    _passedParameters: string[],
+    passedParameters: string[],
     options: CallidescopeCommandOptions,
   ): Promise<void> {
+    const [unexpected] = passedParameters;
+
+    if (unexpected !== undefined) {
+      this.rejectCommandLine(
+        new InputError(buildUnknownCommandMessage(unexpected)),
+      );
+      return;
+    }
+
     try {
       await this.traceWorkspace(options);
     } catch (error) {

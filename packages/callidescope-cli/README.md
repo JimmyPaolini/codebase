@@ -49,6 +49,19 @@ Two questions this answers that reading code does not:
 
 ## Usage
 
+Tracing the workspace is the **default command**, so the flags below sit
+directly on `callidescope`:
+
+```bash
+npx callidescope --check depth
+```
+
+`callidescope callidescope --check depth` is the same run written out, which is
+what a task runner that always names a command spells. `depth`, `breadth`, and
+`limits` are matched by name before anything falls through to the default, so
+they are unaffected — and a word that names none of them is refused rather than
+quietly traced.
+
 | Flag | Meaning |
 | ---- | ------- |
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |

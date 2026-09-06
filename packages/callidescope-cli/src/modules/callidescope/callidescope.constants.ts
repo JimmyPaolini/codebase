@@ -12,6 +12,19 @@ export const INCLUDE_CONSTRUCTOR_EDGES = true;
 /** File a project's embedded section is spliced into. */
 export const PROJECT_README_NAME = "README.md";
 
+/**
+ * Says a bare argument named no command, and lists the ones that exist.
+ *
+ * The price of `callidescope` being the default command: a name commander
+ * cannot match is no longer an unknown command, it is an operand handed to the
+ * default — so a `deep` typed where `depth` was meant would otherwise trace the whole
+ * workspace and report success rather than saying the word does not exist. This turns that
+ * back into a refusal, which is the whole reason `run` looks at the parameters
+ * it is otherwise given no use for.
+ */
+export const buildUnknownCommandMessage = (name: string): string =>
+  `${name} is not a callidescope command, and the trace takes no positional arguments. Run one of depth, breadth, or limits, or drop the argument to trace the workspace.`;
+
 // 🚨 Errors
 
 /**

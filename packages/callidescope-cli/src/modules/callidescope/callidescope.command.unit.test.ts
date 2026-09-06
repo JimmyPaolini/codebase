@@ -34,6 +34,7 @@ import { ReportFindingsService } from "../report-findings/report-findings.servic
 import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { CallidescopeCommand } from "./callidescope.command";
+import { buildUnknownCommandMessage } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
 
 import type {
@@ -439,6 +440,22 @@ describe(CallidescopeCommand, () => {
     expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
     // One write: the report is a single rendered document now.
     expect(process.stdout.write).toHaveBeenCalledTimes(1);
+  });
+
+  it("refuses a positional argument rather than tracing anyway", async () => {
+    // This is the default command, so a word commander could not match as a
+    // subcommand arrives here as an operand. Tracing the whole workspace and
+    // reporting success would be a worse answer to a typo than the
+    // `unknown command` it replaced.
+    await command.run(["deep"], {});
+
+    expect(callidescopeService.trace).not.toHaveBeenCalled();
+    expect(process.exitCode).toBe(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected the command line",
+      undefined,
+      { reason: buildUnknownCommandMessage("deep") },
+    );
   });
 
   it("logs the start of a trace with the working directory as its root", async () => {
