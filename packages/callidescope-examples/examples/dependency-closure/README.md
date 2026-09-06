@@ -51,7 +51,7 @@ Four projects are traced when this package is the starting root:
 | Project | Reached because |
 | ------- | --------------- |
 | `packages/callidescope-examples` | The directory the run was pointed at |
-| `packages/callidescope-configuration` | The fixture above imports it, and [`callidescope.config.ts`](../../callidescope.config.ts) imports a type from it |
+| `packages/callidescope-configuration` | The fixture above imports it, and [`callidescope.workspace.config.ts`](../../callidescope.workspace.config.ts) imports a type from it |
 | `packages/codometer-configuration` | Reached through the shared `configuration/codometer.config.ts` that this package's own [`codometer.config.ts`](../../codometer.config.ts) spreads |
 | `packages/logger` | Reached through the shared `configuration/eslint.config.ts`, which imports `@codebase/logger/eslint` |
 
@@ -72,7 +72,7 @@ if some file the compiler read imported it — which is how `packages/logger`
 gets into this run, through a shared configuration file rather than through
 anything this package declares.
 
-A type-only import is enough. `callidescope.config.ts` imports a type from
+A type-only import is enough. `callidescope.workspace.config.ts` imports a type from
 `@callidescope/configuration` and nothing else, and the compiler reads the
 package all the same — so the dependency would be in this closure even without
 the fixture above.

@@ -11,7 +11,7 @@ import path from "node:path";
 
 import { beforeAll, describe, expect, it } from "vitest";
 
-import callidescopeConfiguration from "../callidescope.config.js";
+import callidescopeConfiguration from "../callidescope.workspace.config.js";
 
 import type {
   CallGraphResult,
@@ -107,14 +107,20 @@ function readOwnReport(result: CallGraphResult): ProjectReport {
  * Traces the fixtures the way the Nx target does, into a throwaway report.
  *
  * The real configuration is reused rather than restated — only its output is
- * redirected — so a limit changed in `callidescope.config.ts` changes what this
- * asserts instead of quietly disagreeing with it. The committed reports under
- * `output/` are left exactly where they were.
+ * redirected — so a limit changed in `callidescope.workspace.config.ts` changes
+ * what this asserts instead of quietly disagreeing with it. The committed
+ * reports under `output/` are left exactly where they were.
  *
  * Both overrides exist for a differential, because a rule that narrows
  * something can only be shown to do anything by running the same fixtures again
  * without it. `limits` lifts the implementation cap; `exclude` drops one
  * project out of the run's dependency closure.
+ *
+ * Writing a derived copy into a temporary directory is also why the file it
+ * derives from is not named `callidescope.config.ts`: `--config` then names the
+ * temporary file, so the run's "one file, one role" skip has no path to match
+ * and would discover the real one at the project root as this package's own
+ * project configuration — which sets workspace-only fields and is refused.
  */
 function traceFixtures(
   overrides: {

@@ -44,14 +44,14 @@ project its imports transitively reach, so this one covers four projects:
 | A frame you did not expect, named for a declaration rather than the local name | [`plain-call`](examples/plain-call/README.md) | The checker unwraps the import alias. A report always names the declaration |
 | A frame, a stack, or a per-project row in a package the run was not pointed at | [`dependency-closure`](examples/dependency-closure/README.md) | A scoped run traces the projects its imports reach. Not a leak — a call into a dependency lands on a frame instead of stopping at the package boundary |
 | A stack that ends at a call into another directory, with no frame for it | [`dependency-closure`](examples/dependency-closure/README.md) | The destination is refused: a project root holding no `package.json` is shared settings rather than a package, and the workspace root contains every project |
-| `A configured destination is stale` | [`callidescope.config.ts`](callidescope.config.ts) | Run the `write` configuration of whichever project owns the destination |
+| `A configured destination is stale` | [`callidescope.workspace.config.ts`](callidescope.workspace.config.ts) | Run the `write` configuration of whichever project owns the destination |
 | `--check` rejected a value | [README, "The two flags"](README.md#the-two-flags) | Only `depth` and `reports` are findings; an empty `--check` is refused |
 
 ## Layout
 
 ```text
 callidescope-examples/
-├── callidescope.config.ts             what traces this package, and every limit it sets
+├── callidescope.workspace.config.ts   what traces this package, and every limit it sets
 ├── examples/
 │   └── <name>/
 │       ├── README.md                  the guide for this example
@@ -171,6 +171,6 @@ about fixtures.
 | File | What it is |
 | ---- | ---------- |
 | [README.md](README.md) | The human guide — how to read a stack, and how to act on each finding |
-| [callidescope.config.ts](callidescope.config.ts) | Why this package's limits differ from the workspace's |
+| [callidescope.workspace.config.ts](callidescope.workspace.config.ts) | Why this package's limits differ from the workspace's |
 | [../callidescope-cli/README.md](../callidescope-cli/README.md) | The behavior being demonstrated |
 | [../callidescope-configuration/README.md](../callidescope-configuration/README.md) | Every configuration field |

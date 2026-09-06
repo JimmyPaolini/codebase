@@ -24,6 +24,35 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
  *   report here goes stale when a fixture changed, when the resolver did, or
  *   when one of the three dependency packages the run's closure reaches did —
  *   all three of which are exactly what the check should catch.
+ *
+ * ## Why this file is not called `callidescope.config.ts`
+ *
+ * Because it is a *workspace* configuration that happens to sit at a project
+ * root, and the two roles are read differently. A run resolves a configuration
+ * beside every project it traces, and a project's own file may set only
+ * `entryPoints`, `limits.maximumDepth`, `limits.maximumBreadth`, and `exclude`.
+ * This one legitimately sets `output`, `workspaceStructure`, and
+ * `limits.maximumImplementationCandidates`, every one of which only a workspace
+ * configuration may set — so being discovered as this package's project
+ * configuration would refuse the run outright.
+ *
+ * A run does skip the file it was handed by `--config`, on the ground that one
+ * file holds one role per run. That is necessary but not sufficient here:
+ * `testing/examples.integration.test.ts` traces the fixtures through a
+ * *derived* copy of this object written into a temporary directory, because two
+ * of its assertions override `limits` and `exclude` and neither has a flag. The
+ * run's `--config` then names the temporary file, so path equality has nothing
+ * to match and discovery would find this one at the project root.
+ *
+ * The name is what settles it. Project discovery looks for exactly the eight
+ * `callidescope.config.*` spellings, so any other name is invisible to it while
+ * staying perfectly loadable when `--config` names it. Renaming rather than
+ * relocating keeps the file in the trace: `testing/` is excluded as test code,
+ * so moving it there would drop this package's `fileCount` and put the suite's
+ * counts at odds with the committed report.
+ *
+ * It also leaves the name `callidescope.config.ts` free beside it, for a
+ * genuine per-project configuration this package can demonstrate.
  */
 const callidescopeConfiguration: CallidescopeConfiguration = {
   limits: {

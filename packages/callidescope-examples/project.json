@@ -17,10 +17,10 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directories packages/callidescope-examples --config packages/callidescope-examples/callidescope.config.ts --check reports"
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directories packages/callidescope-examples --config packages/callidescope-examples/callidescope.workspace.config.ts --check reports"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directories packages/callidescope-examples --config packages/callidescope-examples/callidescope.config.ts --write"
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directories packages/callidescope-examples --config packages/callidescope-examples/callidescope.workspace.config.ts --write"
         }
       },
       "defaultConfiguration": "check",

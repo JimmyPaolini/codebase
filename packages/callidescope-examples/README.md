@@ -122,7 +122,7 @@ Pointed at this package, the run builds a program for four projects:
 | Project | Reached because |
 | ------- | --------------- |
 | `packages/callidescope-examples` | The directory the run was pointed at |
-| `packages/callidescope-configuration` | Imported by the fixture, and by [`callidescope.config.ts`](callidescope.config.ts) |
+| `packages/callidescope-configuration` | Imported by the fixture, and by [`callidescope.workspace.config.ts`](callidescope.workspace.config.ts) |
 | `packages/codometer-configuration` | Reached through the shared configuration [`codometer.config.ts`](codometer.config.ts) spreads |
 | `packages/logger` | Reached through the shared `configuration/eslint.config.ts` |
 
@@ -205,7 +205,7 @@ same file is the example working, not a lint failure to chase.
 ### Output
 
 All four destinations are configured in
-[`callidescope.config.ts`](callidescope.config.ts) and all four results are
+[`callidescope.workspace.config.ts`](callidescope.workspace.config.ts) and all four results are
 committed:
 
 | Destination | Result |
@@ -374,10 +374,14 @@ because a machine reading it has no line width to respect.
 
 ## Configuring your own workspace
 
-Start from [`callidescope.config.ts`](callidescope.config.ts) here, which is
-short on purpose, and read
+Start from
+[`callidescope.workspace.config.ts`](callidescope.workspace.config.ts) here,
+which is short on purpose, and read
 [the configuration reference](../callidescope-configuration/README.md) for every
-field.
+field. Yours will be called `callidescope.config.ts` — this one carries the
+longer name because it is a workspace configuration sitting at a project root,
+and only that name keeps it from also being read as this package's own project
+configuration. Its doc comment explains why that matters.
 
 Three decisions are worth making deliberately:
 
@@ -428,7 +432,7 @@ about a dependency that is genuinely real.
 
 ```text
 callidescope-examples/
-├── callidescope.config.ts             what traces this package, and every limit it sets
+├── callidescope.workspace.config.ts   what traces this package, and every limit it sets
 ├── examples/
 │   └── <name>/
 │       ├── README.md                  the guide for this example
@@ -798,7 +802,7 @@ _This project defines no NestJS modules to graph._
 <!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
-  file_callidescope_config_ts["callidescope.config.ts"]
+  file_callidescope_workspace_config_ts["callidescope.workspace.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_examples_base_class_base_class_ts["examples/base-class/base-class.ts"]
@@ -808,6 +812,7 @@ graph LR
   file_examples_constructed_class_constructed_class_ts["examples/constructed-class/constructed-class.ts"]
   file_examples_constructed_class_parser_ts["examples/constructed-class/parser.ts"]
   file_examples_deep_stack_deep_stack_ts["examples/deep-stack/deep-stack.ts"]
+  file_examples_dependency_closure_dependency_closure_ts["examples/dependency-closure/dependency-closure.ts"]
   file_examples_entry_points_entry_points_ts["examples/entry-points/entry-points.ts"]
   file_examples_forwarding_stack_forwarding_stack_ts["examples/forwarding-stack/forwarding-stack.ts"]
   file_examples_frame_annotations_frame_annotations_ts["examples/frame-annotations/frame-annotations.ts"]
@@ -852,7 +857,7 @@ graph LR
   file_src_index_ts --> file_examples_plain_call_normalize_label_ts
   file_src_main_ts --> file_examples_injected_dependency_inventory_ts
   file_src_main_ts --> file_examples_injected_dependency_orders_ts
-  file_testing_examples_integration_test_ts --> file_callidescope_config_ts
+  file_testing_examples_integration_test_ts --> file_callidescope_workspace_config_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 
