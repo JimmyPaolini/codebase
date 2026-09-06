@@ -1,6 +1,3 @@
-// cspell:ignore dldl dldldl ddd lll — mosaic tile identifiers, one letter per
-// cell of the tile, from MOSAIC_MARK_LETTERS in
-// src/modules/mosaic-motif/mosaic-motif.constants.ts.
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 

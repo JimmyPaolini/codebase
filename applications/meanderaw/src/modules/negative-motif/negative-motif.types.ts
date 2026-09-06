@@ -1,7 +1,3 @@
-// cspell:ignore dvvxxd dvvxxvvxxvvxxd hxxhhx hxxhhxxhhxxhhx dldldld — mosaic
-// tile identifiers, one letter per point of the tile, from
-// MosaicSymmetryService.identify.
-
 // 🏷️ Types
 
 /** One cell of the source pattern, by the lattice column it sits in and the interior level it sits on. */
@@ -97,14 +93,14 @@ export interface NegativeRowSpan {
  * `README.md` and are _branches only_: their negatives branch at every swept
  * row count and cross at none.
  *
- * - `stair` is `dvvxxd` → `dvvxxvvxxvvxxd`: two dots capping a staircase of
- *   vertical dashes. The shortlist's first entry and the highest-branching
- *   non-crossing pattern it found, so it is what `negative` draws with no
- *   modifier.
- * - `brick-staggered` is `hxxhhx` → `hxxhhxxhhxxhhx`: horizontal dashes in
- *   running bond, the shortlist's structurally simplest entry.
- * - `ruled` is `dld` → `dldldld`: one column alternating dot levels with the
- *   continuous rule, the shortlist's columns-1 entry.
+ * - `stair` is two columns of southward edges offset by one level, capped by
+ *   a bare point at each end of the staircase. The shortlist's first entry
+ *   and the highest-branching non-crossing pattern it found, so it is what
+ *   `negative` draws with no modifier.
+ * - `brick-staggered` is one eastward edge per level, its anchor column
+ *   alternating — running bond, the shortlist's structurally simplest entry.
+ * - `ruled` is one column alternating bare levels with the wrapped rule, the
+ *   shortlist's columns-1 entry.
  *
  * Four more invert a `MosaicSubFamily`'s own aligned tile, so the names the
  * `mosaic` family already recognizes are drawable as negatives rather than
@@ -125,9 +121,9 @@ export interface NegativeSpan {
  * The sources built from a two-column tile rather than from a one-column
  * repeating motif.
  *
- * Two columns is where a horizontal dash becomes expressible, and the bond
+ * Two columns is where an eastward edge reaches a different point, and the bond
  * it is laid in is the whole difference between the two `brick` sources: a
- * dash walls the lattice column it is anchored on and leaves the one it
+ * edge walls the lattice column it is anchored on and leaves the one it
  * reaches into open, so the anchors decide which columns carry corridors.
  * Alternating them by level puts a corridor either side of every course and
  * never two in a line — running bond, which branches without crossing.

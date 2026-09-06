@@ -69,10 +69,10 @@ enumerated half inverts `mosaic` tiles. A modifier carrying a
 parameter puts it in the variant too, or two of its own drawings would collide on one
 path: `output/branch/7-rows/stagger-branches-4-6-repeats.svg` and
 `output/branch/7-rows/comb-upward-6-repeats.svg`. A directory listing is
-then the parameter space it enumerates, and the 449 enumerated tiles — which would be
-unreadable as one flat directory — sit a few hundred at a time under the row count and
-column span that produced them, named by nothing but what distinguishes them, with the
-handful that a family already has a word for carrying that word after the identifier.
+then the parameter space it enumerates, and the 8,759 enumerated tiles — which would be
+unreadable as one flat directory — sit under the row count and column span that produced
+them, named by nothing but the hexadecimal string that distinguishes them, with the handful whose
+structure earns a name carrying that name after it.
 
 **Two families have a permutation half, and they enumerate different things.**
 `mosaic`'s is its whole unit space at every column span its edge budget admits, 8,551
@@ -116,28 +116,37 @@ new family — it is a different kind of drawing. Three of the four that came af
 negotiable one each, on purpose: `cross` crosses, and `negative` and `branch` both branch
 — in different shapes, which "The Branching Family" below is about. `negative` breaks the
 other one too, in three of its ten modes, and that is not a second family creeping in: the
-survey below found that 3,070 of the 3,179 `mosaic` tiles have a crossing negative, so a
-`negative` family that crossed nowhere was drawing the 3.3% minority of its own source
-space. The fourth of the four, `parallel`, breaks none of them, and that is the point of
-it.
+survey below found that 3,070 of the 3,179 `mosaic` tiles it measured have a crossing
+negative, so a `negative` family that crossed nowhere was drawing the 3.3% minority of its
+own source space. The fourth of the four, `parallel`, breaks none of them, and that is the
+point of it.
+
+`mosaic` breaks both, and it is the only family that breaks them in its **enumerated half
+alone**. Its named modes — `plain`, `split`, `alternated`, `dot` — branch and cross
+nowhere; its unit space is every assignment of direction bits over a lattice, and most of
+that space does. The declaration in `meander-topology.service.integration.test.ts` says so
+with a `permutations` flag, and the assertion that a declared relaxation is really
+_present_ is taken from committed output rather than from a generated drawing.
 
 | # | Invariant | Status |
 | --- | --- | --- |
 | 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Fixed |
 | 2 | **Space-filling** — every interior white channel is exactly one stroke width | Fixed |
-| 3 | **No branching** — ink contains no T-junctions | Relaxed by `branch` in every mode, by `negative` in every mode but `ruled-closed`, and by `chain` and `snake` under `edge` and `edge-flip` |
-| 4 | **No crossing** — ink contains no X-junctions | Relaxed by `cross` except under `interrupted`, and by `negative` under `brick-straight`, `brick-upright`, and `grid` |
+| 3 | **No branching** — ink contains no T-junctions | Relaxed by `branch` in every mode, by `negative` in every mode but `ruled-closed`, by `mosaic` across its enumerated half, and by `chain` and `snake` under `edge` and `edge-flip` |
+| 4 | **No crossing** — ink contains no X-junctions | Relaxed by `cross` except under `interrupted`, by `mosaic` across its enumerated half, and by `negative` under `brick-straight`, `brick-upright`, and `grid` |
 | 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Fixed |
 | 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
 | 7 | Invariants hold within a band, not at its termination | See [#338](https://github.com/JimmyPaolini/codebase/issues/338) |
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
-against the corpus as it now stands, 1,183 named patterns beside 449 enumerated tiles. The
-named half was 174 until the sweep's row range was raised to the command line's own, and
-it has moved with every family that gained a mode or a parameter since; the enumerated
-half was 3,554 until `mosaic` was capped at 6 rows. Most of these counts have moved
-several times for those reasons alone — see the note under "Meander Charter" above:
+against the corpus as it now stands, 1,183 named patterns beside 8,759 enumerated tiles.
+The named half was 174 until the sweep's row range was raised to the command line's own,
+and it has moved with every family that gained a mode or a parameter since; the enumerated
+half was 3,554 until `mosaic` was capped at 6 rows, 449 after that, and 8,759 once that
+family's matching rule was replaced by an edge budget over a lattice. Most of these counts
+have moved several times for those reasons alone — see the note under "Meander Charter"
+above:
 
 - **Every interior white channel is exactly one stroke width**, in all 9,942 files. The
   channel width equals the stroke width equals half a grid unit, and that single number
@@ -232,9 +241,69 @@ A **family** is a generator of repeat units — its **unit space**. A **modifier
 named constructor into that space; a **sub-family** is a named predicate over it. Both
 are views on one underlying space, which is why `mosaic` is the only family with
 sub-families today: [#365](https://github.com/JimmyPaolini/codebase/pull/365)
-materialized its unit space as 3,179 enumerable tiles, so its regions —
-`lines`, `dashes`, `dots`, `diamond` — became recognizable. The other nine families
-have latent unit spaces and therefore only modifiers.
+materialized its unit space as enumerable tiles, so its regions — `lines`, `dashes`,
+`dots`, `diamond` — became recognizable. The other nine families have latent unit spaces
+and therefore only modifiers.
+
+### A `mosaic` tile is a lattice of four-direction points
+
+A repeat tile is a `columns` by `rows - 1` grid of **lattice points**, each carrying four
+bits: whether ink leaves it north, south, east, or west. `0000` is a dot, `1100` a corner,
+`1110` a T-junction, `1111` a crossing. The two border rules at grid levels `0` and `rows`
+are the cap ticks rather than tile points, so a point on the first level carries no `north`
+and one on the last carries no `south`.
+
+Three things follow, and they are why the family is a family rather than a soup.
+
+**A tile is space-filling for free.** A point on no edge _is_ an inked dot — the same dot
+the family has always drawn — so charter invariant 2 holds by construction at every degree
+and needs no predicate.
+
+**The bits are twice-redundant, and the redundancy is a checked invariant.** `east` at one
+point is `west` at the point to its right, wrapping from the last column into the next
+repeat, and `south` is `north` at the point below. `MosaicTileService.assertWellFormed`
+refuses a grid that disagrees. That agreement is what makes a tile's bits denote exactly
+one drawing — no two assignments draw the same pattern, and no assignment draws none — and
+the east–west wrap at the last column **is** what makes a tile join up with its own next
+repeat, stated once rather than handled wherever a mark used to reach past the tile's edge.
+
+The alternative reading — each bit draws a half-unit arm, so disagreeing neighbors leave a
+stub ending between lattice lines — is rejected. `MeanderLatticeService` refuses a
+coordinate that is not on a lattice line, so half-arms would break the whole measurement
+stack, and a stub ending in mid-air is not obviously legal under invariant 2 either.
+
+**One budget bounds the space.** A tile's edges are its only degrees of freedom — one
+eastward and one southward per point, minus the last level's southward ones, which have
+nowhere to reach — so a shape holds exactly `2 ** (columns * (2 * rows - 3))` tiles and
+rows and columns are not independent knobs. Capping each alone caps neither: six rows is
+fine, six columns is fine, and a six-by-six tile is `2 ** 54` of them. `MOSAIC_TILE_EDGE_BUDGET`
+caps the edge count at **16**, which admits eleven shapes and 8,551 distinct tiles after
+symmetry folding — a corpus a person can look through. Twenty would admit about 116,000.
+
+| rows × columns | edges | tiles |
+| --- | --- | --- |
+| 3 × 1 | 3 | 6 |
+| 3 × 2 | 6 | 21 |
+| 3 × 3 | 9 | 74 |
+| 3 × 4 | 12 | 354 |
+| 3 × 5 | 15 | 1,884 |
+| 4 × 1 | 5 | 20 |
+| 4 × 2 | 10 | 204 |
+| 4 × 3 | 15 | 3,100 |
+| 5 × 1 | 7 | 72 |
+| 5 × 2 | 14 | 2,544 |
+| 6 × 1 | 9 | 272 |
+| **Total** | | **8,551** |
+
+Counts are folded over the tile's symmetry group — horizontal translations, times a
+horizontal mirror, times a level flip, order `4 * columns`. Enumeration is a walk over
+every subset of the edges, so it is counting in binary rather than searching, and a shape
+past the budget is refused rather than enumerated slowly: the walk is `2 ** edges` wide,
+so one shape too many is not a long run but an unfinished one.
+
+**The row cap is separate and still 6.** The budget alone admits a one-column tile out to
+nine rows, but a family that ran deeper at one column than at any other would describe its
+own ceiling with two numbers that disagree.
 
 The glossary for these terms lives in the repository [CONTEXT.md](../../CONTEXT.md).
 Note one deliberate divergence: the code says `MeanderType`, `SUPPORTED_TYPES`, and
@@ -282,11 +351,22 @@ paying it buys a filename whose characters are the tile's own points rather than
 edge list nobody can read. The directory a drawing is filed under carries the shape, so
 two tiles of different shapes may share a string.
 
-Recognition lives in `MosaicNamingService.name`, which reads those bits and never the
-identifier. That is deliberate: the names keep working at row and column counts nobody
-has enumerated, and survive any change to the enumeration's bounds. A tile mixing them —
-which is nearly all of them — belongs to no sub-family and is left **unnamed** rather
-than pushed into the nearest one.
+Recognition lives in the `mosaic-naming` module, which is a list of **rules**: a name,
+and a predicate over the tile's own direction bits that a tile must satisfy to be called
+it. Adding a name to the family is adding one of these, not writing a motif service.
+
+Three consequences, and each is asserted rather than assumed:
+
+- **A name keeps working outside the enumeration.** No rule consults a list of known
+  identifiers, so a tile at a row or column count nobody has swept is named exactly as one
+  inside it would be.
+- **A tile matching no rule keeps its identifier** rather than being forced into the
+  nearest name. Most tiles are like this, and that is the point: a name everything has
+  says nothing.
+- **A tile matching two rules is a defect in the rule set**, not a tie to break. The rules
+  are exclusive by construction — each requires the _absence_ of the directions the others
+  are about — and `mosaic-naming.service.unit.test.ts` asserts it over the whole
+  enumerated space.
 
 Across the 8,551 tiles the enumeration admits — every shape the edge budget allows, which
 is exactly what the sweep commits:
@@ -304,12 +384,14 @@ working rather than a coincidence: each rule requires the **absence** of the dir
 the others are about, so a tile carrying a junction earns no name at all.
 
 A region holds every tile its predicate accepts, not only the one it is named after,
-which is why `dashes` is much the largest: a horizontal dash may anchor in either column
-of a two-column tile, so staggered arrangements are `dashes` too. `diamond` is the
-smallest because its covers are forced rather than chosen — vertical dashes cover the
-bar's interior levels in pairs, so there is one arrangement per column span where the
-number of levels is even and none at all where it is odd. Asking for a `diamond` at an
-even row count is refused rather than approximated.
+which is why `dashes` is much the largest: an eastward edge may be anchored at any column,
+so staggered arrangements are `dashes` too. `lines` is the smallest because it exists only
+at a single column, where an eastward edge wraps onto its own point — four shapes admit
+that, and each holds exactly one such tile. `diamond` is nearly as small because its
+arrangements are forced rather than chosen: southward edges cover the bar's interior levels
+in pairs, so there is one per column span where the number of levels is even and none at
+all where it is odd. Asking for a `diamond` at an even row count is refused rather than
+approximated.
 
 Ask for a sub-family by name:
 
@@ -332,7 +414,8 @@ both names survive here because they play different roles — exactly the distin
   breaks the bar into dashes, and nothing about it, its compatibility entry, or its
   reference asset changes.
 - **`diamond` is a sub-family**: a named _predicate_ over the unit space. It recognizes
-  any tile built entirely of vertical dashes, whether or not `split` is what produced it.
+  any tile every one of whose points is reached by a southward edge and by nothing running
+  across the band, whether or not `split` is what produced it.
 
 Two routes to one shape, which is what the glossary means by "some sub-families arise by
 applying a modifier, others by recognizing a structural property". The equality is tested
@@ -354,16 +437,21 @@ crossings in the negative space of `mosaic split` and `mosaic alternated period-
 branching in every family's negative — but only across the 114 named patterns.
 [#412](https://github.com/JimmyPaolini/codebase/issues/412) runs the same measurement
 across all 3,179 tiles of the `mosaic` permutation set at 4 through 8 rows, which the
-sweep committed under `output/mosaic/<rows>-rows/permutations/` at the time — the only
+sweep committed under `output/mosaic/<rows>-rows/permutations/` at the time, before that
+level was removed — the only
 family with an enumerated unit space, so the only one this measurement can run over every
 tile rather than a handful of named modifiers. The space it measured is not the space
 the family enumerates today — the matching rule it was taken under has since been
-replaced by an edge budget and a ceiling of two direction bits per point — so the
-figures below are a record of that survey rather than a description of what is on disk.
+replaced by an edge budget over a lattice of four-direction points — so the figures below
+are a record of that survey rather than a description of what is on disk. The `negative`
+family still inverts the region that survey measured, and now says so: a source carrying a
+junction can wall a cell on every side, and a cell with no corridor leaves the negative
+with a lattice point nothing paints, so `NEGATIVE_SOURCE_MAXIMUM_DEGREE` stops its sources
+at a corner.
 
 ### Method
 
-Every `output/mosaic/<rows>-rows/permutations/<columns>-columns/*.svg` file was read from disk — no generation, no motif
+Every `output/mosaic/<rows>-rows/<columns>-columns/*.svg` file was read from disk — no generation, no motif
 service, the same approach the charter test already uses to gate the corpus — and passed
 to the existing
 [`MeanderTopologyService.measure`](src/modules/meander-topology/meander-topology.service.ts).
@@ -506,6 +594,17 @@ the measurements behind that.
 This was a spike. It changed no code, and everything below is measurement on the sweep
 `nx run meanderaw:start` already writes.
 
+> **What changed since, and what did not.** `mosaic` has since moved onto that shared
+> degree-bounded lattice rule — its tiles are four direction bits per point, junctions
+> included, which is the rule this section measured. The finding **stands**: the rule
+> really does generate far too much to be useful, and it is precisely why `mosaic` carries
+> an edge budget. The difference is that `mosaic` can clamp the lattice hard enough to stay
+> small enough to look through, because its pitch is a free parameter — `columns` — while the five families
+> here have no such knob: their pitch is the width of their own motif, and capping it below
+> that deletes the family. Adopting the rule at _their_ pitch is what this section rejects,
+> and nothing about `mosaic`'s lattice reopens that. The recommendation to leave the
+> asymmetry is unchanged.
+
 The verdict per family, with the rest of the section as its evidence:
 
 | Family | A rule of its own? | The shared charter rule? | Tiles it contributes | Tiles the shared rule generates at 5 rows |
@@ -573,22 +672,30 @@ zigzag to the border rule — the same ink T-junctions
 [#410](https://github.com/JimmyPaolini/codebase/issues/410) reports, reached here
 independently and from the other direction.
 
-`mosaic` is the same model with one extra bound. A `mosaic` tile is an exact cover of its
-cells by dots and one-unit dashes, and a cell **is** a lattice point: a dot is an isolated
-point, a dash is a single lattice edge. So a `mosaic` tile is exactly a **matching** of the
-tile's lattice, every unmatched point drawn as a dot. Re-deriving the enumeration from that
-one-line description reproduces the committed sweep tile for tile — 8, 15, 18, 50, 40, 159,
-93, 567, 216, and 2,013 per row count and column span, 3,179 in all — so the two
-descriptions are the same description.
+`mosaic` was the same model with one extra bound, and this is where that bound came off.
+A `mosaic` tile used to be an exact cover of its cells by dots and one-unit dashes, and a
+cell **is** a lattice point: a dot is an isolated point, a dash is a single lattice edge.
+So such a tile is exactly a **matching** of the tile's lattice, every unmatched point drawn
+as a dot. Re-deriving that enumeration from the one-line description reproduced the sweep
+as it then stood tile for tile — 8, 15, 18, 50, 40, 159, 93, 567, 216, and 2,013 per row
+count and column span, 3,179 in all — so the two descriptions were the same description.
+
+Recognizing that is what made the matching rule droppable. `mosaic` is now the _whole_
+lattice under an edge budget rather than one region of it, and the matching region is still
+recoverable exactly: `MosaicTilesService.isMatching` filters the enumeration back down to
+it, and `mosaic-tiles.service.unit.test.ts` asserts the result shape by shape. That is what
+says the widening is a widening and not a replacement.
 
 ### The five sit at the far end of one axis
 
-`mosaic` bounds every component of the tile to a single edge. The five make the tile one
-component as long as it can be. Both are regions of the one space:
+`mosaic` used to bound every component of the tile to a single edge. The five make the
+tile one component as long as it can be. Both were regions of the one space — and `mosaic`
+now occupies the whole of it at the shapes its budget admits, which is the far end of the
+axis in the other direction rather than a point on it:
 
 | Region | Rule | Who lives there |
 | --- | --- | --- |
-| matchings | every component has at most one edge | `mosaic` |
+| matchings | every component has at most one edge | `mosaic`, until its degree ceiling came off |
 | simple traversals | at most one horizontal run per level and one vertical run per column | `boxes`, `chain`, `snake`, `whirl` |
 | Hamiltonian cycles | one component, every point of degree 2 | `snake` |
 | Hamiltonian paths | one component, two loose ends | `boxes`, `chain`, `swirl`, `whirl` |
@@ -628,15 +735,23 @@ than "Hamiltonian path" covers all five.
 
 ### Why `mosaic`'s space is small, and the five cannot borrow it
 
-Two independent bounds keep `mosaic` enumerable, and only one of them is the rule:
+When this was measured, two independent bounds kept `mosaic` enumerable, and only one of
+them was the rule:
 
-- **The rule caps a mark at one grid unit**, which is what turns a tile into a matching.
-- **The enumeration caps the tile's column span at 2.**
+- **The rule capped a mark at one grid unit**, which is what turned a tile into a matching.
+- **The enumeration capped the tile's column span at 2.**
 
-Both are load-bearing. `mosaic`'s own matching rule, applied at the pitch `boxes`, `chain`,
-and `snake` use, gives 21,497 tiles at 5 rows and 4.10 × 10¹³ at 8 rows. The five have no
-equivalent cap available: their pitch is not a free parameter, it is the width of their own
-motif — `rows - 1`, `rows`, or `2 rows - 3` — and capping it below that deletes the family.
+Both were load-bearing. `mosaic`'s own matching rule, applied at the pitch `boxes`,
+`chain`, and `snake` use, gives 21,497 tiles at 5 rows and 4.10 × 10¹³ at 8 rows. The five
+have no equivalent cap available: their pitch is not a free parameter, it is the width of
+their own motif — `rows - 1`, `rows`, or `2 rows - 3` — and capping it below that deletes
+the family.
+
+The first of those two bounds is gone now and the second has become an edge budget, which
+does not change the argument — it sharpens it. What kept `mosaic` enumerable was never the
+matching rule on its own; it is that the family has a free pitch to clamp. Dropping the
+matching rule while keeping the clamp gives 8,551 tiles. Keeping the matching rule at a
+pitch that cannot be clamped gives 4.10 × 10¹³.
 
 And a materialized space only earns sub-families when it holds more tiles than it has
 names. Each of the five produces **exactly one tile per row count and modifier**: 78
@@ -646,11 +761,13 @@ absence of a rule, is why they have no sub-families.
 
 ### The property `mosaic` has that the five lack
 
-`mosaic`'s constraint is **local and decomposable**. A tile is an unordered set of
-independent marks, each occupying one cell or two adjacent ones, and legality is settled
-per cell — is it claimed exactly once? Nothing about one mark depends on a mark elsewhere.
-That is what makes the backtracking enumeration possible, and what makes the space's
-members similar enough to fall into classes worth naming.
+`mosaic`'s constraint is **local and decomposable**. A tile is an assignment of direction
+bits to independent lattice points, and legality is settled per point — do its bits agree
+with its neighbors'? Nothing about one point's own two edges depends on a point elsewhere.
+That is what makes the enumeration a walk over subsets rather than a search, and what makes
+the space's members similar enough to fall into classes worth naming. It was true of the
+matching rule this was measured under and it is true of the lattice that replaced it; what
+changed is only how much of the space the rule admits.
 
 The five have **no piece decomposition at all**. The tile is one traversal of the whole
 lattice, and "is a spiral" or "is a zigzag" is a property of the traversal entire, not of
@@ -722,7 +839,7 @@ then could the contract phase delete the per-family path emission.
 
 **Measured**: every pitch, degree histogram, bare-point count, and junction count in the
 tables above, over all 78 non-`mosaic` documents; the `mosaic` tile counts, re-derived from
-the matching description and checked against the committed sweep; every space size marked
+the matching description and checked against the committed sweep as it stood then; every space size marked
 with a number, computed exactly (the charter-legal counts by transfer matrix, cross-checked
 against brute force at 3 × 3; the Hamiltonian and simple-traversal counts by enumeration,
 cross-checked against brute force at 3 × 3, 4 × 3, and 4 × 4).
@@ -1019,7 +1136,7 @@ else in the corpus.
 Thirty of those two hundred numbers have a committed source: the ones at 3 through 5 rows,
 whose `mosaic` sources are among the committed permutation tiles. Each of the thirty is
 asserted, in `meander-topology.service.integration.test.ts`, to equal the negative T- and
-X-junction counts of the committed `output/mosaic/<rows>-rows/permutations/` document it
+X-junction counts of the committed `output/mosaic/<rows>-rows/<columns>-columns/` document it
 inverts — read off disk, from a file that existed before this family did. That assertion is
 what makes "the candidates come from the mosaic space" a fact rather than a claim: if a
 drawing stopped being that document's complement, it would fail. It was fifty until
