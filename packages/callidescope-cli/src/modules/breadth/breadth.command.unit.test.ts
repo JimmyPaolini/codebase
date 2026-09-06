@@ -2,7 +2,7 @@ import {
   InputService,
   ProjectConfigurationFieldNotPermittedError,
 } from "@callidescope/configuration";
-import { BreadthService } from "@callidescope/graph";
+import { BreadthService, ProgramConfigurationError } from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -434,6 +434,29 @@ describe(BreadthCommand, () => {
 
     expect(logger.error).toHaveBeenCalledExactlyOnceWith(
       "🔭 Rejected a project configuration",
+      undefined,
+      { reason: error.message },
+    );
+    expect(process.exitCode).toBe(1);
+    expect(process.stdout.write).not.toHaveBeenCalled();
+  });
+
+  // A lookup traces before it matches, so it can reach a project whose
+  // `tsconfig.json` is missing or will not parse — the same failure a
+  // whole-workspace trace already reports under this headline, rather than
+  // the raw stack `main.ts`'s handler would otherwise print.
+  it("reports a project it could not read instead of crashing", async () => {
+    const error = new ProgramConfigurationError({
+      configurationPath: "packages/broken/tsconfig.json",
+      messages: ["missing"],
+    });
+
+    addressLookupService.locate.mockRejectedValue(error);
+
+    await command.run([], { addresses: ["a.ts#Foo.bar"], format: "markdown" });
+
+    expect(logger.error).toHaveBeenCalledExactlyOnceWith(
+      "🔭 Rejected a project it could not read",
       undefined,
       { reason: error.message },
     );

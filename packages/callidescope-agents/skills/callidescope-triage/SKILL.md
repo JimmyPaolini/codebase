@@ -14,7 +14,7 @@ occurred is most of the work. Separate them first:
 | `🚨 [DEPTH n > limit]` | A **finding** about the code. Fix the layering |
 | A breadth row over the limit | A **finding**. Split the callable |
 | `A configured destination is stale` | **Drift**. Re-run `--write` |
-| `🔭 Rejected a project it could not read` | A `tsconfig.json` **did not parse**. The trace stopped there |
+| `🔭 Rejected a project it could not read` | A `tsconfig.json` **is missing or did not parse**. The trace stopped there |
 | `🔭 Traced nothing` | The run **saw no code at all**. Nothing below it means anything |
 | `🔭 Rejected the command line` | A **mistake** in the flags. Nothing was traced |
 | `🔭 Rejected a project configuration` | One project's own `callidescope.config.ts` **was refused**. Nothing was reported |
@@ -309,8 +309,12 @@ were in scope is something only the trace knows.
 
 ## A project it could not read
 
-One project's `tsconfig.json` did not parse, and the run stopped there. The
-message carries the path and the compiler's own diagnostic.
+One project's `tsconfig.json` is missing or did not parse, and the run stopped
+there. The message carries the path and either the compiler's own diagnostic
+or that the directory holds no `tsconfig.json` at all. `depth` and `breadth`
+raise this too, under the same headline: a lookup traces before it matches, so
+it can reach the same unreadable project a whole-workspace trace always
+could.
 
 Nothing was printed and no destination was written, which is the point of
 stopping rather than stepping over it: a caller writes its report before it

@@ -1,5 +1,5 @@
 import { InputError, InputService } from "@callidescope/configuration";
-import { BreadthService } from "@callidescope/graph";
+import { BreadthService, ProgramConfigurationError } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -167,6 +167,22 @@ export class BreadthCommand extends CommandRunner {
   }
 
   /**
+   * Logs a project whose configuration could not be read, and fails the run.
+   *
+   * A message rather than a stack trace, and the same headline a full trace
+   * prints: a lookup traces before it matches, so it can reach a project
+   * whose `tsconfig.json` is missing or will not parse exactly the way a
+   * whole-workspace trace already can. Nothing has been printed and no
+   * destination has been touched by the time this runs.
+   */
+  private rejectProject(error: ProgramConfigurationError): void {
+    this.logger.error("🔭 Rejected a project it could not read", undefined, {
+      reason: error.message,
+    });
+    process.exitCode = 1;
+  }
+
+  /**
    * Logs a project whose own configuration was refused, and fails the run.
    *
    * A message rather than a stack trace, and the same headline a full trace
@@ -249,10 +265,11 @@ export class BreadthCommand extends CommandRunner {
   /**
    * Prints each named callable's direct callers and callees.
    *
-   * Two failures are caught, both because they are a file a person wrote
-   * rather than a fault in callidescope: a refused command line, and a
-   * project configuration refused for a field it may not set or for not
-   * loading at all. Anything else propagates with its stack intact.
+   * Three failures are caught, all because they are a file a person wrote —
+   * or left unwritten — rather than a fault in callidescope: a refused
+   * command line, a project whose `tsconfig.json` is missing or will not
+   * parse, and a project configuration refused for a field it may not set or
+   * for not loading at all. Anything else propagates with its stack intact.
    */
   public async run(
     _passedParameters: string[],
@@ -261,6 +278,11 @@ export class BreadthCommand extends CommandRunner {
     try {
       await this.printBreadth(options);
     } catch (error) {
+      if (error instanceof ProgramConfigurationError) {
+        this.rejectProject(error);
+        return;
+      }
+
       if (isRefusedProjectConfiguration(error)) {
         this.rejectProjectConfiguration(error);
         return;
