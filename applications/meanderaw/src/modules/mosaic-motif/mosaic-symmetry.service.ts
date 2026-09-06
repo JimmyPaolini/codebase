@@ -1,12 +1,9 @@
-// cspell:ignore hxhxhx xhxhxh — mosaic tile identifiers, one letter per
-// point of the tile, from MosaicSymmetryService.identify.
 import { Inject, Injectable } from "@nestjs/common";
 
 import { MosaicTileService } from "./mosaic-tile.service";
 
 import type {
   MosaicDirections,
-  MosaicPointLetters,
   MosaicPointRank,
   MosaicTile,
   MosaicTransform,
@@ -46,15 +43,6 @@ export class MosaicSymmetryService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /** A tile's edges as a bit string, which names it exactly: two tiles of one shape draw the same pattern if and only if these agree. */
-  private edgeKey(tile: MosaicTile): string {
-    const { horizontal, vertical } = this.mosaicTileService.edges(tile);
-
-    return [...horizontal, ...vertical]
-      .flatMap((row) => row.map((isSet) => (isSet ? "1" : "0")))
-      .join("");
-  }
 
   /**
    * Where an edge's column lands under one group element. A horizontal
@@ -150,7 +138,7 @@ export class MosaicSymmetryService {
       .flatMap((row) => row.map((directions) => this.rank(directions)))
       .join("");
 
-    return `${ranks}|${this.edgeKey(tile)}`;
+    return `${ranks}|${this.identify(tile)}`;
   }
 
   /** The tile one group element maps `tile` to. */
@@ -184,23 +172,15 @@ export class MosaicSymmetryService {
   // 🌎 Public Methods
 
   /**
-   * The identifier every tile in a symmetry class shares: the
-   * lexicographically smallest {@link identify} string over the class. Two
-   * tiles draw the same pattern exactly when their canonical identifiers
-   * match, so this doubles as the deduplication key.
+   * The identifier every tile in a symmetry class shares: {@link identify}
+   * of the one member {@link canonicalTile} picks. Two tiles draw the same
+   * pattern exactly when their canonical identifiers match, so this doubles
+   * as the deduplication key — and because it is the representative's own
+   * bit string, a committed drawing's filename is a complete description of
+   * the tile that drew it.
    */
   canonicalIdentifier(tile: MosaicTile): string {
-    let smallest = this.identify(tile);
-
-    for (const variant of this.orbit(tile)) {
-      const identifier = this.identify(variant);
-
-      if (identifier < smallest) {
-        smallest = identifier;
-      }
-    }
-
-    return smallest;
+    return this.identify(this.canonicalTile(tile));
   }
 
   /**
@@ -226,26 +206,25 @@ export class MosaicSymmetryService {
   }
 
   /**
-   * Names a tile by its own points, row-major from the top interior level:
-   * `d` for a bare point, `v` where a southward edge is anchored, `h` where
-   * an eastward one is, `l` where that eastward edge is the single-column
-   * rule wrapping onto its own point, and `x` for a point reached only by a
-   * neighbor's edge. `x` sorts after every other letter on purpose, so the
-   * smallest identifier in a symmetry class is the one anchoring its edges
-   * earliest — `hxhxhx` for the `dashes` tile rather than the `xhxhxh` its
-   * own mirror would give. The string names every point, so it is both a
-   * complete description of the tile and safe to use as a filename.
+   * Names a tile by its own edges: one character per edge, `1` where the
+   * edge is drawn and `0` where it is not, every eastward edge in reading
+   * order and then every southward one.
+   *
+   * The string is a complete description of the tile — the edges *are* its
+   * degrees of freedom, so nothing about it is left unsaid — and it is safe
+   * to use as a filename. It replaces the per-point letter the family used
+   * to be named by, which could say a point anchored an eastward edge or a
+   * southward one but had no letter for a point anchoring both.
+   *
+   * It does not name the *shape*: two tiles of different shapes can share a
+   * bit string, and the sweep tells them apart by the directory it files
+   * them under, which already carries the row count and the column span.
    */
   identify(tile: MosaicTile): string {
-    const letters: MosaicPointLetters = [
-      "d",
-      "v",
-      tile.columns === 1 ? "l" : "h",
-      "x",
-    ];
+    const { horizontal, vertical } = this.mosaicTileService.edges(tile);
 
-    return tile.points
-      .flatMap((row) => row.map((point) => letters[this.rank(point)]))
+    return [...horizontal, ...vertical]
+      .flatMap((row) => row.map((isSet) => (isSet ? "1" : "0")))
       .join("");
   }
 
@@ -253,7 +232,7 @@ export class MosaicSymmetryService {
    * Every distinct tile that draws the same pattern as `tile`, itself
    * included — its symmetry class, as tiles rather than as a name.
    *
-   * The group has `4 × columns` elements but a class can be smaller than
+   * The group has `4 * columns` elements but a class can be smaller than
    * that, because a tile symmetric under one of them is mapped to itself by
    * it. Summing these sizes over the enumeration is what recovers the
    * unfolded tile count from the folded one.
@@ -262,7 +241,7 @@ export class MosaicSymmetryService {
     const distinct = new Map<string, MosaicTile>();
 
     for (const variant of this.orbit(tile)) {
-      distinct.set(this.edgeKey(variant), variant);
+      distinct.set(this.identify(variant), variant);
     }
 
     return [...distinct.values()];

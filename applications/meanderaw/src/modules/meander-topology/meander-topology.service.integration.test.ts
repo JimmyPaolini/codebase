@@ -1,15 +1,3 @@
-// cspell:ignore dvvxxd dvvxxvdx dvvxxvvxxd dvvxxvvxxvdx dvvxxvvxxvvxxd
-// cspell:ignore hxxhhx hxxhhxxh hxxhhxxhhx hxxhhxxhhxxh hxxhhxxhhxxhhx
-// cspell:ignore hxhxhx hxhxhxhx hxhxhxhxhx hxhxhxhxhxhx hxhxhxhxhxhxhx
-// cspell:ignore dvx vxvx dvxvx vxvxvx dvxvxvx
-// cspell:ignore ddd dddd ddddd dddddd ddddddd
-// cspell:ignore lll llll lllll llllll lllllll
-// cspell:ignore dld dldl dldld dldldl dldldld
-// cspell:ignore ldl ldldl ldldldl
-// cspell:ignore dll dlld dlldl dlldll dlldlld
-// cspell:ignore lvx lvxl dlvxl lvxlvx lvxlvxl
-// — mosaic tile identifiers, one letter per cell of the tile, from
-// MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -29,9 +17,11 @@ import { MotifRegistryService } from "../meander-generation/motif-registry.servi
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
+import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
@@ -438,78 +428,62 @@ const NEGATIVE_SPACE_SURVEYED_FAMILIES: ReadonlySet<MeanderType> = new Set([
  * compare against and are absent here. They are still gated by the sweep
  * above, which measures them like every other drawing.
  */
+/**
+ * The three services the source paths below are derived from, constructed by
+ * hand for the same reason {@link charterSweep} is: `it.each` needs its table
+ * at collection time, before any `beforeAll` has run.
+ *
+ * Deriving the path rather than writing it out is what keeps this list
+ * honest. Each entry has to name a file the `mosaic` half of the sweep really
+ * wrote, and the sweep names a file by exactly these two calls — so a change
+ * to how a tile is identified or named moves both together instead of
+ * leaving thirty string literals behind.
+ */
+const mosaicTileService = new MosaicTileService();
+const mosaicSymmetryService = new MosaicSymmetryService(mosaicTileService);
+const mosaicNamingService = new MosaicNamingService(mosaicTileService);
+const negativeSourceService = new NegativeSourceService(mosaicTileService);
+
 const NEGATIVE_SOURCE_DOCUMENTS: readonly {
   readonly parameters: GenerationParameters;
   readonly sourceName: string;
 }[] = (
   [
-    {
-      columns: 2,
-      identifiers: ["dvvxxd", "dvvxxvdx", "dvvxxvvxxd"],
-    },
-    {
-      columns: 2,
-      identifiers: ["hxxhhx-dashes", "hxxhhxxh-dashes", "hxxhhxxhhx-dashes"],
-      modifierName: "brick-staggered",
-    },
-    {
-      columns: 2,
-      identifiers: ["hxhxhx-dashes", "hxhxhxhx-dashes", "hxhxhxhxhx-dashes"],
-      modifierName: "brick-straight",
-    },
-    {
-      columns: 1,
-      identifiers: ["dvx", "vxvx-diamond", "dvxvx"],
-      modifierName: "brick-upright",
-      repeatCount: 5,
-    },
-    {
-      columns: 1,
-      identifiers: ["ddd-dots", "dddd-dots", "ddddd-dots"],
-      modifierName: "grid",
-      repeatCount: 5,
-    },
-    {
-      columns: 1,
-      identifiers: ["dld", "dldl", "dldld"],
-      modifierName: "ruled",
-    },
-    {
-      columns: 1,
-      identifiers: ["lll-lines", "llll-lines", "lllll-lines"],
-      modifierName: "ruled-closed",
-    },
-    {
-      columns: 1,
-      identifiers: ["ldl", "dldl", "ldldl"],
-      modifierName: "ruled-raised",
-    },
-    {
-      columns: 1,
-      identifiers: ["dll", "dlld", "dlldl"],
-      modifierName: "ruled-spaced",
-    },
-    {
-      columns: 1,
-      identifiers: ["lvx", "lvxl", "dlvxl"],
-      modifierName: "ruled-tall",
-    },
+    {},
+    { modifierName: "brick-staggered" },
+    { modifierName: "brick-straight" },
+    { modifierName: "brick-upright", repeatCount: 5 },
+    { modifierName: "grid", repeatCount: 5 },
+    { modifierName: "ruled" },
+    { modifierName: "ruled-closed" },
+    { modifierName: "ruled-raised" },
+    { modifierName: "ruled-spaced" },
+    { modifierName: "ruled-tall" },
   ] satisfies readonly {
-    columns: number;
-    identifiers: readonly string[];
     modifierName?: Modifier["name"];
     repeatCount?: number;
   }[]
-).flatMap(({ columns, identifiers, modifierName, repeatCount }) =>
-  identifiers.map((identifier, index) => ({
-    parameters: {
-      repeatCount: repeatCount ?? 6,
-      rows: index + 3,
-      type: "negative" as const,
-      ...(modifierName ? { modifier: { name: modifierName } } : {}),
-    },
-    sourceName: `mosaic/${index + 4}-rows/permutations/${columns}-columns/${identifier}.svg`,
-  })),
+).flatMap(({ modifierName, repeatCount }) =>
+  [3, 4, 5].map((rows) => {
+    const modifier = modifierName ? { name: modifierName } : undefined;
+    const tile = negativeSourceService.tile(
+      negativeSourceService.source(modifier),
+      rows,
+    );
+    const identifier = mosaicSymmetryService.canonicalIdentifier(tile);
+    const earned = mosaicNamingService.name(tile);
+    const stem = earned ? `${identifier}-${earned}` : identifier;
+
+    return {
+      parameters: {
+        repeatCount: repeatCount ?? 6,
+        rows,
+        type: "negative" as const,
+        ...(modifier ? { modifier } : {}),
+      },
+      sourceName: `mosaic/${tile.rows}-rows/permutations/${tile.columns}-columns/${stem}.svg`,
+    };
+  }),
 );
 
 /**

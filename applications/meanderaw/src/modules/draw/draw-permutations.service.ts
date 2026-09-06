@@ -5,10 +5,10 @@ import {
   MOSAIC_TILE_MAXIMUM_ROWS,
   MOSAIC_TILE_MINIMUM_ROWS,
 } from "../mosaic-motif/mosaic-motif.constants";
-import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import {
@@ -24,9 +24,9 @@ import type { RenderedDocument } from "./draw.types";
  *
  * Where the named-type half of the sweep samples a parameter space — a few
  * representative periods, a couple of shapes — this half enumerates one
- * exhaustively. Every arrangement of dots and one-unit dashes that leaves
- * no cell of a tile blank is generated, one per symmetry class, so nothing
- * in it repeats a re-phasing or a mirror of anything else. It stays bounded
+ * exhaustively. Every tile the family's own ceiling admits is generated, one
+ * per symmetry class, so nothing in it repeats a re-phasing or a mirror of
+ * anything else. It stays bounded
  * by capping the tile's column span at {@link MOSAIC_TILE_MAXIMUM_COLUMNS},
  * since the count grows exponentially in that span and only mildly in
  * `rows`.
@@ -44,8 +44,8 @@ export class DrawPermutationsService {
   constructor(
     @Inject(MosaicTileGenerationService)
     private readonly mosaicGenerationService: MosaicTileGenerationService,
-    @Inject(MosaicSubFamilyService)
-    private readonly mosaicSubFamilyService: MosaicSubFamilyService,
+    @Inject(MosaicNamingService)
+    private readonly mosaicNamingService: MosaicNamingService,
     @Inject(MosaicSymmetryService)
     private readonly mosaicSymmetryService: MosaicSymmetryService,
     @Inject(MosaicTilesService)
@@ -66,11 +66,11 @@ export class DrawPermutationsService {
    * Enumerates and renders every mosaic at one row count, across every
    * column span up to the cap.
    *
-   * A tile that belongs to a named sub-family carries that name after its
-   * identifier, so the handful of tiles a reader already has a word for are
+   * A tile whose structure earns a name carries that name after its bit
+   * string, so the handful of tiles a reader already has a word for are
    * legible in the directory listing rather than hidden among the hundreds
-   * that have none. A tile belonging to none is named by its identifier
-   * alone.
+   * that have none. A tile earning none is named by its bit string alone,
+   * which describes it exactly.
    */
   render(rows: number): RenderedDocument[] {
     const mosaics: RenderedDocument[] = [];
@@ -86,8 +86,8 @@ export class DrawPermutationsService {
     ) {
       for (const tile of this.mosaicTilesService.enumerate(rows, columns)) {
         const identifier = this.mosaicSymmetryService.canonicalIdentifier(tile);
-        const subFamily = this.mosaicSubFamilyService.classify(tile);
-        const name = subFamily ? `${identifier}-${subFamily}` : identifier;
+        const earned = this.mosaicNamingService.name(tile);
+        const name = earned ? `${identifier}-${earned}` : identifier;
 
         mosaics.push({
           directory: `${familyDirectory}/${PERMUTATIONS_SUBDIRECTORY}/${columns}-columns`,

@@ -1,5 +1,3 @@
-// cspell:ignore hxhxhxhxhx ddddd lllll dvx — mosaic tile identifiers, one
-// letter per point of the tile, from MosaicSymmetryService.identify.
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -96,12 +94,13 @@ describe(MosaicTilesService, () => {
         .enumerate(6, 2)
         .map((tile) => mosaicSymmetryService.canonicalIdentifier(tile));
 
-      // `dots` is a bare point on every level; `lines` is the single
-      // column's wrapped rule on every level; `dashes` is an eastward edge
-      // across both columns of a two-column tile.
-      expect(singleColumn).toContain("ddddd");
-      expect(singleColumn).toContain("lllll");
-      expect(twoColumn).toContain("hxhxhxhxhx");
+      // `dots` is a bare point on every level, so no edge at all;
+      // `lines` is the single column's wrapped rule on every level, so
+      // every eastward edge and no southward one; `dashes` is the same
+      // across the first column of a two-column tile.
+      expect(singleColumn).toContain("000000000");
+      expect(singleColumn).toContain("111110000");
+      expect(twoColumn).toContain("101010101000000000");
     });
 
     it("finds only the dot and the line at the smallest tile there is", () => {
@@ -109,14 +108,13 @@ describe(MosaicTilesService, () => {
         .enumerate(4, 1)
         .map((tile) => mosaicSymmetryService.canonicalIdentifier(tile));
 
-      // Three interior levels, one column: every point is bare, carries the
-      // wrapped rule, or is one end of a southward edge over two of the
-      // levels. That last tile is named `dvx` rather than `vxd` because a
-      // tile and its top-to-bottom mirror share the smaller of the two
-      // names.
-      expect(identifiers).toContain("ddd");
-      expect(identifiers).toContain("lll");
-      expect(identifiers).toContain("dvx");
+      // Three interior levels, one column, so five edges: three eastward
+      // and two southward. Every point bare, every point on the wrapped
+      // rule, and a southward edge over the lower two levels — the last
+      // being the representative its own top-to-bottom mirror folds onto.
+      expect(identifiers).toContain("00000");
+      expect(identifiers).toContain("11100");
+      expect(identifiers).toContain("00001");
     });
 
     it.each`

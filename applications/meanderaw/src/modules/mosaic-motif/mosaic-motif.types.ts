@@ -78,9 +78,6 @@ export interface MosaicLatticePoint {
   readonly y: number;
 }
 
-/** The letter `MosaicSymmetryService.identify` writes for each {@link MosaicPointRank}, in rank order. */
-export type MosaicPointLetters = readonly [string, string, string, string];
-
 /**
  * How a point is reached, ranked in the order the family's original
  * exact-cover search discovered covers in: `0` a bare point, `1` one
