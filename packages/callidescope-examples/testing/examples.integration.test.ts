@@ -42,19 +42,76 @@ const INHERITED_LIMITS_DIRECTORY = `${EXAMPLES_DIRECTORY}/examples/inherited-lim
 const MODULE_PREFIX = `${EXAMPLES_DIRECTORY}:`;
 
 /**
- * The roots a run is pointed at, exactly the way the `examples` target names
- * them.
+ * Every example directory that is a project of its own — the ones holding a
+ * `tsconfig.json`.
  *
- * Three rather than one, because two example directories are projects of their
- * own and a project is only measured when a run reaches it. Neither is reached
- * through the closure — a closure destination must hold a `package.json`, and a
- * nested one makes Nx infer a project — so both are named here instead.
+ * Read off disk rather than listed, because that is what makes a fourth
+ * nested-project example impossible to add halfway: it appears here the moment
+ * its `tsconfig.json` does, and the assertion below then fails until the
+ * `examples` target names it too.
  */
-const STARTING_DIRECTORIES = [
-  EXAMPLES_DIRECTORY,
-  GATED_LEAF_DIRECTORY,
-  INHERITED_LIMITS_DIRECTORY,
-].join(",");
+const NESTED_PROJECT_DIRECTORIES = readdirSync(
+  path.join(WORKSPACE_ROOT, EXAMPLES_DIRECTORY, "examples"),
+  { withFileTypes: true },
+)
+  .filter(
+    (entry) =>
+      entry.isDirectory() &&
+      existsSync(
+        path.join(
+          WORKSPACE_ROOT,
+          EXAMPLES_DIRECTORY,
+          "examples",
+          entry.name,
+          "tsconfig.json",
+        ),
+      ),
+  )
+  .map((entry) => `${EXAMPLES_DIRECTORY}/examples/${entry.name}`)
+  .toSorted();
+
+/**
+ * Reads the `--directories` value out of one `examples` target configuration.
+ *
+ * The target's own command rather than a copy of it: the list this suite
+ * traces and the list the target traces have to be one list, and a second
+ * spelling of it here is a fixture that goes untraced in CI while every
+ * assertion about it still passes.
+ */
+function readTargetDirectories(configuration: "check" | "write"): string {
+  const command = String(
+    (
+      JSON.parse(
+        readFileSync(
+          path.join(WORKSPACE_ROOT, EXAMPLES_DIRECTORY, "project.json"),
+          "utf8",
+        ),
+      ) as {
+        targets: {
+          examples: { configurations: Record<string, { command: string }> };
+        };
+      }
+    ).targets.examples.configurations[configuration]?.command,
+  ).split(" ");
+  const value = command[command.indexOf("--directories") + 1];
+
+  if (value === undefined) {
+    throw new Error(`The examples ${configuration} command names no roots`);
+  }
+
+  return value;
+}
+
+/**
+ * The roots a run is pointed at, read from the `examples` target itself.
+ *
+ * More than one, because an example directory holding its own `tsconfig.json`
+ * is a project and a project is only measured when a run reaches it. Neither
+ * nested one is reached through the closure — a closure destination must hold
+ * a `package.json`, and a nested one makes Nx infer a project — so both are
+ * named by the target instead.
+ */
+const STARTING_DIRECTORIES = readTargetDirectories("check");
 
 /**
  * The `dependency-closure` fixture's stack, frame by frame, with the project
@@ -277,6 +334,22 @@ describe("callidescope examples (integration)", () => {
 
   beforeAll(() => {
     result = traceFixtures();
+  });
+
+  describe("the examples target names every root", () => {
+    // The standard's completeness rule, applied to the one list this package
+    // keeps in three places: a nested-project example added without being
+    // named by the target is simply never traced, and its guide's generated
+    // section never appears — with nothing failing to say so.
+    it("names the same roots in check and in write", () => {
+      expect(readTargetDirectories("write")).toBe(STARTING_DIRECTORIES);
+    });
+
+    it("names this package and every nested project under examples", () => {
+      expect(STARTING_DIRECTORIES.split(",").toSorted()).toStrictEqual(
+        [EXAMPLES_DIRECTORY, ...NESTED_PROJECT_DIRECTORIES].toSorted(),
+      );
+    });
   });
 
   describe("the examples are all documented", () => {
