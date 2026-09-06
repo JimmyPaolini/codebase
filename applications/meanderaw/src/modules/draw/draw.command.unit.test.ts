@@ -14,6 +14,7 @@ import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.servic
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
@@ -66,6 +67,7 @@ describe(DrawCommand, () => {
         MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
+        MosaicTileService,
         MosaicSymmetryService,
         MosaicTilesService,
         NegativeMotifService,
@@ -114,6 +116,7 @@ describe(DrawCommand, () => {
         MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
+        MosaicTileService,
         MosaicSymmetryService,
         MosaicTilesService,
         NegativeMotifService,

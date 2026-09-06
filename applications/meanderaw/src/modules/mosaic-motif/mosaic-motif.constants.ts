@@ -1,64 +1,43 @@
 // ♟️ Constants
 
 import type {
-  MosaicMarkKind,
   MosaicSubFamily,
   MosaicSubFamilyShape,
 } from "./mosaic-motif.types";
-
-/**
- * The letter {@link MosaicSymmetryService.identify} writes for each mark
- * kind. A cell covered by the other half of a dash anchored elsewhere gets
- * `x`, which is why no kind may claim that letter — and why every letter
- * here sorts before it, so a canonical identifier anchors its dashes as
- * early as it can.
- */
-export const MOSAIC_MARK_LETTERS: Record<MosaicMarkKind, string> = {
-  dot: "d",
-  horizontal: "h",
-  line: "l",
-  vertical: "v",
-};
-
-/**
- * The sub-family each mark kind names, which is what makes recognizing one
- * a predicate over a tile's own pieces rather than a lookup of its
- * identifier: a tile belongs to a sub-family exactly when every mark in it
- * is that sub-family's kind. Every kind names one and only one, so the map
- * is total in both directions — it is the inverse of
- * {@link MOSAIC_SUB_FAMILY_SHAPES}'s own `kind`, and
- * `MosaicSubFamilyService`'s round-trip test is what keeps the two
- * agreeing.
- */
-export const MOSAIC_SUB_FAMILIES_BY_MARK_KIND: Record<
-  MosaicMarkKind,
-  MosaicSubFamily
-> = {
-  dot: "dots",
-  horizontal: "dashes",
-  line: "lines",
-  vertical: "diamond",
-};
 
 /**
  * The tile each sub-family is named for, as the rule that builds it. A
  * region holds every tile its predicate accepts, so this is the region's
  * aligned representative rather than its only member.
  *
- * `dashes` spans two columns because a horizontal dash covers its own cell
- * and the one to its right, so a single-column tile can only express that
- * mark as the continuous rule `lines` draws. `diamond` steps two levels at
- * a time because a vertical dash covers its own cell and the one below it.
+ * `MosaicSubFamilyService`'s round-trip test is what keeps a shape and the
+ * predicate that recognizes it agreeing.
  */
 export const MOSAIC_SUB_FAMILY_SHAPES: Record<
   MosaicSubFamily,
   MosaicSubFamilyShape
 > = {
-  dashes: { columns: 2, kind: "horizontal", levelStep: 1 },
-  diamond: { columns: 1, kind: "vertical", levelStep: 2 },
-  dots: { columns: 1, kind: "dot", levelStep: 1 },
-  lines: { columns: 1, kind: "line", levelStep: 1 },
+  dashes: { columns: 2, direction: "east", levelStep: 1 },
+  diamond: { columns: 1, direction: "south", levelStep: 2 },
+  dots: { columns: 1, direction: undefined, levelStep: 1 },
+  lines: { columns: 1, direction: "east", levelStep: 1 },
 };
+
+/**
+ * The most edges one point of a `mosaic` tile may be touched by.
+ *
+ * One, and that one number is the whole of the family's original rule. A
+ * tile was an exact cover of its cells: every cell claimed exactly once, by
+ * a dot on its own or by one half of a one-unit dash. On the lattice that is
+ * a matching — no two edges meet — and a matching is exactly what a ceiling
+ * of one on a point's incident edges describes.
+ *
+ * The single-column wrapped edge counts as the one edge it is, which is why
+ * the continuous rule `lines` draws sits inside this ceiling: it is one edge
+ * looping from its point back to itself, even though the ink really does
+ * leave that point both east and west.
+ */
+export const MOSAIC_TILE_MAXIMUM_INCIDENT_EDGES = 1;
 
 /**
  * The most columns one `mosaic` repeat tile may span. The tile count grows
@@ -126,3 +105,23 @@ export const MOSAIC_TILE_MINIMUM_ROWS = 4;
 export const SUPPORTED_SUB_FAMILIES: readonly string[] = Object.keys(
   MOSAIC_SUB_FAMILY_SHAPES,
 );
+
+// 🚨 Errors
+
+/**
+ * Thrown when a grid of direction bits is not a tile: two adjoining points
+ * disagree about the edge between them, a point at the first level claims a
+ * `north` or one at the last claims a `south`, or the grid is not the size
+ * its own `rows` and `columns` declare.
+ *
+ * Refusing these is what makes the bits a bijection with the drawing. A
+ * disagreeing pair would have to render as a half-unit stub ending between
+ * lattice lines, which `MeanderLatticeService` refuses to read back, and
+ * which no charter invariant admits.
+ */
+export class MalformedMosaicTileError extends Error {
+  constructor(reason: string) {
+    super(`direction bits do not describe a mosaic tile: ${reason}`);
+    this.name = "MalformedMosaicTileError";
+  }
+}

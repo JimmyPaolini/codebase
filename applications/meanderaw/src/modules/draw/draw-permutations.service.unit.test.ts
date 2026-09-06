@@ -6,6 +6,7 @@ import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.servic
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
@@ -25,14 +26,15 @@ describe(DrawPermutationsService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
+        DrawPermutationsService,
         GridGeometryService,
         MosaicSubFamilyService,
+        MosaicSymmetryService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
-        MosaicSymmetryService,
+        MosaicTileService,
         MosaicTilesService,
         OutputPathService,
-        DrawPermutationsService,
         SvgRenderingService,
       ],
     }).compile();

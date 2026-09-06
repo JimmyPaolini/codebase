@@ -1,24 +1,25 @@
-// cspell:ignore hxhxhxhxhx — the `dashes` tile's identifier, one letter
-// per cell of the tile, from MOSAIC_MARK_LETTERS.
+// cspell:ignore hxhxhxhxhx ddddd lllll dvx — mosaic tile identifiers, one
+// letter per point of the tile, from MosaicSymmetryService.identify.
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
+import { MosaicTileService } from "./mosaic-tile.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
-
-import type { MosaicTile } from "./mosaic-motif.types";
 
 describe(MosaicTilesService, () => {
   let service: MosaicTilesService;
   let mosaicSymmetryService: MosaicSymmetryService;
+  let mosaicTileService: MosaicTileService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [MosaicTilesService, MosaicSymmetryService],
+      providers: [MosaicSymmetryService, MosaicTileService, MosaicTilesService],
     }).compile();
 
     service = await module.resolve(MosaicTilesService);
     mosaicSymmetryService = await module.resolve(MosaicSymmetryService);
+    mosaicTileService = await module.resolve(MosaicTileService);
   });
 
   it("is defined", () => {
@@ -26,27 +27,39 @@ describe(MosaicTilesService, () => {
   });
 
   describe("enumerate", () => {
-    it("covers every cell exactly once in every tile it returns", () => {
+    /**
+     * The one number that pins the model down.
+     *
+     * `README.md`'s negative-space survey reports that the sweep's folded
+     * 2,013 tiles at 8 rows and 2 columns come from 11,275 unfolded, and it
+     * arrived at both by walking covers of cells. Recovering the same pair
+     * by counting *edge subsets under a ceiling of one incident edge per
+     * point* is what says the two descriptions are the same space and not
+     * merely similar-sized ones — so a representation that got the lattice
+     * wrong fails here rather than somewhere subtler.
+     */
+    it("finds the 2,013 folded tiles at 8 rows and 2 columns that the survey's 11,275 unfolded ones reduce to", () => {
+      const tiles = service.enumerate(8, 2);
+      const unfolded = tiles.reduce(
+        (total, tile) => total + mosaicSymmetryService.variants(tile).length,
+        0,
+      );
+
+      expect(tiles).toHaveLength(2013);
+      expect(unfolded).toBe(11275);
+    });
+
+    it("touches every point of every tile it returns with at most one edge", () => {
       for (const rows of [4, 5, 6, 7]) {
         for (const columns of [1, 2]) {
           for (const tile of service.enumerate(rows, columns)) {
-            const claims = new Map<number, number>();
-
-            for (const piece of tile.pieces) {
-              for (const cell of mosaicSymmetryService.coveredCells(
-                piece,
-                columns,
-              )) {
-                claims.set(cell, (claims.get(cell) ?? 0) + 1);
+            for (const [level, row] of tile.points.entries()) {
+              for (const [column] of row.entries()) {
+                expect(
+                  mosaicTileService.incidentEdges(tile, level, column),
+                ).toBeLessThanOrEqual(service.ceiling());
               }
             }
-
-            const cellCount = columns * (rows - 1);
-
-            expect(claims.size).toBe(cellCount);
-            expect([...claims.values()].every((claim) => claim === 1)).toBe(
-              true,
-            );
           }
         }
       }
@@ -69,6 +82,12 @@ describe(MosaicTilesService, () => {
       expect(identifiers).toStrictEqual(identifiers.toSorted());
     });
 
+    it("returns the representative of each class rather than whichever member the walk reached first", () => {
+      for (const tile of service.enumerate(5, 2)) {
+        expect(mosaicSymmetryService.canonicalTile(tile)).toStrictEqual(tile);
+      }
+    });
+
     it("includes the three named members of the family at 6 rows", () => {
       const singleColumn = service
         .enumerate(6, 1)
@@ -77,9 +96,9 @@ describe(MosaicTilesService, () => {
         .enumerate(6, 2)
         .map((tile) => mosaicSymmetryService.canonicalIdentifier(tile));
 
-      // `dots` is a dot on every level; `lines` is the single-column tile's
-      // continuous rule on every level; `dashes` is a horizontal dash across
-      // both columns of a two-column tile.
+      // `dots` is a bare point on every level; `lines` is the single
+      // column's wrapped rule on every level; `dashes` is an eastward edge
+      // across both columns of a two-column tile.
       expect(singleColumn).toContain("ddddd");
       expect(singleColumn).toContain("lllll");
       expect(twoColumn).toContain("hxhxhxhxhx");
@@ -90,10 +109,11 @@ describe(MosaicTilesService, () => {
         .enumerate(4, 1)
         .map((tile) => mosaicSymmetryService.canonicalIdentifier(tile));
 
-      // Three interior levels, one column: everything is a dot, a line, or
-      // a vertical dash over two of the levels. The dash tile is named
-      // `dvx` rather than `vxd` because a tile and its top-to-bottom mirror
-      // share the smaller of the two names.
+      // Three interior levels, one column: every point is bare, carries the
+      // wrapped rule, or is one end of a southward edge over two of the
+      // levels. That last tile is named `dvx` rather than `vxd` because a
+      // tile and its top-to-bottom mirror share the smaller of the two
+      // names.
       expect(identifiers).toContain("ddd");
       expect(identifiers).toContain("lll");
       expect(identifiers).toContain("dvx");
@@ -121,17 +141,20 @@ describe(MosaicTilesService, () => {
       },
     );
 
-    it("never anchors a piece outside the tile it belongs to", () => {
-      const tiles: MosaicTile[] = service.enumerate(7, 2);
+    it("returns tiles whose direction bits agree, so every one of them denotes a drawing", () => {
+      const tiles = service.enumerate(7, 2);
+      const malformed = tiles.filter((tile) => {
+        try {
+          mosaicTileService.assertWellFormed(tile);
 
-      for (const tile of tiles) {
-        for (const piece of tile.pieces) {
-          expect(piece.column).toBeGreaterThanOrEqual(0);
-          expect(piece.column).toBeLessThan(tile.columns);
-          expect(piece.level).toBeGreaterThanOrEqual(0);
-          expect(piece.level).toBeLessThan(tile.rows - 1);
+          return tile.points.length !== tile.rows - 1;
+        } catch {
+          return true;
         }
-      }
+      });
+
+      expect(tiles.length).toBeGreaterThan(0);
+      expect(malformed).toStrictEqual([]);
     });
   });
 });
