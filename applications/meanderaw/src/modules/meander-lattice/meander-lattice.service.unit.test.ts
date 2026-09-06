@@ -1,12 +1,12 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { MeanderLatticeService } from "./meander-lattice.service";
 import {
   OffLatticeCoordinateError,
   UnmeasurableDocumentError,
   UnsupportedPathCommandError,
-} from "./meander-topology.constants";
+} from "./meander-lattice.constants";
+import { MeanderLatticeService } from "./meander-lattice.service";
 
 // 🔧 Configuration
 
