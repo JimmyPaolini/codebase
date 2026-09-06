@@ -108,10 +108,11 @@ frame, the way every call out of a package did before closures existed.
 Publishing. A run writes a `## 🔭 Callidescope` section for the projects it was
 **scoped** to and for no others, so this run publishes into the three guides of
 its three starting projects and leaves the three dependency packages alone —
-measurement reaches into a dependency, publishing does not. A closure that widened both would have this
-target rewriting an anchor block in three packages that never asked for it, and
-`nx run codebase:callidescope:write` — which reads different limits — writing
-the opposite content back into the same three blocks on its next run.
+measurement reaches into a dependency, publishing does not. A closure that
+widened both would have this target rewriting an anchor block in three packages
+that never asked for it, and `nx run codebase:callidescope:write` — which reads
+different limits — writing the opposite content back into the same three
+blocks on its next run.
 
 The whole-workspace run is unaffected, for the same reason the two rules above
 leave a starting project alone: a run naming no directory has every project as a

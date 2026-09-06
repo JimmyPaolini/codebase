@@ -228,9 +228,10 @@ a project may say about itself and what happens when it says nothing:
 | [`gated-leaf`](examples/gated-leaf) | Both fields, plus `limits.maximumBreadth`, in its own nested project | Four frames and three direct callees become findings that no limit above them would ever have reported |
 
 They sit in the reading order above in that order, and one rule does all the
-work: **the workspace number is a default, not a ceiling.** A project that names a limit keeps it; a project
-that names none inherits, one limit at a time rather than as an object; and a
-project that names one limit still inherits every other.
+work: **the workspace number is a default, not a ceiling.** A project that names
+a limit keeps it; a project that names none inherits, one limit at a time rather
+than as an object; and a project that names one limit still inherits every
+other.
 
 Which is why a project configuration is written as the override alone —
 

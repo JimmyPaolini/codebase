@@ -7,8 +7,16 @@ const config: KnipConfig = {
   // Every project carries a codometer.config.ts that the codometer command line
   // reads by walking upward from the directory it measures. Nothing imports it,
   // the way nothing imports eslint.config.ts — but knip has a plugin that knows
-  // about eslint and none that knows about codometer, so it is named here.
-  ignore: ["**/*.test.ts", "**/codometer.config.ts", "notepads/**"],
+  // about eslint and none that knows about codometer, so it is named here. A
+  // project's callidescope.config.ts is found the same way — resolved by name
+  // beside every project a trace reaches, never imported — so it is named here
+  // for the same reason.
+  ignore: [
+    "**/*.test.ts",
+    "**/callidescope.config.ts",
+    "**/codometer.config.ts",
+    "notepads/**",
+  ],
 
   // Blank constants/types files are conformance placeholders; keep them out of unused-file checks only.
   // testing/mocks.ts files are conformance placeholders for project-level test utilities (used by future tests).

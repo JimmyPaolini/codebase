@@ -132,6 +132,11 @@ function readFileProject(result: CallGraphResult, filePath: string): string {
  * The section rather than the whole file, because a guide links to its
  * neighbors from its prose as well — reading the whole file would call a
  * broken chain unbroken on the strength of a mention halfway up it.
+ *
+ * The first `## Next`, not the last: a guide with a generated section below
+ * its own `## Next` — `gated-leaf` and `inherited-limits` both carry a
+ * `## 🔭 Callidescope` block after it — would otherwise read that trailing
+ * section instead of the reading-order link this assertion exists to check.
  */
 function readNextLink(exampleName: string): string {
   const guide = readFileSync(
@@ -145,7 +150,7 @@ function readNextLink(exampleName: string): string {
     "utf8",
   );
 
-  return guide.split("## Next").at(-1) ?? "";
+  return guide.split("## Next")[1] ?? "";
 }
 
 /**

@@ -4,7 +4,7 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
  * The configuration the fixtures in this package are traced with.
  *
  * Deliberately not the workspace's. `configuration/callidescope.config.ts`
- * carries a ratchet — `maximumDepth: 19`, today's worst stack — because its job
+ * carries a ratchet — `maximumDepth: 17`, today's worst stack — because its job
  * is to stop the repository getting worse. This one carries the tool's own
  * defaults, because its job is to make the fixtures produce findings: a package
  * whose examples all pass demonstrates nothing.
