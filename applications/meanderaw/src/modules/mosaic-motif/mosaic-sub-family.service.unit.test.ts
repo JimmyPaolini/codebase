@@ -102,30 +102,34 @@ describe(MosaicSubFamilyService, () => {
       );
     });
 
-    it("builds tiles the enumeration itself finds, so a named tile is a real member of the unit space", () => {
-      for (const rows of SWEPT_ROWS) {
-        for (const subFamily of NAMED_SUB_FAMILIES) {
-          const built = service.tile(subFamily, rows);
+    it(
+      "builds tiles the enumeration itself finds, so a named tile is a real member of the unit space",
+      () => {
+        for (const rows of SWEPT_ROWS) {
+          for (const subFamily of NAMED_SUB_FAMILIES) {
+            const built = service.tile(subFamily, rows);
 
-          if (!built) {
-            continue;
+            if (!built) {
+              continue;
+            }
+
+            const enumerated: string[] = [];
+
+            for (const tile of mosaicTilesService.enumerate(
+              rows,
+              built.columns,
+            )) {
+              enumerated.push(mosaicSymmetryService.canonicalIdentifier(tile));
+            }
+
+            expect(enumerated).toContain(
+              mosaicSymmetryService.canonicalIdentifier(built),
+            );
           }
-
-          const enumerated: string[] = [];
-
-          for (const tile of mosaicTilesService.enumerate(
-            rows,
-            built.columns,
-          )) {
-            enumerated.push(mosaicSymmetryService.canonicalIdentifier(tile));
-          }
-
-          expect(enumerated).toContain(
-            mosaicSymmetryService.canonicalIdentifier(built),
-          );
         }
-      }
-    }, SPACE_WALK_TIMEOUT_MILLISECONDS);
+      },
+      SPACE_WALK_TIMEOUT_MILLISECONDS,
+    );
 
     it("never builds a tile wider than the sweep's own column cap", () => {
       for (const subFamily of NAMED_SUB_FAMILIES) {
