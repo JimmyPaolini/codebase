@@ -1,10 +1,8 @@
 // cspell:ignore dvvxxd dvvxxvvxxvvxxd hxxhhx hxxhhxxhhxxhhx dldldld — mosaic
-// tile identifiers, one letter per cell of the tile, from
-// MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
+// tile identifiers, one letter per point of the tile, from
+// MosaicSymmetryService.identify.
 
 // 🏷️ Types
-
-import type { MosaicMarkKind } from "../mosaic-motif/mosaic-motif.types";
 
 /** One cell of the source pattern, by the lattice column it sits in and the interior level it sits on. */
 export interface NegativeCell {
@@ -13,16 +11,22 @@ export interface NegativeCell {
 }
 
 /**
- * One mark of a {@link NegativeColumnSource}'s repeating motif.
+ * One mark of a {@link NegativeColumnSource}'s repeating motif: how one
+ * point of a one-column source tile is reached.
  *
- * It is every {@link MosaicMarkKind} but the horizontal dash, and that
- * exclusion is structural rather than a choice: a horizontal dash covers its
- * own cell and the one to its right, so a one-column tile has no second cell
- * for it to reach into. The `line` in its place is the degenerate horizontal
- * dash a one-column tile does admit — it chains with its own copy in every
- * following tile into one rule running the length of the band.
+ * Three of them, and the three are what a single column admits. A `dot`
+ * leaves its point on no edge; a `vertical` sends a southward edge to the
+ * point below, so it accounts for two levels; a `line` sends an eastward
+ * edge that, at one column, wraps onto its own point and chains with its
+ * own copy in every following tile into one rule running the length of the
+ * band.
+ *
+ * This is the `negative` family's own vocabulary rather than a slice of
+ * `mosaic`'s. A `mosaic` tile is four direction bits per point and has no
+ * mark kinds to borrow; these three name the *motifs this family repeats*,
+ * which is a smaller and more particular thing.
  */
-export type NegativeColumnMark = Exclude<MosaicMarkKind, "horizontal">;
+export type NegativeColumnMark = "dot" | "line" | "vertical";
 
 /**
  * The sources built from a one-column repeating motif, as opposed to the

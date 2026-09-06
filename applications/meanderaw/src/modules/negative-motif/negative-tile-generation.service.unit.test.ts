@@ -1,11 +1,13 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { mosaicTile } from "../../../testing/mosaic-tiles";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import {
   InvalidRepeatCountError,
   InvalidRowsError,
 } from "../meander-generation/meander-generation.constants";
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { NEGATIVE_SOURCE_ROW_OFFSET } from "./negative-motif.constants";
@@ -35,6 +37,7 @@ describe(NegativeTileGenerationService, () => {
     const module = await Test.createTestingModule({
       providers: [
         GridGeometryService,
+        MosaicTileService,
         NegativeMotifService,
         NegativeSourceService,
         NegativeTileGenerationService,
@@ -91,16 +94,9 @@ describe(NegativeTileGenerationService, () => {
     // a tile at the `mosaic` family's own minimum is accepted here and one a
     // row shallower is not — see `NEGATIVE_SOURCE_ROW_OFFSET`.
     it("refuses a tile whose negative would fall below the family's minimum", () => {
-      expect(() =>
-        service.generate(
-          {
-            columns: 1,
-            pieces: [{ column: 0, kind: "dot", level: 0 }],
-            rows: 2,
-          },
-          REPEAT_COUNT,
-        ),
-      ).toThrow(InvalidRowsError);
+      expect(() => service.generate(mosaicTile(["."]), REPEAT_COUNT)).toThrow(
+        InvalidRowsError,
+      );
     });
 
     it("accepts a tile one row deeper than that, which is the offset itself", () => {

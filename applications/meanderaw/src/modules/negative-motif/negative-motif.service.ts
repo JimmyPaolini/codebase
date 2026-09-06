@@ -107,25 +107,23 @@ export class NegativeMotifService implements MotifService {
 
   /**
    * Whether the source anchors a wall of the given orientation at a lattice
-   * column and interior level. `"horizontal"` covers the single-column tile's
-   * continuous rule too, which is a horizontal dash that happens to chain
-   * with its own copy in the next tile.
+   * column and interior level — which is to say whether that point owns an
+   * edge leaving it that way. `"horizontal"` covers the single-column tile's
+   * continuous rule too, which is the same eastward edge wrapping onto its
+   * own point.
    */
   private hasMark(
     tile: MosaicTile,
     orientation: NegativeOrientation,
     cell: NegativeCell,
   ): boolean {
-    const column = cell.column % tile.columns;
+    const directions = tile.points[cell.level]?.[cell.column % tile.columns];
 
-    return tile.pieces.some(
-      (piece) =>
-        piece.column === column &&
-        piece.level === cell.level &&
-        (orientation === "vertical"
-          ? piece.kind === "vertical"
-          : piece.kind === "horizontal" || piece.kind === "line"),
-    );
+    if (directions === undefined) {
+      return false;
+    }
+
+    return orientation === "vertical" ? directions.south : directions.east;
   }
 
   /** One horizontal run's path data, along `row` across the given lattice column span. */
@@ -201,10 +199,8 @@ export class NegativeMotifService implements MotifService {
   private reach(tile: MosaicTile): number {
     return Math.max(
       1,
-      ...tile.pieces.map(
-        (piece) =>
-          piece.column +
-          (piece.kind === "horizontal" || piece.kind === "line" ? 1 : 0),
+      ...tile.points.flatMap((row) =>
+        row.map((directions, column) => column + (directions.east ? 1 : 0)),
       ),
     );
   }

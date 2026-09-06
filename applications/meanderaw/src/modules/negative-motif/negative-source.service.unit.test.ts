@@ -9,6 +9,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { COMPATIBLE_MODIFIERS } from "../meander-generation/meander-generation.constants";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 
 import {
   NEGATIVE_COLUMN_MOTIFS,
@@ -147,16 +148,16 @@ const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
  * Split here rather than branched inside the assertion, because the two
  * halves are different claims: one is that the two builders agree, the other
  * that this family draws where the `mosaic` family does not. It is built
- * from a directly instantiated service because `it.each` needs its table at
+ * from directly instantiated services because `it.each` needs its table at
  * collection time, before any `beforeAll` has run — the same reason the
- * charter sweep instantiates `DrawCombinationsService` — and the service
- * takes no dependencies, so there is nothing for a container to supply.
+ * charter sweep instantiates `DrawCombinationsService` — and neither service
+ * takes a dependency a container has to resolve.
  */
 const [NAMED_SUB_FAMILY_CASES, UNNAMED_SUB_FAMILY_CASES] = ((): readonly [
   readonly (SubFamilyCase & { rows: number })[],
   readonly (SubFamilyCase & { rows: number })[],
 ] => {
-  const subFamilies = new MosaicSubFamilyService();
+  const subFamilies = new MosaicSubFamilyService(new MosaicTileService());
   const cases = SUB_FAMILY_CASES.flatMap((subFamilyCase) =>
     SWEPT_ROWS.map((rows) => ({ ...subFamilyCase, rows })),
   );
@@ -177,6 +178,7 @@ const [NAMED_SUB_FAMILY_CASES, UNNAMED_SUB_FAMILY_CASES] = ((): readonly [
 describe(NegativeSourceService, () => {
   let subFamilyService: MosaicSubFamilyService;
   let symmetryService: MosaicSymmetryService;
+  let tileService: MosaicTileService;
   let service: NegativeSourceService;
 
   beforeAll(async () => {
@@ -184,12 +186,14 @@ describe(NegativeSourceService, () => {
       providers: [
         MosaicSubFamilyService,
         MosaicSymmetryService,
+        MosaicTileService,
         NegativeSourceService,
       ],
     }).compile();
 
     subFamilyService = await module.resolve(MosaicSubFamilyService);
     symmetryService = await module.resolve(MosaicSymmetryService);
+    tileService = await module.resolve(MosaicTileService);
     service = await module.resolve(NegativeSourceService);
   });
 
@@ -229,24 +233,17 @@ describe(NegativeSourceService, () => {
     it.each(
       SOURCES.flatMap((source) => SWEPT_ROWS.map((rows) => ({ rows, source }))),
     )(
-      "covers every cell of the $source tile exactly once at $rows rows",
+      "touches every point of the $source tile with at most one edge at $rows rows",
       ({ rows, source }) => {
         const tile = service.tile(source, rows);
-        const claims = Array.from(
-          { length: tile.columns * (tile.rows - 1) },
-          () => 0,
+        const touched = tile.points.flatMap((row, level) =>
+          row.map((_directions, column) =>
+            tileService.incidentEdges(tile, level, column),
+          ),
         );
 
-        for (const piece of tile.pieces) {
-          for (const cell of symmetryService.coveredCells(
-            piece,
-            tile.columns,
-          )) {
-            claims[cell] = (claims[cell] ?? 0) + 1;
-          }
-        }
-
-        expect(claims.filter((count) => count !== 1)).toStrictEqual([]);
+        expect(touched.filter((count) => count > 1)).toStrictEqual([]);
+        expect(() => tileService.assertWellFormed(tile)).not.toThrow();
       },
     );
 

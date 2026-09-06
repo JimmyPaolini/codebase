@@ -18,6 +18,7 @@ import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
@@ -293,6 +294,7 @@ describe(BranchMotifService, () => {
         MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
+        MosaicTileService,
         MotifRegistryService,
         MotifTransformsService,
         NegativeMotifService,

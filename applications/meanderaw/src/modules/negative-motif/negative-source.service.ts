@@ -1,7 +1,9 @@
 // cspell:ignore dvvxxd dvvxxvvxxvvxxd hxxhhx hxxhhxxhhxxhhx dldldld — mosaic
-// tile identifiers, one letter per cell of the tile, from
-// MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
-import { Injectable } from "@nestjs/common";
+// tile identifiers, one letter per point of the tile, from
+// MosaicSymmetryService.identify.
+import { Inject, Injectable } from "@nestjs/common";
+
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 
 import {
   DEFAULT_NEGATIVE_SOURCE,
@@ -13,7 +15,7 @@ import {
 
 import type { Modifier } from "../meander-generation/meander-generation.types";
 import type {
-  MosaicPiece,
+  MosaicEdgesDraft,
   MosaicTile,
 } from "../mosaic-motif/mosaic-motif.types";
 import type {
@@ -29,7 +31,7 @@ import type {
  *
  * Ten of them, and they arrive two ways. Seven are one-column repeating
  * motifs read off {@link NEGATIVE_COLUMN_MOTIFS} and walked by
- * {@link columnPieces}; three are two-column tiles with a rule apiece —
+ * {@link columnEdges}; three are two-column tiles with a rule apiece —
  * `dvvxxd` → `dvvxxvvxxvvxxd`, `hxxhhx` → `hxxhhxxhhxxhhx`, and that same
  * running bond laid straight. Neither kind is looked up by identifier, so
  * every one keeps working at row counts nobody has enumerated, the same
@@ -51,7 +53,10 @@ import type {
 export class NegativeSourceService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(MosaicTileService)
+    private readonly mosaicTileService: MosaicTileService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -60,11 +65,10 @@ export class NegativeSourceService {
   // 🔏 Private Methods
 
   /**
-   * A `brick` source's marks: one horizontal dash per interior level, each
-   * covering its own cell and the one to its right and wrapping into the
-   * next repeat tile from the last column — so a single dash covers a whole
-   * level either way round, and only the column it is *anchored* on is
-   * walled.
+   * A `brick` source's edges: one eastward edge per interior level, each
+   * reaching the point to its right and wrapping into the next repeat tile
+   * from the last column — so a single edge spans a whole level either way
+   * round, and only the column it is *anchored* on is walled.
    *
    * That is the whole difference between the two bonds. `staggered`
    * alternates the anchor by level, so the open column alternates with it
@@ -74,21 +78,27 @@ export class NegativeSourceService {
    * unbroken vertical line — stack bond, whose mortar is a grid and
    * therefore crosses.
    */
-  private brickPieces(rows: number, staggered: boolean): MosaicPiece[] {
-    return Array.from({ length: rows - 1 }, (_value, level) => ({
-      column: staggered ? level % 2 : 0,
-      kind: "horizontal" as const,
-      level,
-    }));
+  private brickEdges(rows: number, staggered: boolean): MosaicEdgesDraft {
+    const edges = this.mosaicTileService.blankEdges({ columns: 2, rows });
+
+    for (let level = 0; level < rows - 1; level += 1) {
+      this.mosaicTileService.mark(
+        edges.horizontal,
+        level,
+        staggered ? level % 2 : 0,
+      );
+    }
+
+    return edges;
   }
 
   /**
-   * A one-column source's marks: its motif repeated down the interior and
+   * A one-column source's edges: its motif repeated down the interior and
    * truncated wherever it runs out of room.
    *
    * A `vertical` opening spans two levels, so the last level of an interior
    * that cannot fit one closes with a `dot` instead — the same one-level
-   * opening, and the same rule {@link stairPieces} uses to cap its stair.
+   * opening, and the same rule {@link stairEdges} uses to cap its stair.
    * Without it a motif carrying a `vertical` would simply be undefined at
    * half the row counts, which is what makes `diamond` unavailable at an odd
    * interior in the `mosaic` family and is not a limitation worth inheriting
@@ -98,12 +108,12 @@ export class NegativeSourceService {
    * terminate: every pass of the inner loop advances `level` by at least
    * one.
    */
-  private columnPieces(
+  private columnEdges(
     motif: readonly [NegativeColumnMark, ...NegativeColumnMark[]],
     rows: number,
-  ): MosaicPiece[] {
+  ): MosaicEdgesDraft {
     const levels = rows - 1;
-    const pieces: MosaicPiece[] = [];
+    const edges = this.mosaicTileService.blankEdges({ columns: 1, rows });
     let level = 0;
 
     while (level < levels) {
@@ -113,14 +123,14 @@ export class NegativeSourceService {
         }
 
         const fits = level + 1 < levels;
-        const kind = mark === "vertical" && !fits ? "dot" : mark;
+        const drawn = mark === "vertical" && !fits ? "dot" : mark;
 
-        pieces.push({ column: 0, kind, level });
-        level += kind === "vertical" ? 2 : 1;
+        this.markColumn(edges, drawn, level);
+        level += drawn === "vertical" ? 2 : 1;
       }
     }
 
-    return pieces;
+    return edges;
   }
 
   /** Narrows a source to one built from a one-column motif, without an unchecked assertion. */
@@ -137,55 +147,57 @@ export class NegativeSourceService {
     return Object.hasOwn(NEGATIVE_SOURCES_BY_MODIFIER_NAME, name);
   }
 
+  /** Marks the edge one {@link NegativeColumnMark} leaves at `level` of a one-column source; a `dot` leaves none. */
+  private markColumn(
+    edges: MosaicEdgesDraft,
+    mark: NegativeColumnMark,
+    level: number,
+  ): void {
+    if (mark === "line") {
+      this.mosaicTileService.mark(edges.horizontal, level, 0);
+    }
+
+    if (mark === "vertical") {
+      this.mosaicTileService.mark(edges.vertical, level, 0);
+    }
+  }
+
   /**
-   * One column of `dvvxxd`'s marks: vertical dashes stacked two levels at a
-   * time, offset by one level between the two columns so the pair reads as a
-   * staircase. Column `0` opens with a dot to create that offset, and
-   * whichever column runs out of room for a last full dash closes with a dot
-   * of its own — which is why the tile is capped by exactly two dots at every
-   * row count, one at each end of the stair.
+   * `dvvxxd`'s edges: southward edges stacked two levels at a time, offset
+   * by one level between the two columns so the pair reads as a staircase.
+   * Column `0` starts one level down to create that offset, and whichever
+   * column runs out of room for a last full edge simply stops — leaving that
+   * point bare, which draws a dot. That is why the tile is capped by exactly
+   * two dots at every row count, one at each end of the stair.
    */
-  private stairPieces(column: number, rows: number): MosaicPiece[] {
+  private stairEdges(rows: number): MosaicEdgesDraft {
     const levels = rows - 1;
-    const pieces: MosaicPiece[] = [];
-    let level = 0;
+    const edges = this.mosaicTileService.blankEdges({ columns: 2, rows });
 
-    if (column === 0) {
-      pieces.push({ column, kind: "dot", level });
-      level = 1;
+    for (const column of [0, 1]) {
+      let level = column === 0 ? 1 : 0;
+
+      while (level + 1 < levels) {
+        this.mosaicTileService.mark(edges.vertical, level, column);
+        level += 2;
+      }
     }
 
-    while (level < levels) {
-      const fits = level + 1 < levels;
-
-      pieces.push({ column, kind: fits ? "vertical" : "dot", level });
-      level += fits ? 2 : 1;
-    }
-
-    return pieces;
+    return edges;
   }
 
   /** The two-column tile a source names, built at the source's own row count. */
   private tileSource(source: NegativeTileSource, rows: number): MosaicTile {
-    const tilesBySource: Record<NegativeTileSource, MosaicTile> = {
-      "brick-staggered": {
-        columns: 2,
-        pieces: this.brickPieces(rows, true),
-        rows,
-      },
-      "brick-straight": {
-        columns: 2,
-        pieces: this.brickPieces(rows, false),
-        rows,
-      },
-      stair: {
-        columns: 2,
-        pieces: [...this.stairPieces(0, rows), ...this.stairPieces(1, rows)],
-        rows,
-      },
+    const edgesBySource: Record<NegativeTileSource, MosaicEdgesDraft> = {
+      "brick-staggered": this.brickEdges(rows, true),
+      "brick-straight": this.brickEdges(rows, false),
+      stair: this.stairEdges(rows),
     };
 
-    return tilesBySource[source];
+    return this.mosaicTileService.build(
+      { columns: 2, rows },
+      edgesBySource[source],
+    );
   }
 
   // 🌎 Public Methods
@@ -224,11 +236,10 @@ export class NegativeSourceService {
     const sourceRows = rows + NEGATIVE_SOURCE_ROW_OFFSET;
 
     if (this.isColumnSource(source)) {
-      return {
-        columns: 1,
-        pieces: this.columnPieces(NEGATIVE_COLUMN_MOTIFS[source], sourceRows),
-        rows: sourceRows,
-      };
+      return this.mosaicTileService.build(
+        { columns: 1, rows: sourceRows },
+        this.columnEdges(NEGATIVE_COLUMN_MOTIFS[source], sourceRows),
+      );
     }
 
     return this.tileSource(source, sourceRows);
