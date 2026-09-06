@@ -8,6 +8,16 @@ import type {
 /** What a command line and its configuration resolved to. */
 export interface PreparedRun {
   readonly configuration: ResolvedCallidescopeConfiguration;
+  /**
+   * The file the configuration was read from, or `undefined` when the search
+   * found none and the run is on the tool's defaults.
+   *
+   * The trace resolves a configuration beside every project it reaches, and
+   * skips this one: a file a run was pointed at is already that run's workspace
+   * configuration, and reading it again as a project's would refuse it for the
+   * workspace-only fields it is entitled to set.
+   */
+  readonly configurationPath: string | undefined;
   readonly mode: RunMode;
   readonly workspaceRoot: string;
 }

@@ -50,6 +50,7 @@ export {
   DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_SPREAD_THRESHOLD,
   ProjectConfigurationError,
+  ProjectConfigurationFieldNotPermittedError,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,

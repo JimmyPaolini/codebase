@@ -182,10 +182,14 @@ export class RunPlanService {
       workspaceRoot,
     });
 
-    const loaded = await this.configurationService.loadConfiguration({
-      configurationPath: options.config,
-      searchDirectory: workspaceRoot,
-    });
+    // The file-aware load rather than the plain one: the trace resolves a
+    // configuration beside every project it reaches, and needs to know which
+    // file it has already read as this run's own so it is not read twice.
+    const { configuration: loaded, path: configurationPath } =
+      await this.configurationService.loadConfigurationFile({
+        configurationPath: options.config,
+        searchDirectory: workspaceRoot,
+      });
     const configuration: ResolvedCallidescopeConfiguration = {
       ...loaded,
       output: {
@@ -217,7 +221,7 @@ export class RunPlanService {
       return undefined;
     }
 
-    return { configuration, mode, workspaceRoot };
+    return { configuration, configurationPath, mode, workspaceRoot };
   }
 
   /**

@@ -67,6 +67,15 @@ export interface SyncDestinationsArguments {
 /** Arguments for one full trace of a workspace. */
 export interface TraceArguments {
   readonly configuration: ResolvedCallidescopeConfiguration;
+  /**
+   * The file `configuration` was read from, when a file was found at all.
+   *
+   * Carried so the trace can skip it while resolving a configuration beside
+   * every project it reaches: one file holds one role per run, and a package
+   * whose task names its own file would otherwise have it read a second time
+   * as that package's project configuration.
+   */
+  readonly configurationPath?: string | undefined;
   /** Project directories to trace. Every project in the workspace when empty. */
   readonly directories: readonly string[];
   readonly workspaceRoot: string;

@@ -5,6 +5,8 @@ import {
   DEFAULT_PREVIEW_COUNT,
   InputError,
   InputService,
+  ProjectConfigurationError,
+  ProjectConfigurationFieldNotPermittedError,
 } from "@callidescope/configuration";
 import { ProgramConfigurationError } from "@callidescope/graph";
 import {
@@ -126,6 +128,20 @@ export class CallidescopeCommand extends CommandRunner {
    */
   private rejectProject(error: ProgramConfigurationError): void {
     this.logger.error("🔭 Rejected a project it could not read", undefined, {
+      reason: error.message,
+    });
+    process.exitCode = 1;
+  }
+
+  /**
+   * Logs a project whose own configuration was refused, and fails the run.
+   *
+   * A message rather than a stack trace: the file is one a person wrote, and
+   * every refusal it can earn already names the project and the field. The
+   * trace ends where it happens, so no destination has been touched.
+   */
+  private rejectProjectConfiguration(error: Error): void {
+    this.logger.error("🔭 Rejected a project configuration", undefined, {
       reason: error.message,
     });
     process.exitCode = 1;
@@ -346,10 +362,11 @@ export class CallidescopeCommand extends CommandRunner {
       return;
     }
 
-    const { configuration, mode, workspaceRoot } = prepared;
+    const { configuration, configurationPath, mode, workspaceRoot } = prepared;
 
-    const outcome = this.callidescopeService.trace({
+    const outcome = await this.callidescopeService.trace({
       configuration,
+      configurationPath,
       directories: resolvedOptions.directories ?? configuration.directories,
       workspaceRoot,
     });
@@ -472,6 +489,14 @@ export class CallidescopeCommand extends CommandRunner {
     } catch (error) {
       if (error instanceof ProgramConfigurationError) {
         this.rejectProject(error);
+        return;
+      }
+
+      if (
+        error instanceof ProjectConfigurationError ||
+        error instanceof ProjectConfigurationFieldNotPermittedError
+      ) {
+        this.rejectProjectConfiguration(error);
         return;
       }
 

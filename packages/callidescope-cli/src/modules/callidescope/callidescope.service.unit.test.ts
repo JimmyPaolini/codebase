@@ -31,6 +31,7 @@ import { CallidescopeService } from "./callidescope.service";
 import type { FixtureServices } from "../../../testing/programs";
 import type {
   CallGraphResult,
+  ProjectConfigurationService,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 import type { DeepMocked } from "@golevelup/ts-vitest";
@@ -118,6 +119,7 @@ function buildSubject(args: {
       new GraphService(),
     ),
     args.fixture.programService,
+    createMock<ProjectConfigurationService>(),
     new ProjectReportsService(
       new PathsService(new DocumentationService(), new SignaturesService()),
       new SignaturesService(),

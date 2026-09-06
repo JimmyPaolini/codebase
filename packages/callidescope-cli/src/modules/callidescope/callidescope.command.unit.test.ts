@@ -128,7 +128,7 @@ describe(CallidescopeCommand, () => {
 
   /** Configures a report destination, the one output every mode can reach. */
   function configureJsonDestination(): void {
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "markdown",
@@ -139,6 +139,23 @@ describe(CallidescopeCommand, () => {
         },
       }),
     );
+  }
+
+  /**
+   * Points the loader at a resolved configuration, as if it had read a file.
+   *
+   * The file-aware load rather than the plain one, because the run carries the
+   * path it read forward: the trace resolves a configuration beside every
+   * project it reaches and skips whichever file is already the run's own.
+   */
+  function stubConfiguration(
+    configuration: ResolvedCallidescopeConfiguration,
+  ): void {
+    configurationService.loadConfigurationFile.mockResolvedValue({
+      authored: {},
+      configuration,
+      path: undefined,
+    });
   }
 
   /** Points the trace at a result holding one stack past the limit. */
@@ -183,7 +200,7 @@ describe(CallidescopeCommand, () => {
 
   /** Points the trace at a prepared result. */
   function stubTrace(result: CallGraphResult = buildCallGraphResult()): void {
-    callidescopeService.trace.mockReturnValue({
+    callidescopeService.trace.mockResolvedValue({
       projectNames: ["example"],
       result,
       startingProjectRoots: new Map([["example", "packages/example"]]),
@@ -265,9 +282,7 @@ describe(CallidescopeCommand, () => {
     }).compile();
 
     command = await module.resolve(CallidescopeCommand);
-    configurationService.loadConfiguration.mockResolvedValue(
-      buildConfiguration(),
-    );
+    stubConfiguration(buildConfiguration());
     stubTrace();
     vi.spyOn(process.stdout, "write").mockReturnValue(true);
     process.exitCode = undefined;
@@ -396,7 +411,7 @@ describe(CallidescopeCommand, () => {
   });
 
   it("prints json when the format asks for it", async () => {
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "json",
@@ -433,7 +448,7 @@ describe(CallidescopeCommand, () => {
   });
 
   it("prints a diagram when the format asks for mermaid", async () => {
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "mermaid",
@@ -482,7 +497,7 @@ describe(CallidescopeCommand, () => {
       write: undefined,
     };
 
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "markdown",
@@ -514,7 +529,7 @@ describe(CallidescopeCommand, () => {
       write: undefined,
     };
 
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "markdown",
@@ -555,7 +570,7 @@ describe(CallidescopeCommand, () => {
   });
 
   it("writes a section into every scoped project's README", async () => {
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "markdown",
@@ -594,7 +609,7 @@ describe(CallidescopeCommand, () => {
   });
 
   it("addresses a section to the README of the project it describes", async () => {
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "markdown",
@@ -624,7 +639,7 @@ describe(CallidescopeCommand, () => {
   });
 
   it("fails when a project README is stale in check mode", async () => {
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "markdown",
@@ -690,7 +705,7 @@ describe(CallidescopeCommand, () => {
 
   it("fails when a callable exceeded the breadth limit", async () => {
     stubWideCallable();
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
       }),
@@ -703,7 +718,7 @@ describe(CallidescopeCommand, () => {
 
   it("names a callable that calls too much directly as its own finding", async () => {
     stubWideCallable();
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
       }),
@@ -720,7 +735,7 @@ describe(CallidescopeCommand, () => {
 
   it("passes over a wide callable when only depth is checked", async () => {
     stubWideCallable();
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
       }),
@@ -749,7 +764,7 @@ describe(CallidescopeCommand, () => {
   });
 
   it("traces normally when breadth is configured but not checked", async () => {
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
       }),
@@ -899,7 +914,7 @@ describe(CallidescopeCommand, () => {
   });
 
   it("writes a JSON report when a path is configured", async () => {
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "markdown",
@@ -966,7 +981,7 @@ describe(CallidescopeCommand, () => {
   });
 
   it("fails when a configured report is stale in check mode", async () => {
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "markdown",
@@ -985,7 +1000,7 @@ describe(CallidescopeCommand, () => {
   });
 
   it("fails when a configured markdown block is stale in check mode", async () => {
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "markdown",
@@ -1013,7 +1028,7 @@ describe(CallidescopeCommand, () => {
   it("does not force check mode on a plain run", async () => {
     // Calling the parser again here would turn every run into a check, which
     // is why `run` reads the raw option instead.
-    configurationService.loadConfiguration.mockResolvedValue(
+    stubConfiguration(
       buildConfiguration({
         output: {
           format: "markdown",
@@ -1043,7 +1058,7 @@ describe(CallidescopeCommand, () => {
     await command.run([], { config: "custom.config.ts" });
 
     expect(
-      configurationService.loadConfiguration.mock.calls[0]?.[0]
+      configurationService.loadConfigurationFile.mock.calls[0]?.[0]
         ?.configurationPath,
     ).toBe("custom.config.ts");
   });

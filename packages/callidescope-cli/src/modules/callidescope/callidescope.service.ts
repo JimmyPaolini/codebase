@@ -1,3 +1,4 @@
+import { ProjectConfigurationService } from "@callidescope/configuration";
 import {
   CallablesService,
   ClassesService,
@@ -13,10 +14,7 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import {
-  INCLUDE_CONSTRUCTOR_EDGES,
-  NO_PROJECT_ENTRY_POINTS,
-} from "./callidescope.constants";
+import { INCLUDE_CONSTRUCTOR_EDGES } from "./callidescope.constants";
 
 import type {
   AnalyzeOutcome,
@@ -51,6 +49,7 @@ export class CallidescopeService {
     private readonly externalService: ExternalService,
     private readonly graphAssemblyService: GraphAssemblyService,
     private readonly programService: ProgramService,
+    private readonly projectConfigurationService: ProjectConfigurationService,
     private readonly projectReportsService: ProjectReportsService,
     private readonly workspaceService: WorkspaceService,
     private readonly logger: LoggerService,
@@ -142,6 +141,40 @@ export class CallidescopeService {
         startingProjects.map((project) => [project.name, project.root]),
       ),
     };
+  }
+
+  /**
+   * Reads the entry-point rules each traced project declared for itself.
+   *
+   * Over the whole closure rather than the projects the run was pointed at: a
+   * dependency's callables are measured by this run, and the project that owns
+   * them is the one entitled to say what roots a stack through them. A run
+   * scoped elsewhere would otherwise judge them by whoever happened to reach
+   * them.
+   *
+   * A project declaring no configuration is simply absent from the map, and
+   * `EntriesService` falls back to the run's own configuration for it — which
+   * is how every project in a workspace with no project configurations behaves,
+   * and why this returns rules rather than a whole configuration.
+   */
+  private async loadProjectEntryPoints(args: {
+    configurationPath: string | undefined;
+    projectNames: readonly string[];
+    workspaceRoot: string;
+  }): Promise<ReadonlyMap<string, ResolvedCallidescopeEntryPoints>> {
+    const loaded =
+      await this.projectConfigurationService.loadProjectConfigurations({
+        projects: args.projectNames,
+        workspaceConfigurationPath: args.configurationPath,
+        workspaceRoot: args.workspaceRoot,
+      });
+
+    return new Map(
+      loaded.map((projectConfiguration) => [
+        projectConfiguration.project,
+        projectConfiguration.configuration.entryPoints,
+      ]),
+    );
   }
 
   /** Reads the deepest depth any component reached. */
@@ -277,17 +310,24 @@ export class CallidescopeService {
   }
 
   /** Traces a workspace and returns everything the run found. */
-  public trace(args: TraceArguments): TraceOutcome {
+  public async trace(args: TraceArguments): Promise<TraceOutcome> {
     this.logger.info("🔭 Tracing a workspace", undefined, {
       workspaceRoot: args.workspaceRoot,
     });
 
     const { collection, projectNames, startingProjectRoots } =
       this.discoverCallables(args);
+    // After discovery, because the projects to look beside are the ones the
+    // run turned out to reach rather than the ones it was pointed at.
+    const entryPointsByProject = await this.loadProjectEntryPoints({
+      configurationPath: args.configurationPath,
+      projectNames,
+      workspaceRoot: args.workspaceRoot,
+    });
     const analyzed = this.analyze({
       callablesById: collection.byId,
       configuration: args.configuration,
-      entryPointsByProject: NO_PROJECT_ENTRY_POINTS,
+      entryPointsByProject,
       fileCount: collection.fileCount,
       fileCountByProject: collection.fileCountByProject,
       projectCount: projectNames.length,
