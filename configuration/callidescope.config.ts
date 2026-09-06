@@ -1,4 +1,50 @@
-import { type CallidescopeConfiguration } from "@callidescope/configuration";
+import {
+  type CallidescopeConfiguration,
+  type CallidescopeLimits,
+} from "@callidescope/configuration";
+
+/**
+ * What every project in this repository is held to unless it says otherwise.
+ *
+ * Exported by name so a project's own `callidescope.config.ts` writes its
+ * override against a spread of these rather than in place of them. A spread
+ * replaces a nested object wholesale rather than merging into it, so a project
+ * writing `limits: { maximumDepth: 10 }` on its own would silently drop every
+ * other limit here. `configuration/codometer.config.ts`'s
+ * `compiledJavaScriptTarget` export is the precedent, and lexico's codometer
+ * configuration replacing the shared object outright — and reporting none of
+ * its counters for it — is the failure both exports exist to prevent.
+ */
+export const workspaceLimits = {
+  /**
+   * The deepest stack this repository currently has, so the gate starts
+   * green and only fails on a regression past today's worst.
+   *
+   * A ratchet rather than a target. Set to the issue's suggested six, this
+   * fails on arrival with dozens of findings — which is a backlog, not a
+   * gate, and a red pipeline nobody can act on teaches people to ignore it.
+   * Lower it as the outliers come down; the distribution today runs
+   * 17, 17, 17, 16, 16, 16, then six at 15, four at 14, four at 13, five at
+   * 12, and a long tail at 11 and below.
+   *
+   * Came down from 19 by removing three frames that were not layers: a
+   * `FormsService` method that forwarded its arguments unchanged to the
+   * forms builder, a rung of lexico-ingestion's finite-verb cascade whose
+   * whole body re-ran three guards the rungs above had already applied, and
+   * a caelundas method that destructured six fields and passed the same six
+   * on. Nothing was merged that was doing work.
+   *
+   * Three stacks now sit at 17 and pin the ratchet: `LexicoIngestionCommand.run`,
+   * and callidescope-nx's `depthExecutor` and `breadthExecutor`. Sixteen is
+   * one frame from each, and neither one is obviously spare — lexico's
+   * remaining seventeen are a command, a recursion pair, a parse, and the
+   * mood/voice/tense/number/person descent, each of which earns its frame.
+   * Reaching 16 by collapsing one of those would buy the number and cost the
+   * code, which is the trade this comment exists to refuse.
+   */
+  maximumDepth: 17,
+  spreadThreshold: 4,
+} satisfies CallidescopeLimits;
 
 /**
  * The report is published on main, and only the depth gate runs on a branch.
@@ -52,36 +98,7 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
      */
     projectReadmes: {},
   },
-  limits: {
-    /**
-     * The deepest stack this repository currently has, so the gate starts
-     * green and only fails on a regression past today's worst.
-     *
-     * A ratchet rather than a target. Set to the issue's suggested six, this
-     * fails on arrival with dozens of findings — which is a backlog, not a
-     * gate, and a red pipeline nobody can act on teaches people to ignore it.
-     * Lower it as the outliers come down; the distribution today runs
-     * 17, 17, 17, 16, 16, 16, then six at 15, four at 14, four at 13, five at
-     * 12, and a long tail at 11 and below.
-     *
-     * Came down from 19 by removing three frames that were not layers: a
-     * `FormsService` method that forwarded its arguments unchanged to the
-     * forms builder, a rung of lexico-ingestion's finite-verb cascade whose
-     * whole body re-ran three guards the rungs above had already applied, and
-     * a caelundas method that destructured six fields and passed the same six
-     * on. Nothing was merged that was doing work.
-     *
-     * Three stacks now sit at 17 and pin the ratchet: `LexicoIngestionCommand.run`,
-     * and callidescope-nx's `depthExecutor` and `breadthExecutor`. Sixteen is
-     * one frame from each, and neither one is obviously spare — lexico's
-     * remaining seventeen are a command, a recursion pair, a parse, and the
-     * mood/voice/tense/number/person descent, each of which earns its frame.
-     * Reaching 16 by collapsing one of those would buy the number and cost the
-     * code, which is the trade this comment exists to refuse.
-     */
-    maximumDepth: 17,
-    spreadThreshold: 4,
-  },
+  limits: workspaceLimits,
 };
 
 export default callidescopeConfiguration;

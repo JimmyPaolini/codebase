@@ -49,6 +49,7 @@ export {
   DEFAULT_PROJECT_README_HEADING,
   DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_SPREAD_THRESHOLD,
+  ProjectConfigurationError,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
@@ -66,6 +67,9 @@ export type {
   CallidescopeProjectReadmeConfiguration,
   CallidescopeWorkspaceStructure,
   LoadConfigurationArguments,
+  LoadedCallidescopeConfiguration,
+  LoadedProjectConfiguration,
+  LoadProjectConfigurationsArguments,
   MarkdownAnchorHelpers,
   RenderMarkdownArguments,
   RenderMarkdownOutput,
@@ -80,6 +84,7 @@ export type {
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";
+export { ProjectConfigurationService } from "./modules/configuration/project-configuration.service";
 export {
   InputError,
   missingInputError,

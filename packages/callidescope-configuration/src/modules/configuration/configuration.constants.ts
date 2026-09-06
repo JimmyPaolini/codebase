@@ -271,3 +271,27 @@ export class ConfigurationFileNotFoundError extends Error {
     this.name = "ConfigurationFileNotFoundError";
   }
 }
+
+/**
+ * Raised when a project's own configuration file cannot be read or parsed.
+ *
+ * Names the project rather than only the path, because a run resolves a file
+ * per project and the failure has to say which one to go and fix. The original
+ * failure is kept as `cause` so nothing a reader would need is thrown away.
+ */
+export class ProjectConfigurationError extends Error {
+  constructor(args: {
+    cause: unknown;
+    configurationPath: string;
+    project: string;
+  }) {
+    const reason =
+      args.cause instanceof Error ? args.cause.message : "It could not be read";
+
+    super(
+      `Failed to read the callidescope configuration for ${args.project} at ${args.configurationPath}: ${reason}`,
+      { cause: args.cause },
+    );
+    this.name = "ProjectConfigurationError";
+  }
+}

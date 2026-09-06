@@ -153,6 +153,52 @@ export interface LoadConfigurationArguments {
   searchDirectory?: string | undefined;
 }
 
+/**
+ * A resolved configuration, what the file itself declared, and which file it
+ * was.
+ *
+ * Both objects are kept because they answer different questions. A refusal has
+ * to name the fields the file set, which resolution would otherwise
+ * manufacture; anything judging a project reads values only resolution
+ * supplies. The path is what nothing downstream of the search can still tell,
+ * and what keeps one file from being given two roles in a run.
+ */
+export interface LoadedCallidescopeConfiguration {
+  /** The file's own object, before a single default was applied. */
+  authored: CallidescopeConfiguration;
+  configuration: ResolvedCallidescopeConfiguration;
+  /** `undefined` when no configuration file was found at all. */
+  path: string | undefined;
+}
+
+/** One project's own configuration file, and the project it configures. */
+export interface LoadedProjectConfiguration {
+  /** The file's own object, before a single default was applied. */
+  authored: CallidescopeConfiguration;
+  configuration: ResolvedCallidescopeConfiguration;
+  path: string;
+  /** Workspace-relative root of the project the file sits at. */
+  project: string;
+}
+
+/** Arguments accepted by the project configuration loader. */
+export interface LoadProjectConfigurationsArguments {
+  /** Workspace-relative project roots to look beside. */
+  projects: readonly string[];
+  /**
+   * Absolute path already loaded as the run's own workspace configuration, as
+   * `loadConfigurationFile` reports it.
+   *
+   * One file, one role per run: a configuration that a run was pointed at is
+   * not additionally read as the configuration of whichever project happens to
+   * hold it. A package whose Nx target names its own file is exactly that case,
+   * and treating the file as both would refuse it for the workspace-only fields
+   * it legitimately sets.
+   */
+  workspaceConfigurationPath?: string | undefined;
+  workspaceRoot: string;
+}
+
 /** Splicing helpers handed to a configured `write` function. */
 export interface MarkdownAnchorHelpers {
   endMarker: string;
