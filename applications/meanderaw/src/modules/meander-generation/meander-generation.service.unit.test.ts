@@ -641,11 +641,22 @@ describe(MeanderGenerationService, () => {
       ).toThrow(UnavailableSubFamilyError);
     });
 
-    it("throws below the row count a mosaic tile needs, even for a sub-family that exists there", () => {
-      expect(() =>
+    it("draws a sub-family at the shallowest band a mosaic tile is enumerated in", () => {
+      expect(
         service.generate({
           repeatCount: 6,
           rows: 3,
+          subFamily: "dots",
+          type: "mosaic",
+        }),
+      ).toContain("<svg");
+    });
+
+    it("throws below that band, where a tile's interior has nothing under its single level", () => {
+      expect(() =>
+        service.generate({
+          repeatCount: 6,
+          rows: 2,
           subFamily: "dots",
           type: "mosaic",
         }),

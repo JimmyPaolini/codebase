@@ -26,8 +26,12 @@ import { DrawNegativePermutationsService } from "./draw-negative-permutations.se
  * exhaustive half is that its size is a fact about the space rather than
  * whatever the search happened to find. The count roughly two-and-a-half
  * times per row, which is also the reason the half stops where it does.
+ *
+ * It grew with the `mosaic` family it inverts: a source tile may turn a
+ * corner now, so the one-column space at each row count is wider than the
+ * matchings it used to be.
  */
-const TILE_COUNTS: readonly number[] = [8, 18, 40, 93];
+const TILE_COUNTS: readonly number[] = [9, 21, 51, 127];
 
 /**
  * How many of each row count's tiles carry the name of a source the family

@@ -72,7 +72,7 @@ export class MeanderTopologyService {
    *
    * The first and last lattice column are skipped: that is where a band
    * terminates, and a gap there is invariant 7's, not invariant 2's. The
-   * carve-out is load-bearing rather than a formality — 2,120 of the 3,353
+   * carve-out is load-bearing rather than a formality — 1,513 of the 3,797
    * committed documents have a termination gap, and not one of them has a
    * gap anywhere else. That count is asserted in
    * `meander-topology.service.integration.test.ts`, from this same lattice.

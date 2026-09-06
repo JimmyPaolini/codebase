@@ -75,10 +75,10 @@ column span that produced them, named by nothing but what distinguishes them, wi
 handful that a family already has a word for carrying that word after the identifier.
 
 **Two families have a permutation half, and they enumerate different things.**
-`mosaic`'s is its whole unit space at one and two columns, 290 tiles across 4 through 6
-rows. `negative`'s is its **one-column source space** — the `ruled` domain, since a
-one-column source has no vertical mark for a second column to stagger against — 159
-sources across 3 through 6 rows. Both stop at the same 6, which is the whole `mosaic`
+`mosaic`'s is its whole unit space at every column span its edge budget admits, 2,406
+tiles across 3 through 6 rows. `negative`'s is its **one-column source space** — the
+`ruled` domain, since a one-column source has no southward edge for a second column to
+stagger against — 208 sources across 3 through 6 rows. Both stop at the same 6, which is the whole `mosaic`
 family's ceiling and the only row range in this repository that is not the command
 line's: see "Neither permutation half followed" below. The absent
 `negative/<rows>-rows/permutations/2-columns/` is a statement too — the two-column source
@@ -137,7 +137,7 @@ it has moved with every family that gained a mode or a parameter since; the enum
 half was 3,554 until `mosaic` was capped at 6 rows. Most of these counts have moved
 several times for those reasons alone — see the note under "Meander Charter" above:
 
-- **Every interior white channel is exactly one stroke width**, in all 1,632 files. The
+- **Every interior white channel is exactly one stroke width**, in all 3,797 files. The
   channel width equals the stroke width equals half a grid unit, and that single number
   is the same in every document the project has ever written — the stroke is `unit / 2`
   at every row count, in every family, at every ply of `parallel`. #340 and #413 both
@@ -153,7 +153,7 @@ several times for those reasons alone — see the note under "Meander Charter" a
   unbroken both ways where running bond's does not, `grid` inverts the `dots` sub-family,
   and `brick-upright` inverts `diamond` — for 705 X-junctions between them. Its permutation
   half crosses in 106 of its 159 drawings, which is the same finding at the scale of a
-  whole space rather than of three named modes. Nowhere else in the 1,632-file corpus.
+  whole space rather than of three named modes. Nowhere else in the 3,797-file corpus.
   `cross` carries twelve at every one of its row counts, 6 through 12, so its count is a
   property of the repeat count rather than of `rows`. See "The Crossing Family" and "The
   Negative Space Family" below.
@@ -207,7 +207,7 @@ to the command line's own closed the gap for both at once, which is why neither 
 maximum of its own any more. Most of the counts below moved by that change and nothing else.
 
 **Neither permutation half followed, and `mosaic` as a whole did not either.** Both halves
-stop at 6 rows, at 290 tiles and 159 sources. They enumerate their spaces exhaustively
+stop at 6 rows, at 2,406 tiles and 208 sources. They enumerate their spaces exhaustively
 rather than sampling them, and `mosaic`'s count grows about 3.4× per row — 23, 68 and 199
 at rows 4 through 6, then 660, 2,229, 7,977, 29,002, 108,089 and 406,934 — so following the
 other nine families to 12 would mean committing 554,891 more files. `negative`'s own growth
@@ -286,16 +286,16 @@ has enumerated, and survive any change to the enumeration's bounds. A tile mixin
 which is nearly all of them — belongs to no sub-family and is left **unnamed** rather
 than pushed into the nearest one.
 
-Across the 3,179 tiles the enumeration admits at 4–8 rows and 1–2 columns — the range
-this table was measured over, and two rows deeper than the 290 the sweep commits today:
+Across the 2,406 tiles the enumeration admits — every shape the edge budget allows, which
+is exactly what the sweep commits:
 
 | Sub-family | Tiles |
 | --- | --- |
-| `dashes` | 75 |
-| `dots` | 10 |
-| `lines` | 5 |
-| `diamond` | 4 |
-| unnamed | 3,085 |
+| `dashes` | 76 |
+| `diamond` | 15 |
+| `dots` | 11 |
+| `lines` | 4 |
+| unnamed | 2,300 |
 
 A region holds every tile its predicate accepts, not only the one it is named after,
 which is why `dashes` is much the largest: a horizontal dash may anchor in either column
@@ -350,9 +350,10 @@ branching in every family's negative — but only across the 114 named patterns.
 across all 3,179 tiles of the `mosaic` permutation set at 4 through 8 rows, which the
 sweep committed under `output/mosaic/<rows>-rows/permutations/` at the time — the only
 family with an enumerated unit space, so the only one this measurement can run over every
-tile rather than a handful of named modifiers. The sweep stops at 6 rows now, so 290 of
-those tiles are on disk; the finding is a statement about the space rather than about the
-directory, and re-running it over the enumeration reproduces every figure below.
+tile rather than a handful of named modifiers. The space it measured is not the space
+the family enumerates today — the matching rule it was taken under has since been
+replaced by an edge budget and a ceiling of two direction bits per point — so the
+figures below are a record of that survey rather than a description of what is on disk.
 
 ### Method
 
@@ -624,7 +625,7 @@ than "Hamiltonian path" covers all five.
 Two independent bounds keep `mosaic` enumerable, and only one of them is the rule:
 
 - **The rule caps a mark at one grid unit**, which is what turns a tile into a matching.
-- **The enumeration caps the tile at `MOSAIC_TILE_MAXIMUM_COLUMNS`, which is 2.**
+- **The enumeration caps the tile's column span at 2.**
 
 Both are load-bearing. `mosaic`'s own matching rule, applied at the pitch `boxes`, `chain`,
 and `snake` use, gives 21,497 tiles at 5 rows and 4.10 × 10¹³ at 8 rows. The five have no
@@ -970,10 +971,10 @@ it already covers the named modes above 6 rows, which have never had a committed
 | 5 — band, not field | Yes | the canvas height is the shared geometry's, identical to a `mosaic` of the same rows; only width grows with `repeatCount` |
 
 **Whether the output stays space-filling was measured, not assumed, and it does.** Every
-lattice point of every one of the 259 committed drawings carries ink — the 100 named and
-the 159 enumerated alike — including the band's first and last lattice column, which
+lattice point of every one of the 308 committed drawings carries ink — the 100 named and
+the 208 enumerated alike — including the band's first and last lattice column, which
 invariant 7 would have excused. The family needs no termination carve-out at all, where
-273 of the 1,632 committed documents do have a gap there. The reason is the survey's own
+1,513 of the 3,797 committed documents do have a gap there. The reason is the survey's own
 finding that no cell of any of the 3,179
 permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
 lattice point with at least one arm of ink.
