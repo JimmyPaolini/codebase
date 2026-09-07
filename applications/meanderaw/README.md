@@ -382,10 +382,16 @@ bounded lattice of `"column,row"` points and the other on a wrapping repeat of
 dependency runs mosaic onto topology, which leaves the topology service free of any
 knowledge that a `mosaic` exists.
 
+**A component count is not a substitute for looking at the drawing**, and the `zigzag` /
+`rings` split below is where that bites: two tiles can be the same graph on the quotient
+band and still draw as unrelated patterns, because the count cannot see _which_ edge is the
+one that wraps. So these numbers answer what they say they answer — how many pieces the
+ink falls into, and whether it loops — and no more.
+
 ## 🔤 Naming a Mosaic Sub-family
 
 `mosaic`'s unit space is materialized, so a region of it can be **recognized** rather
-than listed. Seven regions have names, and six of them come in pairs.
+than listed. Eight regions have names, and they come in four pairs.
 
 | Sub-family | Every point | Smallest tile | Reads as |
 | --- | --- | --- | --- |
@@ -395,7 +401,8 @@ than listed. Seven regions have names, and six of them come in pairs.
 | `dashes` | is on a run across the band, broken somewhere | `2121` | broken horizontal rules |
 | `bars` | is on a run down the band, unbroken | `4c8` | unbroken vertical rules |
 | `diamond` | is on a run down the band, broken somewhere | `4848` | a dashed vertical bar |
-| `zigzag` | turns a corner | `56a9` | a staircase |
+| `zigzag` | turns a corner, stepping out of the repeat | `56a9` | a staircase |
+| `rings` | turns a corner, closing inside the repeat | `65a9` | separated rectangular loops |
 
 **Unbroken or broken is the question**, and it is asked of the edges rather than of the
 points. A point in the middle of a rule and a point at the end of a dash both carry ink
@@ -404,11 +411,14 @@ is. Asking only "is every point reached the same way" cannot tell them apart, wh
 how a solid bar came to be called a `diamond` — a `diamond` being a _dashed_ bar — and a
 two-column tile of unbroken rules came to be called `dashes`.
 
-`dots` and `mesh` are the two ends of the space rather than a pair: the tile with no edge
-and the tile with every edge, one of each per shape. `zigzag` is the only rule about a
-point's own shape rather than about which directions a tile uses, and it is empty at a
-single column, where a point's eastward edge wraps onto itself and gives it two
-horizontal bits rather than one.
+`dots` and `mesh` are the ends of the space: the tile with no edge and the tile with every
+edge, one of each per shape.
+
+`zigzag` and `rings` are the one pair about a point's own **shape** rather than about which
+directions a tile uses, and both are empty at a single column, where a point's eastward
+edge wraps onto itself and gives it two horizontal bits rather than one. They were **one
+name until the drawings were looked at**, and the section below works through what
+separates them and why the ink's own component count cannot.
 
 A tile is identified by its **hexadecimal string**: one character per point in reading
 order, worth `8` for `north`, `4` for `south`, `2` for `east` and `1` for `west`. So `0`
@@ -438,7 +448,9 @@ Three consequences, and each is asserted rather than assumed:
 - **A tile matching two rules is a defect in the rule set**, not a tie to break. The rules
   are exclusive by construction — each requires the _absence_ of the directions the others
   are about — and `mosaic-naming.service.unit.test.ts` asserts it over the whole
-  enumerated space.
+  enumerated space. `zigzag` and `rings` are the one pair that cannot separate that way,
+  since every point turns a corner in both; they split on a reading whose two halves are
+  false together rather than true together whenever a tile is neither.
 
 Across the 8,551 tiles the enumeration admits — every shape the edge budget allows, which
 is exactly what the sweep commits:
@@ -450,9 +462,10 @@ is exactly what the sweep commits:
 | `dots` | 11 |
 | `lines` | 11 |
 | `mesh` | 11 |
-| `zigzag` | 10 |
 | `diamond` | 4 |
-| unnamed | 8,424 |
+| `rings` | 4 |
+| `zigzag` | 4 |
+| unnamed | 8,426 |
 
 `bars`, `dots`, `lines` and `mesh` name exactly one tile per shape, which is what makes
 them the eleven shapes' landmarks rather than regions: no edge, every edge, every eastward
@@ -470,15 +483,58 @@ where the number of levels is even and none at all where it is odd. Asking for a
 than a coincidence: every rule requires the _absence_ of the directions the others are
 about, so nothing that branches or crosses satisfies one.
 
+### A corner tile is a staircase or a row of loops, and the split is geometric
+
+`zigzag` and `rings` were one name — every point turning a corner — and one look at the
+ten drawings it committed shows two unrelated patterns. `56a9` at three rows and two
+columns is a continuous staircase marching sideways through every repeat. `65a9`, the only
+other tile of that shape, is a **closed rectangle with a gap between it and the next
+repeat's** — a row of separated loops, and not a staircase in any reading.
+
+Where each loop closes is the whole of it, and it is forced by two constraints:
+
+- **The southward edges pair the levels up from the top.** A point's `north` is the edge
+  above it and its `south` the edge below, so exactly one vertical bit per point makes the
+  edges down a column run on, off, on, off; the first level has no `north`, so the run
+  starts on. Levels therefore pair `(0, 1)`, `(2, 3)`, … and **no southward edge ever joins
+  one pair to another**. Each pair is an independent **lane**.
+- **Each level's horizontal runs alternate columns**, and the only freedom is which columns
+  they start on. So one lane is two such choices, and there are only two cases.
+
+A lane whose lower level **repeats** the upper level's choice turns the ink back on itself:
+it closes into rectangles inside the repeat, one per pair of columns, with a gap to the
+next repeat's. A lane that **offsets** it makes each level's run start where the one above
+it ended, so the ink turns the opposite way at every level and walks out of the repeat and
+into the next, never closing. `zigzag` is every lane offset; `rings` is every lane
+repeated.
+
+**A tile can mix them**, closing in one lane and stepping in another, and two of the ten do.
+Those earn neither name and keep their bit string — the same answer a tile mixing
+horizontal and vertical ink already got, rather than the nearer of the two.
+
+**The ink's own component count cannot make this split**, which is worth stating because it
+is the obvious thing to reach for. At two columns a closed rectangle and a step that leaves
+the repeat are the **same four-cycle**: four points, four edges, one component. They differ
+only in _which_ of those edges is the one that wraps, which is a fact about how the graph
+sits in the band and not about the graph. So `65a9` — a proven row of loops — has
+`components === 1` exactly as the staircase `56a9` does, and a component count would name it
+`zigzag`. It fails the other way too: at five rows and two columns every corner tile has two
+lanes and therefore two components, including the two that are a pair of **parallel
+staircases**, which a component count would have to call loops — and it has no way to leave a
+mixed tile unnamed, since every corner tile has some component count or other. Several of the
+ten committed tiles come out wrong by it, in both directions. Comparing the lanes' horizontal
+rows is asked of the rows instead, and it is exact.
+
 ### Every name is a constructor as well as a predicate
 
 A name is a rule, so recognizing a region costs nothing; building its aligned
 representative is the separate job `MosaicSubFamilyService` does, and for a while only
-five of the seven names had one. `mesh` and `zigzag` did not, because the shape table
+five of the names had one. `mesh` and `zigzag` did not, because the shape table
 could say one thing — one direction's edges, anchored in the first column, every
 `levelStep` levels — and neither of those two is that. `mesh` uses both directions at
 once. `zigzag` needs its eastward edges to start a column further along at every level,
-which no single anchor expresses.
+which no single anchor expresses. `rings` then cost nothing at all: it is `zigzag`'s two
+rules with the phase off, which is the only difference between the two names.
 
 Each sub-family's tile is now **two rules, one per edge grid**, each an edge every
 `levelStep` levels and every `columnStep` columns, optionally _phased_ so the column
@@ -487,30 +543,39 @@ offset advances by one per level. The family's pairings then fall out one number
 `dashes` the same eastward rule at `columnStep` 1 and 2, `dots` no rule at all, and
 `mesh` both rules at every step of one.
 
-`zigzag` is the only one needing a phase, and the phase is what makes it a staircase
-rather than a stack of closed boxes. Every point turning a corner means exactly one
-horizontal bit and one vertical bit **at every point**, and that pins both rules down:
+`zigzag` and `rings` are the only two needing a phase between them, and **the phase is the
+entire difference between those two names** — one boolean, which is why it is a field on
+the rule rather than a special case wherever the staircase is built. Every point turning a
+corner means exactly one horizontal bit and one vertical bit **at every point**, and that
+pins both rules down for both names:
 
 - **The southward edges have to alternate level by level.** A point's `north` is the
   edge above it and its `south` the edge below, so a point can have exactly one of them
   only if the edges down a column are on, off, on, off. The first level has no `north`,
   so the run starts on — and the last level has no `south`, so it must end on the level
   above. That happens only when the interior's level count is **even**, which is
-  `diamond`'s constraint arriving for a different reason: `zigzag` exists at 3, 5, 7 …
-  rows and nowhere else, and is refused rather than approximated at 4 and 6.
+  `diamond`'s constraint arriving for a different reason: `zigzag` and `rings` exist at
+  3, 5, 7 … rows and nowhere else, and are refused rather than approximated at 4 and 6.
 - **The eastward edges have to alternate column by column**, since a point's `east` and
   `west` are the edges either side of it. Alternating has to survive the wrap from the
   last column into the next repeat, so the column span must be **even** — two, which is
-  why `zigzag` is empty at a single column rather than merely unaligned there.
-- **The alternation has to shift by one at every level.** Hold the phase fixed and each
-  level's eastward edge sits directly above the next level's, the ink turns back on
-  itself, and the tile is a stack of closed rectangles — every point still a corner, but
-  not a staircase. Advance it and each level's horizontal run starts where the one above
-  it ended, so the ink turns the other way at every level and walks sideways through the
-  repeats.
+  why both are empty at a single column rather than merely unaligned there.
+- **Whether the alternation shifts by one at every level is the name.** Hold the phase
+  fixed and each level's eastward edge sits directly above the next level's, the ink turns
+  back on itself, and the tile is a stack of closed rectangles — every point still a
+  corner, but not a staircase. That is `rings`. Advance it and each level's horizontal run
+  starts where the one above it ended, so the ink turns the other way at every level and
+  walks sideways through the repeats. That is `zigzag`.
 
-The smallest one is `56a9` — two columns, two interior levels — and the smallest `mesh`
-is `7b`, a single column with every edge it has.
+The smallest of each is two columns and two interior levels: `56a9` for `zigzag` and
+`65a9` for `rings`, the only two tiles of that shape whose every point turns a corner. The
+smallest `mesh` is `7b`, a single column with every edge it has.
+
+**Advancing the phase keeps every lane stepping, at every row count**, which is what makes
+one boolean enough rather than a rule that only reads right at the shallowest tile. The
+phase is the level index, so consecutive levels always disagree by one, so every lane is
+offset — and `mosaic-naming.service.unit.test.ts` names both constructors' tiles back at
+every row count each exists at, from 5 through 11, rather than only at the smallest.
 
 Ask for a sub-family by name:
 

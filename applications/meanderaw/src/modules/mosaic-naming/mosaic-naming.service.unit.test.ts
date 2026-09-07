@@ -2,6 +2,9 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { mosaicTile } from "../../../testing/mosaic-tiles";
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
+import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
+import { MosaicConnectivityService } from "../mosaic-motif/mosaic-connectivity.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
@@ -49,6 +52,7 @@ const NAMES: readonly MosaicSubFamily[] = [
   "dots",
   "lines",
   "mesh",
+  "rings",
   "zigzag",
 ];
 
@@ -60,6 +64,7 @@ const BUILDABLE_NAMES: readonly MosaicBuildableSubFamily[] = [
   "dots",
   "lines",
   "mesh",
+  "rings",
   "zigzag",
 ];
 
@@ -71,6 +76,7 @@ const CANONICAL_TILES: readonly (readonly [MosaicSubFamily, MosaicTile])[] = [
   ["dots", mosaicTile([".", ".", "."])],
   ["lines", mosaicTile(["ee", "ee", "ee"])],
   ["mesh", mosaicTile(["bb", "bb", "ee"])],
+  ["rings", mosaicTile(["bs", "e."])],
   ["zigzag", mosaicTile(["sb", "e."])],
 ];
 
@@ -78,12 +84,16 @@ const CANONICAL_TILES: readonly (readonly [MosaicSubFamily, MosaicTile])[] = [
 
 describe(MosaicNamingService, () => {
   let service: MosaicNamingService;
+  let mosaicConnectivityService: MosaicConnectivityService;
   let mosaicSubFamilyService: MosaicSubFamilyService;
   let mosaicTilesService: MosaicTilesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
+        MeanderLatticeService,
+        MeanderTopologyService,
+        MosaicConnectivityService,
         MosaicNamingService,
         MosaicSubFamilyService,
         MosaicSymmetryService,
@@ -93,6 +103,7 @@ describe(MosaicNamingService, () => {
     }).compile();
 
     service = await module.resolve(MosaicNamingService);
+    mosaicConnectivityService = await module.resolve(MosaicConnectivityService);
     mosaicSubFamilyService = await module.resolve(MosaicSubFamilyService);
     mosaicTilesService = await module.resolve(MosaicTilesService);
   });
@@ -125,6 +136,29 @@ describe(MosaicNamingService, () => {
     it("tells an unbroken bar from a dashed one, which is the difference between bars and diamond", () => {
       expect(service.name(mosaicTile(["s", "s", "."]))).toBe("bars");
       expect(service.name(mosaicTile(["s", ".", "s", "."]))).toBe("diamond");
+    });
+
+    it("tells a lane that steps out of the repeat from one that closes inside it, which is the difference between zigzag and rings", () => {
+      expect(service.name(mosaicTile(["sb", "e."]))).toBe("zigzag");
+      expect(service.name(mosaicTile(["bs", "e."]))).toBe("rings");
+    });
+
+    it("leaves a corner tile that steps in one lane and closes in another unnamed, rather than naming it the nearer of the two", () => {
+      expect(
+        service.name(mosaicTile(["sb", "e.", "bs", "e."])),
+      ).toBeUndefined();
+    });
+
+    it("splits the pair on its lanes rather than on its component count, which at two columns reads the same for both", () => {
+      const stepped = mosaicTile(["sb", "e."]);
+      const closed = mosaicTile(["bs", "e."]);
+
+      expect(mosaicConnectivityService.connectivity(stepped).components).toBe(
+        1,
+      );
+      expect(mosaicConnectivityService.connectivity(closed).components).toBe(1);
+      expect(service.name(stepped)).toBe("zigzag");
+      expect(service.name(closed)).toBe("rings");
     });
 
     it("names the two ends of the space, the tile with no edge and the tile with every edge", () => {
@@ -209,8 +243,9 @@ describe(MosaicNamingService, () => {
           dots: 11,
           lines: 11,
           mesh: 11,
-          unnamed: 8424,
-          zigzag: 10,
+          rings: 4,
+          unnamed: 8426,
+          zigzag: 4,
         });
       },
       SPACE_WALK_TIMEOUT_MILLISECONDS,

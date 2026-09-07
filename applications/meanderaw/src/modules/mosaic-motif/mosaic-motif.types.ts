@@ -11,6 +11,13 @@
  * horizontal edges to move a column along at every level, so the two arrived
  * together with the {@link MosaicEdgeRule} pair that can state them —
  * see {@link MosaicSubFamilyShape}.
+ *
+ * `rings` arrived for free once `zigzag` had a phase: it is the identical
+ * pair of rules with {@link MosaicEdgeRule.phased} off, which is the whole of
+ * the difference between a staircase and a stack of closed rectangles. That
+ * the two names are one boolean apart is the strongest evidence the split
+ * between them is real rather than a distinction drawn over a region nobody
+ * could tell apart.
  */
 export type MosaicBuildableSubFamily =
   | "bars"
@@ -19,6 +26,7 @@ export type MosaicBuildableSubFamily =
   | "dots"
   | "lines"
   | "mesh"
+  | "rings"
   | "zigzag";
 
 /**
@@ -63,14 +71,16 @@ export interface MosaicEdgeAddress {
  * `columnStep` 1 and 2 — a continuous rule and a broken one. `mesh` is both
  * grids at every step of one, which is every edge there is.
  *
- * `phased` exists for `zigzag` alone, and it is what makes that name a
- * staircase rather than a stack of closed boxes. Both close every point into
- * a corner — a fixed column offset lets the ink turn back on itself, closing
- * into a rectangle; advancing that offset by one column per level instead
- * makes each level's horizontal run start where the one above it ended, so
- * the ink turns the opposite way at every level and walks sideways through
- * the repeats. `zigzag` is named for the staircase, so it is `phased` that
- * builds it.
+ * `phased` is the one field that is a whole sub-family by itself. `zigzag`
+ * and `rings` are the same two rules and differ in nothing else: both close
+ * every point into a corner, and a fixed column offset lets the ink turn back
+ * on itself and close into a rectangle inside the repeat, while advancing
+ * that offset by one column per level makes each level's horizontal run start
+ * where the one above it ended, so the ink turns the opposite way at every
+ * level and walks sideways through the repeats. `zigzag` is the one with the
+ * phase on and `rings` the one with it off, which is why the field is a
+ * boolean on the rule rather than a special case in whatever built the
+ * staircase.
  */
 export interface MosaicEdgeRule {
   readonly columnStep: number;
@@ -139,18 +149,31 @@ export type MosaicPointRank = 0 | 1 | 2 | 3;
  * recognizing a structural property of a tile rather than by applying a
  * modifier.
  *
- * Seven of them, and six come in pairs. Ink running **across** the band is
- * either unbroken at every level (`lines`) or broken somewhere (`dashes`);
- * ink running **down** it is either unbroken in every column (`bars`) or
- * broken somewhere (`diamond`) — a `diamond` being a *dashed* bar, which is
- * the distinction that makes those two different names rather than one.
- * `dots` and `mesh` are the two ends of the space, the tile with no edge and
- * the tile with every edge. `zigzag` is the odd one: every point turning a
- * corner, which is a staircase and the closest thing here to the fret the
- * project is named after.
+ * Eight of them, in four pairs. Ink running **across** the band is either
+ * unbroken at every level (`lines`) or broken somewhere (`dashes`); ink
+ * running **down** it is either unbroken in every column (`bars`) or broken
+ * somewhere (`diamond`) — a `diamond` being a *dashed* bar, which is the
+ * distinction that makes those two different names rather than one. `dots`
+ * and `mesh` are the two ends of the space, the tile with no edge and the
+ * tile with every edge.
+ *
+ * `zigzag` and `rings` are the fourth pair, and the only one about a point's
+ * own *shape*: every point turns a corner in both. What separates them is
+ * where each level's horizontal runs sit relative to the level above. Offset
+ * by a column, the ink turns the opposite way at every level and walks
+ * sideways out of the repeat and into the next — a staircase, and the closest
+ * thing here to the fret the project is named after. Repeated in the same
+ * columns, the ink turns back on itself and closes inside the repeat, so the
+ * drawing is a row of separated rectangular loops with a gap between each
+ * repeat and the next. They were one name until the drawings were looked at,
+ * and `README.md` works through why the ink's own component count cannot tell
+ * them apart.
  *
  * A tile matching none of them is left unnamed rather than forced into the
- * nearest, which is nearly all of them.
+ * nearest, which is nearly all of them — and now includes a corner tile that
+ * *mixes* the two readings, stepping in one pair of levels and closing in
+ * another. That is neither name rather than the nearer one, which is the same
+ * stance a tile mixing horizontal and vertical ink already got.
  *
  * Every one has a constructor as well as a predicate — see
  * {@link MosaicBuildableSubFamily}. `diamond` names the same shape the
@@ -166,6 +189,7 @@ export type MosaicSubFamily =
   | "dots"
   | "lines"
   | "mesh"
+  | "rings"
   | "zigzag";
 
 /**
@@ -176,27 +200,27 @@ export type MosaicSubFamily =
  *
  * It is a rule per grid rather than one direction and one level step
  * because a sub-family may use both directions at once. `mesh` uses every
- * edge of both, and `zigzag` needs a southward rule and an eastward rule
- * that disagree about their periods — pairs of levels down, alternate
- * columns across — which a single direction cannot say.
+ * edge of both, and `zigzag` and `rings` each need a southward rule and an
+ * eastward rule that disagree about their periods — pairs of levels down,
+ * alternate columns across — which a single direction cannot say.
  *
  * A `levelStep` above one is what makes a sub-family unavailable at some row
  * counts, since a rule has to close on the interior it fills rather than run
  * off the end of it. `diamond`'s southward edges span levels in pairs, so an
  * interior with an odd number of levels has no `diamond` tile at all, and
- * `zigzag` inherits exactly that constraint from the southward rule it
- * shares: every point turning a corner forces the southward edges to
- * alternate level by level, which only lands on the last level when the
- * number of them is even.
+ * `zigzag` and `rings` inherit exactly that constraint from the southward
+ * rule all three share: every point turning a corner forces the southward
+ * edges to alternate level by level, which only lands on the last level when
+ * the number of them is even.
  *
  * `columns` is a consequence of the rules rather than an independent knob: a
  * `columnStep` of two needs two columns to be two columns wide. `dashes`
  * spans two for that reason — an eastward edge reaches the point to its
  * right, so at a single column it wraps onto its own point and draws the
- * continuous rule `lines` is named for instead — and `zigzag` spans two for
- * the same reason read the other way, since its horizontal bits have to
- * alternate around the repeat and an odd number of columns cannot alternate
- * and still join up with itself.
+ * continuous rule `lines` is named for instead — and `zigzag` and `rings`
+ * span two for the same reason read the other way, since their horizontal
+ * bits have to alternate around the repeat and an odd number of columns
+ * cannot alternate and still join up with itself.
  */
 export interface MosaicSubFamilyShape {
   readonly columns: number;
