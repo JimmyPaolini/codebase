@@ -69,7 +69,7 @@ describe(DrawParametersService, () => {
   });
 
   describe("subFamily", () => {
-    it.each(["dashes", "diamond", "dots", "lines"])(
+    it.each(["dashes", "diamond", "dots", "lines", "mesh", "zigzag"])(
       "passes the %s sub-family through unchanged",
       (subFamily) => {
         expect(service.subFamily(subFamily)).toBe(subFamily);
