@@ -43,21 +43,34 @@ Call stacks traced through `packages/callidescope-graph`, deepest first. Each fr
 
 | Measure | Value |
 | --- | --- |
-| Callables | 198 |
-| Files | 63 |
-| Calls traced | 178 |
-| Call stacks | 2 |
+| Callables | 224 |
+| Files | 64 |
+| Calls traced | 210 |
+| Call stacks | 4 |
 | Deepest stack | 5 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 3 |
+| Unfollowable calls | 5 |
 
 ### Call stacks (depth)
 
-**1. `CallablesService.visit`** — depth 5 · orphan-root
+**1. `ProgramService.resolveProjectFiles`** — depth ≥ 5 · orphan-root
+
+```text
+🚀 ProgramService.resolveProjectFiles(project: WorkspaceProject): readonly string[] [packages/callidescope-graph/src/modules/program/program.service.ts:262]
+  └─> ProgramService.buildProgram(args: { project: WorkspaceProject; workspaceRoot: string; }): ProjectProgram [packages/callidescope-graph/src/modules/program/program.service.ts:115]
+     ↳ Builds one project's program, checker, and owned-file set.
+    └─> CompilerHostService.createHost(args: { options: ts.CompilerOptions; workspaceRoot: string; }): ts.CompilerHost [packages/callidescope-graph/src/modules/program/compiler-host.service.ts:76]
+       ↳ Creates a compiler host that reuses already-parsed source files. `setParentNodes` is on because the rest of the package…
+      └─> CompilerHostService.resolveModuleCache(options: ts.CompilerOptions, workspaceRoot: string): ts.ModuleResolutionCache [packages/callidescope-graph/src/modules/program/compiler-host.service.ts:40]
+         ↳ Returns the module resolution cache for one working directory.
+        └─> CompilerHostService.createModuleResolutionCache(…)(fileName: string): string [packages/callidescope-graph/src/modules/program/compiler-host.service.ts:52]
+```
+
+**2. `CallablesService.visit`** — depth 5 · orphan-root
 
 ```text
 🚀 CallablesService.visit(node: ts.Node): void [packages/callidescope-graph/src/modules/callables/callables.service.ts:49]
-  └─> CallablesService.describe(args: DescribeCallableArguments): DiscoveredCallable [packages/callidescope-graph/src/modules/callables/callables.service.ts:116]
+  └─> CallablesService.describe(args: DescribeCallableArguments): DiscoveredCallable [packages/callidescope-graph/src/modules/callables/callables.service.ts:122]
      ↳ Turns one declaration into a fully described node.
     └─> CallableIdentityService.readDisplayName(declaration: CallableDeclaration): string [packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:131]
        ↳ Builds the qualified name a report prints for a callable.
@@ -67,12 +80,29 @@ Call stacks traced through `packages/callidescope-graph`, deepest first. Each fr
            ↳ Reads the name a property, variable, or parameter declaration binds.
 ```
 
-**2. `WorkspaceService.isExcluded`** — depth 2 · orphan-root
+**3. `FileFilterService.isExcluded`** — depth ≥ 4 · orphan-root
 
 ```text
-🚀 WorkspaceService.isExcluded(workspaceRelativePath: string): boolean [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:204]
-  └─> WorkspaceService.some(…)(glob: string): boolean [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:206]
+🚀 FileFilterService.isExcluded(workspaceRelativePath: string): boolean [packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:206]
+  └─> FileFilterService.isExcludedByOwningProject(…): boolean [packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:60]
+     ↳ True when the project owning a file excludes it with a glob of its own.
+    └─> WorkspaceService.resolveOwningProject(…): WorkspaceProject | undefined [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:331]
+       ↳ Names the traced project whose root most narrowly contains a file. "Contains" means the deepest of `args.projects`…
+      └─> WorkspaceService.isContainedByRoot(args: { root: string; workspaceRelativePath: string; }): boolean [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:131]
+         ↳ True when a project's root is a path-segment prefix of a file's path.
 ```
+
+<details>
+<summary>1 more call stacks</summary>
+
+**4. `FileFilterService.isExcluded`** — depth 2 · orphan-root
+
+```text
+🚀 FileFilterService.isExcluded(workspaceRelativePath: string): boolean [packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:161]
+  └─> FileFilterService.some(…)(glob: string): boolean [packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:163]
+```
+
+</details>
 
 ### Module spread
 
@@ -82,38 +112,45 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CallablesService.describe` | 9 | `CallableIdentityService.readDisplayName`, `CallableIdentityService.readEnclosingTypeName`, `CallableIdentityService.buildId`, `CallableIdentityService.isExported`, `CallableIdentityService.readKind`, `CallableIdentityService.readLocation`, `CallableIdentityService.readMemberName`, `WorkspaceService.resolveModuleId`, `CallableIdentityService.countStatements` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:116` |
+| `CallablesService.describe` | 9 | `CallableIdentityService.readDisplayName`, `CallableIdentityService.readEnclosingTypeName`, `CallableIdentityService.buildId`, `CallableIdentityService.isExported`, `CallableIdentityService.readKind`, `CallableIdentityService.readLocation`, `CallableIdentityService.readMemberName`, `WorkspaceService.resolveModuleId`, `CallableIdentityService.countStatements` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:122` |
 | `EdgesService.buildSiteEdges` | 7 | `EdgesService.collectCallbackEdges`, `EdgesService.resolveSite`, `EdgesService.filter(…)`, `EdgesService.filter(…)`, `EdgesService.map(…)`, `EdgesService.filter(…)`, `EdgesService.readLocation` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:59` |
 | `SymbolResolutionService.resolveSymbol` | 6 | `SymbolResolutionService.unwrapAlias`, `SymbolResolutionService.every(…)`, `SymbolResolutionService.readBodied`, `SymbolResolutionService.readResolution`, `SymbolResolutionService.find(…)`, `SymbolResolutionService.resolveThroughHierarchy` | `packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:165` |
 
 <details>
-<summary>87 more callables</summary>
+<summary>100 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `GraphAssemblyService.assemble` | 6 | `GraphService.assemble`, `EdgesService.build`, `ComponentsService.condense`, `GraphAssemblyService.map(…)`, `BreadthService.measure`, `GraphDepthService.measure` | `packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44` |
-| `AddressService.resolve` | 4 | `AddressService.parseAddress`, `AddressService.describeInvalidAddress`, `AddressService.findMatches`, `AddressService.toCandidates` | `packages/callidescope-graph/src/modules/callables/address.service.ts:175` |
-| `WorkspaceService.discoverProjects` | 4 | `WorkspaceService.map(…)`, `WorkspaceService.findAllProjectDirectories`, `WorkspaceService.isExcludedProject`, `WorkspaceService.toSorted(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:237` |
+| `WorkspaceService.discoverProjects` | 5 | `WorkspaceService.map(…)`, `WorkspaceService.findAllProjectDirectories`, `WorkspaceService.isExcludedProject`, `ProgramConfigurationError.constructor`, `WorkspaceService.toSorted(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:214` |
+| `ProgramService.assignOwnership` | 5 | `ProgramService.toRealPath`, `ProgramService.map(…)`, `WorkspaceService.toWorkspaceRelative`, `WorkspaceService.resolveOwningProject`, `ProgramService.find(…)` | `packages/callidescope-graph/src/modules/program/program.service.ts:64` |
+| `EntriesService.resolve` | 5 | `EntriesService.toRules`, `EntriesService.map(…)`, `EntriesService.classifyEveryCallable`, `EntriesService.rootDeclaredAddresses`, `EntriesService.promoteOrphans` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:312` |
+| `AddressService.resolve` | 4 | `AddressService.parseAddress`, `AddressService.describeInvalidAddress`, `AddressService.findMatches`, `AddressService.toCandidates` | `packages/callidescope-graph/src/modules/callables/address.service.ts:235` |
 | `ClassesService.resolveImplementations` | 4 | `ClassesService.collectDerived`, `ClassesService.filter(…)`, `ClassesService.filterAssignable`, `ClassesService.flatMap(…)` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:207` |
 | `CohesionService.findModuleSpreads` | 4 | `CohesionService.isSpreadAllowed`, `CohesionService.readDepth`, `CohesionService.readDirectModuleIds`, `CohesionService.toSorted(…)` | `packages/callidescope-graph/src/modules/cohesion/cohesion.service.ts:202` |
 | `DocumentationService.read` | 4 | `DocumentationService.readSymbol`, `DocumentationService.readSummary`, `DocumentationService.filter(…)`, `DocumentationService.map(…)` | `packages/callidescope-graph/src/modules/documentation/documentation.service.ts:78` |
-| `AddressService.listAddresses` | 3 | `AddressService.toAddress`, `AddressService.map(…)`, `AddressService.toSorted(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:152` |
-| `ProgramService.buildProgram` | 3 | `ProgramService.parseConfiguration`, `CompilerHostService.createHost`, `ProgramService.map(…)` | `packages/callidescope-graph/src/modules/program/program.service.ts:70` |
-| `ProgramService.parseConfiguration` | 3 | `ProgramService.readJsonConfigFile(…)`, `ProgramConfigurationError.constructor`, `ProgramService.map(…)` | `packages/callidescope-graph/src/modules/program/program.service.ts:102` |
+| `AddressService.describeCandidates` | 3 | `AddressService.countCandidatesByLine`, `AddressService.some(…)`, `AddressService.map(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:181` |
+| `AddressService.listAddresses` | 3 | `AddressService.toAddress`, `AddressService.map(…)`, `AddressService.toSorted(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:212` |
+| `ProgramService.buildProgram` | 3 | `ProgramService.parseConfiguration`, `CompilerHostService.createHost`, `ProgramService.map(…)` | `packages/callidescope-graph/src/modules/program/program.service.ts:115` |
+| `ProgramService.parseConfiguration` | 3 | `ProgramService.readJsonConfigFile(…)`, `ProgramConfigurationError.constructor`, `ProgramService.map(…)` | `packages/callidescope-graph/src/modules/program/program.service.ts:147` |
+| `ProgramService.buildPrograms` | 3 | `WorkspaceService.walkImportedProjectClosure`, `ProgramService.toSorted(…)`, `ProgramService.assignOwnership` | `packages/callidescope-graph/src/modules/program/program.service.ts:254` |
 | `CallablesService.collectFromProgram` | 3 | `CallablesService.readOwnedPath`, `WorkspaceService.isTestFile`, `CallablesService.collectFromFile` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:77` |
 | `ClassesService.indexProgram` | 3 | `ExternalService.isExternal`, `ClassesService.indexMembers`, `ClassesService.indexHeritage` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:181` |
 | `CohesionService.summarizeTypeDepths` | 3 | `CohesionService.readDepth`, `CohesionService.extendTypeSummary`, `CohesionService.toSorted(…)` | `packages/callidescope-graph/src/modules/cohesion/cohesion.service.ts:256` |
 | `EdgesService.collectCallbackEdges` | 3 | `EdgesService.map(…)`, `EdgesService.filter(…)`, `EdgesService.map(…)` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:127` |
-| `EntriesService.classify` | 3 | `EntriesService.hasConfiguredDecorator`, `EntriesService.isCommandRunnerMethod`, `EntriesService.isBootstrapFunction` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:49` |
+| `EntriesService.classify` | 3 | `EntriesService.hasConfiguredDecorator`, `EntriesService.isCommandRunnerMethod`, `EntriesService.isBootstrapFunction` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:67` |
 | `ComponentsService.condense` | 3 | `ComponentsService.openNode`, `ComponentsService.step`, `ComponentsService.buildSuccessors` | `packages/callidescope-graph/src/modules/graph/components.service.ts:183` |
 | `GraphDepthService.measure` | 3 | `GraphDepthService.combine`, `GraphDepthService.readOwnModules`, `GraphDepthService.hasUnresolved` | `packages/callidescope-graph/src/modules/graph/graph-depth.service.ts:132` |
-| `AddressService.parseAddress` | 2 | `AddressService.parseSymbolPath`, `AddressService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/callables/address.service.ts:71` |
+| `AddressService.parseAddress` | 2 | `AddressService.parseSymbolPath`, `AddressService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/callables/address.service.ts:89` |
 | `CallableIdentityService.readDisplayName` | 2 | `CallableIdentityService.readMemberName`, `CallableIdentityService.readEnclosingTypeName` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:131` |
 | `CallableIdentityService.readMemberName` | 2 | `CallableIdentityService.readBindingName`, `CallableIdentityService.describeCallbackArgument` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:193` |
-| `WorkspaceService.findProjectDirectories` | 2 | `WorkspaceService.toWorkspaceRelative`, `WorkspaceService.isExcludedFromScan` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:77` |
-| `ProgramService.buildPrograms` | 2 | `ProgramService.buildProgram`, `ProgramService.assignOwnership` | `packages/callidescope-graph/src/modules/program/program.service.ts:144` |
+| `WorkspaceService.findProjectDirectories` | 2 | `WorkspaceService.toWorkspaceRelative`, `WorkspaceService.isExcludedFromScan` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:82` |
+| `WorkspaceService.walkImportedProjectClosure` | 2 | `WorkspaceService.resolveOwningProject`, `WorkspaceService.isClosureDestination` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:402` |
+| `FileFilterService.isExcludedByOwningProject` | 2 | `WorkspaceService.resolveOwningProject`, `FileFilterService.some(…)` | `packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:60` |
+| `ProgramService.readPulledInPaths` | 2 | `ProgramService.toRealPath`, `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/program/program.service.ts:195` |
+| `ProgramService.resolveProjectFiles` | 2 | `ProgramService.buildProgram`, `ProgramService.readPulledInPaths` | `packages/callidescope-graph/src/modules/program/program.service.ts:262` |
 | `CallablesService.visit` | 2 | `CallablesService.isCallableDeclaration`, `CallablesService.describe` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:49` |
-| `CallablesService.readOwnedPath` | 2 | `ProgramService.toRealPath`, `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:162` |
+| `CallablesService.readOwnedPath` | 2 | `ProgramService.toRealPath`, `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:168` |
 | `ClassesService.readMemberDeclarations` | 2 | `ClassesService.filter(…)`, `ClassesService.filter(…)` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:149` |
 | `CohesionService.findMisplacedCallables` | 2 | `CohesionService.readCallerDistribution`, `CohesionService.toSorted(…)` | `packages/callidescope-graph/src/modules/cohesion/cohesion.service.ts:161` |
 | `CallSitesService.visit` | 2 | `CallSitesService.isNestedBody`, `CallSitesService.readFunctionArguments` | `packages/callidescope-graph/src/modules/edges/call-sites.service.ts:62` |
@@ -123,7 +160,9 @@ None.
 | `EdgesService.resolveCallableId` | 2 | `WorkspaceService.toWorkspaceRelative`, `ProgramService.toRealPath` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:202` |
 | `EdgesService.resolveSite` | 2 | `SymbolResolutionService.resolveConstructor`, `SymbolResolutionService.resolve` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:226` |
 | `EdgesService.build` | 2 | `CallSitesService.collect`, `EdgesService.buildSiteEdges` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:251` |
-| `EntriesService.hasConfiguredDecorator` | 2 | `EntriesService.some(…)`, `EntriesService.readDecoratorNames` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:85` |
+| `EntriesService.classifyEveryCallable` | 2 | `EntriesService.classify`, `EntriesService.readRules` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:102` |
+| `EntriesService.hasConfiguredDecorator` | 2 | `EntriesService.some(…)`, `EntriesService.readDecoratorNames` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:117` |
+| `EntriesService.rootDeclaredAddresses` | 2 | `EntriesService.listDeclaringConfigurations`, `EntriesService.rootDeclaredAddress` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:262` |
 | `PathsService.buildDeepestPath` | 2 | `PathsService.orderMembers`, `PathsService.buildFrame` | `packages/callidescope-graph/src/modules/graph/paths.service.ts:59` |
 | `PathsService.buildFrame` | 2 | `DocumentationService.read`, `SignaturesService.read` | `packages/callidescope-graph/src/modules/graph/paths.service.ts:103` |
 | `AddressDepthService.toStack` | 2 | `PathsService.buildFrame`, `AddressDepthService.isLowerBound` | `packages/callidescope-graph/src/modules/graph/address-depth.service.ts:105` |
@@ -133,20 +172,22 @@ None.
 | `ComponentsService.step` | 2 | `ComponentsService.finishFrame`, `ComponentsService.visitSuccessor` | `packages/callidescope-graph/src/modules/graph/components.service.ts:116` |
 | `ComponentsService.visitSuccessor` | 2 | `ComponentsService.openNode`, `ComponentsService.liftLowLink` | `packages/callidescope-graph/src/modules/graph/components.service.ts:139` |
 | `GraphService.assemble` | 2 | `GraphService.append`, `GraphService.map(…)` | `packages/callidescope-graph/src/modules/graph/graph.service.ts:44` |
-| `AddressService.toCandidates` | 1 | `AddressService.map(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:119` |
-| `AddressService.map(…)` | 1 | `AddressService.toAddress` | `packages/callidescope-graph/src/modules/callables/address.service.ts:163` |
+| `AddressService.toCandidates` | 1 | `AddressService.map(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:137` |
+| `AddressService.map(…)` | 1 | `AddressService.toAddress` | `packages/callidescope-graph/src/modules/callables/address.service.ts:223` |
 | `CallableIdentityService.isExported` | 1 | `CallableIdentityService.findAncestor(…)` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:111` |
 | `CallableIdentityService.readEnclosingTypeName` | 1 | `CallableIdentityService.findAncestor(…)` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:139` |
 | `CallableIdentityService.readKind` | 1 | `CallableIdentityService.readBoundKind` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:152` |
-| `WorkspaceService.findAllProjectDirectories` | 1 | `WorkspaceService.findProjectDirectories` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:55` |
-| `WorkspaceService.isExcludedProject` | 1 | `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:123` |
-| `WorkspaceService.buildFileFilter` | 1 | `WorkspaceService.listIgnoredFiles` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:180` |
-| `WorkspaceService.isExcluded` | 1 | `WorkspaceService.some(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:204` |
-| `WorkspaceService.map(…)` | 1 | `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:240` |
+| `WorkspaceService.findAllProjectDirectories` | 1 | `WorkspaceService.findProjectDirectories` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:60` |
+| `WorkspaceService.isExcludedProject` | 1 | `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:161` |
+| `WorkspaceService.map(…)` | 1 | `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:217` |
+| `WorkspaceService.resolveOwningProject` | 1 | `WorkspaceService.isContainedByRoot` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:331` |
+| `FileFilterService.buildFileFilter` | 1 | `FileFilterService.listIgnoredFiles` | `packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:137` |
+| `FileFilterService.isExcluded` | 1 | `FileFilterService.some(…)` | `packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:161` |
+| `FileFilterService.isExcluded` | 1 | `FileFilterService.isExcludedByOwningProject` | `packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:206` |
 | `CompilerHostService.resolveModuleCache` | 1 | `CompilerHostService.createModuleResolutionCache(…)` | `packages/callidescope-graph/src/modules/program/compiler-host.service.ts:40` |
 | `CompilerHostService.createHost` | 1 | `CompilerHostService.resolveModuleCache` | `packages/callidescope-graph/src/modules/program/compiler-host.service.ts:76` |
-| `ProgramService.map(…)` | 1 | `ProgramService.toRealPath` | `packages/callidescope-graph/src/modules/program/program.service.ts:88` |
-| `CallablesService.collect` | 1 | `CallablesService.collectFromProgram` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:189` |
+| `ProgramService.map(…)` | 1 | `ProgramService.toRealPath` | `packages/callidescope-graph/src/modules/program/program.service.ts:133` |
+| `CallablesService.collect` | 1 | `CallablesService.collectFromProgram` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:195` |
 | `ExternalService.isExternal` | 1 | `ExternalService.computeVerdict` | `packages/callidescope-graph/src/modules/classes/external.service.ts:64` |
 | `ClassesService.filterAssignable` | 1 | `ClassesService.filter(…)` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:87` |
 | `ClassesService.build` | 1 | `ClassesService.indexProgram` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:172` |
@@ -164,9 +205,11 @@ None.
 | `EdgesService.map(…)` | 1 | `EdgesService.resolveCallableId` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:134` |
 | `EdgesService.map(…)` | 1 | `EdgesService.readLocation` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:142` |
 | `EdgesService.isIgnoredCallee` | 1 | `EdgesService.some(…)` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:162` |
-| `EntriesService.isCommandRunnerMethod` | 1 | `EntriesService.hasConfiguredDecorator` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:103` |
-| `EntriesService.readDecoratorNames` | 1 | `EntriesService.map(…)` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:121` |
-| `EntriesService.resolve` | 1 | `EntriesService.classify` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:139` |
+| `EntriesService.isCommandRunnerMethod` | 1 | `EntriesService.hasConfiguredDecorator` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:135` |
+| `EntriesService.promoteOrphans` | 1 | `EntriesService.readRules` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:171` |
+| `EntriesService.readDecoratorNames` | 1 | `EntriesService.map(…)` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:192` |
+| `EntriesService.rootDeclaredAddress` | 1 | `AddressService.resolve` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:233` |
+| `EntriesService.map(…)` | 1 | `EntriesService.toRules` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:320` |
 | `SignaturesService.read` | 1 | `SignaturesService.map(…)` | `packages/callidescope-graph/src/modules/signatures/signatures.service.ts:65` |
 | `SignaturesService.map(…)` | 1 | `SignaturesService.readParameter` | `packages/callidescope-graph/src/modules/signatures/signatures.service.ts:75` |
 | `AddressDepthService.isLowerBound` | 1 | `AddressDepthService.some(…)` | `packages/callidescope-graph/src/modules/graph/address-depth.service.ts:71` |

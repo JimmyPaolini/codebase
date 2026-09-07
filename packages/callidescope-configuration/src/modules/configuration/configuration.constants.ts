@@ -153,6 +153,15 @@ export const DEFAULT_OUTPUT_FORMAT = "markdown";
 /** Heading the section embedded in a project README is written under. */
 export const DEFAULT_PROJECT_README_HEADING = "## 🔭 Callidescope";
 
+/**
+ * Heading a whole-run markdown block is written under.
+ *
+ * First level, because the historical destination for this block is a file of
+ * its own that the block is the whole of. A block spliced into a file that
+ * already has a title sets `heading` to a deeper level instead.
+ */
+export const DEFAULT_RUN_HEADING = "# 🔭 Callidescope";
+
 /** Stacks a README section shows before the rest fold into a disclosure. */
 export const DEFAULT_PREVIEW_COUNT = 3;
 
@@ -321,6 +330,7 @@ const markdownDestinationSchema = z
   .object({
     description: z.string().optional(),
     endMarker: z.string().optional(),
+    heading: z.string().optional(),
     path: z.string(),
     render: callbackSchema<RenderMarkdownOutput>().optional(),
     startMarker: z.string().optional(),

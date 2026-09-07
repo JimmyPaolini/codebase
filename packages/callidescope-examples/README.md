@@ -682,9 +682,9 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
    ↳ Whether a configuration allows a stack as deep as the one asked about.
   └─> DependencyClosureService.readDepthLimit(configuration: CallidescopeConfiguration): number [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:24]
      ↳ Reads the depth limit the dependency's own defaulting settles on.
-    └─> ConfigurationService.resolveConfiguration(configuration: CallidescopeConfiguration): ResolvedCallidescopeConfiguration [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:431]
+    └─> ConfigurationService.resolveConfiguration(configuration: CallidescopeConfiguration): ResolvedCallidescopeConfiguration [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:433]
        ↳ Fills in every field a configuration file may leave out.
-      └─> ConfigurationService.resolveAllowSpreadFor(allowSpreadFor: string[] | undefined): string[] [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:170]
+      └─> ConfigurationService.resolveAllowSpreadFor(allowSpreadFor: string[] | undefined): string[] [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:171]
          ↳ Applies the default globs exempt from the module-spread finding.
 ```
 
