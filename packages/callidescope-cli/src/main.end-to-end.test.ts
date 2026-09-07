@@ -12,6 +12,15 @@ import { environmentSchema } from "./constants";
 const ENTRY_POINT = path.resolve(import.meta.dirname, "main.ts");
 
 /**
+ * How long a real `runCallidescope` spawn is given, well past vitest's 5s
+ * default.
+ *
+ * A real child process under a loaded CI runner can outrun that default even
+ * though it normally finishes in a fraction of a second locally.
+ */
+const PROCESS_SPAWN_TIMEOUT_MILLISECONDS = 15_000;
+
+/**
  * The TypeScript loader, as an absolute URL resolved from this file.
  *
  * The package's own `esm-register` entry registers the hook against the
@@ -141,42 +150,54 @@ describe("main end-to-end suite", () => {
   });
 
   describe("the exit code of a run that could not trace", () => {
-    it("passes a workspace it traced without finding anything", () => {
-      expect.hasAssertions();
+    it(
+      "passes a workspace it traced without finding anything",
+      () => {
+        expect.hasAssertions();
 
-      const workspaceRoot = writeWorkspace();
+        const workspaceRoot = writeWorkspace();
 
-      writeReadableProject(workspaceRoot, "readable");
+        writeReadableProject(workspaceRoot, "readable");
 
-      expect(runCallidescope(workspaceRoot).status).toBe(0);
-    });
+        expect(runCallidescope(workspaceRoot).status).toBe(0);
+      },
+      PROCESS_SPAWN_TIMEOUT_MILLISECONDS,
+    );
 
-    it("fails a workspace whose only project cannot be read", () => {
-      expect.hasAssertions();
+    it(
+      "fails a workspace whose only project cannot be read",
+      () => {
+        expect.hasAssertions();
 
-      // The regression. This used to print the parsing failure and exit 0,
-      // so the depth gate passed for having traced nothing at all.
-      const workspaceRoot = writeWorkspace();
+        // The regression. This used to print the parsing failure and exit 0,
+        // so the depth gate passed for having traced nothing at all.
+        const workspaceRoot = writeWorkspace();
 
-      writeUnreadableProject(workspaceRoot, "broken");
+        writeUnreadableProject(workspaceRoot, "broken");
 
-      expect(runCallidescope(workspaceRoot).status).toBe(1);
-    });
+        expect(runCallidescope(workspaceRoot).status).toBe(1);
+      },
+      PROCESS_SPAWN_TIMEOUT_MILLISECONDS,
+    );
 
-    it("fails a workspace holding one unreadable project among readable ones", () => {
-      expect.hasAssertions();
+    it(
+      "fails a workspace holding one unreadable project among readable ones",
+      () => {
+        expect.hasAssertions();
 
-      const workspaceRoot = writeWorkspace();
+        const workspaceRoot = writeWorkspace();
 
-      writeReadableProject(workspaceRoot, "readable");
-      writeUnreadableProject(workspaceRoot, "broken");
+        writeReadableProject(workspaceRoot, "readable");
+        writeUnreadableProject(workspaceRoot, "broken");
 
-      const { output, status } = runCallidescope(workspaceRoot);
+        const { output, status } = runCallidescope(workspaceRoot);
 
-      // Fails on the project it could not read, rather than on anything it
-      // measured through a workspace that was missing one.
-      expect(status).toBe(1);
-      expect(output).toContain("Rejected a project it could not read");
-    });
+        // Fails on the project it could not read, rather than on anything it
+        // measured through a workspace that was missing one.
+        expect(status).toBe(1);
+        expect(output).toContain("Rejected a project it could not read");
+      },
+      PROCESS_SPAWN_TIMEOUT_MILLISECONDS,
+    );
   });
 });
