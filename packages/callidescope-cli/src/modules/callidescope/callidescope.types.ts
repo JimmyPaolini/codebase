@@ -30,16 +30,21 @@ export interface CallidescopeCommandOptions {
 export interface LocateOutcome {
   readonly callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
   readonly graph: CallGraph;
-  /** Workspace-relative root of each project traced, keyed by name. */
-  readonly projectRoots: ReadonlyMap<string, string>;
+  /** Workspace-relative root of each project the run was scoped to, keyed by name. */
+  readonly startingProjectRoots: ReadonlyMap<string, string>;
 }
 
 /** Arguments for writing every configured destination. */
 export interface SyncDestinationsArguments {
   readonly check: boolean;
   readonly configuration: ResolvedCallidescopeConfiguration;
-  readonly projectRoots: ReadonlyMap<string, string>;
   readonly result: CallGraphResult;
+  /**
+   * Workspace-relative root of each project the run was scoped to, keyed by
+   * name. Only these projects have a README section published, so a scoped run
+   * never writes into a dependency it merely measured.
+   */
+  readonly startingProjectRoots: ReadonlyMap<string, string>;
 }
 
 /** Arguments for one full trace of a workspace. */
@@ -52,8 +57,12 @@ export interface TraceArguments {
 
 /** What one trace produced, alongside the projects it covered. */
 export interface TraceOutcome {
+  /** Every project the run measured, its dependency closure included. */
   readonly projectNames: readonly string[];
-  /** Workspace-relative root of each project traced, keyed by name. */
-  readonly projectRoots: ReadonlyMap<string, string>;
   readonly result: CallGraphResult;
+  /**
+   * Workspace-relative root of each project the run was scoped to, keyed by
+   * name — the starting projects, not the closure they reached.
+   */
+  readonly startingProjectRoots: ReadonlyMap<string, string>;
 }

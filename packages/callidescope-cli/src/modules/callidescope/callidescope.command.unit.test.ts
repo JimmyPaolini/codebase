@@ -184,8 +184,8 @@ describe(CallidescopeCommand, () => {
   function stubTrace(result: CallGraphResult = buildCallGraphResult()): void {
     callidescopeService.trace.mockReturnValue({
       projectNames: ["example"],
-      projectRoots: new Map([["example", "packages/example"]]),
       result,
+      startingProjectRoots: new Map([["example", "packages/example"]]),
     });
   }
 
@@ -552,7 +552,7 @@ describe(CallidescopeCommand, () => {
     expect(diagram).toContain("```mermaid");
   });
 
-  it("writes a section into every traced project's README", async () => {
+  it("writes a section into every scoped project's README", async () => {
     configurationService.loadConfiguration.mockResolvedValue(
       buildConfiguration({
         output: {
@@ -570,11 +570,14 @@ describe(CallidescopeCommand, () => {
       }),
     );
     outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
+    // The second project is reported but not scoped — a dependency the run
+    // measured through its closure. Publishing covers what a run was pointed
+    // at, so no section is addressed to that project's README.
     stubTrace(
       buildCallGraphResult({
         projects: [
           buildProjectReport("example"),
-          buildProjectReport("untraced"),
+          buildProjectReport("dependency"),
         ],
       }),
     );

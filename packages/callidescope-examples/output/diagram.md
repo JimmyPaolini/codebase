@@ -4,15 +4,15 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 69 |
-| Files | 33 |
-| Calls traced | 53 |
-| Call stacks | 23 |
+| Callables | 185 |
+| Files | 72 |
+| Calls traced | 153 |
+| Call stacks | 60 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
-| Unfollowable calls | 2 |
+| Unfollowable calls | 10 |
 
-## Call stacks over the depth limit (4)
+## Call stacks over the depth limit (5)
 
 ```mermaid
 flowchart LR
@@ -39,13 +39,21 @@ flowchart LR
   n20["ForwardingStackService.perform"]
   n21["ForwardingStackService.relay"]
   n22["ForwardingStackService.finish"]
-  n23(["FrameAnnotationsService.trace"])
-  n24["FrameAnnotationsService.render"]
-  n25["FrameAnnotationsService.summarize"]
-  n26["FrameAnnotationsService.describe"]
-  n27["FrameAnnotationsService.compose"]
-  n28["FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong"]
-  n29["FrameAnnotationsService.finish"]
+  n23(["ConfigurationService.loadConfiguration"])
+  n24["ConfigurationService.loadConfigurationFile"]
+  n25["ConfigurationService.resolveConfiguration"]
+  n26["ConfigurationService.resolveLimits"]
+  n27["ConfigurationService.map(…)"]
+  n28["ConfigurationService.parseLimitValue"]
+  n29["ConfigurationService.parseLimitValueText"]
+  n30["InvalidLimitValueError.constructor"]
+  n31(["FrameAnnotationsService.trace"])
+  n32["FrameAnnotationsService.render"]
+  n33["FrameAnnotationsService.summarize"]
+  n34["FrameAnnotationsService.describe"]
+  n35["FrameAnnotationsService.compose"]
+  n36["FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong"]
+  n37["FrameAnnotationsService.finish"]
   n0 --> n1
   n1 --> n2
   n2 --> n3
@@ -73,6 +81,13 @@ flowchart LR
   n26 --> n27
   n27 --> n28
   n28 --> n29
+  n29 --> n30
+  n31 --> n32
+  n32 --> n33
+  n33 --> n34
+  n34 --> n35
+  n35 --> n36
+  n36 --> n37
 ```
 
 ## Module spread

@@ -4,15 +4,15 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 69 |
-| Files | 33 |
-| Calls traced | 53 |
-| Call stacks | 23 |
+| Callables | 185 |
+| Files | 72 |
+| Calls traced | 153 |
+| Call stacks | 60 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
-| Unfollowable calls | 2 |
+| Unfollowable calls | 10 |
 
-## Call stacks over the depth limit (4)
+## Call stacks over the depth limit (5)
 
 **1. `ComputedMemberService.dispatch`** — depth ≥ 8 · orphan-root
 
@@ -78,9 +78,28 @@
 ```
 
 <details>
-<summary>1 more call stacks</summary>
+<summary>2 more call stacks</summary>
 
-**4. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
+**4. `ConfigurationService.loadConfiguration`** — depth ≥ 8 · orphan-root
+
+```text
+🚀 ConfigurationService.loadConfiguration(args?: LoadConfigurationArguments): Promise<ResolvedCodometerConfiguration> [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:268]
+   ↳ Loads and validates a codometer configuration file.
+  └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedConfiguration> [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:285]
+     ↳ Loads a configuration and says which file answered.
+    └─> ConfigurationService.resolveConfiguration(configuration: CodometerConfiguration): ResolvedCodometerConfiguration [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:308]
+       ↳ Fills in every field a configuration file may leave out.
+      └─> ConfigurationService.resolveLimits(limits: CodometerLimit[] | undefined): ResolvedCodometerLimit[] [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:190]
+         ↳ Gives every limit its severity and a value read as a number.
+        └─> ConfigurationService.map(…)(…): { label: string | undefined; metric: string; severity: CodometerSeverity; value: number; } [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:193]
+          └─> ConfigurationService.parseLimitValue(limit: CodometerLimit): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:74]
+             ↳ Reads a limit's value, in decimal units when it was written as a string.
+            └─> ConfigurationService.parseLimitValueText(metric: string, text: string): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:94]
+               ↳ Reads a limit written as a string, unit and all.
+              └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:467]
+```
+
+**5. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
 
 ```text
 🚀 FrameAnnotationsService.trace(value: string): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:95]
