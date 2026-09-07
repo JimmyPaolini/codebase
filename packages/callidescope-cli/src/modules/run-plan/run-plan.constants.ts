@@ -22,3 +22,12 @@ export const CHECK_NAMES = [CHECK_BREADTH, CHECK_DEPTH, CHECK_REPORTS];
 
 /** How a `--check` value is written: one comma-separated set, no spaces needed. */
 export const CHECK_SEPARATOR = ",";
+
+/**
+ * The flags that name where a report goes, rather than whether one is written.
+ *
+ * Kept as a list so the refusal in `RunPlanService.selectMode` names every one
+ * the command line supplied, and so adding a destination flag without adding
+ * it here is the only way to reintroduce a flag that writes nothing silently.
+ */
+export const DESTINATION_FLAG_NAMES = ["json", "markdown"] as const;

@@ -416,7 +416,8 @@ export class CallidescopeCommand extends CommandRunner {
 
   /** Parses `--json`. */
   @Option({
-    description: "Path to write the JSON report to",
+    description:
+      "Where the JSON report goes when --write or --check reports asks for it",
     flags: "--json [json]",
   })
   public parseJson(value: string | undefined): string | undefined {
@@ -425,7 +426,8 @@ export class CallidescopeCommand extends CommandRunner {
 
   /** Parses `--markdown`. */
   @Option({
-    description: "Path to splice the markdown block into",
+    description:
+      "Where the markdown block goes when --write or --check reports asks for it",
     flags: "-m, --markdown [markdown]",
   })
   public parseMarkdown(value: string | undefined): string | undefined {

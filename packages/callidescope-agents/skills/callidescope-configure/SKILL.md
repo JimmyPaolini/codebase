@@ -33,8 +33,8 @@ leaves every committed report exactly as it found it.
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |
 | `-d, --directories` | Comma-separated project directories to trace, each holding its own `tsconfig.json` |
 | `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default |
-| `--json` | Path to write the machine-readable report to |
-| `-m, --markdown` | Path to splice the markdown block into |
+| `--json` | Where the machine-readable report goes. Needs `--write` or `--check reports` |
+| `-m, --markdown` | Where the markdown block goes. Needs `--write` or `--check reports` |
 | `--check` | Fail on a comma-separated set drawn from `breadth`, `depth`, and `reports` |
 | `--write` | Write every configured destination |
 

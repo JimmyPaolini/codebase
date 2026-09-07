@@ -258,6 +258,53 @@ describe(RunPlanService, () => {
     ]);
   });
 
+  it("refuses a destination flag that nothing writes or compares", () => {
+    // This used to exit 0, log a finished trace, and write no file and no
+    // warning — a flag naming a destination taught people the tool had run.
+    const { errors } = service.selectMode({ json: "report.json" });
+
+    expect(errors).toStrictEqual([
+      "--json names a destination but nothing writes or compares it. Add --write to write it, or --check reports to fail on it being out of date.",
+    ]);
+  });
+
+  it("names every destination flag the command line supplied", () => {
+    const { errors } = service.selectMode({
+      json: "report.json",
+      markdown: "report.md",
+    });
+
+    expect(errors).toStrictEqual([
+      "--json and --markdown name destinations but nothing writes or compares them. Add --write to write them, or --check reports to fail on them being out of date.",
+    ]);
+  });
+
+  it("accepts a destination flag alongside --write", () => {
+    const { errors } = service.selectMode({ json: "report.json", write: true });
+
+    expect(errors).toStrictEqual([]);
+  });
+
+  it("accepts a destination flag alongside --check reports", () => {
+    // `--check reports` compares a destination, so an override is meaningful
+    // there too. Refusing on a missing `--write` alone would be wrong.
+    const { errors } = service.selectMode({
+      check: "reports",
+      json: "report.json",
+    });
+
+    expect(errors).toStrictEqual([]);
+  });
+
+  it("leaves a run naming no destination flag alone", () => {
+    // The safety property the refusal must not disturb: a bare run with
+    // destinations in the configuration still writes nothing and complains
+    // about nothing, which is what makes it safe to type in a checkout.
+    const { errors } = service.selectMode({});
+
+    expect(errors).toStrictEqual([]);
+  });
+
   // 📄 Touching files
 
   it("touches files when it writes", () => {

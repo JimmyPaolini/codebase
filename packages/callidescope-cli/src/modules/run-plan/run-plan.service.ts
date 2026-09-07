@@ -9,6 +9,7 @@ import {
   CHECK_NAMES,
   CHECK_REPORTS,
   CHECK_SEPARATOR,
+  DESTINATION_FLAG_NAMES,
 } from "./run-plan.constants";
 
 import type { AddressCommandOptions } from "../address-lookup/address-lookup.types";
@@ -254,6 +255,25 @@ export class RunPlanService {
     if (writes && names.has(CHECK_REPORTS)) {
       errors.push(
         `--write cannot be combined with --check ${CHECK_REPORTS}: a report cannot be stale in the run that just wrote it. Drop one of them, or run --write and --check ${CHECK_REPORTS} separately.`,
+      );
+    }
+
+    // A destination with no verb is the one mistake this command used to make
+    // silently: it exited 0, logged a finished trace, and wrote nothing. These
+    // flags are destinations rather than actions — `--write` and
+    // `--check reports` are the verbs — and a run given neither deliberately
+    // leaves every file alone, which is what makes a bare run safe to type
+    // inside somebody's checkout. So the answer is to refuse and name the
+    // missing verb, never to let a destination imply one.
+    const namedDestinations = DESTINATION_FLAG_NAMES.filter(
+      (flag) => options[flag] !== undefined,
+    );
+
+    if (namedDestinations.length > 0 && !writes && !names.has(CHECK_REPORTS)) {
+      const single = namedDestinations.length === 1;
+
+      errors.push(
+        `${namedDestinations.map((flag) => `--${flag}`).join(" and ")} ${single ? "names a destination" : "name destinations"} but nothing writes or compares ${single ? "it" : "them"}. Add --write to write ${single ? "it" : "them"}, or --check ${CHECK_REPORTS} to fail on ${single ? "it" : "them"} being out of date.`,
       );
     }
 
