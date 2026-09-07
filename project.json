@@ -4,6 +4,7 @@
   "namedInputs": {
     "vendored-skills": [
       "!{projectRoot}/.agents/skills/ask-matt/**",
+      "!{projectRoot}/.agents/skills/brainstorming/**",
       "!{projectRoot}/.agents/skills/callidescope-configure/**",
       "!{projectRoot}/.agents/skills/callidescope-trace/**",
       "!{projectRoot}/.agents/skills/callidescope-triage/**",
@@ -22,6 +23,7 @@
       "!{projectRoot}/.agents/skills/diagnosing-bugs/**",
       "!{projectRoot}/.agents/skills/dispatching-parallel-agents/**",
       "!{projectRoot}/.agents/skills/domain-modeling/**",
+      "!{projectRoot}/.agents/skills/finishing-a-development-branch/**",
       "!{projectRoot}/.agents/skills/gh-stack/**",
       "!{projectRoot}/.agents/skills/github-issues/**",
       "!{projectRoot}/.agents/skills/grill-me/**",
@@ -40,12 +42,15 @@
       "!{projectRoot}/.agents/skills/nx-workspace/**",
       "!{projectRoot}/.agents/skills/prototype/**",
       "!{projectRoot}/.agents/skills/receiving-code-review/**",
+      "!{projectRoot}/.agents/skills/requesting-code-review/**",
       "!{projectRoot}/.agents/skills/research/**",
       "!{projectRoot}/.agents/skills/resolving-merge-conflicts/**",
       "!{projectRoot}/.agents/skills/setup-matt-pocock-skills/**",
       "!{projectRoot}/.agents/skills/subagent-driven-development/**",
+      "!{projectRoot}/.agents/skills/systematic-debugging/**",
       "!{projectRoot}/.agents/skills/tdd/**",
       "!{projectRoot}/.agents/skills/teach/**",
+      "!{projectRoot}/.agents/skills/test-driven-development/**",
       "!{projectRoot}/.agents/skills/to-questionnaire/**",
       "!{projectRoot}/.agents/skills/to-spec/**",
       "!{projectRoot}/.agents/skills/to-tickets/**",
@@ -55,7 +60,8 @@
       "!{projectRoot}/.agents/skills/wait-what/**",
       "!{projectRoot}/.agents/skills/wayfinder/**",
       "!{projectRoot}/.agents/skills/wizard/**",
-      "!{projectRoot}/.agents/skills/writing-for-agents/**"
+      "!{projectRoot}/.agents/skills/writing-for-agents/**",
+      "!{projectRoot}/.agents/skills/writing-skills/**"
     ]
   },
   "projectType": "application",
@@ -476,7 +482,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Lint markdown files in workspace root (agents, scripts, documentation, infrastructure). Reaches .agents/ so this repository's own skills are linted like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the markdownlint configuration. The inputs enumerate exactly the globs the command lints, plus the markdownlint configuration and shared-globals \u2014 the latter carries pnpm-lock.yaml, so a markdownlint upgrade cannot replay a cached pass. The workspace-wide default input is deliberately absent: it resolves to {projectRoot}/**/* for the root project, which made every root-owned file the tool never reads invalidate this cache. The vendored-skills negations then drop the 50 skills markdownlint already ignores, so editing one of them no longer busts the cache for nothing.",
+      "description": "Lint markdown files in workspace root (agents, scripts, documentation, infrastructure). Reaches .agents/ so this repository's own skills are linted like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the markdownlint configuration. The inputs enumerate exactly the globs the command lints, plus the markdownlint configuration and shared-globals \u2014 the latter carries pnpm-lock.yaml, so a markdownlint upgrade cannot replay a cached pass. The workspace-wide default input is deliberately absent: it resolves to {projectRoot}/**/* for the root project, which made every root-owned file the tool never reads invalidate this cache. The vendored-skills negations then drop the 59 skills markdownlint already ignores, so editing one of them no longer busts the cache for nothing.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/*.md",
@@ -715,7 +721,7 @@
     },
     "spell-check": {
       "cache": true,
-      "description": "Check spelling in every workspace root file no project owns (configuration, documentation, infrastructure, notepads, openwiki, planning, scripts, and the .agents, .devcontainer, .github, and .vscode directories). Reaches .agents/ so this repository's own skills are spell-checked like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the cspell configuration. The inputs enumerate exactly the globs the command checks, plus the cspell configuration and dictionaries and shared-globals \u2014 the latter carries pnpm-lock.yaml, so a cspell upgrade cannot replay a cached pass. The workspace-wide default input is deliberately absent: it resolves to {projectRoot}/**/* for the root project, which made every root-owned file the tool never reads invalidate this cache. The vendored-skills negations then drop the 50 skills cspell already ignores, so editing one of them no longer busts the cache for nothing.",
+      "description": "Check spelling in every workspace root file no project owns (configuration, documentation, infrastructure, notepads, openwiki, planning, scripts, and the .agents, .devcontainer, .github, and .vscode directories). Reaches .agents/ so this repository's own skills are spell-checked like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the cspell configuration. The inputs enumerate exactly the globs the command checks, plus the cspell configuration and dictionaries and shared-globals \u2014 the latter carries pnpm-lock.yaml, so a cspell upgrade cannot replay a cached pass. The workspace-wide default input is deliberately absent: it resolves to {projectRoot}/**/* for the root project, which made every root-owned file the tool never reads invalidate this cache. The vendored-skills negations then drop the 59 skills cspell already ignores, so editing one of them no longer busts the cache for nothing.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/*.{ts,tsx,js,jsx,md,yaml,yml,json}",
