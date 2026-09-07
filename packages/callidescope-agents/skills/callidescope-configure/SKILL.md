@@ -23,8 +23,8 @@ other:
 
 A run given neither `--write` nor `--check reports` **reads no destination and
 rewrites none**. It traces, prints, and exits. That is what makes a bare run
-safe to type inside somebody's checkout, and it is why `--check depth` on a
-pull request leaves every committed report exactly as it found it.
+safe to type inside somebody's checkout, and it is why a gate on a pull request
+leaves every committed report exactly as it found it.
 
 ## The flags
 
@@ -78,6 +78,16 @@ a commit hook.
 npx callidescope --check depth
 ```
 
+**In an Nx workspace, prefer the per-project `gate` target to this flag.** A
+whole-workspace `--check depth` judges every project against whatever limit each
+one resolved, which is the right verdict computed the expensive way: one
+uncacheable run over the whole repository on every commit. `@callidescope/nx`
+infers a `gate` onto each project instead, which traces that project with its Nx
+dependencies, fails only on the findings **that project owns**, and caches on
+that project's own inputs — so `nx affected --target=gate` judges what a change
+touched and nothing else. The flag remains the answer wherever there is no Nx
+graph to scope by.
+
 **Staleness is not a gate.** A report goes stale whenever the call graph moves
 anywhere, which is nearly every change. Gating on it would fail pull requests
 for drift they did not cause. Publish the report on the default branch instead,
@@ -126,10 +136,14 @@ every consumer — a narrowed lookup reporting two callers when there are nine i
 worse than a slow one.
 
 An Nx workspace can hand the selecting to Nx instead, through the separate
-`@callidescope/nx` plugin, which infers `trace`, `depth`, and `breadth` targets
-onto every project and traces each one _with its Nx dependencies_ — so those
-dependencies are projects the run is scoped to rather than ones it merely
-reached through a closure. It is a separate package rather than a flag here on
+`@callidescope/nx` plugin, which infers `trace`, `depth`, `breadth`, and `gate`
+targets onto every project and traces each one _with its Nx dependencies_ — so
+those dependencies are projects the run is scoped to rather than ones it merely
+reached through a closure. The first three only ever print; `gate` is the one
+that decides an exit code, and the one a branch runs. A project the workspace
+configuration excludes keeps the three that print and is denied the gate,
+because its own code is never traced and a gate there would report green for a
+project it never read. It is a separate package rather than a flag here on
 purpose: this CLI depends on nothing Nx-shaped, and a flag that worked only
 when an optional package happened to be installed would advertise in `--help`
 something that silently did nothing.
@@ -225,6 +239,16 @@ Four are worth understanding rather than copying:
 Picking a first `maximumDepth`: run once with no gate, read the deepest stacks,
 and set the limit at the shape you want rather than at whatever the code
 currently is. A limit set to today's worst number gates nothing.
+
+**Once limits are per project, pick each one by boundary-testing rather than by
+reading a number off a run.** Write a candidate in the project's own file, run
+its gate, then run it again one lower: a limit worth having passes at the number
+written and fails at one below it. Anything looser is headroom, and headroom is
+a limit that gates nothing while claiming to have been measured. This is not
+belt-and-braces — a scoped run's printed summary is about the whole trace,
+dependency closure included, so the deepest stack it reports is routinely deeper
+than anything the judged project owns. Only a gate's own verdict knows which
+findings belong to the project.
 
 ### `entryPoints`
 
@@ -358,6 +382,13 @@ default), and the same `startMarker`/`endMarker` pair the markdown destination
 uses. `{}` accepts all four defaults — and is usually the right answer, because
 which files those are follows from which projects were traced. Restating that
 as a list of paths would only give it somewhere to drift from.
+
+A project's block opens with its counts, then a `### Limits` table stating the
+depth and breadth that project is judged against and whether each was
+`declared` in its own file or `inherited` from the run. That is not decoration:
+a block saying a project's deepest stack is ten says nothing about whether ten
+is allowed, and once fifty projects hold fifty answers the limit cannot be
+inferred from anything else on the page.
 
 A markdown destination may also supply `render`, to replace the built-in
 tables, or `write`, to place the block itself. A `write` function is handed
