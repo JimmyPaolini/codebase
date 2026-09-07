@@ -34,10 +34,12 @@ export const BRANCH_MODES_BY_MODIFIER_NAME: Record<
  * `stagger` is the mode this number no longer decides. Its crenel is as
  * wide as the run of branches the rail joins before changing side, so its
  * unit width is `branches - 1` and is read off the modifier by
- * {@link BranchMotifService.unitColumns}. At
- * {@link MINIMUM_STAGGER_BRANCHES} that expression evaluates to this
- * number, which is why the mode drew a two-column unit for as long as it
- * could not be asked for anything else.
+ * {@link BranchMotifService.unitColumns}. At **three** branches that
+ * expression evaluates to this number — the width the mode drew for as long
+ * as it could not be asked for anything else — which is why
+ * {@link MINIMUM_STAGGER_BRANCHES} excludes three rather than merely
+ * preferring against it. Its floor of four draws a three-column unit, one
+ * wider than this and the narrowest the mode still commits.
  */
 export const BRANCH_UNIT_COLUMNS = 2;
 
@@ -79,8 +81,11 @@ export const DEFAULT_RUNG_IS_LEFTWARD = false;
  * parameter names is absent from the ink, and what is left is a plain comb.
  *
  * That is not a stricter drawing, it is another mode's drawing under this
- * mode's name — a parameter advertising a choice it cannot make. A crenel
- * narrower than four branches is not a crenel.
+ * mode's name — a parameter advertising a choice it cannot make. Being
+ * swallowed by a rule is not what isolates three: a rail of any width is
+ * swallowed the same way now, a six-branch one included. What isolates it is
+ * the unit width, which at three branches is exactly the unmodified
+ * drawing's and at every count above it is not.
  * `branch-motif.service.unit.test.ts` renders the three-branch figure this
  * constant excludes and measures it against that comb, so the number and
  * its reason cannot drift apart.

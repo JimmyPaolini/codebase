@@ -30,9 +30,11 @@ import type {
  *
  * Every other family's ink is a **forest** — a disjoint union of simple
  * arcs, `edges = nodes − components` with the component count in the
- * dozens. `negative`'s is one to five pieces, every one of them full of
- * loops: 10 to 45 of them in the eighteen drawings it commits, because a
- * corridor network closes a loop through each of its own repeats. This
+ * dozens. `negative`'s is one to thirteen pieces, and nearly every one of
+ * them is full of loops: 0 to 65 of them across the 308 drawings it commits,
+ * because a corridor network closes a loop through each of its own repeats.
+ * The floor is zero rather than one because `ruled-closed` inverts a source
+ * whose negative is the band's own two rules and nothing joining them. This
  * family was the corpus's first **tree**, and it is one no longer: it was a
  * tree only while one of its two borders was left open, and a rule now runs
  * the full width of the repeat along both. Closing the second rule closes a
@@ -333,18 +335,16 @@ export class BranchMotifService implements MotifService {
    * pair — see the class comment. A unit rail that runs along a border row is
    * now a subset of this rule and harmless: the lattice records each step
    * once.
+   *
+   * The two runs themselves are `GridGeometryService.borderPath`, which is
+   * where every family closing its band this way draws them from; all this
+   * adds is where the band's right edge falls.
    */
   border(geometry: GridGeometry, pattern: RepeatPatternOptions): string {
-    const leftX = this.gridGeometryService.formatCoordinate(geometry.offset);
-    const rightX = this.gridGeometryService.formatCoordinate(
+    return this.gridGeometryService.borderPath(
+      geometry,
       this.rightEdge(geometry, pattern),
     );
-    const topY = this.gridGeometryService.formatCoordinate(geometry.offset);
-    const bottomY = this.gridGeometryService.formatCoordinate(
-      geometry.offset + geometry.height,
-    );
-
-    return `M${rightX} ${bottomY}H${leftX}M${rightX} ${topY}H${leftX}`;
   }
 
   /**

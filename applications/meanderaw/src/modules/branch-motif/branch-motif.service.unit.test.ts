@@ -77,10 +77,10 @@ const SWEPT_ROWS: readonly number[] = [2, 3, 4, 5, 6, 7, 8];
  * assumed here — no count in this table could tell a reflection from its
  * original.
  *
- * `README.md`'s own table under "The Branching Family" still carries the
- * counts this family measured while one of its borders was open. Correcting
- * that prose is issue #670's, which lands with the charter amendment; these
- * are the numbers a fresh run gives.
+ * `README.md`'s own table under "The Branching Family" restates every number
+ * here, rewritten against both borders being ruled when the charter was
+ * amended. Nothing keeps the two in step but this table being the measured
+ * one, so a count that moves is corrected here first and copied there after.
  */
 const MODES: readonly {
   readonly cycles: number;

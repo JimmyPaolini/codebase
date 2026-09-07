@@ -222,7 +222,10 @@ describe(DrawCombinationsService, () => {
     // reflected as a count: `aligned` still draws one strand, and no other
     // ply-carrying modifier does. A future strand count that reintroduced
     // `plied`'s or `serpentine`'s one-strand entry would fail here even if
-    // nobody remembered to update the numbers above.
+    // nobody remembered to update the numbers above. The converse — that
+    // those three entries really would draw `aligned-strands-1`'s own
+    // lattice — is measured in `parallel-motif.service.unit.test.ts`, which
+    // renders them rather than taking the exclusion on trust.
     it("draws one strand for aligned only, never for plied or serpentine", () => {
       const oneStrand = combinations.filter(
         (parameters) =>

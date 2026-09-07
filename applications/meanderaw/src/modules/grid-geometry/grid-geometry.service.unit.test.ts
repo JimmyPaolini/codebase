@@ -43,6 +43,28 @@ describe(GridGeometryService, () => {
     });
   });
 
+  describe("borderPath", () => {
+    // 🎯 The run three families share. Each passes its own right edge and
+    // nothing else, so this is the whole of what they have in common — and
+    // the assertion is on the literal path data rather than on a parse of
+    // it, because the committed corpus is bytes and an extraction that
+    // reordered these two runs would rewrite every drawing in it.
+    it("rules both border rows from the right edge back to the left", () => {
+      expect(service.borderPath(service.compute(5), 123)).toBe(
+        "M123 63H3M123 3H3",
+      );
+    });
+
+    it("reads the band's depth off the geometry rather than the row count", () => {
+      const shallow = service.borderPath(service.compute(2), 40);
+      const deep = service.borderPath(service.compute(12), 40);
+
+      expect(shallow).not.toBe(deep);
+      expect(shallow).toBe("M40 67.5H7.5M40 7.5H7.5");
+      expect(deep).toBe("M40 61.25H1.25M40 1.25H1.25");
+    });
+  });
+
   describe("formatCoordinate", () => {
     it("renders a whole number with no decimal point", () => {
       expect(service.formatCoordinate(15)).toBe("15");

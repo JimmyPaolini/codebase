@@ -175,9 +175,9 @@ interface CharterRelaxation {
  * It closed a loop nowhere while one of those two borders was left open, and
  * that was the only thing separating it from `negative`, whose relaxation is
  * the same one. Both borders being ruled closes a loop in every column pair,
- * so it now closes 5 to 29 of them — against `negative`'s one to five pieces
- * with 0 to 65 cycles among them. Both are measured below, not asserted
- * here, and no charter invariant is about a loop.
+ * so it now closes 5 to 29 of them — against `negative`'s one to thirteen
+ * pieces with 0 to 65 cycles among them. Both are measured below, not
+ * asserted here, and no charter invariant is about a loop.
  *
  * `parallel` relaxes no-branching, and it is the one row here narrowed by a
  * structural condition rather than by a modifier name. Both of its borders
@@ -479,6 +479,26 @@ const readCommittedCorpus = async (
 };
 
 /**
+ * A drawing's lattice as one comparable string, so two of them can be tested
+ * for being the same ink under two names.
+ *
+ * It reads the lattice rather than the document because a family may
+ * decompose one figure into different `M`/`V`/`H` runs — `parallel`'s three
+ * shapes do exactly that at one strand — so equal bytes are sufficient for a
+ * duplicate and nowhere near necessary. Both edge sets and the node set are
+ * sorted, so the order the paths happened to be emitted in cannot make two
+ * identical drawings look distinct.
+ */
+const latticeAddress = (graph: LatticeGraph): string =>
+  JSON.stringify({
+    columns: graph.columns,
+    horizontalEdges: [...graph.horizontalEdges].toSorted(),
+    nodes: [...graph.nodes].toSorted(),
+    rows: graph.rows,
+    verticalEdges: [...graph.verticalEdges].toSorted(),
+  });
+
+/**
  * Whether a document leaves its band's termination open: a lattice point
  * missing from the first or last column, which is the pair
  * `MeanderTopologyService.isChannelWidthCompliant` steps over.
@@ -775,21 +795,37 @@ describe(MeanderTopologyService, () => {
       const parallelCases = charterSweep.filter(
         ({ parameters }) => parameters.type === "parallel",
       );
-      const addresses = parallelCases.map(({ parameters }) => {
-        const lattice = latticeService.build(
-          generationService.generate(parameters),
-        );
-
-        return JSON.stringify({
-          columns: lattice.columns,
-          horizontalEdges: [...lattice.horizontalEdges].toSorted(),
-          nodes: [...lattice.nodes].toSorted(),
-          rows: lattice.rows,
-          verticalEdges: [...lattice.verticalEdges].toSorted(),
-        });
-      });
+      const addresses = parallelCases.map(({ parameters }) =>
+        latticeAddress(
+          latticeService.build(generationService.generate(parameters)),
+        ),
+      );
 
       expect(parallelCases).toHaveLength(786);
+      expect(new Set(addresses).size).toBe(addresses.length);
+    });
+
+    // 🎯 Issue #682's headline criterion, asserted the same way for the same
+    // reason. Closing this family's second border took away the only thing
+    // that had told three of its names apart — `plain`, `comb-upward`, and
+    // `stagger-branches-3` drew one pattern under three at every row count,
+    // separated by which border each left bare. Two of the three are gone,
+    // and this is what says the third kind of collision is too. It is a gate
+    // on the geometry rather than on those names: a change to `spineRow` or
+    // to `unitColumns` that gave two modes one lattice again would fail here
+    // rather than commit two names for one drawing. The count guards against
+    // the sweep quietly narrowing to nothing.
+    it("draws no two branch combinations onto the same lattice", () => {
+      const branchCases = charterSweep.filter(
+        ({ parameters }) => parameters.type === "branch",
+      );
+      const addresses = branchCases.map(({ parameters }) =>
+        latticeAddress(
+          latticeService.build(generationService.generate(parameters)),
+        ),
+      );
+
+      expect(branchCases).toHaveLength(66);
       expect(new Set(addresses).size).toBe(addresses.length);
     });
 

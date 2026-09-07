@@ -59,9 +59,9 @@ import type { ParallelUnitPlacement } from "./parallel-motif.types";
  *   with west, east, and south ink at one lattice point — three arms — so
  *   `plied` and `aligned` fork at every interior column of both borders, and
  *   the family relaxes invariant 3. Nothing gains a fourth arm: a border row
- *   has no ink above it, so invariant 4 still holds everywhere. The 675
- *   drawings that fork are exactly the ones a border rule added ink to, and
- *   the fewest any of them leaves is 10.
+ *   has no ink above it, so invariant 4 still holds everywhere. 642 of the
+ *   family's 786 drawings fork, and they are exactly the ones a border rule
+ *   added ink to; the fewest any of them leaves is 10.
  * - **The ply is the component count only under `serpentine`.** A bracket's
  *   two arms both end on the same border, so ruling it joins every strand of
  *   every unit into one looped figure with no free end left. A stack of
@@ -179,18 +179,17 @@ export class ParallelMotifService implements MotifService {
    * starts this family branching — see the class comment. Ink a shape already
    * laid on a border row is now a subset of this rule and harmless: the
    * lattice records each step once.
+   *
+   * The two runs themselves are `GridGeometryService.borderPath`, which is
+   * where every family closing its band this way draws them from; all this
+   * adds is where the band's right edge falls — which for this family is a
+   * question its own {@link rightEdge} answers differently per shape.
    */
   border(geometry: GridGeometry, pattern: RepeatPatternOptions): string {
-    const leftX = this.gridGeometryService.formatCoordinate(geometry.offset);
-    const rightX = this.gridGeometryService.formatCoordinate(
+    return this.gridGeometryService.borderPath(
+      geometry,
       this.rightEdge(geometry, pattern),
     );
-    const topY = this.gridGeometryService.formatCoordinate(geometry.offset);
-    const bottomY = this.gridGeometryService.formatCoordinate(
-      geometry.offset + geometry.height,
-    );
-
-    return `M${rightX} ${bottomY}H${leftX}M${rightX} ${topY}H${leftX}`;
   }
 
   /**

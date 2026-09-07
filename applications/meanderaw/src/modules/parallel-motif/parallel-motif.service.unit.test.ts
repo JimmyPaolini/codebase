@@ -243,6 +243,59 @@ describe(ParallelMotifService, () => {
     });
   });
 
+  describe("the one-strand duplicates", () => {
+    // 🎯 Issue #669's exclusion, argued from the ink rather than from the
+    // name. `plied-strands-1` and both one-strand `serpentine` variants left
+    // the sweep because at one strand there is nothing to ply and nothing to
+    // serpentine: each lays down the lone bracket `aligned-strands-1` already
+    // names. `draw-combinations.service.unit.test.ts` asserts only `aligned`
+    // still sweeps a ply of one; this is the half saying the other three
+    // really would have duplicated it.
+
+    // Lattices are compared rather than bytes. The three shapes decompose
+    // that one bracket into different `M`/`V`/`H` runs, so a checksum would
+    // call them distinct for a reason nobody disputes. The two-strand `plied`
+    // at the end is the guard against a comparison that equates everything.
+    it.each(SWEPT_ROWS)(
+      "draws aligned-strands-1's own lattice at %i rows",
+      (rows) => {
+        const drawnBy = (modifier: Modifier): string => {
+          const lattice = latticeService.build(
+            generationService.generate({
+              modifier,
+              repeatCount: REPEAT_COUNT,
+              rows,
+              type: "parallel",
+            }),
+          );
+
+          return JSON.stringify({
+            columns: lattice.columns,
+            horizontalEdges: [...lattice.horizontalEdges].toSorted(),
+            nodes: [...lattice.nodes].toSorted(),
+            rows: lattice.rows,
+            verticalEdges: [...lattice.verticalEdges].toSorted(),
+          });
+        };
+        const excluded: Modifier[] = [
+          { name: "plied", strands: 1 },
+          ...serpentineService.variants(rows, 1).map((variant) => ({
+            name: "serpentine" as const,
+            strands: 1,
+            ...variant,
+          })),
+        ];
+        const aligned = drawnBy({ name: "aligned", strands: 1 });
+
+        expect(excluded).toHaveLength(3);
+        expect(
+          new Set(excluded.map((modifier) => drawnBy(modifier))),
+        ).toStrictEqual(new Set([aligned]));
+        expect(drawnBy({ name: "plied", strands: 2 })).not.toBe(aligned);
+      },
+    );
+  });
+
   describe("strandCount", () => {
     it("draws the default ply when no modifier asks for one", () => {
       expect(service.strandCount(undefined)).toBe(DEFAULT_PARALLEL_STRANDS);

@@ -36,20 +36,25 @@ export const RUNG_SWEEP_LEFTWARD_VALUES: readonly boolean[] = [false, true];
 /**
  * `branches` values swept for the `stagger` modifier's batch combinations.
  *
- * A contiguous run rather than the sampled ply counts `plied`
- * takes, because this parameter has a floor it does not and every value
- * above it draws a visibly different crenel. The first is
- * `MINIMUM_STAGGER_BRANCHES` itself, the narrowest crenel the mode can
- * still tell apart from a plain `comb`; each one after it widens the
- * crenel by a single lattice column, so no value in the run repeats the
- * one before it at another scale.
+ * A contiguous run rather than the sampled ply counts `plied` takes, because
+ * this parameter has a floor it does not: the run opens at
+ * `MINIMUM_STAGGER_BRANCHES` itself and takes the next two whole numbers.
  *
- * It stops at six because a crenel keeps its shape and only its wavelength
- * grows: past six branches one rail run spans most of a six-repeat band and
- * the figure reads as a `comb` with a couple of changes of side rather than
- * as a crenellation. Nothing structural stops a wider one — the command
- * line accepts up to `MAXIMUM_VALUE` — so this is where the sweep stops
- * rather than where the mode does.
+ * **What it varies is a width, not a crenel.** With both band borders ruled
+ * end to end a `stagger` rail lies wholly inside a rule at every branch count
+ * — see `MINIMUM_STAGGER_BRANCHES` and `BranchMotifService.spineUnit` — so no
+ * value here draws a crenellation a reader can pick out of the rules. What it
+ * does draw is a repeat unit `branches - 1` lattice columns wide, and so a
+ * band that much wider: three, four, and five columns per unit across this
+ * run, eighteen, twenty-four, and thirty columns at the sweep's repeat count.
+ * The fork and loop counts climb with that width rather than repeating, which
+ * is why each value earns its own drawing.
+ *
+ * It stops at six because every value past it only adds another column to the
+ * same figure, at a band already two and a half times the unmodified
+ * drawing's twelve. Nothing structural stops a wider one — the command line
+ * accepts up to `MAXIMUM_VALUE` — so this is where the sweep stops rather
+ * than where the mode does.
  */
 export const STAGGER_SWEEP_BRANCH_COUNTS: readonly number[] = [4, 5, 6];
 
