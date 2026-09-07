@@ -152,24 +152,30 @@ the point:
   pass under the six it would otherwise inherit, which is the whole example.
 - `gated-leaf` breaches both of the limits its own `callidescope.config.ts`
   declares, on purpose: four frames against three, and three direct callees
-  against two. It is the only project in this repository declaring a
-  `maximumBreadth`, so it is also the only reason `--check breadth` can run at
-  all — quieting it takes the gate away with it.
+  against two. `maximumBreadth` has no default anywhere, so `--check breadth`
+  needs some project in scope to declare one — this is the project that makes
+  the refusal and the finding demonstrable side by side, and quieting it takes
+  the example away with it.
 - `inherited-limits` is seven frames against the six it inherits, on purpose. It
   declares nothing, and that is the example: it exists to be judged by a number
   written somewhere else. Its `inherited-limits.generated.ts` is traced on
   purpose too — it is the twin of the file `gated-leaf` excludes, and a run that
   dropped both would prove nothing about where a project's globs reach.
 
-One finding is not a fixture at all. The run's default `maximumDepth` is 6 — the
-tool's own, low enough to make the deep fixtures findings — and the closure
-judges three real dependency packages by it, because none of the three declares a
-limit for itself, so a genuine stack in one of them is reported as too deep. Do
-not restructure a dependency to quiet this run: nothing here gates depth, and
-`configuration/callidescope.config.ts` is the limit that has a say over those
-packages. [`inherited-limits`](examples/inherited-limits/README.md) is the
-example that finding belongs to, and it names the real remedy — a
-`callidescope.config.ts` in the package being judged.
+One finding is not a fixture at all. `LoggerService.log` is reported at five
+frames against the four `packages/logger` declares — a real stack in a real
+package the closure reaches, not a fixture. Four is right there: the
+whole-workspace run ignores calls to `LoggerService.*` and measures four, and
+this run deliberately does not ignore them and measures five, so one declared
+number is a pass in the gate and a finding in this report. Do not restructure
+the logger to quiet this run, and do not raise its four — that buys headroom on
+the gate that matters to tidy a fixture package.
+[`inherited-limits`](examples/inherited-limits/README.md) is the example that
+finding belongs to. The three dependency packages the closure reaches all
+declare their own limits now; the finding that used to appear here —
+`ConfigurationService.loadConfiguration` at eight frames against the run's
+default six — is gone because `packages/codometer-configuration` declares eight,
+and that guide reads it as the outcome rather than as drift.
 
 **This package gates `reports`, not `depth`.** Adding `--check depth` to its
 `examples` target would fail by design.

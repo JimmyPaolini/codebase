@@ -565,9 +565,10 @@ describe("callidescope examples (integration)", () => {
     it("reports every deliberately deep stack this package heads", () => {
       // Narrowed to the stacks this package heads, so it says nothing about
       // how many the whole run reports. The closure's three dependency
-      // packages are real code judged by a limit set low enough to make these
-      // fixtures findings, so one of them is over it — a fact about those
-      // packages rather than about a fixture, and not this suite's to pin.
+      // packages each declare their own limit now, and one of them is still
+      // over it — `packages/logger`, which measures five here and four in the
+      // run that ignores calls into it. That is a fact about those packages
+      // rather than about a fixture, and not this suite's to pin.
       expect(
         readDeepStacksFor(result, EXAMPLES_DIRECTORY).map((stack) => ({
           depth: stack.depth,

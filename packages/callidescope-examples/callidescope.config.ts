@@ -35,9 +35,10 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
  * ## Why five
  *
  * Six is what this package would inherit — `callidescope.workspace.config.ts`
- * declares it, and the three dependency packages this run reaches are judged by
- * it. Five is one tighter, and the difference is the example: every finding
- * this package produces carries `"limit": 5`, the dependency packages' carry
+ * declares it, and every project this run reaches that declares nothing of its
+ * own is judged by it, which is now `examples/inherited-limits` and nothing
+ * else. Five is one tighter, and the difference is the example: every finding
+ * this package produces carries `"limit": 5`, `inherited-limits`' carries
  * `"limit": 6`, and `examples/project-depth-limit` is a six-frame chain that is
  * a finding under one number and not the other. An override that restated the
  * number it already inherits would be indistinguishable from having no file at
