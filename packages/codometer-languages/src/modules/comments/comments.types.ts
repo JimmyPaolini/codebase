@@ -6,6 +6,7 @@ import type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerLanguageCommentsConfiguration,
 } from "@codometer/configuration";
+import type { CommentRange } from "typescript";
 import type { LineCounter } from "yaml";
 
 /** A run of comment lines a reader takes as one thought. */
@@ -100,6 +101,18 @@ export interface MeasureLanguageCommentsArguments {
 export interface PositionedToken {
   offset: number;
   token: CommentToken;
+}
+
+/**
+ * One TypeScript or JavaScript file's in-progress scan.
+ *
+ * Keyed by position rather than held as a list, so a comment range found from
+ * both a token's leading trivia and its predecessor's trailing trivia — the
+ * same range read from either side of the gap between them — is kept once.
+ */
+export interface TypescriptCommentScan {
+  content: string;
+  ranges: Map<number, CommentRange>;
 }
 
 /** One YAML file's in-progress scan: the text, its lines, and what was found. */

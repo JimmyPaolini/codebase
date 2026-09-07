@@ -66,14 +66,13 @@ const codometerConfiguration = {
   ],
   // A comment block is capped by how much it says, not how wide it is: every
   // linter here already holds a line to 80 columns, so a character budget
-  // would only restate it. The budget is per block — the run of `#` lines a
-  // reader takes as one thought, ended by a blank line — which is what makes a
-  // sprawling explanation the thing reported rather than a long word.
+  // would only restate it. The budget is per block — the run of comment lines
+  // a reader takes as one thought, ended by a blank line — which is what makes
+  // a sprawling explanation the thing reported rather than a long word.
   //
-  // Written once at the top level rather than per language, so YAML, shell,
-  // TOML, and Python are held to one number. `documentation` stays unset:
-  // gating this prose is not a reason to start gating every JSDoc comment
-  // against the same budget.
+  // Written once at the top level rather than per language, so every language
+  // with comments is held to one number. `documentation` stays unset: gating
+  // this prose is not a reason to start gating every JSDoc comment too.
   comments: { maximumWords: 128 },
 } satisfies CodometerConfiguration;
 

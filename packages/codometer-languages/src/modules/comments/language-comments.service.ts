@@ -59,7 +59,7 @@ export class LanguageCommentsService {
   private measureLanguage(args: {
     comments: ResolvedCodometerLanguageCommentsConfiguration | undefined;
     files: readonly string[];
-    read: (content: string) => CommentToken[];
+    read: (content: string, filePath: string) => CommentToken[];
     workingDirectory: string;
   }): CommentMeasurement[] {
     if (args.comments === undefined) {
@@ -79,7 +79,7 @@ export class LanguageCommentsService {
         ...this.comments.measure({
           comments: args.comments,
           filePath,
-          tokens: args.read(content),
+          tokens: args.read(content, filePath),
         }),
       );
     }
@@ -177,7 +177,8 @@ export class LanguageCommentsService {
       ...this.measureLanguage({
         comments: configuration.typescript.comments,
         files: files.sourceFiles,
-        read: (content) => this.typescriptComments.read(content),
+        read: (content, filePath) =>
+          this.typescriptComments.read(content, filePath),
         workingDirectory,
       }),
       ...this.measureLanguage({

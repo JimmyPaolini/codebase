@@ -741,11 +741,12 @@ When a file nears 512 lines, split it along the module file suffixes (`*.types.t
 **Comment blocks are capped at 128 words**, declared as
 `comments: { maximumWords: 128 }` in
 [`configuration/codometer.config.ts`](configuration/codometer.config.ts) and
-enforced by codometer rather than by ESLint. It reaches **Python, shell, TOML,
-and YAML** — every language whose comments start with `#`. A block is the run
-of comment lines a reader takes as one thought: a blank line ends one, a
-comment trailing a value is never part of the block above it, and a `#!`
-shebang is never a comment at all. A breach names its file and line.
+enforced by codometer rather than by ESLint. It reaches **every language this
+tool measures comments in** — Python, shell, TOML, YAML, CSS, HCL, SQL, and
+TypeScript/JavaScript's non-JSDoc comments. A block is the run of comment
+lines a reader takes as one thought: a blank line ends one, a comment
+trailing a value is never part of the block above it, and a `#!` shebang is
+never a comment at all. A breach names its file and line.
 
 It budgets **what a comment says, not how wide it is** — every linter here
 already holds a line to 80 columns, so a character budget would only restate

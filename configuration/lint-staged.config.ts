@@ -74,18 +74,18 @@ const config = {
   // 🔬 Static analysis and conformetry validation
   // One `nx affected` run over every staged path, on the same `lint-codebase`
   // target the Lint Codebase workflow runs, so what passes here passes there.
-  //
+
   // This replaces a table of per-path entries that mapped a changed file to
   // the target that cared about it. Nx already does that mapping: each leaf
   // declares the config files it reads in its own `inputs`, so touching
   // knip.config.ts or the PR template re-runs exactly the leaves it should and
   // cache-hits the rest. Doing it by hand duplicated that, and every entry
   // cost another project graph build.
-  //
+
   // Conformetry validates the whole workspace on every commit: generated
   // instances need not match a template-pattern glob to have drifted, so it
   // cannot be scoped to `affected`.
-  //
+
   // `callidescope` and each derivation synchronization are named alongside
   // `lint-codebase` rather than reached through its `dependsOn`, for the
   // reason the Lint Codebase workflow names them: callidescope also publishes
@@ -95,13 +95,13 @@ const config = {
   // invocation is what keeps a commit gating call-stack depth and derivation
   // drift; a second `nx affected` call would have cost another project graph
   // build for nothing.
-  //
+
   // There is no aggregate `synchronize` target to name instead: each
   // synchronization is its own Nx target on the `synchronization` project, run
   // directly the way `codebase:codometer` and `codebase:callidescope` are —
   // named by whichever caller wants it rather than through a shared process
   // that loops over all of them.
-  //
+
   // `nx sync:check` no longer runs anywhere, on commit or otherwise: the
   // generator plugin it checked is emitted into .conformetry on install rather
   // than committed, so no commit can stage it out of date. Every conformetry
