@@ -27,6 +27,39 @@ import {
  * lose every counter it did not restate, which is what lexico did. A limit is
  * neither a list element nor incomplete, and does have that fallback.
  *
+ * A project's file also carries no type annotation, and so no import of
+ * `CallidescopeConfiguration`. An `import type` is still an Nx dependency
+ * edge: it puts `@callidescope/configuration` into that project's graph, it
+ * widens what the project's own `gate` target has to trace, and it asks the
+ * manifest of a project like `logger` to declare a toolchain package that
+ * project does not use. What it would buy is a second check of something
+ * already checked: the four fields a project may set are validated when the
+ * file is read and a fifth is refused by name, and every project's
+ * `tsconfig.json` names its own file, so the object literal is compiled either
+ * way. `packages/callidescope-examples` is the annotated exception on purpose:
+ * its two configuration files are the worked examples of this shape, and it
+ * depends on the configuration package for real.
+ *
+ * ## The projects that override nothing
+ *
+ * Thirty-two projects under `packages/` now declare their own measured depth,
+ * and ten declare nothing and are held to the number below. Two reasons,
+ * neither of them that nobody got to them. The four skill packages —
+ * `callidescope-agents`, `codependix-agents`, `codometer-agents`,
+ * `conformetry-agents` — and `codependix-examples` hold between zero and three
+ * callables, so there is no stack of theirs to gate. The five conformetry leaf
+ * analyzers hold real code that roots nothing: `conformetry-typescript` has
+ * forty callables, `-json` twenty-three, `-jupyter` twenty-two, `-python`
+ * eleven, and `-text` five, and every one of them is reached from
+ * `conformetry-generation` above rather than entered directly, so each
+ * measures zero however much it does. Gating either kind at zero would fail on
+ * the first stack of any length, which is a landmine rather than a ratchet.
+ *
+ * The dependency closure a scoped run traces did fix this for
+ * `codometer-changes`, which measured zero before it and ten after. These ten
+ * are a different phenomenon and the closure does not reach them: it supplies
+ * the callees a stack descends into, and what these are missing is a caller.
+ *
  * Still exported although nothing imports it, because a rule needs a name to
  * be about, and narrowing it to the one limit a project may override was
  * considered and rejected — that leaves an object whose only member every

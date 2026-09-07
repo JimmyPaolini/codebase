@@ -685,232 +685,6 @@
       "limit": 5
     },
     {
-      "depth": 8,
-      "entryPointKind": "orphan-root",
-      "frames": [
-        {
-          "displayName": "ConfigurationService.loadConfiguration",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Loads and validates a codometer configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly measure the repository with defaults it never asked for. A path that was not named is searched for from the measured directory upward, and its absence is legal. The nearest configuration file wins outright: nothing from a further ancestor is folded into it. Merging the two would leave a limit that never applied looking exactly like one that did, and the only way to tell them apart would be to know which of several files each field came from.",
-            "tags": []
-          },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#11819",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 348
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": true,
-                "isRest": false,
-                "name": "args",
-                "type": "LoadConfigurationArguments"
-              }
-            ],
-            "returnType": "Promise<ResolvedCodometerConfiguration>",
-            "text": "(args?: LoadConfigurationArguments): Promise<ResolvedCodometerConfiguration>"
-          }
-        },
-        {
-          "displayName": "ConfigurationService.loadConfigurationFile",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Loads a configuration and says which file answered. The same work as `loadConfiguration`, keeping the path the upward walk settled on. A caller measuring one directory has no use for it — the configuration is the whole answer — but one listing what a repository configures has to attribute each answer to the file that gave it, and nothing downstream of the walk can still tell.",
-            "tags": []
-          },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12471",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 365
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": true,
-                "isRest": false,
-                "name": "args",
-                "type": "LoadConfigurationArguments"
-              }
-            ],
-            "returnType": "Promise<LoadedConfiguration>",
-            "text": "(args?: LoadConfigurationArguments): Promise<LoadedConfiguration>"
-          }
-        },
-        {
-          "displayName": "ConfigurationService.resolveConfiguration",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Fills in every field a configuration file may leave out. Exposed so a host embedding codometer can hand over a configuration object it assembled itself and get the same shape a configuration file produces.",
-            "tags": []
-          },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#13188",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 388
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "configuration",
-                "type": "CodometerConfiguration"
-              }
-            ],
-            "returnType": "ResolvedCodometerConfiguration",
-            "text": "(configuration: CodometerConfiguration): ResolvedCodometerConfiguration"
-          }
-        },
-        {
-          "displayName": "ConfigurationService.resolveLimits",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Gives every limit its severity and a value read as a number. Which metric a limit lands on is decided where the measurement is, since nothing here knows what was measured — the only thing settled at this point is what the limit says.",
-            "tags": []
-          },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8916",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 270
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "limits",
-                "type": "CodometerLimit[] | undefined"
-              }
-            ],
-            "returnType": "ResolvedCodometerLimit[]",
-            "text": "(limits: CodometerLimit[] | undefined): ResolvedCodometerLimit[]"
-          }
-        },
-        {
-          "displayName": "ConfigurationService.map(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9043",
-          "isCycle": false,
-          "location": {
-            "column": 31,
-            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 273
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "limit",
-                "type": "CodometerLimit"
-              }
-            ],
-            "returnType": "{ label: string | undefined; metric: string; severity: CodometerSeverity; value: number; }",
-            "text": "(limit: CodometerLimit): { label: string | undefined; metric: string; severity: CodometerSeverity; value: number; }"
-          }
-        },
-        {
-          "displayName": "ConfigurationService.parseLimitValue",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Reads a limit's value, in decimal units when it was written as a string. Everything unreadable is refused: a negative number, a unit missing its `b`, a word, an empty string. The tool this replaces coerced an unreadable limit to nothing and then failed every target holding a single byte.",
-            "tags": []
-          },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2425",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 80
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "limit",
-                "type": "CodometerLimit"
-              }
-            ],
-            "returnType": "number",
-            "text": "(limit: CodometerLimit): number"
-          }
-        },
-        {
-          "displayName": "ConfigurationService.parseLimitValueText",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Reads a limit written as a string, unit and all. A unit multiplies and then rounds: `\"1.5 KB\"` is 1500, and the rounding is what keeps `\"0.1 KB\"` from arriving as the 100.00000000000001 floating point makes of it. A string carrying no unit at all is the plain number, which is what a limit on a count of interfaces or files is written as.",
-            "tags": []
-          },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#3152",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 100
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "metric",
-                "type": "string"
-              },
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "text",
-                "type": "string"
-              }
-            ],
-            "returnType": "number",
-            "text": "(metric: string, text: string): number"
-          }
-        },
-        {
-          "displayName": "InvalidLimitValueError.constructor",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 492
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "metric",
-                "type": "string"
-              },
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "value",
-                "type": "string"
-              }
-            ],
-            "returnType": "InvalidLimitValueError",
-            "text": "(metric: string, value: string): InvalidLimitValueError"
-          }
-        }
-      ],
-      "isLowerBound": true,
-      "limit": 6
-    },
-    {
       "depth": 7,
       "entryPointKind": "orphan-root",
       "frames": [
@@ -1485,6 +1259,173 @@
       ],
       "isLowerBound": false,
       "limit": 5
+    },
+    {
+      "depth": 5,
+      "entryPointKind": "orphan-root",
+      "frames": [
+        {
+          "displayName": "LoggerService.log",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Logs an informational message at the `info` level. NestJS and `nest-commander` call this method directly as part of the framework's own `LoggerService` contract, so it must keep working exactly as before. Application code should call `info` instead — the same behavior under a name that says what level it logs at.",
+            "tags": []
+          },
+          "id": "packages/logger/src/modules/logger/logger.service.ts#9600",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 292
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "message",
+                "type": "unknown"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "context",
+                "type": "string | undefined"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "data",
+                "type": "LogData | undefined"
+              }
+            ],
+            "returnType": "void",
+            "text": "(message: unknown, context?: string, data?: LogData): void"
+          }
+        },
+        {
+          "displayName": "LoggerService.info",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Logs an informational message at the `info` level.",
+            "tags": []
+          },
+          "id": "packages/logger/src/modules/logger/logger.service.ts#8999",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 276
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "message",
+                "type": "unknown"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "context",
+                "type": "string | undefined"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "data",
+                "type": "LogData | undefined"
+              }
+            ],
+            "returnType": "void",
+            "text": "(message: unknown, context?: string, data?: LogData): void"
+          }
+        },
+        {
+          "displayName": "LoggerService.buildBindings",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Assembles the object pino merges into the line.",
+            "tags": []
+          },
+          "id": "packages/logger/src/modules/logger/logger.service.ts#5285",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 158
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }"
+              }
+            ],
+            "returnType": "Record<string, unknown>",
+            "text": "(args: { context: string | undefined; data: LogData | undefined; parsed: ParsedLogMessage; }): Record<string, unknown>"
+          }
+        },
+        {
+          "displayName": "LoggerService.assertConventionalMessage",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Fails a malformed message in development, and never in production. A logger that throws in production turns an observability call into an outage, so the check runs only where a developer is present to fix it.",
+            "tags": []
+          },
+          "id": "packages/logger/src/modules/logger/logger.service.ts#4418",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 125
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ context: string | undefined; parsed: ParsedLogMessage; }"
+              }
+            ],
+            "returnType": "void",
+            "text": "(args: { context: string | undefined; parsed: ParsedLogMessage; }): void"
+          }
+        },
+        {
+          "displayName": "LoggerService.isConventionalVerb",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is under way; past means it finished. Regular morphology covers both, so a new verb needs no registration anywhere — only irregular pasts are enumerated.",
+            "tags": []
+          },
+          "id": "packages/logger/src/modules/logger/logger.service.ts#6074",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/logger/src/modules/logger/logger.service.ts",
+            "line": 183
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "word",
+                "type": "string"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(word: string): boolean"
+          }
+        }
+      ],
+      "isLowerBound": false,
+      "limit": 4
     },
     {
       "depth": 4,
@@ -3246,7 +3187,7 @@
         "cyclicComponentCount": 0,
         "edgeCount": 57,
         "entryPointCount": 8,
-        "fileCount": 14,
+        "fileCount": 15,
         "maximumDepth": 6,
         "projectCount": 1,
         "unresolvedCallCount": 5
@@ -9102,7 +9043,7 @@
         "cyclicComponentCount": 0,
         "edgeCount": 50,
         "entryPointCount": 6,
-        "fileCount": 17,
+        "fileCount": 18,
         "maximumDepth": 8,
         "projectCount": 1,
         "unresolvedCallCount": 4
@@ -10425,7 +10366,7 @@
         "cyclicComponentCount": 0,
         "edgeCount": 19,
         "entryPointCount": 7,
-        "fileCount": 9,
+        "fileCount": 10,
         "maximumDepth": 5,
         "projectCount": 1,
         "unresolvedCallCount": 1
@@ -10446,7 +10387,7 @@
     "cyclicComponentCount": 1,
     "edgeCount": 196,
     "entryPointCount": 76,
-    "fileCount": 81,
+    "fileCount": 84,
     "maximumDepth": 8,
     "projectCount": 6,
     "unresolvedCallCount": 12

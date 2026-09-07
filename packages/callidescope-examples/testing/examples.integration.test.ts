@@ -712,10 +712,19 @@ describe("callidescope examples (integration)", () => {
 
   describe("per-project limits", () => {
     it("judges each project against the limit its own configuration settles on", () => {
-      // The whole feature in one assertion: four projects, three different
-      // depth limits, one report. Two of them are declared in the project's own
-      // `callidescope.config.ts` and one is the run's default, inherited by
-      // every project that declares nothing.
+      // The whole feature in one assertion: four different depth limits in one
+      // report. Three are declared in a project's own `callidescope.config.ts`
+      // — `gated-leaf`'s three, this package's five, and `@codebase/logger`'s
+      // four, which the closure reaches — and the six is the run's default,
+      // inherited by `inherited-limits`, which declares nothing.
+      //
+      // `@codebase/logger` is here because it is a real workspace package that
+      // now states its own limit, and this run does not ignore calls to it the
+      // way the workspace run does: four is what the logger measures with
+      // `LoggerService.*` ignored, five is what it measures here, so the same
+      // number is a pass there and a finding in this report. That is the
+      // per-project feature working rather than a fixture misbehaving —
+      // `packages/logger/callidescope.config.ts` says so beside the number.
       expect(
         result.deepStacks.map((stack) => [
           stack.frames[0]?.displayName,
@@ -725,10 +734,10 @@ describe("callidescope examples (integration)", () => {
         ["ComputedMemberService.dispatch", 5],
         ["DeepStackService.quote", 5],
         ["ForwardingStackService.handle", 5],
-        ["ConfigurationService.loadConfiguration", 6],
         ["FrameAnnotationsService.trace", 5],
         ["InheritedLimitsService.request", 6],
         ["ProjectDepthLimitService.judge", 5],
+        ["LoggerService.log", 4],
         ["GatedLeafService.read", 3],
       ]);
     });
