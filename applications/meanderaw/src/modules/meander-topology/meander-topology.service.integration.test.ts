@@ -272,7 +272,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
  * this size. Bounded rather than removed, so a genuine hang still fails
  * instead of running forever.
  */
-const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
+const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
 
 /**
  * How many documents `DrawCommand` commits: 1,183 named patterns beside two

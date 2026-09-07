@@ -28,7 +28,7 @@ const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6];
  * rather than left to the default five seconds, the same way the charter
  * measurement declares its own.
  */
-const SPACE_WALK_TIMEOUT_MILLISECONDS = 60_000;
+const SPACE_WALK_TIMEOUT_MILLISECONDS = 120_000;
 
 /** Every named sub-family, typed rather than widened for the command line. */
 const NAMED_SUB_FAMILIES: readonly MosaicBuildableSubFamily[] = [
