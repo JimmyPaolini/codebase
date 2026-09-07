@@ -35,7 +35,7 @@ import type {
  *   space, and the rules are written to be exclusive by construction: each
  *   one requires the *absence* of the directions the others are about, so
  *   they stay disjoint at any degree rather than only where a point can
- *   carry one edge. `zigzag` and `rings` are the one pair that cannot
+ *   carry one edge. `zigzag` and `square` are the one pair that cannot
  *   separate that way, since every point turns a corner in both — so they
  *   split on {@link MosaicCornerLanes} instead, whose two halves are false
  *   together rather than true together whenever a tile is neither.
@@ -73,10 +73,10 @@ export class MosaicNamingService {
    * level: exactly one horizontal bit per point makes each level's eastward
    * edges a run of alternating columns, and the only choice is which columns
    * it starts on. A lane whose lower level repeats its upper level's choice
-   * closes into rectangles; a lane that offsets it steps sideways. Comparing
+   * closes into squares; a lane that offsets it steps sideways. Comparing
    * the two rows is therefore the whole question, and it is asked of the rows
    * rather than of a component count because a component count cannot answer
-   * it — at two columns a closed rectangle and a step that leaves the repeat
+   * it — at two columns a closed square and a step that leaves the repeat
    * are the same four-cycle, differing only in *which* of its edges is the
    * one that wraps. `README.md` works that through.
    */
@@ -195,7 +195,7 @@ export class MosaicNamingService {
    * and the tile with every edge, each one tile per shape, and between them
    * what the family looks like at its two extremes.
    *
-   * `zigzag` and `rings` are the fourth pair, and the only pair about a
+   * `zigzag` and `square` are the fourth pair, and the only pair about a
    * point's *shape* rather than about which directions a tile uses. Every
    * point turns a corner in both, which is why they were one rule until the
    * drawings were looked at: a corner tile is always a disjoint union of
@@ -204,7 +204,7 @@ export class MosaicNamingService {
    * the next, so the drawing is one staircase per lane marching sideways —
    * the closest thing in the space to the fret the project is named after. A
    * lane whose levels repeat them turns the ink back on itself, so it shuts
-   * inside the repeat and the drawing is a row of separated rectangular
+   * inside the repeat and the drawing is a row of separated square
    * loops. Both are empty at a single column, where a point's eastward edge
    * wraps onto itself and gives it two horizontal bits rather than one.
    *
@@ -255,7 +255,7 @@ export class MosaicNamingService {
       },
       {
         matches: (tile) => corner(tile) && this.cornerLanes(tile).closed,
-        name: "rings",
+        name: "square",
       },
     ];
   }

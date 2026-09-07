@@ -58,7 +58,7 @@ export const MOSAIC_SUB_FAMILY_SHAPES: Record<
     horizontal: { columnStep: 1, levelStep: 1, phased: false },
     vertical: { columnStep: 1, levelStep: 1, phased: false },
   },
-  rings: {
+  square: {
     columns: 2,
     horizontal: { columnStep: 2, levelStep: 1, phased: false },
     vertical: { columnStep: 1, levelStep: 2, phased: false },

@@ -99,7 +99,7 @@ describe(DrawPermutationsService, () => {
       () => {
         const paths = sweepPaths();
         const named = paths.filter((filePath) =>
-          /-(?:bars|dashes|diamond|dots|lines|mesh|rings|zigzag)\.svg$/.test(
+          /-(?:bars|dashes|diamond|dots|lines|mesh|square|zigzag)\.svg$/.test(
             filePath,
           ),
         );

@@ -11,10 +11,10 @@ import type {
  * the only way those edges can fall.
  *
  * `closed` when every lane repeats the columns its horizontal runs start in,
- * so each lane's ink turns back on itself and shuts into rectangles inside
+ * so each lane's ink turns back on itself and shuts into squares inside
  * the repeat; `stepped` when every lane offsets them instead, so each lane's
  * ink turns the opposite way at every level and walks out of the repeat into
- * the next. They are the question `rings` and `zigzag` differ on, which is
+ * the next. They are the question `square` and `zigzag` differ on, which is
  * why it is one answer with two halves rather than two predicates.
  *
  * Both are false for a tile that *mixes* the two, closing in one lane and

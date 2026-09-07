@@ -383,7 +383,7 @@ dependency runs mosaic onto topology, which leaves the topology service free of 
 knowledge that a `mosaic` exists.
 
 **A component count is not a substitute for looking at the drawing**, and the `zigzag` /
-`rings` split below is where that bites: two tiles can be the same graph on the quotient
+`square` split below is where that bites: two tiles can be the same graph on the quotient
 band and still draw as unrelated patterns, because the count cannot see _which_ edge is the
 one that wraps. So these numbers answer what they say they answer — how many pieces the
 ink falls into, and whether it loops — and no more.
@@ -402,7 +402,7 @@ than listed. Eight regions have names, and they come in four pairs.
 | `bars` | is on a run down the band, unbroken | `4c8` | unbroken vertical rules |
 | `diamond` | is on a run down the band, broken somewhere | `4848` | a dashed vertical bar |
 | `zigzag` | turns a corner, stepping out of the repeat | `56a9` | a staircase |
-| `rings` | turns a corner, closing inside the repeat | `65a9` | separated rectangular loops |
+| `square` | turns a corner, closing inside the repeat | `65a9` | separated square loops |
 
 **Unbroken or broken is the question**, and it is asked of the edges rather than of the
 points. A point in the middle of a rule and a point at the end of a dash both carry ink
@@ -414,7 +414,7 @@ two-column tile of unbroken rules came to be called `dashes`.
 `dots` and `mesh` are the ends of the space: the tile with no edge and the tile with every
 edge, one of each per shape.
 
-`zigzag` and `rings` are the one pair about a point's own **shape** rather than about which
+`zigzag` and `square` are the one pair about a point's own **shape** rather than about which
 directions a tile uses, and both are empty at a single column, where a point's eastward
 edge wraps onto itself and gives it two horizontal bits rather than one. They were **one
 name until the drawings were looked at**, and the section below works through what
@@ -448,7 +448,7 @@ Three consequences, and each is asserted rather than assumed:
 - **A tile matching two rules is a defect in the rule set**, not a tie to break. The rules
   are exclusive by construction — each requires the _absence_ of the directions the others
   are about — and `mosaic-naming.service.unit.test.ts` asserts it over the whole
-  enumerated space. `zigzag` and `rings` are the one pair that cannot separate that way,
+  enumerated space. `zigzag` and `square` are the one pair that cannot separate that way,
   since every point turns a corner in both; they split on a reading whose two halves are
   false together rather than true together whenever a tile is neither.
 
@@ -463,7 +463,7 @@ is exactly what the sweep commits:
 | `lines` | 11 |
 | `mesh` | 11 |
 | `diamond` | 4 |
-| `rings` | 4 |
+| `square` | 4 |
 | `zigzag` | 4 |
 | unnamed | 8,426 |
 
@@ -485,10 +485,10 @@ about, so nothing that branches or crosses satisfies one.
 
 ### A corner tile is a staircase or a row of loops, and the split is geometric
 
-`zigzag` and `rings` were one name — every point turning a corner — and one look at the
+`zigzag` and `square` were one name — every point turning a corner — and one look at the
 ten drawings it committed shows two unrelated patterns. `56a9` at three rows and two
 columns is a continuous staircase marching sideways through every repeat. `65a9`, the only
-other tile of that shape, is a **closed rectangle with a gap between it and the next
+other tile of that shape, is a **closed square with a gap between it and the next
 repeat's** — a row of separated loops, and not a staircase in any reading.
 
 Where each loop closes is the whole of it, and it is forced by two constraints:
@@ -502,10 +502,10 @@ Where each loop closes is the whole of it, and it is forced by two constraints:
   they start on. So one lane is two such choices, and there are only two cases.
 
 A lane whose lower level **repeats** the upper level's choice turns the ink back on itself:
-it closes into rectangles inside the repeat, one per pair of columns, with a gap to the
+it closes into squares inside the repeat, one per pair of columns, with a gap to the
 next repeat's. A lane that **offsets** it makes each level's run start where the one above
 it ended, so the ink turns the opposite way at every level and walks out of the repeat and
-into the next, never closing. `zigzag` is every lane offset; `rings` is every lane
+into the next, never closing. `zigzag` is every lane offset; `square` is every lane
 repeated.
 
 **A tile can mix them**, closing in one lane and stepping in another, and two of the ten do.
@@ -513,7 +513,7 @@ Those earn neither name and keep their bit string — the same answer a tile mix
 horizontal and vertical ink already got, rather than the nearer of the two.
 
 **The ink's own component count cannot make this split**, which is worth stating because it
-is the obvious thing to reach for. At two columns a closed rectangle and a step that leaves
+is the obvious thing to reach for. At two columns a closed square and a step that leaves
 the repeat are the **same four-cycle**: four points, four edges, one component. They differ
 only in _which_ of those edges is the one that wraps, which is a fact about how the graph
 sits in the band and not about the graph. So `65a9` — a proven row of loops — has
@@ -533,7 +533,7 @@ five of the names had one. `mesh` and `zigzag` did not, because the shape table
 could say one thing — one direction's edges, anchored in the first column, every
 `levelStep` levels — and neither of those two is that. `mesh` uses both directions at
 once. `zigzag` needs its eastward edges to start a column further along at every level,
-which no single anchor expresses. `rings` then cost nothing at all: it is `zigzag`'s two
+which no single anchor expresses. `square` then cost nothing at all: it is `zigzag`'s two
 rules with the phase off, which is the only difference between the two names.
 
 Each sub-family's tile is now **two rules, one per edge grid**, each an edge every
@@ -543,7 +543,7 @@ offset advances by one per level. The family's pairings then fall out one number
 `dashes` the same eastward rule at `columnStep` 1 and 2, `dots` no rule at all, and
 `mesh` both rules at every step of one.
 
-`zigzag` and `rings` are the only two needing a phase between them, and **the phase is the
+`zigzag` and `square` are the only two needing a phase between them, and **the phase is the
 entire difference between those two names** — one boolean, which is why it is a field on
 the rule rather than a special case wherever the staircase is built. Every point turning a
 corner means exactly one horizontal bit and one vertical bit **at every point**, and that
@@ -554,7 +554,7 @@ pins both rules down for both names:
   only if the edges down a column are on, off, on, off. The first level has no `north`,
   so the run starts on — and the last level has no `south`, so it must end on the level
   above. That happens only when the interior's level count is **even**, which is
-  `diamond`'s constraint arriving for a different reason: `zigzag` and `rings` exist at
+  `diamond`'s constraint arriving for a different reason: `zigzag` and `square` exist at
   3, 5, 7 … rows and nowhere else, and are refused rather than approximated at 4 and 6.
 - **The eastward edges have to alternate column by column**, since a point's `east` and
   `west` are the edges either side of it. Alternating has to survive the wrap from the
@@ -562,13 +562,13 @@ pins both rules down for both names:
   why both are empty at a single column rather than merely unaligned there.
 - **Whether the alternation shifts by one at every level is the name.** Hold the phase
   fixed and each level's eastward edge sits directly above the next level's, the ink turns
-  back on itself, and the tile is a stack of closed rectangles — every point still a
-  corner, but not a staircase. That is `rings`. Advance it and each level's horizontal run
+  back on itself, and the tile is a stack of closed squares — every point still a
+  corner, but not a staircase. That is `square`. Advance it and each level's horizontal run
   starts where the one above it ended, so the ink turns the other way at every level and
   walks sideways through the repeats. That is `zigzag`.
 
 The smallest of each is two columns and two interior levels: `56a9` for `zigzag` and
-`65a9` for `rings`, the only two tiles of that shape whose every point turns a corner. The
+`65a9` for `square`, the only two tiles of that shape whose every point turns a corner. The
 smallest `mesh` is `7b`, a single column with every edge it has.
 
 **Advancing the phase keeps every lane stepping, at every row count**, which is what makes

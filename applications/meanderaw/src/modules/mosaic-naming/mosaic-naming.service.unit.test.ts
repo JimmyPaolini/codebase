@@ -52,7 +52,7 @@ const NAMES: readonly MosaicSubFamily[] = [
   "dots",
   "lines",
   "mesh",
-  "rings",
+  "square",
   "zigzag",
 ];
 
@@ -64,7 +64,7 @@ const BUILDABLE_NAMES: readonly MosaicBuildableSubFamily[] = [
   "dots",
   "lines",
   "mesh",
-  "rings",
+  "square",
   "zigzag",
 ];
 
@@ -76,7 +76,7 @@ const CANONICAL_TILES: readonly (readonly [MosaicSubFamily, MosaicTile])[] = [
   ["dots", mosaicTile([".", ".", "."])],
   ["lines", mosaicTile(["ee", "ee", "ee"])],
   ["mesh", mosaicTile(["bb", "bb", "ee"])],
-  ["rings", mosaicTile(["bs", "e."])],
+  ["square", mosaicTile(["bs", "e."])],
   ["zigzag", mosaicTile(["sb", "e."])],
 ];
 
@@ -138,9 +138,9 @@ describe(MosaicNamingService, () => {
       expect(service.name(mosaicTile(["s", ".", "s", "."]))).toBe("diamond");
     });
 
-    it("tells a lane that steps out of the repeat from one that closes inside it, which is the difference between zigzag and rings", () => {
+    it("tells a lane that steps out of the repeat from one that closes inside it, which is the difference between zigzag and square", () => {
       expect(service.name(mosaicTile(["sb", "e."]))).toBe("zigzag");
-      expect(service.name(mosaicTile(["bs", "e."]))).toBe("rings");
+      expect(service.name(mosaicTile(["bs", "e."]))).toBe("square");
     });
 
     it("leaves a corner tile that steps in one lane and closes in another unnamed, rather than naming it the nearer of the two", () => {
@@ -158,7 +158,7 @@ describe(MosaicNamingService, () => {
       );
       expect(mosaicConnectivityService.connectivity(closed).components).toBe(1);
       expect(service.name(stepped)).toBe("zigzag");
-      expect(service.name(closed)).toBe("rings");
+      expect(service.name(closed)).toBe("square");
     });
 
     it("names the two ends of the space, the tile with no edge and the tile with every edge", () => {
@@ -243,7 +243,7 @@ describe(MosaicNamingService, () => {
           dots: 11,
           lines: 11,
           mesh: 11,
-          rings: 4,
+          square: 4,
           unnamed: 8426,
           zigzag: 4,
         });

@@ -38,7 +38,7 @@ const NAMED_SUB_FAMILIES: readonly MosaicBuildableSubFamily[] = [
   "dots",
   "lines",
   "mesh",
-  "rings",
+  "square",
   "zigzag",
 ];
 
@@ -106,15 +106,15 @@ describe(MosaicSubFamilyService, () => {
       );
     });
 
-    it("builds closed rectangles for rings, the same two rules with the phase off, so its horizontal runs sit directly above one another", () => {
-      const rings = service.tile("rings", 3);
+    it("builds closed squares for square, the same two rules with the phase off, so its horizontal runs sit directly above one another", () => {
+      const square = service.tile("square", 3);
 
-      expect(rings && mosaicSymmetryService.canonicalIdentifier(rings)).toBe(
+      expect(square && mosaicSymmetryService.canonicalIdentifier(square)).toBe(
         "65a9",
       );
     });
 
-    it.each(["rings", "zigzag"] as const)(
+    it.each(["square", "zigzag"] as const)(
       "has no %s tile where the interior has an odd number of levels, since a corner's southward edges cover levels in pairs",
       (subFamily) => {
         expect(service.tile(subFamily, 4)).toBeUndefined();
@@ -130,14 +130,14 @@ describe(MosaicSubFamilyService, () => {
       expect(service.tile("zigzag", 1)).toBeUndefined();
     });
 
-    it("spans two columns for dashes, rings and zigzag, whose edges reach into the column beside them, and one for the rest", () => {
+    it("spans two columns for dashes, square and zigzag, whose edges reach into the column beside them, and one for the rest", () => {
       expect(service.tile("bars", 6)?.columns).toBe(1);
       expect(service.tile("dashes", 6)?.columns).toBe(2);
       expect(service.tile("diamond", 5)?.columns).toBe(1);
       expect(service.tile("dots", 6)?.columns).toBe(1);
       expect(service.tile("lines", 6)?.columns).toBe(1);
       expect(service.tile("mesh", 6)?.columns).toBe(1);
-      expect(service.tile("rings", 5)?.columns).toBe(2);
+      expect(service.tile("square", 5)?.columns).toBe(2);
       expect(service.tile("zigzag", 5)?.columns).toBe(2);
     });
 
