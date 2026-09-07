@@ -1,12 +1,11 @@
 // 🏷️ Types
 
 import type {
-  DotShape,
   MeanderType,
   Modifier,
   SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
-import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types";
 
 /**
  * Parsed `draw` options, in the shape nest-commander leaves them.
@@ -14,8 +13,8 @@ import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.type
  * Everything but `outputDirectory` and `repeatCount` is optional, and that is
  * the command's whole contract: `draw` with no drawing named sweeps every
  * meander the application can draw, and `draw --type <family> --rows <n>`
- * draws that one. `branches`, `leftward`, `modifier`, `period`, `shape`,
- * `strands`, and `upward` arrive
+ * draws that one. `branches`, `leftward`, `modifier`, `strands`, and
+ * `upward` arrive
  * separately because nest-commander derives each option's key from its own
  * long flag — {@link DrawParametersService.modifier} is what puts them back
  * together.
@@ -28,7 +27,9 @@ import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.type
  *
  * `subFamily` needs no such combining: it names a region of the family's
  * unit space on its own, and it is mutually exclusive with `modifier`, which
- * the generation service enforces.
+ * the generation service enforces. For `mosaic` it is also required — that
+ * family draws no repeat unit for a modifier to adjust or a bare `--type`
+ * to fall back on.
  */
 export interface DrawCommandOptions {
   branches?: number;
@@ -37,11 +38,10 @@ export interface DrawCommandOptions {
   modifier?: Modifier["name"];
   offset?: number;
   outputDirectory: string;
-  period?: number;
   repeatCount: number;
   rows?: number;
-  shape?: DotShape;
   strands?: number;
+
   subFamily?: MosaicBuildableSubFamily;
   type?: MeanderType;
   upward?: boolean;

@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 
 import type {
   MosaicDirections,
   MosaicSubFamily,
   MosaicTile,
-} from "../mosaic-motif/mosaic-motif.types";
+} from "../mosaic-tile/mosaic-tile.types";
 import type {
   MosaicCornerLanes,
   MosaicNamingRule,

@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { MosaicMotifModule } from "../mosaic-motif/mosaic-motif.module";
+import { MosaicTileModule } from "../mosaic-tile/mosaic-tile.module";
 
 import { MosaicNamingService } from "./mosaic-naming.service";
 
@@ -17,7 +17,7 @@ import { MosaicNamingService } from "./mosaic-naming.service";
 @Module({
   controllers: [],
   exports: [MosaicNamingService],
-  imports: [MosaicMotifModule],
+  imports: [MosaicTileModule],
   providers: [MosaicNamingService],
 })
 export class MosaicNamingModule {}

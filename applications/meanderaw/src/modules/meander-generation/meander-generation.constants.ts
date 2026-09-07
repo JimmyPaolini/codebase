@@ -2,26 +2,34 @@
 
 import {
   MOSAIC_TILE_MAXIMUM_ROWS,
-  SUPPORTED_SUB_FAMILIES,
-} from "../mosaic-motif/mosaic-motif.constants";
+  MOSAIC_TILE_MINIMUM_ROWS,
+} from "../mosaic-tile/mosaic-tile.constants";
 
 import type {
-  DotShape,
   MeanderType,
   Modifier,
+  TileDrawnType,
 } from "./meander-generation.types";
 
 /**
  * Which modifier `name`s each type accepts. `MeanderGenerationService.generate`
  * rejects any `parameters.modifier` whose `name` isn't listed for
  * `parameters.type`.
+ *
+ * `mosaic`'s list is empty because a modifier constructs a repeat unit, and
+ * every repeat unit that family has is already in the space
+ * `MosaicTilesService` enumerates: 19 of the 24 drawings `alternated`,
+ * `dot`, and `split` produced were tiles it already commits. See
+ * {@link TILE_DRAWN_TYPES}.
  */
+
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
   branch: ["comb", "rung", "stagger"],
   chain: ["edge", "flip", "edge-flip"],
   cross: ["interrupted"],
-  mosaic: ["alternated", "dot", "split"],
+  mosaic: [],
+
   negative: [
     "brick-staggered",
     "brick-straight",
@@ -39,17 +47,8 @@ export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   whirl: ["flip"],
 };
 
-/**
- * The smallest `rows` value at which `mosaic`'s `dot` modifier draws a dot at
- * all. The dot interrupts two whole grid levels of the bar — one either side
- * of its own level — so the bar needs at least two levels to give up, and it
- * spans only `rows - 2`. At 3 rows the bar is a single grid level and there
- * is no room, so `dot` falls through to the unmodified bar, the same way
- * `split` already degenerates there (see {@link STRUCTURAL_MINIMUM_ROWS}).
- */
-export const DOT_MINIMUM_ROWS = 4;
-
-/** Directory a drawing is written to when the caller doesn't override it, shared by `draw`'s sweep and its single-drawing mode alike. */
+/** Directory a drawing is written to
+ when the caller doesn't override it, shared by `draw`'s sweep and its single-drawing mode alike. */
 export const DEFAULT_OUTPUT_DIRECTORY = "output";
 
 /**
@@ -82,9 +81,6 @@ export const FAMILY_MAXIMUM_ROWS: Record<MeanderType, number> = {
   swirl: MAXIMUM_VALUE,
   whirl: MAXIMUM_VALUE,
 };
-
-/** Lowest `period` value `alternated` accepts: a run must span at least one grid level. */
-export const MINIMUM_PERIOD = 1;
 
 /** Lowest `repeatCount` value the CLI accepts: at least one unit must be drawn. */
 export const MINIMUM_REPEAT_COUNT = 1;
@@ -147,12 +143,6 @@ export const SPIN_FAMILY_MODIFIER_NAMES: readonly Modifier["name"][] = [
   "spin-flip",
 ];
 
-/** Every shape `mosaic`'s `dot` modifier accepts, mirroring `SUPPORTED_MODIFIER_NAMES`'s widened declaration for the same reason. */
-export const SUPPORTED_DOT_SHAPES: readonly string[] = [
-  "bounce",
-  "up",
-] satisfies readonly DotShape[];
-
 /**
  * Every implemented modifier `name`, mirroring `SUPPORTED_TYPES`'s widened
  * `readonly string[]` declaration for the same reason: it keeps
@@ -166,9 +156,6 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "edge",
   "flip",
   "edge-flip",
-  "alternated",
-  "split",
-  "dot",
   "interrupted",
   "brick-staggered",
   "brick-straight",
@@ -198,7 +185,9 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
  * alphabetical or a historical one.** It runs from the families whose motif is
  * a single line — `snake` through `boxes` — into the four that break one of
  * the charter's negotiable invariants, and ends at `mosaic`, whose enumerated
- * tiles outnumber every other family put together. It is the order the `--type`
+ * tiles outnumber every other family put together, and which is drawn from
+ * that enumeration alone. It is the order the `--type`
+
  * help text lists, the order the sweep generates in, and the order
  * `DrawIndexService` lays the index page out in, so a family moved here moves
  * in all three at once.
@@ -217,30 +206,8 @@ export const SUPPORTED_TYPES: readonly string[] = [
 ] satisfies readonly MeanderType[];
 
 /**
- * Which sub-family names each type admits. A sub-family is a named
- * predicate over a family's unit space, so a family whose unit space is
- * latent rather than materialized has none to admit — which today is every
- * family but `mosaic`. `MeanderGenerationService.generate` rejects any
- * `parameters.subFamily` not listed for `parameters.type`.
- */
-export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
-  boxes: [],
-  branch: [],
-  chain: [],
-  cross: [],
-  mosaic: SUPPORTED_SUB_FAMILIES,
-  negative: [],
-  parallel: [],
-  snake: [],
-  swirl: [],
-  whirl: [],
-};
-
-/**
  * The smallest `rows` value that still produces a valid, non-degenerate
- * motif for each type. `mosaic`'s vertical bar spans grid levels 1 through
- * `rows - 1`; below 3 rows those two levels collapse to the same level and
- * the bar disappears, leaving only the two caps. `boxes`'s spiral traces
+ * motif for each type. `boxes`'s spiral traces
  * `rows - 1` grid levels inward; below 3 rows the first move collapses to a
  * zero-length segment. `chain` and `snake` share a zigzag that needs a
  * genuine middle row distinct from its two neighbors; below 4 rows the
@@ -249,11 +216,14 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * reference files starting at 4 rows; nothing below that has been checked
  * against real geometry.
  *
- * `mosaic`'s minimum of 3 is a floor for the unmodified bar shape only: at
- * exactly 3 rows the bar spans a single grid unit, so the `split` modifier
- * degenerates to a no-op there — it has nothing left to split, and its
- * output is byte-identical to the unmodified bar.
+ * `mosaic`'s entry is {@link MOSAIC_TILE_MINIMUM_ROWS} and nothing here
+ * reads it: that family draws no motif — see {@link TILE_DRAWN_TYPES} — so
+ * `MosaicTileGenerationService` validates a tile's rows against those same
+ * constants. Stated anyway, because this record is total over
+ * {@link MeanderType}.
  *
+
+
  * `cross`'s minimum of 6 is set by its `interrupted` modifier rather than by
  * its solid shape, which would draw down to 4 rows. The break gives up the
  * grid level either side of the crossing, and the crossing sits at
@@ -325,7 +295,7 @@ export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   branch: 2,
   chain: 4,
   cross: 6,
-  mosaic: 3,
+  mosaic: MOSAIC_TILE_MINIMUM_ROWS,
   negative: 3,
   parallel: 2,
   snake: 4,
@@ -334,21 +304,6 @@ export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
 };
 
 // 🚨 Errors
-
-/**
- * Thrown when a sub-family and a modifier are requested together. Both
- * decide which repeat unit is drawn — a modifier by constructing one, a
- * sub-family by naming a region of the units the family already generates —
- * so honoring one would mean silently discarding the other.
- */
-export class ConflictingSubFamilyError extends Error {
-  constructor(subFamily: string, modifierName: string) {
-    super(
-      `sub-family "${subFamily}" cannot be combined with modifier "${modifierName}"; a modifier constructs a repeat unit and a sub-family names one, so only one of them may choose it`,
-    );
-    this.name = "ConflictingSubFamilyError";
-  }
-}
 
 /** Thrown when a modifier's `name` isn't listed as compatible with the requested type. */
 export class InvalidModifierError extends Error {
@@ -382,16 +337,6 @@ export class InvalidOffsetError extends Error {
       `offset must be between 0 and the strand count ${strands} exclusive, received ${offset}`,
     );
     this.name = "InvalidOffsetError";
-  }
-}
-
-/** Thrown when `alternated`'s `period` falls outside the shared bounds, or `repeatCount` isn't a whole multiple of it. */
-export class InvalidPeriodError extends Error {
-  constructor(period: number, minimum: number, maximum: number) {
-    super(
-      `period must be between ${minimum} and ${maximum}, received ${period}`,
-    );
-    this.name = "InvalidPeriodError";
   }
 }
 
@@ -461,35 +406,6 @@ export class InvalidStrandCountError extends Error {
   }
 }
 
-/** Thrown when a sub-family isn't listed as one of the requested type's own, which for every type but `mosaic` means it has none. */
-export class InvalidSubFamilyError extends Error {
-  constructor(
-    subFamily: string,
-    type: string,
-    subFamilyNames: readonly string[],
-  ) {
-    super(
-      `sub-family "${subFamily}" is not a sub-family of type "${type}"; sub-families: ${
-        subFamilyNames.length > 0 ? subFamilyNames.join(", ") : "none"
-      }`,
-    );
-    this.name = "InvalidSubFamilyError";
-  }
-}
-
-/**
- * Thrown when a sub-family names no tile at the requested row count. Only
- * `diamond` can hit this: its vertical dashes cover the bar's interior
- * levels in pairs, so an interior with an odd number of them cannot be
- * covered by vertical dashes alone.
- */
-export class UnavailableSubFamilyError extends Error {
-  constructor(subFamily: string, rows: number) {
-    super(`sub-family "${subFamily}" has no tile at ${rows} rows`);
-    this.name = "UnavailableSubFamilyError";
-  }
-}
-
 /**
  * Types whose unmodified drawing one of their own modifiers already names,
  * so the sweep draws it once under that name rather than twice under two.
@@ -508,3 +424,20 @@ export class UnavailableSubFamilyError extends Error {
 export const TYPES_WITH_MODIFIER_NAMED_DEFAULT: readonly MeanderType[] = [
   "parallel",
 ];
+
+/**
+ * Families drawn from an enumerated unit space rather than by a motif
+ * service — the runtime half of {@link TileDrawnType}, read by the three
+ * places that would otherwise each carry the same exception:
+ * `MeanderGenerationService.generate` refuses one with no `subFamily`,
+ * having no motif to dispatch to; `DrawCombinationsService.enumerate`
+ * leaves them out of the named-type sweep, a family with neither modifier
+ * nor motif having no combination to contribute; and
+ * `MotifRegistryService` holds no entry, which {@link MotifDrawnType} makes
+ * a type error rather than a lookup answering `undefined`. Widened to
+ * `readonly string[]` for {@link SUPPORTED_TYPES}'s reason.
+ */
+
+export const TILE_DRAWN_TYPES: readonly string[] = [
+  "mosaic",
+] satisfies readonly TileDrawnType[];

@@ -2,42 +2,47 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { MINIMUM_STAGGER_BRANCHES } from "../branch-motif/branch-motif.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
-import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
+import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
+import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import {
   COMPATIBLE_MODIFIERS,
-  ConflictingSubFamilyError,
   FAMILY_MAXIMUM_ROWS,
   InvalidModifierError,
   InvalidOffsetError,
-  InvalidPeriodError,
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
   InvalidRowsError,
   InvalidStaggerBranchCountError,
   InvalidStrandCountError,
-  InvalidSubFamilyError,
   MAXIMUM_VALUE,
-  MINIMUM_PERIOD,
   MINIMUM_REPEAT_COUNT,
   MINIMUM_STRANDS,
   PLY_MODIFIER_NAMES,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
-  SUB_FAMILIES,
-  UnavailableSubFamilyError,
+  TILE_DRAWN_TYPES,
 } from "./meander-generation.constants";
 import { MotifRegistryService } from "./motif-registry.service";
+import {
+  ConflictingSubFamilyError,
+  InvalidSubFamilyError,
+  MissingSubFamilyError,
+  SUB_FAMILIES,
+  UnavailableSubFamilyError,
+} from "./sub-family.constants";
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
-import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types";
 import type {
   GenerationParameters,
   MeanderType,
   Modifier,
+  MotifDrawnType,
+  MotifService,
+  TileDrawnType,
 } from "./meander-generation.types";
 
 /**
@@ -71,10 +76,10 @@ export class MeanderGenerationService {
 
   /** Builds every repeat unit's path, appending the type's shared border path when it draws one. */
   private buildPaths(
+    motifService: MotifService,
     geometry: GridGeometry,
     parameters: GenerationParameters,
   ): string[] {
-    const motifService = this.motifRegistryService.resolve(parameters.type);
     const unitPaths = Array.from(
       { length: parameters.repeatCount },
       (_value, unitIndex) =>
@@ -144,6 +149,38 @@ export class MeanderGenerationService {
     );
   }
 
+  /** Narrows a family to a tile-drawn one, so the refusal below can name the space to pick a member of. */
+  private isTileDrawnType(type: MeanderType): type is TileDrawnType {
+    return TILE_DRAWN_TYPES.includes(type);
+  }
+
+  /**
+   * Narrows `type` to a family that has a motif service, refusing a
+   * tile-drawn one outright.
+   *
+   * A tile-drawn family reaches here only when no `subFamily` was given,
+   * since {@link generate} routes one that was through
+   * {@link generateSubFamily} before anything else. There is nothing to
+   * dispatch to for it, so this is where the request is turned back —
+   * {@link MissingSubFamilyError} naming the sub-families to choose from,
+   * rather than a lookup answering `undefined` and a border path throwing
+   * somewhere further in.
+   *
+   * It runs *after* the validations rather than before them, so a request
+   * that is wrong about something more specific is told about that instead:
+   * `--type mosaic --rows 2` is out of the family's row range, and
+   * `--type mosaic --modifier flip` names a modifier the family does not
+   * accept — which `COMPATIBLE_MODIFIERS` reports as "compatible modifiers:
+   * none", a more useful answer than a missing sub-family.
+   */
+  private motifDrawnType(type: MeanderType): MotifDrawnType {
+    if (this.isTileDrawnType(type)) {
+      throw new MissingSubFamilyError(type, SUB_FAMILIES[type]);
+    }
+
+    return type;
+  }
+
   /** Throws {@link InvalidModifierError} when the modifier's `name` isn't compatible with `type`. */
   private validateModifier(
     type: MeanderType,
@@ -170,13 +207,11 @@ export class MeanderGenerationService {
    * otherwise the last repeat unit's rotation would be cut off mid-cycle
    * instead of ending back at the starting orientation.
    *
-   * `alternated` has no equivalent cycle to validate against
-   * `repeatCount`: `period` controls a single repeat tile's own column
-   * span (see {@link MosaicMotifService.alternatedPath}), and every tile is
-   * self-contained regardless of how many times it repeats. A truncated
-   * final run inside a tile is expected, accepted behavior — see
-   * {@link MotifTransformsService.alternate}'s own tests — not a defect
-   * `repeatCount` could ever fix by being "more compatible" with `period`.
+   * It is the spin family's alone. No other modifier carries a cycle a
+   * `repeatCount` could cut off: `stagger`'s crenel and the ply-carrying
+   * modifiers' bundles are each self-contained within one repeat unit, so
+   * however many units are drawn, none of them ends partway through
+   * anything.
    */
   private validateModifierCycle(
     modifier: Modifier | undefined,
@@ -214,23 +249,6 @@ export class MeanderGenerationService {
 
     if (!Number.isInteger(offset) || offset < 0 || offset >= strands) {
       throw new InvalidOffsetError(offset, strands);
-    }
-  }
-
-  /** Throws {@link InvalidPeriodError} when `alternated`'s `period` isn't a whole number within the shared bounds. */
-  private validatePeriod(modifier: Modifier | undefined): void {
-    if (modifier?.name !== "alternated") {
-      return;
-    }
-
-    const { period } = modifier;
-
-    if (
-      !Number.isInteger(period) ||
-      period < MINIMUM_PERIOD ||
-      period > MAXIMUM_VALUE
-    ) {
-      throw new InvalidPeriodError(period, MINIMUM_PERIOD, MAXIMUM_VALUE);
     }
   }
 
@@ -340,7 +358,8 @@ export class MeanderGenerationService {
    * Validates the parameters, then renders the finished SVG document. A
    * `subFamily` names a member of the family's own unit space and takes a
    * different route through {@link generateSubFamily}, since there is no
-   * motif service to dispatch to for it.
+   * motif service to dispatch to for it — and for a tile-drawn family it is
+   * the only route, which {@link motifDrawnType} is what enforces.
    */
   generate(parameters: GenerationParameters): string {
     if (parameters.subFamily) {
@@ -350,21 +369,23 @@ export class MeanderGenerationService {
     this.validateRows(parameters.type, parameters.rows);
     this.validateRepeatCount(parameters.repeatCount);
     this.validateModifier(parameters.type, parameters.modifier);
-    this.validatePeriod(parameters.modifier);
     this.validateModifierCycle(parameters.modifier, parameters.repeatCount);
     this.validateStaggerBranches(parameters.modifier);
     this.validateStrands(parameters.modifier, parameters.rows);
     this.validateOffset(parameters.modifier);
 
+    const motifService = this.motifRegistryService.resolve(
+      this.motifDrawnType(parameters.type),
+    );
     const geometry = this.gridGeometryService.compute(parameters.rows);
-    const paths = this.buildPaths(geometry, parameters);
-    const rightEdge = this.motifRegistryService
-      .resolve(parameters.type)
-      .rightEdge(geometry, {
-        repeatCount: parameters.repeatCount,
-        rows: parameters.rows,
-        ...(parameters.modifier ? { modifier: parameters.modifier } : {}),
-      });
+
+    const paths = this.buildPaths(motifService, geometry, parameters);
+    const rightEdge = motifService.rightEdge(geometry, {
+      repeatCount: parameters.repeatCount,
+      rows: parameters.rows,
+      ...(parameters.modifier ? { modifier: parameters.modifier } : {}),
+    });
+
     const format = (value: number): string =>
       this.gridGeometryService.formatCoordinate(value);
 

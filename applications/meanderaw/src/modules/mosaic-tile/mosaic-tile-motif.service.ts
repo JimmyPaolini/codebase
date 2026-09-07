@@ -10,7 +10,7 @@ import type {
   MosaicLatticePoint,
   MosaicTile,
   MosaicTileUnit,
-} from "./mosaic-motif.types";
+} from "./mosaic-tile.types";
 
 /**
  * Draws one repeat unit of a `mosaic` tile: every edge the tile's points
