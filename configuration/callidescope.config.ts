@@ -6,6 +6,15 @@ import {
 /**
  * What every project in this repository is held to unless it says otherwise.
  *
+ * **Defaults, never ceilings.** Each limit here is what a project falls back
+ * to, and a project declaring a number *higher* than one of these keeps its
+ * own — nothing clamps it. That has to be true for the numbers below to mean
+ * anything: a workspace limit is pinned by the single worst stack anywhere in
+ * the repository, so reading it as a ceiling would hold every project to the
+ * worst one's allowance, which is the arrangement the per-project gate exists
+ * to replace. The gate a branch runs reads a project's own resolved limit and
+ * never this object directly.
+ *
  * A project's own `callidescope.config.ts` writes only the limits it overrides
  * — `limits: { maximumDepth: 10 }`, and nothing beside it. **Never spread this
  * object into one.** `spreadThreshold` is a limit only a workspace may set, and
@@ -101,27 +110,49 @@ import {
  */
 export const workspaceLimits = {
   /**
-   * The deepest stack this repository currently has, so the gate starts
-   * green and only fails on a regression past today's worst.
+   * The default a project that declares nothing is judged by — and no longer
+   * this repository's ratchet.
    *
-   * A ratchet rather than a target. Set to the issue's suggested six, this
-   * fails on arrival with dozens of findings — which is a backlog, not a
-   * gate, and a red pipeline nobody can act on teaches people to ignore it.
-   * Lower it as the outliers come down; the distribution today runs
-   * 17, 17, 17, 16, 16, 16, then six at 15, four at 14, four at 13, five at
-   * 12, and a long tail at 11 and below.
+   * **The ratchet is thirty-eight numbers now**, one per project that declares
+   * its own, every one of them set from a boundary-tested run at its gate's own
+   * scope: it passes at the number written and fails one below it. That is what
+   * a ratchet is, and it is what this single number could never be. Seventeen
+   * is the deepest stack anywhere in the repository, so as one workspace-wide
+   * limit it gated the three projects near it and nothing else — `logger` at
+   * four had thirteen frames of free rein, which is to say no gate at all.
+   * `nx run callidescope-cli:start -- limits --config
+   * configuration/callidescope.config.ts` prints the whole set and the file
+   * each number is written in.
    *
-   * Came down from 19 by removing three frames that were not layers: a
-   * `FormsService` method that forwarded its arguments unchanged to the
-   * forms builder, a rung of lexico-ingestion's finite-verb cascade whose
-   * whole body re-ran three guards the rungs above had already applied, and
-   * a caelundas method that destructured six fields and passed the same six
-   * on. Nothing was merged that was doing work.
+   * **Lowering this number is not how the ratchet descends.** It reaches only
+   * the projects that declare none of their own, and those are the ones with
+   * no stack to gate — the four skill packages and `codependix-examples` hold
+   * barely a callable between them, and the conformetry leaf analyzers root
+   * nothing, so each measures zero however much it does. A number lowered here
+   * fires on the first stack any of them grows rather than on a regression, and
+   * the value it stands in for is exactly the one they cannot pick for
+   * themselves. To tighten a project, write the boundary-tested number in that
+   * project's own `callidescope.config.ts`; `## The projects that override
+   * nothing` above says which projects those are and why each one inherits.
    *
-   * Three stacks now sit at 17 and pin the ratchet: `LexicoIngestionCommand.run`,
-   * and callidescope-nx's `depthExecutor` and `breadthExecutor`. Sixteen is
-   * one frame from each, and neither one is obviously spare — lexico's
-   * remaining seventeen are a command, a recursion pair, a parse, and the
+   * The history is still worth keeping, because it is what the per-project
+   * numbers were measured against. Set to the issue's suggested six, one
+   * workspace limit failed on arrival with dozens of findings — a backlog
+   * rather than a gate, and a red pipeline nobody can act on teaches people to
+   * ignore it. It came down from 19 by removing three frames that were not
+   * layers: a `FormsService` method that forwarded its arguments unchanged to
+   * the forms builder, a rung of lexico-ingestion's finite-verb cascade whose
+   * whole body re-ran three guards the rungs above had already applied, and a
+   * caelundas method that destructured six fields and passed the same six on.
+   * Nothing was merged that was doing work.
+   *
+   * Three stacks sit at 17 and are why it stopped there:
+   * `LexicoIngestionCommand.run`, and callidescope-nx's `depthExecutor` and
+   * `breadthExecutor`. Both of those projects now write that number in a file
+   * of their own, where it gates the project owning the stack and nobody
+   * else — which is the whole difference this ticket made. Sixteen
+   * is one frame from each and neither frame is obviously spare — lexico's
+   * seventeen are a command, a recursion pair, a parse, and the
    * mood/voice/tense/number/person descent, each of which earns its frame.
    * Reaching 16 by collapsing one of those would buy the number and cost the
    * code, which is the trade this comment exists to refuse.

@@ -246,14 +246,56 @@ Every flag they accept sits in the configuration skill alongside the workspace
 run's, because a flag cannot be explained apart from the configuration field it
 reads — `--check breadth` is refused outright without `limits.maximumBreadth`.
 
-Two flags name two different findings, and they sit on opposite sides of a pull
-request:
+**Depth and breadth are per project**, enforced by the `gate` target
+`@callidescope/nx` infers onto every project holding a `tsconfig.json` — 48 of
+the 51 here. Each gate traces its project together with that project's Nx
+dependencies and fails on the findings that project **owns**, so a dependency's
+breach is that dependency's own gate's business. `affirmations` has no
+TypeScript program to trace; `packages/callidescope-examples` is excluded by
+`configuration/.callidescopeignore` and is denied a gate on purpose, its
+fixtures existing to breach; the workspace root project is skipped by
+construction, its scope being the workspace itself.
 
-- `--check depth` gates the branch. `codebase:callidescope` runs it, because a
-  stack that got longer in a change is what that change should fix.
-- `--check reports` gates freshness. The workspace cannot use it on a branch —
-  the call graph moves on nearly every change, so freshness would fail pull
-  requests for being behind `main` rather than for anything they did.
+Thirty-eight projects declare their own limits in a `callidescope.config.ts` at
+their own root, and each writes only what it overrides — inheritance is per
+limit, so `configuration/callidescope.config.ts` supplies whatever a project
+does not name. Every one of those numbers was set from a boundary-tested run at
+the gate's own Nx-graph scope, passing at N and failing at N−1, so none carries
+headroom. Breadth is declared only where every callable at the project's widest
+number is a closed enumeration — a switch over a union, a registry, a set of
+formats — and a tie with an ordinary sequential orchestrator decides against
+gating it, which is why `lexico-ingestion`, `synchronization`, and
+`callidescope-output` gate depth and nothing else. Reading them as a set is a
+command rather than a table, now that no one file holds them:
+
+```bash
+nx run callidescope-cli:start -- limits --config configuration/callidescope.config.ts
+```
+
+Two things are gated, and they sit on opposite sides of a pull request:
+
+- **The per-project `gate` target gates the branch**, scoped by `nx affected` in
+  [`.github/workflows/lint-codebase.yml`](.github/workflows/lint-codebase.yml)
+  and [`configuration/lint-staged.config.ts`](configuration/lint-staged.config.ts),
+  because a stack that got longer in a change is what that change should fix. It
+  reads no destination and writes nothing, so its exit code is purely the
+  verdict and a failing gate leaves every committed report as it found it.
+- **`--check reports` gates freshness, and nothing here runs it.** The workspace
+  cannot use it on a branch — the call graph moves on nearly every change, so
+  freshness would fail pull requests for being behind `main` rather than for
+  anything they did. `codebase:callidescope` therefore carries only `write`,
+  which publishes the workspace report and every project's README block on
+  `main`.
+
+**Four traced roots carry no gate of their own**, and its own `project.json`
+target description records why. `configuration/` measures depth 3 and holds a
+`tsconfig.json`, so it is traced, but it is not an Nx project and no inference
+can reach it; three fixture roots under `packages/codependix-examples/examples/`
+are the same case at depth 0. All four keep being traced and published by
+`write` on `main`, so a regression in any of them still lands in the report —
+they only stop failing a pull request. The workspace root is a fifth gap of a
+different kind: `.callidescopeignore` drops it as a project, so the loose
+maintenance scripts it owned are traced by nothing at all.
 
 When a behavior needs to be **seen** rather than described, run it:
 [`packages/callidescope-examples`](packages/callidescope-examples) is a small
@@ -466,27 +508,27 @@ was just cached under and can never hit its own cache.
 
 ### Quality Tools
 
-| Tool            | Description                                           | Config                                   | Docs                                                                 |
-| --------------- | ----------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------- |
-| `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`          | [docs](https://oxc.rs/docs/guide/usage/formatter.html)               |
-| `sqlfluff`      | Formats and lints SQL files                           | root `pyproject.toml`                    | [docs](https://docs.sqlfluff.com/)                                   |
-| `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`       | [docs](https://prettier.io/docs/)                                    |
-| `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`               | [docs](https://eslint.org/docs/latest/)                              |
-| `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`         | [docs](https://oxc.rs/docs/guide/usage/linter.html)                  |
-| `ruff`          | Formats and lints Python files                        | root `pyproject.toml`                    | [docs](https://docs.astral.sh/ruff/)                                 |
-| `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                  | [docs](https://www.typescriptlang.org/docs/)                         |
-| `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                     | [docs](https://github.com/plantain-00/type-coverage)                 |
-| `pyright`       | Performs static Python type checking                  | root `pyproject.toml`                    | [docs](https://github.com/microsoft/pyright)                         |
-| `ty`            | Performs additional Python type checking              | root `pyproject.toml`                    | [docs](https://docs.astral.sh/ty/)                                   |
-| `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`           | [docs](https://knip.dev/)                                            |
-| `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`     | [docs](https://github.com/jendrikseipp/vulture)                      |
-| `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                                   |
-| `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`        | [docs](https://jscpd.dev/)                                           |
-| `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`   | [docs](packages/callidescope-cli/README.md), [skills](#callidescope) |
-| `codependix`    | Exports dependency graphs and gates rules over them   | `configuration/codependix.config.ts`     | [docs](packages/codependix-cli/README.md), [skills](#codependix)     |
-| `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`       | [docs](https://cspell.org/)                                          |
-| `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2)              |
-| `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`            | [docs](https://yamllint.readthedocs.io/)                             |
+| Tool            | Description                                           | Config                                                          | Docs                                                                 |
+| --------------- | ----------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`                                 | [docs](https://oxc.rs/docs/guide/usage/formatter.html)               |
+| `sqlfluff`      | Formats and lints SQL files                           | root `pyproject.toml`                                           | [docs](https://docs.sqlfluff.com/)                                   |
+| `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`                              | [docs](https://prettier.io/docs/)                                    |
+| `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`                                      | [docs](https://eslint.org/docs/latest/)                              |
+| `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`                                | [docs](https://oxc.rs/docs/guide/usage/linter.html)                  |
+| `ruff`          | Formats and lints Python files                        | root `pyproject.toml`                                           | [docs](https://docs.astral.sh/ruff/)                                 |
+| `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                                         | [docs](https://www.typescriptlang.org/docs/)                         |
+| `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                                            | [docs](https://github.com/plantain-00/type-coverage)                 |
+| `pyright`       | Performs static Python type checking                  | root `pyproject.toml`                                           | [docs](https://github.com/microsoft/pyright)                         |
+| `ty`            | Performs additional Python type checking              | root `pyproject.toml`                                           | [docs](https://docs.astral.sh/ty/)                                   |
+| `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`                                  | [docs](https://knip.dev/)                                            |
+| `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`                            | [docs](https://github.com/jendrikseipp/vulture)                      |
+| `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`                             | [docs](https://docs.fallow.tools/)                                   |
+| `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`                               | [docs](https://jscpd.dev/)                                           |
+| `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`, plus each project's own | [docs](packages/callidescope-cli/README.md), [skills](#callidescope) |
+| `codependix`    | Exports dependency graphs and gates rules over them   | `configuration/codependix.config.ts`                            | [docs](packages/codependix-cli/README.md), [skills](#codependix)     |
+| `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`                              | [docs](https://cspell.org/)                                          |
+| `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc`                        | [docs](https://github.com/DavidAnson/markdownlint-cli2)              |
+| `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`                                   | [docs](https://yamllint.readthedocs.io/)                             |
 
 ## Git Workflow
 
@@ -840,19 +882,23 @@ other Python metric already does: an unreachable interpreter leaves them
 unmeasured rather than miscounted.
 
 **The gate is `codebase:codometer`**, whose `check` runs `--check limits` over
-the whole repository — the same shape as `codebase:callidescope` and
-`codebase:codependix`. It reads no output destination and writes nothing, which
-is what makes it safe on a branch; `write` still publishes the README badges on
-main. Report staleness is deliberately not checked, because every branch would
-fail it for being behind rather than for anything it did.
+the whole repository — the same shape as `codebase:codependix:check`, and the
+shape `codebase:callidescope` used to have before depth gating moved to the
+per-project `gate` target. It reads no output destination and writes nothing,
+which is what makes it safe on a branch; `write` still publishes the README
+badges on main. Report staleness is deliberately not checked, because every
+branch would fail it for being behind rather than for anything it did.
 
 It runs through the root project's `make-projects`, so 👷 Make Projects gates it
 alongside every project's own `codometer`. It is **not** named in 🧑‍💻 Lint
-Codebase the way `callidescope` and `codependix` are: those two exist only on
-the root project, while all fifty projects declare `codometer`, so naming it
-there would fan out over every one and wait on each build. The root run is also
-the only one that reaches the workflows under `.github/`, which belong to no
-project.
+Codebase the way `codependix` and callidescope's `gate` are, and the two of
+those answer the same question two ways: `codependix` exists only on the root
+project, so naming it costs one task, while `gate` fans out over every project
+and is named there regardless, because it reads source and needs no build.
+`codometer` is the one that does both — every project declares it, and each has
+to compile before it can be measured — so naming it there would wait on every
+build in the workspace. The root run is also the only one that reaches the
+workflows under `.github/`, which belong to no project.
 
 ### Formatting and Ordering
 
