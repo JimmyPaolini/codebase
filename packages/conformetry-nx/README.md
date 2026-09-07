@@ -442,7 +442,6 @@ flowchart LR
   GeneratorModule
   InstanceDiscoveryModule
   InstancesModule
-  LanguageModule
   LoggerModule([LoggerModule])
   MainModule
   OptionsModule
@@ -451,6 +450,7 @@ flowchart LR
   ProjectsModule
   RenderingModule
   ReportingModule
+  RunnerModule
   ScopeModule
   ScoringModule
   TemplateDiscoveryModule
@@ -489,8 +489,8 @@ flowchart LR
   TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
   ValidationModule --> InstanceDiscoveryModule
-  ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
+  ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule
 ```
 

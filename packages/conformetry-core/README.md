@@ -13,8 +13,8 @@ npm install --save-dev @conformetry/core
 | Module | Responsibility |
 | ------ | -------------- |
 | `errors` | The structured `ConformetryError` shape, plus builders and guards for it |
-| `language` | The language validator contract and the shared execution envelope |
 | `reporting` | Rendering conformance errors as readable, actionable text |
+| `runner` | Runs a language validator over a prepared document set |
 | `scoring` | The conformance arithmetic: what a finding weighs, what a weight pair scores |
 
 "Language" here means a validator for one file format — TypeScript, JSON,
@@ -26,7 +26,7 @@ for these.
 
 A validator supplies a descriptor and a single-document comparison. Extension
 filtering, grouping errors under their file, and assembling the result are
-handled once by `LanguageService`, so a language package contains only its
+handled once by `RunnerService`, so a language package contains only its
 comparison logic:
 
 ```ts
@@ -78,7 +78,7 @@ document formats) over folding a location into the message.
 
 ## Exports
 
-`ErrorsService`, `LanguageService`, `ReportingService`, `ScoringService` and
+`ErrorsService`, `ReportingService`, `RunnerService`, `ScoringService` and
 their modules, plus the `ConformetryError`, `ConformetryLanguageValidator`,
 `DocumentValidationResult`, `InstanceScore`, `LanguageValidatorDescriptor`,
 `PreparedValidationDocument`, `ValidationFileResult`, and `WeightedFinding`
@@ -126,8 +126,8 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `LanguageService.runValidator` | 4 | `LanguageService.map(…)`, `LanguageService.filter(…)`, `LanguageService.filter(…)`, `LanguageService.reduce(…)` | `packages/conformetry-core/src/modules/language/language.service.ts:81` |
 | `ReportingService.formatTotal` | 4 | `ReportingService.reduce(…)`, `ReportingService.reduce(…)`, `ReportingService.filter(…)`, `ReportingService.formatFraction` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:233` |
+| `RunnerService.runValidator` | 4 | `RunnerService.map(…)`, `RunnerService.filter(…)`, `RunnerService.filter(…)`, `RunnerService.reduce(…)` | `packages/conformetry-core/src/modules/runner/runner.service.ts:81` |
 | `ReportingService.formatFileResult` | 3 | `ReportingService.formatFraction`, `ScoringService.sumWeights`, `ReportingService.flatMap(…)` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:97` |
 
 <details>
@@ -153,13 +153,13 @@ None.
 | `InventoryService.shortenTemplatePairings` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:136` |
 | `InventoryService.map(…)` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:140` |
 | `InventoryService.map(…)` | 1 | `InventoryService.shortenPath` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:143` |
-| `LanguageService.filter(…)` | 1 | `LanguageService.claimsDocument` | `packages/conformetry-core/src/modules/language/language.service.ts:85` |
-| `LanguageService.map(…)` | 1 | `LanguageService.validateDocument` | `packages/conformetry-core/src/modules/language/language.service.ts:88` |
 | `ScoringService.sumWeights` | 1 | `ScoringService.reduce(…)` | `packages/conformetry-core/src/modules/scoring/scoring.service.ts:53` |
 | `ReportingService.formatError` | 1 | `ReportingService.formatLocation` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:53` |
 | `ReportingService.flatMap(…)` | 1 | `ReportingService.formatError` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:114` |
 | `ReportingService.map(…)` | 1 | `ReportingService.formatScore` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:210` |
 | `ReportingService.flatMap(…)` | 1 | `ReportingService.formatFileResult` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:273` |
+| `RunnerService.filter(…)` | 1 | `RunnerService.claimsDocument` | `packages/conformetry-core/src/modules/runner/runner.service.ts:85` |
+| `RunnerService.map(…)` | 1 | `RunnerService.validateDocument` | `packages/conformetry-core/src/modules/runner/runner.service.ts:88` |
 
 </details>
 
@@ -214,8 +214,8 @@ graph LR
 flowchart LR
   DifferencesModule
   InventoryModule
-  LanguageModule
   ReportingModule
+  RunnerModule
   ScoringModule
   ReportingModule --> ScoringModule
 ```
@@ -241,18 +241,18 @@ graph LR
   file_src_modules_inventory_inventory_service_ts["src/modules/inventory/inventory.service.ts"]
   file_src_modules_inventory_inventory_service_unit_test_ts["src/modules/inventory/inventory.service.unit.test.ts"]
   file_src_modules_inventory_inventory_types_ts["src/modules/inventory/inventory.types.ts"]
-  file_src_modules_language_language_constants_ts["src/modules/language/language.constants.ts"]
-  file_src_modules_language_language_module_ts["src/modules/language/language.module.ts"]
-  file_src_modules_language_language_module_unit_test_ts["src/modules/language/language.module.unit.test.ts"]
-  file_src_modules_language_language_service_ts["src/modules/language/language.service.ts"]
-  file_src_modules_language_language_service_unit_test_ts["src/modules/language/language.service.unit.test.ts"]
-  file_src_modules_language_language_types_ts["src/modules/language/language.types.ts"]
   file_src_modules_reporting_reporting_constants_ts["src/modules/reporting/reporting.constants.ts"]
   file_src_modules_reporting_reporting_module_ts["src/modules/reporting/reporting.module.ts"]
   file_src_modules_reporting_reporting_module_unit_test_ts["src/modules/reporting/reporting.module.unit.test.ts"]
   file_src_modules_reporting_reporting_service_ts["src/modules/reporting/reporting.service.ts"]
   file_src_modules_reporting_reporting_service_unit_test_ts["src/modules/reporting/reporting.service.unit.test.ts"]
   file_src_modules_reporting_reporting_types_ts["src/modules/reporting/reporting.types.ts"]
+  file_src_modules_runner_runner_constants_ts["src/modules/runner/runner.constants.ts"]
+  file_src_modules_runner_runner_module_ts["src/modules/runner/runner.module.ts"]
+  file_src_modules_runner_runner_module_unit_test_ts["src/modules/runner/runner.module.unit.test.ts"]
+  file_src_modules_runner_runner_service_ts["src/modules/runner/runner.service.ts"]
+  file_src_modules_runner_runner_service_unit_test_ts["src/modules/runner/runner.service.unit.test.ts"]
+  file_src_modules_runner_runner_types_ts["src/modules/runner/runner.types.ts"]
   file_src_modules_scoring_scoring_constants_ts["src/modules/scoring/scoring.constants.ts"]
   file_src_modules_scoring_scoring_module_ts["src/modules/scoring/scoring.module.ts"]
   file_src_modules_scoring_scoring_module_unit_test_ts["src/modules/scoring/scoring.module.unit.test.ts"]
@@ -276,30 +276,30 @@ graph LR
   file_src_modules_inventory_inventory_service_ts --> file_src_modules_inventory_inventory_types_ts
   file_src_modules_inventory_inventory_service_unit_test_ts --> file_src_modules_inventory_inventory_service_ts
   file_src_modules_inventory_inventory_service_unit_test_ts --> file_src_modules_inventory_inventory_types_ts
-  file_src_modules_language_language_module_ts --> file_src_modules_language_language_service_ts
-  file_src_modules_language_language_module_unit_test_ts --> file_src_modules_language_language_module_ts
-  file_src_modules_language_language_module_unit_test_ts --> file_src_modules_language_language_service_ts
-  file_src_modules_language_language_service_ts --> file_src_modules_language_language_types_ts
-  file_src_modules_language_language_service_unit_test_ts --> file_src_modules_language_language_service_ts
-  file_src_modules_language_language_service_unit_test_ts --> file_src_modules_language_language_types_ts
-  file_src_modules_language_language_types_ts --> file_src_modules_differences_differences_types_ts
   file_src_modules_reporting_reporting_module_ts --> file_src_modules_reporting_reporting_service_ts
   file_src_modules_reporting_reporting_module_ts --> file_src_modules_scoring_scoring_module_ts
   file_src_modules_reporting_reporting_module_unit_test_ts --> file_src_modules_reporting_reporting_module_ts
   file_src_modules_reporting_reporting_module_unit_test_ts --> file_src_modules_reporting_reporting_service_ts
   file_src_modules_reporting_reporting_service_ts --> file_src_modules_differences_differences_types_ts
-  file_src_modules_reporting_reporting_service_ts --> file_src_modules_language_language_types_ts
   file_src_modules_reporting_reporting_service_ts --> file_src_modules_reporting_reporting_constants_ts
   file_src_modules_reporting_reporting_service_ts --> file_src_modules_reporting_reporting_types_ts
+  file_src_modules_reporting_reporting_service_ts --> file_src_modules_runner_runner_types_ts
   file_src_modules_reporting_reporting_service_ts --> file_src_modules_scoring_scoring_constants_ts
   file_src_modules_reporting_reporting_service_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_reporting_reporting_service_ts --> file_src_modules_scoring_scoring_types_ts
-  file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_language_language_types_ts
   file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_reporting_reporting_service_ts
+  file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_runner_runner_types_ts
   file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_scoring_scoring_types_ts
-  file_src_modules_reporting_reporting_types_ts --> file_src_modules_language_language_types_ts
+  file_src_modules_reporting_reporting_types_ts --> file_src_modules_runner_runner_types_ts
   file_src_modules_reporting_reporting_types_ts --> file_src_modules_scoring_scoring_types_ts
+  file_src_modules_runner_runner_module_ts --> file_src_modules_runner_runner_service_ts
+  file_src_modules_runner_runner_module_unit_test_ts --> file_src_modules_runner_runner_module_ts
+  file_src_modules_runner_runner_module_unit_test_ts --> file_src_modules_runner_runner_service_ts
+  file_src_modules_runner_runner_service_ts --> file_src_modules_runner_runner_types_ts
+  file_src_modules_runner_runner_service_unit_test_ts --> file_src_modules_runner_runner_service_ts
+  file_src_modules_runner_runner_service_unit_test_ts --> file_src_modules_runner_runner_types_ts
+  file_src_modules_runner_runner_types_ts --> file_src_modules_differences_differences_types_ts
   file_src_modules_scoring_scoring_module_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_scoring_scoring_module_unit_test_ts --> file_src_modules_scoring_scoring_module_ts
   file_src_modules_scoring_scoring_module_unit_test_ts --> file_src_modules_scoring_scoring_service_ts

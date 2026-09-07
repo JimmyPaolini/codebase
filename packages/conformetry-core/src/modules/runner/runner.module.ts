@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 
-import { LanguageService } from "./language.service";
+import { RunnerService } from "./runner.service";
 
 /**
- * Owns the language validator contract and the shared execution envelope.
+ * Owns the shared envelope for running a language validator.
  *
  * Imported by `conformetry-validation`, which drives the registered language
  * validators, and by any package composing them (such as
@@ -11,8 +11,8 @@ import { LanguageService } from "./language.service";
  */
 @Module({
   controllers: [],
-  exports: [LanguageService],
+  exports: [RunnerService],
   imports: [],
-  providers: [LanguageService],
+  providers: [RunnerService],
 })
-export class LanguageModule {}
+export class RunnerModule {}
