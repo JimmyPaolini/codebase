@@ -310,6 +310,78 @@ Note one deliberate divergence: the code says `MeanderType`, `SUPPORTED_TYPES`, 
 `--type` where the glossary says **family**. Renaming the flag would be a breaking CLI
 change and is not worth making for a vocabulary correction.
 
+### A tile's ink is a graph, read one repeat at a time
+
+The charter reports a **rendered document**'s ink as a graph — nodes, edges, components,
+free ends — and two predicates follow from those counts by arithmetic and nothing else: a
+**forest** is exactly `edges = nodes − components`, and a **tree** is exactly
+`components = 1 && edges = nodes − 1`. `MosaicConnectivityService` asks the same two
+questions of a **tile**, and answers them without drawing it.
+
+| Question | Over the 8,551 tiles |
+| --- | --- |
+| Ink carries no loop (a forest) | **3,352** |
+| Ink is one connected figure | **1,947** |
+| Both at once (a tree) | **370** |
+
+Nothing is filtered by this. The enumeration is still 8,551 tiles and the corpus is
+unchanged; these are three counts over that space, the way the junction counts are counts
+over the corpus.
+
+**A tile is read as its own repeating band, divided by the repeat.** A tile's eastward edge
+at its last column reaches the first column of the _same_ tile — the wrap above, which is
+what makes a tile join up with its own next repeat. So its points and edges already
+describe an infinite band, and the graph read here is that band modulo one repeat: nodes
+are the tile's points, eastward and westward steps wrap around the column span, and
+northward and southward ones do not, because grid levels `0` and `rows` are cap ticks
+rather than tile points. Every number above is therefore a property of the tile at no
+repeat count at all.
+
+**Why not measure a drawing instead.** Because the answer would be about the drawing.
+`bars` at four rows is one unbroken vertical stroke per repeat, so a document of it holds
+`repeats + 2` components — one stroke each, plus the band's two cap-tick rules — and a
+document of ten repeats reports ten where a document of three reports three. The tile did
+not change between those two drawings. Its own count is **one**, because there is one
+stroke per repeat, which is the only reading that is about the tile.
+
+**The two readings are the same reading, in this precise sense.** A document of `N` repeats
+is the tile's band unrolled `N` times, plus those two cap ticks. So every loop a drawing
+carries closes inside some run of repeats, and that run maps back onto the band carrying
+the loop with it — therefore **a tile with no loop renders to a drawing with no loop, at
+every repeat count**. `bars` is the worked case in both directions: the tile is a tree, one
+component and no loop; the drawing is a forest of `repeats + 2` components and no loop.
+Both say loop-free, and they differ on the component count by exactly the factor the
+drawing chose.
+
+**The converse fails, in one exactly-known way, and the way is the point.** A cycle that
+closes _only_ by wrapping is a loop within one repeat and no loop once unrolled: it becomes
+a run that leaves at one side and never comes back. `lines` is the smallest case — at one
+column every level's eastward edge leaves its own point and arrives back at it from the
+west, so the repeat holds one self-loop per level while the drawing is three straight
+rules. So the tile-level reading calls some tiles cyclic that every drawing of them shows
+loop-free, and that is the honest answer for a repeat unit rather than a defect: within one
+repeat the ink really does close on itself, and the distinction it draws — ink that
+terminates inside the repeat against ink that runs on through the repeats forever — is one
+the drawing cannot state.
+
+Both halves are asserted rather than argued.
+`mosaic-connectivity.service.integration.test.ts` renders every tile of three shapes at two
+repeat counts, measures each document the way any committed document is measured, and
+checks that the implication has no exception and that the set of tiles the two readings
+disagree about is the same set once enough repeats are drawn for a wrapping run to show
+itself rather than close by coincidence within a narrow drawing — 1,631 tiles disagree at
+one repeat and 1,039 at two, against 1,033 from three repeats on, which is where the set
+settles into a property of the tile rather than of how much of it was drawn.
+
+The walk that counts the pieces is `MeanderTopologyService.components` and the arithmetic
+is its `isAcyclic` and `isOneComponent`, shared with the document-level reading through an
+`InkAdjacency` — nodes, neighbors, and an identity for a node. That is the whole of what a
+component count needs, and it is the only thing the two readings can share: one lives on a
+bounded lattice of `"column,row"` points and the other on a wrapping repeat of
+`[level][column]` points, so neither coordinate system is a special case of the other. The
+dependency runs mosaic onto topology, which leaves the topology service free of any
+knowledge that a `mosaic` exists.
+
 ## 🔤 Naming a Mosaic Sub-family
 
 `mosaic`'s unit space is materialized, so a region of it can be **recognized** rather
