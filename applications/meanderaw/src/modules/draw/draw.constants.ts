@@ -1,5 +1,22 @@
 // ♟️ Constants
 
+import type { Modifier } from "../meander-generation/meander-generation.types";
+
+/**
+ * Ply-carrying modifier names whose one-strand drawing duplicates
+ * `aligned-strands-1` once both border rules are drawn full.
+ *
+ * At one strand there is nothing to ply and nothing to serpentine: both
+ * shapes decompose to the same lone bracket `aligned` already draws at that
+ * count. The three shapes still emit different `M`/`V`/`H` runs for it — the
+ * duplication is in the *ink* the lattice carries, not in the bytes on disk
+ * — so `aligned-strands-1` is the only honest name for it and the sweep
+ * drops the strand count named here for `plied` and `serpentine` while
+ * keeping it for `aligned`.
+ */
+export const NAMES_WITHOUT_A_ONE_STRAND_DRAWING: ReadonlySet<Modifier["name"]> =
+  new Set(["plied", "serpentine"]);
+
 /**
 
  * `isLeftward` values swept for the `rung` modifier's batch combinations.

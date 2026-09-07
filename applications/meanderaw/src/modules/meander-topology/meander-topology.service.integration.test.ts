@@ -182,7 +182,7 @@ interface CharterRelaxation {
  * `parallel` relaxes no-branching, and it is the one row here narrowed by a
  * structural condition rather than by a modifier name. Both of its borders
  * are ruled end to end now, and a rule meets a strand's rising end with
- * west, east, and south ink at one lattice point — so 675 of its 819
+ * west, east, and south ink at one lattice point — so 642 of its 786
  * drawings fork. The other 144 are the `serpentine` drawings whose first and
  * last strips are each one lattice row deep: the flat ribbon on such a strip
  * is the rule, so nothing rises to meet it. That is a fact about the ply and
@@ -341,7 +341,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 
 /**
  * How long a corpus-wide measurement may take. Each of the three tests that
- * use it reads all 9,907 committed documents from disk and measures every
+ * use it reads all 9,863 committed documents from disk and measures every
  * one, which takes well under a second locally but several times that on a
  * shared CI runner — past vitest's five-second default, which is what failed
  * there while passing everywhere else, back when the corpus was three times
@@ -351,7 +351,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
 
 /**
- * How many documents `DrawCommand` commits: 1,148 named patterns beside two
+ * How many documents `DrawCommand` commits: 1,104 named patterns beside two
  * exhaustive halves — 8,551 enumerated `mosaic` tiles and 208 enumerated
  * one-column `negative` sources.
  *
@@ -382,7 +382,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
  * but not committed, which is why the corridor-identity gate below covers
  * rows 3 through 5 of it rather than all of it.
  */
-const COMMITTED_CORPUS_SIZE = 1137 + 8551 + 208;
+const COMMITTED_CORPUS_SIZE = 1104 + 8551 + 208;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -712,7 +712,7 @@ describe(MeanderTopologyService, () => {
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
 
-    // The count also pins where the sweep stops, on every axis. 1,148 is
+    // The count also pins where the sweep stops, on every axis. 1,104 is
     // every combination up to each family's own `FAMILY_MAXIMUM_ROWS`; 174
     // was every combination up to 8, and the row counts issue #507 was
     // reachable at and untested at are most of the difference. Reverting
@@ -734,7 +734,7 @@ describe(MeanderTopologyService, () => {
     // corpus does not commit is the same blind spot #507 was, one modifier
     // over.
     it("sweeps every named-type combination DrawCommand writes, out to the deepest row count the command line accepts", () => {
-      expect(charterSweep).toHaveLength(1137);
+      expect(charterSweep).toHaveLength(1104);
 
       expect(
         Math.max(...charterSweep.map(({ parameters }) => parameters.rows)),
@@ -760,6 +760,37 @@ describe(MeanderTopologyService, () => {
         crosses: relaxes(parameters, "no-crossing"),
         spaceFilling: !relaxes(parameters, "space-filling"),
       });
+    });
+
+    // 🎯 Issue #669's exclusion, asserted as a lattice property rather than
+    // reflected as a count. `aligned-strands-1`, `plied-strands-1`, and
+    // `serpentine`'s two one-strand variants used to render the same ink
+    // under four names, once both borders were drawn full — three shapes
+    // decompose it into different `M`/`V`/`H` runs, so comparing paths or
+    // bytes would miss the duplication. Reducing every `parallel`
+    // combination to its lattice and asserting none collide catches the
+    // next degenerate combination whether or not anybody predicted it; the
+    // count guards against the sweep quietly narrowing to nothing.
+    it("draws no two parallel combinations onto the same lattice", () => {
+      const parallelCases = charterSweep.filter(
+        ({ parameters }) => parameters.type === "parallel",
+      );
+      const addresses = parallelCases.map(({ parameters }) => {
+        const lattice = latticeService.build(
+          generationService.generate(parameters),
+        );
+
+        return JSON.stringify({
+          columns: lattice.columns,
+          horizontalEdges: [...lattice.horizontalEdges].toSorted(),
+          nodes: [...lattice.nodes].toSorted(),
+          rows: lattice.rows,
+          verticalEdges: [...lattice.verticalEdges].toSorted(),
+        });
+      });
+
+      expect(parallelCases).toHaveLength(786);
+      expect(new Set(addresses).size).toBe(addresses.length);
     });
 
     // 🎯 This pins the corpus #340 measured and nothing beyond it. It scopes
@@ -900,31 +931,31 @@ describe(MeanderTopologyService, () => {
 
         expect(trees).toStrictEqual([]);
 
-        // 🎯 The 22 lone ribbons, followed out of the tree set: two at each
-        // of the eleven row counts the family draws at, since a single ribbon
-        // can be flipped as well as left in phase and the two are different
-        // drawings. Every one is one component still — nothing came apart —
-        // and every one closes 11 loops, which is one per pair of adjacent
-        // lattice columns across its twelve, exactly as `branch` closes one
-        // per column pair. A drawing that lost a piece, or one that stopped
-        // closing, fails here.
-        expect(loneRibbons).toHaveLength(22);
-        expect([...new Set(loneRibbons)]).toStrictEqual([
-          "1 component(s), 11 loop(s)",
-        ]);
+        // 🎯 The 22 lone ribbons this suite used to follow out of the tree
+        // set — the `serpentine-strands-1` pair, in phase and flipped, at
+        // each of the eleven row counts — are gone rather than renamed:
+        // issue #669 drops both one-strand `serpentine` variants from the
+        // sweep, since a single ribbon spanning the whole band draws the
+        // same ink `aligned-strands-1` already names. There is no lone
+        // ribbon left to be a tree or a loop. The loop keeps watching for
+        // one rather than being deleted with the drawings, so a strand
+        // count that reintroduced one would be caught here again.
+        expect(loneRibbons).toHaveLength(0);
 
         // 🎯 Where the loops are: 294 of `negative`'s 308 corridor networks,
         // 3,099 `mosaic` drawings, `cross`'s seven solid crossings, the
         // eighteen `snake` drawings whose `edge` pitch closes a loop against
-        // the band border, all 66 of `branch`'s, and 675 of `parallel`'s 819.
+        // the band border, all 66 of `branch`'s, and 642 of `parallel`'s 786.
 
-        // `parallel` is the newest arrival, and its 675 are exactly the
-        // drawings a border rule added ink to — so the count is the same 675
+        // `parallel` is the newest arrival, and its 642 are exactly the
+        // drawings a border rule added ink to — so the count is the same 642
         // the branching test below reports, from a different measurement.
         // The 144 it leaves out are the `serpentine` drawings whose first and
         // last strips are each one lattice row deep: those two flat ribbons
         // already were the two rules, so ruling them adds no step and closes
-        // nothing.
+        // nothing. Issue #669 dropped the family's other 33 documents — the
+        // one-strand `plied` and `serpentine` entries — before this count was
+        // taken, so none of them are in either figure.
 
         // `branch` arrived the same way one commit earlier, and `mosaic`
         // earlier still, from removing the degree ceiling: a figure of dash
@@ -941,7 +972,7 @@ describe(MeanderTopologyService, () => {
         // band's own rules and nothing joining them, so it is one component
         // per lattice row with no loop anywhere, and the one corner of this
         // family that is a forest like the six oldest.
-        expect(looped).toHaveLength(4159);
+        expect(looped).toHaveLength(4126);
         expect(
           [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual([
@@ -964,13 +995,12 @@ describe(MeanderTopologyService, () => {
     // The junction total moved from 5,152 to 6,538 when `branch` gained a
     // rule along its second border, and to 24,572 when `parallel` gained
     // both of its own: those 819 documents carry 18,034 of these where they
-    // carried none. The document count moved with it this time — 214 to
-    // 889 — where `branch` moved the total alone, having already forked in
-    // all of its 66. Both numbers fell twice more, to 24,352 and 878 when
-    // the eleven `comb` duplicates of `plain` were deleted, and to 24,132
-    // and 867 when the eleven `stagger-branches-3` duplicates were. That is
-    // why the total, the count, and the set are three assertions rather
-    // than one.
+    // carried none. The document count moved with it — 214 to 889 — where
+    // `branch` moved the total alone, having already forked in all of its
+    // 66. Both fell three times more: to 24,352 and 878 when the eleven
+    // `comb` duplicates of `plain` were deleted; to 24,132 and 867 when the
+    // eleven `stagger-branches-3` duplicates were; and to 23,472 and 834
+    // when issue #669 dropped `parallel`'s 33 one-strand duplicates.
 
     // 144 `parallel` documents are still absent, and they are the same 144
     // the looped test above leaves out — the `serpentine` drawings whose two
@@ -995,16 +1025,16 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(documents).toHaveLength(1137);
+      expect(documents).toHaveLength(1104);
 
-      expect(tJunctions).toBe(24132);
-      expect(branching).toHaveLength(867);
+      expect(tJunctions).toBe(23472);
+      expect(branching).toHaveLength(834);
       expect(
         [...new Set(branching.map((name) => familyOf(name)))].toSorted(),
       ).toStrictEqual(["branch", "chain", "negative", "parallel", "snake"]);
       expect(
         branching.filter((name) => familyOf(name) === "parallel"),
-      ).toHaveLength(675);
+      ).toHaveLength(642);
     });
 
     it(

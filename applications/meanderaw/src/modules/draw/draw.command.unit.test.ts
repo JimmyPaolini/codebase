@@ -181,35 +181,38 @@ describe(DrawCommand, () => {
         // `parallel` is the one family whose modifiers do not expand to a
         // fixed number of values, so it is the one row here that is neither a
         // multiplication nor a single literal. It has no unmodified entry —
-        // `plied` names that drawing — and `plied` and `aligned` each sweep
-        // 1..rows, which is the `2 * rows` term.
+        // `plied` names that drawing — and `aligned` sweeps 1..rows while
+        // `plied` sweeps 2..rows, which is the `2 * rows - 1` term: at one
+        // strand there is nothing to ply, so only `aligned` still draws it.
 
         // `serpentine` sweeps every
         // *distinct* rotation and flip of each of those plies, and distinct
         // is the operative word: rotating a partition whose strips are all the
         // same depth changes nothing, `alternating` and `one` name the same
         // ribbon below three strands, and flipping a strip with no depth is a
-        // no-op. So its per-row counts are written out rather than derived —
-        // they are what `ParallelSerpentineService.variants` deduplicates down
-        // to, and a change in that deduplication should fail here rather than
-        // quietly committing the same drawing twice.
+        // no-op. Its one-strand ply is dropped for the same reason `plied`'s
+        // is, which is why every per-row count here is two lower than it
+        // used to be. So its per-row counts are written out rather than
+        // derived — they are what `ParallelSerpentineService.variants`
+        // deduplicates down to, and a change in that deduplication should
+        // fail here rather than quietly committing the same drawing twice.
         const serpentinePerRow: Record<number, number> = {
-          2: 5,
-          3: 9,
-          4: 19,
-          5: 19,
-          6: 44,
-          7: 45,
-          8: 65,
-          9: 66,
-          10: 126,
-          11: 85,
-          12: 182,
+          2: 3,
+          3: 7,
+          4: 17,
+          5: 17,
+          6: 42,
+          7: 43,
+          8: 63,
+          9: 64,
+          10: 124,
+          11: 83,
+          12: 180,
         };
         const expectedParallelCount = [
           2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
         ].reduce(
-          (total, rows) => total + 2 * rows + (serpentinePerRow[rows] ?? 0),
+          (total, rows) => total + 2 * rows - 1 + (serpentinePerRow[rows] ?? 0),
           0,
         );
         const expectedNamedTypeCount =
@@ -275,7 +278,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("9896 drawings");
+      expect(index?.[1]).toContain("9863 drawings");
 
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/1-columns/00000-dots.svg"',
@@ -644,14 +647,14 @@ describe(DrawCommand, () => {
           realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
         ).resolves.toBeUndefined();
 
-        // 🎯 every one of the 1,137 enumerated named-type combinations, every
+        // 🎯 every one of the 1,104 enumerated named-type combinations, every
         // one of the 8,551 mosaic tiles, and every one of the 208 one-column
         // negative sources, reached its real generation
         // service and real validators without throwing — this is the
         // regression guard the mocked tests above can't provide, since they
         // replace the generation services entirely. The extra file is the
         // single index page listing all of them.
-        expect(mockWriteFile).toHaveBeenCalledTimes(1137 + 8551 + 208 + 1);
+        expect(mockWriteFile).toHaveBeenCalledTimes(1104 + 8551 + 208 + 1);
       },
       FULL_SWEEP_TIMEOUT_MILLISECONDS,
     );
