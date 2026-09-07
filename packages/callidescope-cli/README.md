@@ -118,8 +118,8 @@ nx run codebase:callidescope:write
 ```
 
 Nothing writes unless it is asked to. A run given neither `--write` nor
-`--check reports` reads no destination and rewrites none, so `--check depth` on
-a pull request leaves every committed report exactly as it found it.
+`--check reports` reads no destination and rewrites none, so a gate on a pull
+request leaves every committed report exactly as it found it.
 `--write --check reports` is refused outright: a report cannot be stale in the
 run that just wrote it.
 

@@ -2008,7 +2008,7 @@
             }
           ],
           "displayName": "InputService.resolveFormatOption",
-          "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#7724",
+          "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#7702",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/input/input.service.ts",
@@ -2649,10 +2649,10 @@
               "displayName": "InputService.resolveFormatOption",
               "documentation": {
                 "isDeprecated": false,
-                "summary": "Returns the given options with `--format` filled in where one is wanted. Offered rather than required, which is the one place this differs from every other missing value: the configuration already declares a format, so with nobody at a terminal the configured one stands and the run proceeds. Demanding it would fail every scripted `--check depth` — the gate this repository runs on each pull request among them — over a flag those runs have never needed to pass. Generic over the caller's options type, so a command carries its own other flags through unchanged.",
+                "summary": "Returns the given options with `--format` filled in where one is wanted. Offered rather than required, which is the one place this differs from every other missing value: the configuration already declares a format, so with nobody at a terminal the configured one stands and the run proceeds. Demanding it would fail every scripted run — this repository's own per-project `gate` among them — over a flag those runs have never needed to pass. Generic over the caller's options type, so a command carries its own other flags through unchanged.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#7724",
+              "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#7702",
               "isCycle": false,
               "location": {
                 "column": 3,
@@ -7755,6 +7755,10 @@
           "breadth": 7,
           "callees": [
             {
+              "displayName": "ConfigurationService.resolveLanguageComments",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8246"
+            },
+            {
               "displayName": "ConfigurationService.resolveDocumentation",
               "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6456"
             },
@@ -7769,10 +7773,6 @@
             {
               "displayName": "ConfigurationService.resolveMarkdownOutput",
               "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9307"
-            },
-            {
-              "displayName": "ConfigurationService.resolveLanguageComments",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8246"
             },
             {
               "displayName": "ConfigurationService.resolveCustomStatistics",
@@ -7924,7 +7924,7 @@
             },
             {
               "displayName": "ConfigurationFileNotFoundError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15970"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16113"
             }
           ],
           "displayName": "ConfigurationLoaderService.resolveConfigurationPath",
@@ -7956,7 +7956,7 @@
             },
             {
               "displayName": "InvalidLimitValueError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16614"
             }
           ],
           "displayName": "ConfigurationService.parseLimitValue",
@@ -8101,15 +8101,15 @@
           "callees": [
             {
               "displayName": "every(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10192"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10226"
             }
           ],
           "displayName": "refine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10144",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10178",
           "location": {
             "column": 11,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 324
+            "line": 325
           },
           "signature": {
             "parameters": [
@@ -8129,15 +8129,15 @@
           "callees": [
             {
               "displayName": "some(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14482"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14584"
             }
           ],
           "displayName": "superRefine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14398",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14500",
           "location": {
             "column": 22,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 438
+            "line": 441
           },
           "signature": {
             "parameters": [
@@ -8163,15 +8163,15 @@
           "callees": [
             {
               "displayName": "map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15616"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15718"
             }
           ],
           "displayName": "refine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15575",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15677",
           "location": {
             "column": 7,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 465
+            "line": 468
           },
           "signature": {
             "parameters": [
@@ -8246,7 +8246,7 @@
           "callees": [
             {
               "displayName": "InvalidLimitValueError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16614"
             }
           ],
           "displayName": "ConfigurationService.parseLimitValueText",
@@ -8706,12 +8706,12 @@
             },
             {
               "displayName": "InvalidLimitValueError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16614",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 492
+                "line": 496
               },
               "signature": {
                 "parameters": [
@@ -8884,12 +8884,12 @@
           "frames": [
             {
               "displayName": "refine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10144",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10178",
               "isCycle": false,
               "location": {
                 "column": 11,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 324
+                "line": 325
               },
               "signature": {
                 "parameters": [
@@ -8906,12 +8906,12 @@
             },
             {
               "displayName": "every(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10192",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10226",
               "isCycle": false,
               "location": {
                 "column": 38,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 325
+                "line": 326
               },
               "signature": {
                 "parameters": [
@@ -8935,12 +8935,12 @@
           "frames": [
             {
               "displayName": "superRefine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14398",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14500",
               "isCycle": false,
               "location": {
                 "column": 22,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 438
+                "line": 441
               },
               "signature": {
                 "parameters": [
@@ -8963,12 +8963,12 @@
             },
             {
               "displayName": "some(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14482",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14584",
               "isCycle": false,
               "location": {
                 "column": 13,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 440
+                "line": 443
               },
               "signature": {
                 "parameters": [
@@ -8992,12 +8992,12 @@
           "frames": [
             {
               "displayName": "refine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15575",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15677",
               "isCycle": false,
               "location": {
                 "column": 7,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 465
+                "line": 468
               },
               "signature": {
                 "parameters": [
@@ -9014,12 +9014,12 @@
             },
             {
               "displayName": "map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15616",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15718",
               "isCycle": false,
               "location": {
                 "column": 29,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 466
+                "line": 469
               },
               "signature": {
                 "parameters": [
@@ -9041,7 +9041,7 @@
       "summary": {
         "callableCount": 52,
         "cyclicComponentCount": 0,
-        "edgeCount": 50,
+        "edgeCount": 54,
         "entryPointCount": 6,
         "fileCount": 18,
         "maximumDepth": 8,
@@ -10385,7 +10385,7 @@
   "summary": {
     "callableCount": 230,
     "cyclicComponentCount": 1,
-    "edgeCount": 196,
+    "edgeCount": 200,
     "entryPointCount": 76,
     "fileCount": 84,
     "maximumDepth": 8,

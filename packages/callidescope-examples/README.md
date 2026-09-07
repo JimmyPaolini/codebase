@@ -299,13 +299,14 @@ straight line, and a straight line is a list with extra steps.
 
 ### The two flags
 
-`--check depth` and `--check reports` name two different findings, and they sit
-on opposite sides of a pull request. This package is the clearest place to see
-why, because it uses the opposite one from the workspace around it:
+Gating a project's limits and gating a report's freshness are two different
+findings, and they sit on opposite sides of a pull request. This package is the
+clearest place to see why, because it uses the opposite one from the workspace
+around it:
 
 | Run | Flag | Why |
 | --- | ---- | --- |
-| `nx run codebase:callidescope` | `--check depth` | A stack got longer in this change, and this change is what fixes it |
+| `nx run <project>:gate` | the project's own limits | A stack got longer in this change, and this change is what fixes it |
 | `nx run callidescope-examples:examples` | `--check reports` | The fixtures are frozen, so a stale report means a fixture, a dependency, or the resolver moved |
 
 The workspace cannot check its own report on a branch: the call graph moves on

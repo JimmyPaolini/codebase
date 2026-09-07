@@ -221,9 +221,9 @@ export class InputService {
    * Offered rather than required, which is the one place this differs from
    * every other missing value: the configuration already declares a format,
    * so with nobody at a terminal the configured one stands and the run
-   * proceeds. Demanding it would fail every scripted `--check depth` — the
-   * gate this repository runs on each pull request among them — over a flag
-   * those runs have never needed to pass.
+   * proceeds. Demanding it would fail every scripted run — this repository's
+   * own per-project `gate` among them — over a flag those runs have never
+   * needed to pass.
    *
    * Generic over the caller's options type, so a command carries its own
    * other flags through unchanged.
