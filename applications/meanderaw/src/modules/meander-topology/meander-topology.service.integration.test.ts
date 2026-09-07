@@ -1055,7 +1055,7 @@ describe(MeanderTopologyService, () => {
             .map(({ name }) => name),
         ).toStrictEqual([]);
 
-        // 🎯 Ink crosses in exactly three families across all 9,942 files, and
+        // 🎯 Ink crosses in exactly three families across all 9,863 files, and
         // in neither of them by accident. Taken as three statements rather
         // than one list, so each says something a longer list would bury.
         const crossing = measured.filter(
