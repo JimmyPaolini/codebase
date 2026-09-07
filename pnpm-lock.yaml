@@ -2799,24 +2799,6 @@ importers:
       '@conformetry/generation':
         specifier: workspace:*
         version: link:../conformetry-generation
-      '@conformetry/json':
-        specifier: workspace:*
-        version: link:../conformetry-json
-      '@conformetry/jupyter':
-        specifier: workspace:*
-        version: link:../conformetry-jupyter
-      '@conformetry/markdown':
-        specifier: workspace:*
-        version: link:../conformetry-markdown
-      '@conformetry/python':
-        specifier: workspace:*
-        version: link:../conformetry-python
-      '@conformetry/text':
-        specifier: workspace:*
-        version: link:../conformetry-text
-      '@conformetry/typescript':
-        specifier: workspace:*
-        version: link:../conformetry-typescript
       '@conformetry/validation':
         specifier: workspace:*
         version: link:../conformetry-validation
@@ -2995,30 +2977,12 @@ importers:
       '@conformetry/files':
         specifier: workspace:*
         version: link:../conformetry-files
-      '@conformetry/json':
+      '@conformetry/languages':
         specifier: workspace:*
-        version: link:../conformetry-json
-      '@conformetry/jupyter':
-        specifier: workspace:*
-        version: link:../conformetry-jupyter
-      '@conformetry/markdown':
-        specifier: workspace:*
-        version: link:../conformetry-markdown
-      '@conformetry/python':
-        specifier: workspace:*
-        version: link:../conformetry-python
-      '@conformetry/text':
-        specifier: workspace:*
-        version: link:../conformetry-text
-      '@conformetry/typescript':
-        specifier: workspace:*
-        version: link:../conformetry-typescript
+        version: link:../conformetry-languages
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/core':
-        specifier: 'catalog:'
-        version: 11.1.28(@nestjs/common@11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2

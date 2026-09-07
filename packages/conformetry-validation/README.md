@@ -14,7 +14,7 @@ npm install --save-dev @conformetry/validation
 ```ts
 import { ValidationService } from "@conformetry/validation";
 
-const result = await validationService.validate({
+const result = validationService.validate({
   instances, // from DiscoveryService.findInstances
   templates, // from DiscoveryService.collectTemplate
   languageNames: ["typescript"], // optional filter
@@ -55,32 +55,26 @@ report must not change it.
 instance matched no template at all — an unmatched path has no template to be
 held to, so no threshold could excuse it.
 
-## Lazy language loading
+## Language resolution
 
-Which language packages exist is a static table keyed by extension, so a run
-can decide whether it needs `@conformetry/python` without importing it first.
-Only the packages a run's templates actually call for are loaded.
+Which languages a run needs is
+[`@conformetry/languages`](../conformetry-languages/README.md)'s question, not
+this package's. `LanguagesService` is injected, asked which engines claim the
+extensions the run's templates declare, and its answer is what `validate`
+dispatches over. An extension no language claims is compared line by line by
+the text fallback, so no template file goes unchecked.
 
-| Extensions | Package |
-| ---------- | ------- |
-| `.ts`, `.tsx` | `@conformetry/typescript` |
-| `.md` | `@conformetry/markdown` |
-| `.py` | `@conformetry/python` |
-| `.json`, `.jsonc` | `@conformetry/json` |
-| `.ipynb` | `@conformetry/jupyter` |
-| everything else | `@conformetry/text` |
-
-`@conformetry/text` is a required dependency rather than an optional one: it is
-the floor, so an extension nobody claims is still compared line by line instead
-of going unchecked. Pass `loadLanguageModule` to supply your own loader.
+Nothing is imported on demand any more. That mechanism bought install-time
+optionality nobody was spending — the fallback makes every run need the
+package regardless — so the specifier registry, the module loader, and the
+`loadLanguageModule` option went with it.
 
 ## Exports
 
-`ValidationService`, `ValidationLanguagesService`,
-`ValidationDeduplicationService`, `ValidationFindingsService`,
-`ValidationModule`, `MissingLanguagePackageError`, and the
-`RunValidationArguments`, `RunValidationResult`, `InstanceFileResults`, and
-`LanguageModuleLoader` types.
+`ValidationService`, `ValidationDeduplicationService`,
+`ValidationFindingsService`, `ValidationScoringService`, `ValidationModule`,
+and the `RunValidationArguments`, `RunValidationResult`, and
+`InstanceFileResults` types.
 
 ## Test
 
@@ -104,13 +98,13 @@ Call stacks traced through `packages/conformetry-validation`, deepest first. Eac
 
 | Measure | Value |
 | --- | --- |
-| Callables | 48 |
-| Files | 12 |
-| Calls traced | 49 |
+| Callables | 35 |
+| Files | 11 |
+| Calls traced | 37 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 4 |
+| Unfollowable calls | 0 |
 
 ### Call stacks (depth)
 
@@ -124,33 +118,29 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ValidationService.validate` | 10 | `InstanceDiscoveryService.matchInstances`, `ValidationService.selectValidators`, `ValidationLanguagesService.resolveValidators`, `ValidationService.readTemplateExtensions`, `ValidationService.map(…)`, `ValidationScoringService.scoreInstances`, `ValidationDeduplicationService.deduplicate`, `ValidationFindingsService.buildUnmatchedResults`, `ValidationService.map(…)`, `ValidationService.every(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:132` |
+| `ValidationService.validate` | 10 | `InstanceDiscoveryService.matchInstances`, `ValidationService.selectValidators`, `LanguagesService.resolveValidators`, `ValidationService.readTemplateExtensions`, `ValidationService.map(…)`, `ValidationScoringService.scoreInstances`, `ValidationDeduplicationService.deduplicate`, `ValidationFindingsService.buildUnmatchedResults`, `ValidationService.map(…)`, `ValidationService.every(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:136` |
 | `ValidationService.validateInstance` | 6 | `InstanceDiscoveryService.prepareDocuments`, `ValidationService.flatMap(…)`, `FilesService.checkInstanceFiles`, `ValidationService.map(…)`, `ValidationService.flatMap(…)`, `ValidationService.reduce(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:87` |
-| `ValidationLanguagesService.resolveValidators` | 4 | `ValidationLanguagesService.filter(…)`, `ValidationLanguagesService.loadValidator`, `ValidationLanguagesService.flatMap(…)`, `ValidationLanguagesService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:117` |
+| `ValidationScoringService.scoreInstance` | 4 | `ValidationScoringService.reduce(…)`, `ScoringService.calculateScore`, `ValidationScoringService.resolveThreshold`, `ValidationScoringService.resolveInstancePath` | `packages/conformetry-validation/src/modules/validation/validation-scoring.service.ts:74` |
 
 <details>
-<summary>18 more callables</summary>
+<summary>14 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ValidationScoringService.scoreInstance` | 4 | `ValidationScoringService.reduce(…)`, `ScoringService.calculateScore`, `ValidationScoringService.resolveThreshold`, `ValidationScoringService.resolveInstancePath` | `packages/conformetry-validation/src/modules/validation/validation-scoring.service.ts:74` |
-| `ValidationLanguagesService.loadValidator` | 3 | `MissingLanguagePackageError.constructor`, `ValidationLanguagesService.readExport`, `ValidationLanguagesService.load(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:42` |
 | `ValidationDeduplicationService.deduplicate` | 2 | `ValidationDeduplicationService.selectOwners`, `ValidationDeduplicationService.flatMap(…)` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:90` |
 | `ValidationFindingsService.buildUnmatchedResults` | 2 | `ValidationFindingsService.resolveTemplatesRootPath`, `ValidationFindingsService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:68` |
-| `ValidationLanguagesService.readExport` | 2 | `ValidationLanguagesService.isConstructable`, `MissingLanguagePackageError.constructor` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:85` |
 | `ValidationScoringService.scoreInstances` | 2 | `ValidationScoringService.scoreInstance`, `ValidationScoringService.resolveScoreKey` | `packages/conformetry-validation/src/modules/validation/validation-scoring.service.ts:111` |
 | `ValidationDeduplicationService.selectOwners` | 1 | `ValidationDeduplicationService.compareInstances` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:57` |
 | `ValidationDeduplicationService.flatMap(…)` | 1 | `ValidationDeduplicationService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:94` |
 | `ValidationDeduplicationService.filter(…)` | 1 | `ValidationDeduplicationService.resolveFindingKey` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:95` |
 | `ValidationFindingsService.resolveTemplatesRootPath` | 1 | `ValidationFindingsService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:57` |
 | `ValidationFindingsService.map(…)` | 1 | `ValidationFindingsService.describeReason` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:74` |
-| `ValidationLanguagesService.filter(…)` | 1 | `ValidationLanguagesService.some(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:128` |
 | `ValidationScoringService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/conformetry-validation/src/modules/validation/validation-scoring.service.ts:75` |
 | `ValidationService.readTemplateExtensions` | 1 | `ValidationService.flatMap(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:50` |
 | `ValidationService.flatMap(…)` | 1 | `ValidationService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:53` |
 | `ValidationService.selectValidators` | 1 | `ValidationService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:63` |
 | `ValidationService.map(…)` | 1 | `RunnerService.runValidator` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:100` |
-| `ValidationService.map(…)` | 1 | `ValidationService.validateInstance` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:150` |
+| `ValidationService.map(…)` | 1 | `ValidationService.validateInstance` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:149` |
 
 </details>
 
@@ -173,13 +163,8 @@ graph LR
   conformetry_core["conformetry-core"]
   conformetry_examples["conformetry-examples"]
   conformetry_files["conformetry-files"]
-  conformetry_json["conformetry-json"]
-  conformetry_jupyter["conformetry-jupyter"]
-  conformetry_markdown["conformetry-markdown"]
+  conformetry_languages["conformetry-languages"]
   conformetry_nx["conformetry-nx"]
-  conformetry_python["conformetry-python"]
-  conformetry_text["conformetry-text"]
-  conformetry_typescript["conformetry-typescript"]
   conformetry_validation["conformetry-validation"]
   conformetry_cli --> conformetry_validation
   conformetry_examples --> conformetry_validation
@@ -187,12 +172,7 @@ graph LR
   conformetry_validation --> conformetry_configuration
   conformetry_validation --> conformetry_core
   conformetry_validation --> conformetry_files
-  conformetry_validation --> conformetry_json
-  conformetry_validation --> conformetry_jupyter
-  conformetry_validation --> conformetry_markdown
-  conformetry_validation --> conformetry_python
-  conformetry_validation --> conformetry_text
-  conformetry_validation --> conformetry_typescript
+  conformetry_validation --> conformetry_languages
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_validation subject
 ```
@@ -207,21 +187,43 @@ flowchart LR
   DifferencesModule
   FilesModule
   InstanceDiscoveryModule
+  JsonModule
+  JupyterModule
+  LanguagesModule
+  MarkdownModule
+  PythonModule
   RenderingModule
   ReportingModule
   RunnerModule
   ScoringModule
   TemplateDiscoveryModule
+  TextModule
+  TypescriptModule
   ValidationModule
   FilesModule --> DifferencesModule
   FilesModule --> InstanceDiscoveryModule
   InstanceDiscoveryModule --> ConfigurationModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule
+  JsonModule --> ScoringModule
+  JupyterModule --> JsonModule
+  JupyterModule --> MarkdownModule
+  JupyterModule --> PythonModule
+  LanguagesModule --> JsonModule
+  LanguagesModule --> JupyterModule
+  LanguagesModule --> MarkdownModule
+  LanguagesModule --> PythonModule
+  LanguagesModule --> TextModule
+  LanguagesModule --> TypescriptModule
+  MarkdownModule --> ScoringModule
+  PythonModule --> DifferencesModule
+  PythonModule --> ScoringModule
   ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
+  TypescriptModule --> ScoringModule
   ValidationModule --> FilesModule
   ValidationModule --> InstanceDiscoveryModule
+  ValidationModule --> LanguagesModule
   ValidationModule --> ReportingModule
   ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule
@@ -240,8 +242,6 @@ graph LR
   file_src_modules_validation_validation_deduplication_service_unit_test_ts["src/modules/validation/validation-deduplication.service.unit.test.ts"]
   file_src_modules_validation_validation_findings_service_ts["src/modules/validation/validation-findings.service.ts"]
   file_src_modules_validation_validation_findings_service_unit_test_ts["src/modules/validation/validation-findings.service.unit.test.ts"]
-  file_src_modules_validation_validation_languages_service_ts["src/modules/validation/validation-languages.service.ts"]
-  file_src_modules_validation_validation_languages_service_unit_test_ts["src/modules/validation/validation-languages.service.unit.test.ts"]
   file_src_modules_validation_validation_scoring_service_ts["src/modules/validation/validation-scoring.service.ts"]
   file_src_modules_validation_validation_scoring_service_unit_test_ts["src/modules/validation/validation-scoring.service.unit.test.ts"]
   file_src_modules_validation_validation_constants_ts["src/modules/validation/validation.constants.ts"]
@@ -257,22 +257,15 @@ graph LR
   file_src_modules_validation_validation_deduplication_service_unit_test_ts --> file_src_modules_validation_validation_deduplication_service_ts
   file_src_modules_validation_validation_deduplication_service_unit_test_ts --> file_src_modules_validation_validation_types_ts
   file_src_modules_validation_validation_findings_service_unit_test_ts --> file_src_modules_validation_validation_findings_service_ts
-  file_src_modules_validation_validation_languages_service_ts --> file_src_modules_validation_validation_constants_ts
-  file_src_modules_validation_validation_languages_service_ts --> file_src_modules_validation_validation_types_ts
-  file_src_modules_validation_validation_languages_service_unit_test_ts --> file_src_modules_validation_validation_languages_service_ts
-  file_src_modules_validation_validation_languages_service_unit_test_ts --> file_src_modules_validation_validation_types_ts
   file_src_modules_validation_validation_scoring_service_ts --> file_src_modules_validation_validation_constants_ts
   file_src_modules_validation_validation_scoring_service_ts --> file_src_modules_validation_validation_types_ts
   file_src_modules_validation_validation_scoring_service_unit_test_ts --> file_src_modules_validation_validation_scoring_service_ts
-  file_src_modules_validation_validation_constants_ts --> file_src_modules_validation_validation_types_ts
   file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_deduplication_service_ts
   file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_findings_service_ts
-  file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_languages_service_ts
   file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_scoring_service_ts
   file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_service_ts
   file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_deduplication_service_ts
   file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_findings_service_ts
-  file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_languages_service_ts
   file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_scoring_service_ts
   file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_types_ts
   file_src_modules_validation_validation_service_unit_test_ts --> file_src_modules_validation_validation_module_ts

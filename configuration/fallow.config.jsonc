@@ -118,9 +118,6 @@
     // been built — before that pnpm warns and creates nothing, which is
     // expected on a fresh clone rather than a broken install.
     "@conformetry/cli",
-    // Named as a string in conformetry-validation's language registry and
-    // imported on demand, so no static import proves it is used.
-    "@conformetry/text",
     // Depended on by codometer-examples so its tests spawn the command line
     // they document; they resolve its entry point through the manifest and run
     // it as a process rather than importing it.

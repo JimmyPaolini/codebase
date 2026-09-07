@@ -90,7 +90,7 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
 | Callables | 143 |
 | Files | 40 |
 | Calls traced | 190 |
-| Call stacks | 15 |
+| Call stacks | 14 |
 | Deepest stack | 13 |
 | Stacks through recursion | 3 |
 | Unfollowable calls | 0 |
@@ -175,7 +175,7 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
 ```
 
 <details>
-<summary>12 more call stacks</summary>
+<summary>11 more call stacks</summary>
 
 **4. `PythonService.validateDocument`** — depth 6 · orphan-root
 
@@ -215,16 +215,7 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
        ↳ Reads a node's children, or an empty list for a leaf.
 ```
 
-**7. `LanguagesService.resolveValidators`** — depth 3 · orphan-root
-
-```text
-🚀 LanguagesService.resolveValidators(args: ResolveValidatorsArguments): ConformetryLanguageValidator[] [packages/conformetry-languages/src/modules/languages/languages.service.ts:95]
-   ↳ Resolves a validator for every extension in play.
-  └─> LanguagesService.filter(…)(language: ConformetryLanguageValidator): boolean [packages/conformetry-languages/src/modules/languages/languages.service.ts:98]
-    └─> LanguagesService.some(…)(extension: string): boolean [packages/conformetry-languages/src/modules/languages/languages.service.ts:99]
-```
-
-**8. `MarkdownNodesService.code`** — depth 2 · orphan-root
+**7. `MarkdownNodesService.code`** — depth 2 · orphan-root
 
 ```text
 🚀 MarkdownNodesService.code(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:35]
@@ -232,7 +223,7 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
      ↳ Compares two optional string fields, treating absent as empty.
 ```
 
-**9. `MarkdownNodesService.heading`** — depth 2 · orphan-root
+**8. `MarkdownNodesService.heading`** — depth 2 · orphan-root
 
 ```text
 🚀 MarkdownNodesService.heading(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:41]
@@ -240,7 +231,7 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
      ↳ Reads a node's rendered plain text.
 ```
 
-**10. `MarkdownNodesService.html`** — depth 2 · orphan-root
+**9. `MarkdownNodesService.html`** — depth 2 · orphan-root
 
 ```text
 🚀 MarkdownNodesService.html(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:47]
@@ -248,7 +239,7 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
      ↳ Compares two optional string fields, treating absent as empty.
 ```
 
-**11. `MarkdownNodesService.image`** — depth 2 · orphan-root
+**10. `MarkdownNodesService.image`** — depth 2 · orphan-root
 
 ```text
 🚀 MarkdownNodesService.image(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:50]
@@ -256,7 +247,7 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
      ↳ Compares two optional string fields, treating absent as empty.
 ```
 
-**12. `MarkdownNodesService.inlineCode`** — depth 2 · orphan-root
+**11. `MarkdownNodesService.inlineCode`** — depth 2 · orphan-root
 
 ```text
 🚀 MarkdownNodesService.inlineCode(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:56]
@@ -264,7 +255,7 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
      ↳ Compares two optional string fields, treating absent as empty.
 ```
 
-**13. `MarkdownNodesService.link`** — depth 2 · orphan-root
+**12. `MarkdownNodesService.link`** — depth 2 · orphan-root
 
 ```text
 🚀 MarkdownNodesService.link(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:59]
@@ -272,7 +263,7 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
      ↳ Compares two optional string fields, treating absent as empty.
 ```
 
-**14. `MarkdownNodesService.tableRow`** — depth 2 · orphan-root
+**13. `MarkdownNodesService.tableRow`** — depth 2 · orphan-root
 
 ```text
 🚀 MarkdownNodesService.tableRow(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:74]
@@ -280,7 +271,7 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
      ↳ Reads a node's children, or an empty list for a leaf.
 ```
 
-**15. `MarkdownNodesService.text`** — depth 2 · orphan-root
+**14. `MarkdownNodesService.text`** — depth 2 · orphan-root
 
 ```text
 🚀 MarkdownNodesService.text(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:80]
@@ -404,7 +395,9 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   conformetry_core["conformetry-core"]
   conformetry_languages["conformetry-languages"]
+  conformetry_validation["conformetry-validation"]
   conformetry_languages --> conformetry_core
+  conformetry_validation --> conformetry_languages
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_languages subject
 ```

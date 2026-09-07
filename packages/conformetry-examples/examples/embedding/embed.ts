@@ -77,7 +77,7 @@ async function main(): Promise<void> {
   );
 
   const instanceDiscoveryService = context.get(InstanceDiscoveryService);
-  const result = await context.get(ValidationService).validate({
+  const result = context.get(ValidationService).validate({
     instances: definition.instances.flatMap((group) =>
       instanceDiscoveryService.findInstances({
         patterns: group.patterns ?? [],

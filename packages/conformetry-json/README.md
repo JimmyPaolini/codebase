@@ -133,12 +133,8 @@ graph LR
   conformetry_core["conformetry-core"]
   conformetry_json["conformetry-json"]
   conformetry_jupyter["conformetry-jupyter"]
-  conformetry_nx["conformetry-nx"]
-  conformetry_validation["conformetry-validation"]
   conformetry_json --> conformetry_core
   conformetry_jupyter --> conformetry_json
-  conformetry_nx --> conformetry_json
-  conformetry_validation --> conformetry_json
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_json subject
 ```

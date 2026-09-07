@@ -201,12 +201,8 @@ graph LR
   conformetry_core["conformetry-core"]
   conformetry_jupyter["conformetry-jupyter"]
   conformetry_markdown["conformetry-markdown"]
-  conformetry_nx["conformetry-nx"]
-  conformetry_validation["conformetry-validation"]
   conformetry_jupyter --> conformetry_markdown
   conformetry_markdown --> conformetry_core
-  conformetry_nx --> conformetry_markdown
-  conformetry_validation --> conformetry_markdown
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_markdown subject
 ```
