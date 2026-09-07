@@ -6,9 +6,8 @@ import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 
 import {
-  ADDRESSED_UNIT,
   InvalidSpanError,
-  MINIMUM_ADDRESSABLE_UNITS,
+  TERMINATION_MARGIN_PITCHES,
 } from "./lattice-identification.constants";
 
 import type { LatticeGraph } from "../meander-lattice/meander-lattice.types";
@@ -16,7 +15,10 @@ import type {
   MosaicTile,
   MosaicTileShape,
 } from "../mosaic-tile/mosaic-tile.types";
-import type { LatticeAddress } from "./lattice-identification.types";
+import type {
+  LatticeAddress,
+  LatticeUnit,
+} from "./lattice-identification.types";
 
 /**
  * Names a reading of the lattice: which repeat unit of a rendered document
@@ -61,9 +63,16 @@ export class LatticeIdentificationService {
   // 🔏 Private Methods
 
   /**
-   * Refuses a span the drawing cannot be addressed at: one that is not a
-   * whole number of columns, or one leaving too few repeat units for
-   * {@link ADDRESSED_UNIT} to sit clear of both band terminations.
+   * Refuses a unit the drawing cannot be addressed at: a pitch or a span
+   * that is not a whole number of columns, a span that is not a whole number
+   * of pitches, or a drawing too narrow to hold that span with
+   * {@link TERMINATION_MARGIN_PITCHES} clear at either end.
+   *
+   * Every bound is counted in pitches rather than in spans, which is what
+   * keeps a drawing whose span is several pitches wide addressable at all:
+   * the band's terminations are one unit wide however many units a repeat
+   * takes, so demanding a whole span of margin would refuse drawings that
+   * are perfectly readable.
    *
    * It says nothing about whether the drawing really repeats at that span.
    * A tile's `north` and `west` are the neighboring point's `south` and
@@ -72,17 +81,34 @@ export class LatticeIdentificationService {
    * rather than about the canvas, which nothing in this shape check could
    * answer.
    */
-  private assertAddressable(graph: LatticeGraph, columns: number): void {
-    if (!Number.isInteger(columns) || columns < 1) {
-      throw new InvalidSpanError(columns, "no whole number of columns");
+  private assertAddressable(graph: LatticeGraph, unit: LatticeUnit): void {
+    const { pitch, span } = unit;
+
+    if (!Number.isInteger(pitch) || pitch < 1) {
+      throw new InvalidSpanError(
+        span,
+        `a pitch of ${pitch} is no whole number of columns`,
+      );
     }
 
-    const units = Math.floor(graph.columns / columns);
+    if (!Number.isInteger(span) || span < 1) {
+      throw new InvalidSpanError(span, "no whole number of columns");
+    }
 
-    if (units < MINIMUM_ADDRESSABLE_UNITS) {
+    if (span % pitch !== 0) {
       throw new InvalidSpanError(
-        columns,
-        `a ${graph.columns}-column drawing holds ${units} repeat units at it, too few for one carrying neither band termination`,
+        span,
+        `no whole number of ${pitch}-column repeat units`,
+      );
+    }
+
+    const pitches = Math.floor(graph.columns / pitch);
+    const required = span / pitch + 2 * TERMINATION_MARGIN_PITCHES;
+
+    if (pitches < required) {
+      throw new InvalidSpanError(
+        span,
+        `a ${graph.columns}-column drawing holds ${pitches} repeat units of ${pitch} columns, too few for the ${required} a span clear of both band terminations needs`,
       );
     }
   }
@@ -151,11 +177,16 @@ export class LatticeIdentificationService {
    * canonical symmetry class beside it, and the sub-family name the ink
    * earns where it earns one.
    *
-   * The span is a parameter rather than something recovered here. How wide
-   * one repeat unit is, is a fact about the family that drew the document —
-   * `MotifPitchService` derives it from the family's own pitch — while what
-   * the ink *does* over that span is a fact about the document, and only the
-   * second of those can be read off the drawing.
+   * The {@link LatticeUnit} is a parameter rather than something recovered
+   * here. How wide one repeat unit is, and how many of them a true repeat
+   * takes, are facts about the family that drew the document —
+   * `MotifPitchService` derives both — while what the ink *does* over that
+   * span is a fact about the document, and only the last of those can be
+   * read off the drawing.
+   *
+   * The addressed window opens one pitch in and closes one pitch short of
+   * the end, so a family whose span runs to several pitches is still
+   * addressable at the widths the corpus is drawn at.
    *
    * The band's row count is not a parameter, because the document declares
    * it: the canvas height over the grid pitch is the number of grid rows,
@@ -163,13 +194,18 @@ export class LatticeIdentificationService {
    * border rules. Those rules are not addressed, exactly as a `mosaic` tile
    * does not address them.
    */
-  identifyDocument(document: string, columns: number): LatticeAddress {
+  identifyDocument(document: string, unit: LatticeUnit): LatticeAddress {
     const graph = this.meanderLatticeService.build(document);
 
-    this.assertAddressable(graph, columns);
+    this.assertAddressable(graph, unit);
 
+    const columns = unit.span;
     const shape: MosaicTileShape = { columns, rows: graph.rows };
-    const tile = this.readTile(graph, shape, ADDRESSED_UNIT);
+    const tile = this.readTile(
+      graph,
+      shape,
+      TERMINATION_MARGIN_PITCHES * unit.pitch,
+    );
     const identifier = this.identify(tile);
     const earned = this.mosaicNamingService.name(tile);
 
@@ -184,25 +220,30 @@ export class LatticeIdentificationService {
   }
 
   /**
-   * The tile one repeat unit of a rendered document draws.
+   * The tile the window of a rendered document beginning at `startColumn`
+   * draws.
    *
    * A tile point `(level, column)` is the lattice point at column
-   * `unit × columns + column` and row `level + 1` — the `+ 1` being the top
+   * `startColumn + column` and row `level + 1` — the `+ 1` being the top
    * cap tick, which sits on grid level `0` and is not a tile point. An
    * eastward edge is the one-pitch step right from there, a southward edge
    * the step down.
+   *
+   * The window is placed by a lattice column rather than by a repeat-unit
+   * index, because the two stopped agreeing once a span could be several
+   * pitches wide: a drawing is addressed one *pitch* in, which is a fraction
+   * of a unit when its span is four of them.
    */
   readTile(
     graph: LatticeGraph,
     shape: MosaicTileShape,
-    unit: number,
+    startColumn: number,
   ): MosaicTile {
-    const start = unit * shape.columns;
     const edges = this.mosaicTileService.blankEdges(shape);
 
     for (const [level, row] of edges.horizontal.entries()) {
       for (const [column] of row.entries()) {
-        if (graph.horizontalEdges.has(`${start + column},${level + 1}`)) {
+        if (graph.horizontalEdges.has(`${startColumn + column},${level + 1}`)) {
           this.mosaicTileService.mark(edges.horizontal, level, column);
         }
       }
@@ -210,7 +251,7 @@ export class LatticeIdentificationService {
 
     for (const [level, row] of edges.vertical.entries()) {
       for (const [column] of row.entries()) {
-        if (graph.verticalEdges.has(`${start + column},${level + 1}`)) {
+        if (graph.verticalEdges.has(`${startColumn + column},${level + 1}`)) {
           this.mosaicTileService.mark(edges.vertical, level, column);
         }
       }

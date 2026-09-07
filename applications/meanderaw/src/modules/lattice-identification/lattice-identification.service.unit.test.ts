@@ -156,7 +156,9 @@ describe(LatticeIdentificationService, () => {
         rows: 3,
       });
 
-      expect(service.identifyDocument(document, 1)).toStrictEqual({
+      expect(
+        service.identifyDocument(document, { pitch: 1, span: 1 }),
+      ).toStrictEqual({
         address: "3r1c-48",
         canonicalIdentifier: "48",
         columns: 1,
@@ -173,7 +175,9 @@ describe(LatticeIdentificationService, () => {
         rows: 2,
       });
 
-      expect(service.identifyDocument(document, 1)).toMatchObject({
+      expect(
+        service.identifyDocument(document, { pitch: 1, span: 1 }),
+      ).toMatchObject({
         address: "2r1c-3",
         subFamily: "lines",
       });
@@ -190,7 +194,7 @@ describe(LatticeIdentificationService, () => {
         ]),
         rows: 2,
       });
-      const address = service.identifyDocument(document, 3);
+      const address = service.identifyDocument(document, { pitch: 3, span: 3 });
 
       expect(address.identifier).toBe("210");
       expect(address).not.toHaveProperty("subFamily");
@@ -206,7 +210,9 @@ describe(LatticeIdentificationService, () => {
         rows: 2,
       });
 
-      expect(service.identifyDocument(document, 1).identifier).toBe("3");
+      expect(
+        service.identifyDocument(document, { pitch: 1, span: 1 }).identifier,
+      ).toBe("3");
     });
 
     it("reports the canonical class beside the literal address rather than in place of it", () => {
@@ -221,7 +227,7 @@ describe(LatticeIdentificationService, () => {
             ),
             rows: 2,
           }),
-          2,
+          { pitch: 2, span: 2 },
         );
       const aligned = dashesFrom(0);
       const shifted = dashesFrom(1);
@@ -242,25 +248,87 @@ describe(LatticeIdentificationService, () => {
         rows: 2,
       });
 
-      expect(() => service.identifyDocument(document, 2)).toThrow(
-        InvalidSpanError,
-      );
+      expect(() =>
+        service.identifyDocument(document, { pitch: 2, span: 2 }),
+      ).toThrow(InvalidSpanError);
     });
 
     it.each([0, -1, 1.5])(
       "refuses a span of %s, which is no whole number of columns",
-      (columns) => {
+      (span) => {
         const document = drawing({
           columns: 8,
           paths: [across(1, 0, 8)],
           rows: 2,
         });
 
-        expect(() => service.identifyDocument(document, columns)).toThrow(
-          InvalidSpanError,
-        );
+        expect(() =>
+          service.identifyDocument(document, { pitch: 1, span }),
+        ).toThrow(InvalidSpanError);
       },
     );
+
+    it.each([0, -1, 1.5])(
+      "refuses a pitch of %s, which is no whole number of columns",
+      (pitch) => {
+        const document = drawing({
+          columns: 8,
+          paths: [across(1, 0, 8)],
+          rows: 2,
+        });
+
+        expect(() =>
+          service.identifyDocument(document, { pitch, span: 2 }),
+        ).toThrow(InvalidSpanError);
+      },
+    );
+
+    it("refuses a span that is no whole number of repeat units", () => {
+      const document = drawing({
+        columns: 12,
+        paths: [across(1, 0, 12)],
+        rows: 2,
+      });
+
+      expect(() =>
+        service.identifyDocument(document, { pitch: 2, span: 3 }),
+      ).toThrow(InvalidSpanError);
+    });
+
+    it("opens the addressed window one pitch in rather than one span in", () => {
+      // One dash between lattice columns 1 and 2 of a four-column band. The
+      // window that starts a pitch in holds it; the window that starts a span
+      // in — which is where a reader measuring its margin in spans would
+      // look — holds two bare points.
+      const document = drawing({
+        columns: 4,
+        paths: [across(1, 1, 2)],
+        rows: 2,
+      });
+
+      expect(
+        service.identifyDocument(document, { pitch: 1, span: 2 }).identifier,
+      ).toBe("21");
+    });
+
+    it("addresses a span several pitches wide in a drawing only two pitches wider than it", () => {
+      // Six pitches of drawing and a span of four of them. Clearing a pitch
+      // at each end fits; clearing a span at each end would need twelve, and
+      // would leave a `boxes spin` drawing — four pitches to a span, eight
+      // units to a drawing — impossible to address rather than addressed once.
+      const document = drawing({
+        columns: 6,
+        paths: [across(1, 0, 6)],
+        rows: 2,
+      });
+
+      expect(
+        service.identifyDocument(document, { pitch: 1, span: 4 }),
+      ).toMatchObject({
+        address: "2r4c-3333",
+        columns: 4,
+      });
+    });
 
     it.each([
       {
@@ -284,7 +352,10 @@ describe(LatticeIdentificationService, () => {
       "refuses $refused rather than addressing it wrongly",
       ({ error, paths }) => {
         expect(() =>
-          service.identifyDocument(drawing({ columns: 4, paths, rows: 2 }), 1),
+          service.identifyDocument(drawing({ columns: 4, paths, rows: 2 }), {
+            pitch: 1,
+            span: 1,
+          }),
         ).toThrow(error);
       },
     );
@@ -297,9 +368,9 @@ describe(LatticeIdentificationService, () => {
         "</svg>",
       ].join("\n");
 
-      expect(() => service.identifyDocument(document, 1)).toThrow(
-        UnmeasurableDocumentError,
-      );
+      expect(() =>
+        service.identifyDocument(document, { pitch: 1, span: 1 }),
+      ).toThrow(UnmeasurableDocumentError);
     });
   });
 });

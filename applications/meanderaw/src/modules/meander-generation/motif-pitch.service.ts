@@ -2,13 +2,19 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 
-import { PITCH_PROBE_REPEAT_COUNT } from "./meander-generation.constants";
+import {
+  MODIFIER_REPEAT_PITCHES,
+  PITCH_PROBE_REPEAT_COUNT,
+} from "./meander-generation.constants";
 import { MotifRegistryService } from "./motif-registry.service";
 
 import type { MotifPitchOptions } from "./meander-generation.types";
 
 /**
- * How wide one repeat unit of a family is, in lattice columns.
+ * How wide one repeat unit of a family is, in lattice columns, and how wide
+ * one of its true repeats is — the two are the same number for every family
+ * whose consecutive units are identical, and {@link columnSpan} is where
+ * they part company.
  *
  * Every family already answers this, and none of them answers it by name:
  * a motif service reports how far right a whole pattern reaches, and the
@@ -44,8 +50,14 @@ export class MotifPitchService {
   // 🌎 Public Methods
 
   /**
-   * The column span of one repeat unit: the lattice columns the drawing's
-   * right edge advances by when a unit is added.
+   * The pitch: the lattice columns the drawing's right edge advances by when
+   * one repeat unit is added.
+   *
+   * It is how far along the drawing one unit sits from the next, which is
+   * not always how far apart two *identical* units sit — see
+   * {@link columnSpan}. It is also the width of the drawing's own
+   * termination artifacts, so it is the margin an addressed window has to
+   * clear at either end.
    *
    * Rounded because the arithmetic is in canvas pixels rather than in
    * columns — the grid unit is a canvas height divided by a row count, so a
@@ -54,7 +66,7 @@ export class MotifPitchService {
    * so is always whole; the rounding recovers it rather than approximating
    * it.
    */
-  columnSpan(options: MotifPitchOptions): number {
+  columnPitch(options: MotifPitchOptions): number {
     const { modifier, rows, type } = options;
     const geometry = this.gridGeometryService.compute(rows);
     const motifService = this.motifRegistryService.resolve(type);
@@ -70,5 +82,23 @@ export class MotifPitchService {
         rightEdge(PITCH_PROBE_REPEAT_COUNT)) /
         geometry.unit,
     );
+  }
+
+  /**
+   * The column span of one **true** repeat: the distance between two units
+   * of the drawing that are identical, which is a whole number of pitches.
+   *
+   * Usually one of them. A modifier that varies its unit — a rotation, an
+   * alternating flip, an alternating bundle orientation — comes back only
+   * after several, and {@link MODIFIER_REPEAT_PITCHES} says how many. A
+   * drawing addressed at its pitch instead would have as many addresses as
+   * that modifier has phases, which is what this exists to prevent.
+   */
+  columnSpan(options: MotifPitchOptions): number {
+    const pitches = options.modifier
+      ? (MODIFIER_REPEAT_PITCHES[options.modifier.name] ?? 1)
+      : 1;
+
+    return pitches * this.columnPitch(options);
   }
 }

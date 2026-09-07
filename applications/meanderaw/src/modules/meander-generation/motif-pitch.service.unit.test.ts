@@ -136,13 +136,13 @@ describe(MotifPitchService, () => {
     expect(service).toBeDefined();
   });
 
-  describe("columnSpan", () => {
+  describe("columnPitch", () => {
     /**
      * The pitch measured off the ink instead of computed from the family: how
      * many lattice columns the rendered drawing really gains per repeat unit
      * added, read back by the same reader an address is read through.
      *
-     * That is the assertion worth making. Deriving the span from `rightEdge`
+     * That is the assertion worth making. Deriving the pitch from `rightEdge`
      * and then checking it against `rightEdge` would prove only that
      * subtraction works; checking it against a document says the number
      * describes the drawing.
@@ -166,11 +166,66 @@ describe(MotifPitchService, () => {
               width(drawing, NARROWER_REPEAT_COUNT)) /
             (WIDER_REPEAT_COUNT - NARROWER_REPEAT_COUNT);
 
-          expect({ ...drawing, span: measured }).toStrictEqual({
+          expect({ ...drawing, pitch: measured }).toStrictEqual({
             ...drawing,
-            span: service.columnSpan(drawing),
+            pitch: service.columnPitch(drawing),
           });
         }
+      },
+    );
+  });
+
+  describe("columnSpan", () => {
+    /**
+     * One measured span per modifier the table names, and one for a family
+     * whose pitch is already its repeat.
+     *
+     * The numbers are pinned rather than recomputed from the pitch and the
+     * table, because multiplying the two here and comparing against the same
+     * multiplication would assert nothing about either. What holds the table
+     * to the drawings is the corpus sweep in
+     * `lattice-identification.service.integration.test.ts`, which addresses
+     * two consecutive spans of every combination and requires them to agree.
+     */
+    it.each([
+      { expected: 16, modifier: { name: "spin" }, rows: 5, type: "boxes" },
+      { expected: 16, modifier: { name: "spin-flip" }, rows: 5, type: "boxes" },
+      { expected: 12, modifier: { name: "edge-flip" }, rows: 6, type: "snake" },
+      { expected: 12, modifier: { name: "edge-flip" }, rows: 6, type: "chain" },
+      {
+        expected: 8,
+        modifier: { name: "plied", strands: 2 },
+        rows: 6,
+        type: "parallel",
+      },
+    ] as const satisfies readonly (MotifPitchOptions & {
+      readonly expected: number;
+    })[])(
+      "spans $expected columns for a $type drawing of $rows rows under $modifier.name",
+      ({ expected, ...drawing }) => {
+        expect(service.columnSpan(drawing)).toBe(expected);
+      },
+    );
+
+    /**
+     * `flip` is the entry worth reading. Turning alternate units over does
+     * take two of them to come back, and on these families that is already
+     * paid for in the pitch — `snake flip` at six rows advances eight columns
+     * per unit where the plain drawing advances five — so a multiple on top
+     * of it would address two repeats as one.
+     */
+    it.each([
+      { expected: 5, rows: 6, type: "snake" },
+      { expected: 8, modifier: { name: "flip" }, rows: 6, type: "snake" },
+      { expected: 18, modifier: { name: "flip" }, rows: 6, type: "swirl" },
+      { expected: 6, modifier: { name: "edge" }, rows: 6, type: "snake" },
+    ] as const satisfies readonly (MotifPitchOptions & {
+      readonly expected: number;
+    })[])(
+      "is the pitch itself, $expected columns, for a $type drawing whose consecutive units already agree",
+      ({ expected, ...drawing }) => {
+        expect(service.columnSpan(drawing)).toBe(expected);
+        expect(service.columnPitch(drawing)).toBe(expected);
       },
     );
   });

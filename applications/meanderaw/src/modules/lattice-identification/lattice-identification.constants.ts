@@ -1,26 +1,28 @@
 // ♟️ Constants
 
 /**
- * Which repeat unit of a drawing is the one addressed.
+ * How much of a drawing the addressed window leaves untouched at each end,
+ * counted in **pitches** rather than in spans.
  *
- * Never the first and never the last, because both of those carry the band's
- * own termination rather than its pattern: a family that clips its final
- * unit flush with its own motif, or that opens with an overhang, would put
- * that accident into the address and give two drawings of one pattern two
- * names. The second unit is the shallowest one that is neither, which is why
- * {@link MINIMUM_ADDRESSABLE_UNITS} is one more than it.
+ * Both ends carry the band's own termination rather than its pattern: a
+ * family that clips its final unit flush with its own motif, or that opens
+ * with an overhang, would put that accident into the address and give two
+ * drawings of one pattern two names. Those artifacts are one repeat *unit*
+ * wide, so one pitch is exactly the margin they need — and a margin of one
+ * whole span instead would be needlessly greedy, which matters because a
+ * span can be four pitches. `boxes spin` at five rows is drawn 31 lattice
+ * columns wide and spans 16 of them; clearing a span at each end would need
+ * 48 and make the drawing impossible to address, while clearing a pitch needs 24.
  */
-export const ADDRESSED_UNIT = 1;
-
-/** How many repeat units a drawing must hold for {@link ADDRESSED_UNIT} to be neither its first nor its last. */
-export const MINIMUM_ADDRESSABLE_UNITS = ADDRESSED_UNIT + 2;
+export const TERMINATION_MARGIN_PITCHES = 1;
 
 // 🚨 Errors
 
 /**
- * Thrown when a document cannot be addressed at the span it was given: a
- * span that is not a whole number of columns, or a drawing too narrow to
- * hold an interior repeat unit at it.
+ * Thrown when a document cannot be addressed at the unit it was given: a
+ * pitch or a span that is not a whole number of columns, a span that is not
+ * a whole number of pitches, or a drawing too narrow to hold that span clear
+ * of both band terminations.
  *
  * It is deliberately narrow. A document that cannot be *read* is refused by
  * `MeanderLatticeService` — a curve, a diagonal, a second stroke width, a

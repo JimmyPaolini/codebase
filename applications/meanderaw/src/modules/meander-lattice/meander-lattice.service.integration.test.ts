@@ -26,7 +26,7 @@ import type { MosaicTileShape } from "../mosaic-tile/mosaic-tile.types";
  */
 const REPEAT_COUNT = 3;
 
-/** The repeat unit the tile is read back out of. */
+/** The repeat unit the tile is read back out of, which its own width turns into the lattice column `readTile` starts at. */
 const READ_UNIT = 1;
 
 /**
@@ -116,7 +116,7 @@ describe("mosaic tiles round-trip through the lattice", () => {
           latticeIdentificationService.readTile(
             meanderLatticeService.build(document),
             shape,
-            READ_UNIT,
+            READ_UNIT * shape.columns,
           ),
         ).toStrictEqual(tile);
       }

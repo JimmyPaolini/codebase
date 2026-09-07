@@ -28,3 +28,25 @@ export interface LatticeAddress {
   readonly rows: number;
   readonly subFamily?: MosaicSubFamily;
 }
+
+/**
+ * The two widths a document has to be handed before it can be addressed:
+ * how far apart its repeat units sit, and how far apart two *identical*
+ * units sit.
+ *
+ * Both come from the family that drew the document rather than from the
+ * document — `MotifPitchService` answers each — which is why they arrive as
+ * parameters instead of being recovered here. Recovering the span by
+ * searching for the narrowest window that happens to repeat would agree with
+ * every drawing by construction and so would report a drawing whose repeat
+ * had grown as correct.
+ *
+ * {@link span} is what the address is read at and is always a whole number
+ * of {@link pitch}es. {@link pitch} is not addressed at all: it is the width
+ * of the band's own termination artifacts, and so the margin the addressed
+ * window clears at either end.
+ */
+export interface LatticeUnit {
+  readonly pitch: number;
+  readonly span: number;
+}
