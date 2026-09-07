@@ -180,13 +180,13 @@ export class NegativeMotifService implements MotifService {
 
   /**
    * How many lattice columns past its own start the source's last repeat tile
-   * reaches. A dash reaching right claims the column beyond the cell it is
+   * reaches. An eastward edge claims the column beyond the cell it is
    * anchored on, which is why a tile ending in horizontal marks declares a
    * wider canvas than one ending in dots at the same repeat count.
    *
    * The floor of one is load-bearing rather than defensive. A tile carrying
-   * no rightward-reaching mark at all — a one-column tile of nothing but
-   * dots or nothing but vertical dashes, which is what `grid` and
+   * no eastward edge at all — a one-column tile of nothing but bare points
+   * or nothing but southward edges, which is what `grid` and
    * `brick-upright` are — measures zero here, and zero makes the last repeat
    * unit draw no column and no row at all while every unit before it has
    * already run its lattice row one column past its own: the drawing would
@@ -211,7 +211,7 @@ export class NegativeMotifService implements MotifService {
    *
    * The corridor between cell `(column, row)` and `(column + 1, row)` is open
    * unless the source anchors a vertical mark on the lattice column between
-   * them — a vertical dash spans a cell and the one below it, so it walls the
+   * them — a southward edge joins a cell to the one below it, so it walls the
    * pair of cells to its right off from the pair to its left. It sits one
    * level above the row it walls.
    *
@@ -219,7 +219,7 @@ export class NegativeMotifService implements MotifService {
    * the drawing closes as a band without any border being drawn for it. The
    * top row asks for a mark at level `-1`, which is above the band's first
    * interior level and so cannot exist. The bottom row asks for one at level
-   * `rows - 2`, the tile's last interior level: a vertical dash claims its
+   * `rows - 2`, the tile's last interior level: a southward edge claims its
    * own level and the one below, so the deepest one a tile can anchor is at
    * `rows - 3`, and that last level never carries one either.
    */
