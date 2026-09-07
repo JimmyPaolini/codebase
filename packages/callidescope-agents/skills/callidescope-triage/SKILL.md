@@ -238,6 +238,12 @@ Nothing was traced. The message lists the reasons; these are the ones to expect:
   stale in the run that just wrote it, so the combination would pass whatever
   it was meant to catch. Run them separately, on the sides of the pull request
   they belong to.
+- **A destination flag with no verb.** `--json` and `--markdown` say _where_ a
+  report goes; `--write` and `--check reports` say _whether_ one is written or
+  compared. Given a destination and neither verb, the run is refused rather
+  than obeyed silently — which is what it used to do, exiting 0 over a file it
+  never created. Add the verb the message names. `--check reports` counts as
+  one: it compares a destination, so an override is meaningful there too.
 - **`depth` or `breadth` with no address.** Those commands take
   `<file>#<qualified-name>`. At a real terminal outside CI they trace first and
   then complete the address against every callable they found, so the name can
