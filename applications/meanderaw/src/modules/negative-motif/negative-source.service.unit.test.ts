@@ -1,8 +1,3 @@
-// cspell:ignore dvvxxd dvvxxvdx dvvxxvvxxd dvvxxvvxxvdx dvvxxvvxxvvxxd
-// cspell:ignore hxxhhx hxxhhxxh hxxhhxxhhx hxxhhxxhhxxh hxxhhxxhhxxhhx
-// cspell:ignore dld dldl dldld dldldl dldldld
-// — mosaic tile identifiers, one letter per cell of the tile, from
-// MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -19,7 +14,7 @@ import {
 } from "./negative-motif.constants";
 import { NegativeSourceService } from "./negative-source.service";
 
-import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type {
   NegativeModifierName,
   NegativeSource,
@@ -38,7 +33,7 @@ interface ShortlistCase {
 /** One source that inverts a named `mosaic` sub-family, and the sub-family it inverts. */
 interface SubFamilyCase {
   readonly source: NegativeSource;
-  readonly subFamily: MosaicSubFamily;
+  readonly subFamily: MosaicBuildableSubFamily;
 }
 
 /**
@@ -60,31 +55,56 @@ interface SubFamilyCase {
  * identifier, and one that needs no dictionary entry to read.
  */
 const SHORTLIST_CASES: readonly ShortlistCase[] = [
-  { columns: 2, identifier: "dvvxxd", rows: 3, source: "stair" },
-  { columns: 2, identifier: "dvvxxvdx", rows: 4, source: "stair" },
-  { columns: 2, identifier: "dvvxxvvxxd", rows: 5, source: "stair" },
-  { columns: 2, identifier: "dvvxxvvxxvdx", rows: 6, source: "stair" },
-  { columns: 2, identifier: "dvvxxvvxxvvxxd", rows: 7, source: "stair" },
-  { columns: 2, identifier: "hxxhhx", rows: 3, source: "brick-staggered" },
-  { columns: 2, identifier: "hxxhhxxh", rows: 4, source: "brick-staggered" },
-  { columns: 2, identifier: "hxxhhxxhhx", rows: 5, source: "brick-staggered" },
+  { columns: 2, identifier: "044880", rows: 3, source: "stair" },
+  { columns: 2, identifier: "04488408", rows: 4, source: "stair" },
+  { columns: 2, identifier: "0448844880", rows: 5, source: "stair" },
   {
     columns: 2,
-    identifier: "hxxhhxxhhxxh",
+    identifier: "044884488408",
+    rows: 6,
+    source: "stair",
+  },
+  {
+    columns: 2,
+    identifier: "04488448844880",
+    rows: 7,
+    source: "stair",
+  },
+  {
+    columns: 2,
+    identifier: "211221",
+    rows: 3,
+    source: "brick-staggered",
+  },
+  {
+    columns: 2,
+    identifier: "21122112",
+    rows: 4,
+    source: "brick-staggered",
+  },
+  {
+    columns: 2,
+    identifier: "2112211221",
+    rows: 5,
+    source: "brick-staggered",
+  },
+  {
+    columns: 2,
+    identifier: "211221122112",
     rows: 6,
     source: "brick-staggered",
   },
   {
     columns: 2,
-    identifier: "hxxhhxxhhxxhhx",
+    identifier: "21122112211221",
     rows: 7,
     source: "brick-staggered",
   },
-  { columns: 1, identifier: "dld", rows: 3, source: "ruled" },
-  { columns: 1, identifier: "dldl", rows: 4, source: "ruled" },
-  { columns: 1, identifier: "dldld", rows: 5, source: "ruled" },
-  { columns: 1, identifier: "dldldl", rows: 6, source: "ruled" },
-  { columns: 1, identifier: "dldldld", rows: 7, source: "ruled" },
+  { columns: 1, identifier: "030", rows: 3, source: "ruled" },
+  { columns: 1, identifier: "0303", rows: 4, source: "ruled" },
+  { columns: 1, identifier: "03030", rows: 5, source: "ruled" },
+  { columns: 1, identifier: "030303", rows: 6, source: "ruled" },
+  { columns: 1, identifier: "0303030", rows: 7, source: "ruled" },
 ];
 
 /**

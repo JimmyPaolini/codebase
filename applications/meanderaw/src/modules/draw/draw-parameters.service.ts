@@ -27,7 +27,7 @@ import type {
   PlyModifierName,
   SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
-import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type { DrawCommandOptions } from "./draw.types";
 
 /**
@@ -117,8 +117,8 @@ export class DrawParametersService {
     return SUPPORTED_SERPENTINE_FLIPS.includes(value);
   }
 
-  /** Narrows a raw string to a {@link MosaicSubFamily} without an unchecked assertion. */
-  private isSubFamily(value: string): value is MosaicSubFamily {
+  /** Narrows a raw string to a {@link MosaicBuildableSubFamily} without an unchecked assertion. */
+  private isSubFamily(value: string): value is MosaicBuildableSubFamily {
     return SUPPORTED_SUB_FAMILIES.includes(value);
   }
 
@@ -301,11 +301,11 @@ export class DrawParametersService {
   }
 
   /**
-   * Narrows `--sub-family` to a {@link MosaicSubFamily}. Note that `dots` is
+   * Narrows `--sub-family` to a {@link MosaicBuildableSubFamily}. Note that `dots` is
    * a sub-family and `dot` is a modifier: different things, one letter
    * apart, and only the plural is accepted here.
    */
-  subFamily(value: string): MosaicSubFamily {
+  subFamily(value: string): MosaicBuildableSubFamily {
     if (!this.isSubFamily(value)) {
       throw new UnsupportedOptionError(
         "sub-family",

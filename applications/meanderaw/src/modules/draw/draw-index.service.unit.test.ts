@@ -13,8 +13,8 @@ describe(DrawIndexService, () => {
     { directory: "boxes/3-rows", fileName: "plain-6-repeats.svg" },
     { directory: "boxes/10-rows", fileName: "plain-6-repeats.svg" },
     {
-      directory: "mosaic/6-rows/permutations/1-columns",
-      fileName: "ddddd-dots.svg",
+      directory: "mosaic/6-rows/1-columns",
+      fileName: "00000-dots.svg",
     },
   ];
 
@@ -34,9 +34,7 @@ describe(DrawIndexService, () => {
     it("links every drawing relative to the page rather than inlining it", () => {
       const page = service.render(documents);
 
-      expect(page).toContain(
-        'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
-      );
+      expect(page).toContain('src="mosaic/6-rows/1-columns/00000-dots.svg"');
       expect(page).toContain('src="boxes/3-rows/spin-8-repeats.svg"');
       expect(page).not.toContain("<path");
     });
@@ -71,8 +69,8 @@ describe(DrawIndexService, () => {
     it("lays the families out in the order they are declared rather than alphabetically", () => {
       const page = service.render([
         {
-          directory: "mosaic/6-rows/permutations/1-columns",
-          fileName: "ddddd-dots.svg",
+          directory: "mosaic/6-rows/1-columns",
+          fileName: "00000-dots.svg",
         },
         { directory: "boxes/3-rows", fileName: "plain-6-repeats.svg" },
         { directory: "snake/4-rows", fileName: "plain-6-repeats.svg" },
@@ -82,14 +80,14 @@ describe(DrawIndexService, () => {
         page.indexOf("<h2>boxes/3-rows</h2>"),
       );
       expect(page.indexOf("<h2>boxes/3-rows</h2>")).toBeLessThan(
-        page.indexOf("<h2>mosaic/6-rows/permutations/1-columns</h2>"),
+        page.indexOf("<h2>mosaic/6-rows/1-columns</h2>"),
       );
     });
 
     it("sorts a directory no family names after every family, rather than by its initial letter", () => {
       const page = service.render([
         { directory: "attic", fileName: "plain-6-repeats.svg" },
-        { directory: "mosaic/6-rows", fileName: "ddddd-dots.svg" },
+        { directory: "mosaic/6-rows", fileName: "00000-dots.svg" },
       ]);
 
       expect(page.indexOf("<h2>mosaic/6-rows</h2>")).toBeLessThan(

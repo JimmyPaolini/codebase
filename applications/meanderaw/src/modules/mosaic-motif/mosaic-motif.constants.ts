@@ -1,7 +1,7 @@
 // ♟️ Constants
 
 import type {
-  MosaicSubFamily,
+  MosaicBuildableSubFamily,
   MosaicSubFamilyShape,
 } from "./mosaic-motif.types";
 
@@ -10,13 +10,17 @@ import type {
  * region holds every tile its predicate accepts, so this is the region's
  * aligned representative rather than its only member.
  *
+ * `bars` and `diamond` are the same direction at two level steps, which is
+ * the whole difference between an unbroken vertical bar and a dashed one.
+ *
  * `MosaicSubFamilyService`'s round-trip test is what keeps a shape and the
  * predicate that recognizes it agreeing.
  */
 export const MOSAIC_SUB_FAMILY_SHAPES: Record<
-  MosaicSubFamily,
+  MosaicBuildableSubFamily,
   MosaicSubFamilyShape
 > = {
+  bars: { columns: 1, direction: "south", levelStep: 1 },
   dashes: { columns: 2, direction: "east", levelStep: 1 },
   diamond: { columns: 1, direction: "south", levelStep: 2 },
   dots: { columns: 1, direction: undefined, levelStep: 1 },
