@@ -695,12 +695,12 @@
             "summary": "Loads and validates a codometer configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly measure the repository with defaults it never asked for. A path that was not named is searched for from the measured directory upward, and its absence is legal. The nearest configuration file wins outright: nothing from a further ancestor is folded into it. Merging the two would leave a limit that never applied looking exactly like one that did, and the only way to tell them apart would be to know which of several files each field came from.",
             "tags": []
           },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9009",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#11819",
           "isCycle": false,
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 268
+            "line": 348
           },
           "signature": {
             "parameters": [
@@ -722,12 +722,12 @@
             "summary": "Loads a configuration and says which file answered. The same work as `loadConfiguration`, keeping the path the upward walk settled on. A caller measuring one directory has no use for it — the configuration is the whole answer — but one listing what a repository configures has to attribute each answer to the file that gave it, and nothing downstream of the walk can still tell.",
             "tags": []
           },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9661",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12471",
           "isCycle": false,
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 285
+            "line": 365
           },
           "signature": {
             "parameters": [
@@ -749,12 +749,12 @@
             "summary": "Fills in every field a configuration file may leave out. Exposed so a host embedding codometer can hand over a configuration object it assembled itself and get the same shape a configuration file produces.",
             "tags": []
           },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10378",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#13188",
           "isCycle": false,
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 308
+            "line": 388
           },
           "signature": {
             "parameters": [
@@ -776,12 +776,12 @@
             "summary": "Gives every limit its severity and a value read as a number. Which metric a limit lands on is decided where the measurement is, since nothing here knows what was measured — the only thing settled at this point is what the limit says.",
             "tags": []
           },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6106",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8916",
           "isCycle": false,
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 190
+            "line": 270
           },
           "signature": {
             "parameters": [
@@ -798,12 +798,12 @@
         },
         {
           "displayName": "ConfigurationService.map(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6233",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9043",
           "isCycle": false,
           "location": {
             "column": 31,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 193
+            "line": 273
           },
           "signature": {
             "parameters": [
@@ -825,12 +825,12 @@
             "summary": "Reads a limit's value, in decimal units when it was written as a string. Everything unreadable is refused: a negative number, a unit missing its `b`, a word, an empty string. The tool this replaces coerced an unreadable limit to nothing and then failed every target holding a single byte.",
             "tags": []
           },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2228",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2425",
           "isCycle": false,
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 74
+            "line": 80
           },
           "signature": {
             "parameters": [
@@ -852,12 +852,12 @@
             "summary": "Reads a limit written as a string, unit and all. A unit multiplies and then rounds: `\"1.5 KB\"` is 1500, and the rounding is what keeps `\"0.1 KB\"` from arriving as the 100.00000000000001 floating point makes of it. A string carrying no unit at all is the plain number, which is what a limit on a count of interfaces or files is written as.",
             "tags": []
           },
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2955",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#3152",
           "isCycle": false,
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 94
+            "line": 100
           },
           "signature": {
             "parameters": [
@@ -880,12 +880,12 @@
         },
         {
           "displayName": "InvalidLimitValueError.constructor",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15615",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471",
           "isCycle": false,
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 467
+            "line": 492
           },
           "signature": {
             "parameters": [
@@ -7811,39 +7811,43 @@
     {
       "callableBreadths": [
         {
-          "breadth": 6,
+          "breadth": 7,
           "callees": [
             {
               "displayName": "ConfigurationService.resolveDocumentation",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4943"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6456"
             },
             {
               "displayName": "ConfigurationService.resolveLimits",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6106"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8916"
             },
             {
               "displayName": "ConfigurationService.resolveJsonOutput",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#5496"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7639"
             },
             {
               "displayName": "ConfigurationService.resolveMarkdownOutput",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6497"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9307"
+            },
+            {
+              "displayName": "ConfigurationService.resolveLanguageComments",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8246"
             },
             {
               "displayName": "ConfigurationService.resolveCustomStatistics",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#3808"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#5321"
             },
             {
               "displayName": "ConfigurationService.resolveTargets",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7578"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10388"
             }
           ],
           "displayName": "ConfigurationService.resolveConfiguration",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10378",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#13188",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 308
+            "line": 388
           },
           "signature": {
             "parameters": [
@@ -7907,23 +7911,23 @@
           "callees": [
             {
               "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8048"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10858"
             },
             {
               "displayName": "ConfigurationService.filter(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7981"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10791"
             },
             {
               "displayName": "ConfigurationService.filter(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8205"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#11015"
             }
           ],
           "displayName": "ConfigurationService.map(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7710",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10520",
           "location": {
             "column": 32,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 234
+            "line": 314
           },
           "signature": {
             "parameters": [
@@ -7979,7 +7983,7 @@
             },
             {
               "displayName": "ConfigurationFileNotFoundError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15114"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15970"
             }
           ],
           "displayName": "ConfigurationLoaderService.resolveConfigurationPath",
@@ -8007,19 +8011,19 @@
           "callees": [
             {
               "displayName": "ConfigurationService.parseLimitValueText",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2955"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#3152"
             },
             {
               "displayName": "InvalidLimitValueError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15615"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471"
             }
           ],
           "displayName": "ConfigurationService.parseLimitValue",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2228",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2425",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 74
+            "line": 80
           },
           "signature": {
             "parameters": [
@@ -8038,20 +8042,84 @@
           "breadth": 2,
           "callees": [
             {
+              "displayName": "ConfigurationService.filter(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4306"
+            },
+            {
+              "displayName": "ConfigurationService.reduce(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4476"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveComments",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4127",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 129
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": true,
+                "name": "layers",
+                "type": "(CodometerCommentsConfiguration | undefined)[]"
+              }
+            ],
+            "returnType": "ResolvedCodometerCommentsConfiguration | undefined",
+            "text": "(...layers: (CodometerCommentsConfiguration | undefined)[]): ResolvedCodometerCommentsConfiguration | undefined"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.resolveComments",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4127"
+            },
+            {
+              "displayName": "ConfigurationService.map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8605"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveLanguageComments",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8246",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 248
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": true,
+                "name": "layers",
+                "type": "(CodometerLanguageCommentsConfiguration | undefined)[]"
+              }
+            ],
+            "returnType": "ResolvedCodometerLanguageCommentsConfiguration | undefined",
+            "text": "(...layers: (CodometerLanguageCommentsConfiguration | undefined)[]): ResolvedCodometerLanguageCommentsConfiguration | undefined"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
               "displayName": "ConfigurationLoaderService.load",
               "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#6939"
             },
             {
               "displayName": "ConfigurationService.resolveConfiguration",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10378"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#13188"
             }
           ],
           "displayName": "ConfigurationService.loadConfigurationFile",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9661",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12471",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 285
+            "line": 365
           },
           "signature": {
             "parameters": [
@@ -8092,15 +8160,15 @@
           "callees": [
             {
               "displayName": "every(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#9336"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10192"
             }
           ],
           "displayName": "refine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#9288",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10144",
           "location": {
             "column": 11,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 300
+            "line": 324
           },
           "signature": {
             "parameters": [
@@ -8108,11 +8176,11 @@
                 "isOptional": false,
                 "isRest": false,
                 "name": "kinds",
-                "type": "Record<string, number>"
+                "type": "Record<string, { maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | undefined; severity?: \"fail\" | \"warn\" | undefined; }>"
               }
             ],
             "returnType": "boolean",
-            "text": "(kinds: Record<string, number>): boolean"
+            "text": "(kinds: Record<string, { maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | undefined; severity?: \"fail\" | \"warn\" | undefined; }>): boolean"
           }
         },
         {
@@ -8120,15 +8188,15 @@
           "callees": [
             {
               "displayName": "some(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#13696"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14482"
             }
           ],
           "displayName": "superRefine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#13612",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14398",
           "location": {
             "column": 22,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 415
+            "line": 438
           },
           "signature": {
             "parameters": [
@@ -8154,15 +8222,15 @@
           "callees": [
             {
               "displayName": "map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14830"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15616"
             }
           ],
           "displayName": "refine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14789",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15575",
           "location": {
             "column": 7,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 442
+            "line": 465
           },
           "signature": {
             "parameters": [
@@ -8237,15 +8305,15 @@
           "callees": [
             {
               "displayName": "InvalidLimitValueError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15615"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471"
             }
           ],
           "displayName": "ConfigurationService.parseLimitValueText",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2955",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#3152",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 94
+            "line": 100
           },
           "signature": {
             "parameters": [
@@ -8271,15 +8339,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4047"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#5560"
             }
           ],
           "displayName": "ConfigurationService.resolveCustomStatistics",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#3808",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#5321",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 121
+            "line": 163
           },
           "signature": {
             "parameters": [
@@ -8298,16 +8366,44 @@
           "breadth": 1,
           "callees": [
             {
-              "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6233"
+              "displayName": "ConfigurationService.resolveComments",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4127"
             }
           ],
-          "displayName": "ConfigurationService.resolveLimits",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6106",
+          "displayName": "ConfigurationService.resolveDocumentation",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6456",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 190
+            "line": 196
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configured",
+                "type": "CodometerDocumentationConfiguration | undefined"
+              }
+            ],
+            "returnType": "ResolvedCodometerDocumentationConfiguration | undefined",
+            "text": "(configured: CodometerDocumentationConfiguration | undefined): ResolvedCodometerDocumentationConfiguration | undefined"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9043"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveLimits",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8916",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 270
           },
           "signature": {
             "parameters": [
@@ -8327,15 +8423,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.parseLimitValue",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2228"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2425"
             }
           ],
           "displayName": "ConfigurationService.map(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6233",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9043",
           "location": {
             "column": 31,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 193
+            "line": 273
           },
           "signature": {
             "parameters": [
@@ -8355,15 +8451,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7710"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10520"
             }
           ],
           "displayName": "ConfigurationService.resolveTargets",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7578",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10388",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 231
+            "line": 311
           },
           "signature": {
             "parameters": [
@@ -8383,15 +8479,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9661"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12471"
             }
           ],
           "displayName": "ConfigurationService.loadConfiguration",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9009",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#11819",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 268
+            "line": 348
           },
           "signature": {
             "parameters": [
@@ -8484,12 +8580,12 @@
                 "summary": "Loads and validates a codometer configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly measure the repository with defaults it never asked for. A path that was not named is searched for from the measured directory upward, and its absence is legal. The nearest configuration file wins outright: nothing from a further ancestor is folded into it. Merging the two would leave a limit that never applied looking exactly like one that did, and the only way to tell them apart would be to know which of several files each field came from.",
                 "tags": []
               },
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9009",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#11819",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 268
+                "line": 348
               },
               "signature": {
                 "parameters": [
@@ -8511,12 +8607,12 @@
                 "summary": "Loads a configuration and says which file answered. The same work as `loadConfiguration`, keeping the path the upward walk settled on. A caller measuring one directory has no use for it — the configuration is the whole answer — but one listing what a repository configures has to attribute each answer to the file that gave it, and nothing downstream of the walk can still tell.",
                 "tags": []
               },
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9661",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12471",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 285
+                "line": 365
               },
               "signature": {
                 "parameters": [
@@ -8538,12 +8634,12 @@
                 "summary": "Fills in every field a configuration file may leave out. Exposed so a host embedding codometer can hand over a configuration object it assembled itself and get the same shape a configuration file produces.",
                 "tags": []
               },
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10378",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#13188",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 308
+                "line": 388
               },
               "signature": {
                 "parameters": [
@@ -8565,12 +8661,12 @@
                 "summary": "Gives every limit its severity and a value read as a number. Which metric a limit lands on is decided where the measurement is, since nothing here knows what was measured — the only thing settled at this point is what the limit says.",
                 "tags": []
               },
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6106",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8916",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 190
+                "line": 270
               },
               "signature": {
                 "parameters": [
@@ -8587,12 +8683,12 @@
             },
             {
               "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6233",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9043",
               "isCycle": false,
               "location": {
                 "column": 31,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 193
+                "line": 273
               },
               "signature": {
                 "parameters": [
@@ -8614,12 +8710,12 @@
                 "summary": "Reads a limit's value, in decimal units when it was written as a string. Everything unreadable is refused: a negative number, a unit missing its `b`, a word, an empty string. The tool this replaces coerced an unreadable limit to nothing and then failed every target holding a single byte.",
                 "tags": []
               },
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2228",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2425",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 74
+                "line": 80
               },
               "signature": {
                 "parameters": [
@@ -8641,12 +8737,12 @@
                 "summary": "Reads a limit written as a string, unit and all. A unit multiplies and then rounds: `\"1.5 KB\"` is 1500, and the rounding is what keeps `\"0.1 KB\"` from arriving as the 100.00000000000001 floating point makes of it. A string carrying no unit at all is the plain number, which is what a limit on a count of interfaces or files is written as.",
                 "tags": []
               },
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#2955",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#3152",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 94
+                "line": 100
               },
               "signature": {
                 "parameters": [
@@ -8669,12 +8765,12 @@
             },
             {
               "displayName": "InvalidLimitValueError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15615",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 467
+                "line": 492
               },
               "signature": {
                 "parameters": [
@@ -8847,12 +8943,12 @@
           "frames": [
             {
               "displayName": "refine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#9288",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10144",
               "isCycle": false,
               "location": {
                 "column": 11,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 300
+                "line": 324
               },
               "signature": {
                 "parameters": [
@@ -8860,21 +8956,21 @@
                     "isOptional": false,
                     "isRest": false,
                     "name": "kinds",
-                    "type": "Record<string, number>"
+                    "type": "Record<string, { maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | undefined; severity?: \"fail\" | \"warn\" | undefined; }>"
                   }
                 ],
                 "returnType": "boolean",
-                "text": "(kinds: Record<string, number>): boolean"
+                "text": "(kinds: Record<string, { maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | undefined; severity?: \"fail\" | \"warn\" | undefined; }>): boolean"
               }
             },
             {
               "displayName": "every(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#9336",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10192",
               "isCycle": false,
               "location": {
                 "column": 38,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 301
+                "line": 325
               },
               "signature": {
                 "parameters": [
@@ -8898,12 +8994,12 @@
           "frames": [
             {
               "displayName": "superRefine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#13612",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14398",
               "isCycle": false,
               "location": {
                 "column": 22,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 415
+                "line": 438
               },
               "signature": {
                 "parameters": [
@@ -8926,12 +9022,12 @@
             },
             {
               "displayName": "some(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#13696",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14482",
               "isCycle": false,
               "location": {
                 "column": 13,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 417
+                "line": 440
               },
               "signature": {
                 "parameters": [
@@ -8955,12 +9051,12 @@
           "frames": [
             {
               "displayName": "refine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14789",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15575",
               "isCycle": false,
               "location": {
                 "column": 7,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 442
+                "line": 465
               },
               "signature": {
                 "parameters": [
@@ -8977,12 +9073,12 @@
             },
             {
               "displayName": "map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14830",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15616",
               "isCycle": false,
               "location": {
                 "column": 29,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 443
+                "line": 466
               },
               "signature": {
                 "parameters": [
@@ -9002,11 +9098,11 @@
         }
       ],
       "summary": {
-        "callableCount": 47,
+        "callableCount": 52,
         "cyclicComponentCount": 0,
-        "edgeCount": 39,
+        "edgeCount": 50,
         "entryPointCount": 6,
-        "fileCount": 16,
+        "fileCount": 17,
         "maximumDepth": 8,
         "projectCount": 1,
         "unresolvedCallCount": 4
@@ -9014,7 +9110,7 @@
       "typeDepths": [
         {
           "maximumDepth": 8,
-          "memberCount": 18,
+          "memberCount": 23,
           "minimumDepth": 1,
           "moduleId": "packages/codometer-configuration:examples",
           "typeName": "ConfigurationService"
@@ -10346,11 +10442,11 @@
     }
   ],
   "summary": {
-    "callableCount": 225,
+    "callableCount": 230,
     "cyclicComponentCount": 1,
-    "edgeCount": 185,
+    "edgeCount": 196,
     "entryPointCount": 76,
-    "fileCount": 80,
+    "fileCount": 81,
     "maximumDepth": 8,
     "projectCount": 6,
     "unresolvedCallCount": 12
@@ -10365,7 +10461,7 @@
     },
     {
       "maximumDepth": 8,
-      "memberCount": 18,
+      "memberCount": 23,
       "minimumDepth": 1,
       "moduleId": "packages/codometer-configuration:examples",
       "typeName": "ConfigurationService"
