@@ -474,7 +474,7 @@ Issues and specs live as GitHub issues in [JimmyPaolini/codebase](https://github
 gh issue create --template issue.yml
 ```
 
-Issue titles follow the same `<type>(<scope>): <gitmoji> <subject>` convention as commits. Unlike a pull request title this is not enforced, so a quick backlog-idea title is a normal shape for an issue. Labels are the `type:*` and `scope:*` labels matching the title, one `source:*` label, and a triage label — `status:needs-triage`, `status:needs-info`, `status:ready-for-agent`, `status:ready-for-human`, or `wontfix`.
+Issue titles follow the same `<type>(<scope>): <gitmoji> <subject>` convention as commits. Unlike a pull request title this is not enforced, so a quick backlog-idea title is a normal shape for an issue. Labels are the `type:*` and `scope:*` labels matching the title, one `source:*` label, and a triage label — `status:needs-triage`, `status:needs-info`, `status:ready-for-agent`, `status:ready-for-human`, or `wontfix`. A sixth, `status:in-progress`, is applied once implementation begins rather than during triage.
 
 The Audit Issues workflow checks issue metadata on `opened`, `edited`, `labeled`, and `unlabeled`, and on `opened` first reconciles the labels a submitted form implies. It has its own README badge, so a red one there means an issue and nothing else.
 
