@@ -61,6 +61,8 @@ const codometerConfiguration: CodometerConfiguration = {
       name: "compiled",
     },
   ],
+  // How long one YAML comment block may run.
+  comments: { maximumWords: 128 },
 };
 
 export default codometerConfiguration;
@@ -264,6 +266,110 @@ A target that matched **no files** fails the run if and only if a limit is
 written against it. Declaring a limit asserts the files are there, so an empty
 match is a glob that stopped matching or a build that never ran — while a
 target nobody limited simply measured zero, which is unremarkable.
+
+## Comment Length
+
+Two checks measure how long a comment runs, and each is opt-in: naming no block
+at all leaves that check off rather than gating every comment against a number
+nobody chose.
+
+One vocabulary serves both. `comments` is the repository-wide budget for every
+language that has comments — Python, shell, TOML, and YAML:
+
+```ts
+comments: { maximumCharacters: 900, maximumLines: 24, maximumWords: 128 },
+shell: { comments: { maximumWords: 256 } },
+```
+
+`documentation` measures a documented declaration's JSDoc comment, and adds
+`kinds` on top of the same three maxima:
+
+```ts
+documentation: {
+  kinds: { class: { maximumLines: 24 }, property: { maximumWords: 40 } },
+  maximumLines: 6,
+  severity: "warn",
+},
+```
+
+| Field | Required | Default | Meaning |
+| ----- | -------- | ------- | ------- |
+| `maximumCharacters` | no | — | How many characters a block may hold, markers and newlines and all |
+| `maximumLines` | no | — | How many lines a block may span |
+| `maximumWords` | no | — | How many words of prose a block may hold, once markers are stripped |
+| `severity` | no | `fail` | `fail` stops the run on a breach; `warn` reports it |
+
+**The three maxima are not alternatives.** A repository can hold prose to a word
+budget and still refuse a block that sprawls over forty lines, so each is its
+own field rather than one `maximum` steered by a `unit`. A field left out is
+not measured, and a block is reported **once per declared maximum** — one
+carrying both a word and a line budget yields two entries, each naming its own
+unit. Declaring none measures nothing.
+
+**Budgets are per block, not per file.** A block is the run of comment lines a
+reader takes as one thought, and that is what a comment budget is normally
+about: one explanation that got away from its author. Add a `file` block to
+measure every comment in a file together as well:
+
+```ts
+comments: { file: { maximumWords: 2000 }, maximumWords: 128 },
+```
+
+Both are reported, and they answer different questions — a file holding forty
+well-sized comments is not the same problem as one holding a single essay, and
+a file-wide number alone cannot tell them apart. `documentation` has no `file`
+scope: a JSDoc block is already one comment attached to one declaration.
+
+**One merge rule, applied twice.** A language's `comments` block is merged field
+by field over the top-level `comments`, and a `documentation` kind's entry is
+merged the same way over `documentation`'s own maxima. So naming one maximum in
+an override never silently drops the others, and `shell: { comments: {
+maximumWords: 256 } }` loosens words while keeping whatever line and character
+budgets the default set.
+
+### Which languages
+
+| Language | Read by | Knows a `#` from a string? |
+| -------- | ------- | -------------------------- |
+| Python | `tokenize`, in the analysis subprocess | **Yes** |
+| YAML | the `yaml` package's CST | **Yes** |
+| Shell, TOML | a line scanner | No |
+| TypeScript / JavaScript | the TypeScript compiler, via `documentation` | Yes, JSDoc only |
+
+The line scanner reads a `#` inside a string literal as a comment, exactly as
+those analyzers' own `comments` counters already do. Python and YAML are read
+by real tokenizers instead — Python because its analysis already runs one, and
+YAML because it puts quoted scalars beside `#` constantly. A `#!` shebang on
+the first line is never a comment in any of them.
+
+Every reader emits comments; none of them measures. That is what keeps one
+definition of a word across the tool rather than one per language.
+
+CSS, SQL, HCL, and non-JSDoc `//` runs are not measured yet — their comments
+span lines with delimiters, which needs more than a line scanner.
+
+A **block** is the run of `#` lines a reader takes as one thought. A blank line
+ends one, and a comment trailing a value is never part of the block above it —
+it is read with that value, not with the prose. Comments are read from the
+tokenizer rather than the text, so a `#` inside a quoted scalar stays a
+character in a string.
+
+The two are configured apart rather than as one number with a YAML kind. A
+JSDoc comment documents a declaration a caller will meet and a YAML comment
+explains a setting to whoever edits it next; one limit would have to be wrong
+for one of them, and enabling either check would otherwise silently enable the
+other.
+
+Both reach the report through one channel, so a breach of either renders the
+same way and `kind` says which it was:
+
+```text
+- `.github/workflows/audit-issues.yml:3` — `Issue metadata — the type…` (comment): 147/128 words
+```
+
+Neither is a `limits` entry, so neither appears in `codometer configuration
+--limits`. A breach fails the run under `--check limits` exactly as a limit
+does.
 
 ## Custom Statistics
 

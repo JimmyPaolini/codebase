@@ -1,8 +1,10 @@
 # 📗 Documentation limits
 
-A **documentation limit** is how long one documented declaration's JSDoc comment
-may run, per declaration kind. It is the only limit with no `metric` path to
-write, because declarations are found rather than addressed.
+A **documentation limit** is how long a comment may run. Two of them exist, and
+each is enabled on its own: `documentation` measures a documented declaration's
+JSDoc comment per declaration kind, and `yaml.comments` measures a YAML comment
+block. They are the only limits with no `metric` path to write, because comments
+are found rather than addressed.
 
 ## Run it
 
@@ -14,7 +16,9 @@ codometer --directory examples/corpus --config examples/documentation/codometer.
 
 ```text
 documentation/
-└── codometer.config.ts    a per-kind comment length budget
+├── codometer.config.ts       a per-kind JSDoc comment length budget
+├── comments.config.ts        one budget across every `#` language
+└── yaml-comments.config.ts   a per-block YAML comment length budget
 ```
 
 It is opt-in, and gated by the same `--check limits` flag as every other limit —
@@ -25,6 +29,73 @@ which **2 breach**: `CatalogService`, whose eight-line overview is longer than a
 class's 4, and `Receipt.blank`, whose seven-line note is longer than a method's
 2. Every other declaration is reported too, with its headroom — the report lists
 what held as well as what did not.
+
+## YAML comment blocks
+
+```bash
+codometer --directory examples/corpus --config examples/documentation/yaml-comments.config.ts --check limits
+```
+
+That configuration sets `yaml.comments` and no `documentation` block, so not one
+JSDoc comment is measured — the two are enabled separately on purpose.
+
+A **block** is the run of `#` lines a reader takes as one thought. A blank line
+ends one, and a comment trailing a value is never part of the block above it.
+Comments come from the tokenizer rather than the text, so a `#` inside a quoted
+scalar stays a character in a string.
+
+The corpus holds exactly **one** block — the note above `pipeline.yaml`'s
+anchor — and that configuration declares two budgets for it. The block is
+reported **once per declared maximum**, and the two disagree:
+
+```text
+  ok      yaml/pipeline.yaml:2   1/1 lines
+  BREACH  yaml/pipeline.yaml:2  12/5 words
+```
+
+That is why the maxima are separate fields rather than one `maximum` steered by
+a `unit`: a block can sit inside one budget and outside another, and a shape
+that made them alternatives could not say so. Declaring none measures nothing.
+
+Both kinds reach the report through one channel and render the same way; `kind`
+is what says which was measured.
+
+## Every `#` language, one budget
+
+```bash
+codometer --directory examples/corpus --config examples/documentation/comments.config.ts --check limits
+```
+
+`comments` at the top level is the repository-wide budget; a language's own
+block is merged field by field over it. That configuration holds Python, TOML,
+and YAML to three words and loosens shell to eight:
+
+```text
+  BREACH  python/inventory.py:7    10/3 words
+  BREACH  shell/release.sh:2       11/8 words
+  ok      shell/release.sh:8        6/8 words
+  BREACH  toml/service.toml:1       5/3 words
+  BREACH  yaml/pipeline.yaml:2     12/3 words
+```
+
+They arrive in measurement order — Python, shell, TOML, YAML — not sorted.
+
+Two things are visible there. The shell override changes only the field it
+names, and both sides of it are reported. And `release.sh`'s first block starts
+on line **2**, not line 1: a `#!` shebang is never a comment, and without that
+rule every shell script opening with one would measure a block whose first word
+is `!/usr/bin/env`.
+
+Python and YAML are read by real tokenizers — `tokenize` in the Python
+subprocess, the `yaml` package's CST for YAML — so neither mistakes a `#`
+inside a string literal for a comment. Shell and TOML use a line scanner that
+cannot tell the two apart, exactly as their own `comments` counters already
+cannot.
+
+Every budget here is **per block**. Add a `file` block to measure every comment
+in one file together instead — the two are reported side by side, because a
+file holding forty well-sized comments is a different thing from one holding a
+single essay.
 
 ## What is absent is as informative
 

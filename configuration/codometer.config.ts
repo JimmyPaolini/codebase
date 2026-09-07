@@ -33,6 +33,12 @@ const codometerConfiguration = {
   // deliberately: only the `write` configuration passes it, which is what keeps
   // a branch's `check` run from rewriting every project README.
   output: { json: { path: "codometer-report.json" } },
+  // Shell is loosened rather than held to the shared budget: `scripts/shell/`
+  // holds command references — grep, netstat — whose whole body is one comment
+  // block documenting flags. That is a manual page, not a sprawling
+  // explanation, and condensing it would delete the thing the file exists for.
+  // 256 still catches real sprawl; the longest reference here runs to 190.
+  shell: { comments: { maximumWords: 256 } },
   // Python lives in a uv workspace, so the interpreter is reached through uv
   // rather than being on PATH.
   python: { command: "uv run python" },
@@ -58,6 +64,17 @@ const codometerConfiguration = {
       symbols: { kinds: ["method"], modifiers: ["static"] },
     },
   ],
+  // A comment block is capped by how much it says, not how wide it is: every
+  // linter here already holds a line to 80 columns, so a character budget
+  // would only restate it. The budget is per block — the run of `#` lines a
+  // reader takes as one thought, ended by a blank line — which is what makes a
+  // sprawling explanation the thing reported rather than a long word.
+  //
+  // Written once at the top level rather than per language, so YAML, shell,
+  // TOML, and Python are held to one number. `documentation` stays unset:
+  // gating this prose is not a reason to start gating every JSDoc comment
+  // against the same budget.
+  comments: { maximumWords: 128 },
 } satisfies CodometerConfiguration;
 
 // 🎯 Targets

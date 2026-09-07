@@ -6,6 +6,7 @@ export const EMPTY_PYTHON_RESULT: PythonResult = {
   classes: 0,
   commentLines: 0,
   comments: 0,
+  commentTokens: [],
   constants: 0,
   decorators: 0,
   docstringLines: 0,

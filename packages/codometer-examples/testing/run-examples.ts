@@ -48,6 +48,8 @@ const EXPECTED_EXIT_CODES: Record<string, number> = {
   "compression/none.config.ts": 0,
   "discovery/nested/codometer.config.ts": 0,
   "documentation/codometer.config.ts": 1,
+  "documentation/comments.config.ts": 1,
+  "documentation/yaml-comments.config.ts": 1,
   "limits/ambiguous.config.ts": 1,
   "limits/default-target.config.ts": 0,
   "limits/empty-target-limited.config.ts": 1,

@@ -21,14 +21,12 @@ import type {
 import type {
   CodeStatisticsResult,
   CodometerAnalysis,
+  CodometerCommentMeasurement,
   JavascriptStatistics,
   ResolvedCodometerTarget,
   TypescriptStatistics,
 } from "@codometer/configuration";
-import type {
-  TypescriptDocumentationMeasurement,
-  TypescriptResult,
-} from "@codometer/languages";
+import type { TypescriptResult } from "@codometer/languages";
 
 /**
  * Aggregates every analyzer's report into a single set of statistics.
@@ -75,7 +73,7 @@ export class MeasureService {
    * a target naming compiled output are counted by exactly the same analyzers.
    */
   private analyzeFiles(args: AnalyzeFilesArguments): {
-    documentation: TypescriptDocumentationMeasurement[];
+    documentation: CodometerCommentMeasurement[];
     statistics: CodeStatisticsResult;
   } {
     const directory = args.workingDirectory;
@@ -98,7 +96,13 @@ export class MeasureService {
     });
 
     return {
-      documentation: languages.typescript.documentation,
+      // One channel for both: a JSDoc block and a YAML comment block are
+      // gated, reported, and rendered identically, and `kind` is what tells a
+      // reader which is which.
+      documentation: [
+        ...languages.typescript.documentation,
+        ...languages.comments,
+      ],
       statistics: {
         css: { ...languages.css },
         custom: this.customizationService.analyze({
@@ -138,7 +142,7 @@ export class MeasureService {
 
   /** Stamps every documentation measurement with the target it was found in. */
   private attachTargetName(
-    documentation: readonly TypescriptDocumentationMeasurement[],
+    documentation: readonly CodometerCommentMeasurement[],
     targetName: string,
   ): DocumentationMeasurement[] {
     return documentation.map((measurement) => ({
@@ -183,6 +187,14 @@ export class MeasureService {
     };
   }
 
+  /**
+   * The YAML counters alone, without the comment measurements beside them.
+   *
+   * `YamlResult` carries its measurements next to its counters the way
+   * `TypescriptResult` does, and those travel through the documentation
+   * channel instead — so spreading the whole result here would leave an array
+   * inside an object whose type says it holds only numbers.
+   */
   /** Reads whatever a target's measurement threw as a printable sentence. */
   private describeFailure(error: unknown): string {
     return error instanceof Error ? error.message : String(error);

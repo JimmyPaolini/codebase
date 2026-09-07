@@ -10,7 +10,6 @@ import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
   ConfigurationFileNotFoundError,
   DEFAULT_CUSTOM_STATISTIC_COLORS,
-  DEFAULT_DOCUMENTATION_UNIT,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_LIMIT_SEVERITY,
@@ -966,6 +965,70 @@ describe(ConfigurationService, () => {
     expect(configuration.targets[0]?.directory).toBe("../..");
   });
 
+  it("leaves yaml comments undefined when unconfigured, so the check is off", () => {
+    const configuration = service.resolveConfiguration({});
+
+    expect(configuration.yaml.comments).toBeUndefined();
+  });
+
+  it("invents no maximum a configuration left out", () => {
+    const configuration = service.resolveConfiguration({
+      yaml: { comments: { maximumWords: 128 } },
+    });
+
+    // A budget nobody wrote is one nobody chose. Only `severity` defaults.
+    expect(configuration.yaml.comments).toStrictEqual({
+      file: undefined,
+      maximumCharacters: undefined,
+      maximumLines: undefined,
+      maximumWords: 128,
+      severity: DEFAULT_LIMIT_SEVERITY,
+    });
+  });
+
+  it("keeps every yaml comment field a configuration sets explicitly", () => {
+    const configuration = service.resolveConfiguration({
+      yaml: {
+        comments: {
+          maximumCharacters: 900,
+          maximumLines: 24,
+          maximumWords: 64,
+          severity: "warn",
+        },
+      },
+    });
+
+    expect(configuration.yaml.comments).toStrictEqual({
+      file: undefined,
+      maximumCharacters: 900,
+      maximumLines: 24,
+      maximumWords: 64,
+      severity: "warn",
+    });
+  });
+
+  it("merges a language's file budget over the top-level one", () => {
+    const configuration = service.resolveConfiguration({
+      comments: { file: { maximumLines: 400 }, maximumWords: 128 },
+      shell: { comments: { file: { maximumWords: 900 } } },
+    });
+
+    // The language names only a word budget for the file, so it keeps the line
+    // budget written at the top level — the same merge the block maxima get.
+    expect(configuration.shell.comments?.file).toStrictEqual({
+      maximumCharacters: undefined,
+      maximumLines: 400,
+      maximumWords: 900,
+      severity: DEFAULT_LIMIT_SEVERITY,
+    });
+    expect(configuration.yaml.comments?.file).toStrictEqual({
+      maximumCharacters: undefined,
+      maximumLines: 400,
+      maximumWords: undefined,
+      severity: DEFAULT_LIMIT_SEVERITY,
+    });
+  });
+
   it("leaves documentation undefined when unconfigured, so the check is off", () => {
     const configuration = service.resolveConfiguration({});
 
@@ -974,38 +1037,49 @@ describe(ConfigurationService, () => {
 
   it("defaults documentation fields a configuration leaves out", () => {
     const configuration = service.resolveConfiguration({
-      documentation: { default: 12 },
+      documentation: { maximumLines: 12 },
     });
 
     expect(configuration.documentation).toStrictEqual({
-      default: 12,
       kinds: {},
+      maximumCharacters: undefined,
+      maximumLines: 12,
+      maximumWords: undefined,
       severity: DEFAULT_LIMIT_SEVERITY,
-      unit: DEFAULT_DOCUMENTATION_UNIT,
     });
   });
 
-  it("keeps every documentation field a configuration sets explicitly", () => {
+  it("merges a documentation kind over the block's own maxima", () => {
     const configuration = service.resolveConfiguration({
       documentation: {
-        default: 6,
-        kinds: { class: 24, interface: 16, method: 12, property: 4 },
+        kinds: { class: { maximumLines: 24 }, property: { maximumWords: 20 } },
+        maximumLines: 6,
+        maximumWords: 60,
         severity: "warn",
-        unit: "characters",
       },
     });
 
-    expect(configuration.documentation).toStrictEqual({
-      default: 6,
-      kinds: { class: 24, interface: 16, method: 12, property: 4 },
-      severity: "warn",
-      unit: "characters",
+    // `class` names only lines, so it keeps the block's word budget; the
+    // entries are merged field by field rather than replacing it.
+    expect(configuration.documentation?.kinds).toStrictEqual({
+      class: {
+        maximumCharacters: undefined,
+        maximumLines: 24,
+        maximumWords: 60,
+        severity: "warn",
+      },
+      property: {
+        maximumCharacters: undefined,
+        maximumLines: 6,
+        maximumWords: 20,
+        severity: "warn",
+      },
     });
   });
 
   it("rejects a documentation kind that names no declaration kind", async () => {
     const configurationPath = await writeConfiguration({
-      documentation: { kinds: { sigil: 10 } },
+      documentation: { kinds: { sigil: { maximumLines: 10 } } },
     });
 
     await expect(
@@ -1015,7 +1089,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a non-integer documentation kind limit", async () => {
     const configurationPath = await writeConfiguration({
-      documentation: { kinds: { class: 10.5 } },
+      documentation: { kinds: { class: { maximumLines: 10.5 } } },
     });
 
     await expect(
@@ -1025,7 +1099,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a zero documentation kind limit", async () => {
     const configurationPath = await writeConfiguration({
-      documentation: { kinds: { class: 0 } },
+      documentation: { kinds: { class: { maximumLines: 0 } } },
     });
 
     await expect(
@@ -1035,7 +1109,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a negative documentation default limit", async () => {
     const configurationPath = await writeConfiguration({
-      documentation: { default: -1 },
+      documentation: { maximumLines: -1 },
     });
 
     await expect(

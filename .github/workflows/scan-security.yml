@@ -20,18 +20,16 @@ permissions:
 concurrency:
   # Per-commit on `main`, per-ref everywhere else. This workflow's README badge
   # renders every non-`success` conclusion red, `cancelled` among them, so a
-  # merge landing while the previous one is still running leaves the badge
-  # reporting a run that was superseded rather than one that broke. Roughly a
-  # quarter of merges land inside a run window, and the badge stays red until
-  # the next merge clears it.
+  # merge landing while the previous one still runs leaves the badge reporting
+  # a superseded run rather than a broken one. Roughly a quarter of merges land
+  # inside a run window, and the badge stays red until the next merge clears it.
   #
   # `cancel-in-progress: false` alone would not fix that, which is the trap:
   # GitHub keeps at most one *pending* run per group, so a third push cancels
-  # the queued second one whatever this flag says. Only a group nothing else
-  # can join keeps a `main` run out of that queue.
+  # the queued second whatever this flag says. Only a group nothing else can
+  # join keeps a `main` run out of that queue.
   #
-  # Pull request branches keep cancelling, where no badge reads the conclusion
-  # and a superseded run is pure waste.
+  # Pull request branches keep cancelling, where no badge reads the conclusion.
   group: >-
     ${{ github.workflow }}-${{ github.ref == 'refs/heads/main'
     && github.sha || github.ref }}
@@ -57,23 +55,19 @@ jobs:
 
       # `pnpm-audit:check` passes `--ignore-registry-errors`, which exits 0
       # when the advisory fetch itself throws. npm's
-      # `/-/npm/v1/security/advisories/bulk` endpoint accepts the POST and
-      # then never answers during an incident — ordinary registry reads stay
-      # fast, so nothing else in the job notices — and pnpm's three retries
-      # turn that into a three-minute red build on every push and pull
-      # request. Scan Security is a required check, so an npm outage blocked
-      # every merge in the repository.
+      # `/-/npm/v1/security/advisories/bulk` endpoint accepts the POST and then
+      # never answers during an incident — ordinary registry reads stay fast,
+      # so nothing else notices — and pnpm's three retries turn that into a
+      # three-minute red build on every push. Scan Security is a required
+      # check, so an npm outage blocked every merge.
       #
       # The flag is narrower than it sounds: pnpm wraps only the advisory
-      # fetch in the try/catch it short-circuits, so a registry that answers
-      # with vulnerabilities still fails this step. Only an unreachable
-      # registry passes, and the warnings it printed stay in the log. The
-      # weekly schedule re-audits once npm recovers.
+      # fetch, so a registry that answers with vulnerabilities still fails this
+      # step. Only an unreachable registry passes. The weekly schedule
+      # re-audits once npm recovers.
       #
-      # Terraform scanning used to sit behind a `dorny/paths-filter` step with
-      # a special case for schedule events, which have no diff context. The
-      # trivy-config target declares the terraform tree in its `inputs`, so Nx
-      # skips it on a cache hit — the same saving without the special case.
+      # Terraform scanning needs no `paths-filter`: the trivy-config target
+      # declares the terraform tree in its `inputs`, so Nx skips it on a hit.
       - name: 🕵️ Scan Security
         run: pnpm exec nx affected --target=scan-security --parallel=4
 

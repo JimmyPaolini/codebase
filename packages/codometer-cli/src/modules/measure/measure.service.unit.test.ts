@@ -21,12 +21,19 @@ import type { LanguageResults } from "@codometer/languages";
 
 const configuration: ResolvedCodometerConfiguration = {
   defaultTarget: undefined,
-  documentation: { default: 6, kinds: {}, severity: "fail", unit: "lines" },
+  documentation: {
+    kinds: {},
+    maximumCharacters: undefined,
+    maximumLines: 6,
+    maximumWords: undefined,
+    severity: "fail",
+  },
   exclude: ["**/node_modules/**"],
   excludeFrom: [],
   limits: [],
   output: { json: undefined, markdown: undefined },
-  python: { command: "uv run python" },
+  python: { command: "uv run python", comments: undefined },
+  shell: { comments: undefined },
   statistics: [
     {
       color: "7c3aed",
@@ -36,6 +43,8 @@ const configuration: ResolvedCodometerConfiguration = {
     },
   ],
   targets: [],
+  toml: { comments: undefined },
+  yaml: { comments: undefined },
 };
 
 const compiledTarget: ResolvedCodometerTarget = {
@@ -400,6 +409,60 @@ describe(MeasureService, () => {
     expect(result.documentation).toStrictEqual(
       result.targets[0]?.documentation,
     );
+  });
+
+  it("carries every language's comment blocks through the documentation channel", () => {
+    vi.mocked(languagesService.analyze).mockReturnValue(
+      createMock<LanguageResults>({
+        comments: [
+          {
+            breached: true,
+            declaration: "why this workflow skips setup",
+            file: ".github/workflows/ci.yml",
+            kind: "comment",
+            limit: 128,
+            line: 3,
+            measured: 147,
+            severity: "fail",
+            unit: "words",
+          },
+        ],
+        typescript: createMock<LanguageResults["typescript"]>({
+          documentation: [
+            {
+              breached: false,
+              declaration: "Foo",
+              file: "src/foo.ts",
+              kind: "class",
+              limit: 6,
+              line: 1,
+              measured: 3,
+              severity: "fail",
+              unit: "lines",
+            },
+          ],
+        }),
+      }),
+    );
+
+    const result = buildService().measure({
+      configuration,
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    // One channel, both kinds: `kind` is what distinguishes them downstream.
+    expect(result.documentation.map((entry) => entry.kind)).toStrictEqual([
+      "class",
+      "comment",
+    ]);
+    expect(result.documentation[1]).toMatchObject({
+      breached: true,
+      file: ".github/workflows/ci.yml",
+      line: 3,
+      measured: 147,
+      target: "codebase",
+    });
   });
 
   it("attaches a declared target's name to its documentation measurements", () => {

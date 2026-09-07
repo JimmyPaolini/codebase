@@ -1,45 +1,26 @@
 #!/bin/bash
 
-# Restore the skills declared in skills-lock.json into their .agents/skills/<name>/
-# folders.
+# Restore the skills declared in skills-lock.json into .agents/skills/<name>/.
 #
-# Invoked from the root postinstall so every environment that installs node
-# dependencies — local clones, devcontainers, CI jobs, Claude Code worktrees —
-# ends up holding the skills that the Agent Workflow in AGENTS.md points at.
-# Without this the skills are declared but absent, and every skill link in
-# AGENTS.md dangles.
-#
-# Keeping those skills out of the five tools whose scan reaches `.agents/` is a
-# separate job, owned by the `skill-exclusions` synchronizer in
-# tools/synchronization — `nx run synchronization:synchronize` generates and
-# verifies the marker-delimited blocks, so a skill `skills update` adds to the
-# lockfile fails the check until the same change regenerates them.
+# Invoked from the root postinstall so every environment installing node
+# dependencies ends up holding the skills the Agent Workflow points at.
+# Without it those skill links in AGENTS.md dangle. Keeping the same skills out
+# of the tools whose scan reaches `.agents/` is a separate job, owned by the
+# `skill-exclusions` synchronizer.
 #
 # Four properties matter:
 #
-#   - Idempotent. Returns in milliseconds when every locked skill is already
-#     present, rather than re-cloning every source repository. Set
-#     SKILLS_INSTALL_FORCE=1 to re-run anyway and repair a damaged skill.
-#   - Honest about failure. A lockfile that cannot be read or parsed is
-#     reported as such and never reported as "already restored".
-#   - Leaves tracked files alone. `skills experimental_install` rewrites
-#     skills-lock.json with whatever hash each source holds right now, and
-#     rewrites every skill folder with whatever content its source holds right
-#     now. Left in place either would dirty the tree on every CI job and make
-#     upgrade-dependencies.yml open an empty "upgrade" pull request on every
-#     run, because it gates on `git diff --quiet`. One absent folder is enough
-#     to refresh every skill whose upstream has moved, so both the lockfile and
-#     the folders are returned to the committed content here. Moving the pins
-#     forward is the job of `skills update`, which that workflow already runs.
-#   - Non-fatal. Skills are agent context, not a build input. A GitHub outage or
-#     rate limit must not break `pnpm install` for everyone, so this always
-#     exits 0 and prints the recovery command instead. Returning the folders to
-#     the committed content also means an outage leaves a committed skill in
-#     place rather than absent — git already holds it, so only an entry the
-#     lockfile has gained but the repository has not yet committed can go
-#     missing.
-#
-# Set SKIP_SKILLS_INSTALL=1 to opt out entirely.
+#   - Idempotent. Returns in milliseconds when every locked skill is present.
+#     Set SKILLS_INSTALL_FORCE=1 to repair a damaged one anyway.
+#   - Honest about failure. An unreadable lockfile is reported as such, never
+#     as "already restored".
+#   - Leaves tracked files alone. `skills experimental_install` rewrites both
+#     the lockfile and every skill folder, and one absent folder refreshes them
+#     all. Left in place that dirties the tree on every CI job, which makes
+#     upgrade-dependencies.yml open an empty pull request. Moving the pins
+#     forward is `skills update`.
+#   - Non-fatal. Skills are agent context, not a build input, so an outage
+#     prints the recovery command and exits 0.
 
 set -uo pipefail
 

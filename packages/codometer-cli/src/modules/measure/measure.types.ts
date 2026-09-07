@@ -3,11 +3,11 @@
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
 import type {
   CodeStatisticsResult,
+  CodometerCommentMeasurement,
   ResolvedCodometerConfiguration,
   ResolvedCodometerTarget,
 } from "@codometer/configuration";
 import type { DiscoveryResult } from "@codometer/discovery";
-import type { TypescriptDocumentationMeasurement } from "@codometer/languages";
 import type { SizeResult } from "@codometer/size";
 
 /**
@@ -19,8 +19,15 @@ export interface AnalyzeFilesArguments {
   workingDirectory: string;
 }
 
-/** One measured JSDoc comment, with the target it was found in. */
-export interface DocumentationMeasurement extends TypescriptDocumentationMeasurement {
+/**
+ * One measured comment, with the target it was found in.
+ *
+ * Both a JSDoc block and a YAML comment block arrive here: they are gated the
+ * same way, reported the same way, and rendered by the same line of markdown,
+ * so a second channel would only be the same code twice. `kind` is what says
+ * which one a reader is looking at.
+ */
+export interface DocumentationMeasurement extends CodometerCommentMeasurement {
   target: string;
 }
 

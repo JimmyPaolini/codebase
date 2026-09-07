@@ -137,7 +137,7 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts measure --directory . --config codometer.config.ts --check reports"
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts measure --directory . --config codometer.config.ts --check limits"
         },
         "write": {
           "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts measure --directory . --config codometer.config.ts --write"
@@ -145,10 +145,11 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [],
-      "description": "Measure the whole repository and write its README.md statistics badges. Written out as an empty list rather than left to the `codometer` targetDefault, which depends on `build`: a per-project run measures compiled output and must wait for it, while this one measures source and would otherwise wait on every build in the workspace \u2014 slow, and circular, since the tools it would be waiting for are measured by it. The two are deliberately different and must not be collapsed into one. Run on main by the release workflow, which commits the result alongside the changelog; pull requests do not check it, and `check` here means staleness because the repository declares no limit of its own.",
+      "description": "Measure the whole repository: `check` gates the limits it declares over itself, chiefly the 128-word budget on a YAML comment block, and `write` writes its README.md statistics badges. The two flags name two findings on opposite sides of a pull request, the same split callidescope makes. `check` reads no output destination and writes nothing, which is what makes it safe on a branch \u2014 a breached budget is something the branch did. Report staleness is deliberately not checked: those badges are written on main by the release workflow, so every branch would fail for being behind rather than for anything it did. `dependsOn` is written out as an empty list rather than left to the `codometer` targetDefault, which depends on `build`: a per-project run measures compiled output and must wait for it, while this one measures source and would otherwise wait on every build in the workspace \u2014 slow, and circular, since the tools it would be waiting for are measured by it. The two are deliberately different and must not be collapsed into one. This is also the only run that reaches the workflows under .github, which belong to no project, so no per-project run ever measures them.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cjs,cts,js,json,jsx,mjs,mts,py,ts,tsx}",
+        "{workspaceRoot}/**/*.{yaml,yml}",
         "{workspaceRoot}/configuration/.codometerignore",
         "{workspaceRoot}/configuration/codometer.config.ts",
         "{workspaceRoot}/README.md",
@@ -457,6 +458,12 @@
         "command": "NODE_OPTIONS='--import=tsx' lint-staged --config configuration/lint-staged.config.ts --continue-on-error",
         "cwd": "{projectRoot}"
       }
+    },
+    "make-projects": {
+      "cache": false,
+      "dependsOn": ["codometer"],
+      "description": "Measure the repository and gate the limits it declares over itself. An nx:noop aggregator, the way every project's `make-projects` is. `dependsOn` names `codometer` alone rather than inheriting the targetDefault's `build`: the root project builds nothing, and this run measures source. It exists so \ud83d\udc77 Make Projects reaches the repository itself \u2014 the workflows under .github belong to no project, so without this nothing gates their comment budgets.",
+      "executor": "nx:noop"
     },
     "markdown-lint": {
       "cache": true,

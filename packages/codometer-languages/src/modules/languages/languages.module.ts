@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { CommentsModule } from "../comments/comments.module";
 import { CssModule } from "../css/css.module";
 import { HclModule } from "../hcl/hcl.module";
 import { JsonModule } from "../json/json.module";
@@ -21,6 +22,7 @@ import { LanguagesService } from "./languages.service";
   controllers: [],
   exports: [LanguagesService],
   imports: [
+    CommentsModule,
     CssModule,
     HclModule,
     JsonModule,

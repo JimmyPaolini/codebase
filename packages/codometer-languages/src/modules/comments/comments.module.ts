@@ -1,0 +1,33 @@
+import { Module } from "@nestjs/common";
+
+import { LoggerModule } from "@codebase/logger";
+
+import { CommentsService } from "./comments.service";
+import { HashCommentsService } from "./hash-comments.service";
+import { LanguageCommentsService } from "./language-comments.service";
+import { YamlCommentsService } from "./yaml-comments.service";
+
+/**
+ * NestJS module that provides comment-length measurement.
+ *
+ * One measuring service and one reader per comment syntax, so a language that
+ * marks its comments differently is a new reader here rather than a second
+ * definition of what a word is.
+ */
+@Module({
+  controllers: [],
+  exports: [
+    CommentsService,
+    HashCommentsService,
+    LanguageCommentsService,
+    YamlCommentsService,
+  ],
+  imports: [LoggerModule],
+  providers: [
+    CommentsService,
+    HashCommentsService,
+    LanguageCommentsService,
+    YamlCommentsService,
+  ],
+})
+export class CommentsModule {}

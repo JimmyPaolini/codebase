@@ -87,7 +87,8 @@ describe(RenderConfigurationService, () => {
             excludeFrom: [".codometerignore"],
             limits: [],
             output: { json: undefined, markdown: undefined },
-            python: { command: "uv run python" },
+            python: { command: "uv run python", comments: undefined },
+            shell: { comments: undefined },
             statistics: [
               {
                 color: "166534",
@@ -106,6 +107,8 @@ describe(RenderConfigurationService, () => {
                 name: "Compiled JavaScript",
               },
             ],
+            toml: { comments: undefined },
+            yaml: { comments: undefined },
           } satisfies ResolvedCodometerConfiguration,
           directory: "packages/logger",
           error: undefined,

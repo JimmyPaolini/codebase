@@ -2,11 +2,10 @@ import { Injectable } from "@nestjs/common";
 
 import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
+  CODOMETER_SYMBOL_KINDS,
   codometerConfigurationSchema,
   DEFAULT_CUSTOM_STATISTIC_COLORS,
   DEFAULT_CUSTOM_STATISTIC_GROUP,
-  DEFAULT_DOCUMENTATION_LIMIT,
-  DEFAULT_DOCUMENTATION_UNIT,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_LIMIT_SEVERITY,
@@ -22,24 +21,31 @@ import {
 } from "./configuration.constants";
 
 import type {
+  CodometerCommentsConfiguration,
   CodometerConfiguration,
   CodometerCustomStatistic,
   CodometerDocumentationConfiguration,
+  CodometerLanguageCommentsConfiguration,
   CodometerLimit,
+  CodometerSymbolKind,
   CodometerTarget,
   LoadConfigurationArguments,
-  LoadedConfiguration,
-  ResolvedCodometerConfiguration,
-  ResolvedCodometerCustomStatistic,
-  ResolvedCodometerDocumentationConfiguration,
-  ResolvedCodometerLimit,
-  ResolvedCodometerTarget,
 } from "./configuration.types";
 import type {
   CodometerOutputConfiguration,
   ResolvedCodometerJsonOutputConfiguration,
   ResolvedCodometerMarkdownOutputConfiguration,
 } from "./output.types";
+import type {
+  LoadedConfiguration,
+  ResolvedCodometerCommentsConfiguration,
+  ResolvedCodometerConfiguration,
+  ResolvedCodometerCustomStatistic,
+  ResolvedCodometerDocumentationConfiguration,
+  ResolvedCodometerLanguageCommentsConfiguration,
+  ResolvedCodometerLimit,
+  ResolvedCodometerTarget,
+} from "./resolved.types";
 import type { CodometerStatisticGroup } from "./statistics.types";
 
 /**
@@ -112,6 +118,42 @@ export class ConfigurationService {
   }
 
   /**
+   * Fills in the severity a `comments` block may leave out.
+   *
+   * `undefined` when a configuration names no block, the same way
+   * `resolveDocumentation` returns `undefined`: the check is opt-in, so a
+   * repository that never wrote one is measured and reported like any other
+   * but gated by nothing. Each maximum is carried through as written, absent
+   * included — nothing invents a budget nobody chose.
+   */
+  private resolveComments(
+    ...layers: (CodometerCommentsConfiguration | undefined)[]
+  ): ResolvedCodometerCommentsConfiguration | undefined {
+    const written = layers.filter((layer) => layer !== undefined);
+
+    if (written.length === 0) {
+      return undefined;
+    }
+
+    const merged = written.reduce<CodometerCommentsConfiguration>(
+      (carried, layer) => ({
+        maximumCharacters: layer.maximumCharacters ?? carried.maximumCharacters,
+        maximumLines: layer.maximumLines ?? carried.maximumLines,
+        maximumWords: layer.maximumWords ?? carried.maximumWords,
+        severity: layer.severity ?? carried.severity,
+      }),
+      {},
+    );
+
+    return {
+      maximumCharacters: merged.maximumCharacters,
+      maximumLines: merged.maximumLines,
+      maximumWords: merged.maximumWords,
+      severity: merged.severity ?? DEFAULT_LIMIT_SEVERITY,
+    };
+  }
+
+  /**
    * Gives every configured counter a color and a group.
    *
    * Colors are handed out by position within a group rather than within the
@@ -154,16 +196,32 @@ export class ConfigurationService {
   private resolveDocumentation(
     configured: CodometerDocumentationConfiguration | undefined,
   ): ResolvedCodometerDocumentationConfiguration | undefined {
-    if (configured === undefined) {
+    const block = this.resolveComments(configured);
+
+    if (configured === undefined || block === undefined) {
       return undefined;
     }
 
-    return {
-      default: configured.default ?? DEFAULT_DOCUMENTATION_LIMIT,
-      kinds: configured.kinds ?? {},
-      severity: configured.severity ?? DEFAULT_LIMIT_SEVERITY,
-      unit: configured.unit ?? DEFAULT_DOCUMENTATION_UNIT,
-    };
+    const kinds: Partial<
+      Record<CodometerSymbolKind, ResolvedCodometerCommentsConfiguration>
+    > = {};
+
+    const written = configured.kinds ?? {};
+
+    // Walked over the known kinds rather than the written keys, so no cast is
+    // needed to get from `Object.keys`' `string` back to a symbol kind. The
+    // schema has already refused any key that is not one of these.
+    for (const kind of CODOMETER_SYMBOL_KINDS) {
+      // Merged over the block's own maxima rather than replacing them, so a
+      // kind naming only `maximumLines` still inherits `maximumWords`.
+      const resolved = this.resolveComments(configured, written[kind]);
+
+      if (written[kind] !== undefined && resolved !== undefined) {
+        kinds[kind] = resolved;
+      }
+    }
+
+    return { ...block, kinds };
   }
 
   /** Applies defaults to the JSON output destination, if one was named. */
@@ -177,6 +235,28 @@ export class ConfigurationService {
     return {
       indentation: output.json.indentation ?? DEFAULT_JSON_INDENTATION,
       path: output.json.path,
+    };
+  }
+
+  /**
+   * Resolves a language's comment budgets, block and file alike.
+   *
+   * `file` is merged across the same layers the block maxima are, so a
+   * top-level `comments.file` can be loosened for one language without that
+   * language having to restate it.
+   */
+  private resolveLanguageComments(
+    ...layers: (CodometerLanguageCommentsConfiguration | undefined)[]
+  ): ResolvedCodometerLanguageCommentsConfiguration | undefined {
+    const block = this.resolveComments(...layers);
+
+    if (block === undefined) {
+      return undefined;
+    }
+
+    return {
+      ...block,
+      file: this.resolveComments(...layers.map((layer) => layer?.file)),
     };
   }
 
@@ -328,9 +408,31 @@ export class ConfigurationService {
       },
       python: {
         command: configuration.python?.command ?? DEFAULT_PYTHON_COMMAND,
+        comments: this.resolveLanguageComments(
+          configuration.comments,
+          configuration.python?.comments,
+        ),
+      },
+      shell: {
+        comments: this.resolveLanguageComments(
+          configuration.comments,
+          configuration.shell?.comments,
+        ),
       },
       statistics: this.resolveCustomStatistics(configuration.statistics),
       targets: this.resolveTargets(configuration.targets),
+      toml: {
+        comments: this.resolveLanguageComments(
+          configuration.comments,
+          configuration.toml?.comments,
+        ),
+      },
+      yaml: {
+        comments: this.resolveLanguageComments(
+          configuration.comments,
+          configuration.yaml?.comments,
+        ),
+      },
     };
   }
 }

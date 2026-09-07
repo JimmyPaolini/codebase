@@ -4,7 +4,6 @@ import type {
   CodeStatisticsResult,
   CodometerCompression,
   CodometerDocumentationUnit,
-  CodometerSymbolKind,
   ResolvedCodometerMarkdownOutputConfiguration,
 } from "@codometer/configuration";
 
@@ -16,15 +15,17 @@ export interface BuildAnchorHelpersArguments {
 }
 
 /**
- * One documented declaration whose JSDoc comment ran over its kind's limit.
+ * One comment that ran over the limit its kind carries.
  *
  * A rendering-only shape: only the fields a bullet needs, so this package
  * never has to know the richer measurement type the caller carries it in.
+ * `kind` is a plain string because a JSDoc block and a YAML comment block both
+ * arrive here — this package renders the word, it does not judge it.
  */
 export interface DocumentationBreach {
   declaration: string;
   file: string;
-  kind: CodometerSymbolKind;
+  kind: string;
   limit: number;
   line: number;
   measured: number;
