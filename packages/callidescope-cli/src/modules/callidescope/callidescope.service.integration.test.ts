@@ -113,13 +113,7 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
 async function buildConfiguredWorkspace(
   libraryConfiguration: Record<string, unknown>,
 ): Promise<string> {
-  // Resolved through the symlink `mkdtemp` hands back on macOS, where the
-  // temporary directory really lives under `/private`. A declared address is
-  // matched against paths the compiler reported, and those come back resolved —
-  // so an unresolved root here would make every file path relative to nothing.
-  const workspaceRoot = await realpath(
-    await mkdtemp(path.join(tmpdir(), "callidescope-project-")),
-  );
+  const workspaceRoot = await makeWorkspaceRoot("callidescope-project-");
 
   await writeProject({
     name: "library",
@@ -166,9 +160,7 @@ async function buildConfiguredWorkspace(
  * neither of them mentions.
  */
 async function buildLayeredWorkspace(): Promise<string> {
-  const workspaceRoot = await mkdtemp(
-    path.join(tmpdir(), "callidescope-closure-"),
-  );
+  const workspaceRoot = await makeWorkspaceRoot("callidescope-closure-");
 
   await writeProject({
     name: "library",
@@ -238,9 +230,7 @@ async function buildLayeredWorkspace(): Promise<string> {
  * through an injected service — the shape this tool exists to follow.
  */
 async function buildWorkspace(): Promise<string> {
-  const workspaceRoot = await mkdtemp(
-    path.join(tmpdir(), "callidescope-trace-"),
-  );
+  const workspaceRoot = await makeWorkspaceRoot("callidescope-trace-");
   const root = path.join(workspaceRoot, "packages", "example");
 
   await mkdir(path.join(root, "src", "modules", "example"), {
@@ -290,6 +280,26 @@ async function buildWorkspace(): Promise<string> {
   );
 
   return workspaceRoot;
+}
+
+/**
+ * A temporary directory every fixture here roots its workspace at.
+ *
+ * Resolved through the symlink `mkdtemp` hands back on macOS, where the
+ * temporary directory really lives under `/private`. A program's source files
+ * come back under that real path, so an unresolved root leaves every
+ * workspace-relative path a `../../…` climb out of the workspace — no project
+ * root contains one, `resolveOwningProject` answers nothing, and a project's
+ * own `exclude` silently applies to nothing. Files are still collected under a
+ * different keying, so the only symptom is a fixture that cannot reproduce a
+ * behavior the real workspace has: it misleads rather than failing.
+ *
+ * One helper rather than the two calls written out per builder, because a
+ * fixture added without them is that defect back, and it has been back three
+ * times.
+ */
+async function makeWorkspaceRoot(prefix: string): Promise<string> {
+  return realpath(await mkdtemp(path.join(tmpdir(), prefix)));
 }
 
 /** The configuration file name a project declares itself through. */
@@ -484,9 +494,8 @@ describe(`${CallidescopeService.name} (integration)`, () => {
   it("leaves out the files a project's own configuration excluded", async () => {
     // The whole wiring in one run: a file sitting at a project root, read
     // only after discovery has found that root, deciding what the run's own
-    // filter had no way to decide. Resolved through the symlink `mkdtemp`
-    // hands back on macOS, for the reason `buildConfiguredWorkspace` gives.
-    const workspaceRoot = await realpath(await buildWorkspace());
+    // filter had no way to decide.
+    const workspaceRoot = await buildWorkspace();
 
     await writeFile(
       path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
@@ -507,7 +516,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     // The same glob written the other way round. A path that would be right
     // in the run's own configuration names nothing from inside the project,
     // which is what "anchored to the project" costs and buys.
-    const workspaceRoot = await realpath(await buildWorkspace());
+    const workspaceRoot = await buildWorkspace();
 
     await writeFile(
       path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
@@ -532,7 +541,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     // The fifth `entryPoints` field, and the one that is spent at collection
     // rather than when roots are chosen: a project that asks for its tests
     // gets them walked even though the run said no.
-    const workspaceRoot = await realpath(await buildWorkspace());
+    const workspaceRoot = await buildWorkspace();
 
     await writeTestFile(workspaceRoot);
     await writeFile(
@@ -553,7 +562,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
   it("leaves a project's test files out when the run said so", async () => {
     // The same workspace with nothing declared, which is what makes the
     // count above the project's own answer rather than the run's.
-    const workspaceRoot = await realpath(await buildWorkspace());
+    const workspaceRoot = await buildWorkspace();
 
     await writeTestFile(workspaceRoot);
 

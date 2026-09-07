@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, realpathSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -129,9 +129,25 @@ function writeUnreadableProject(workspaceRoot: string, name: string): void {
   );
 }
 
-/** Builds a throwaway workspace carrying the tool's default configuration. */
+/**
+ * Builds a throwaway workspace carrying the tool's default configuration.
+ *
+ * Rooted at a resolved path, because `mkdtempSync` hands back a symlink on
+ * macOS — `/var/folders/…` for a directory that really lives under
+ * `/private/var/folders/…`. A program's source files come back under the real
+ * path, so an unresolved root leaves every workspace-relative path a `../../…`
+ * climb out of the workspace, which no project root contains: ownership
+ * resolves to nothing and a project's own `exclude` silently applies to
+ * nothing. Files are still collected under a different keying, so the only
+ * symptom is a fixture that cannot reproduce a behavior the real workspace
+ * has. This suite asserts exit codes rather than paths today and so is not
+ * wrong yet; any assertion here on ownership, a module identifier, or a
+ * rendered path would be measuring the wrong thing without this.
+ */
 function writeWorkspace(): string {
-  const workspaceRoot = mkdtempSync(path.join(tmpdir(), "callidescope-exit-"));
+  const workspaceRoot = realpathSync(
+    mkdtempSync(path.join(tmpdir(), "callidescope-exit-")),
+  );
 
   writeFileSync(
     path.join(workspaceRoot, "callidescope.config.json"),
