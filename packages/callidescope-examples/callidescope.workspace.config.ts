@@ -11,15 +11,23 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
  *
  * That is also why `configuration/.callidescopeignore` excludes this directory
  * from the workspace run. Fixtures that exist to be too deep would otherwise
- * fail `nx run codebase:callidescope:check`, and silencing them there would
- * mean either raising the workspace limit past what the repository can hold or
- * teaching everyone to ignore a red gate.
+ * gain a `gate` target of their own: the callidescope Nx plugin withholds
+ * `gate` from a project the workspace configuration excludes, because such a
+ * project's own code is never traced. Dropping this directory from the ignore
+ * file would stop excluding it, so the plugin would infer `gate` here the same
+ * as everywhere else, and `deep-stack` and `forwarding-stack` would fail it
+ * immediately. Silencing that would mean either raising the workspace limit
+ * past what the repository can hold or teaching everyone to ignore a red gate.
  *
- * The two gates therefore sit on opposite flags, which is the clearest
- * demonstration of the split this package can offer:
+ * The two gates therefore rest on entirely different mechanisms, which is the
+ * clearest demonstration of the split this package can offer:
  *
- * - the workspace runs `--check depth`, and its committed report is published
- *   on `main` only, because the call graph moves on nearly every change;
+ * - the workspace gates depth (and, wherever a project declares
+ *   `limits.maximumBreadth`, breadth) through the inferred per-project `gate`
+ *   target, scoped by `nx affected` to whatever a change touched; its
+ *   committed report is published separately, by `nx run
+ *   codebase:callidescope:write` on `main` only, because the call graph moves
+ *   on nearly every change;
  * - this package runs `--check reports`, because its fixtures are frozen. A
  *   report here goes stale when a fixture changed, when the resolver did, or
  *   when one of the three dependency packages the run's closure reaches did —

@@ -135,9 +135,11 @@ Most of this package is code that would fail review if it were real, and that is
 the point:
 
 - `deep-stack` and `forwarding-stack` both breach `maximumDepth` on purpose.
-  `configuration/.callidescopeignore` is what keeps them from failing
-  `nx run codebase:callidescope:check`; removing that entry fails the workspace
-  gate immediately.
+  `configuration/.callidescopeignore` is what keeps this package excluded from
+  the inferred `gate` target altogether — the callidescope Nx plugin withholds
+  `gate` from an excluded project, since it never traces one. Removing that
+  entry stops the exclusion, so the plugin infers `gate` here the same as
+  everywhere else, and these two fixtures fail it immediately.
 - `computed-member` cannot be followed on purpose, which is what makes a depth a
   floor.
 - `implementation-fan-out` exceeds `maximumImplementationCandidates` on purpose.

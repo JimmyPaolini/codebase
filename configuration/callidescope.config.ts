@@ -141,14 +141,17 @@ export const workspaceLimits = {
  * would fail every pull request whose call graph moved until the author reran
  * the writer, burying the depth findings the gate exists to surface.
  *
- * So the two are split at the flag rather than by leaving the destination unset.
- * `nx run codebase:callidescope:check` passes `--check depth`, which reads no
- * destination at all, so its exit code is purely the depth verdict.
+ * So the two are split at the mechanism rather than by leaving the destination
+ * unset. Depth — and, wherever a project declares `limits.maximumBreadth`,
+ * breadth too — is gated by the inferred per-project `gate` target, an
+ * executor of its own rather than a flag on this one, scoped by `nx affected`
+ * to whatever a change touched. It reads no destination at all, so its exit
+ * code is purely the depth (and, where judged, breadth) verdict.
  * `nx run codebase:callidescope:write` passes `--write`, and the release
- * workflow runs it on main. Two configurations carry that split with no third,
- * because the target hangs off nothing: `lint-codebase` does not depend on it,
- * so no run of it ever forwards `write` here, and the pull request names
- * `check` itself.
+ * workflow runs it on main. That is the only configuration this target
+ * carries now: `lint-codebase` does not depend on it, so no run of it ever
+ * forwards `write` here, and `defaultConfiguration` is `write` for the same
+ * reason — there is nothing else left to default to.
  *
  * Every rule and finding this configuration turns on has a worked example in
  * `packages/callidescope-examples`, which also demonstrates the opposite half

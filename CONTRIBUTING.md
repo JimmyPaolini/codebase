@@ -323,12 +323,12 @@ Lowering a threshold to make a change pass is not an option — fix the code.
 
 Four toolchains are developed in this repository and gate its own code. You are most likely to meet them as a failing check, so it is worth knowing which one is talking.
 
-| Toolchain      | What it does                                                                                                                   | What fails a pull request                                                    |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| `conformetry`  | Scaffolds projects, modules, and components from templates, then measures the generated instances back against those templates | `conformetry-validate`, inside `lint-codebase`                               |
-| `codometer`    | Measures a directory — languages, declared conventions, compressed size — against the limits its configuration declares        | that project's `codometer` target, inside Make Projects                      |
-| `codependix`   | Exports Nx, NestJS module, and file-level import graphs, and judges them against declared boundary rules                       | `codependix --check boundaries`, run beside `lint-codebase` in Lint Codebase |
-| `callidescope` | Traces call stacks through injected dependencies and flags stacks that are too deep or callables that reach too widely         | `callidescope --check depth`, run beside `lint-codebase` in Lint Codebase    |
+| Toolchain      | What it does                                                                                                                   | What fails a pull request                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| `conformetry`  | Scaffolds projects, modules, and components from templates, then measures the generated instances back against those templates | `conformetry-validate`, inside `lint-codebase`                                      |
+| `codometer`    | Measures a directory — languages, declared conventions, compressed size — against the limits its configuration declares        | that project's `codometer` target, inside Make Projects                             |
+| `codependix`   | Exports Nx, NestJS module, and file-level import graphs, and judges them against declared boundary rules                       | `codependix --check boundaries`, run beside `lint-codebase` in Lint Codebase        |
+| `callidescope` | Traces call stacks through injected dependencies and flags stacks that are too deep or callables that reach too widely         | the inferred per-project `gate` target, run beside `lint-codebase` in Lint Codebase |
 
 Each is documented in its command-line package — [conformetry-cli](packages/conformetry-cli/README.md), [codometer-cli](packages/codometer-cli/README.md), [codependix-cli](packages/codependix-cli/README.md), [callidescope-cli](packages/callidescope-cli/README.md) — and each has agent skills for the same three moments, which read just as well for a human: running it, configuring it, and acting on what it said (codependix adds a fourth, for reading a graph the repository already committed). They are the `conformetry-*`, `codometer-*`, `codependix-*`, and `callidescope-*` entries under [.agents/skills](.agents/skills).
 

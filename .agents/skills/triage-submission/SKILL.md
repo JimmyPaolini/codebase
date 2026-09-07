@@ -82,7 +82,7 @@ staged `package.json` matches all three, so all four commands run.
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `{**/package.json,pnpm-workspace.yaml}` | `validation lockfile`, run as the CLI directly rather than through its Nx target                                                                                                                                                                                                                                     |
 | `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                                                                                                                                                                                                  |
-| `*` (every staged path)                 | `nx affected --target=lint-codebase --target=callidescope --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate` |
+| `*` (every staged path)                 | `nx affected --target=lint-codebase --target=gate --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate`         |
 
 There is deliberately no per-file-type row any more. `lint-codebase` is an
 `nx:noop` aggregator whose `dependsOn` list holds every static check, and each
@@ -92,15 +92,25 @@ hand-written mapping to drift. Anything the old table routed by hand
 (`sync-vscode-extensions`, `markdown-lint`, `yaml-lint`, `spell-check`) is now
 reached through that `dependsOn` list.
 
-`callidescope` and each derivation synchronization target are the exceptions,
-named in the same invocation rather than reached through `dependsOn`.
-`callidescope` also publishes a report on the default branch, and Nx forwards
-an explicit configuration down `dependsOn` — so an edge there would let
-`lint-codebase --configuration=write` publish from a branch. There is no
-aggregate `synchronize` target: each synchronization command is its own Nx
-target on the `synchronization` project, named here directly. Naming them
-alongside keeps a commit gating call-stack depth and derivation drift without a
-second `nx affected` call and the extra project graph build it would cost.
+Each derivation synchronization target is named in the same invocation rather
+than reached through `dependsOn`, because each also publishes on the default
+branch, and Nx forwards an explicit configuration down `dependsOn` — so an
+edge there would let `lint-codebase --configuration=write` publish from a
+branch.
+
+`gate` is named the same way, but for a different reason: the callidescope Nx
+plugin infers it with no configuration at all, so it has nothing for
+`dependsOn` to forward in the first place. It stays a named sibling because
+`nx affected` scopes it to the projects a commit actually touched, the same
+way it scopes `lint-codebase` itself — a commit that deepens one project's
+call stacks fails that project's own task, which the workspace-wide
+`callidescope --check depth` run this replaced never could name.
+
+There is no aggregate `synchronize` target: each synchronization command is its
+own Nx target on the `synchronization` project, named here directly. Naming
+them alongside keeps a commit gating call-stack depth and derivation drift
+without a second `nx affected` call and the extra project graph build it would
+cost.
 
 Conformetry is the one exception to `affected`: a generated instance can drift
 without matching any changed-file glob, so it validates the whole workspace on

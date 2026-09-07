@@ -98,10 +98,15 @@ which projects were in scope is something only the trace knows.
 
 `depth` and `reports` are separate because they belong on opposite sides of a
 pull request. Depth is the gate — a stack got longer in this change, and this
-change is what fixes it:
+change is what fixes it. In this workspace neither flag is invoked directly
+for that: the callidescope Nx plugin infers a `gate` target onto every project
+it does not exclude, judging depth always and breadth wherever a project
+declares `limits.maximumBreadth` — the same rules `--check depth` and
+`--check breadth` apply, reached through the plugin's own executor rather than
+a subprocess — scoped to just the projects a change touched:
 
 ```bash
-nx run codebase:callidescope:check
+nx affected --target=gate
 ```
 
 Staleness is not, because a report goes stale whenever the call graph moves
@@ -533,8 +538,7 @@ Every rule, finding, and output on this page has a worked example in
 [`@callidescope/examples`](../callidescope-examples/README.md) — a small
 codebase written to be traced, with its rendered reports committed. Its
 [`AGENTS.md`](../callidescope-examples/AGENTS.md) is a "callidescope reported X
-→ open this example" table, so a failing `callidescope:check` has somewhere to
-go.
+→ open this example" table, so a failing `gate` has somewhere to go.
 
 ## Non-goals
 
