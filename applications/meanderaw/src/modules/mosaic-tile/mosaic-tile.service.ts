@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { MalformedMosaicTileError } from "./mosaic-motif.constants";
+import { MalformedMosaicTileError } from "./mosaic-tile.constants";
 
 import type {
   MosaicDirections,
@@ -9,7 +9,7 @@ import type {
   MosaicTile,
   MosaicTilePoint,
   MosaicTileShape,
-} from "./mosaic-motif.types";
+} from "./mosaic-tile.types";
 
 /**
  * The vocabulary every other `mosaic` service reads a tile through: how a

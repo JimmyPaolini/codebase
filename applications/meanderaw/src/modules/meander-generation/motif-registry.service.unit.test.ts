@@ -6,9 +6,8 @@ import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
-import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
+import { MosaicTileMotifService } from "../mosaic-tile/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
@@ -19,35 +18,38 @@ import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
-import { SUPPORTED_TYPES } from "./meander-generation.constants";
+import {
+  SUPPORTED_TYPES,
+  TILE_DRAWN_TYPES,
+} from "./meander-generation.constants";
 import { MotifRegistryService } from "./motif-registry.service";
 
-import type { MeanderType } from "./meander-generation.types";
+import type { MotifDrawnType } from "./meander-generation.types";
 
 // 🔧 Configuration
 
 /**
  * Which motif service each family is expected to resolve to.
  *
- * `Record<MeanderType, MotifService>` inside the registry already makes a
+ * `Record<MotifDrawnType, MotifService>` inside the registry already makes a
  * missing family a type error. What it cannot catch is the same service
  * pasted under two keys, which would silently draw one family's geometry
  * for another family's name — so this table names the class expected for
  * each, and the first test below checks the table itself covers exactly the
- * families the command line accepts.
+ * motif-drawn families the command line accepts.
  */
+
 const EXPECTED_MOTIF_SERVICES = [
   { expected: BoxesMotifService, type: "boxes" },
   { expected: BranchMotifService, type: "branch" },
   { expected: ChainMotifService, type: "chain" },
   { expected: CrossMotifService, type: "cross" },
-  { expected: MosaicMotifService, type: "mosaic" },
   { expected: NegativeMotifService, type: "negative" },
   { expected: ParallelMotifService, type: "parallel" },
   { expected: SnakeMotifService, type: "snake" },
   { expected: SwirlMotifService, type: "swirl" },
   { expected: WhirlMotifService, type: "whirl" },
-] as const satisfies readonly { expected: unknown; type: MeanderType }[];
+] as const satisfies readonly { expected: unknown; type: MotifDrawnType }[];
 
 // 🧪 Tests
 
@@ -62,7 +64,6 @@ describe(MotifRegistryService, () => {
         ChainMotifService,
         CrossMotifService,
         GridGeometryService,
-        MosaicMotifService,
         MosaicTileMotifService,
         MosaicTileService,
         MotifRegistryService,
@@ -87,10 +88,24 @@ describe(MotifRegistryService, () => {
   });
 
   describe("resolve", () => {
-    it("covers exactly the families the command line accepts", () => {
+    it("covers exactly the motif-drawn families the command line accepts", () => {
       expect(
         EXPECTED_MOTIF_SERVICES.map(({ type }) => type).toSorted(),
-      ).toStrictEqual([...SUPPORTED_TYPES].toSorted());
+      ).toStrictEqual(
+        SUPPORTED_TYPES.filter(
+          (type) => !TILE_DRAWN_TYPES.includes(type),
+        ).toSorted(),
+      );
+    });
+
+    it("holds no entry for a tile-drawn family, which has no motif to resolve", () => {
+      const covered = new Set<string>(
+        EXPECTED_MOTIF_SERVICES.map(({ type }) => type),
+      );
+
+      expect(
+        TILE_DRAWN_TYPES.filter((type) => covered.has(type)),
+      ).toStrictEqual([]);
     });
 
     it("hands back a distinct motif service for every family", () => {

@@ -8,7 +8,7 @@ import type {
   InkAdjacency,
   InkConnectivity,
 } from "../meander-topology/meander-topology.types";
-import type { MosaicTile, MosaicTilePoint } from "./mosaic-motif.types";
+import type { MosaicTile, MosaicTilePoint } from "./mosaic-tile.types";
 
 /**
  * Reads one `mosaic` tile's ink as a graph, and answers the two questions

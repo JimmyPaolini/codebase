@@ -3,7 +3,7 @@
 import type {
   MosaicBuildableSubFamily,
   MosaicSubFamilyShape,
-} from "./mosaic-motif.types";
+} from "./mosaic-tile.types";
 
 /**
  * The tile each sub-family is named for, as the rules that build it. A

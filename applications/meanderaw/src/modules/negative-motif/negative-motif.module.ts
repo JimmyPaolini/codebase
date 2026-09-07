@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
-import { MosaicMotifModule } from "../mosaic-motif/mosaic-motif.module";
+import { MosaicTileModule } from "../mosaic-tile/mosaic-tile.module";
 import { SvgRenderingModule } from "../svg-rendering/svg-rendering.module";
 
 import { NegativeMotifService } from "./negative-motif.service";
@@ -15,7 +15,7 @@ import { NegativeTileGenerationService } from "./negative-tile-generation.servic
  * whole document from any source tile at all — which is what the permutation
  * half draws, since the tiles it enumerates have no name to be built from.
  *
- * It imports `MosaicMotifModule` for one thing only: `MosaicTileService`,
+ * It imports `MosaicTileModule` for one thing only: `MosaicTileService`,
  * which is what a `MosaicTile` is *constructed* by now that the type carries
  * an invariant. A tile's four direction bits per point have to agree with
  * their neighbors', so assembling one as a literal is no longer possible —
@@ -35,7 +35,7 @@ import { NegativeTileGenerationService } from "./negative-tile-generation.servic
     NegativeSourceService,
     NegativeTileGenerationService,
   ],
-  imports: [GridGeometryModule, MosaicMotifModule, SvgRenderingModule],
+  imports: [GridGeometryModule, MosaicTileModule, SvgRenderingModule],
   providers: [
     NegativeMotifService,
     NegativeSourceService,

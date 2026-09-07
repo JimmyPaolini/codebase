@@ -10,10 +10,10 @@ import {
 } from "../meander-generation/meander-generation.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
-import { MOSAIC_TILE_MAXIMUM_ROWS } from "./mosaic-motif.constants";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "./mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
+import { MOSAIC_TILE_MAXIMUM_ROWS } from "./mosaic-tile.constants";
 import { MosaicTileService } from "./mosaic-tile.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
 

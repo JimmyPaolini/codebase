@@ -1,6 +1,6 @@
-import { MosaicTileService } from "../src/modules/mosaic-motif/mosaic-tile.service";
+import { MosaicTileService } from "../src/modules/mosaic-tile/mosaic-tile.service";
 
-import type { MosaicTile } from "../src/modules/mosaic-motif/mosaic-motif.types";
+import type { MosaicTile } from "../src/modules/mosaic-tile/mosaic-tile.types";
 
 /**
  * Builds `mosaic` tiles for the tests that need one written out by hand.

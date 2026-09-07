@@ -2,9 +2,9 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { COMPATIBLE_MODIFIERS } from "../meander-generation/meander-generation.constants";
-import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
-import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
+import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 
 import {
   NEGATIVE_COLUMN_MOTIFS,
@@ -14,7 +14,7 @@ import {
 } from "./negative-motif.constants";
 import { NegativeSourceService } from "./negative-source.service";
 
-import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types";
 import type {
   NegativeModifierName,
   NegativeSource,

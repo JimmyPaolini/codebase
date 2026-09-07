@@ -1,20 +1,7 @@
 // ♟️ Constants
 
-import type { DotShape } from "../meander-generation/meander-generation.types";
-
 /**
- * `period` values swept for the `alternated` modifier's batch combinations:
- * two representative points within the shared `MINIMUM_PERIOD`–`MAXIMUM_VALUE`
- * bounds (period 1 sits on the lower bound itself), distinct enough to show
- * the modifier actually varies with `period`
- * without sweeping the whole range. Period 1 leads the sweep because it's the
- * only period verified byte-exact against real reference files; period 3's
- * interior zigzag geometry, like every period above 1, is a hand-idealized
- * approximation (see `MosaicMotifService.alternatedPath`'s JSDoc).
- */
-export const ALTERNATED_SWEEP_PERIODS: readonly number[] = [1, 3];
 
-/**
  * `isUpward` values swept for the `comb` modifier's batch combinations.
  *
  * One value rather than two, and deliberately not the mode's own default:
@@ -31,17 +18,11 @@ export const ALTERNATED_SWEEP_PERIODS: readonly number[] = [1, 3];
 export const COMB_SWEEP_UPWARD_VALUES: readonly boolean[] = [true];
 
 /**
- * Every shape swept for the `dot` modifier's batch combinations. `DotShape`
- * only has two members, so this sweeps the type's full domain rather than a
- * sample of it.
- */
-export const DOT_SWEEP_SHAPES: readonly DotShape[] = ["bounce", "up"];
 
-/**
  * `isLeftward` values swept for the `rung` modifier's batch combinations.
  *
  * Both of them, which is the modifier's whole domain rather than a sample of
- * it — the same reason {@link DOT_SWEEP_SHAPES} sweeps two. `false` leads,
+ * it. `false` leads,
  * so the rightward drawing the sweep committed under the bare name before
  * the flag existed is still the first one enumerated at each row count.
  *
@@ -55,8 +36,8 @@ export const RUNG_SWEEP_LEFTWARD_VALUES: readonly boolean[] = [false, true];
 /**
  * `branches` values swept for the `stagger` modifier's batch combinations.
  *
- * A contiguous run rather than the sampled pairs `alternated` and `plied`
- * take, because this parameter has a floor they do not and every value
+ * A contiguous run rather than the sampled ply counts `plied`
+ * takes, because this parameter has a floor it does not and every value
  * above it draws a visibly different crenel. The first is
  * `MINIMUM_STAGGER_BRANCHES` itself, which is both the tightest crenel the
  * mode admits and the only one any `stagger` was drawn at before the flag
@@ -73,8 +54,8 @@ export const RUNG_SWEEP_LEFTWARD_VALUES: readonly boolean[] = [false, true];
 export const STAGGER_SWEEP_BRANCH_COUNTS: readonly number[] = [3, 4, 5, 6];
 
 /**
-
- * The gallery page `DrawCommand` writes at the root of the output directory,
+ * The gallery page `DrawCommand` writes
+ at the root of the output directory,
  * listing every document the sweep produced under the directory it landed
  * in. One page rather than one per row count: the tiles are now separated by
  * directory on disk, so the page's only remaining job is to show them all in

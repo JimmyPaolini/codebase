@@ -12,11 +12,10 @@ import { MeanderGenerationService } from "../meander-generation/meander-generati
 import { MotifRegistryService } from "../meander-generation/motif-registry.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
-import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
-import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
-import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
-import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
+import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
+import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../mosaic-tile/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
@@ -208,7 +207,6 @@ describe(NegativeMotifService, () => {
         MeanderGenerationService,
         MeanderLatticeService,
         MeanderTopologyService,
-        MosaicMotifService,
         MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
@@ -376,6 +374,11 @@ describe(NegativeMotifService, () => {
     // compare a deeper `negative` against. Above the overlap the assertion
     // on the geometry number stands alone, which is why it is written as a
     // number rather than only as a second family's height.
+
+    // The mosaic it compares against names a sub-family, that family
+    // drawing no repeat unit of its own any more. `bars` has a tile at
+    // every row count in the overlap, so nothing is lost.
+
     it.each(
       SWEEP.filter(
         ({ parameters }) => parameters.rows <= FAMILY_MAXIMUM_ROWS.mosaic,
@@ -386,6 +389,7 @@ describe(NegativeMotifService, () => {
           generationService.generate({
             repeatCount: REPEAT_COUNT,
             rows: parameters.rows,
+            subFamily: "bars",
             type: "mosaic",
           }),
         ),

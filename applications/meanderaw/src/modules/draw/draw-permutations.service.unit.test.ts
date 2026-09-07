@@ -2,12 +2,12 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
-import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
-import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
-import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../mosaic-tile/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
+import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 

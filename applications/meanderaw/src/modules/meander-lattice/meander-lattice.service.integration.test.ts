@@ -2,12 +2,12 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { MOSAIC_TILE_EDGE_BUDGET } from "../mosaic-motif/mosaic-motif.constants";
-import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
-import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
-import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
-import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../mosaic-tile/mosaic-tile-motif.service";
+import { MOSAIC_TILE_EDGE_BUDGET } from "../mosaic-tile/mosaic-tile.constants";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
+import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { MeanderLatticeService } from "./meander-lattice.service";
@@ -15,7 +15,7 @@ import { MeanderLatticeService } from "./meander-lattice.service";
 import type {
   MosaicTile,
   MosaicTileShape,
-} from "../mosaic-motif/mosaic-motif.types";
+} from "../mosaic-tile/mosaic-tile.types";
 import type { LatticeGraph } from "./meander-lattice.types";
 
 // 🔧 Configuration
@@ -63,7 +63,7 @@ const SWEPT_SHAPES: readonly MosaicTileShape[] = [3, 4, 5, 6].flatMap((rows) =>
  * both wrong the same way would have to agree through a representation
  * neither of them shares.
  *
- * It lives here rather than in `mosaic-motif` because the lattice is the
+ * It lives here rather than in `mosaic-tile` because the lattice is the
  * thing being crossed: this module is the vocabulary the drawing side and
  * the measuring side both speak, and this is the assertion that they speak
  * it the same way.
