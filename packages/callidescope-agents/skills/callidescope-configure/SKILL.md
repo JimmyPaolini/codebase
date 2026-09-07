@@ -13,8 +13,7 @@ is only written when a flag asks for it.
 
 ## The two decisions a run makes
 
-Every invocation answers two independent questions, and neither implies the
-other:
+Every invocation answers two independent questions, neither implying the other:
 
 | Question | Answered by |
 | -------- | ----------- |
@@ -22,8 +21,8 @@ other:
 | What does this run rewrite? | `--write`, plus the destinations in the configuration |
 
 A run given neither `--write` nor `--check reports` **reads no destination and
-rewrites none**. It traces, prints, and exits. That is what makes a bare run
-safe to type inside somebody's checkout, and it is why a gate on a pull request
+rewrites none**: it traces, prints, and exits. That is what makes a bare run
+safe to type inside somebody's checkout, and why a gate on a pull request
 leaves every committed report exactly as it found it.
 
 ## The flags
@@ -41,8 +40,8 @@ leaves every committed report exactly as it found it.
 
 `--config`, `--directories`, and `--format` are the three that `depth` and
 `breadth` also take, and `--addresses` is theirs alone — it names what to
-report on, which a whole-workspace trace never needs. The rest are the whole-workspace command's alone, because
-a lookup never writes or compares a destination.
+report on, which a whole-workspace trace never needs. The rest belong to the
+whole-workspace command, which is the only one that writes or compares.
 
 ### `--check` takes a set, and the set matters
 
@@ -79,71 +78,65 @@ npx callidescope --check depth
 ```
 
 **In an Nx workspace, prefer the per-project `gate` target to this flag.** A
-whole-workspace `--check depth` judges every project against whatever limit each
-one resolved, which is the right verdict computed the expensive way: one
-uncacheable run over the whole repository on every commit. `@callidescope/nx`
-infers a `gate` onto each project instead, which traces that project with its Nx
-dependencies, fails only on the findings **that project owns**, and caches on
-that project's own inputs — so `nx affected --target=gate` judges what a change
-touched and nothing else. The flag remains the answer wherever there is no Nx
-graph to scope by.
+whole-workspace `--check depth` reaches the right verdict the expensive way:
+one uncacheable run over the repository on every commit. `@callidescope/nx`
+infers a `gate` onto each project instead — tracing it with its Nx
+dependencies, failing only on the findings **that project owns**, and caching
+on that project's own inputs, so `nx affected --target=gate` judges what a
+change touched and nothing else. The flag remains the answer without Nx.
 
 **Staleness is not a gate.** A report goes stale whenever the call graph moves
-anywhere, which is nearly every change. Gating on it would fail pull requests
-for drift they did not cause. Publish the report on the default branch instead,
-where nothing else is competing to rewrite the same block:
+anywhere, which is nearly every change, so gating on it fails pull requests for
+drift they did not cause. Publish on the default branch instead, where nothing
+else competes to rewrite the same block:
 
 ```bash
 npx callidescope --write
 ```
 
 `--write --check reports` is **refused outright**: a report cannot be stale in
-the run that just wrote it, so a command line asking for both has misunderstood
-one of them and would pass whatever it was meant to catch.
+the run that just wrote it, so asking for both misunderstands one of them and
+would pass whatever it was meant to catch.
 
 Those two are the whole target set. If a task runner is in play, neither may be
 reachable from a composite task that forwards a configuration down its
-dependencies — otherwise a `write` run from a branch publishes a report from a
-branch. Name the depth gate directly alongside whatever else gates, rather than
-hanging it off a lint-style aggregate.
+dependencies, or a `write` run from a branch publishes from a branch. Name the
+gate directly alongside whatever else gates, not off a lint-style aggregate.
 
 ### `--directories`, and why a run is slow without it
 
 This is the difference between a whole-workspace analysis and a check that
 finishes in seconds. Each directory named needs its own `tsconfig.json`, and
-the programs built are those plus the ones of every project those directories
-transitively import — so a call into a dependency still resolves to a real
-frame:
+the programs built are those plus every project they transitively import, so a
+call into a dependency still resolves to a real frame:
 
 ```bash
 npx callidescope -d packages/foo,packages/bar --check depth
 ```
 
 Omit it and callidescope walks the working directory for every `tsconfig.json`
-it can find. Reach for the wide run when you want the workspace-wide picture,
-not when you want an answer about one package.
+it finds. Reach for the wide run for the workspace-wide picture, not for an
+answer about one package.
 
-It takes **paths**, not project names. Callidescope has no idea what workspace
-tool a repository uses; a directory holding a `tsconfig.json` is the whole
-contract, and it holds in a monorepo, in a single package, or in neither. The
+It takes **paths**, not project names: callidescope knows nothing of workspace
+tooling, and a directory holding a `tsconfig.json` is the whole contract. The
 same list can be set once as `directories` in the configuration file.
 
 There is a real trade-off when narrowing a `breadth` lookup: **callers outside
 the named directories and the closure below them do not exist to the run** —
 the closure runs downward, so a dependent that calls in is never built. For a
-rename whose blast radius is the whole point, trace wide enough to contain
-every consumer — a narrowed lookup reporting two callers when there are nine is
-worse than a slow one.
+rename whose blast radius is the point, trace wide enough to contain every
+consumer; a lookup reporting two callers when there are nine is worse than a
+slow one.
 
 An Nx workspace can hand the selecting to Nx instead, through the separate
 `@callidescope/nx` plugin, which infers `trace`, `depth`, `breadth`, and `gate`
 targets onto every project and traces each one _with its Nx dependencies_ — so
-those dependencies are projects the run is scoped to rather than ones it merely
-reached through a closure. The first three only ever print; `gate` is the one
-that decides an exit code, and the one a branch runs. A project the workspace
-configuration excludes keeps the three that print and is denied the gate,
-because its own code is never traced and a gate there would report green for a
-project it never read. It is a separate package rather than a flag here on
+those are projects the run is scoped to rather than ones it merely reached
+through a closure. The first three only print; `gate` decides an exit code and
+is what a branch runs. An excluded project keeps the three that print and is
+denied the gate: its own code is never traced, so a gate there would report
+green for a project it never read. It is a separate package rather than a flag
 purpose: this CLI depends on nothing Nx-shaped, and a flag that worked only
 when an optional package happened to be installed would advertise in `--help`
 something that silently did nothing.
@@ -153,8 +146,8 @@ something that silently did nothing.
 Printing and writing are independent, and both can be on at once. `--format`
 names one of `markdown` (the default), `mermaid`, or `json` for standard
 output; the destinations in the configuration decide what reaches a file.
-`markdown` is the default because it is the one rendering that reads in a
-terminal, pastes into an issue, and is already what the files hold.
+`markdown` leads because it is the one rendering that reads in a terminal,
+pastes into an issue, and is already what the files hold.
 
 ### Prompting, and why it will not hang a script
 
@@ -172,11 +165,11 @@ anything else could supply it:
 | `--addresses`, which `depth` and `breadth` need | **Refused**, exit non-zero. Nothing else can supply it |
 | `--format` | The format in the configuration stands, and the run proceeds |
 
-The refusal is the load-bearing half. `prompts` does not fail on a
-non-terminal stdin — it draws its menu, never resolves, and lets the process
-**exit 0 having done nothing** — so a required value asserts a terminal before
-it prompts at all and reports a rejected command line instead. Without that,
-a CI run that forgot an argument would read as a green one.
+The refusal is the load-bearing half. `prompts` does not fail on a non-terminal
+stdin — it draws its menu, never resolves, and lets the process **exit 0 having
+done nothing** — so a required value asserts a terminal before prompting at all
+and reports a rejected command line instead. Without it, a CI run that forgot
+an argument would read as a green one.
 
 ## The configuration file
 
@@ -212,17 +205,14 @@ and `workspaceStructure`.
 | `minimumCallers` | `2` | Callers a callable needs before its placement is judged |
 | `callerMajorityRatio` | `0.8` | Share of callers in one foreign module that marks a callable misplaced |
 
-Four are worth understanding rather than copying:
+Four are worth understanding rather than copying.
 
 - **`maximumBreadth` has no default, on purpose.** Until something picks a
-  number, nothing exceeds it and breadth is reported without being gated.
-  `--check breadth` is refused rather than falling back to an unbounded limit,
-  because an unbounded limit looks exactly like passing — and it takes a
-  **project's own** number: a `maximumBreadth` in the workspace file is
-  inherited by every project rather than declared by one, so it produces breadth
-  findings without satisfying the gate. A single breadth number was never
-  something anybody could pick for a whole workspace, which is why breadth has
-  no gate at all until some project picks its own.
+  number, breadth is reported without being gated, and `--check breadth` is
+  refused rather than falling back to an unbounded limit that looks exactly
+  like passing. It takes a **project's own** number: one in the workspace file
+  is inherited rather than declared, so it produces findings without satisfying
+  the gate. No single breadth number ever suited a whole workspace.
 - **`directSpreadThreshold` is what makes module spread mean anything.**
   Transitive reach alone flags every entry point, since an entry point
   legitimately reaches the whole program. Requiring direct breadth as well is
@@ -233,22 +223,20 @@ Four are worth understanding rather than copying:
   execution ever takes. Lower it when a report is full of stacks that could not
   happen; raise it and expect noise.
 - **`minimumCallers` and `callerMajorityRatio` together define "misplaced".** A
-  callable with one caller is not evidence of anything, which is why the floor
-  exists.
+  callable with one caller is not evidence of anything, hence the floor.
 
 Picking a first `maximumDepth`: run once with no gate, read the deepest stacks,
 and set the limit at the shape you want rather than at whatever the code
 currently is. A limit set to today's worst number gates nothing.
 
-**Once limits are per project, pick each one by boundary-testing rather than by
-reading a number off a run.** Write a candidate in the project's own file, run
-its gate, then run it again one lower: a limit worth having passes at the number
-written and fails at one below it. Anything looser is headroom, and headroom is
-a limit that gates nothing while claiming to have been measured. This is not
-belt-and-braces — a scoped run's printed summary is about the whole trace,
-dependency closure included, so the deepest stack it reports is routinely deeper
-than anything the judged project owns. Only a gate's own verdict knows which
-findings belong to the project.
+**Per project, pick each one by boundary-testing rather than by reading a number
+off a run.** Write a candidate, run that project's gate, then run it one lower:
+a limit worth having passes at the number written and fails at one below.
+Anything looser is headroom — a limit that gates nothing while claiming to have
+been measured. This is not belt-and-braces: a scoped run's printed summary
+covers the whole trace, dependency closure included, so the depth it reports is
+routinely deeper than anything the judged project owns. Only a gate's verdict
+knows which findings belong to the project.
 
 ### `entryPoints`
 
@@ -261,9 +249,10 @@ findings belong to the project.
 | `includeTests` | `false` | Trace test files too |
 
 **`addresses` is how a package states the surface it means to be measured on**,
-in the same `<file>#<qualified-name>` form `depth` and `breadth` accept and every
-frame prints — so an address is copied out of a report straight into the
-configuration, with a trailing `:<line>` when one file declares the name twice:
+in the same `<file>#<qualified-name>` form `depth` and `breadth` accept and
+every frame prints, so an address is copied out of a report straight into the
+configuration — with a trailing `:<line>` when one file declares the name
+twice:
 
 ```ts
 entryPoints: {
@@ -273,26 +262,26 @@ entryPoints: {
 
 Declared addresses **add** roots and take none away: the rules below still run
 first and keep the kind saying _why_ something calls a callable, orphan
-promotion still catches whatever nobody named, and an address landing on a
-callable a rule already rooted is one root rather than two.
+promotion still catches whatever nobody named, and an already-rooted callable
+stays one root.
 
 Reach for it when a package sits low in the graph. A stack is filed under the
-project owning its **root**, and most of what such a package publishes is called
-from above — so it roots nothing, measures zero however deep its code runs, and
-any limit on it gates nothing. **An address that resolves to nothing, to more
-than one declaration, or to nothing parseable fails the whole run**; the
+project owning its **root**, and most of what such a package publishes is
+called from above — so it roots nothing, measures zero however deep its code
+runs, and any limit on it gates nothing. **An address resolving to nothing, to
+several declarations, or to nothing parseable fails the whole run**; the
 `callidescope-triage` skill carries each message and its fix.
 
 `decorators` **replaces** the built-in list rather than adding to it, so a
 configuration naming its own framework's decorator should restate the ones it
 still wants. A report where nearly everything is an orphan root usually means
-the decorators in use are not in this list.
+the decorators in use are missing from it.
 
 **`includeOrphans` is a safety net rather than a feature.** Without it, a
 missing entry-point rule silently removes whole subtrees from every
-measurement. With it, they surface as orphan roots — which is itself worth
-knowing, since an orphan is either dead code or a rule that needs adding. Turn
-it off and you lose the signal that told you the configuration was incomplete.
+measurement; with it they surface as orphan roots, which is itself worth
+knowing — an orphan is either dead code or a rule that needs adding. Turn it
+off and you lose the signal that the configuration was incomplete.
 
 ### Keeping code out of a run
 
@@ -305,37 +294,33 @@ Three tools, for three different questions:
   list stays out of the configuration file itself, and it is the right home for
   fixture packages written to be deliberately bad.
 - **`ignoreCallees`** takes globs matched against a callable's display name
-  (`Type.member`), and drops calls landing on a match from the graph entirely —
-  counting toward neither the caller's depth nor its breadth. This is for
-  cross-cutting instrumentation: every call to a logger is a fact about
-  instrumentation, not about how deep or wide the code around it is, and
-  counting it would move every other callable's numbers on a change that has
-  nothing to do with them.
+  (`Type.member`) and drops matching calls from the graph entirely, counting
+  toward neither depth nor breadth. This is for cross-cutting instrumentation:
+  a call to a logger is a fact about instrumentation rather than about the
+  shape of the code around it, and counting it would move every other
+  callable's numbers on a change that has nothing to do with them.
 
 `exclude` and `excludeFrom` drop _files_ from collection; `ignoreCallees` drops
-_edges_. Reaching for the first when you meant the second deletes real findings.
-Neither leaves the `ts.Program`: an excluded file is still compiled, a call into
-it becomes an unfollowable call rather than vanishing, and no `exclude` can
+_edges_, and reaching for the first when you meant the second deletes real
+findings. Neither leaves the `ts.Program`: an excluded file is still compiled, a
+call into it becomes unfollowable rather than vanishing, and no `exclude` can
 un-project a directory holding a `tsconfig.json`. A project's own `exclude`
 behaves the same way.
 
 **`allowSpreadFor`** is narrower still: globs whose callables are exempt from
 the module-spread finding alone, defaulting to command files, module files, and
-`main.ts`. Orchestrating unrelated concerns is the job of a command; it is not
-the job of a service.
+`main.ts`. Orchestrating unrelated concerns is a command's job, not a service's.
 
 ### `directories` and `workspaceStructure`
 
 `directories` is the same list `--directories` takes, set once.
-
 `workspaceStructure` is only needed by a repository whose layout differs from
-the tool's own assumptions, because module identity is what module spread and
-misplacement are measured against: `modulesDirectory` (default `"modules"`) is
-the subdirectory a module identifier is derived from, and `rootModuleSegment`
-(default `"src"`) is the identifier for a file sitting directly under the
-source root. Symptoms of getting it wrong are every file collapsing into one
-module, so spread is never reported, or every file becoming its own module, so
-everything looks misplaced.
+the tool's assumptions, because module identity is what spread and misplacement
+are measured against: `modulesDirectory` (default `"modules"`) is the
+subdirectory a module identifier derives from, and `rootModuleSegment` (default
+`"src"`) is the identifier for a file directly under the source root. Get it
+wrong and either every file collapses into one module, so spread is never
+reported, or each becomes its own, so everything looks misplaced.
 
 ### `output`
 
@@ -352,11 +337,9 @@ so nothing it writes can go stale.
 | `output.projectReadmes` | One section per traced project, in that project's own readme |
 
 `output.mermaid` takes the same keys as `output.markdown` — they differ in what
-goes between the markers, not in how a block is placed — and is a separate
-destination precisely so a repository can publish the printed trees _and_ the
-diagram from one run. They answer different questions: the tree says what each
-frame takes, returns, and documents; the diagram says what shape they make
-together.
+goes between the markers, not in how a block is placed — and is separate so one
+run publishes both: the tree says what each frame takes, returns, and documents,
+the diagram what shape they make together.
 
 ```ts
 output: {
@@ -377,23 +360,20 @@ project that measured nothing apart from one with room to spare. The findings
 tables follow.
 
 `output.projectReadmes` takes `heading` (`## 🔭 Callidescope` by default),
-`previewCount` (stacks shown before the rest fold into a disclosure, three by
-default), and the same `startMarker`/`endMarker` pair the markdown destination
-uses. `{}` accepts all four defaults — and is usually the right answer, because
-which files those are follows from which projects were traced. Restating that
-as a list of paths would only give it somewhere to drift from.
+`previewCount` (stacks shown before the rest fold away, three by default), and
+the same `startMarker`/`endMarker` pair. `{}` accepts all four defaults, and is
+usually right: which files those are follows from which projects were traced,
+so a list of paths would only give it somewhere to drift from.
 
 A project's block opens with its counts, then a `### Limits` table stating the
-depth and breadth that project is judged against and whether each was
-`declared` in its own file or `inherited` from the run. That is not decoration:
-a block saying a project's deepest stack is ten says nothing about whether ten
-is allowed, and once fifty projects hold fifty answers the limit cannot be
-inferred from anything else on the page.
+depth and breadth it is judged against and whether each was `declared` in its
+own file or `inherited` from the run. A block saying a project's deepest stack
+is ten says nothing about whether ten is allowed, and once fifty projects hold
+fifty answers the limit is inferable from nothing else on the page.
 
 A markdown destination may also supply `render`, to replace the built-in
-tables, or `write`, to place the block itself. A `write` function is handed
-`syncAnchoredBlock` and `wrapInAnchors`, so a custom writer reuses the same
-splice rather than reimplementing it. **Returning `false` reports the
+tables, or `write`, to place the block itself — handed `syncAnchoredBlock` and
+`wrapInAnchors`, so it reuses the same splice. **Returning `false` reports the
 destination as stale**; anything else, `undefined` included, counts as current.
 
 ## A project's own configuration file
@@ -401,16 +381,15 @@ destination as stale**; anything else, `undefined` included, counts as current.
 Everything above describes the file a run is pointed at — the **workspace**
 configuration. A second `callidescope.config.ts` may also sit at any traced
 project's own root, the directory holding the `tsconfig.json` that makes it a
-project. It is looked for by name in that directory alone, with no upward walk,
-and may use any of the same eight extensions.
-
-A project with no file of its own is configured entirely by the run, which is
-what most projects should keep doing. Add one when a project needs a limit or a
-root the run cannot pick for it, not as a matter of course.
+project, found by name in that directory alone with no upward walk, in any of
+the same eight extensions. A project with no file of its own is configured
+entirely by the run, which is what most projects should keep doing — add one
+when a project needs a limit or a root the run cannot pick for it, not as a
+matter of course.
 
 The file a run was pointed at is never also read as a project's — one file, one
 role per run. A package whose task names its own configuration and then traces
-itself would otherwise have that file refused for the workspace-only fields it
+itself would otherwise have it refused for the workspace-only fields it
 legitimately sets, so a package needing both keeps two files under two names.
 
 ### What a project may set, and nothing else
@@ -424,13 +403,11 @@ legitimately sets, so a package needing both keeps two files under two names.
 
 **A project's `exclude` globs are anchored to that project's root**, never to
 the workspace: `exclude: ["src/generated/**"]` in `packages/thing`'s own file
-names `packages/thing/src/generated/**`, and there is no spelling of it that
-reaches a sibling. Write the path as the project sees it — a workspace-relative
-glob here matches nothing, and the files it meant to drop stay traced.
+names `packages/thing/src/generated/**`, and no spelling of it reaches a
+sibling. A workspace-relative glob here matches nothing, silently.
 
-The run's own `exclude` keeps its workspace-relative meaning and is layered
-underneath, so a project can leave more out and can never put back what the run
-left out — and it filters collection only, exactly as the run's does. Noise
+The run's own `exclude` stays workspace-relative and is layered underneath, so
+a project can leave more out and never put back what the run left out. Noise
 spanning several projects still belongs in the workspace file.
 
 Every other field is refused **by name, before anything is traced**, and the
@@ -439,45 +416,38 @@ message names the four above so it is actionable without opening this skill.
 ### Write the override, never a spread
 
 ```ts
-import { type CallidescopeConfiguration } from "@callidescope/configuration";
-
-const projectConfiguration: CallidescopeConfiguration = {
-  limits: { maximumDepth: 10 },
-};
-
-export default projectConfiguration;
+export default { limits: { maximumDepth: 10 } };
 ```
 
+Annotating it with `CallidescopeConfiguration` is optional. Where a dependency
+graph is built from imports, leaving it off keeps the project from gaining an
+edge on the toolchain it does not otherwise use.
+
 **Never spread a workspace limits object into a project's `limits`.** Such an
-object carries `spreadThreshold` and the rest of the graph-shaping limits, every
-one of which only a workspace may set, so a project file holding one is rejected
-before anything is traced. If a repository's own documentation tells you to
-spread, it is out of date — the tool refuses it.
+object carries `spreadThreshold` and the other graph-shaping limits, which only
+a workspace may set, so a project file holding one is rejected before anything
+is traced. Documentation telling you to spread is out of date — the tool
+refuses it.
 
-Nothing is lost by writing the override alone, because **a project inherits per
-limit rather than per object**. Each limit falls back to the workspace's number
-on its own, so a project naming `maximumDepth` still inherits `maximumBreadth`,
-and a project naming neither is handed the workspace's object itself. A spread
-has nothing left to contribute either: depth and breadth are the only two limits
-a project may set, so it would supply exactly the field being overridden plus
-the one that gets the file rejected.
+Nothing is lost, because **a project inherits per limit rather than per
+object**: each limit falls back to the workspace's number on its own, so a
+project naming `maximumDepth` still inherits `maximumBreadth`. A spread has
+nothing to contribute either — depth and breadth are the only two a project may
+set, so it would supply exactly the field being overridden plus the one that
+gets the file rejected. A "spread or you will clobber the rest" rule elsewhere
+in a repository is worth checking rather than copying: that is the right rule
+for an incomplete list element with no per-field fallback behind it, which a
+limit is not.
 
-A "spread or you will clobber the rest" rule elsewhere in a repository is worth
-checking rather than copying. It is the right rule for a configuration object
-that is one element of a list and deliberately incomplete, with no per-field
-fallback behind it — codometer's measured targets are that shape. A limit is
-neither, and does have that fallback.
-
-The workspace number is a **default rather than a ceiling**. A project declaring
-a higher limit than the workspace keeps its own, because a workspace number
-pinned by the single worst stack anywhere in it gates nothing for the projects
-nowhere near it.
+The workspace number is a **default rather than a ceiling**: a project
+declaring a higher limit keeps it, because a workspace number pinned by the
+single worst stack anywhere gates nothing for the projects nowhere near it.
 
 `entryPoints` does not inherit that way. A project declaring any entry-point
 rule replaces the rule set for its own callables outright, and the fields it
-leaves out fall back to the tool's defaults rather than to the workspace file's
-— so a project that declares `addresses` and wants a decorator list the
-workspace customized has to restate that list too.
+omits fall back to the tool's defaults rather than the workspace file's — so a
+project declaring `addresses` that wants a customized decorator list must
+restate it.
 
 ### Why the other limits cannot vary per project
 
@@ -496,8 +466,8 @@ Not an oversight, and not a rule to argue with:
 
 The same reasoning keeps `ignoreCallees`, `allowSpreadFor`, `directories`,
 `excludeFrom`, `output`, and `workspaceStructure` in the workspace file: they
-name what a run reads, what it writes, or how it partitions the workspace, and a
-project cannot answer those differently from the run tracing it.
+name what a run reads, writes, or partitions, which a project cannot answer
+differently from the run tracing it.
 
 ### Reading the whole set back
 
@@ -518,17 +488,16 @@ at all: a limit that file never wrote is still what everything is judged
 against.
 
 It resolves configuration and measures nothing, so it costs milliseconds rather
-than a trace, takes `--config` and nothing else, and can fail on nothing but a
-configuration it cannot read.
+than a trace, takes `--config` alone, and fails on nothing but a configuration
+it cannot read.
 
 ## After changing any of this
 
-A configuration change usually moves the numbers, which makes every committed
-report stale. Re-run the write configuration in the same change, and lint
-**before** regenerating rather than after: every frame carries a `file:line`,
-so a formatter that sorts class members moves the line numbers of everything
-after it, and a report written before that sort is stale the moment it lands.
+A configuration change usually moves the numbers, making every committed report
+stale. Re-run the write configuration in the same change, and lint **before**
+regenerating: every frame carries a `file:line`, so a formatter that sorts class
+members moves the line numbers after it, and a report written before that sort
+is stale the moment it lands.
 
-When a run is refused or a report reads stale, reach for the
-`callidescope-triage` skill. To read what a run printed, reach for
-`callidescope-trace`.
+When a run is refused or a report reads stale, reach for `callidescope-triage`.
+To read what a run printed, reach for `callidescope-trace`.
