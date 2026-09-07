@@ -51,7 +51,13 @@ fix.
    destination — that skill is not installed here, and a spec and its tickets
    belong where [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md)
    says.
-3. Build with [implement](.agents/skills/implement/SKILL.md), which drives
+3. Hand the plan across the session boundary with
+   [handoff](.agents/skills/handoff/SKILL.md) whenever the building will happen
+   in a fresh session, which is the normal case for anything larger than a
+   single ticket. The document it writes is the next agent's entire brief, so
+   it is held to this repository's rules rather than the skill's defaults — see
+   [Handoffs](#handoffs).
+4. Build with [implement](.agents/skills/implement/SKILL.md), which drives
    red-green-refactor through two TDD skills used in tandem, both read before
    the first test.
    [test-driven-development](.agents/skills/test-driven-development/SKILL.md)
@@ -62,7 +68,7 @@ fix.
    asserted through public interfaces, and the tautological,
    implementation-coupled, and horizontally-sliced anti-patterns named. Where
    they disagree, `test-driven-development` owns the loop's strictness and
-   `tdd` owns refactoring: it belongs to step 4's review rather than to the
+   `tdd` owns refactoring: it belongs to step 5's review rather than to the
    cycle. Its `npm test` invocations are `nx run <project>:vitest:<kind>` here
    — see [Testing](#testing). For a multi-task ticket set, orchestrate with
    [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
@@ -74,7 +80,7 @@ fix.
    the way the TDD pair is: systematic-debugging is the gate — no fix proposed
    until its root-cause phase is finished, however obvious the fix looks — and
    diagnosing-bugs is the method that gets you a root cause.
-4. Ask for the review with
+5. Ask for the review with
    [requesting-code-review](.agents/skills/requesting-code-review/SKILL.md) —
    a fresh subagent handed the base and head commits and what the work was
    meant to do, never this session's history — review with
@@ -82,10 +88,10 @@ fix.
    feedback through
    [receiving-code-review](.agents/skills/receiving-code-review/SKILL.md)
    rather than agreeing on sight.
-5. Finish with [validate-code](.agents/skills/validate-code/SKILL.md), gated by
+6. Finish with [validate-code](.agents/skills/validate-code/SKILL.md), gated by
    [verification-before-completion](.agents/skills/verification-before-completion/SKILL.md):
    never claim done without the command output that proves it.
-6. Integrate with
+7. Integrate with
    [finishing-a-development-branch](.agents/skills/finishing-a-development-branch/SKILL.md),
    which supplies the decision — merge, open a pull request, or leave the
    branch — and nothing else: this repository's own skills own the mechanics,
@@ -99,6 +105,59 @@ fix.
 The codebase-native skills still own this repository's mechanics — branch
 names, commits, pull requests, Nx targets, and validation. Prefer them over any
 general-purpose equivalent, and see the [Skills](#skills) list for the full set.
+
+### Handoffs
+
+A planning session ends where an implementation session begins, and that seam
+is where the workflow above is most easily lost: the next agent starts from a
+document instead of from this conversation, and whatever the document does not
+say, it invents. The handoff is also what makes an uninterrupted implementation
+run legitimate — step 1's approval gate was passed in the planning session, and
+this document is the next session's only record of that. Five repository rules
+override the skill's generic defaults:
+
+- **It goes on the spec ticket, not in a temporary directory.** The skill saves
+  to the operating system's temporary directory, which the next session cannot
+  be pointed at and the next reboot may empty. Post it as a comment on the spec
+  issue instead, where
+  [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) already keeps
+  the spec and its tickets — the next session is then handed one link and reads
+  the plan, the tickets, and the brief in one place.
+- **It prescribes the workflow skills rather than suggesting them.** The skill
+  asks for a "suggested skills" section, and a list of skills an agent may find
+  useful is a list an agent skips — which is how the workflow above silently
+  stops being used. Write a numbered "How to run this" section instead, naming
+  each skill in the order it is called:
+  [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md) for the
+  isolated workspace,
+  [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
+  to orchestrate the ticket set, then
+  [implement](.agents/skills/implement/SKILL.md) and
+  [tdd](.agents/skills/tdd/SKILL.md) inside each dispatched task, and steps 5
+  through 7 above to finish each one.
+- **It answers the two questions those skills otherwise stop and ask.**
+  `subagent-driven-development` keys its workspace and its ledger off a **plan
+  file path**, so a plan that lives on the issue tracker has to be exported to
+  a local scratch file first — say so, or the session halts on its first step.
+  And `tdd` will not write a test at a seam the user has not confirmed, so
+  point it at the spec's Testing Decisions and say to treat those as the
+  confirmation — otherwise a session told to run without interruption
+  interrupts before its first test.
+- **It says how the work is cut into pull requests.** One ticket per pull
+  request, stacked with [gh-stack](.agents/skills/gh-stack/SKILL.md) so each
+  one reviews as the increment it is rather than as a diff carrying its
+  predecessors. Name each branch — or at least the type and scope every branch
+  must take — rather than leaving the next session to derive them: a squashed
+  title is the only thing semantic-release ever sees, so the ticket split the
+  planning session already made is what decides
+  [Release Significance](#release-significance).
+- **It assigns a model and a thinking level per role.** Orchestrating a ticket
+  set, implementing one ticket, and reviewing a diff are different problems and
+  should not draw the same reasoning budget; the harness can set the model per
+  subagent, so say what each role gets rather than leaving one setting to serve
+  everything. No table of model names lives here on purpose — the right
+  assignment moves with whichever models exist, and names written down in this
+  file would be stale within a release or two.
 
 ## Projects
 
