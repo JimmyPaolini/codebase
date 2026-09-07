@@ -269,6 +269,7 @@ flowchart LR
   ProgramModule
   ProjectReportsModule
   ProjectsModule
+  ReportFindingsModule
   ReportModule
   RunPlanModule
   SignaturesModule
@@ -294,6 +295,7 @@ flowchart LR
   CallidescopeModule --> OutputMarkdownModule
   CallidescopeModule --> ProgramModule
   CallidescopeModule --> ProjectReportsModule
+  CallidescopeModule --> ReportFindingsModule
   CallidescopeModule --> ReportModule
   CallidescopeModule --> RunPlanModule
   CallidescopeModule --> WorkspaceModule
@@ -301,6 +303,7 @@ flowchart LR
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
+  EntriesModule --> CallablesModule
   GraphModule --> DocumentationModule
   GraphModule --> EdgesModule
   GraphModule --> SignaturesModule
@@ -442,14 +445,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3810-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-138.77_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3818-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-139.26_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-42-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-18.41_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-18.56_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -673,9 +676,9 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
        ↳ Prints every call stack above and below each callable.
       └─> AddressService.locate(…): Promise<string | { identified: { address: string; id: string; }[]; workspace: LocatedWorkspace; }> [packages/callidescope-nx/src/modules/address/address.service.ts:71]
          ↳ Traces the selection, then matches every address against it.
-        └─> AddressLookupService.locate(options: AddressCommandOptions): Promise<LocatedWorkspace> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:85]
+        └─> AddressLookupService.locate(options: AddressCommandOptions): Promise<LocatedWorkspace> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:87]
            ↳ Loads the configuration and traces the workspace, matching nothing yet.
-          └─> CallidescopeService.locate(args: TraceArguments): LocateOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:259]
+          └─> CallidescopeService.locate(args: TraceArguments): Promise<LocateOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:399]
              ↳ Collects every callable and assembles the graph over them, without running the analysis a full trace does.
             └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
                ↳ Builds the call graph and everything derived from it.
@@ -710,9 +713,9 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
        ↳ Prints every call stack above and below each callable.
       └─> AddressService.locate(…): Promise<string | { identified: { address: string; id: string; }[]; workspace: LocatedWorkspace; }> [packages/callidescope-nx/src/modules/address/address.service.ts:71]
          ↳ Traces the selection, then matches every address against it.
-        └─> AddressLookupService.locate(options: AddressCommandOptions): Promise<LocatedWorkspace> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:85]
+        └─> AddressLookupService.locate(options: AddressCommandOptions): Promise<LocatedWorkspace> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:87]
            ↳ Loads the configuration and traces the workspace, matching nothing yet.
-          └─> CallidescopeService.locate(args: TraceArguments): LocateOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:259]
+          └─> CallidescopeService.locate(args: TraceArguments): Promise<LocateOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:399]
              ↳ Collects every callable and assembles the graph over them, without running the analysis a full trace does.
             └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
                ↳ Builds the call graph and everything derived from it.
@@ -743,9 +746,9 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
    ↳ Traces one selection of Nx projects with callidescope.
   └─> PluginService.runTrace(args: RunTraceArguments): Promise<RunTraceResult> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:220]
      ↳ Traces the resolved directories and renders the report.
-    └─> CallidescopeService.trace(args: TraceArguments): TraceOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:272]
+    └─> CallidescopeService.trace(args: TraceArguments): Promise<TraceOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:413]
        ↳ Traces a workspace and returns everything the run found.
-      └─> CallidescopeService.analyze(…): CallGraphResult [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:154]
+      └─> CallidescopeService.analyze(…): AnalyzeOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:284]
          ↳ Derives every finding from the collected callables.
         └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
            ↳ Builds the call graph and everything derived from it.
@@ -814,7 +817,7 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runTrace` | 5 | `OptionsService.resolveConfigurationPath`, `PluginService.readNxConfiguration`, `ConfigurationService.loadConfiguration`, `CallidescopeService.trace`, `MarkdownReportService.renderRun` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:220` |
+| `PluginService.runTrace` | 5 | `OptionsService.resolveConfigurationPath`, `PluginService.readNxConfiguration`, `ConfigurationService.loadConfigurationFile`, `CallidescopeService.trace`, `MarkdownReportService.renderRun` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:220` |
 | `resolveExecutorScope` | 5 | `resolveOptionsService`, `OptionsService.readStringList`, `resolvePluginService`, `PluginService.resolveTraceScope`, `PluginService.describeRefusedScope` | `packages/callidescope-nx/src/modules/plugin/plugin.utilities.ts:24` |
 | `traceExecutor` | 5 | `resolveExecutorScope`, `resolveOptionsService`, `resolvePluginService`, `PluginService.runTrace`, `OptionsService.readFormat` | `packages/callidescope-nx/src/executors/trace/executor.ts:25` |
 | `PluginService.resolveTraceScope` | 4 | `ProjectsService.readProjectGraph`, `ProjectsService.resolveProjectNames`, `ProjectsService.resolveDependencyClosure`, `ProjectsService.resolveDirectories` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:183` |
