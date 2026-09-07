@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
   existsSync,
   mkdtempSync,
@@ -27,8 +27,39 @@ const WORKSPACE_ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
 /** The package whose fixtures every assertion below is about. */
 const EXAMPLES_DIRECTORY = "packages/callidescope-examples";
 
+/** The one target name every guide's `## Run it` block is supposed to name. */
+const AGGREGATE_TARGET_NAME = "examples";
+
+/**
+ * The command every guide's `## Run it` block documents.
+ *
+ * Composed from the project's own name and the aggregate target's, so renaming
+ * either one fails every guide rather than leaving twenty-three copies of a
+ * command nothing answers to.
+ */
+const RUN_IT_COMMAND = `nx run ${readProjectDefinition().name}:${AGGREGATE_TARGET_NAME}`;
+
+/** Every directory under `examples/`, whether or not it is a project. */
+const EXAMPLE_NAMES = readdirSync(
+  path.join(WORKSPACE_ROOT, EXAMPLES_DIRECTORY, "examples"),
+  { withFileTypes: true },
+)
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+  .toSorted();
+
 /** The nested project that carries its own limits, and breaches both. */
 const GATED_LEAF_DIRECTORY = `${EXAMPLES_DIRECTORY}/examples/gated-leaf`;
+
+/**
+ * The one guide documenting runs of its own, beyond the aggregate target.
+ *
+ * Named rather than discovered, because "a guide with a second command" is not
+ * a category — this one has two because breadth's refusal can only be shown by
+ * running the same check twice at two scopes. A second such guide is a
+ * deliberate act, and adding its name here is part of that act.
+ */
+const GUIDES_WITH_DOCUMENTED_RUNS = ["gated-leaf"];
 
 /** The nested project that declares nothing, and is judged all the same. */
 const INHERITED_LIMITS_DIRECTORY = `${EXAMPLES_DIRECTORY}/examples/inherited-limits`;
@@ -70,6 +101,25 @@ const NESTED_PROJECT_DIRECTORIES = readdirSync(
   .map((entry) => `${EXAMPLES_DIRECTORY}/examples/${entry.name}`)
   .toSorted();
 
+/** As much of an Nx project definition as anything here reads. */
+interface ProjectDefinition {
+  name: string;
+  targets: Record<
+    string,
+    { configurations?: Record<string, { command: string }> }
+  >;
+}
+
+/** This package's own Nx project definition, read off disk. */
+function readProjectDefinition(): ProjectDefinition {
+  return JSON.parse(
+    readFileSync(
+      path.join(WORKSPACE_ROOT, EXAMPLES_DIRECTORY, "project.json"),
+      "utf8",
+    ),
+  ) as ProjectDefinition;
+}
+
 /**
  * Reads the `--directories` value out of one `examples` target configuration.
  *
@@ -80,18 +130,9 @@ const NESTED_PROJECT_DIRECTORIES = readdirSync(
  */
 function readTargetDirectories(configuration: "check" | "write"): string {
   const command = String(
-    (
-      JSON.parse(
-        readFileSync(
-          path.join(WORKSPACE_ROOT, EXAMPLES_DIRECTORY, "project.json"),
-          "utf8",
-        ),
-      ) as {
-        targets: {
-          examples: { configurations: Record<string, { command: string }> };
-        };
-      }
-    ).targets.examples.configurations[configuration]?.command,
+    readProjectDefinition().targets[AGGREGATE_TARGET_NAME]?.configurations?.[
+      configuration
+    ]?.command,
   ).split(" ");
   const value = command[command.indexOf("--directories") + 1];
 
@@ -161,6 +202,45 @@ function readDeepStacksFor(
 }
 
 /**
+ * Every command one guide documents beside the outcome it promises.
+ *
+ * A `bash` fence and the `text` fence under it, paired by position — the shape
+ * every such passage in this package is written in. Read out of the guide
+ * rather than restated here, which is the whole point: a command this suite
+ * runs from a copy proves nothing about the command a reader will type.
+ */
+function readDocumentedRuns(
+  exampleName: string,
+): { command: string; promised: string }[] {
+  const guide = readGuide(exampleName);
+  const commands = readFences(guide, "bash").filter(
+    (command) => command !== RUN_IT_COMMAND,
+  );
+  const promises = readFences(guide, "text");
+
+  return commands.map((command, index) => ({
+    command,
+    promised: promises[index] ?? "",
+  }));
+}
+
+/**
+ * Every fenced block of one language in a guide, in the order they appear.
+ *
+ * Split on the fence opener rather than matched with one expression, because
+ * the closing fence of a `bash` block and the opener of the `text` block that
+ * follows it are the same three characters — and pairing them by position is
+ * exactly what `readDocumentedRuns` needs.
+ */
+function readFences(guide: string, language: string): string[] {
+  return guide
+    .split(`\`\`\`${language}\n`)
+    .slice(1)
+    .map((rest) => rest.split("```")[0] ?? "")
+    .map((block) => block.trimEnd());
+}
+
+/**
  * The project a frame's file belongs to, named the way the run names it.
  *
  * A `StackFrame` carries no project of its own, so the owner is resolved
@@ -183,20 +263,9 @@ function readFileProject(result: CallGraphResult, filePath: string): string {
   return owner;
 }
 
-/**
- * What one example's `## Next` section links to.
- *
- * The section rather than the whole file, because a guide links to its
- * neighbors from its prose as well — reading the whole file would call a
- * broken chain unbroken on the strength of a mention halfway up it.
- *
- * The first `## Next`, not the last: a guide with a generated section below
- * its own `## Next` — `gated-leaf` and `inherited-limits` both carry a
- * `## 🔭 Callidescope` block after it — would otherwise read that trailing
- * section instead of the reading-order link this assertion exists to check.
- */
-function readNextLink(exampleName: string): string {
-  const guide = readFileSync(
+/** One example's guide, read whole. */
+function readGuide(exampleName: string): string {
+  return readFileSync(
     path.join(
       WORKSPACE_ROOT,
       EXAMPLES_DIRECTORY,
@@ -206,8 +275,25 @@ function readNextLink(exampleName: string): string {
     ),
     "utf8",
   );
+}
 
-  return guide.split("## Next")[1] ?? "";
+/**
+ * What one example's `## Next` section links to.
+ *
+ * The section rather than the whole file, because a guide links to its
+ * neighbors from its prose as well — reading the whole file would call a
+ * broken chain unbroken on the strength of a mention halfway up it.
+ *
+ * The first `## Next` and only as far as the heading after it. `gated-leaf`
+ * and `inherited-limits` both carry a generated `## 🔭 Callidescope` block
+ * below their `## Next`, so a read taken to either the last marker or the end
+ * of the file would answer out of that block instead of out of the
+ * reading-order link this assertion exists to check.
+ */
+function readNextLink(exampleName: string): string {
+  const [, ...rest] = readGuide(exampleName).split("## Next");
+
+  return (rest[0] ?? "").split("\n## ")[0] ?? "";
 }
 
 /**
@@ -241,6 +327,21 @@ function readProjectReport(
 }
 
 /**
+ * The headline a documented outcome promises, without its JSON payload.
+ *
+ * The payload carries counts and callable names that a fixture edit may
+ * legitimately move; the headline is the run's verdict and is what the guide is
+ * really claiming. Asserting the headline and the exit code is what this suite
+ * holds every documented run to — see the `## Run it` describe for what is
+ * deliberately left out of that.
+ */
+function readPromisedHeadline(promised: string): string {
+  const [firstLine = ""] = promised.split("\n");
+
+  return (firstLine.split(" {")[0] ?? firstLine).trim();
+}
+
+/**
  * The examples in the order the package guide walks a reader through them.
  *
  * Read out of the guide rather than restated here: a list in this file would
@@ -260,6 +361,45 @@ function readReadingOrder(): string[] {
   return [...(walkthrough ?? "").matchAll(/\(examples\/([a-z0-9-]+)\/README/g)]
     .map((match) => match[1])
     .filter((exampleName) => exampleName !== undefined);
+}
+
+/**
+ * The `## Run it` command one guide documents.
+ *
+ * The first `bash` fence, because that section opens every guide and the
+ * command in it is the aggregate target. A guide documenting nothing runnable
+ * yields the empty string and fails the assertion below rather than being
+ * skipped.
+ */
+function readRunItCommand(exampleName: string): string {
+  return readFences(readGuide(exampleName), "bash")[0] ?? "";
+}
+
+/**
+ * Runs one documented command line and reports how it went.
+ *
+ * The comment lines and the shell continuations are stripped and the rest split
+ * on whitespace, so the argument vector really is the one the guide prints.
+ * `node` heads every such command and is replaced by this process's own
+ * executable, since a spawn resolves no `PATH` here.
+ */
+function runDocumented(command: string): { output: string; status: number } {
+  const [, ...args] = command
+    .split("\n")
+    .filter((line) => !line.trimStart().startsWith("#"))
+    .join(" ")
+    .replaceAll("\\", " ")
+    .split(/\s+/)
+    .filter((token) => token !== "");
+  const result = spawnSync(process.execPath, args, {
+    cwd: WORKSPACE_ROOT,
+    encoding: "utf8",
+  });
+
+  return {
+    output: `${result.stdout}${result.stderr}`,
+    status: result.status ?? -1,
+  };
 }
 
 /**
@@ -356,13 +496,7 @@ describe("callidescope examples (integration)", () => {
     // The half no assertion about a finding can catch: an example whose guide
     // is missing, or which nothing links to, is reachable only by listing the
     // directory. Every sibling `*-examples` package checks the same two things.
-    const exampleNames = readdirSync(
-      path.join(WORKSPACE_ROOT, EXAMPLES_DIRECTORY, "examples"),
-      { withFileTypes: true },
-    )
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name)
-      .toSorted();
+    const exampleNames = EXAMPLE_NAMES;
 
     it.each(exampleNames)("%s carries its own README.md", (exampleName) => {
       expect.hasAssertions();
@@ -421,6 +555,58 @@ describe("callidescope examples (integration)", () => {
         }),
       ).toStrictEqual(order.map((exampleName) => [exampleName, true]));
     });
+  });
+
+  describe("the commands the guides document", () => {
+    // The third instance of one defect on this branch was a guide documenting
+    // a `--check breadth` run as refused, which configuring these packages had
+    // quietly made succeed — a documented behavior that stopped being true
+    // with nothing to say so. These assertions are what says so.
+
+    it.each(EXAMPLE_NAMES)(
+      "%s documents the aggregate target this package really has",
+      (exampleName) => {
+        // The `## Run it` command is not spawned here, and deliberately: all
+        // twenty-three name the same target, this suite's own `beforeAll`
+        // already runs that trace with that configuration, and every
+        // assertion below it is a claim about the outcome. What no assertion
+        // covered was the command line itself — a renamed project or target
+        // would have left every guide naming something Nx cannot run.
+        expect(readRunItCommand(exampleName)).toBe(RUN_IT_COMMAND);
+      },
+    );
+
+    it.each(GUIDES_WITH_DOCUMENTED_RUNS)(
+      "%s runs every command it documents to the outcome it promises",
+      (exampleName) => {
+        const runs = readDocumentedRuns(exampleName);
+
+        // Guarded rather than assumed: a guide whose documented runs were
+        // deleted would otherwise pass this by having nothing to check.
+        expect(runs.length).toBeGreaterThan(0);
+        expect(
+          runs.map((run) => {
+            const { output, status } = runDocumented(run.command);
+            const headline = readPromisedHeadline(run.promised);
+
+            return {
+              headline,
+              printed: output.includes(headline),
+              succeeded: status === 0,
+            };
+          }),
+        ).toStrictEqual(
+          runs.map((run) => ({
+            headline: readPromisedHeadline(run.promised),
+            printed: true,
+            // Both of `gated-leaf`'s runs exit non-zero, for opposite reasons
+            // its guide states outright: the first found the finding it was
+            // asked to look for, the second had no limit to look with.
+            succeeded: false,
+          })),
+        );
+      },
+    );
   });
 
   describe("what the run measured", () => {
