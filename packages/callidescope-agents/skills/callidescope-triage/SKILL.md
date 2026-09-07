@@ -75,15 +75,16 @@ gate into headroom for the one project the finding is about.
 ### The summary's depth is not the project's depth
 
 The number to take is the one a **verdict** gives you, and never the one a
-summary line prints. `readMaximumDepth` reduces over the whole of a run's
-measurement — the entire dependency-widened trace — so the `maximumDepth` in a
-`🔭 Finished an analysis` log line is the deepest stack anywhere the run
-reached, dependencies included. The per-project scoping that decides a gate's
-verdict is a different code path entirely.
+summary line prints. A `🔭 Finished an analysis` log line reports
+`maximumDepthTraced`, and the name is literal: it reduces over the whole of a
+run's measurement, the entire dependency-widened trace, so it is the deepest
+stack anywhere the run reached rather than anywhere it was pointed. The
+per-project scoping that decides a gate's verdict is a different code path
+entirely.
 
 The two routinely disagree by several frames. `tools/synchronization`'s scoped
-run prints `maximumDepth:13`, while its gate passes at the declared 10 and
-fails at 9 — ten is the number that project owns, and thirteen belongs to a
+run prints `maximumDepthTraced:13`, while its gate passes at the declared 10
+and fails at 9 — ten is the number that project owns, and thirteen belongs to a
 dependency it was traced alongside.
 
 So do not set a project's limit from that line. **Boundary-test instead**: write
