@@ -778,12 +778,15 @@ single essay, and a file-wide number cannot tell them apart. A `file` block can
 be added beside the block maxima to measure a whole file's comments as well —
 both are then reported — but this repository declares only the block ones.
 
-Python and YAML read their comments from real tokenizers: `tokenize` inside the
-Python analysis subprocess, and the `yaml` package's CST. Neither mistakes a
-`#` inside a string literal for a comment. Shell and TOML use a line scanner
-that does, exactly as those analyzers' own `comments` counters already do. CSS,
-SQL, HCL, and non-JSDoc `//` runs are not measured yet — see
-[#636](https://github.com/JimmyPaolini/codebase/issues/636).
+Python, YAML, CSS, and TypeScript/JavaScript's non-JSDoc comments all read from
+a real parser or tokenizer: `tokenize` inside the Python analysis subprocess,
+the `yaml` package's CST, postcss's own parse, and the TypeScript compiler's
+scanner. None of the four mistakes a comment marker inside a string literal for
+a comment. Shell, TOML, SQL, and HCL use a line scanner instead — SQL's through
+the same patterns `SqlService` already strips comments with — which cannot
+tell the two apart, exactly as those analyzers' own `comments` counters
+already cannot. CSS has only the one comment syntax; HCL is the one language
+measured with three, `#`, `//`, and `/* */` alike.
 
 Python's comments therefore depend on `uv` being present, the same way every
 other Python metric already does: an unreachable interpreter leaves them

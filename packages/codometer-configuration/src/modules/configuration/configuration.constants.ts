@@ -315,6 +315,7 @@ const languageSchema = z.object({
  */
 export const codometerConfigurationSchema = z.object({
   comments: languageCommentsSchema.optional(),
+  css: languageSchema.optional(),
   defaultTarget: z.string().min(1).optional(),
   documentation: commentsSchema
     .extend({
@@ -335,6 +336,7 @@ export const codometerConfigurationSchema = z.object({
     .optional(),
   exclude: z.array(z.string()).optional(),
   excludeFrom: z.array(z.string()).optional(),
+  hcl: languageSchema.optional(),
   // Two limits may name one metric on purpose — a `warn` short of a `fail` is
   // how a repository sees a number coming before it stops a change — so
   // nothing here asks the paths to be distinct.
@@ -383,6 +385,7 @@ export const codometerConfigurationSchema = z.object({
     .optional(),
   python: languageSchema.extend({ command: z.string().optional() }).optional(),
   shell: languageSchema.optional(),
+  sql: languageSchema.optional(),
   statistics: z
     .array(
       z
@@ -468,6 +471,7 @@ export const codometerConfigurationSchema = z.object({
     )
     .optional(),
   toml: languageSchema.optional(),
+  typescript: languageSchema.optional(),
   yaml: languageSchema.optional(),
 });
 

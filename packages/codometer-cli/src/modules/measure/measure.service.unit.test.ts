@@ -20,6 +20,7 @@ import type { DiscoveryResult } from "@codometer/discovery";
 import type { LanguageResults } from "@codometer/languages";
 
 const configuration: ResolvedCodometerConfiguration = {
+  css: { comments: undefined },
   defaultTarget: undefined,
   documentation: {
     kinds: {},
@@ -30,10 +31,12 @@ const configuration: ResolvedCodometerConfiguration = {
   },
   exclude: ["**/node_modules/**"],
   excludeFrom: [],
+  hcl: { comments: undefined },
   limits: [],
   output: { json: undefined, markdown: undefined },
   python: { command: "uv run python", comments: undefined },
   shell: { comments: undefined },
+  sql: { comments: undefined },
   statistics: [
     {
       color: "7c3aed",
@@ -44,6 +47,7 @@ const configuration: ResolvedCodometerConfiguration = {
   ],
   targets: [],
   toml: { comments: undefined },
+  typescript: { comments: undefined },
   yaml: { comments: undefined },
 };
 

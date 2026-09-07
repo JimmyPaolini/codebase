@@ -39,7 +39,12 @@ export interface CommentToken {
  * result satisfies this structurally, so callers pass it unchanged.
  */
 export interface LanguageCommentFiles {
+  cssFiles: string[];
+  hclFiles: string[];
   shellFiles: string[];
+  /** TypeScript and JavaScript sources, in every dialect the workspace holds. */
+  sourceFiles: string[];
+  sqlFiles: string[];
   tomlFiles: string[];
   yamlFiles: string[];
 }

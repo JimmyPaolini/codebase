@@ -16,6 +16,7 @@ function buildConfiguration(
   output: Partial<ResolvedCodometerConfiguration["output"]> = {},
 ): ResolvedCodometerConfiguration {
   return {
+    css: { comments: undefined },
     defaultTarget: undefined,
     documentation: {
       kinds: {},
@@ -26,13 +27,16 @@ function buildConfiguration(
     },
     exclude: [],
     excludeFrom: [],
+    hcl: { comments: undefined },
     limits: [],
     output: { json: undefined, markdown: undefined, ...output },
     python: { command: "python3", comments: undefined },
     shell: { comments: undefined },
+    sql: { comments: undefined },
     statistics: [],
     targets: [],
     toml: { comments: undefined },
+    typescript: { comments: undefined },
     yaml: { comments: undefined },
   };
 }
