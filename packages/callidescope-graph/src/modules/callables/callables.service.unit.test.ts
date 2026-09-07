@@ -16,6 +16,7 @@ import type { CallableCollection } from "./callables.types";
 function collect(args: {
   files: Record<string, string>;
   includeTests?: boolean;
+  includeTestsByProject?: ReadonlyMap<string, boolean>;
   isExcluded?: (filePath: string) => boolean;
 }): CallableCollection {
   const projectProgram = buildFixtureProgram(args.files);
@@ -24,6 +25,7 @@ function collect(args: {
   return services.callables.collect({
     fileFilter: { isExcluded: args.isExcluded ?? (() => false) },
     includeTests: args.includeTests ?? true,
+    includeTestsByProject: args.includeTestsByProject ?? new Map(),
     ownerByFilePath: new Map(
       [...projectProgram.ownedFilePaths].map((filePath) => [
         filePath,
@@ -162,6 +164,47 @@ describe(CallablesService, () => {
     ).toStrictEqual(["testHelper"]);
   });
 
+  it("includes a project's test files when that project asked for them", () => {
+    expect(
+      collectNames({
+        files: {
+          "packages/example/src/modules/a/a.service.unit.test.ts":
+            "export function testHelper(): void {}",
+        },
+        includeTests: false,
+        includeTestsByProject: new Map([["example", true]]),
+      }),
+    ).toStrictEqual(["testHelper"]);
+  });
+
+  it("skips a project's test files when that project refused them", () => {
+    expect(
+      collectNames({
+        files: {
+          "packages/example/src/modules/a/a.service.ts":
+            "export function a(): void {}",
+          "packages/example/src/modules/a/a.service.unit.test.ts":
+            "export function testHelper(): void {}",
+        },
+        includeTests: true,
+        includeTestsByProject: new Map([["example", false]]),
+      }),
+    ).toStrictEqual(["a"]);
+  });
+
+  it("falls back to the run's answer for a project that declared none", () => {
+    expect(
+      collectNames({
+        files: {
+          "packages/example/src/modules/a/a.service.unit.test.ts":
+            "export function testHelper(): void {}",
+        },
+        includeTests: true,
+        includeTestsByProject: new Map([["other", false]]),
+      }),
+    ).toStrictEqual(["testHelper"]);
+  });
+
   it("skips a source file no program owns", () => {
     const projectProgram = buildFixtureProgram({
       "packages/example/src/modules/a/a.service.ts":
@@ -176,6 +219,7 @@ describe(CallablesService, () => {
     const collection = services.callables.collect({
       fileFilter: { isExcluded: () => false },
       includeTests: true,
+      includeTestsByProject: new Map(),
       ownerByFilePath: new Map(
         owned.map((filePath) => [filePath, projectProgram]),
       ),

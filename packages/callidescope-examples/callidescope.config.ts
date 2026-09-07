@@ -1,69 +1,68 @@
 import type { CallidescopeConfiguration } from "@callidescope/configuration";
 
 /**
- * The configuration the fixtures in this package are traced with.
+ * What this package says about itself, as opposed to what it runs.
  *
- * Deliberately not the workspace's. `configuration/callidescope.config.ts`
- * carries a ratchet — `maximumDepth: 19`, today's worst stack — because its job
- * is to stop the repository getting worse. This one carries the tool's own
- * defaults, because its job is to make the fixtures produce findings: a package
- * whose examples all pass demonstrates nothing.
+ * Two files at this root, two roles. `callidescope.workspace.config.ts` beside
+ * this one is the *workspace* configuration a run of these fixtures is handed:
+ * it names the output destinations, the module layout, and the default limits
+ * every project the run reaches falls back to. This file is this *project's*
+ * own, discovered the way every project's is — by name, at the root holding the
+ * `tsconfig.json` that makes it a project — and it may only say the four things
+ * a project is entitled to say about itself.
  *
- * That is also why `configuration/.callidescopeignore` excludes this directory
- * from the workspace run. Fixtures that exist to be too deep would otherwise
- * fail `nx run codebase:callidescope:check`, and silencing them there would
- * mean either raising the workspace limit past what the repository can hold or
- * teaching everyone to ignore a red gate.
+ * ## Never spread the workspace limits
  *
- * The two gates therefore sit on opposite flags, which is the clearest
- * demonstration of the split this package can offer:
+ * A project writes the limits it overrides and nothing else:
  *
- * - the workspace runs `--check depth`, and its committed report is published
- *   on `main` only, because the call graph moves on nearly every change;
- * - this package runs `--check reports`, because its traced source is frozen
- *   fixture code. A report here goes stale only when a fixture changed or the
- *   resolver did — which is exactly what the check should catch.
+ * ```ts
+ * limits: { maximumDepth: 5 }
+ * ```
+ *
+ * Spreading a workspace limits object into this one is refused before anything
+ * is traced, because such an object carries limits that shape the graph —
+ * `spreadThreshold`, `maximumImplementationCandidates` — and two projects that
+ * disagreed about those would be describing two different graphs over the same
+ * shared code.
+ *
+ * Nothing is lost by writing only the override. Limits fall back one at a time
+ * rather than as an object, so `maximumBreadth` and every analysis-shaping
+ * limit still come from the run. And a spread would have nothing left to
+ * contribute anyway: depth and breadth are the only two a project may set, so
+ * it would supply the field being overridden plus the one that gets the file
+ * rejected.
+ *
+ * ## Why five
+ *
+ * Six is what this package would inherit — `callidescope.workspace.config.ts`
+ * declares it, and the three dependency packages this run reaches are judged by
+ * it. Five is one tighter, and the difference is the example: every finding
+ * this package produces carries `"limit": 5`, the dependency packages' carry
+ * `"limit": 6`, and `examples/project-depth-limit` is a six-frame chain that is
+ * a finding under one number and not the other. An override that restated the
+ * number it already inherits would be indistinguishable from having no file at
+ * all.
+ *
+ * @see examples/project-depth-limit/README.md — the limit, and what it changed
+ * @see examples/declared-entry-points/README.md — the address, and the kind
  */
 const callidescopeConfiguration: CallidescopeConfiguration = {
-  limits: {
+  entryPoints: {
     /**
-     * Two, against three structural implementations of `LineSink`.
+     * One address, for a callable no rule would have rooted.
      *
-     * The default is eight, and demonstrating the cap at that setting would
-     * need nine near-identical classes carrying no other meaning. Lowered here,
-     * one small module shows the same behavior.
+     * `DeclaredEntryPointsService.collect` is called from inside this package,
+     * so orphan promotion never sees it and it would head no stack of its own.
+     * Naming it here roots it under the `declared` kind, which is how a package
+     * states the surface it means to be measured on.
      */
-    maximumImplementationCandidates: 2,
-    /**
-     * The tool's own default, so the deliberately deep fixtures are findings.
-     *
-     * Seven frames and up are reported; `DeepStackService` and
-     * `ForwardingStackService` are eight apiece, and both are meant to fail.
-     */
-    maximumDepth: 6,
+    addresses: [
+      "packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts#DeclaredEntryPointsService.collect",
+    ],
   },
-  /**
-   * Each directory under `examples/` is one module, which is what module spread
-   * and misplacement are measured against.
-   *
-   * The default segment is `src`, and by default a module is
-   * `src/modules/<name>`. Nothing here lives under either: the fixtures sit in
-   * `examples/<name>/`, one directory per example, so each is readable on its
-   * own. Naming `examples` as the root segment is what keeps
-   * `ModuleSpreadService.orchestrate` reaching five distinct modules instead of
-   * collapsing every fixture into one.
-   */
-  workspaceStructure: { rootModuleSegment: "examples" },
-
-  output: {
-    /** The whole run as JSON, which is the machine-readable shape. */
-    json: { path: "packages/callidescope-examples/output/report.json" },
-    /** The printed trees, spliced between anchors. */
-    markdown: { path: "packages/callidescope-examples/output/report.md" },
-    /** The same stacks drawn as one flowchart instead of printed. */
-    mermaid: { path: "packages/callidescope-examples/output/diagram.md" },
-    /** The `## 🔭 Callidescope` section at the bottom of this README. */
-    projectReadmes: {},
+  limits: {
+    /** Five, one under the six this package would otherwise inherit. */
+    maximumDepth: 5,
   },
 };
 

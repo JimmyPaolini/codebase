@@ -4,15 +4,15 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 69 |
-| Files | 33 |
-| Calls traced | 53 |
-| Call stacks | 23 |
+| Callables | 230 |
+| Files | 81 |
+| Calls traced | 196 |
+| Call stacks | 76 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
-| Unfollowable calls | 2 |
+| Unfollowable calls | 12 |
 
-## Call stacks over the depth limit (4)
+## Call stacks over the depth limit (8)
 
 **1. `ComputedMemberService.dispatch`** — depth ≥ 8 · orphan-root
 
@@ -78,9 +78,28 @@
 ```
 
 <details>
-<summary>1 more call stacks</summary>
+<summary>5 more call stacks</summary>
 
-**4. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
+**4. `ConfigurationService.loadConfiguration`** — depth ≥ 8 · orphan-root
+
+```text
+🚀 ConfigurationService.loadConfiguration(args?: LoadConfigurationArguments): Promise<ResolvedCodometerConfiguration> [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:348]
+   ↳ Loads and validates a codometer configuration file.
+  └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedConfiguration> [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:365]
+     ↳ Loads a configuration and says which file answered.
+    └─> ConfigurationService.resolveConfiguration(configuration: CodometerConfiguration): ResolvedCodometerConfiguration [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:388]
+       ↳ Fills in every field a configuration file may leave out.
+      └─> ConfigurationService.resolveLimits(limits: CodometerLimit[] | undefined): ResolvedCodometerLimit[] [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:270]
+         ↳ Gives every limit its severity and a value read as a number.
+        └─> ConfigurationService.map(…)(…): { label: string | undefined; metric: string; severity: CodometerSeverity; value: number; } [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:273]
+          └─> ConfigurationService.parseLimitValue(limit: CodometerLimit): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:80]
+             ↳ Reads a limit's value, in decimal units when it was written as a string.
+            └─> ConfigurationService.parseLimitValueText(metric: string, text: string): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:100]
+               ↳ Reads a limit written as a string, unit and all.
+              └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:492]
+```
+
+**5. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
 
 ```text
 🚀 FrameAnnotationsService.trace(value: string): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:95]
@@ -99,6 +118,55 @@
                ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
+**6. `InheritedLimitsService.request`** — depth 7 · orphan-root
+
+```text
+🚀 InheritedLimitsService.request(key: string): string [packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts:38]
+   ↳ Asks the leaf about one key, through the two frames above it.
+  └─> InheritedLimitsService.prepare(key: string): string [packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts:31]
+     ↳ Prepares the key the leaf is asked about.
+    └─> InheritedLimitsService.forward(key: string): string [packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts:26]
+       ↳ Hands the key to the leaf, which is where this project's code stops.
+      └─> GatedLeafService.read(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40]
+         ↳ The address this project declares as its entry point.
+        └─> GatedLeafService.parse(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:27]
+           ↳ First of the three, and the way into the chain.
+          └─> GatedLeafService.normalize(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:22]
+             ↳ Second of the three, one hop from the end.
+            └─> GatedLeafService.finish(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:17]
+               ↳ Ends the chain, which is where the fourth frame is.
+```
+
+**7. `ProjectDepthLimitService.judge`** — depth 6 · orphan-root
+
+```text
+🚀 ProjectDepthLimitService.judge(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:45]
+   ↳ Judges one project, through every stage a resolved limit passes.
+  └─> ProjectDepthLimitService.resolveConfiguration(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:38]
+     ↳ Names the configuration file the project is judged by.
+    └─> ProjectDepthLimitService.readLimit(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:28]
+       ↳ Reads the limit whichever configuration file the project settled on.
+      └─> ProjectDepthLimitService.applyLimit(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:18]
+         ↳ Applies the limit the resolved project turned out to declare.
+        └─> ProjectDepthLimitService.reportVerdict(verdict: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:33]
+           ↳ States the verdict, and where the number behind it came from.
+          └─> ProjectDepthLimitService.readDeclaringFile(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:23]
+             ↳ Reads the file the number the verdict used was written in.
+```
+
+**8. `GatedLeafService.read`** — depth 4 · declared
+
+```text
+🚀 GatedLeafService.read(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40]
+   ↳ The address this project declares as its entry point.
+  └─> GatedLeafService.parse(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:27]
+     ↳ First of the three, and the way into the chain.
+    └─> GatedLeafService.normalize(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:22]
+       ↳ Second of the three, one hop from the end.
+      └─> GatedLeafService.finish(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:17]
+         ↳ Ends the chain, which is where the fourth frame is.
+```
+
 </details>
 
 ## Module spread
@@ -107,9 +175,11 @@
 | --- | --- | --- | --- |
 | `ModuleSpreadService.orchestrate` | 6 | `packages/callidescope-examples:base-class`, `packages/callidescope-examples:callback-argument`, `packages/callidescope-examples:constructed-class`, `packages/callidescope-examples:injected-dependency`, `packages/callidescope-examples:plain-call` | `packages/callidescope-examples/examples/module-spread/module-spread.ts:32` |
 
-## Callables over the breadth limit (0)
+## Callables over the breadth limit (1)
 
-None.
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `GatedLeafService.read` | 3 | `GatedLeafService.parse`, `GatedLeafService.normalize`, `GatedLeafService.finish` | `packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40` |
 
 ## Possibly misplaced
 

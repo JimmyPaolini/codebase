@@ -4,15 +4,15 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 69 |
-| Files | 33 |
-| Calls traced | 53 |
-| Call stacks | 23 |
+| Callables | 230 |
+| Files | 81 |
+| Calls traced | 196 |
+| Call stacks | 76 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
-| Unfollowable calls | 2 |
+| Unfollowable calls | 12 |
 
-## Call stacks over the depth limit (4)
+## Call stacks over the depth limit (8)
 
 ```mermaid
 flowchart LR
@@ -39,13 +39,34 @@ flowchart LR
   n20["ForwardingStackService.perform"]
   n21["ForwardingStackService.relay"]
   n22["ForwardingStackService.finish"]
-  n23(["FrameAnnotationsService.trace"])
-  n24["FrameAnnotationsService.render"]
-  n25["FrameAnnotationsService.summarize"]
-  n26["FrameAnnotationsService.describe"]
-  n27["FrameAnnotationsService.compose"]
-  n28["FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong"]
-  n29["FrameAnnotationsService.finish"]
+  n23(["ConfigurationService.loadConfiguration"])
+  n24["ConfigurationService.loadConfigurationFile"]
+  n25["ConfigurationService.resolveConfiguration"]
+  n26["ConfigurationService.resolveLimits"]
+  n27["ConfigurationService.map(…)"]
+  n28["ConfigurationService.parseLimitValue"]
+  n29["ConfigurationService.parseLimitValueText"]
+  n30["InvalidLimitValueError.constructor"]
+  n31(["FrameAnnotationsService.trace"])
+  n32["FrameAnnotationsService.render"]
+  n33["FrameAnnotationsService.summarize"]
+  n34["FrameAnnotationsService.describe"]
+  n35["FrameAnnotationsService.compose"]
+  n36["FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong"]
+  n37["FrameAnnotationsService.finish"]
+  n38(["InheritedLimitsService.request"])
+  n39["InheritedLimitsService.prepare"]
+  n40["InheritedLimitsService.forward"]
+  n41["GatedLeafService.read"]
+  n42["GatedLeafService.parse"]
+  n43["GatedLeafService.normalize"]
+  n44["GatedLeafService.finish"]
+  n45(["ProjectDepthLimitService.judge"])
+  n46["ProjectDepthLimitService.resolveConfiguration"]
+  n47["ProjectDepthLimitService.readLimit"]
+  n48["ProjectDepthLimitService.applyLimit"]
+  n49["ProjectDepthLimitService.reportVerdict"]
+  n50["ProjectDepthLimitService.readDeclaringFile"]
   n0 --> n1
   n1 --> n2
   n2 --> n3
@@ -73,6 +94,24 @@ flowchart LR
   n26 --> n27
   n27 --> n28
   n28 --> n29
+  n29 --> n30
+  n31 --> n32
+  n32 --> n33
+  n33 --> n34
+  n34 --> n35
+  n35 --> n36
+  n36 --> n37
+  n38 --> n39
+  n39 --> n40
+  n40 --> n41
+  n41 --> n42
+  n42 --> n43
+  n43 --> n44
+  n45 --> n46
+  n46 --> n47
+  n47 --> n48
+  n48 --> n49
+  n49 --> n50
 ```
 
 ## Module spread
@@ -81,9 +120,11 @@ flowchart LR
 | --- | --- | --- | --- |
 | `ModuleSpreadService.orchestrate` | 6 | `packages/callidescope-examples:base-class`, `packages/callidescope-examples:callback-argument`, `packages/callidescope-examples:constructed-class`, `packages/callidescope-examples:injected-dependency`, `packages/callidescope-examples:plain-call` | `packages/callidescope-examples/examples/module-spread/module-spread.ts:32` |
 
-## Callables over the breadth limit (0)
+## Callables over the breadth limit (1)
 
-None.
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `GatedLeafService.read` | 3 | `GatedLeafService.parse`, `GatedLeafService.normalize`, `GatedLeafService.finish` | `packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40` |
 
 ## Possibly misplaced
 

@@ -4,6 +4,7 @@ export type {
   CallableAddressCandidate,
   CallableAddressResolution,
   ResolveAddressArguments,
+  UnresolvedCallableAddress,
 } from "./modules/callables/address.types";
 export { CallableIdentityService } from "./modules/callables/callable-identity.service";
 export { ANONYMOUS_MEMBER_NAME } from "./modules/callables/callables.constants";
@@ -63,6 +64,7 @@ export { EntriesService } from "./modules/entries/entries.service";
 export type {
   EntryPointCollection,
   ResolveEntriesArguments,
+  UnresolvedEntryPointAddress,
 } from "./modules/entries/entries.types";
 export { MAXIMUM_CALL_ADDRESS_STACKS } from "./modules/graph/address-depth.constants";
 export { AddressDepthService } from "./modules/graph/address-depth.service";
@@ -112,6 +114,7 @@ export { SIGNATURE_FORMAT_FLAGS } from "./modules/signatures/signatures.constant
 export { SignaturesModule } from "./modules/signatures/signatures.module";
 export { SignaturesService } from "./modules/signatures/signatures.service";
 export type { ReadSignatureArguments } from "./modules/signatures/signatures.types";
+export { FileFilterService } from "./modules/workspace/file-filter.service";
 export {
   DEFAULT_MODULES_DIRECTORY,
   DEFAULT_ROOT_MODULE_SEGMENT,
@@ -124,6 +127,7 @@ export { WorkspaceModule } from "./modules/workspace/workspace.module";
 export { WorkspaceService } from "./modules/workspace/workspace.service";
 export type {
   BuildExclusionsArguments,
+  BuildProjectFileFilterArguments,
   DiscoverProjectsArguments,
   FileFilter,
   WorkspaceProject,

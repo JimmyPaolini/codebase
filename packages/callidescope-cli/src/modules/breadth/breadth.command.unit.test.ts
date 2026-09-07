@@ -1,5 +1,8 @@
-import { InputService } from "@callidescope/configuration";
-import { BreadthService } from "@callidescope/graph";
+import {
+  InputService,
+  ProjectConfigurationFieldNotPermittedError,
+} from "@callidescope/configuration";
+import { BreadthService, ProgramConfigurationError } from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -29,6 +32,7 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
     allowSpreadFor: [],
     directories: [],
     entryPoints: {
+      addresses: [],
       decorators: [],
       includeExportedFunctions: true,
       includeOrphans: true,
@@ -69,7 +73,7 @@ function buildLocated(): {
     unresolvedCallerIds: Set<string>;
     unresolvedCalls: never[];
   };
-  projectRoots: Map<string, string>;
+  startingProjectRoots: Map<string, string>;
 } {
   return {
     callablesById: new Map(),
@@ -80,7 +84,7 @@ function buildLocated(): {
       unresolvedCallerIds: new Set(),
       unresolvedCalls: [],
     },
-    projectRoots: new Map(),
+    startingProjectRoots: new Map(),
   };
 }
 
@@ -413,6 +417,51 @@ describe(BreadthCommand, () => {
     await expect(
       command.run([], { addresses: ["a.ts#Foo.bar"], format: "markdown" }),
     ).rejects.toThrow("Trace failed.");
+  });
+
+  // A lookup traces before it matches, so it loads the configuration of every
+  // project it reaches — and a file somebody wrote is reported as such, under
+  // the same headline a full trace prints, rather than as a crash.
+  it("reports a refused project configuration instead of crashing", async () => {
+    const error = new ProjectConfigurationFieldNotPermittedError({
+      field: "excludeFrom",
+      project: "packages/thing",
+    });
+
+    addressLookupService.locate.mockRejectedValue(error);
+
+    await command.run([], { addresses: ["a.ts#Foo.bar"], format: "markdown" });
+
+    expect(logger.error).toHaveBeenCalledExactlyOnceWith(
+      "🔭 Rejected a project configuration",
+      undefined,
+      { reason: error.message },
+    );
+    expect(process.exitCode).toBe(1);
+    expect(process.stdout.write).not.toHaveBeenCalled();
+  });
+
+  // A lookup traces before it matches, so it can reach a project whose
+  // `tsconfig.json` is missing or will not parse — the same failure a
+  // whole-workspace trace already reports under this headline, rather than
+  // the raw stack `main.ts`'s handler would otherwise print.
+  it("reports a project it could not read instead of crashing", async () => {
+    const error = new ProgramConfigurationError({
+      configurationPath: "packages/broken/tsconfig.json",
+      messages: ["missing"],
+    });
+
+    addressLookupService.locate.mockRejectedValue(error);
+
+    await command.run([], { addresses: ["a.ts#Foo.bar"], format: "markdown" });
+
+    expect(logger.error).toHaveBeenCalledExactlyOnceWith(
+      "🔭 Rejected a project it could not read",
+      undefined,
+      { reason: error.message },
+    );
+    expect(process.exitCode).toBe(1);
+    expect(process.stdout.write).not.toHaveBeenCalled();
   });
 
   // 📚 Several addresses

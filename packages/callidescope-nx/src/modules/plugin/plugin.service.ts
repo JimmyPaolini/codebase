@@ -225,10 +225,15 @@ export class PluginService {
           existsSync(path.join(args.workspaceRoot, candidatePath)),
         nxConfiguration: this.readNxConfiguration(args.workspaceRoot),
       });
-    const loaded = await this.configurationService.loadConfiguration({
-      configurationPath,
-      searchDirectory: args.workspaceRoot,
-    });
+    // The file-aware load rather than the plain one: the trace resolves a
+    // configuration beside every project it reaches, and skips whichever file
+    // is already serving as this run's own. The path the loader settled on,
+    // never the one it was handed, since a search may have answered instead.
+    const { configuration: loaded, path: loadedPath } =
+      await this.configurationService.loadConfigurationFile({
+        configurationPath,
+        searchDirectory: args.workspaceRoot,
+      });
     const configuration = {
       ...loaded,
       output: {
@@ -237,8 +242,9 @@ export class PluginService {
       },
     };
 
-    const outcome = this.callidescopeService.trace({
+    const outcome = await this.callidescopeService.trace({
       configuration,
+      configurationPath: loadedPath,
       directories: args.directories,
       workspaceRoot: args.workspaceRoot,
     });
