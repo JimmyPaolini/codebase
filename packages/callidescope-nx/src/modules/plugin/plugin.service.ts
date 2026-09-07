@@ -116,6 +116,10 @@ export class PluginService {
    * finding at all and report green for a project it never read.
    * `packages/callidescope-examples` is the case: its fixtures exist to breach
    * the limits, which is why `.callidescopeignore` names it.
+   *
+   * That sentence is what `runTrace`'s exemption from the unread rule keeps
+   * true: such a project reads nothing of its own by definition, so a trace
+   * failing on that would hand it a permanently red target.
    */
   private buildInferredTargets(args: {
     isExcluded: boolean;
@@ -167,6 +171,22 @@ export class PluginService {
     };
   }
 
+  /**
+   * The block a verdict owes the reader when its findings cannot explain it.
+   *
+   * Both targets print this and only one fails on it — see `judge` — because
+   * an unread project is a fact about the run either way. The unread projects
+   * come first when both apply: they name what went missing, where the
+   * whole-run reason can only say that something did.
+   */
+  private explainVerdict(verdict: RunVerdict): string | undefined {
+    if (verdict.unreadProjectNames.length > 0) {
+      return reportUnreadProjects(verdict.unreadProjectNames);
+    }
+
+    return verdict.reason;
+  }
+
   /** Whether a project's directory holds a TypeScript program to trace. */
   private holdsProgram(args: {
     projectRoot: string;
@@ -212,14 +232,24 @@ export class PluginService {
    * does not either. A dependency's breach is its own gate's business, and
    * `nx affected` selects it too when it changes, so nothing escapes a verdict.
    *
-   * **A judged project none of whose own files were read fails**, the case
-   * `callidescope`'s own `reportEmptyTrace` fails for the same reason: a gate
-   * that passes because it never looked reports the project as clean. Asked of
-   * each judged project rather than of the whole run, because narrowing made
-   * those two different questions — a project with dependencies has a
-   * non-empty run whatever became of its own sources, so its own `exclude`
-   * over-matching would otherwise leave it owning no finding and passing
-   * green. The whole run is asked too, for a run judging no project at all.
+   * **A judged project none of whose own files were read is named back**, the
+   * case `callidescope`'s own `reportEmptyTrace` fails for the same reason: a
+   * gate that passes because it never looked reports the project as clean.
+   * Asked of each judged project rather than of the whole run, because
+   * narrowing made those two different questions — a project with dependencies
+   * has a non-empty run whatever became of its own sources, so its own
+   * `exclude` over-matching would otherwise leave it owning no finding and
+   * passing green. The whole run is asked too, for a run judging no project at
+   * all.
+   *
+   * It is the one rule whose **consequence** is the caller's rather than this
+   * predicate's, and so the one thing `unreadProjectNames` is returned beside
+   * `ok` for: a `gate` fails on it and a `trace` prints it and passes. Every
+   * project the workspace configuration excludes reads nothing of its own and
+   * is denied a gate while keeping its trace, so failing the trace too would
+   * make that project's target permanently red for being configured exactly as
+   * it was asked to be. Finding the projects stays here either way, so the
+   * rule cannot be applied to one verdict and forgotten by the other.
    *
    * **Depth is judged always, breadth wherever a limit exists** — not two
    * modes to be selected between. `maximumDepth` has a default and
@@ -242,16 +272,13 @@ export class PluginService {
       reports: args.result.projects,
     });
 
-    if (unreadProjectNames.length > 0) {
+    if (args.result.summary.callableCount === 0) {
       return {
         findings,
         ok: false,
-        reason: reportUnreadProjects(unreadProjectNames),
+        reason: EMPTY_TRACE_REPORT,
+        unreadProjectNames,
       };
-    }
-
-    if (args.result.summary.callableCount === 0) {
-      return { findings, ok: false, reason: EMPTY_TRACE_REPORT };
     }
 
     return {
@@ -259,6 +286,7 @@ export class PluginService {
       ok:
         findings.deepStacks.length === 0 && findings.wideCallables.length === 0,
       reason: undefined,
+      unreadProjectNames,
     };
   }
 
@@ -389,6 +417,9 @@ export class PluginService {
    * The verdict is `judge`'s, which is where the rules are written; this
    * chooses what to print for it — the findings it judged, or, for a run that
    * read nothing and so has none to show, the reason it failed instead.
+   *
+   * The one thing it adds to that verdict is the exit code for an unread
+   * judged project, which is the gate's alone — see `judge`.
    */
   public async runGate(args: RunGateArguments): Promise<RunTraceResult> {
     const { configuration, path: configurationPath } =
@@ -406,9 +437,9 @@ export class PluginService {
     });
 
     return {
-      ok: verdict.ok,
+      ok: verdict.ok && verdict.unreadProjectNames.length === 0,
       report:
-        verdict.reason ??
+        this.explainVerdict(verdict) ??
         this.markdownReportService.renderFindings({
           ...verdict.findings,
           previewCount:
@@ -429,6 +460,10 @@ export class PluginService {
    * to disagree about what a passing run is. A run that read nothing keeps its
    * report and gains the reason underneath it: a summary table of zeroes is
    * what happened, not why it failed.
+   *
+   * The one rule the two act on differently: a judged project none of whose
+   * own files were read is **printed here and not failed on**, where a gate
+   * fails — see `judge` for why that is the one exemption.
    */
   public async runTrace(args: RunTraceArguments): Promise<RunTraceResult> {
     const { configuration: loaded, path: loadedPath } =
@@ -459,11 +494,11 @@ export class PluginService {
       rendering: configuration.output.format === "mermaid" ? "diagram" : "tree",
       result: outcome.result,
     });
+    const explanation = this.explainVerdict(verdict);
 
     return {
       ok: verdict.ok,
-      report:
-        verdict.reason === undefined ? report : `${report}\n${verdict.reason}`,
+      report: explanation === undefined ? report : `${report}\n${explanation}`,
     };
   }
 }

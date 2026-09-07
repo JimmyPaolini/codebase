@@ -17,7 +17,11 @@ projects they were scoped to, so a dependency's breach fails the dependency's
 own gate rather than every task downstream of it. A gate that opened none of
 the judged project's own files fails rather than passing, because a verdict on
 nothing is not a clean project — asked per project rather than of the whole
-run, since a project with dependencies always has theirs to show. This is the
+run, since a project with dependencies always has theirs to show. That one rule
+is the only place the two verdicts part: `trace` prints the same block and
+passes on it, because an excluded project reads nothing of its own by
+definition and keeps its trace after losing its gate, so failing it there would
+be permanently red. This is the
 only package in the callidescope toolchain that depends on `@nx/devkit`:
 `@callidescope/cli` and `@callidescope/graph` are deliberately Nx-free and take
 plain `--directories`.

@@ -122,6 +122,17 @@ nothing looked at, and a green task there would say the opposite with nothing
 in the output to correct it. The `callidescope` command fails the same case for
 the same reason.
 
+**`trace` prints that same block and passes on it** — the one rule the two
+targets act on differently, and the only place their verdicts part. A project
+the configuration excludes reads nothing of its own by definition and is given
+no `gate` for exactly that reason, so failing its `trace` as well would leave
+the one target it has permanently red for being configured as it was asked to
+be, and a red task that is always red is one a reader learns to ignore. It
+still prints, because whether a project's own code was read is a fact about the
+run either way and a reader has to be able to see it. Everything else — a stack
+over a depth limit, a callable over a breadth limit, a run that read nothing at
+all — fails both.
+
 **Asked per judged project, not of the whole run**, because narrowing the
 verdict made those two different questions. A project with dependencies has a
 non-empty run whatever became of its own sources, so an `exclude` that
@@ -157,7 +168,9 @@ any project with **no `tsconfig.json`**, whose targets would be permanently
 empty. A project the configuration **excludes** — `exclude` or `excludeFrom` in
 the workspace file — additionally gets no `gate`: its own code is never traced,
 so a gate there would own no finding at all and report green for code it never
-read.
+read. It keeps the three that print something, `trace` included, which is what
+the unread exemption above is there to preserve: `packages/callidescope-examples`
+is the case, and its stacks are still a report a reader can open.
 
 ### Why the trace follows dependencies
 

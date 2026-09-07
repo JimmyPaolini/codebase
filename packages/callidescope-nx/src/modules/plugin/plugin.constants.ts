@@ -43,15 +43,23 @@ export const PROJECT_LIMITS_INPUT = "{projectRoot}/callidescope.config.*";
 export const PLUGIN_CONTEXT_GLOBAL_KEY = "__callidescopePluginContext";
 
 /**
- * What a gate prints when it read none of the code it was judging.
+ * What a run prints when it read none of the code it was judging.
  *
  * The whole-run rule below cannot catch this one, and the difference is the
- * dependency closure. A gate traces the projects its own imports reach and
+ * dependency closure. A run traces the projects its own imports reach and
  * judges only the projects it was pointed at, so a project whose own sources
  * were all excluded still has a non-empty run to show — its dependencies' —
  * while owning no report content and therefore no finding. It would pass green
  * over code nothing read, which is the failure the whole-run rule exists to
  * prevent arriving through a second door.
+ *
+ * One rendering for both targets, saying which of them fails on it, because
+ * the two differ here and only here: a `gate` fails, a `trace` prints this and
+ * passes. A project the workspace configuration excludes gets no gate and
+ * keeps its trace, and every such project reads nothing of its own by
+ * definition — so a trace that failed on this would be permanently red for
+ * being configured exactly as it was asked to be, which is a red task a reader
+ * learns to ignore.
  *
  * Files rather than callables, for the reason
  * `ProjectReportsService.findUnreadProjects` states: a project can legitimately
@@ -65,14 +73,15 @@ export const reportUnreadProjects = (projectNames: readonly string[]): string =>
   [
     "## Read nothing of its own (0 files)",
     "",
-    `This gate judged ${projectNames.length === 1 ? "a project" : "projects"} whose own code it never read:`,
+    `This run judged ${projectNames.length === 1 ? "a project" : "projects"} whose own code it never read:`,
     "",
     ...projectNames.map((projectName) => `- \`${projectName}\``),
     "",
-    "It fails rather than passing: a gate that never looked cannot tell a",
-    "clean project from an unread one. The run itself was not empty — the",
-    "dependencies it traced were read — so only the judged project's own",
-    "sources went missing.",
+    "A `gate` fails on this and a `trace` does not: a gate that never looked",
+    "cannot tell a clean project from an unread one, where a trace decides",
+    "nothing and is a report for a reader to open. The run itself was not",
+    "empty — the dependencies it traced were read — so only the judged",
+    "project's own sources went missing.",
     "",
     "Check `exclude` and `excludeFrom` in the workspace callidescope",
     "configuration and `exclude` in the project's own `callidescope.config.*`",

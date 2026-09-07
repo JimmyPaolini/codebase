@@ -650,7 +650,7 @@ describe(PluginService, () => {
       ).resolves.toStrictEqual({ ok: true, report: "# Report" });
     });
 
-    it("fails a trace whose judged project had none of its own files read", async () => {
+    it("names a judged project none of whose own files were read without failing on it", async () => {
       expect.hasAssertions();
 
       stubTrace();
@@ -658,17 +658,42 @@ describe(PluginService, () => {
         "packages/alpha",
       ]);
 
-      // Judged by the same predicate the gate is, so one project's two targets
-      // cannot come to disagree about whether it was measured at all.
+      // The one rule the two targets act on differently. Every project the
+      // workspace configuration excludes reads nothing of its own and is
+      // denied a gate for that reason, so failing its trace as well would
+      // leave the one target it has permanently red — a red task a reader
+      // learns to ignore. It still prints, because a reader must be able to
+      // see that the project read nothing.
       const result = await service.runTrace({
         directories: ["packages/alpha", "packages/beta"],
         judgedProjectNames: ["packages/alpha"],
         workspaceRoot: "/workspace",
       });
 
-      expect(result.ok).toBe(false);
+      expect(result.ok).toBe(true);
       expect(result.report).toContain("# Report");
       expect(result.report).toContain("Read nothing of its own");
+      expect(result.report).toContain("packages/alpha");
+    });
+
+    it("still fails a trace whose judged project broke a limit while reading nothing", async () => {
+      expect.hasAssertions();
+
+      // The exemption is from the unread rule alone: a finding the judged
+      // project owns fails the trace whether or not that project also went
+      // unread, so the exemption cannot become a way to pass a real breach.
+      stubTrace({ deepStacks: [createMock<DeepStackFinding>()] });
+      projectReportsService.findUnreadProjects.mockReturnValue([
+        "packages/alpha",
+      ]);
+
+      const result = await service.runTrace({
+        directories: ["packages/alpha"],
+        judgedProjectNames: ["packages/alpha"],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(result.ok).toBe(false);
     });
 
     it("says under the report why a run that read nothing failed", async () => {

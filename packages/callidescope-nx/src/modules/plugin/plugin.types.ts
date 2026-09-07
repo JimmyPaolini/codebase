@@ -122,6 +122,19 @@ export interface RunTraceResult {
  */
 export interface RunVerdict {
   readonly findings: OwnedFindings;
+  /** Whether every rule both targets share was cleared. */
   readonly ok: boolean;
   readonly reason: string | undefined;
+  /**
+   * Judged projects none of whose own files were read.
+   *
+   * Reported beside `ok` rather than folded into it, because this is the one
+   * rule the two targets act on differently: a `gate` fails on it, a `trace`
+   * prints it and passes. Every project the workspace configuration excludes
+   * reads nothing of its own and keeps its trace while losing its gate, so a
+   * trace failing here would be permanently red for being configured as asked.
+   * The rule itself still lives in one place — `PluginService.judge` — and only
+   * the consequence is the caller's.
+   */
+  readonly unreadProjectNames: readonly string[];
 }
