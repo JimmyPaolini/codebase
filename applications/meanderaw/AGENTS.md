@@ -29,14 +29,36 @@ at 8 for every family alike until
 counts between, so do not give that half a sweep maximum of its own again.
 
 **Nine of the ten ceilings are the shared `MAXIMUM_VALUE` of 12. `mosaic`'s is 6,** because
-it is the family whose space is enumerated exhaustively rather than sampled and the count
-grows about 3.4x per row — 290 tiles at 4 through 6 rows, and 554,891 more to reach 12. The
-cap is on the whole family rather than on the enumeration alone, so `--type mosaic --rows 7`
-is refused: a budget that stopped at the sweep would leave those row counts reachable and
-uncommitted, which is the shape #507 had. See `MOSAIC_TILE_MAXIMUM_ROWS`.
+it is the family whose space is enumerated exhaustively rather than sampled — 8,551 tiles
+across 3 through 6 rows. The cap is on the whole family rather than on the enumeration
+alone, so `--type mosaic --rows 7` is refused: a budget that stopped at the sweep would
+leave those row counts reachable and uncommitted, which is the shape #507 had. See
+`MOSAIC_TILE_MAXIMUM_ROWS`.
+
+**What bounds `mosaic` is one edge budget, not a column cap.** A tile is a `columns` by
+`rows - 1` grid of lattice points, each carrying four direction bits, and its edges are its
+only degrees of freedom — so a shape holds `2 ** (columns * (2 * rows - 3))` tiles and rows
+and columns are not independent knobs. `MOSAIC_TILE_EDGE_BUDGET` caps that edge count at
+16, which admits eleven shapes: 3×1 through 3×5, 4×1 through 4×3, 5×1, 5×2, and 6×1. A
+shape past it is refused rather than enumerated slowly. Raising it is a one-line change
+with a visible effect on counts `mosaic-tiles.service.unit.test.ts` asserts — which is the
+point of it being one number. See "Families, Sub-families, and Tiles" in
+[README.md](./README.md).
+
+**`mosaic` has no `permutations/` level,** and removing it was deliberate: that level
+separated an enumerated half from a named one, and every tile the family draws is now a
+member of one space. Its named drawings sit beside the `<columns>-columns/` directories
+because they are tiles at column spans the edge budget refuses — `alternated period-3` is
+six columns wide at six rows, which is 54 edges against a budget of 16 — rather than a
+different kind of thing. Do not put the level back for that family.
 
 **`negative` has a permutation half too,** and it enumerates its one-column source space —
-the `ruled` domain — at 159 sources across 3 through 6 rows. It stops at the same
+the `ruled` domain — at 208 sources across 3 through 6 rows. Those are the `mosaic` tiles
+it can invert rather than all of them: a source point carrying more than
+`NEGATIVE_SOURCE_MAXIMUM_DEGREE` bits can wall a cell on every side, and a cell with no
+corridor leaves the negative with a lattice point nothing paints — charter invariant 2
+broken, measured over the corpus at 599 drawings. Do not widen it without giving this
+family a rule for what to draw there. It stops at the same
 `MOSAIC_TILE_MAXIMUM_ROWS` the `mosaic` half does, so its deepest row count inverts a
 seven-row source that is enumerable but no longer committed: the corridor-identity gate
 covers rows 3 through 5 of the half and the charter sweep covers the rest. `negative` as a
@@ -44,8 +66,8 @@ named family keeps its ceiling of 12.
 
 Every change to a family's row range or mode set moves most of the published counts —
 widening the sweep to the command line's own range, giving every `branch` mode a parameter,
-growing `negative` from three sources to ten, and capping `mosaic` at 6 rows have each done
-it in turn. So a figure below that disagrees with a measurement is more likely stale than
+growing `negative` from three sources to ten, capping `mosaic` at 6 rows, and replacing
+that family's matching rule with an edge budget over a lattice have each done it in turn. So a figure below that disagrees with a measurement is more likely stale than
 wrong.
 
 The three that most often catch a change:
@@ -87,6 +109,17 @@ Three things that look like defects and are not:
   sub-family. `split` is a modifier that constructs a shape; `diamond` is the sub-family
   that recognizes the same shape however it arose. Do not collapse either pair — see
   "Naming a Mosaic Sub-family" in [README.md](./README.md).
+- **A `mosaic` name is a rule, not a label.** `mosaic-naming` holds one predicate per
+  name, read off a tile's direction bits; a tile matching none keeps its identifier and
+  stays unnamed, and one matching two is a defect the unit test catches over the whole
+  space. Adding a name to the family means adding a rule there, never a motif service.
+  **Unbroken or broken is a question about edges, not points** — `lines` and `dashes`
+  differ on it, and so do `bars` and `diamond` — which is what an earlier rule set got
+  wrong when it called a solid vertical bar a `diamond`.
+- **A `mosaic` tile branching or crossing** is declared, not a regression. Its named modes
+  do neither; its enumerated half does both, which the charter test's `RELAXED_INVARIANTS`
+  records with a `permutations` flag and then asserts is really present in committed
+  output. Editing that declaration is how the permission moves — never the assertions.
 - **`parallel` being a family rather than a modifier** is a correction, not an oversight.
   [#340](https://github.com/JimmyPaolini/codebase/issues/340) models it as the one modifier
   compatible with every family; `N` strands cannot trace the path one strand traces, so
@@ -208,7 +241,7 @@ nx run meanderaw:oxfmt           # Formatting
 
 This application has **one command, `draw`**, and it is the default — so `start` runs it.
 With no arguments it writes every drawing under `output/<family>/<rows>-rows/`, nests the
-enumerated `mosaic` tiles a `permutations/<columns>-columns/` deeper, and writes one
+enumerated `mosaic` tiles a `<columns>-columns/` deeper, and writes one
 `output/index.html` listing them all. With `--type` and `--rows` it draws that
 one into the same tree:
 
