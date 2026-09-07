@@ -42,9 +42,9 @@ import {
  *
  * ## The projects that override nothing
  *
- * Thirty-two projects under `packages/` now declare their own measured depth,
- * and ten declare nothing and are held to the number below. Two reasons,
- * neither of them that nobody got to them. The four skill packages —
+ * Thirty-one projects under `packages/` now declare their own measured depth,
+ * and eleven declare nothing and are held to the number below. Three reasons,
+ * none of them that nobody got to them. The four skill packages —
  * `callidescope-agents`, `codependix-agents`, `codometer-agents`,
  * `conformetry-agents` — and `codependix-examples` hold between zero and three
  * callables, so there is no stack of theirs to gate. The five conformetry leaf
@@ -55,10 +55,21 @@ import {
  * measures zero however much it does. Gating either kind at zero would fail on
  * the first stack of any length, which is a landmine rather than a ratchet.
  *
+ * `codometer-examples` is the eleventh, and it is the same landmine one frame
+ * along. It measures two, over two callables in a package that is a corpus and
+ * a test suite rather than a library, and a limit at two breaches the moment
+ * either of those callables gains a single frame — which, in a fixture corpus,
+ * is a thing somebody adds casually and correctly. Headroom is not the
+ * alternative: a limit set above what a project measures gates nothing and
+ * lies about having been measured. So this one inherits, and the honest record
+ * of its two is a `breadth`/`depth` run against it rather than a number in a
+ * file.
+ *
  * The dependency closure a scoped run traces did fix this for
- * `codometer-changes`, which measured zero before it and ten after. These ten
- * are a different phenomenon and the closure does not reach them: it supplies
- * the callees a stack descends into, and what these are missing is a caller.
+ * `codometer-changes`, which measured zero before it and ten after. The ten
+ * with no caller are a different phenomenon and the closure does not reach
+ * them: it supplies the callees a stack descends into, and what these are
+ * missing is a caller.
  *
  * Still exported although nothing imports it, because a rule needs a name to
  * be about, and narrowing it to the one limit a project may override was

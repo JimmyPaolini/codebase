@@ -22,7 +22,6 @@
   ],
   "extends": "../../configuration/tsconfig.json",
   "include": [
-    "callidescope.config.ts",
     "codometer.config.ts",
     "eslint.config.ts",
     "examples/**/*.ts",
