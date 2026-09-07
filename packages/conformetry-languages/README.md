@@ -65,6 +65,14 @@ and the helper services the Languages are built from —
 A host almost always wants `LanguagesModule`, which imports and re-exports all
 six.
 
+## Why one package
+
+These six Languages were six packages until the consolidation recorded in
+[ADR 0006](../../docs/adr/0006-hold-every-conformetry-language-in-one-package.md).
+That record is the place to read what installing this package costs a consumer
+who needs only one Language, why paying it won, and which three alternatives
+were weighed and rejected.
+
 ## Test
 
 ```bash

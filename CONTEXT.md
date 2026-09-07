@@ -25,6 +25,12 @@ The comparison engine for one family of file types, selected by file extension,
 that measures an instance against its template.
 _Avoid_: Rule, validator rule, check
 
+**Fallback**:
+The line-by-line text comparison that every file extension no Language claims is
+routed to. An unclaimed extension is never skipped — the Fallback is the floor
+under a validation run, not a gap in it.
+_Avoid_: Default language, catch-all, unhandled
+
 **Difference**:
 Something a template declares that its instance lacks. Content the instance adds
 is never a difference.
