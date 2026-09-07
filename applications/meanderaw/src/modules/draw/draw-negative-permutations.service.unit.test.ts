@@ -27,9 +27,11 @@ import { DrawNegativePermutationsService } from "./draw-negative-permutations.se
  * whatever the search happened to find. The count roughly two-and-a-half
  * times per row, which is also the reason the half stops where it does.
  *
- * It grew with the `mosaic` family it inverts: a source tile may turn a
- * corner now, so the one-column space at each row count is wider than the
- * matchings it used to be.
+ * It grew once with the `mosaic` family it inverts, when a source tile was
+ * first allowed to turn a corner. It did not grow again when that family's
+ * degree ceiling came off entirely: a source carrying a junction can wall a
+ * cell on every side, and this family has nothing to draw where a cell has
+ * no corridor — see `NEGATIVE_SOURCE_MAXIMUM_DEGREE`.
  */
 const TILE_COUNTS: readonly number[] = [9, 21, 51, 127];
 

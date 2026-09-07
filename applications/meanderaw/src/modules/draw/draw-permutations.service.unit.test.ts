@@ -13,6 +13,16 @@ import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { DrawPermutationsService } from "./draw-permutations.service";
 
+/**
+ * How long the assertions that render the whole enumerated half are given.
+ *
+ * The edge budget admits 8,551 tiles and these really render each one, so
+ * this is real work rather than a hang — declared rather than left to the
+ * default five seconds, the same way the charter measurement declares its
+ * own.
+ */
+const FULL_SWEEP_TIMEOUT_MILLISECONDS = 60_000;
+
 describe(DrawPermutationsService, () => {
   let service: DrawPermutationsService;
 
@@ -65,28 +75,40 @@ describe(DrawPermutationsService, () => {
       ]);
     });
 
-    it("renders a document for every distinct tile in the family", () => {
-      expect(sweepPaths()).toHaveLength(2406);
-    });
+    it(
+      "renders a document for every distinct tile in the family",
+      () => {
+        expect(sweepPaths()).toHaveLength(8551);
+      },
+      FULL_SWEEP_TIMEOUT_MILLISECONDS,
+    );
 
-    it("names every file after the tile it draws, so no two collide", () => {
-      const paths = sweepPaths();
+    it(
+      "names every file after the tile it draws, so no two collide",
+      () => {
+        const paths = sweepPaths();
 
-      expect(new Set(paths).size).toBe(paths.length);
-      expect(paths).toContain("mosaic/6-rows/1-columns/00000-dots.svg");
-    });
+        expect(new Set(paths).size).toBe(paths.length);
+        expect(paths).toContain("mosaic/6-rows/1-columns/00000-dots.svg");
+      },
+      FULL_SWEEP_TIMEOUT_MILLISECONDS,
+    );
 
-    it("carries the sub-family in the filename where a tile has one, and only the identifier where it has none", () => {
-      const paths = sweepPaths();
-      const named = paths.filter((filePath) =>
-        /-(?:bars|dashes|diamond|dots|lines|mesh|steps)\.svg$/.test(filePath),
-      );
+    it(
+      "carries the sub-family in the filename where a tile has one, and only the identifier where it has none",
+      () => {
+        const paths = sweepPaths();
+        const named = paths.filter((filePath) =>
+          /-(?:bars|dashes|diamond|dots|lines|mesh|steps)\.svg$/.test(filePath),
+        );
 
-      // The tile whose only edge is a southward one over the lower two
-      // levels earns no name, so nothing is appended to its identifier.
-      expect(paths).toContain("mosaic/4-rows/1-columns/048.svg");
-      expect(named).toHaveLength(116);
-    });
+        // The tile whose only edge is a southward one over the lower two
+        // levels earns no name, so nothing is appended to its identifier.
+        expect(paths).toContain("mosaic/4-rows/1-columns/048.svg");
+        expect(named).toHaveLength(127);
+      },
+      FULL_SWEEP_TIMEOUT_MILLISECONDS,
+    );
 
     it("renders the tile itself, so the document is the drawing rather than a placeholder", () => {
       const [first] = service.render(4);

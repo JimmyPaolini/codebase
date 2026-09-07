@@ -63,18 +63,28 @@ type CharterInvariant = "no-branching" | "no-crossing" | "space-filling";
 /**
  * One invariant a family is allowed to break.
  *
- * The two optional fields narrow the permission from opposite directions,
+ * The two modifier fields narrow the permission from opposite directions,
  * and a relaxation may use either, both, or neither. `modifierNames` names
  * the modifiers that break it, so the family holds the invariant otherwise;
  * `exceptModifierNames` names the modifiers that put it back, so the family
  * breaks it otherwise — including when drawn with no modifier at all, which
  * `modifierNames` alone has no way to say. `cross` needs the second: it
  * crosses by default and stops crossing under `interrupted`.
+ *
+ * `permutations` says the permission is about the family's **enumerated**
+ * half rather than its named one. `mosaic` needs it: a name reaches a
+ * handful of points in its unit space and none of them branch, while the
+ * space itself is every assignment of direction bits and most of it does. A
+ * relaxation marked this way is therefore invisible to the sweep below,
+ * which draws only named parameters, and is asserted instead against the
+ * committed permutation documents — in both directions, exactly as the
+ * sweep asserts the rest.
  */
 interface CharterRelaxation {
   readonly exceptModifierNames?: readonly Modifier["name"][];
   readonly invariant: CharterInvariant;
   readonly modifierNames?: readonly Modifier["name"][];
+  readonly permutations?: boolean;
 }
 
 /**
@@ -162,7 +172,10 @@ const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
   branch: [{ invariant: "no-branching" }],
   chain: [{ invariant: "no-branching", modifierNames: ["edge", "edge-flip"] }],
   cross: [{ exceptModifierNames: ["interrupted"], invariant: "no-crossing" }],
-  mosaic: [],
+  mosaic: [
+    { invariant: "no-branching", permutations: true },
+    { invariant: "no-crossing", permutations: true },
+  ],
   negative: [
     { exceptModifierNames: ["ruled-closed"], invariant: "no-branching" },
     {
@@ -220,7 +233,7 @@ const modifierLabel = (modifier: Modifier): string => {
  * given ply is a fact about the geometry, and asking the geometry is what
  * keeps the sweep from committing the same drawing twice.
  *
- * The sweep stops short of `mosaic`'s 2,406 enumerated tiles for one reason:
+ * The sweep stops short of `mosaic`'s 8,551 enumerated tiles for one reason:
  * those are reachable only through a motif service, and the charter is
  * tested through `MeanderGenerationService.generate`, the single seam every
  * family, modifier, and validation rule already passes through. Those tiles
@@ -252,7 +265,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 
 /**
  * How long a corpus-wide measurement may take. Each of the three tests that
- * use it reads all 3,797 committed documents from disk and measures every
+ * use it reads all 9,942 committed documents from disk and measures every
  * one, which takes well under a second locally but several times that on a
  * shared CI runner — past vitest's five-second default, which is what failed
  * there while passing everywhere else, back when the corpus was three times
@@ -263,7 +276,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
 
 /**
  * How many documents `DrawCommand` commits: 1,183 named patterns beside two
- * exhaustive halves — 2,406 enumerated `mosaic` tiles and 208 enumerated
+ * exhaustive halves — 8,551 enumerated `mosaic` tiles and 208 enumerated
  * one-column `negative` sources.
  *
  * The named half was 174 until issue #507. It sampled row counts up to 8
@@ -275,7 +288,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
  *
  * Nine of the ten families read the shared `MAXIMUM_VALUE` there. `mosaic`
  * is the tenth, at 6, and its lower ceiling is why the named half is 1,183
- * rather than 1,219 and why the exhaustive `mosaic` half is 2,406 rather than
+ * rather than 1,219 and why the exhaustive `mosaic` half is 8,551 rather than
  * 3,179. The reason is a budget on an exhaustively enumerated space rather
  * than anything the geometry does — `MOSAIC_TILE_MAXIMUM_ROWS` carries the
  * count per row, and the whole family stopping at the same number is what
@@ -287,7 +300,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
  * but not committed, which is why the corridor-identity gate below covers
  * rows 3 through 5 of it rather than all of it.
  */
-const COMMITTED_CORPUS_SIZE = 1183 + 2406 + 208;
+const COMMITTED_CORPUS_SIZE = 1183 + 8551 + 208;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -300,16 +313,43 @@ const COMMITTED_CORPUS_SIZE = 1183 + 2406 + 208;
  * It reached 2,120 when `cross` added six, 2,176 when the named half of the
  * sweep grew to `MAXIMUM_VALUE`, 273 when `mosaic` — which leaves such a gap
  * in every one of its documents, named and enumerated alike — was capped at
- * 6 rows, and 1,513 when that family's edge budget widened its enumerated
- * half from 290 tiles to 2,406. Nothing would have caught any of those
- * drifts:
+ * 6 rows, and 6,005 when that family's edge budget and the removal of its
+ * degree ceiling widened its enumerated half from 290 tiles to 8,551.
+ * Nothing would have caught any of those drifts:
  * `channelWidthCompliant` passes either way, because skipping those two
  * columns is exactly what it does. `negative`, `branch`, and `parallel` add
  * none at any row count — each covers its own first and last lattice column
  * — so this number moving by anything other than a change of row range is a
  * family changing how its band ends.
  */
-const TERMINATION_GAP_DOCUMENTS = 1513;
+const TERMINATION_GAP_DOCUMENTS = 6005;
+
+/** Which of a measured document's two junction counts an invariant is about. */
+type JunctionKind = "inkTJunctions" | "inkXJunctions";
+
+/** Whether the charter declaration allows a family to break `invariant` at all, by any route. */
+const declaresRelaxation = (
+  family: string,
+  invariant: CharterInvariant,
+): boolean =>
+  Object.entries(RELAXED_INVARIANTS).some(
+    ([declared, relaxations]) =>
+      declared === family &&
+      relaxations.some((relaxation) => relaxation.invariant === invariant),
+  );
+
+/** Every family whose enumerated half the charter declaration allows to break `invariant`. */
+const permutationRelaxations = (invariant: CharterInvariant): string[] =>
+  Object.entries(RELAXED_INVARIANTS)
+    .filter(([, relaxations]) =>
+      relaxations.some(
+        (relaxation) =>
+          relaxation.invariant === invariant &&
+          relaxation.permutations === true,
+      ),
+    )
+    .map(([family]) => family)
+    .toSorted();
 
 /** Where `DrawCommand` writes those documents, and where they are committed. */
 const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
@@ -511,7 +551,15 @@ const NEGATIVE_SOURCE_DOCUMENTS: readonly {
  */
 const familyOf = (name: string): string => name.split("/")[0] ?? name;
 
-/** Whether `parameters` name a drawing the charter declaration allows to break `invariant`. */
+/**
+ * Whether `parameters` name a drawing the charter declaration allows to
+ * break `invariant`.
+ *
+ * A relaxation marked `permutations` is skipped: it is about the tiles a
+ * family enumerates, which no set of named parameters reaches, so applying
+ * it here would excuse a named drawing for something only an enumerated one
+ * does. Those are asserted against committed output instead.
+ */
 const relaxes = (
   parameters: GenerationParameters,
   invariant: CharterInvariant,
@@ -519,6 +567,7 @@ const relaxes = (
   RELAXED_INVARIANTS[parameters.type].some(
     (relaxation) =>
       relaxation.invariant === invariant &&
+      relaxation.permutations !== true &&
       (relaxation.modifierNames === undefined ||
         (parameters.modifier !== undefined &&
           relaxation.modifierNames.includes(parameters.modifier.name))) &&
@@ -769,19 +818,20 @@ describe(MeanderTopologyService, () => {
         ).toBe(true);
 
         // 🎯 The loops are all somewhere else: 294 of `negative`'s 308
-        // corridor networks, 150 `mosaic` drawings, `cross`'s seven solid
+        // corridor networks, 3,099 `mosaic` drawings, `cross`'s seven solid
         // crossings, and the eighteen `snake` drawings whose `edge` pitch
         // closes a loop against the band border. `branch` appears nowhere in
         // this list, which is the half of the claim a tree test alone would
         // not make — and neither does `parallel`, whose three shapes are all
         // acyclic at every ply.
         //
-        // `mosaic` is new to it, and it is what letting a point turn a corner
-        // bought: a figure of dash ends cannot close, and 150 of the family's
-        // 2,430 documents now do. No charter invariant is about a loop — the
-        // ink stays orthogonal, every point stays inked, and nothing branches
-        // or crosses — so this is the family's shape as a graph changing
-        // rather than its compliance.
+        // `mosaic` is new to it, and it is what removing the degree ceiling
+        // bought: a figure of dash ends cannot close, and 3,099 of the
+        // family's 8,575 documents now do. No charter invariant is about a
+        // loop — the ink stays orthogonal and every point stays inked — so
+        // this is the family's shape as a graph changing rather than its
+        // compliance. What it does now break is declared: invariants 3 and 4,
+        // for the enumerated half only.
         //
         // The fourteen `negative` documents missing from it are the `lines`
         // sub-family's negative — `ruled-closed` at each of the family's ten
@@ -791,7 +841,7 @@ describe(MeanderTopologyService, () => {
         // band's own rules and nothing joining them, so it is one component
         // per lattice row with no loop anywhere, and the one corner of this
         // family that is a forest like the six oldest.
-        expect(looped).toHaveLength(469);
+        expect(looped).toHaveLength(3418);
         expect(
           [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual(["cross", "mosaic", "negative", "snake"]);
@@ -847,7 +897,7 @@ describe(MeanderTopologyService, () => {
             .map(({ name }) => name),
         ).toStrictEqual([]);
 
-        // 🎯 Ink crosses in exactly two families across all 3,797 files, and
+        // 🎯 Ink crosses in exactly three families across all 9,942 files, and
         // in neither of them by accident. Taken as three statements rather
         // than one list, so each says something a longer list would bury.
         const crossing = measured.filter(
@@ -856,7 +906,42 @@ describe(MeanderTopologyService, () => {
 
         expect(
           [...new Set(crossing.map(({ name }) => familyOf(name)))].toSorted(),
-        ).toStrictEqual(["cross", "negative"]);
+        ).toStrictEqual(["cross", "mosaic", "negative"]);
+
+        // 🎯 The other half of `RELAXED_INVARIANTS`, for the relaxations the
+        // sweep above cannot see because no set of named parameters reaches
+        // them. Asserted in both directions, exactly as the sweep asserts the
+        // rest: a family declared to branch or cross in its enumerated half
+        // has to actually do it somewhere in committed output, and a family
+        // that declares nothing has to do it nowhere. So a declaration
+        // cannot be added without the drawings, and the drawings cannot
+        // appear without the declaration.
+        const permutationFamilies = (junctions: JunctionKind): string[] =>
+          [
+            ...new Set(
+              measured
+                .filter(
+                  (topology) =>
+                    COLUMN_SPAN_PATTERN.test(topology.name) &&
+                    topology[junctions] > 0,
+                )
+                .map(({ name }) => familyOf(name)),
+            ),
+          ].toSorted();
+
+        for (const [invariant, junctions] of [
+          ["no-branching", "inkTJunctions"],
+          ["no-crossing", "inkXJunctions"],
+        ] satisfies readonly [CharterInvariant, JunctionKind][]) {
+          const observed = permutationFamilies(junctions);
+
+          expect(observed).toStrictEqual(
+            expect.arrayContaining(permutationRelaxations(invariant)),
+          );
+          expect(
+            observed.filter((family) => !declaresRelaxation(family, invariant)),
+          ).toStrictEqual([]);
+        }
 
         // 🎯 `cross`'s seven, at twelve junctions per document at every one
         // of its row counts, 6 through 12 — the count is a property of the
