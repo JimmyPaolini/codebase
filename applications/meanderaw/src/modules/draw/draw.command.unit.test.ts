@@ -161,7 +161,7 @@ describe(DrawCommand, () => {
         // own `FAMILY_MAXIMUM_ROWS`: 2..12 (branch, parallel), 3..12 (boxes,
         // negative), 4..12 (chain, snake, swirl, whirl), or 6..12 (cross),
         // crossed with "no modifier" plus every compatible modifier (rung
-        // expands to 2 representative values, stagger to 4):
+        // expands to 2 representative values, stagger to 3):
 
         // `mosaic` contributes nothing. It is drawn from its enumerated
         // space rather than from a motif — see `TILE_DRAWN_TYPES` — so
@@ -176,7 +176,7 @@ describe(DrawCommand, () => {
         // whirl: 9 rows * (1 + 1) modifiers = 18
         // cross: 7 rows * (1 + 1) modifiers = 14
         // negative: 10 rows * (1 + 9) modifiers = 100
-        // branch: 11 rows * (1 + 2 + 4) modifiers = 77
+        // branch: 11 rows * (1 + 2 + 3) modifiers = 66
 
         // `parallel` is the one family whose modifiers do not expand to a
         // fixed number of values, so it is the one row here that is neither a
@@ -213,7 +213,7 @@ describe(DrawCommand, () => {
           0,
         );
         const expectedNamedTypeCount =
-          30 + 36 + 36 + 18 + 18 + 14 + 100 + 77 + expectedParallelCount;
+          30 + 36 + 36 + 18 + 18 + 14 + 100 + 66 + expectedParallelCount;
 
         const writtenFileNames = vi
           .mocked(mockWriteFile)
@@ -275,7 +275,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("9907 drawings");
+      expect(index?.[1]).toContain("9896 drawings");
 
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/1-columns/00000-dots.svg"',
@@ -298,7 +298,7 @@ describe(DrawCommand, () => {
         vi.mocked(meanderGenerationService.generate).mock.calls,
       ).toContainEqual([
         {
-          modifier: { branches: 3, name: "stagger" },
+          modifier: { branches: 4, name: "stagger" },
           repeatCount: 6,
           rows: 2,
           type: "branch",
@@ -644,14 +644,14 @@ describe(DrawCommand, () => {
           realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
         ).resolves.toBeUndefined();
 
-        // 🎯 every one of the 1,148 enumerated named-type combinations, every
+        // 🎯 every one of the 1,137 enumerated named-type combinations, every
         // one of the 8,551 mosaic tiles, and every one of the 208 one-column
         // negative sources, reached its real generation
         // service and real validators without throwing — this is the
         // regression guard the mocked tests above can't provide, since they
         // replace the generation services entirely. The extra file is the
         // single index page listing all of them.
-        expect(mockWriteFile).toHaveBeenCalledTimes(1148 + 8551 + 208 + 1);
+        expect(mockWriteFile).toHaveBeenCalledTimes(1137 + 8551 + 208 + 1);
       },
       FULL_SWEEP_TIMEOUT_MILLISECONDS,
     );

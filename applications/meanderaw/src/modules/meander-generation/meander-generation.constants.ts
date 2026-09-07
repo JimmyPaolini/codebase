@@ -373,9 +373,10 @@ export class InvalidRowsError extends Error {
  *
  * The minimum is the family's own and the maximum is the command line's,
  * which is why the message names them rather than restating either: below
- * the minimum the mode stops forking altogether, and above the maximum
- * nothing structural fails — a crenel simply grows wider than any other
- * parameter this application accepts.
+ * the minimum the crenel is no wider than a plain comb's own unit and the
+ * drawing is one, and above the maximum nothing structural fails — a
+ * crenel simply grows wider than any other parameter this application
+ * accepts.
  */
 export class InvalidStaggerBranchCountError extends Error {
   constructor(branches: number, minimum: number, maximum: number) {

@@ -114,14 +114,6 @@ const MODES: readonly {
     unitColumns: BRANCH_UNIT_COLUMNS,
   },
   {
-    cycles: 11,
-    freeEnds: [0, 0, 0, 0, 0, 0, 0],
-    label: "stagger over 3 branches",
-    modifier: { branches: 3, name: "stagger" },
-    tJunctions: [20, 20, 20, 20, 20, 20, 20],
-    unitColumns: 2,
-  },
-  {
     cycles: 17,
     freeEnds: [0, 0, 0, 0, 0, 0, 0],
     label: "stagger over 4 branches",
@@ -381,7 +373,7 @@ describe(BranchMotifService, () => {
     // would quietly measure fewer drawings — or none — without failing.
     it("covers every mode at every swept row count", () => {
       expect(BRANCH_CASES).toHaveLength(MODES.length * SWEPT_ROWS.length);
-      expect(BRANCH_CASES).toHaveLength(49);
+      expect(BRANCH_CASES).toHaveLength(42);
     });
 
     it("starts at the family's own structural minimum", () => {
@@ -563,9 +555,9 @@ describe(BranchMotifService, () => {
     // the minimum, and nothing else in this suite would notice: the ink
     // would still fork, still be orthogonal, still be the same height.
     it.each([
-      { branches: MINIMUM_STAGGER_BRANCHES, unitColumns: 2 },
-      { branches: 4, unitColumns: 3 },
+      { branches: MINIMUM_STAGGER_BRANCHES, unitColumns: 3 },
       { branches: 5, unitColumns: 4 },
+      { branches: 6, unitColumns: 5 },
     ])(
       "reaches $unitColumns columns per unit when a stagger joins $branches branches",
       ({ branches, unitColumns }) => {
@@ -669,7 +661,6 @@ describe(BranchMotifService, () => {
     // the longest run in every drawing whatever the crenel does.
     it.each([
       { branches: MINIMUM_STAGGER_BRANCHES },
-      { branches: 4 },
       { branches: 5 },
       { branches: 8 },
     ])("joins $branches branches per rail run", ({ branches }) => {
@@ -693,40 +684,43 @@ describe(BranchMotifService, () => {
       ).toStrictEqual([0, 5]);
     });
 
-    // 🎯 The reason `MINIMUM_STAGGER_BRANCHES` is 3 rather than 2, measured
-    // at the value it excludes. A two-branch crenel is one lattice step
-    // wide, and a rail always runs along a border row — so at two branches
-    // every rail run lies inside the rule it sits on, contributes nothing,
-    // and the crenellation the mode is named for is not in the drawing at
-    // all. What is left is a plain comb half as wide: the two records below
-    // are measured from two different drawings and agree in every number.
-    it("draws a plain comb at two branches", () => {
-      const twoBranch = belowBranchMinimum(2, 5);
+    // 🎯 The reason `MINIMUM_STAGGER_BRANCHES` is 4 rather than 3, measured
+    // at the value it excludes. A three-branch crenel's rail spans exactly
+    // `BRANCH_UNIT_COLUMNS` lattice steps — a plain comb's own unit width —
+    // and a rail always runs along a border row now ruled end to end, so
+    // that run lies entirely inside the rule it sits on and contributes
+    // nothing the rule did not already draw. What is left is a plain comb
+    // of the same width: the two records below are measured from two
+    // different drawings and agree in every number.
+    it("draws a plain comb at three branches", () => {
+      const threeBranch = belowBranchMinimum(3, 5);
       const plain = generationService.generate({
-        repeatCount: REPEAT_COUNT / 2,
+        repeatCount: REPEAT_COUNT,
         rows: 5,
         type: "branch",
       });
 
-      expect(longestUnitRail({ branches: 2, name: "stagger" }, 5)).toBe(1);
-      expect(topologyService.connectivity(twoBranch)).toStrictEqual(
+      expect(longestUnitRail({ branches: 3, name: "stagger" }, 5)).toBe(
+        BRANCH_UNIT_COLUMNS,
+      );
+      expect(topologyService.connectivity(threeBranch)).toStrictEqual(
         topologyService.connectivity(plain),
       );
-      expect(topologyService.measure(twoBranch)).toStrictEqual(
+      expect(topologyService.measure(threeBranch)).toStrictEqual(
         topologyService.measure(plain),
       );
-      expect(topologyService.connectivity(twoBranch)).toStrictEqual({
+      expect(topologyService.connectivity(threeBranch)).toStrictEqual({
         components: 1,
-        edges: 40,
+        edges: 82,
         freeEnds: 0,
-        nodes: REPEAT_COUNT * 6,
+        nodes: BRANCH_UNIT_COLUMNS * REPEAT_COUNT * 6,
       });
     });
 
     it.each([
-      { branches: 2, reason: "below the family's own floor" },
+      { branches: 3, reason: "below the family's own floor" },
       { branches: 13, reason: "past the shared maximum" },
-      { branches: 2.5, reason: "not a whole number" },
+      { branches: 3.5, reason: "not a whole number" },
     ])("refuses $branches branches, $reason", ({ branches }) => {
       expect(() =>
         generationService.generate({
@@ -735,7 +729,7 @@ describe(BranchMotifService, () => {
           rows: 5,
           type: "branch",
         }),
-      ).toThrow(/branches must be between 3 and 12/u);
+      ).toThrow(/branches must be between 4 and 12/u);
     });
   });
 
@@ -824,25 +818,35 @@ describe(BranchMotifService, () => {
     // rail's length does not depend on the band's height. So 2 is `rung`'s
     // floor rather than the lattice's.
     it.each([
-      { cycles: 11, freeEnds: 0, label: "comb", tJunctions: 20 },
       {
         cycles: 11,
+        freeEnds: 0,
+        label: "comb",
+        nodes: LATTICE_COLUMNS * 2,
+        tJunctions: 20,
+      },
+      {
+        cycles: 17,
         freeEnds: 0,
         label: "stagger",
         modifier: {
           branches: MINIMUM_STAGGER_BRANCHES,
           name: "stagger" as const,
         },
-        tJunctions: 20,
+        // 🎯 `stagger`'s own unit is `MINIMUM_STAGGER_BRANCHES - 1` lattice
+        // columns wide rather than `BRANCH_UNIT_COLUMNS`, so its node count
+        // does not share `LATTICE_COLUMNS` with `comb`'s.
+        nodes: (MINIMUM_STAGGER_BRANCHES - 1) * REPEAT_COUNT * 2,
+        tJunctions: 32,
       },
     ])("still draws $label at one row", (testCase) => {
       const document = belowMinimum(1, testCase.modifier);
 
       expect(topologyService.connectivity(document)).toStrictEqual({
         components: 1,
-        edges: LATTICE_COLUMNS * 2 - 1 + testCase.cycles,
+        edges: testCase.nodes - 1 + testCase.cycles,
         freeEnds: testCase.freeEnds,
-        nodes: LATTICE_COLUMNS * 2,
+        nodes: testCase.nodes,
       });
       expect(topologyService.measure(document).inkTJunctions).toBe(
         testCase.tJunctions,

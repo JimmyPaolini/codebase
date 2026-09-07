@@ -22,10 +22,10 @@ export const RUNG_SWEEP_LEFTWARD_VALUES: readonly boolean[] = [false, true];
  * A contiguous run rather than the sampled ply counts `plied`
  * takes, because this parameter has a floor it does not and every value
  * above it draws a visibly different crenel. The first is
- * `MINIMUM_STAGGER_BRANCHES` itself, which is both the tightest crenel the
- * mode admits and the only one any `stagger` was drawn at before the flag
- * existed; each one after it widens the crenel by a single lattice column,
- * so no value in the run repeats the one before it at another scale.
+ * `MINIMUM_STAGGER_BRANCHES` itself, the narrowest crenel the mode can
+ * still tell apart from a plain `comb`; each one after it widens the
+ * crenel by a single lattice column, so no value in the run repeats the
+ * one before it at another scale.
  *
  * It stops at six because a crenel keeps its shape and only its wavelength
  * grows: past six branches one rail run spans most of a six-repeat band and
@@ -34,7 +34,7 @@ export const RUNG_SWEEP_LEFTWARD_VALUES: readonly boolean[] = [false, true];
  * line accepts up to `MAXIMUM_VALUE` — so this is where the sweep stops
  * rather than where the mode does.
  */
-export const STAGGER_SWEEP_BRANCH_COUNTS: readonly number[] = [3, 4, 5, 6];
+export const STAGGER_SWEEP_BRANCH_COUNTS: readonly number[] = [4, 5, 6];
 
 /**
  * The gallery page `DrawCommand` writes

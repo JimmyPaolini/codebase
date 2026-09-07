@@ -69,21 +69,23 @@ export const DEFAULT_RUNG_IS_LEFTWARD = false;
 /**
  * The fewest branches one `stagger` rail run may join before changing side.
  *
- * Three, and it is a structural floor rather than a taste one. A rail
- * always runs along one of the band's two border rows, and both of those
- * rows are ruled end to end — so a two-branch run, which crosses a single
- * lattice step from one tooth to the next, lies entirely inside the rule it
- * sits on and contributes nothing at all. The crenellation the parameter
- * names would then be absent from the ink, and what is left is a plain comb
- * half as wide.
+ * Four, and it is a structural floor rather than a taste one.
+ * `BranchMotifService.unitColumns` answers `branches - 1`, which at three
+ * branches is exactly `BRANCH_UNIT_COLUMNS` — the width `comb` already
+ * draws — and `spineRow` only ever names a border row, both of which are
+ * now ruled end to end regardless of which one a rail reinforces. So a
+ * three-branch rail run sits wholly inside a rule already there and
+ * contributes nothing the rule did not already draw: the crenellation the
+ * parameter names is absent from the ink, and what is left is a plain comb.
  *
  * That is not a stricter drawing, it is another mode's drawing under this
- * mode's name — a parameter advertising a choice it cannot make.
- * `branch-motif.service.unit.test.ts` renders the two-branch figure this
+ * mode's name — a parameter advertising a choice it cannot make. A crenel
+ * narrower than four branches is not a crenel.
+ * `branch-motif.service.unit.test.ts` renders the three-branch figure this
  * constant excludes and measures it against that comb, so the number and
  * its reason cannot drift apart.
  */
-export const MINIMUM_STAGGER_BRANCHES = 3;
+export const MINIMUM_STAGGER_BRANCHES = 4;
 
 // 🚨 Errors
 
