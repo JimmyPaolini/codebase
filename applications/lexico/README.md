@@ -595,7 +595,7 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5441-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-164.59_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-164.58_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-39-3178c6?style=flat-square)
 
@@ -629,8 +629,8 @@ graph LR
 ![Constants](https://img.shields.io/badge/Constants-289-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-155-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-82-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-416-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-637-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-414-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-635-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

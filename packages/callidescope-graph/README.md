@@ -276,6 +276,7 @@ flowchart LR
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
+  EntriesModule --> CallablesModule
   GraphModule --> DocumentationModule
   GraphModule --> EdgesModule
   GraphModule --> SignaturesModule
@@ -369,6 +370,8 @@ graph LR
   file_src_modules_signatures_signatures_service_ts["src/modules/signatures/signatures.service.ts"]
   file_src_modules_signatures_signatures_service_unit_test_ts["src/modules/signatures/signatures.service.unit.test.ts"]
   file_src_modules_signatures_signatures_types_ts["src/modules/signatures/signatures.types.ts"]
+  file_src_modules_workspace_file_filter_service_ts["src/modules/workspace/file-filter.service.ts"]
+  file_src_modules_workspace_file_filter_service_unit_test_ts["src/modules/workspace/file-filter.service.unit.test.ts"]
   file_src_modules_workspace_workspace_constants_ts["src/modules/workspace/workspace.constants.ts"]
   file_src_modules_workspace_workspace_module_ts["src/modules/workspace/workspace.module.ts"]
   file_src_modules_workspace_workspace_service_ts["src/modules/workspace/workspace.service.ts"]
@@ -479,15 +482,22 @@ graph LR
   file_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_src_modules_edges_symbol_resolution_service_ts
   file_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_testing_programs_ts
+  file_src_modules_entries_entries_module_ts --> file_src_modules_callables_callables_module_ts
   file_src_modules_entries_entries_module_ts --> file_src_modules_entries_entries_service_ts
+  file_src_modules_entries_entries_service_ts --> file_src_modules_callables_address_service_ts
   file_src_modules_entries_entries_service_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_entries_entries_service_ts --> file_src_modules_entries_entries_constants_ts
   file_src_modules_entries_entries_service_ts --> file_src_modules_entries_entries_types_ts
+  file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_callables_address_service_ts
+  file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_entries_entries_service_ts
+  file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_entries_entries_types_ts
   file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_entries_entries_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_entries_entries_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_entries_entries_service_unit_test_ts --> file_testing_programs_ts
+  file_src_modules_entries_entries_types_ts --> file_src_modules_callables_address_types_ts
   file_src_modules_entries_entries_types_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_entries_entries_types_ts --> file_src_modules_graph_graph_types_ts
   file_src_modules_graph_address_depth_service_ts --> file_src_modules_callables_callables_types_ts
@@ -593,6 +603,13 @@ graph LR
   file_src_modules_signatures_signatures_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_signatures_signatures_service_unit_test_ts --> file_testing_programs_ts
   file_src_modules_signatures_signatures_types_ts --> file_src_modules_callables_callables_types_ts
+  file_src_modules_workspace_file_filter_service_ts --> file_src_modules_workspace_workspace_service_ts
+  file_src_modules_workspace_file_filter_service_ts --> file_src_modules_workspace_workspace_types_ts
+  file_src_modules_workspace_file_filter_service_unit_test_ts --> file_src_modules_workspace_file_filter_service_ts
+  file_src_modules_workspace_file_filter_service_unit_test_ts --> file_src_modules_workspace_workspace_service_ts
+  file_src_modules_workspace_file_filter_service_unit_test_ts --> file_src_modules_workspace_workspace_types_ts
+  file_src_modules_workspace_file_filter_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_workspace_workspace_module_ts --> file_src_modules_workspace_file_filter_service_ts
   file_src_modules_workspace_workspace_module_ts --> file_src_modules_workspace_workspace_service_ts
   file_src_modules_workspace_workspace_service_ts --> file_src_modules_program_program_constants_ts
   file_src_modules_workspace_workspace_service_ts --> file_src_modules_workspace_workspace_constants_ts
@@ -632,40 +649,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-12036-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-379.38_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-13173-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-419.13_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-13-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-89-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-91-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-54.31_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-58.86_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-89-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-49-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-91-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-55-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-32-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-286-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-33-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-324-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-22-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-23-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-12-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-33-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-529-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-184-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-649-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-64-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-743-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-431-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-122-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-539-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1124-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-34-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-566-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-200-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-701-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-65-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-792-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-457-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-130-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-600-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1309-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -777,13 +794,13 @@ graph LR
 ### Conventions
 
 ![Module Files](https://img.shields.io/badge/Module_Files-10-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-22-0284c7?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-23-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
 ![Constants Files](https://img.shields.io/badge/Constants_Files-13-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-14-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-22-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-23-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 

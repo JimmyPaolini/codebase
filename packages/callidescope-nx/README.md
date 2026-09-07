@@ -269,6 +269,7 @@ flowchart LR
   ProgramModule
   ProjectReportsModule
   ProjectsModule
+  ReportFindingsModule
   ReportModule
   RunPlanModule
   SignaturesModule
@@ -294,6 +295,7 @@ flowchart LR
   CallidescopeModule --> OutputMarkdownModule
   CallidescopeModule --> ProgramModule
   CallidescopeModule --> ProjectReportsModule
+  CallidescopeModule --> ReportFindingsModule
   CallidescopeModule --> ReportModule
   CallidescopeModule --> RunPlanModule
   CallidescopeModule --> WorkspaceModule
@@ -301,6 +303,7 @@ flowchart LR
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
+  EntriesModule --> CallablesModule
   GraphModule --> DocumentationModule
   GraphModule --> EdgesModule
   GraphModule --> SignaturesModule
@@ -442,14 +445,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3810-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-138.77_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3818-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-139.26_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-42-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-18.41_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-18.56_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

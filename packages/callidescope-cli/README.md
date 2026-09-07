@@ -1012,12 +1012,14 @@ flowchart LR
   EntriesModule
   GraphModule
   InputModule
+  LimitsModule
   LoggerModule([LoggerModule])
   MainModule
   OutputJsonModule
   OutputMarkdownModule
   ProgramModule
   ProjectReportsModule
+  ReportFindingsModule
   ReportModule
   RunPlanModule
   SignaturesModule
@@ -1044,6 +1046,7 @@ flowchart LR
   CallidescopeModule --> OutputMarkdownModule
   CallidescopeModule --> ProgramModule
   CallidescopeModule --> ProjectReportsModule
+  CallidescopeModule --> ReportFindingsModule
   CallidescopeModule --> ReportModule
   CallidescopeModule --> RunPlanModule
   CallidescopeModule --> WorkspaceModule
@@ -1055,14 +1058,19 @@ flowchart LR
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
+  EntriesModule --> CallablesModule
   GraphModule --> DocumentationModule
   GraphModule --> EdgesModule
   GraphModule --> SignaturesModule
+  LimitsModule --> ConfigurationModule
+  LimitsModule --> InputModule
+  LimitsModule --> WorkspaceModule
   MainModule --> BreadthModule
   MainModule --> CallidescopeModule
   MainModule --> ConfigurationModule
   MainModule --> DepthModule
   MainModule --> DiscoveryModule
+  MainModule --> LimitsModule
   ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
   ProjectReportsModule --> SignaturesModule
@@ -1085,6 +1093,7 @@ graph LR
   file_src_main_module_ts["src/main.module.ts"]
   file_src_main_ts["src/main.ts"]
   file_src_modules_address_lookup_address_lookup_constants_ts["src/modules/address-lookup/address-lookup.constants.ts"]
+  file_src_modules_address_lookup_address_lookup_constants_unit_test_ts["src/modules/address-lookup/address-lookup.constants.unit.test.ts"]
   file_src_modules_address_lookup_address_lookup_module_ts["src/modules/address-lookup/address-lookup.module.ts"]
   file_src_modules_address_lookup_address_lookup_service_ts["src/modules/address-lookup/address-lookup.service.ts"]
   file_src_modules_address_lookup_address_lookup_service_unit_test_ts["src/modules/address-lookup/address-lookup.service.unit.test.ts"]
@@ -1112,6 +1121,20 @@ graph LR
   file_src_modules_depth_depth_constants_ts["src/modules/depth/depth.constants.ts"]
   file_src_modules_depth_depth_module_ts["src/modules/depth/depth.module.ts"]
   file_src_modules_depth_depth_types_ts["src/modules/depth/depth.types.ts"]
+  file_src_modules_limits_limits_command_ts["src/modules/limits/limits.command.ts"]
+  file_src_modules_limits_limits_command_unit_test_ts["src/modules/limits/limits.command.unit.test.ts"]
+  file_src_modules_limits_limits_constants_ts["src/modules/limits/limits.constants.ts"]
+  file_src_modules_limits_limits_module_ts["src/modules/limits/limits.module.ts"]
+  file_src_modules_limits_limits_service_ts["src/modules/limits/limits.service.ts"]
+  file_src_modules_limits_limits_service_unit_test_ts["src/modules/limits/limits.service.unit.test.ts"]
+  file_src_modules_limits_limits_types_ts["src/modules/limits/limits.types.ts"]
+  file_src_modules_limits_render_limits_service_ts["src/modules/limits/render-limits.service.ts"]
+  file_src_modules_limits_render_limits_service_unit_test_ts["src/modules/limits/render-limits.service.unit.test.ts"]
+  file_src_modules_report_findings_report_findings_constants_ts["src/modules/report-findings/report-findings.constants.ts"]
+  file_src_modules_report_findings_report_findings_module_ts["src/modules/report-findings/report-findings.module.ts"]
+  file_src_modules_report_findings_report_findings_service_ts["src/modules/report-findings/report-findings.service.ts"]
+  file_src_modules_report_findings_report_findings_service_unit_test_ts["src/modules/report-findings/report-findings.service.unit.test.ts"]
+  file_src_modules_report_findings_report_findings_types_ts["src/modules/report-findings/report-findings.types.ts"]
   file_src_modules_run_plan_run_plan_constants_ts["src/modules/run-plan/run-plan.constants.ts"]
   file_src_modules_run_plan_run_plan_module_ts["src/modules/run-plan/run-plan.module.ts"]
   file_src_modules_run_plan_run_plan_service_ts["src/modules/run-plan/run-plan.service.ts"]
@@ -1123,16 +1146,20 @@ graph LR
   file_testing_modules_ts["testing/modules.ts"]
   file_testing_programs_ts["testing/programs.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_testing_workspace_limits_integration_test_ts["testing/workspace-limits.integration.test.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_modules_breadth_breadth_module_ts
   file_src_main_module_ts --> file_src_modules_callidescope_callidescope_module_ts
   file_src_main_module_ts --> file_src_modules_depth_depth_module_ts
+  file_src_main_module_ts --> file_src_modules_limits_limits_module_ts
   file_src_main_ts --> file_src_main_module_ts
+  file_src_modules_address_lookup_address_lookup_constants_unit_test_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_address_lookup_address_lookup_module_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_address_lookup_address_lookup_module_ts --> file_src_modules_callidescope_callidescope_module_ts
   file_src_modules_address_lookup_address_lookup_module_ts --> file_src_modules_run_plan_run_plan_module_ts
+  file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_run_plan_run_plan_service_ts
@@ -1145,10 +1172,12 @@ graph LR
   file_src_modules_address_report_address_report_service_ts --> file_src_modules_address_report_address_report_types_ts
   file_src_modules_address_report_address_report_service_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
   file_src_modules_address_report_address_report_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_report_address_report_service_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_report_address_report_types_ts
+  file_src_modules_breadth_breadth_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
@@ -1157,18 +1186,23 @@ graph LR
   file_src_modules_breadth_breadth_module_ts --> file_src_modules_address_lookup_address_lookup_module_ts
   file_src_modules_breadth_breadth_module_ts --> file_src_modules_address_report_address_report_module_ts
   file_src_modules_breadth_breadth_module_ts --> file_src_modules_breadth_breadth_command_ts
+  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_callidescope_callidescope_types_ts
+  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_report_findings_report_findings_service_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_command_ts
+  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_service_ts
+  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_report_findings_report_findings_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_callidescope_callidescope_constants_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_callidescope_callidescope_command_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_callidescope_callidescope_service_ts
+  file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_report_findings_report_findings_module_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_run_plan_run_plan_module_ts
   file_src_modules_callidescope_callidescope_service_integration_test_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_callidescope_callidescope_service_integration_test_ts --> file_testing_modules_ts
@@ -1177,9 +1211,11 @@ graph LR
   file_src_modules_callidescope_callidescope_service_unit_test_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_callidescope_callidescope_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_callidescope_callidescope_service_unit_test_ts --> file_testing_programs_ts
+  file_src_modules_depth_depth_command_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_depth_depth_command_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_depth_depth_command_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_depth_depth_command_ts --> file_src_modules_address_report_address_report_service_ts
+  file_src_modules_depth_depth_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
@@ -1188,6 +1224,28 @@ graph LR
   file_src_modules_depth_depth_module_ts --> file_src_modules_address_lookup_address_lookup_module_ts
   file_src_modules_depth_depth_module_ts --> file_src_modules_address_report_address_report_module_ts
   file_src_modules_depth_depth_module_ts --> file_src_modules_depth_depth_command_ts
+  file_src_modules_limits_limits_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
+  file_src_modules_limits_limits_command_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_limits_command_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_limits_command_ts --> file_src_modules_limits_render_limits_service_ts
+  file_src_modules_limits_limits_command_unit_test_ts --> file_src_modules_limits_limits_command_ts
+  file_src_modules_limits_limits_command_unit_test_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_limits_command_unit_test_ts --> file_src_modules_limits_render_limits_service_ts
+  file_src_modules_limits_limits_module_ts --> file_src_modules_limits_limits_command_ts
+  file_src_modules_limits_limits_module_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_limits_module_ts --> file_src_modules_limits_render_limits_service_ts
+  file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_render_limits_service_ts --> file_src_modules_limits_limits_constants_ts
+  file_src_modules_limits_render_limits_service_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_render_limits_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_render_limits_service_unit_test_ts --> file_src_modules_limits_render_limits_service_ts
+  file_src_modules_report_findings_report_findings_module_ts --> file_src_modules_report_findings_report_findings_service_ts
+  file_src_modules_report_findings_report_findings_service_ts --> file_src_modules_report_findings_report_findings_types_ts
+  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_src_modules_report_findings_report_findings_service_ts
+  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_src_modules_report_findings_report_findings_types_ts
+  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_report_findings_report_findings_types_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_run_plan_run_plan_module_ts --> file_src_modules_run_plan_run_plan_service_ts
   file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_callidescope_callidescope_types_ts
@@ -1205,40 +1263,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-7140-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-231.46_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-47-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10507-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-346.86_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-63-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-24.65_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-38.98_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-47-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-19-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-63-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-24-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-32-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-147-6366f1?style=flat-square)
-![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-40-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-225-6366f1?style=flat-square)
+![Static Methods](https://img.shields.io/badge/Static_Methods-1-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-10-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-16-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-19-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-14-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-297-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-94-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-278-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-113-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-257-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-230-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-55-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-340-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-633-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-21-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-420-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-118-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-361-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-177-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-369-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-322-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-85-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-520-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1138-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -1349,15 +1407,15 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-7-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-4-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-3-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-6-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-6-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-9-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-7-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-4-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-8-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-8-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-8-ca8a04?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-13-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-2-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 
 ### Jupyter
