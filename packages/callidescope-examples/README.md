@@ -558,6 +558,15 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | Stacks through recursion | 1 |
 | Unfollowable calls | 2 |
 
+### Limits
+
+What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+
+| Limit | Value | Origin |
+| --- | --- | --- |
+| `maximumDepth` | 5 | declared |
+| `maximumBreadth` | none | — |
+
 ### Call stacks (depth)
 
 **1. `ComputedMemberService.dispatch`** — depth ≥ 8 · orphan-root

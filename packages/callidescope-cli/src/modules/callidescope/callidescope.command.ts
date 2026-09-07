@@ -98,6 +98,7 @@ export class CallidescopeCommand extends CommandRunner {
    */
   private buildProjectSections(args: {
     destination: ResolvedCallidescopeProjectReadmeConfiguration;
+    limits: ProjectLimitsLookup;
     result: CallGraphResult;
     startingProjectRoots: ReadonlyMap<string, string>;
   }): ProjectSection[] {
@@ -110,6 +111,7 @@ export class CallidescopeCommand extends CommandRunner {
             {
               content: this.markdownReportService.renderProjectSection({
                 heading: args.destination.heading,
+                limits: args.limits,
                 previewCount: args.destination.previewCount,
                 rendering: "tree",
                 report,
@@ -271,6 +273,7 @@ export class CallidescopeCommand extends CommandRunner {
           destination: projectReadmes,
           sections: this.buildProjectSections({
             destination: projectReadmes,
+            limits: args.projectLimits,
             result: args.result,
             startingProjectRoots: args.startingProjectRoots,
           }),

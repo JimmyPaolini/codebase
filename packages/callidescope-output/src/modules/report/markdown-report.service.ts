@@ -2,12 +2,18 @@ import { Injectable } from "@nestjs/common";
 
 import { MermaidReportService } from "./mermaid-report.service";
 import {
+  LIMIT_ABSENT_LABEL,
   MARKDOWN_DEEP_STACKS_HEADING,
   MARKDOWN_MISPLACED_HEADER,
+  MARKDOWN_PROJECT_LIMIT_NAMES,
+  MARKDOWN_PROJECT_LIMITS_HEADER,
+  MARKDOWN_PROJECT_LIMITS_HEADING,
+  MARKDOWN_PROJECT_LIMITS_SUMMARY,
   MARKDOWN_SPREAD_HEADER,
   MARKDOWN_SUMMARY_HEADER,
   MARKDOWN_WIDE_CALLABLES_HEADER,
   MARKDOWN_WIDE_CALLABLES_HEADING,
+  NO_LIMIT_LABEL,
 } from "./report.constants";
 import { ReportService } from "./report.service";
 import { WorkspaceReportService } from "./workspace-report.service";
@@ -23,8 +29,10 @@ import type {
   CallableBreadthReport,
   CallGraphSummary,
   CallStack,
+  LimitProvenance,
   MisplacedCallableFinding,
   ModuleSpreadFinding,
+  ProjectLimits,
   WideCallableFinding,
 } from "@callidescope/configuration";
 
@@ -96,6 +104,23 @@ export class MarkdownReportService {
     ].join("\n");
   }
 
+  /**
+   * Renders one limit's value and origin cells.
+   *
+   * A limit nothing anywhere declares prints `none` rather than a number,
+   * which is breadth's usual case: it has no default at any level, so a
+   * project declaring none is gated on breadth by nothing at all, and printing
+   * some number there would say the opposite.
+   */
+  private renderLimitCells(provenance: LimitProvenance | undefined): string {
+    const cells =
+      provenance === undefined
+        ? [NO_LIMIT_LABEL, LIMIT_ABSENT_LABEL]
+        : [String(provenance.value), provenance.origin];
+
+    return cells.join(" | ");
+  }
+
   /** Renders the misplaced-callable findings belonging to one scope. */
   private renderMisplaced(
     findings: readonly MisplacedCallableFinding[],
@@ -107,6 +132,30 @@ export class MarkdownReportService {
           `| \`${finding.displayName}\` | \`${finding.homeModuleId}\` | \`${finding.suggestedModuleId}\` | ${String(finding.foreignCallerCount)}/${String(finding.callerCount)} |`,
       ),
     });
+  }
+
+  /**
+   * Renders the two limits one project is judged against, and their origin.
+   *
+   * A project's block already carried its deepest stack and its widest
+   * callable; what it could not say is what either number is measured against.
+   * That was inferable while one workspace number gated everything and is not
+   * inferable now — the limit is a fact about this project, and fifty projects
+   * hold fifty answers.
+   *
+   * The origin is a column rather than a footnote because the two are read
+   * differently: a `declared` number is a decision somebody made about this
+   * project, and an `inherited` one is the workspace default nobody has picked
+   * for it yet. `renderProjectIndex` draws the same distinction for the
+   * workspace's view of every project, in the same words.
+   */
+  private renderProjectLimits(limits: ProjectLimits): string {
+    return [
+      MARKDOWN_PROJECT_LIMITS_HEADER,
+      ...MARKDOWN_PROJECT_LIMIT_NAMES.map(
+        (name) => `| \`${name}\` | ${this.renderLimitCells(limits[name])} |`,
+      ),
+    ].join("\n");
   }
 
   /** Renders the module-spread findings belonging to one scope. */
@@ -251,6 +300,17 @@ export class MarkdownReportService {
       `Call stacks traced through \`${report.projectName}\`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.`,
       "",
       this.renderSummaryTable(report.summary),
+      "",
+      `### ${MARKDOWN_PROJECT_LIMITS_HEADING}`,
+      "",
+      MARKDOWN_PROJECT_LIMITS_SUMMARY,
+      "",
+      this.renderProjectLimits(
+        this.workspaceReportService.limitsFor({
+          limits: args.limits,
+          projectName: report.projectName,
+        }),
+      ),
       "",
       "### Call stacks (depth)",
       "",
