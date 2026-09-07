@@ -9,13 +9,13 @@ import {
 } from "../meander-generation/meander-generation.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
+import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
 import {
   MOSAIC_TILE_MAXIMUM_ROWS,
   MOSAIC_TILE_MINIMUM_ROWS,
-} from "./mosaic-motif.constants";
-import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
+} from "./mosaic-tile.constants";
 
-import type { MosaicTile } from "./mosaic-motif.types";
+import type { MosaicTile } from "./mosaic-tile.types";
 
 /**
  * Turns one `mosaic` tile into a finished SVG document, the way

@@ -10,7 +10,7 @@ import type {
   MotifUnit,
   RepeatPatternOptions,
 } from "../meander-generation/meander-generation.types";
-import type { MosaicTile } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicTile } from "../mosaic-tile/mosaic-tile.types";
 import type {
   NegativeCell,
   NegativeOrientation,

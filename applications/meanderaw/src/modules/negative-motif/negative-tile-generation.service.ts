@@ -13,7 +13,7 @@ import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { NEGATIVE_SOURCE_ROW_OFFSET } from "./negative-motif.constants";
 import { NegativeMotifService } from "./negative-motif.service";
 
-import type { MosaicTile } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicTile } from "../mosaic-tile/mosaic-tile.types";
 
 /**
  * Turns one source tile into a finished `negative` SVG document, the way

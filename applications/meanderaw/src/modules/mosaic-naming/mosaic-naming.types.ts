@@ -3,7 +3,7 @@
 import type {
   MosaicSubFamily,
   MosaicTile,
-} from "../mosaic-motif/mosaic-motif.types";
+} from "../mosaic-tile/mosaic-tile.types";
 
 /**
  * How a corner tile's **lanes** read — a lane being one pair of levels its

@@ -18,11 +18,10 @@ import {
   STAGGER_SWEEP_BRANCH_COUNTS,
 } from "../draw/draw.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
-import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
-import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
-import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
+import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
+import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../mosaic-tile/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
@@ -36,25 +35,29 @@ import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
 import {
   COMPATIBLE_MODIFIERS,
-  ConflictingSubFamilyError,
   DEFAULT_REPEAT_COUNT,
   FAMILY_MAXIMUM_ROWS,
   InvalidOffsetError,
-  InvalidPeriodError,
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
   InvalidRowsError,
   InvalidStrandCountError,
-  InvalidSubFamilyError,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
   SUPPORTED_TYPES,
-  UnavailableSubFamilyError,
+  TILE_DRAWN_TYPES,
 } from "./meander-generation.constants";
 import { MeanderGenerationService } from "./meander-generation.service";
 import { MotifRegistryService } from "./motif-registry.service";
+import {
+  ConflictingSubFamilyError,
+  InvalidSubFamilyError,
+  MissingSubFamilyError,
+  UnavailableSubFamilyError,
+} from "./sub-family.constants";
 
+import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types";
 import type {
   MeanderType,
   Modifier,
@@ -69,6 +72,7 @@ interface PatternCase {
   readonly modifier?: Modifier;
   readonly repeatCount: number;
   readonly rows: number;
+  readonly subFamily?: MosaicBuildableSubFamily;
   readonly type: MeanderType;
 }
 
@@ -114,6 +118,21 @@ const plyCases = (strandCounts: readonly number[]): { modifier: Modifier }[] =>
 const PLY_SWEEP_STRAND_COUNTS: readonly number[] = [1, 2, 3];
 
 /**
+ * Which member of a tile-drawn family's unit space this suite draws.
+ *
+ * `bars` because it is the one sub-family with a tile at every row count in
+ * the family's range: `diamond`, `square`, and `zigzag` need an interior
+ * with an even number of levels, so a sweep over all eight would have to
+ * encode that rule a second time to know which pairs exist.
+ * `mosaic-sub-family.service.unit.test.ts` is where availability is
+ * asserted exhaustively, and the charter property test measures every one
+ * of the family's committed tiles — so what this suite needs from that
+ * family is one drawing per row count, which is exactly what it had while
+ * the family still drew an unmodified bar.
+ */
+const SWEPT_SUB_FAMILY: MosaicBuildableSubFamily = "bars";
+
+/**
  * Every {@link Modifier} one `COMPATIBLE_MODIFIERS` name stands for: a
  * parameterized modifier expands to one entry per parameter value the
  * services document, and every other name to a single entry.
@@ -125,9 +144,6 @@ const modifiersNamed = (name: string): Modifier[] => {
         name: "aligned",
         strands,
       }));
-    }
-    case "alternated": {
-      return [1, 2, 3].map((period) => ({ name: "alternated", period }));
     }
     case "brick-staggered": {
       return [{ name: "brick-staggered" }];
@@ -143,12 +159,6 @@ const modifiersNamed = (name: string): Modifier[] => {
         isUpward,
         name: "comb",
       }));
-    }
-    case "dot": {
-      return [
-        { name: "dot", shape: "bounce" },
-        { name: "dot", shape: "up" },
-      ];
     }
     case "edge": {
       return [{ name: "edge" }];
@@ -204,9 +214,6 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "spin-flip": {
       return [{ name: "spin-flip" }];
     }
-    case "split": {
-      return [{ name: "split" }];
-    }
     case "stagger": {
       return STAGGER_SWEEP_BRANCH_COUNTS.map((branches) => ({
         branches,
@@ -244,13 +251,15 @@ const sweptTypes: readonly MeanderType[] = [
  * Every type/modifier pairing `COMPATIBLE_MODIFIERS` allows, swept over the
  * row counts each type supports, at the repeat count its modifier's own
  * cycle admits — `SPIN_CYCLE_LENGTH` for the spin family, the shared
- * default otherwise. `alternated` is swept over the periods
- * `MosaicMotifService` documents rather than the whole allowed range, and
- * `comb`, `rung`, and `stagger` over the sweep's own constants, and every
+ * default otherwise.
+ * `comb`, `rung`, and `stagger` are swept over the sweep's own constants, and every
  * ply-carrying modifier over {@link PLY_SWEEP_STRAND_COUNTS}, for the same
  * reason.
  */
 const patternCases: readonly PatternCase[] = sweptTypes.flatMap((type) => {
+  const subFamily = TILE_DRAWN_TYPES.includes(type)
+    ? SWEPT_SUB_FAMILY
+    : undefined;
   const modifiers: readonly (Modifier | undefined)[] = [
     undefined,
     ...COMPATIBLE_MODIFIERS[type].flatMap((name) => modifiersNamed(name)),
@@ -280,7 +289,7 @@ const patternCases: readonly PatternCase[] = sweptTypes.flatMap((type) => {
           modifier.strands <= rows,
       )
       .map((rows) => ({
-        label: `${type} at ${rows} rows${modifier ? ` with ${modifier.name}` : ""}`,
+        label: `${type} at ${rows} rows${modifier ? ` with ${modifier.name}` : ""}${subFamily ? ` as ${subFamily}` : ""}`,
         repeatCount:
           modifier && SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name)
             ? SPIN_CYCLE_LENGTH
@@ -288,6 +297,7 @@ const patternCases: readonly PatternCase[] = sweptTypes.flatMap((type) => {
         rows,
         type,
         ...(modifier ? { modifier } : {}),
+        ...(subFamily ? { subFamily } : {}),
       })),
   );
 });
@@ -336,7 +346,6 @@ describe(MeanderGenerationService, () => {
         CrossMotifService,
         GridGeometryService,
         MeanderGenerationService,
-        MosaicMotifService,
         MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
@@ -364,16 +373,17 @@ describe(MeanderGenerationService, () => {
   });
 
   describe("generate", () => {
-    it("matches the committed golden fixture for 5 rows mosaic with 12 repeats", async () => {
+    it("matches the committed golden fixture for 5 rows mosaic with 12 repeats and the bars sub-family", async () => {
       const svg = service.generate({
         repeatCount: 12,
         rows: 5,
+        subFamily: "bars",
         type: "mosaic",
       });
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/assets/mosaic-5-rows-12-repeats.svg",
+          "../../../testing/assets/mosaic-5-rows-12-repeats-bars.svg",
         ),
         "utf8",
       );
@@ -396,51 +406,21 @@ describe(MeanderGenerationService, () => {
       ).toThrow(InvalidRowsError);
     });
 
-    it("matches the committed golden fixture for 5 rows mosaic with 6 repeats and alternated at period 1", async () => {
-      const svg = service.generate({
-        modifier: { name: "alternated", period: 1 },
-        repeatCount: 6,
-        rows: 5,
-        type: "mosaic",
-      });
-      const golden = await readFile(
-        path.join(
-          import.meta.dirname,
-          "../../../testing/assets/mosaic-5-rows-6-repeats-alternated-period-1.svg",
-        ),
-        "utf8",
-      );
-
-      expect(svg).toBe(golden);
-    });
-
-    it("matches the committed golden fixture for 5 rows mosaic with 6 repeats and alternated at period 2", async () => {
-      const svg = service.generate({
-        modifier: { name: "alternated", period: 2 },
-        repeatCount: 6,
-        rows: 5,
-        type: "mosaic",
-      });
-      const golden = await readFile(
-        path.join(
-          import.meta.dirname,
-          "../../../testing/assets/mosaic-5-rows-6-repeats-alternated-period-2.svg",
-        ),
-        "utf8",
-      );
-
-      expect(svg).toBe(golden);
-    });
-
-    it("throws when alternated's period isn't a whole number within the shared bounds", () => {
+    // 🎯 The whole of what a tile-drawn family refuses. `mosaic` draws no
+    // repeat unit, so a request naming no member of its space names no
+    // drawing — and the refusal has to come before `validateRows`, since
+    // 5 rows is a row count that family draws perfectly well once a
+    // sub-family says which of its tiles was meant.
+    it("throws when a tile-drawn family is asked for with no sub-family", () => {
       expect(() =>
-        service.generate({
-          modifier: { name: "alternated", period: 0 },
-          repeatCount: 6,
-          rows: 5,
-          type: "mosaic",
-        }),
-      ).toThrow(InvalidPeriodError);
+        service.generate({ repeatCount: 6, rows: 5, type: "mosaic" }),
+      ).toThrow(MissingSubFamilyError);
+    });
+
+    it("names the sub-families to choose from when it refuses one", () => {
+      expect(() =>
+        service.generate({ repeatCount: 6, rows: 5, type: "mosaic" }),
+      ).toThrow(/name a member of its unit space with a sub-family: /);
     });
 
     // 🎯 The ply bound is the drawing's own row count rather than the shared
@@ -519,36 +499,7 @@ describe(MeanderGenerationService, () => {
       },
     );
 
-    it("does not require repeatCount to divide evenly by alternated's period, since each tile is self-contained", () => {
-      expect(() =>
-        service.generate({
-          modifier: { name: "alternated", period: 4 },
-          repeatCount: 6,
-          rows: 5,
-          type: "mosaic",
-        }),
-      ).not.toThrow();
-    });
-
-    it("matches the committed golden fixture for 5 rows mosaic with 12 repeats and split", async () => {
-      const svg = service.generate({
-        modifier: { name: "split" },
-        repeatCount: 12,
-        rows: 5,
-        type: "mosaic",
-      });
-      const golden = await readFile(
-        path.join(
-          import.meta.dirname,
-          "../../../testing/assets/mosaic-5-rows-12-repeats-split.svg",
-        ),
-        "utf8",
-      );
-
-      expect(svg).toBe(golden);
-    });
-
-    it("draws the diamond sub-family exactly as the split modifier does, two routes to one shape", async () => {
+    it("matches the committed golden fixture for 5 rows mosaic with 12 repeats and the diamond sub-family", async () => {
       const svg = service.generate({
         repeatCount: 12,
         rows: 5,
@@ -558,7 +509,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/assets/mosaic-5-rows-12-repeats-split.svg",
+          "../../../testing/assets/mosaic-5-rows-12-repeats-diamond.svg",
         ),
         "utf8",
       );
@@ -621,7 +572,7 @@ describe(MeanderGenerationService, () => {
     it("throws when a sub-family and a modifier are asked for together, since both choose the unit", () => {
       expect(() =>
         service.generate({
-          modifier: { name: "split" },
+          modifier: { name: "flip" },
           repeatCount: 6,
           rows: 5,
           subFamily: "dots",
@@ -663,68 +614,26 @@ describe(MeanderGenerationService, () => {
       ).toThrow(InvalidRowsError);
     });
 
-    it("matches the committed golden fixture for 6 rows mosaic with 6 repeats and dot bounce", async () => {
-      const svg = service.generate({
-        modifier: { name: "dot", shape: "bounce" },
-        repeatCount: 6,
-        rows: 6,
-        type: "mosaic",
-      });
-      const golden = await readFile(
-        path.join(
-          import.meta.dirname,
-          "../../../testing/assets/mosaic-6-rows-6-repeats-dot-bounce.svg",
-        ),
-        "utf8",
-      );
-
-      expect(svg).toBe(golden);
-    });
-
-    it("matches the committed golden fixture for 6 rows mosaic with 6 repeats and dot up", async () => {
-      const svg = service.generate({
-        modifier: { name: "dot", shape: "up" },
-        repeatCount: 6,
-        rows: 6,
-        type: "mosaic",
-      });
-      const golden = await readFile(
-        path.join(
-          import.meta.dirname,
-          "../../../testing/assets/mosaic-6-rows-6-repeats-dot-up.svg",
-        ),
-        "utf8",
-      );
-
-      expect(svg).toBe(golden);
-    });
-
-    it("throws when dot is requested for a type that doesn't support it", () => {
+    // 🎯 `mosaic` accepts no modifier at all now, so this is the one family
+    // for which every modifier name is incompatible — and it is reported as
+    // an incompatible modifier rather than as a missing sub-family, since
+    // that names the more specific of the two things wrong with the
+    // request.
+    it("throws when any modifier is requested for a tile-drawn family", () => {
       expect(() =>
         service.generate({
-          modifier: { name: "dot", shape: "bounce" },
-          repeatCount: 6,
-          rows: 6,
-          type: "boxes",
-        }),
-      ).toThrow(/not compatible/i);
-    });
-
-    it("throws when split is requested for a type that doesn't support it", () => {
-      expect(() =>
-        service.generate({
-          modifier: { name: "split" },
+          modifier: { name: "flip" },
           repeatCount: 6,
           rows: 5,
-          type: "boxes",
+          type: "mosaic",
         }),
-      ).toThrow(/not compatible/i);
+      ).toThrow(/compatible modifiers: none/);
     });
 
-    it("throws when alternated is requested for a type that doesn't support it", () => {
+    it("throws when a modifier is requested for a type that doesn't support it", () => {
       expect(() =>
         service.generate({
-          modifier: { name: "alternated", period: 1 },
+          modifier: { name: "interrupted" },
           repeatCount: 6,
           rows: 5,
           type: "boxes",
@@ -1083,9 +992,13 @@ describe(MeanderGenerationService, () => {
                 repeatCount: DEFAULT_REPEAT_COUNT,
                 rows,
                 type,
+                ...(TILE_DRAWN_TYPES.includes(type)
+                  ? { subFamily: SWEPT_SUB_FAMILY }
+                  : {}),
               }),
             ),
           )
+
           .map((rows) => `${type} at ${rows} rows`),
       );
 
@@ -1112,6 +1025,9 @@ describe(MeanderGenerationService, () => {
           rows: patternCase.rows,
           type: patternCase.type,
           ...(patternCase.modifier ? { modifier: patternCase.modifier } : {}),
+          ...(patternCase.subFamily
+            ? { subFamily: patternCase.subFamily }
+            : {}),
         });
         const { available, drawn } = rightmostCoordinates(svg);
 

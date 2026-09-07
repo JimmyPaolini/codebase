@@ -7,6 +7,7 @@ import {
   MAXIMUM_VALUE,
   STRUCTURAL_MINIMUM_ROWS,
   SUPPORTED_TYPES,
+  TILE_DRAWN_TYPES,
 } from "../meander-generation/meander-generation.constants";
 import { DEFAULT_PARALLEL_STRANDS } from "../parallel-motif/parallel-motif.constants";
 import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
@@ -27,7 +28,16 @@ import type {
  */
 const DISCARDED_DENSITY_PLY = 2;
 
-/** The six families that predate `cross`, `negative`, `branch`, and `parallel`. */
+/**
+ * The six families that predate `cross`, `negative`, `branch`, and
+ * `parallel`.
+ *
+ * `mosaic` is one of them and no longer appears in this sweep at all, so
+ * the set names six families and matches five of them. That is left as it
+ * is rather than trimmed to the five: the density proposal below is an
+ * argument about those six, and dropping the name would quietly change
+ * which argument the numbers pin.
+ */
 const ORIGINAL_FAMILIES = new Set([
   "boxes",
   "chain",
@@ -66,13 +76,15 @@ describe(DrawCombinationsService, () => {
     // matching — would leave both quietly covering less, so it is pinned
     // here rather than inferred at either call site.
     it.each([
-      // rows 3..6 × (none + alternated ×2 + dot ×2 + split). Four row
-      // counts where every other family gets nine or ten, because this is
-      // the family `FAMILY_MAXIMUM_ROWS` stops early — see
-      // `MOSAIC_TILE_MAXIMUM_ROWS` for why an exhaustively enumerated
-      // family cannot follow the sampled ones to 12.
-      { expected: 24, type: "mosaic" },
+      // Nothing at all. `mosaic` is drawn from its enumerated space rather
+      // than from a motif — see `TILE_DRAWN_TYPES` — so
+      // `DrawPermutationsService` covers it in full and this half of the
+      // sweep contributes none of it. It used to contribute 24: four row
+      // counts crossed with none, `alternated` ×2, `dot` ×2, and `split`,
+      // and 19 of those 24 drew a tile the enumeration already commits.
+      { expected: 0, type: "mosaic" },
       // rows 3..12 × (none + spin + spin-flip)
+
       { expected: 30, type: "boxes" },
       // rows 4..12 × (none + edge + flip + edge-flip)
       { expected: 36, type: "chain" },
@@ -100,7 +112,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(1183);
+      expect(combinations).toHaveLength(1159);
     });
 
     it("names every combination distinctly", () => {
@@ -157,9 +169,11 @@ describe(DrawCombinationsService, () => {
       expect(strandCounts).toContain(DEFAULT_PARALLEL_STRANDS);
     });
 
-    // 🎯 Every other family keeps its unmodified entry, so dropping one is
-    // a decision about `parallel` rather than a change to the sweep.
-    it("still sweeps an unmodified drawing for every other family", () => {
+    // 🎯 Every other motif-drawn family keeps its unmodified entry, so
+    // dropping one is a decision about `parallel` rather than a change to
+    // the sweep. A tile-drawn family has no unmodified drawing to keep: it
+    // draws no repeat unit, so there is nothing for "no modifier" to mean.
+    it("still sweeps an unmodified drawing for every other motif-drawn family", () => {
       const unmodified = new Set(
         combinations
           .filter(({ modifier }) => modifier === undefined)
@@ -167,8 +181,18 @@ describe(DrawCombinationsService, () => {
       );
 
       expect([...unmodified].toSorted()).toStrictEqual(
-        SUPPORTED_TYPES.filter((type) => type !== "parallel").toSorted(),
+        SUPPORTED_TYPES.filter(
+          (type) => type !== "parallel" && !TILE_DRAWN_TYPES.includes(type),
+        ).toSorted(),
       );
+    });
+
+    // 🎯 The other direction of the same claim, so the family cannot creep
+    // back in under a modifier or a bare entry without this failing.
+    it("sweeps no combination at all for a tile-drawn family", () => {
+      expect(
+        combinations.filter(({ type }) => TILE_DRAWN_TYPES.includes(type)),
+      ).toStrictEqual([]);
     });
 
     // 🎯 The deepest ply the sweep reaches is the deepest the command line
@@ -197,9 +221,13 @@ describe(DrawCombinationsService, () => {
     // proposal redraws a pattern at `rows × N` rows, so at the `parallel`
     // family's own ply of two every pair is asked for at `rows × 2`, and
     // `beyondMaximum` is the pairs whose doubled row count no longer fits
-    // inside the shared `MAXIMUM_VALUE` — 36 of them, every pair from 7
-    // rows up in every family that reaches them — which `mosaic` no longer
-    // does, its own ceiling being 6.
+    // inside the shared `MAXIMUM_VALUE` — every pair from 7 rows up in
+    // every family that reaches them, which `mosaic` never does.
+
+    // The figures are 46 and 30 rather than the 56 the README argues over,
+    // because `mosaic` contributes no pair here any more — see
+    // `TILE_DRAWN_TYPES`. Its row counts are all below 7, so only the first
+    // figure moved.
 
     // That count was 8 until issue #507 was fixed, on a stricter criterion
     // that no longer applies: four of those eight sat *inside* the maximum,
@@ -221,7 +249,7 @@ describe(DrawCombinationsService, () => {
         ({ rows }) => rows * DISCARDED_DENSITY_PLY > MAXIMUM_VALUE,
       );
 
-      expect(sweptPairs).toHaveLength(50);
+      expect(sweptPairs).toHaveLength(46);
       expect(beyondMaximum).toHaveLength(30);
     });
 
@@ -232,10 +260,12 @@ describe(DrawCombinationsService, () => {
     // not a figure of the sweep's own choosing — issue #507 was reachable
     // precisely because it once was, and the command line validates against
     // these same two records.
-    //
-    // `mosaic` is the one family whose ceiling is not the shared
-    // `MAXIMUM_VALUE`, and `swirl` stands for the nine whose is, so the two
-    // together say that the exception is an exception.
+
+    // `cross` stands for a family whose floor is its own rather than the
+    // shallowest a band can be, and `swirl` for one whose ceiling is the
+    // shared `MAXIMUM_VALUE`. `mosaic` used to be the second of that pair
+    // and is not swept here at all now.
+
     it("sweeps each type from its own structural minimum through its own family maximum", () => {
       const rowsFor = (type: MeanderType): number[] => [
         ...new Set(
@@ -253,15 +283,17 @@ describe(DrawCombinationsService, () => {
         );
       };
 
-      expect(rowsFor("mosaic")).toStrictEqual(declaredRange("mosaic"));
+      expect(rowsFor("cross")).toStrictEqual(declaredRange("cross"));
       expect(rowsFor("swirl")).toStrictEqual(declaredRange("swirl"));
-      expect(rowsFor("mosaic").at(-1)).toBeLessThan(MAXIMUM_VALUE);
+      expect(rowsFor("cross")[0]).toBeGreaterThan(
+        STRUCTURAL_MINIMUM_ROWS.swirl,
+      );
       expect(rowsFor("swirl").at(-1)).toBe(MAXIMUM_VALUE);
     });
 
     it.each([
       {
-        expected: { repeatCount: 6, rows: 3, type: "mosaic" },
+        expected: { repeatCount: 6, rows: 3, type: "boxes" },
         label: "an unmodified combination at the default repeat count",
       },
       {
@@ -275,21 +307,12 @@ describe(DrawCombinationsService, () => {
       },
       {
         expected: {
-          modifier: { name: "alternated", period: 3 },
+          modifier: { branches: 4, name: "stagger" },
           repeatCount: 6,
           rows: 5,
-          type: "mosaic",
+          type: "branch",
         },
-        label: "each representative period of a parameterized modifier",
-      },
-      {
-        expected: {
-          modifier: { name: "dot", shape: "up" },
-          repeatCount: 6,
-          rows: 6,
-          type: "mosaic",
-        },
-        label: "each representative shape of a parameterized modifier",
+        label: "each representative value of a parameterized modifier",
       },
       {
         expected: {
@@ -298,7 +321,7 @@ describe(DrawCombinationsService, () => {
           rows: 4,
           type: "chain",
         },
-        label: "a composed modifier of a non-mosaic family",
+        label: "a composed modifier",
       },
     ])("includes $label", ({ expected }) => {
       expect(combinations).toContainEqual(expected);

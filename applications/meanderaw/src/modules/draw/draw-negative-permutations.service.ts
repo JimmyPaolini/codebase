@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { STRUCTURAL_MINIMUM_ROWS } from "../meander-generation/meander-generation.constants";
-import { MOSAIC_TILE_MAXIMUM_ROWS } from "../mosaic-motif/mosaic-motif.constants";
-import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
-import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { MOSAIC_TILE_MAXIMUM_ROWS } from "../mosaic-tile/mosaic-tile.constants";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
+import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
 import {
   NEGATIVE_SOURCE_MAXIMUM_DEGREE,
   NEGATIVE_SOURCE_NAMES,
@@ -20,7 +20,7 @@ import {
   PERMUTATIONS_SUBDIRECTORY,
 } from "./draw.constants";
 
-import type { MosaicTile } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicTile } from "../mosaic-tile/mosaic-tile.types";
 import type { NegativeSource } from "../negative-motif/negative-motif.types";
 import type { RenderedDocument } from "./draw.types";
 

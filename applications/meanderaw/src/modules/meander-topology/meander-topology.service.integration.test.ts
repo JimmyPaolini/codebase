@@ -11,18 +11,17 @@ import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { DrawCombinationsService } from "../draw/draw-combinations.service";
 import { COLUMN_SPAN_PATTERN } from "../draw/draw.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { FAMILY_MAXIMUM_ROWS } from "../meander-generation/meander-generation.constants";
+import { TILE_DRAWN_TYPES } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MotifRegistryService } from "../meander-generation/motif-registry.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
-import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
-import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
-import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
-import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
-import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
-import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../mosaic-tile/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
+import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
@@ -191,16 +190,8 @@ const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
 
 /** How a modifier reads in a test name, including whichever parameter it carries. */
 const modifierLabel = (modifier: Modifier): string => {
-  if (modifier.name === "alternated") {
-    return `alternated period ${modifier.period}`;
-  }
-
   if (modifier.name === "comb") {
     return `comb ${modifier.isUpward ? "standing up" : "hanging down"}`;
-  }
-
-  if (modifier.name === "dot") {
-    return `dot ${modifier.shape}`;
   }
 
   if ("strands" in modifier) {
@@ -265,7 +256,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 
 /**
  * How long a corpus-wide measurement may take. Each of the three tests that
- * use it reads all 9,942 committed documents from disk and measures every
+ * use it reads all 9,918 committed documents from disk and measures every
  * one, which takes well under a second locally but several times that on a
  * shared CI runner — past vitest's five-second default, which is what failed
  * there while passing everywhere else, back when the corpus was three times
@@ -275,7 +266,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
 
 /**
- * How many documents `DrawCommand` commits: 1,183 named patterns beside two
+ * How many documents `DrawCommand` commits: 1,159 named patterns beside two
  * exhaustive halves — 8,551 enumerated `mosaic` tiles and 208 enumerated
  * one-column `negative` sources.
  *
@@ -286,21 +277,27 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
  * same record the command line validates against, so the two cannot drift
  * apart again.
  *
+ * It was 1,183 while `mosaic` still had three modifiers of its own. Every
+ * mosaic there is is a member of the enumerated space, and 19 of those 24
+ * named drawings were a tile that space already commits — so the family
+ * draws no motif now and contributes nothing to this half. Its whole
+ * contribution to the corpus is the 8,551.
+ *
  * Nine of the ten families read the shared `MAXIMUM_VALUE` there. `mosaic`
- * is the tenth, at 6, and its lower ceiling is why the named half is 1,183
- * rather than 1,219 and why the exhaustive `mosaic` half is 8,551 rather than
- * 3,179. The reason is a budget on an exhaustively enumerated space rather
- * than anything the geometry does — `MOSAIC_TILE_MAXIMUM_ROWS` carries the
- * count per row, and the whole family stopping at the same number is what
- * keeps this from being a charter blind spot: a `mosaic` above 6 rows is
- * refused rather than drawn uncommitted.
+ * is the tenth, at 6, which is why the exhaustive `mosaic` half is 8,551
+ * rather than 3,179. The reason is a budget on an exhaustively enumerated
+ * space rather than anything the geometry does —
+ * `MOSAIC_TILE_MAXIMUM_ROWS` carries the count per row, and the whole
+ * family stopping at the same number is what keeps this from being a
+ * charter blind spot: a `mosaic` above 6 rows is refused rather than drawn
+ * uncommitted.
  *
  * The `negative` half stops at the same 6, so it is 208 rather than 375.
  * Its deepest row count now inverts a seven-row source that is enumerated
  * but not committed, which is why the corridor-identity gate below covers
  * rows 3 through 5 of it rather than all of it.
  */
-const COMMITTED_CORPUS_SIZE = 1183 + 8551 + 208;
+const COMMITTED_CORPUS_SIZE = 1159 + 8551 + 208;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -594,7 +591,6 @@ describe(MeanderTopologyService, () => {
         MeanderGenerationService,
         MeanderLatticeService,
         MeanderTopologyService,
-        MosaicMotifService,
         MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
@@ -625,13 +621,18 @@ describe(MeanderTopologyService, () => {
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
 
-    // The count also pins where the sweep stops, on every axis. 1,183 is
+    // The count also pins where the sweep stops, on every axis. 1,159 is
     // every combination up to each family's own `FAMILY_MAXIMUM_ROWS`; 174
     // was every combination up to 8, and the row counts issue #507 was
     // reachable at and untested at are most of the difference. Reverting
     // the sweep to a maximum of its own would fail here rather than quietly
-    // narrow the gate — and so would a `mosaic` swept past the ceiling the
-    // command line refuses it above, which the second expectation pins.
+    // narrow the gate.
+
+    // The second expectation pins the other way `mosaic` could go wrong.
+    // It is drawn from its enumerated space rather than from a motif — see
+    // `TILE_DRAWN_TYPES` — so it belongs to this sweep not at all, and a
+    // combination of it creeping back in would be a drawing this half
+    // commits beside a tile the other half already does.
 
     // Most of the rest is `parallel`, which had one shape and a flat pair of
     // swept plies. Its ply range is now the row count's at each row count,
@@ -642,17 +643,16 @@ describe(MeanderTopologyService, () => {
     // corpus does not commit is the same blind spot #507 was, one modifier
     // over.
     it("sweeps every named-type combination DrawCommand writes, out to the deepest row count the command line accepts", () => {
-      expect(charterSweep).toHaveLength(1183);
+      expect(charterSweep).toHaveLength(1159);
+
       expect(
         Math.max(...charterSweep.map(({ parameters }) => parameters.rows)),
       ).toBe(12);
       expect(
-        Math.max(
-          ...charterSweep
-            .filter(({ parameters }) => parameters.type === "mosaic")
-            .map(({ parameters }) => parameters.rows),
+        charterSweep.filter(({ parameters }) =>
+          TILE_DRAWN_TYPES.includes(parameters.type),
         ),
-      ).toBe(FAMILY_MAXIMUM_ROWS.mosaic);
+      ).toStrictEqual([]);
     });
 
     it.each(charterSweep)("$label holds it", ({ parameters }) => {
@@ -675,7 +675,16 @@ describe(MeanderTopologyService, () => {
     // itself by naming the six families that were surveyed, never by naming
     // the families that were not — see
     // `NEGATIVE_SPACE_SURVEYED_FAMILIES` for why the direction matters.
-    it("crosses in the negative space only where the spec reported it, across the six families it measured", () => {
+    //
+    // None of them crosses in its negative space any more, and the two that
+    // did were `mosaic with alternated period 3` and `mosaic with split` —
+    // drawings this half no longer holds. The second of those still has its
+    // measurement: it is the same shape the `diamond` sub-family draws, and
+    // `mosaic-5-rows-12-repeats-diamond.svg` is measured off disk at the
+    // foot of this suite, `negativeXJunctions: 9` and all. So this is an
+    // empty allow-list rather than a lost one, and a family that started
+    // crossing in its white space would still fail here.
+    it("crosses in the negative space nowhere among the six families it measured", () => {
       const crossing = charterSweep
         .filter(({ parameters }) =>
           NEGATIVE_SPACE_SURVEYED_FAMILIES.has(parameters.type),
@@ -688,10 +697,7 @@ describe(MeanderTopologyService, () => {
 
       expect([
         ...new Set(crossing.map(({ variant }) => variant)),
-      ]).toStrictEqual([
-        "mosaic with alternated period 3",
-        "mosaic with split",
-      ]);
+      ]).toStrictEqual([]);
     });
 
     // 🎯 The `negative` family's whole claim, in one assertion: its ink is
@@ -871,7 +877,8 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(documents).toHaveLength(1183);
+      expect(documents).toHaveLength(1159);
+
       expect(tJunctions).toBe(5152);
       expect(branching).toHaveLength(214);
       expect(
@@ -1051,7 +1058,7 @@ describe(MeanderTopologyService, () => {
           negativeTJunctions: 20,
           negativeXJunctions: 9,
         },
-        name: "mosaic-5-rows-12-repeats-split.svg",
+        name: "mosaic-5-rows-12-repeats-diamond.svg",
       },
     ])(
       "is measurable from the committed $name alone",

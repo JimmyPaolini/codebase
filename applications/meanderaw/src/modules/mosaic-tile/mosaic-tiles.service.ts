@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import {
   MOSAIC_TILE_EDGE_BUDGET,
   OversizedMosaicTileError,
-} from "./mosaic-motif.constants";
-import { MosaicSymmetryService } from "./mosaic-symmetry.service";
+} from "./mosaic-tile.constants";
 import { MosaicTileService } from "./mosaic-tile.service";
 
 import type {
@@ -13,7 +13,7 @@ import type {
   MosaicEnumeration,
   MosaicTile,
   MosaicTileShape,
-} from "./mosaic-motif.types";
+} from "./mosaic-tile.types";
 
 /**
  * Enumerates every distinct `mosaic` tile at a given size.

@@ -22,7 +22,8 @@ with the measurements behind it, is in [README.md](./README.md), under "Meander 
 
 **The named half of the sweep runs to `FAMILY_MAXIMUM_ROWS`,** the same record
 `MeanderGenerationService.generate` validates `rows` against — so every drawing the command
-line can be asked for is one this repository commits and the charter gates, 1,183 named
+line can be asked for is one this repository commits and the charter gates, 1,159 named
+
 patterns, each family from its own structural minimum through its own ceiling. It stopped
 at 8 for every family alike until
 [#507](https://github.com/JimmyPaolini/codebase/issues/507), which lived in the four row
@@ -45,12 +46,27 @@ with a visible effect on counts `mosaic-tiles.service.unit.test.ts` asserts — 
 point of it being one number. See "Families, Sub-families, and Tiles" in
 [README.md](./README.md).
 
-**`mosaic` has no `permutations/` level,** and removing it was deliberate: that level
-separated an enumerated half from a named one, and every tile the family draws is now a
-member of one space. Its named drawings sit beside the `<columns>-columns/` directories
-because they are tiles at column spans the edge budget refuses — `alternated period-3` is
-six columns wide at six rows, which is 54 edges against a budget of 16 — rather than a
-different kind of thing. Do not put the level back for that family.
+**`mosaic` draws no motif, and so has no named half at all.** It has no `permutations/`
+level and nothing beside its `<columns>-columns/` directories: every drawing it has is a
+member of the enumerated space, addressed by naming that member. Its three modifiers —
+`alternated`, `dot`, and `split` — produced 24 drawings, 19 of which were tiles the
+enumeration already commits up to the symmetry it folds by, and they are gone with
+`MosaicMotifService`. Five were not redundant, all of them at column spans
+`MOSAIC_TILE_EDGE_BUDGET` refuses (six columns at six rows is 54 edges against a budget
+of 16), and losing those five was the decided cost. See "The mosaic family draws no
+motif" in [README.md](./README.md).
+
+**`--type mosaic` on its own is refused,** by `MissingSubFamilyError`, and the refusal is
+the design rather than a gap: `--sub-family` is how a member of the space is named, and
+the message lists the eight to choose from. Do not give the family a default drawing —
+the default it used to have was the `bars` sub-family under a second name. `TILE_DRAWN_TYPES`
+is the one place that decision is written down, and `MotifDrawnType` is what makes a
+motif lookup for this family a type error rather than an `undefined`.
+
+**The module is `mosaic-tile`, not `mosaic-motif`.** It was renamed with the motif that
+left it: conformetry's `nestjs-service-module` template requires a folder's namesake
+service, and `MosaicTileService` — the tile vocabulary every other service reads a tile
+through — is what the folder is named for now.
 
 **`negative` has a permutation half too,** and it enumerates its one-column source space —
 the `ruled` domain — at 208 sources across 3 through 6 rows. Those are the `mosaic` tiles
@@ -82,7 +98,8 @@ The three that most often catch a change:
 - **No branching and no crossing.** Ink has zero T-junctions everywhere except `negative`
   and `branch`, the two families added to branch, and `chain`/`snake` under
   `edge`/`edge-flip`, which branch where their zigzag lands mid-border — 5,152 junctions
-  across 214 of the 1,183 named patterns, 3,054 of them `negative`'s and 1,738 `branch`'s.
+  across 214 of the 1,159 named patterns, 3,054 of them `negative`'s and 1,738 `branch`'s.
+
   It has zero X-junctions everywhere except `cross` drawn solid — 12 per document at every
   one of its seven row counts, and none under its `interrupted` modifier, where the break
   takes the junction out of the ink graph — and `negative` under `brick-straight`,
@@ -104,11 +121,12 @@ Three things that look like defects and are not:
   [#338](https://github.com/JimmyPaolini/codebase/issues/338). Do not chase them.
 - **`--type` disagreeing with the glossary's "family"** is a deliberate divergence, not a
   stale name. Renaming the flag is a breaking CLI change.
-- **`dot` and `dots`, and `diamond` and `split`,** are pairs of different things rather
-  than duplicates. `dot` is a `mosaic` modifier carrying a shape; `dots` is a `mosaic`
-  sub-family. `split` is a modifier that constructs a shape; `diamond` is the sub-family
-  that recognizes the same shape however it arose. Do not collapse either pair — see
-  "Naming a Mosaic Sub-family" in [README.md](./README.md).
+- **`dot` and `split` were modifiers and are gone; `dots` and `diamond` are sub-families
+  and are not.** The pairs were one letter and one role apart, which is why the README
+  spends a section on each. `--sub-family dot` is still refused, and `diamond` still names
+  the shape `split` used to construct — see "Naming a Mosaic Sub-family" in
+  [README.md](./README.md).
+
 - **A `mosaic` name is a rule, not a label.** `mosaic-naming` holds one predicate per
   name, read off a tile's direction bits; a tile matching none keeps its identifier and
   stays unnamed, and one matching two is a defect the unit test catches over the whole
@@ -116,10 +134,11 @@ Three things that look like defects and are not:
   **Unbroken or broken is a question about edges, not points** — `lines` and `dashes`
   differ on it, and so do `bars` and `diamond` — which is what an earlier rule set got
   wrong when it called a solid vertical bar a `diamond`.
-- **A `mosaic` tile branching or crossing** is declared, not a regression. Its named modes
-  do neither; its enumerated half does both, which the charter test's `RELAXED_INVARIANTS`
+- **A `mosaic` tile branching or crossing** is declared, not a regression. Its enumerated
+  space — which is all of it — does both, which the charter test's `RELAXED_INVARIANTS`
   records with a `permutations` flag and then asserts is really present in committed
   output. Editing that declaration is how the permission moves — never the assertions.
+
 - **`parallel` being a family rather than a modifier** is a correction, not an oversight.
   [#340](https://github.com/JimmyPaolini/codebase/issues/340) models it as the one modifier
   compatible with every family; `N` strands cannot trace the path one strand traces, so

@@ -7,7 +7,7 @@ import {
   InvalidRepeatCountError,
   InvalidRowsError,
 } from "../meander-generation/meander-generation.constants";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { NEGATIVE_SOURCE_ROW_OFFSET } from "./negative-motif.constants";
@@ -15,7 +15,7 @@ import { NegativeMotifService } from "./negative-motif.service";
 import { NegativeSourceService } from "./negative-source.service";
 import { NegativeTileGenerationService } from "./negative-tile-generation.service";
 
-import type { MosaicTile } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicTile } from "../mosaic-tile/mosaic-tile.types";
 
 // 🔧 Configuration
 

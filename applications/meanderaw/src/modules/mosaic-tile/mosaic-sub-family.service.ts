@@ -1,13 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { MOSAIC_SUB_FAMILY_SHAPES } from "./mosaic-motif.constants";
+import { MOSAIC_SUB_FAMILY_SHAPES } from "./mosaic-tile.constants";
 import { MosaicTileService } from "./mosaic-tile.service";
 
 import type {
   MosaicBuildableSubFamily,
   MosaicEdgeRule,
   MosaicTile,
-} from "./mosaic-motif.types";
+} from "./mosaic-tile.types";
 
 /**
  * Builds the tile each named region of the `mosaic` family's unit space is

@@ -45,9 +45,9 @@ export class OutputPathService {
    * sub-family and a modifier together: the generation service rejects that
    * pairing, since either one alone decides which repeat unit is drawn.
    *
-   * `diamond` and `split` draw the same shape under two names, and both
-   * reach here — one as a sub-family, one as a modifier — so they still land
-   * in two files rather than overwriting each other.
+   * `diamond` and the `split` modifier used to draw the same shape under
+   * two names and land in two files. `split` is gone, so the sub-family is
+   * the only name that shape has here now.
    */
   private fileName(parameters: GenerationParameters): string {
     const { modifier, repeatCount, subFamily } = parameters;
@@ -72,24 +72,16 @@ export class OutputPathService {
    * sweep's own values would collide on one path and `CollidingPathsError`
    * would fire rather than a drawing being written. Two spellings, and which
    * one a modifier takes is decided by whether the value reads on its own:
-   * `dot`'s shapes and `comb`'s and `rung`'s directions are words, so they
+   * `comb`'s and `rung`'s directions are words, so they
    * follow the name unadorned, while a bare number would say nothing — so
-   * `alternated`, `stagger`, and the ply-carrying modifiers name their
+   * `stagger` and the ply-carrying modifiers name their
    * parameter before it. The last of those are spelled by
    * {@link plySlug}, since all three spell it the same way and one of them
    * carries a second parameter besides.
    */
   private modifierSlug(modifier: Modifier): string {
-    if (modifier.name === "alternated") {
-      return `alternated-period-${modifier.period}`;
-    }
-
     if (modifier.name === "comb") {
       return `comb-${modifier.isUpward ? "upward" : "downward"}`;
-    }
-
-    if (modifier.name === "dot") {
-      return `dot-${modifier.shape}`;
     }
 
     if (modifier.name === "rung") {

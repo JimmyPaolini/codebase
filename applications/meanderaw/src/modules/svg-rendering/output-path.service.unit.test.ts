@@ -47,17 +47,6 @@ describe(OutputPathService, () => {
       ).toBe("chain/4-rows/edge-flip-6-repeats.svg");
     });
 
-    it("carries alternated's period into the filename", () => {
-      expect(
-        service.build({
-          modifier: { name: "alternated", period: 2 },
-          repeatCount: 6,
-          rows: 5,
-          type: "mosaic",
-        }),
-      ).toBe("mosaic/5-rows/alternated-period-2-6-repeats.svg");
-    });
-
     it("names the file after the sub-family, so a named region of the unit space is legible in it", () => {
       expect(
         service.build({
@@ -69,7 +58,7 @@ describe(OutputPathService, () => {
       ).toBe("mosaic/6-rows/dots-6-repeats.svg");
     });
 
-    it("names diamond and split apart even though they draw the same shape, so neither overwrites the other", () => {
+    it("carries a sub-family's own repeat count into the filename", () => {
       expect(
         service.build({
           repeatCount: 12,
@@ -78,25 +67,6 @@ describe(OutputPathService, () => {
           type: "mosaic",
         }),
       ).toBe("mosaic/5-rows/diamond-12-repeats.svg");
-      expect(
-        service.build({
-          modifier: { name: "split" },
-          repeatCount: 12,
-          rows: 5,
-          type: "mosaic",
-        }),
-      ).toBe("mosaic/5-rows/split-12-repeats.svg");
-    });
-
-    it("carries dot's shape into the filename", () => {
-      expect(
-        service.build({
-          modifier: { name: "dot", shape: "bounce" },
-          repeatCount: 6,
-          rows: 6,
-          type: "mosaic",
-        }),
-      ).toBe("mosaic/6-rows/dot-bounce-6-repeats.svg");
     });
 
     // 🎯 The unmodified `plain` drawing is a downward comb, and this names

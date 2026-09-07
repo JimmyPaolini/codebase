@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 
 import {
   DEFAULT_NEGATIVE_SOURCE,
@@ -14,7 +14,7 @@ import type { Modifier } from "../meander-generation/meander-generation.types";
 import type {
   MosaicEdgesDraft,
   MosaicTile,
-} from "../mosaic-motif/mosaic-motif.types";
+} from "../mosaic-tile/mosaic-tile.types";
 import type {
   NegativeColumnMark,
   NegativeColumnSource,

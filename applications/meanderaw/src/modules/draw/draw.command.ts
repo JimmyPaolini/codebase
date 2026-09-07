@@ -9,12 +9,11 @@ import { LoggerService } from "@codebase/logger";
 import {
   DEFAULT_OUTPUT_DIRECTORY,
   DEFAULT_REPEAT_COUNT,
-  SUPPORTED_DOT_SHAPES,
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
+import { SUPPORTED_SUB_FAMILIES } from "../mosaic-tile/mosaic-tile.constants";
 import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 
@@ -26,13 +25,12 @@ import { DrawPermutationsService } from "./draw-permutations.service";
 import { CollidingPathsError, INDEX_FILE_NAME } from "./draw.constants";
 
 import type {
-  DotShape,
   GenerationParameters,
   MeanderType,
   Modifier,
   SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
-import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicSubFamily } from "../mosaic-tile/mosaic-tile.types";
 import type {
   DrawCommandOptions,
   OutputDocument,
@@ -50,7 +48,8 @@ import type {
  *   {@link DrawCombinationsService} — which the meander charter's property
  *   test also sweeps, so the corpus this writes and the corpus that is gated
  *   are the same space by construction rather than by coincidence — beside
- *   two exhaustive enumerations, of the `mosaic` family's tiles and of the
+ *   two exhaustive enumerations, of the `mosaic` family's tiles — which is
+ *   the whole of what that family draws — and of the
  *   `negative` family's one-column sources. Those run to thousands of files
  *   and so are written one row count at a time. An index page listing every
  *   drawing is written at the root of the output directory.
@@ -62,11 +61,16 @@ import type {
  * says where drawings go, and a sub-command boundary between them only
  * decided which half of that set was legal.
  *
- * Six of those flags belong to one modifier each — `--period`, `--shape`,
- * `--strands`, `--branches`, `--leftward`, and `--upward` — and are
+ * Four of those flags belong to one modifier each — `--strands`,
+ * `--branches`, `--leftward`, and `--upward` — and are
  * recombined with `--modifier` by {@link DrawParametersService.modifier},
  * since nest-commander parses each one through a method that cannot see the
  * others.
+ *
+ * `--sub-family` is the one flag that is neither: it names a member of a
+ * family's own unit space rather than adjusting a repeat unit, and for
+ * `mosaic` it is required, since that family has no repeat unit of its own
+ * for `--type` alone to draw.
  *
  * Both halves are written through the same {@link writeDocuments}, so
  * "somewhere under the output directory" is the only thing this command knows
@@ -275,17 +279,8 @@ export class DrawCommand extends CommandRunner {
     return value;
   }
 
-  /** Parses `--period` as an integer, used only with `--modifier alternated`. */
-  @Option({
-    description:
-      "Column span of one repeat tile, in 2 * period grid columns, for --modifier alternated",
-    flags: "-p, --period <period>",
-  })
-  parsePeriod(value: string): number {
-    return Number.parseInt(value, 10);
-  }
-
-  /** Parses `--repeat-count` as an integer, defaulting to a sensible repeat count. */
+  /** Parses `--repeat-count` as an integer
+, defaulting to a sensible repeat count. */
   @Option({
     defaultValue: DEFAULT_REPEAT_COUNT,
     description: "Number of times the motif repeats horizontally",
@@ -304,16 +299,8 @@ export class DrawCommand extends CommandRunner {
     return Number.parseInt(value, 10);
   }
 
-  /** Parses `--shape`, rejecting any value outside the supported set. Used only with `--modifier dot`. */
-  @Option({
-    description: `Dot level sequence shape, for --modifier dot (${SUPPORTED_DOT_SHAPES.join(", ")})`,
-    flags: "-s, --shape <shape>",
-  })
-  parseShape(value: string): DotShape {
-    return this.drawParametersService.dotShape(value);
-  }
-
-  /** Parses `--strands` as an integer, used only with `--modifier plied`. */
+  /** Parses `--strands` as an integer
+, used only with `--modifier plied`. */
   @Option({
     description: "Number of strands in one bundle, for --modifier plied",
     flags: "-n, --strands <strands>",

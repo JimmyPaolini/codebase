@@ -11,14 +11,13 @@ import {
   STRUCTURAL_MINIMUM_ROWS,
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
+  TILE_DRAWN_TYPES,
   TYPES_WITH_MODIFIER_NAMED_DEFAULT,
 } from "../meander-generation/meander-generation.constants";
 import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 
 import {
-  ALTERNATED_SWEEP_PERIODS,
   COMB_SWEEP_UPWARD_VALUES,
-  DOT_SWEEP_SHAPES,
   RUNG_SWEEP_LEFTWARD_VALUES,
   STAGGER_SWEEP_BRANCH_COUNTS,
 } from "./draw.constants";
@@ -35,7 +34,7 @@ import type {
  * crossed with every modifier `COMPATIBLE_MODIFIERS` lists for it plus "no
  * modifier", crossed with every row count from that type's own
  * `STRUCTURAL_MINIMUM_ROWS` through its own `FAMILY_MAXIMUM_ROWS`.
- * `alternated`, `comb`, `dot`, `plied`, `rung`, and `stagger` each expand
+ * `comb`, `plied`, `rung`, and `stagger` each expand
  * to the representative values `draw.constants.ts` names rather than their
  * full range, and `repeatCount` is
  * `DEFAULT_REPEAT_COUNT` except for the spin family, which is rounded up to
@@ -54,6 +53,12 @@ import type {
  * enumeration is driven entirely by `SUPPORTED_TYPES`,
  * `COMPATIBLE_MODIFIERS`, `STRUCTURAL_MINIMUM_ROWS`, and
  * `FAMILY_MAXIMUM_ROWS`.
+ *
+ * A `TILE_DRAWN_TYPES` family is left out of it entirely, which is one
+ * filter rather than a per-family exception: such a family has no motif to
+ * draw and no modifier to cross with, so every combination it could
+ * contribute is the empty one. `DrawPermutationsService` covers `mosaic`
+ * instead, and covers it exhaustively.
  */
 @Injectable()
 export class DrawCombinationsService {
@@ -86,7 +91,7 @@ export class DrawCombinationsService {
    * Expands one modifier name into every {@link Modifier} value the sweep
    * covers at `rowCount`.
    *
-   * `alternated` and `dot` ignore the row count and expand to the
+   * `comb`, `rung`, and `stagger` ignore the row count and expand to the
    * representative values `draw.constants.ts` names. `plied` does not: its
    * range *is* the row count, so it is the one modifier whose expansion has
    * to be asked per row rather than once per family — see
@@ -96,16 +101,8 @@ export class DrawCombinationsService {
     name: Modifier["name"],
     rowCount: number,
   ): Modifier[] {
-    if (name === "alternated") {
-      return ALTERNATED_SWEEP_PERIODS.map((period) => ({ name, period }));
-    }
-
     if (name === "comb") {
       return COMB_SWEEP_UPWARD_VALUES.map((isUpward) => ({ isUpward, name }));
-    }
-
-    if (name === "dot") {
-      return DOT_SWEEP_SHAPES.map((shape) => ({ name, shape }));
     }
 
     if (name === "serpentine") {
@@ -243,15 +240,16 @@ export class DrawCombinationsService {
    * in the constant closes it for both callers at once, which is why
    * neither of them passes a range of its own.
    *
-   * That is also why `mosaic`'s lower ceiling costs nothing here. It is a
-   * budget on an exhaustively enumerated family rather than a sampled
-   * range — see `MOSAIC_TILE_MAXIMUM_ROWS` — and because the command line
-   * refuses a `mosaic` above it, the row counts it leaves out are not
-   * reachable rather than merely absent from the corpus.
+   * `mosaic` is not in it at all, and its lower ceiling therefore costs
+   * nothing here. That family is drawn from an enumerated space rather than
+   * from a motif — see `TILE_DRAWN_TYPES` — so
+   * `DrawPermutationsService` is what covers it, and covers every tile the
+   * `MOSAIC_TILE_MAXIMUM_ROWS` band admits rather than a sample of them.
    */
   enumerate(): GenerationParameters[] {
-    const types = SUPPORTED_TYPES.filter((value): value is MeanderType =>
-      this.isMeanderType(value),
+    const types = SUPPORTED_TYPES.filter(
+      (value): value is MeanderType =>
+        !TILE_DRAWN_TYPES.includes(value) && this.isMeanderType(value),
     );
 
     return types.flatMap((type) => this.combinationsForType(type));

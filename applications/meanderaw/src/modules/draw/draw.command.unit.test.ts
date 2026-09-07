@@ -7,13 +7,13 @@ import { LoggerService } from "@codebase/logger";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
-import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
-import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
-import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
+import { MosaicTileMotifService } from "../mosaic-tile/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
+import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
 import { NegativeSourceService } from "../negative-motif/negative-source.service";
 import { NegativeTileGenerationService } from "../negative-motif/negative-tile-generation.service";
@@ -148,7 +148,8 @@ describe(DrawCommand, () => {
 
   describe("run", () => {
     it(
-      "writes the expected number of files across all ten types, with no path collisions",
+      "writes the expected number of files across all nine motif-drawn types, with no path collisions",
+
       async () => {
         await command.run([], { outputDirectory: "output", repeatCount: 6 });
 
@@ -158,15 +159,19 @@ describe(DrawCommand, () => {
 
         // 🎯 rows sweep runs from each type's own structural minimum to its
         // own `FAMILY_MAXIMUM_ROWS`: 2..12 (branch, parallel), 3..12 (boxes,
-        // negative), 4..12 (chain, snake, swirl, whirl), 6..12 (cross), or
-        // 3..6 (mosaic, the one family with a ceiling of its own), crossed
-        // with "no modifier" plus every compatible modifier (alternated, dot,
-        // and rung each expand to 2 representative values, stagger to 4, and
+        // negative), 4..12 (chain, snake, swirl, whirl), or 6..12 (cross),
+        // crossed with "no modifier" plus every compatible modifier (rung
+        // expands to 2 representative values, stagger to 4, and
         // comb to 1 — its other direction is what "no modifier" already
         // draws):
 
-        // mosaic: 4 rows * (1 + 2 + 2 + 1) modifiers = 24
+        // `mosaic` contributes nothing. It is drawn from its enumerated
+        // space rather than from a motif — see `TILE_DRAWN_TYPES` — so
+        // every one of its drawings is counted in the permutation half
+        // below instead. It used to contribute 24 here.
+
         // boxes: 10 rows * (1 + 1 + 1) modifiers = 30
+
         // chain: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
         // snake: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
         // swirl: 9 rows * (1 + 1) modifiers = 18
@@ -210,7 +215,8 @@ describe(DrawCommand, () => {
           0,
         );
         const expectedNamedTypeCount =
-          24 + 30 + 36 + 36 + 18 + 18 + 14 + 100 + 88 + expectedParallelCount;
+          30 + 36 + 36 + 18 + 18 + 14 + 100 + 88 + expectedParallelCount;
+
         const writtenFileNames = vi
           .mocked(mockWriteFile)
           .mock.calls.map(([filePath]) => filePath);
@@ -271,7 +277,8 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("9942 drawings");
+      expect(index?.[1]).toContain("9918 drawings");
+
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/1-columns/00000-dots.svg"',
       );
@@ -283,7 +290,7 @@ describe(DrawCommand, () => {
 
       expect(
         vi.mocked(meanderGenerationService.generate).mock.calls,
-      ).toContainEqual([{ repeatCount: 6, rows: 3, type: "mosaic" }]);
+      ).toContainEqual([{ repeatCount: 6, rows: 3, type: "boxes" }]);
       expect(
         vi.mocked(meanderGenerationService.generate).mock.calls,
       ).toContainEqual([
@@ -293,22 +300,21 @@ describe(DrawCommand, () => {
         vi.mocked(meanderGenerationService.generate).mock.calls,
       ).toContainEqual([
         {
-          modifier: { name: "alternated", period: 1 },
+          modifier: { branches: 3, name: "stagger" },
           repeatCount: 6,
-          rows: 3,
-          type: "mosaic",
+          rows: 2,
+          type: "branch",
         },
       ]);
+
+      // 🎯 The tile-drawn family reaches disk through
+      // `DrawPermutationsService` rather than this service, so the sweep
+      // asks it for no `mosaic` at all.
       expect(
-        vi.mocked(meanderGenerationService.generate).mock.calls,
-      ).toContainEqual([
-        {
-          modifier: { name: "dot", shape: "up" },
-          repeatCount: 6,
-          rows: 3,
-          type: "mosaic",
-        },
-      ]);
+        vi
+          .mocked(meanderGenerationService.generate)
+          .mock.calls.filter(([parameters]) => parameters.type === "mosaic"),
+      ).toStrictEqual([]);
       expect(
         vi.mocked(meanderGenerationService.generate).mock.calls,
       ).toContainEqual([
@@ -332,7 +338,7 @@ describe(DrawCommand, () => {
         .mock.calls.map(([filePath]) => filePath);
 
       expect(writtenFilePaths).toContainEqual(
-        "custom-batch-output/mosaic/3-rows/plain-6-repeats.svg",
+        "custom-batch-output/boxes/3-rows/plain-6-repeats.svg",
       );
       expect(writtenFilePaths).toContainEqual(
         "custom-batch-output/boxes/3-rows/spin-8-repeats.svg",
@@ -439,46 +445,23 @@ describe(DrawCommand, () => {
       );
     });
 
-    it("combines the modifier name with its period and encodes both in the filename", async () => {
+    it("forwards the sub-family to the generation service and names the file after it", async () => {
       await command.run([], {
-        modifier: "alternated",
         outputDirectory: "output",
-        period: 2,
         repeatCount: 6,
-        rows: 5,
+        rows: 6,
+        subFamily: "dots",
         type: "mosaic",
       });
 
       expect(meanderGenerationService.generate).toHaveBeenCalledWith({
-        modifier: { name: "alternated", period: 2 },
         repeatCount: 6,
-        rows: 5,
+        rows: 6,
+        subFamily: "dots",
         type: "mosaic",
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
-        "output/mosaic/5-rows/alternated-period-2-6-repeats.svg",
-        "<svg>fixture</svg>\n",
-      );
-    });
-
-    it("combines the modifier name with its shape and encodes both in the filename", async () => {
-      await command.run([], {
-        modifier: "dot",
-        outputDirectory: "output",
-        repeatCount: 6,
-        rows: 6,
-        shape: "bounce",
-        type: "mosaic",
-      });
-
-      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
-        modifier: { name: "dot", shape: "bounce" },
-        repeatCount: 6,
-        rows: 6,
-        type: "mosaic",
-      });
-      expect(mockWriteFile).toHaveBeenCalledWith(
-        "output/mosaic/6-rows/dot-bounce-6-repeats.svg",
+        "output/mosaic/6-rows/dots-6-repeats.svg",
         "<svg>fixture</svg>\n",
       );
     });
@@ -548,19 +531,26 @@ describe(DrawCommand, () => {
     );
 
     it.each([
-      { flag: "--period", modifier: "alternated" as const },
-      { flag: "--shape", modifier: "dot" as const },
-      { flag: "--strands", modifier: "plied" as const },
+      {
+        flag: "--strands",
+        modifier: "plied" as const,
+        type: "parallel" as const,
+      },
+      {
+        flag: "--branches",
+        modifier: "stagger" as const,
+        type: "branch" as const,
+      },
     ])(
       "refuses $modifier without $flag rather than guessing one",
-      async ({ flag, modifier }) => {
+      async ({ flag, modifier, type }) => {
         await expect(
           command.run([], {
             modifier,
             outputDirectory: "output",
             repeatCount: 6,
             rows: 6,
-            type: "mosaic",
+            type,
           }),
         ).rejects.toThrow(new RegExp(`requires ${flag}`));
       },
@@ -590,23 +580,14 @@ describe(DrawCommand, () => {
       expect(command.parseSubFamily("dots")).toBe("dots");
     });
 
-    it("rejects a name that is no sub-family, including the dot modifier it sounds like", () => {
+    it("rejects a name that is no sub-family, including the singular the dots one sounds like", () => {
       expect(() => command.parseSubFamily("dot")).toThrow(
         /unsupported sub-family/i,
       );
     });
 
-    it("passes a supported shape through unchanged", () => {
-      expect(command.parseShape("bounce")).toBe("bounce");
-    });
-
-    it("rejects an unsupported shape", () => {
-      expect(() => command.parseShape("bogus")).toThrow(/unsupported shape/i);
-    });
-
     it.each([
       { method: "parseBranches" as const, value: "2" },
-      { method: "parsePeriod" as const, value: "2" },
       { method: "parseRepeatCount" as const, value: "2" },
       { method: "parseRows" as const, value: "2" },
       { method: "parseStrands" as const, value: "2" },
@@ -673,14 +654,14 @@ describe(DrawCommand, () => {
           realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
         ).resolves.toBeUndefined();
 
-        // 🎯 every one of the 1,183 enumerated named-type combinations, every
+        // 🎯 every one of the 1,159 enumerated named-type combinations, every
         // one of the 8,551 mosaic tiles, and every one of the 208 one-column
         // negative sources, reached its real generation
         // service and real validators without throwing — this is the
         // regression guard the mocked tests above can't provide, since they
         // replace the generation services entirely. The extra file is the
         // single index page listing all of them.
-        expect(mockWriteFile).toHaveBeenCalledTimes(1183 + 8551 + 208 + 1);
+        expect(mockWriteFile).toHaveBeenCalledTimes(1159 + 8551 + 208 + 1);
       },
       FULL_SWEEP_TIMEOUT_MILLISECONDS,
     );

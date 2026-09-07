@@ -1,13 +1,13 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { SUPPORTED_SUB_FAMILIES } from "./mosaic-motif.constants";
 import { MosaicSubFamilyService } from "./mosaic-sub-family.service";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
+import { SUPPORTED_SUB_FAMILIES } from "./mosaic-tile.constants";
 import { MosaicTileService } from "./mosaic-tile.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
 
-import type { MosaicBuildableSubFamily } from "./mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "./mosaic-tile.types";
 
 // 🔧 Configuration
 
