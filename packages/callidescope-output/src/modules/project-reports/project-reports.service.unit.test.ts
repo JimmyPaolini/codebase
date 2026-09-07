@@ -518,6 +518,64 @@ describe(ProjectReportsService, () => {
     expect(findings.map((finding) => finding.breadth)).toStrictEqual([2, 1]);
   });
 
+  // 🎯 Only the projects a verdict covers
+
+  it("returns the findings the named projects own", () => {
+    const findings = service.findOwnedFindings({
+      limits: buildLookup({ workspace: buildLimits({ depth: 1 }) }),
+      projectNames: ["alpha"],
+      reports: service.build(buildArguments(3)),
+    });
+
+    expect(findings.deepStacks).toHaveLength(1);
+    expect(findings.wideCallables).toStrictEqual([]);
+  });
+
+  it("drops a finding a project outside the named set owns", () => {
+    // The same stacks, the same limit, and a different set of projects
+    // entitled to fail on them — which is the whole of the narrowing.
+    expect(
+      service.findOwnedFindings({
+        limits: buildLookup({ workspace: buildLimits({ depth: 1 }) }),
+        projectNames: ["beta"],
+        reports: service.build(buildArguments(3)),
+      }).deepStacks,
+    ).toStrictEqual([]);
+  });
+
+  it("narrows a breadth finding to the project declaring the callable", () => {
+    const base = buildArguments(3);
+    const callableIds = [...base.callablesById.keys()];
+    const alpha0Id = callableIds[0] ?? "";
+    const betaId = callableIds.at(-1) ?? "";
+    const reports = service.build({
+      ...base,
+      breadthMeasurement: {
+        byCallable: new Map([
+          [alpha0Id, { breadth: 1, calleeIds: [betaId] }],
+          [betaId, { breadth: 1, calleeIds: [alpha0Id] }],
+        ]),
+      },
+    });
+    const limits = buildLookup({ workspace: buildLimits({ breadth: 0 }) });
+
+    expect(
+      service
+        .findOwnedFindings({ limits, projectNames: ["beta"], reports })
+        .wideCallables.map((finding) => finding.displayName),
+    ).toStrictEqual(["beta0"]);
+  });
+
+  it("contributes nothing for a named project holding no report", () => {
+    expect(
+      service.findOwnedFindings({
+        limits: buildLookup({ workspace: buildLimits({ depth: 1 }) }),
+        projectNames: ["gamma"],
+        reports: service.build(buildArguments(3)),
+      }),
+    ).toStrictEqual({ deepStacks: [], wideCallables: [] });
+  });
+
   // 🕳 Gaps in what the graph knows
 
   it("skips an entry point whose callable was never collected", () => {

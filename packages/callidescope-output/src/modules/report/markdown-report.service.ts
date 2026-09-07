@@ -212,7 +212,7 @@ export class MarkdownReportService {
    * reader who greps a pipeline log for one rendering finds the other.
    */
   public renderFindings(args: RenderFindingsArguments): string {
-    const { deepStacks, wideCallables } = args.result;
+    const { deepStacks, wideCallables } = args;
 
     return [
       `## ${MARKDOWN_DEEP_STACKS_HEADING} (${String(deepStacks.length)})`,

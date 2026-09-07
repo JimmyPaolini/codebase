@@ -47,6 +47,7 @@ function buildScope(
     knownNames: ["alpha"],
     knownTags: ["type:package"],
     projectNames: ["alpha"],
+    selectedDirectories: ["packages/alpha"],
     unknownNames: [],
     unmatchedTags: [],
     ...overrides,

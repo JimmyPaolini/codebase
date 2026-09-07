@@ -21,7 +21,9 @@ import type { ExecutorContext } from "@nx/devkit";
  *
  * With neither `projects` nor `tags` given, the selection is the project this
  * target belongs to, widened along the Nx dependency graph: a stack truncated
- * at a package boundary measures the wrong thing.
+ * at a package boundary measures the wrong thing. The widening decides what is
+ * traced and not what is judged — a dependency's breach fails the dependency's
+ * own gate, which is the task named after the project that owns it.
  */
 export default async function gateExecutor(
   options: GateExecutorOptions,
@@ -49,6 +51,7 @@ export default async function gateExecutor(
       ? {}
       : { configurationPath: options.configurationPath }),
     directories: scope.directories,
+    judgedProjectNames: scope.selectedDirectories,
     workspaceRoot: context.root,
   });
 

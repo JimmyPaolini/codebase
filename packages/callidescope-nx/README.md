@@ -99,6 +99,17 @@ therefore gates a branch by the projects it changed, and the task that fails is
 named after the project that regressed, which one workspace-wide task never
 could.
 
+**A dependency's breach is that dependency's gate's business.** The trace
+reaches into the projects a gate's project depends on, because a stack that
+stops at a package boundary measures the wrong thing — but the verdict covers
+only the projects the task was scoped to. This is the line the publishing side
+already draws, one step further along: measurement reaches into dependencies,
+publishing does not, and judging does not either. Nothing escapes a verdict,
+because `nx affected` selects a changed dependency too and its own gate names
+it. `trace` narrows its verdict the same way, so the two targets on one project
+can never disagree about whose regression it was; its report still shows the
+whole closure, since only the verdict narrows.
+
 **Depth is gated always, breadth wherever a limit exists.** Not two modes to be
 selected between: `maximumDepth` has a default, so every project has a number
 and is judged by it, while `maximumBreadth` has none at any level — so a project
@@ -115,16 +126,16 @@ print what happened rather than failing mutely.
 
 Its cache key names the project's own `callidescope.config.*` alongside the
 workspace configuration, so editing one project's limits re-runs that project's
-gate and no other project's. A dependency's limits are covered by `^default`,
-because a run measures its dependencies and is judged by what they declared.
+gate and no other project's. A dependency's sources are covered by `^default`,
+because a run measures its dependencies even though it does not judge them.
 
 Two projects are deliberately skipped by all four targets: the **workspace-root
 project**, whose targets would trace everything under one uncacheable task, and
 any project with **no `tsconfig.json`**, whose targets would be permanently
 empty. A project the configuration **excludes** — `exclude` or `excludeFrom` in
 the workspace file — additionally gets no `gate`: its own code is never traced,
-so a gate there would judge the project's dependencies and report green for
-code it never read.
+so a gate there would own no finding at all and report green for code it never
+read.
 
 ### Why the trace follows dependencies
 

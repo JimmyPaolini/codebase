@@ -1,5 +1,6 @@
 // 🏷️ Types
 
+import type { OwnedFindings } from "../project-reports/project-reports.types";
 import type {
   CallableId,
   CallGraphResult,
@@ -39,10 +40,14 @@ export interface MermaidDiagram {
  *
  * No `rendering`, unlike `RenderRunArguments`: a gate's product is the list of
  * things to go and fix, and a diagram of them is not that list.
+ *
+ * The findings themselves rather than the run that produced them, also unlike
+ * `RenderRunArguments`: a scoped gate judges fewer findings than its trace
+ * measured, and a renderer handed the whole run would print the ones it was
+ * not judged on.
  */
-export interface RenderFindingsArguments {
+export interface RenderFindingsArguments extends OwnedFindings {
   readonly previewCount: number;
-  readonly result: CallGraphResult;
 }
 
 /** Arguments for rendering one project's section. */

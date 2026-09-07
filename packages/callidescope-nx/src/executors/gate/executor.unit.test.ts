@@ -47,6 +47,7 @@ function buildScope(
     knownNames: ["alpha"],
     knownTags: ["type:package"],
     projectNames: ["alpha"],
+    selectedDirectories: ["packages/alpha"],
     unknownNames: [],
     unmatchedTags: [],
     ...overrides,
@@ -193,6 +194,7 @@ describe(gateExecutor, () => {
     // whole of what this executor does with what it resolved.
     expect(pluginService.runGate).toHaveBeenCalledWith({
       directories: ["packages/alpha"],
+      judgedProjectNames: ["packages/alpha"],
       workspaceRoot: "/workspace",
     });
   });

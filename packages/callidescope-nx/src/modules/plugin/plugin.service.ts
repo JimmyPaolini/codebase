@@ -7,7 +7,10 @@ import {
   DEFAULT_PREVIEW_COUNT,
 } from "@callidescope/configuration";
 import { FileFilterService } from "@callidescope/graph";
-import { MarkdownReportService } from "@callidescope/output";
+import {
+  MarkdownReportService,
+  ProjectReportsService,
+} from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
 
 import {
@@ -37,6 +40,7 @@ import type {
 } from "./plugin.types";
 import type {
   CallGraphResult,
+  ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 import type { FileFilter } from "@callidescope/graph";
@@ -58,6 +62,7 @@ export class PluginService {
     private readonly fileFilterService: FileFilterService,
     private readonly markdownReportService: MarkdownReportService,
     private readonly optionsService: OptionsService,
+    private readonly projectReportsService: ProjectReportsService,
     private readonly projectsService: ProjectsService,
   ) {}
 
@@ -74,14 +79,13 @@ export class PluginService {
    * The run's own filter, built from the same two fields
    * `WorkspaceService.discoverProjects` builds it from and asked the same
    * question it asks — is this project's `tsconfig.json` excluded — so
-   * inference and discovery can never come to disagree about which projects a
-   * run covers.
+   * inference and discovery can never disagree about which projects a run
+   * covers.
    *
    * A configuration that cannot be loaded excludes nothing. This runs while Nx
    * is building the project graph, where a thrown error stops every command in
    * the workspace rather than one task; the executor loads the same file again
-   * and refuses there, which is where a refusal is about the run that asked
-   * for it.
+   * and refuses there, where a refusal is about the run that asked for it.
    */
   private async buildExclusionFilter(args: {
     configurationPath: string;
@@ -109,8 +113,8 @@ export class PluginService {
    *
    * An excluded project gets the three that print something and not the one
    * that decides an exit code. Its own code is never traced — discovery drops
-   * it before its `tsconfig.json` is opened — so a gate here would judge the
-   * project's *dependencies* and report green for a project it never read.
+   * it before its `tsconfig.json` is opened — so a gate there would own no
+   * finding at all and report green for a project it never read.
    * `packages/callidescope-examples` is the case: its fixtures exist to breach
    * the limits, which is why `.callidescopeignore` names it.
    */
@@ -121,9 +125,8 @@ export class PluginService {
     const { pluginOptions } = args;
     // The configured limits decide whether a run passes, so a cache hit taken
     // across an edit to them would report the old verdict. A dependency's
-    // sources join them because the trace follows the Nx graph into them —
-    // which is also what carries a dependency's own limits, since `^default`
-    // reaches every file at its root.
+    // sources join them through `^default`, because the trace follows the Nx
+    // graph into them even though the verdict does not.
     const inputs = [
       "default",
       "^default",
@@ -184,8 +187,8 @@ export class PluginService {
    *
    * Joined with `path.posix` rather than `path.join`, unlike `holdsProgram`
    * beside it: a filter matches the workspace-relative POSIX paths git and the
-   * exclusion globs are written in, where `holdsProgram` hands a native
-   * absolute path to `existsSync`.
+   * exclusion globs are written in, where `holdsProgram` hands `existsSync` a
+   * native absolute path.
    */
   private isExcludedProject(args: {
     fileFilter: FileFilter;
@@ -199,36 +202,48 @@ export class PluginService {
   /**
    * Decides whether a traced result passes, for every target that reads one.
    *
-   * One predicate rather than the same expression written beside each caller,
-   * so a rule added here cannot reach one verdict and miss the other — which
-   * is exactly what the empty-trace rule below would have done.
+   * One predicate rather than the same expression beside each caller, so a
+   * rule added here cannot reach one verdict and miss the other.
    *
-   * **A run that read nothing fails.** `callidescope`'s own
-   * `reportEmptyTrace` fails the same case for the same reason: a gate that
-   * passes because it never looked reports the project as clean and leaves
-   * nothing in the output to say otherwise. It is not a theoretical case here
-   * — a project's own `callidescope.config.*` may write an `exclude`, and one
-   * that over-matches would turn that project's gate permanently and silently
-   * green.
+   * **Only the projects the run was scoped to are judged.** A trace reaches
+   * into the dependencies of what it was pointed at, so judging the whole
+   * run's findings would fail `alpha`'s task for a breach in `beta`. The same
+   * line the publishing side already draws, one step further along:
+   * measurement reaches into dependencies, publishing does not, and judging
+   * does not either. A dependency's breach is its own gate's business, and
+   * `nx affected` selects it too when it changes, so nothing escapes a verdict.
    *
-   * **Depth is judged always, breadth wherever a limit exists.** Not two modes
-   * to be selected between: `maximumDepth` has a default, so every project has
-   * a number and every project is judged by it, while `maximumBreadth` has
-   * none at any level — so a project that declared no breadth limit is judged
-   * against `Infinity` and can produce no breadth finding to fail on. Reading
-   * the findings rather than asking for a check by name is what keeps that
-   * true without a decision: a verdict here cannot be refused for wanting to
-   * check breadth in a project that never asked for it, which is what
-   * `--check breadth` does at a prompt, and cannot silently stop judging depth
-   * either.
+   * **A run that read nothing fails**, the case `callidescope`'s own
+   * `reportEmptyTrace` fails for the same reason: a gate that passes because
+   * it never looked reports the project as clean. Asked of the whole run
+   * rather than of the narrowed findings, since an unread run has no owned
+   * finding to count.
+   *
+   * **Depth is judged always, breadth wherever a limit exists** — not two
+   * modes to be selected between. `maximumDepth` has a default and
+   * `maximumBreadth` has none at any level, so a project declaring no breadth
+   * limit can produce no breadth finding to fail on. Reading the findings
+   * rather than naming a check is what keeps that true without a decision.
    */
-  private judge(result: CallGraphResult): RunVerdict {
-    if (result.summary.callableCount === 0) {
-      return { ok: false, reason: EMPTY_TRACE_REPORT };
+  private judge(args: {
+    judgedProjectNames: readonly string[];
+    projectLimits: ProjectLimitsLookup;
+    result: CallGraphResult;
+  }): RunVerdict {
+    const findings = this.projectReportsService.findOwnedFindings({
+      limits: args.projectLimits,
+      projectNames: args.judgedProjectNames,
+      reports: args.result.projects,
+    });
+
+    if (args.result.summary.callableCount === 0) {
+      return { findings, ok: false, reason: EMPTY_TRACE_REPORT };
     }
 
     return {
-      ok: result.deepStacks.length === 0 && result.wideCallables.length === 0,
+      findings,
+      ok:
+        findings.deepStacks.length === 0 && findings.wideCallables.length === 0,
       reason: undefined,
     };
   }
@@ -238,9 +253,8 @@ export class PluginService {
    *
    * The file-aware load rather than the plain one: a run resolves a
    * configuration beside every project it reaches, and skips whichever file is
-   * already serving as this run's own. The path the loader settled on is what
-   * comes back, never the one it was handed, since a search may have answered
-   * instead.
+   * already serving as this run's own. The path the loader settled on comes
+   * back, never the one it was handed, since a search may have answered.
    */
   private async loadRunConfiguration(args: {
     configurationPath?: string | undefined;
@@ -269,8 +283,7 @@ export class PluginService {
    * consulted for a configuration path an executor was not given.
    *
    * Unreadable or malformed is not an error: the caller falls back to the
-   * conventional filenames, which is what a workspace with no registration
-   * gets anyway.
+   * conventional filenames, which a workspace with no registration gets anyway.
    */
   private readNxConfiguration(workspaceRoot: string): unknown {
     try {
@@ -374,7 +387,9 @@ export class PluginService {
    *
    * The selection is widened along the Nx dependency graph unless asked not to
    * be — see `ProjectsService.resolveDependencyClosure` for why a trace that
-   * stops at a project's own boundary measures the wrong thing.
+   * stops at a project's own boundary measures the wrong thing. Two sets of
+   * directories come back for that reason: what the widened selection reads,
+   * and what the selection itself is answerable for.
    */
   public async resolveTraceScope(
     args: ResolveTraceScopeArguments,
@@ -400,6 +415,10 @@ export class PluginService {
       knownNames: selected.knownNames,
       knownTags: selected.knownTags,
       projectNames,
+      selectedDirectories: this.projectsService.resolveDirectories({
+        graph,
+        projectNames: selected.projectNames,
+      }).directories,
       unknownNames: selected.unknownNames,
       unmatchedTags: selected.unmatchedTags,
     };
@@ -410,9 +429,8 @@ export class PluginService {
    * limits every project in scope declared.
    *
    * The verdict is `judge`'s, which is where the rules are written; this
-   * chooses what to print for it. A run that read nothing prints the reason
-   * instead of the findings, because it has no finding to show and a bare red
-   * task would leave a reader guessing why a project that looks fine failed.
+   * chooses what to print for it — the findings it judged, or, for a run that
+   * read nothing and so has none to show, the reason it failed instead.
    */
   public async runGate(args: RunGateArguments): Promise<RunTraceResult> {
     const { configuration, path: configurationPath } =
@@ -423,15 +441,19 @@ export class PluginService {
       directories: args.directories,
       workspaceRoot: args.workspaceRoot,
     });
-    const verdict = this.judge(outcome.result);
+    const verdict = this.judge({
+      judgedProjectNames: args.judgedProjectNames,
+      projectLimits: outcome.projectLimits,
+      result: outcome.result,
+    });
 
     return {
       ok: verdict.ok,
       report:
         verdict.reason ??
         this.markdownReportService.renderFindings({
+          ...verdict.findings,
           previewCount: this.readPreviewCount(configuration),
-          result: outcome.result,
         }),
     };
   }
@@ -467,7 +489,11 @@ export class PluginService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    const verdict = this.judge(outcome.result);
+    const verdict = this.judge({
+      judgedProjectNames: args.judgedProjectNames,
+      projectLimits: outcome.projectLimits,
+      result: outcome.result,
+    });
     const report = this.markdownReportService.renderRun({
       previewCount: this.readPreviewCount(configuration),
       rendering: configuration.output.format === "mermaid" ? "diagram" : "tree",

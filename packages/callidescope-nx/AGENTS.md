@@ -11,9 +11,12 @@ every project holding a `tsconfig.json`, each backed by an executor that runs
 callidescope over that project **and its Nx dependencies**, resolved from the
 Nx project graph. `gate` is the one a pipeline is meant to read an exit code
 from, and the only one a project the workspace configuration **excludes** does
-not get: its own code is never traced, so a gate there would judge its
-dependencies. A gate that read no code fails rather than passing, because a
-verdict on nothing is not a clean project. This is the
+not get: its own code is never traced, so a gate there would own no finding at
+all. A run **traces** the dependencies and **judges** only the projects it was
+scoped to, so a dependency's breach fails the dependency's own gate rather than
+every task downstream of it. A gate that read no code fails
+rather than passing, because a verdict on nothing is not a clean project. This
+is the
 only package in the callidescope toolchain that depends on `@nx/devkit`:
 `@callidescope/cli` and `@callidescope/graph` are deliberately Nx-free and take
 plain `--directories`.

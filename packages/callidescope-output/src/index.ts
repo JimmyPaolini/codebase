@@ -21,7 +21,11 @@ export type {
 export { MINIMUM_STACK_FRAMES } from "./modules/project-reports/project-reports.constants";
 export { ProjectReportsModule } from "./modules/project-reports/project-reports.module";
 export { ProjectReportsService } from "./modules/project-reports/project-reports.service";
-export type { BuildProjectReportsArguments } from "./modules/project-reports/project-reports.types";
+export type {
+  BuildProjectReportsArguments,
+  FindOwnedFindingsArguments,
+  OwnedFindings,
+} from "./modules/project-reports/project-reports.types";
 export { MarkdownReportService } from "./modules/report/markdown-report.service";
 export { MermaidReportService } from "./modules/report/mermaid-report.service";
 export {

@@ -3,7 +3,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { CallidescopeService } from "@callidescope/cli";
 import { ConfigurationService } from "@callidescope/configuration";
 import { FileFilterService } from "@callidescope/graph";
-import { MarkdownReportService } from "@callidescope/output";
+import {
+  MarkdownReportService,
+  ProjectReportsService,
+} from "@callidescope/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -21,6 +24,9 @@ import type {
   CallGraphSummary,
   CallidescopeOutputFormat,
   DeepStackFinding,
+  ProjectLimits,
+  ProjectLimitsLookup,
+  ProjectReport,
   ResolvedCallidescopeConfiguration,
   WideCallableFinding,
 } from "@callidescope/configuration";
@@ -30,6 +36,18 @@ vi.mock("node:fs", () => ({
   existsSync: vi.fn<() => boolean>(() => true),
   readFileSync: vi.fn<() => string>(() => "{}"),
 }));
+
+/** The limits a stubbed run resolved, so a forwarded lookup can be pinned. */
+const LIMITS: ProjectLimitsLookup = {
+  byProject: new Map(),
+  workspace: createMock<ProjectLimits>(),
+};
+
+/** The per-project reports a stubbed run produced, keyed by project. */
+const REPORTS: ProjectReport[] = [
+  createMock<ProjectReport>({ projectName: "packages/alpha" }),
+  createMock<ProjectReport>({ projectName: "packages/beta" }),
+];
 
 /** A graph of two projects, one depending on the other. */
 const GRAPH: ProjectGraph = {
@@ -50,6 +68,9 @@ describe(PluginService, () => {
   let markdownReportService: ReturnType<
     typeof createMock<MarkdownReportService>
   >;
+  let projectReportsService: ReturnType<
+    typeof createMock<ProjectReportsService>
+  >;
   let projectsService: ProjectsService;
   let service: PluginService;
 
@@ -58,6 +79,7 @@ describe(PluginService, () => {
     configurationService = createMock<ConfigurationService>();
     fileFilterService = createMock<FileFilterService>();
     markdownReportService = createMock<MarkdownReportService>();
+    projectReportsService = createMock<ProjectReportsService>();
     projectsService = new ProjectsService();
 
     const module = await Test.createTestingModule({
@@ -68,6 +90,7 @@ describe(PluginService, () => {
         { provide: FileFilterService, useValue: fileFilterService },
         { provide: MarkdownReportService, useValue: markdownReportService },
         OptionsService,
+        { provide: ProjectReportsService, useValue: projectReportsService },
         { provide: ProjectsService, useValue: projectsService },
       ],
     }).compile();
@@ -91,6 +114,42 @@ describe(PluginService, () => {
       isExcluded: (): boolean => false,
     });
   });
+
+  /**
+   * Stubs one trace outcome, typed rather than cast.
+   *
+   * `createMock` builds a value of the real type from the fields under test,
+   * so nothing here needs an `as unknown as` — which would take these stubs
+   * out of type coverage and stop the compiler noticing when the shapes they
+   * stand in for change.
+   *
+   * The findings are answered twice: as the whole run's, and as what the
+   * projects in scope own. A verdict reads only the second, so a test can set
+   * them apart and pin which one decided it.
+   */
+  function stubOutcome(args: {
+    callableCount: number;
+    deepStacks: DeepStackFinding[];
+    wideCallables: WideCallableFinding[];
+  }): void {
+    callidescopeService.trace.mockResolvedValue(
+      createMock<TraceOutcome>({
+        projectLimits: LIMITS,
+        result: createMock<CallGraphResult>({
+          deepStacks: args.deepStacks,
+          projects: REPORTS,
+          summary: createMock<CallGraphSummary>({
+            callableCount: args.callableCount,
+          }),
+          wideCallables: args.wideCallables,
+        }),
+      }),
+    );
+    projectReportsService.findOwnedFindings.mockReturnValue({
+      deepStacks: args.deepStacks,
+      wideCallables: args.wideCallables,
+    });
+  }
 
   it("is defined", () => {
     expect.hasAssertions();
@@ -318,6 +377,7 @@ describe(PluginService, () => {
         knownNames: ["alpha", "beta"],
         knownTags: ["type:package"],
         projectNames: [],
+        selectedDirectories: [],
         unknownNames: [],
         unmatchedTags: [],
         ...overrides,
@@ -372,6 +432,11 @@ describe(PluginService, () => {
       ).resolves.toMatchObject({
         directories: ["packages/alpha", "packages/beta"],
         projectNames: ["alpha", "beta"],
+        // The widening reaches the trace and not the verdict: a dependency
+        // pulled in here is measured by this run and judged by its own. The
+        // roots rather than the Nx names, because a report's `projectName` is
+        // the directory holding the project's `tsconfig.json`.
+        selectedDirectories: ["packages/alpha"],
       });
     });
 
@@ -408,14 +473,7 @@ describe(PluginService, () => {
   });
 
   describe("runTrace", () => {
-    /**
-     * Stubs one trace, typed rather than cast.
-     *
-     * `createMock` builds a value of the real type from the fields under
-     * test, so nothing here needs an `as unknown as` — which would take these
-     * stubs out of type coverage and stop the compiler noticing when the
-     * shapes they stand in for change.
-     */
+    /** Stubs one trace and the configuration it was judged against. */
     function stubTrace(
       args: {
         callableCount?: number;
@@ -431,19 +489,11 @@ describe(PluginService, () => {
         }),
         path: undefined,
       });
-      callidescopeService.trace.mockResolvedValue(
-        createMock<TraceOutcome>({
-          result: createMock<CallGraphResult>({
-            deepStacks: args.deepStacks ?? [],
-            // Stated rather than left to `createMock`: the verdict reads this
-            // count, so a stub that did not set it would decide the test.
-            summary: createMock<CallGraphSummary>({
-              callableCount: args.callableCount ?? 143,
-            }),
-            wideCallables: args.wideCallables ?? [],
-          }),
-        }),
-      );
+      stubOutcome({
+        callableCount: args.callableCount ?? 143,
+        deepStacks: args.deepStacks ?? [],
+        wideCallables: args.wideCallables ?? [],
+      });
       markdownReportService.renderRun.mockReturnValue("# Report");
     }
 
@@ -455,14 +505,20 @@ describe(PluginService, () => {
       await expect(
         service.runTrace({
           directories: ["packages/alpha"],
+          judgedProjectNames: ["packages/alpha"],
           workspaceRoot: "/workspace",
         }),
       ).resolves.toStrictEqual({ ok: true, report: "# Report" });
+      // `judgedProjectNames` is deliberately absent: it decides the verdict
+      // and never narrows what gets traced.
       expect(callidescopeService.trace).toHaveBeenCalledWith(
         expect.objectContaining({
           directories: ["packages/alpha"],
           workspaceRoot: "/workspace",
         }),
+      );
+      expect(callidescopeService.trace).not.toHaveBeenCalledWith(
+        expect.objectContaining({ judgedProjectNames: ["packages/alpha"] }),
       );
     });
 
@@ -473,6 +529,7 @@ describe(PluginService, () => {
 
       await service.runTrace({
         directories: ["packages/alpha"],
+        judgedProjectNames: ["packages/alpha"],
         workspaceRoot: "/workspace",
       });
 
@@ -494,6 +551,7 @@ describe(PluginService, () => {
       // like, so it resolves the same way rather than failing the task.
       await service.runTrace({
         directories: ["packages/alpha"],
+        judgedProjectNames: ["packages/alpha"],
         workspaceRoot: "/workspace",
       });
 
@@ -511,6 +569,7 @@ describe(PluginService, () => {
       await service.runTrace({
         configurationPath: "elsewhere.ts",
         directories: ["packages/alpha"],
+        judgedProjectNames: ["packages/alpha"],
         workspaceRoot: "/workspace",
       });
 
@@ -528,6 +587,7 @@ describe(PluginService, () => {
       await service.runTrace({
         directories: ["packages/alpha"],
         format: "mermaid",
+        judgedProjectNames: ["packages/alpha"],
         workspaceRoot: "/workspace",
       });
 
@@ -554,9 +614,31 @@ describe(PluginService, () => {
       await expect(
         service.runTrace({
           directories: ["packages/alpha"],
+          judgedProjectNames: ["packages/alpha"],
           workspaceRoot: "/workspace",
         }),
       ).resolves.toMatchObject({ ok: false });
+    });
+
+    it("passes a trace whose only breach belongs to a dependency", async () => {
+      expect.hasAssertions();
+
+      stubTrace({ deepStacks: [createMock<DeepStackFinding>()] });
+      projectReportsService.findOwnedFindings.mockReturnValue({
+        deepStacks: [],
+        wideCallables: [],
+      });
+
+      // Narrowed by the same predicate the gate is, so the two targets on one
+      // project cannot come to disagree about whose regression it was. The
+      // report still shows the whole closure: only the verdict narrows.
+      await expect(
+        service.runTrace({
+          directories: ["packages/alpha", "packages/beta"],
+          judgedProjectNames: ["packages/alpha"],
+          workspaceRoot: "/workspace",
+        }),
+      ).resolves.toStrictEqual({ ok: true, report: "# Report" });
     });
 
     it("says under the report why a run that read nothing failed", async () => {
@@ -570,6 +652,7 @@ describe(PluginService, () => {
       await expect(
         service.runTrace({
           directories: ["packages/alpha"],
+          judgedProjectNames: ["packages/alpha"],
           workspaceRoot: "/workspace",
         }),
       ).resolves.toStrictEqual({
@@ -588,17 +671,11 @@ describe(PluginService, () => {
         wideCallables?: WideCallableFinding[];
       } = {},
     ): void {
-      callidescopeService.trace.mockResolvedValue(
-        createMock<TraceOutcome>({
-          result: createMock<CallGraphResult>({
-            deepStacks: args.deepStacks ?? [],
-            summary: createMock<CallGraphSummary>({
-              callableCount: args.callableCount ?? 143,
-            }),
-            wideCallables: args.wideCallables ?? [],
-          }),
-        }),
-      );
+      stubOutcome({
+        callableCount: args.callableCount ?? 143,
+        deepStacks: args.deepStacks ?? [],
+        wideCallables: args.wideCallables ?? [],
+      });
       markdownReportService.renderFindings.mockReturnValue("## Findings");
     }
 
@@ -610,6 +687,7 @@ describe(PluginService, () => {
       await expect(
         service.runGate({
           directories: ["packages/alpha"],
+          judgedProjectNames: ["packages/alpha"],
           workspaceRoot: "/workspace",
         }),
       ).resolves.toMatchObject({ ok: true });
@@ -623,6 +701,7 @@ describe(PluginService, () => {
       await expect(
         service.runGate({
           directories: ["packages/alpha"],
+          judgedProjectNames: ["packages/alpha"],
           workspaceRoot: "/workspace",
         }),
       ).resolves.toMatchObject({ ok: false });
@@ -639,6 +718,7 @@ describe(PluginService, () => {
       await expect(
         service.runGate({
           directories: ["packages/alpha"],
+          judgedProjectNames: ["packages/alpha"],
           workspaceRoot: "/workspace",
         }),
       ).resolves.toMatchObject({ ok: false });
@@ -654,6 +734,7 @@ describe(PluginService, () => {
 
       const result = await service.runGate({
         directories: ["packages/alpha"],
+        judgedProjectNames: ["packages/alpha"],
         workspaceRoot: "/workspace",
       });
 
@@ -672,6 +753,7 @@ describe(PluginService, () => {
 
       const result = await service.runGate({
         directories: ["packages/alpha"],
+        judgedProjectNames: ["packages/alpha"],
         workspaceRoot: "/workspace",
       });
 
@@ -682,6 +764,69 @@ describe(PluginService, () => {
       expect(markdownReportService.renderRun).not.toHaveBeenCalled();
     });
 
+    it("passes on a breach in a dependency it only measured", async () => {
+      expect.hasAssertions();
+
+      stubGate({ deepStacks: [createMock<DeepStackFinding>()] });
+      // The run found a deep stack and no project this gate covers owns it.
+      // Failing here would name `alpha` for a regression in `beta`, which is
+      // the one thing a per-project gate exists to stop.
+      projectReportsService.findOwnedFindings.mockReturnValue({
+        deepStacks: [],
+        wideCallables: [],
+      });
+
+      await expect(
+        service.runGate({
+          directories: ["packages/alpha", "packages/beta"],
+          judgedProjectNames: ["packages/alpha"],
+          workspaceRoot: "/workspace",
+        }),
+      ).resolves.toMatchObject({ ok: true });
+    });
+
+    it("judges the projects it was scoped to, by the limits they resolved", async () => {
+      expect.hasAssertions();
+
+      stubGate();
+
+      await service.runGate({
+        directories: ["packages/alpha", "packages/beta"],
+        judgedProjectNames: ["packages/alpha"],
+        workspaceRoot: "/workspace",
+      });
+
+      // The selection rather than the closure, and the run's own resolved
+      // limits rather than the configuration's — a project's declared limit
+      // reaches a verdict only through this lookup.
+      expect(projectReportsService.findOwnedFindings).toHaveBeenCalledWith({
+        limits: LIMITS,
+        projectNames: ["packages/alpha"],
+        reports: REPORTS,
+      });
+    });
+
+    it("renders the findings it judged rather than the run's", async () => {
+      expect.hasAssertions();
+
+      stubGate({ deepStacks: [createMock<DeepStackFinding>()] });
+      projectReportsService.findOwnedFindings.mockReturnValue({
+        deepStacks: [],
+        wideCallables: [],
+      });
+
+      await service.runGate({
+        directories: ["packages/alpha", "packages/beta"],
+        judgedProjectNames: ["packages/alpha"],
+        workspaceRoot: "/workspace",
+      });
+
+      // A gate that printed a finding it passed on would read as broken.
+      expect(markdownReportService.renderFindings).toHaveBeenCalledWith(
+        expect.objectContaining({ deepStacks: [], wideCallables: [] }),
+      );
+    });
+
     it("prefers a configuration path it was handed", async () => {
       expect.hasAssertions();
 
@@ -690,6 +835,7 @@ describe(PluginService, () => {
       await service.runGate({
         configurationPath: "elsewhere.ts",
         directories: ["packages/alpha"],
+        judgedProjectNames: ["packages/alpha"],
         workspaceRoot: "/workspace",
       });
 

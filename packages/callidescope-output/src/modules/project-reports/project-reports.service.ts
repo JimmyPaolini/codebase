@@ -3,7 +3,11 @@ import { Injectable } from "@nestjs/common";
 
 import { MINIMUM_STACK_FRAMES } from "./project-reports.constants";
 
-import type { BuildProjectReportsArguments } from "./project-reports.types";
+import type {
+  BuildProjectReportsArguments,
+  FindOwnedFindingsArguments,
+  OwnedFindings,
+} from "./project-reports.types";
 import type {
   CallableBreadthReport,
   CallGraphSummary,
@@ -287,6 +291,31 @@ export class ProjectReportsService {
         }),
       )
       .toSorted((first, second) => second.depth - first.depth);
+  }
+
+  /**
+   * Picks the findings a named set of projects owns, and nothing else.
+   *
+   * For a run whose verdict covers fewer projects than its measurement did. A
+   * finding's owner is already decided — `build` files a stack under the
+   * project owning its entry point and a breadth report under the project
+   * declaring the callable — so this selects among those reports rather than
+   * deciding ownership a second way.
+   *
+   * A named project the reports do not hold contributes nothing rather than
+   * being an error: a run may be pointed at a project whose files it then
+   * found nothing in, and having read nothing is a fact for the caller's own
+   * rules to judge.
+   */
+  public findOwnedFindings(args: FindOwnedFindingsArguments): OwnedFindings {
+    const reports = args.reports.filter((report) =>
+      args.projectNames.includes(report.projectName),
+    );
+
+    return {
+      deepStacks: this.findDeepStacks({ limits: args.limits, reports }),
+      wideCallables: this.findWideCallables({ limits: args.limits, reports }),
+    };
   }
 
   /**
