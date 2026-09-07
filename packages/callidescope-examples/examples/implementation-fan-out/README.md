@@ -8,7 +8,13 @@
 nx run callidescope-examples:examples
 ```
 
-Then read `unresolvedCallCount` in [`output/report.json`](../../output/report.json)'s summary. It is 2: this dropped expansion, and the computed member name.
+Then read `unresolvedCallCount` in the `packages/callidescope-examples` entry of [`output/report.json`](../../output/report.json)'s `projects`. It is 2: this dropped expansion, and the computed member name.
+
+The top-level summary is higher, because the run measures this package's
+dependency closure as well and real code has unfollowable calls of its own. Read
+this package's own entry whenever a count is meant to be about a fixture — see
+[`dependency-closure`](../dependency-closure) for why the run reaches further
+than this package.
 
 `maximumImplementationCandidates` is the primary noise control on structural
 matching. A member named `emit`, `run`, or `sync` matches dozens of unrelated

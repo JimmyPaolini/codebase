@@ -71,7 +71,7 @@ export class CallidescopeService {
   private discoverCallables(args: TraceArguments): {
     collection: CallableCollection;
     projectNames: string[];
-    projectRoots: ReadonlyMap<string, string>;
+    startingProjectRoots: ReadonlyMap<string, string>;
   } {
     this.workspaceService.configure(args.configuration.workspaceStructure);
 
@@ -83,15 +83,32 @@ export class CallidescopeService {
       excludeFrom: args.configuration.excludeFrom,
       workspaceRoot: args.workspaceRoot,
     });
-    const projects = this.workspaceService.discoverProjects({
+    const startingProjects = this.workspaceService.discoverProjects({
       directories: args.directories,
       fileFilter,
       workspaceRoot: args.workspaceRoot,
     });
+    // A run naming no directory already asked for every project, so the walk
+    // that would find them again is the one it just did.
+    const workspaceProjects =
+      args.directories.length === 0
+        ? startingProjects
+        : this.workspaceService.discoverProjects({
+            directories: [],
+            fileFilter,
+            workspaceRoot: args.workspaceRoot,
+          });
     const programSet = this.programService.buildPrograms({
-      projects,
+      startingProjects,
+      workspaceProjects,
       workspaceRoot: args.workspaceRoot,
     });
+    // The closure rather than the starting roots: a scoped run traces the
+    // projects its imports reach as well, so a call into a dependency lands on
+    // a frame instead of stopping at the package boundary.
+    const projects = programSet.programs.map(
+      (projectProgram) => projectProgram.project,
+    );
 
     this.externalService.configure({
       ownedFilePaths: new Set(programSet.ownerByFilePath.keys()),
@@ -113,8 +130,12 @@ export class CallidescopeService {
     return {
       collection,
       projectNames: projects.map((project) => project.name),
-      projectRoots: new Map(
-        projects.map((project) => [project.name, project.root]),
+      // The starting projects rather than the closure: measurement reaches
+      // into a project's dependencies, publishing does not. A run scoped to
+      // one package would otherwise rewrite a section in every README its
+      // imports happened to reach, which is a whole-workspace run's job.
+      startingProjectRoots: new Map(
+        startingProjects.map((project) => [project.name, project.root]),
       ),
     };
   }
@@ -236,7 +257,7 @@ export class CallidescopeService {
    * unconditionally.
    */
   public locate(args: TraceArguments): LocateOutcome {
-    const { collection, projectRoots } = this.discoverCallables(args);
+    const { collection, startingProjectRoots } = this.discoverCallables(args);
     const { graph } = this.graphAssemblyService.assemble({
       callablesById: collection.byId,
       ignoreCallees: args.configuration.ignoreCallees,
@@ -244,7 +265,7 @@ export class CallidescopeService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    return { callablesById: collection.byId, graph, projectRoots };
+    return { callablesById: collection.byId, graph, startingProjectRoots };
   }
 
   /** Traces a workspace and returns everything the run found. */
@@ -253,12 +274,11 @@ export class CallidescopeService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    const { collection, projectNames, projectRoots } =
+    const { collection, projectNames, startingProjectRoots } =
       this.discoverCallables(args);
 
     return {
       projectNames,
-      projectRoots,
       result: this.analyze({
         callablesById: collection.byId,
         configuration: args.configuration,
@@ -268,6 +288,7 @@ export class CallidescopeService {
         projectNames,
         workspaceRoot: args.workspaceRoot,
       }),
+      startingProjectRoots,
     };
   }
 }

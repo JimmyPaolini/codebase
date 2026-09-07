@@ -20,35 +20,81 @@ helm upgrade --install myrelease ./chart
 
 ## Agent Workflow
 
-Use the [mattpocock/skills](https://github.com/mattpocock/skills) workflow for non-trivial features,
-refactors, and bugfixes so the work is clarified, specified, tracked, and
-implemented in a consistent way.
+Use the [mattpocock/skills](https://github.com/mattpocock/skills) workflow for
+non-trivial features, refactors, and bugfixes so the work is clarified,
+specified, tracked, and implemented in a consistent way, with the
+[obra/superpowers](https://github.com/obra/superpowers) skills supplying the
+gates it leaves open — approval before the first line of code, a failing test
+before the first line of implementation, and a root cause before the first
+fix.
 
-1. Sharpen the request first. Run
+1. Sharpen the request first, running
+   [brainstorming](.agents/skills/brainstorming/SKILL.md) and the grilling
+   skills together. Brainstorming classifies the request — spike, bounded, or
+   architectural — and holds the approval gate: no implementation skill, no
+   code, nothing scaffolded until you have said what you intend and heard yes,
+   however small the change. Around that gate, run
    [grill-with-docs](.agents/skills/grill-with-docs/SKILL.md) when the work
    needs a domain model or ADRs to come out of the conversation, or
-   [grill-me](.agents/skills/grill-me/SKILL.md) for a plain interview. Unsure
-   which skill fits? Ask [ask-matt](.agents/skills/ask-matt/SKILL.md).
+   [grill-me](.agents/skills/grill-me/SKILL.md) for a plain interview. Where
+   the two disagree on pacing, [grilling](.agents/skills/grilling/SKILL.md)
+   wins: ask the whole frontier as one numbered round carrying a recommended
+   answer per question, rather than brainstorming's one question per message.
+   Unsure which skill fits? Ask
+   [ask-matt](.agents/skills/ask-matt/SKILL.md).
 2. Capture the outcome with [to-spec](.agents/skills/to-spec/SKILL.md), then
    split it with [to-tickets](.agents/skills/to-tickets/SKILL.md) when the work
    spans multiple tasks. Reach for
    [wayfinder](.agents/skills/wayfinder/SKILL.md) when the work is larger than
-   one agent session can hold.
+   one agent session can hold. This step is brainstorming's terminal state:
+   ignore its hand-off to `writing-plans` and its `docs/superpowers/specs/`
+   destination — that skill is not installed here, and a spec and its tickets
+   belong where [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md)
+   says.
 3. Build with [implement](.agents/skills/implement/SKILL.md), which drives
-   [tdd](.agents/skills/tdd/SKILL.md) red-green-refactor. For a multi-task
-   ticket set, orchestrate with
+   red-green-refactor through two TDD skills used in tandem, both read before
+   the first test.
+   [test-driven-development](.agents/skills/test-driven-development/SKILL.md)
+   is the discipline — no production code without a failing test, and every
+   test watched failing for the right reason before the code that passes it is
+   written. [tdd](.agents/skills/tdd/SKILL.md) is what makes those tests worth
+   keeping — seams confirmed with the user before a test is written, behavior
+   asserted through public interfaces, and the tautological,
+   implementation-coupled, and horizontally-sliced anti-patterns named. Where
+   they disagree, `test-driven-development` owns the loop's strictness and
+   `tdd` owns refactoring: it belongs to step 4's review rather than to the
+   cycle. Its `npm test` invocations are `nx run <project>:vitest:<kind>` here
+   — see [Testing](#testing). For a multi-task ticket set, orchestrate with
    [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
    — one fresh subagent per task — and use
    [dispatching-parallel-agents](.agents/skills/dispatching-parallel-agents/SKILL.md)
    when tasks are genuinely independent. Debug regressions with
-   [diagnosing-bugs](.agents/skills/diagnosing-bugs/SKILL.md).
-4. Review with [code-review](.agents/skills/code-review/SKILL.md), and apply
-   incoming feedback through
+   [systematic-debugging](.agents/skills/systematic-debugging/SKILL.md) and
+   [diagnosing-bugs](.agents/skills/diagnosing-bugs/SKILL.md) in tandem, split
+   the way the TDD pair is: systematic-debugging is the gate — no fix proposed
+   until its root-cause phase is finished, however obvious the fix looks — and
+   diagnosing-bugs is the method that gets you a root cause.
+4. Ask for the review with
+   [requesting-code-review](.agents/skills/requesting-code-review/SKILL.md) —
+   a fresh subagent handed the base and head commits and what the work was
+   meant to do, never this session's history — review with
+   [code-review](.agents/skills/code-review/SKILL.md), and apply incoming
+   feedback through
    [receiving-code-review](.agents/skills/receiving-code-review/SKILL.md)
    rather than agreeing on sight.
 5. Finish with [validate-code](.agents/skills/validate-code/SKILL.md), gated by
    [verification-before-completion](.agents/skills/verification-before-completion/SKILL.md):
    never claim done without the command output that proves it.
+6. Integrate with
+   [finishing-a-development-branch](.agents/skills/finishing-a-development-branch/SKILL.md),
+   which supplies the decision — merge, open a pull request, or leave the
+   branch — and nothing else: this repository's own skills own the mechanics,
+   so run [submit-changes](.agents/skills/submit-changes/SKILL.md) and the
+   [commit-code](.agents/skills/commit-code/SKILL.md) and
+   [create-pull-request](.agents/skills/create-pull-request/SKILL.md) skills it
+   drives rather than that skill's git commands, and read its `npm test` step
+   as `nx affected --target=vitest --base=main`. Decline its worktree cleanup
+   when the harness created the worktree: the session is running inside it.
 
 The codebase-native skills still own this repository's mechanics — branch
 names, commits, pull requests, Nx targets, and validation. Prefer them over any
@@ -994,6 +1040,13 @@ directly, so they are not listed here — reading the directory is what tells yo
 which ones exist right now, including the ones installed from other
 repositories.
 
+Writing or editing one — in `.agents/skills/`, or in the four `*-agents`
+packages this repository publishes — is its own task with its own two skills:
+[writing-skills](.agents/skills/writing-skills/SKILL.md) for how a skill is
+built and verified before it ships, and
+[writing-for-agents](.agents/skills/writing-for-agents/SKILL.md) for the prose
+inside it.
+
 **Every skill is committed**, including the ones vendored from other
 repositories — the [mattpocock/skills](https://github.com/mattpocock/skills) set
 that [Agent Workflow](#agent-workflow) is built on, and the rest recorded in
@@ -1023,7 +1076,7 @@ a vendored copy:
 | ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------- |
 | [mattpocock/skills](https://github.com/mattpocock/skills)           | MIT        | 25, the Agent Workflow set                                                                                    |
 | [nrwl/nx](https://github.com/nrwl/nx)                               | MIT        | 7, the `nx-*` skills plus `monitor-ci` and `link-workspace-packages`                                          |
-| [obra/superpowers](https://github.com/obra/superpowers)             | MIT        | 5                                                                                                             |
+| [obra/superpowers](https://github.com/obra/superpowers)             | MIT        | 11                                                                                                            |
 | [github/gh-stack](https://github.com/github/gh-stack)               | MIT        | 1                                                                                                             |
 | [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT        | 1                                                                                                             |
 | [pbakaus/impeccable](https://github.com/pbakaus/impeccable)         | Apache-2.0 | 1                                                                                                             |
