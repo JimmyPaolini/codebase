@@ -99,7 +99,7 @@ describe(DrawPermutationsService, () => {
       () => {
         const paths = sweepPaths();
         const named = paths.filter((filePath) =>
-          /-(?:bars|dashes|diamond|dots|lines|mesh|zigzag)\.svg$/.test(
+          /-(?:bars|dashes|diamond|dots|lines|mesh|square|zigzag)\.svg$/.test(
             filePath,
           ),
         );
@@ -107,7 +107,7 @@ describe(DrawPermutationsService, () => {
         // The tile whose only edge is a southward one over the lower two
         // levels earns no name, so nothing is appended to its identifier.
         expect(paths).toContain("mosaic/4-rows/1-columns/048.svg");
-        expect(named).toHaveLength(127);
+        expect(named).toHaveLength(125);
       },
       FULL_SWEEP_TIMEOUT_MILLISECONDS,
     );
