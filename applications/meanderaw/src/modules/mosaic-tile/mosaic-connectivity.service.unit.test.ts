@@ -10,10 +10,7 @@ import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { MosaicTileService } from "./mosaic-tile.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
 
-import type {
-  MosaicBuildableSubFamily,
-  MosaicTile,
-} from "./mosaic-motif.types";
+import type { MosaicBuildableSubFamily, MosaicTile } from "./mosaic-tile.types";
 
 // 🔧 Configuration
 

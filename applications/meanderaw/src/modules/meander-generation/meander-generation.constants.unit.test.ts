@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   InvalidModifierError,
-  InvalidPeriodError,
   InvalidStrandCountError,
-  InvalidSubFamilyError,
 } from "./meander-generation.constants";
+import {
+  InvalidSubFamilyError,
+  MissingSubFamilyError,
+} from "./sub-family.constants";
 
 describe("meander generation errors", () => {
   describe(InvalidModifierError, () => {
@@ -30,12 +32,14 @@ describe("meander generation errors", () => {
     });
   });
 
-  describe(InvalidPeriodError, () => {
-    it("names the bounds and the offending period", () => {
-      const error = new InvalidPeriodError(0, 1, 12);
+  describe(MissingSubFamilyError, () => {
+    it("names the family and the members of its space to choose from", () => {
+      const error = new MissingSubFamilyError("mosaic", ["bars", "dots"]);
 
-      expect(error.name).toBe("InvalidPeriodError");
-      expect(error.message).toBe("period must be between 1 and 12, received 0");
+      expect(error.name).toBe("MissingSubFamilyError");
+      expect(error.message).toBe(
+        'type "mosaic" draws no repeat unit of its own; name a member of its unit space with a sub-family: bars, dots',
+      );
     });
   });
 

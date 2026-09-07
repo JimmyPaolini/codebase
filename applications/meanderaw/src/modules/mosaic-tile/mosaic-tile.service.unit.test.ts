@@ -3,10 +3,10 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { mosaicTile } from "../../../testing/mosaic-tiles";
 
-import { MalformedMosaicTileError } from "./mosaic-motif.constants";
+import { MalformedMosaicTileError } from "./mosaic-tile.constants";
 import { MosaicTileService } from "./mosaic-tile.service";
 
-import type { MosaicDirections, MosaicTile } from "./mosaic-motif.types";
+import type { MosaicDirections, MosaicTile } from "./mosaic-tile.types";
 
 // 🔧 Configuration
 

@@ -4,11 +4,11 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { mosaicTile } from "../../../testing/mosaic-tiles";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
-import { MosaicConnectivityService } from "../mosaic-motif/mosaic-connectivity.service";
-import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
-import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
-import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
-import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
+import { MosaicConnectivityService } from "../mosaic-tile/mosaic-connectivity.service";
+import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
+import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
 
 import { MosaicNamingService } from "./mosaic-naming.service";
 
@@ -17,7 +17,7 @@ import type {
   MosaicSubFamily,
   MosaicTile,
   MosaicTileShape,
-} from "../mosaic-motif/mosaic-motif.types";
+} from "../mosaic-tile/mosaic-tile.types";
 
 // 🔧 Configuration
 

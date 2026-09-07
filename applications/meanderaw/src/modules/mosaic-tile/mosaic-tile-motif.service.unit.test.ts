@@ -8,7 +8,7 @@ import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
 import { MosaicTileService } from "./mosaic-tile.service";
 
-import type { MosaicTile } from "./mosaic-motif.types";
+import type { MosaicTile } from "./mosaic-tile.types";
 
 // 🧪 Tests
 

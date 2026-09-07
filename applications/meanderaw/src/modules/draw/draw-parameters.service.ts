@@ -6,11 +6,10 @@ import {
 } from "../branch-motif/branch-motif.constants";
 import {
   PLY_MODIFIER_NAMES,
-  SUPPORTED_DOT_SHAPES,
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
-import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
+import { SUPPORTED_SUB_FAMILIES } from "../mosaic-tile/mosaic-tile.constants";
 import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
 
 import {
@@ -20,14 +19,13 @@ import {
 } from "./draw.constants";
 
 import type {
-  DotShape,
   GenerationParameters,
   MeanderType,
   Modifier,
   PlyModifierName,
   SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
-import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types";
 import type { DrawCommandOptions } from "./draw.types";
 
 /**
@@ -37,9 +35,8 @@ import type { DrawCommandOptions } from "./draw.types";
  * It exists because `DrawCommand` has one command's worth of room and two
  * commands' worth of options: nest-commander derives each option's key from
  * its own long flag, so `--modifier` and the parameter it needs
- * (`alternated`'s `--period`, `dot`'s `--shape`, `plied`'s `--strands`,
- * `stagger`'s `--branches`, `rung`'s `--leftward`, `comb`'s `--upward`) are
- * parsed by separate
+ * (`plied`'s `--strands`, `stagger`'s `--branches`, `rung`'s `--leftward`,
+ * `comb`'s `--upward`) are parsed by separate
  * methods that cannot see each other. Recombining them, and narrowing every
  * raw string to the union it belongs to, is the whole of this service — the
  * command keeps only the `@Option` methods nest-commander insists live on
@@ -62,17 +59,9 @@ export class DrawParametersService {
 
   // 🔏 Private Methods
 
-  /** The `alternated` modifier `--period` describes, refusing the modifier when the flag is absent. */
-  private alternatedModifier(period: number | undefined): Modifier {
-    if (period === undefined) {
-      throw new MissingModifierParameterError("alternated", "--period");
-    }
-
-    return { name: "alternated", period };
-  }
-
   /**
-   * The `comb` modifier `--upward` describes.
+   * The `comb` modifier
+ `--upward` describes.
    *
    * Like {@link rungModifier} it cannot refuse an absent flag, and for the
    * same reason: a boolean left off and a boolean passed `false` reach this
@@ -81,20 +70,6 @@ export class DrawParametersService {
    */
   private combModifier(isUpward: boolean | undefined): Modifier {
     return { isUpward: isUpward ?? DEFAULT_COMB_IS_UPWARD, name: "comb" };
-  }
-
-  /** The `dot` modifier `--shape` describes, refusing the modifier when the flag is absent. */
-  private dotModifier(shape: DotShape | undefined): Modifier {
-    if (shape === undefined) {
-      throw new MissingModifierParameterError("dot", "--shape");
-    }
-
-    return { name: "dot", shape };
-  }
-
-  /** Narrows a raw string to a supported {@link DotShape} without an unchecked assertion. */
-  private isDotShape(value: string): value is DotShape {
-    return SUPPORTED_DOT_SHAPES.includes(value);
   }
 
   /** Narrows a raw string to a supported {@link MeanderType} without an unchecked assertion. */
@@ -197,17 +172,9 @@ export class DrawParametersService {
 
   // 🌎 Public Methods
 
-  /** Narrows `--shape` to a {@link DotShape}, rejecting anything outside the supported set. */
-  dotShape(value: string): DotShape {
-    if (!this.isDotShape(value)) {
-      throw new UnsupportedOptionError("shape", value, SUPPORTED_DOT_SHAPES);
-    }
-
-    return value;
-  }
-
   /**
-   * Builds the {@link Modifier} the parsed options describe, or `undefined`
+   * Builds the {@link Modifier} the parsed options describe
+, or `undefined`
    * where no `--modifier` was given. A modifier carrying a parameter is
    * refused rather than defaulted when that parameter is absent, since
    * guessing one would silently draw something other than what was asked
@@ -221,16 +188,8 @@ export class DrawParametersService {
       return undefined;
     }
 
-    if (modifier === "alternated") {
-      return this.alternatedModifier(options.period);
-    }
-
     if (modifier === "comb") {
       return this.combModifier(options.upward);
-    }
-
-    if (modifier === "dot") {
-      return this.dotModifier(options.shape);
     }
 
     if (this.isPlyModifierName(modifier)) {
@@ -301,9 +260,10 @@ export class DrawParametersService {
   }
 
   /**
-   * Narrows `--sub-family` to a {@link MosaicBuildableSubFamily}. Note that `dots` is
-   * a sub-family and `dot` is a modifier: different things, one letter
-   * apart, and only the plural is accepted here.
+   * Narrows `--sub-family` to a {@link MosaicBuildableSubFamily}, which for
+   * `mosaic` is the only way to name a drawing: the family draws no repeat
+   * unit of its own, so `--type mosaic` on its own is refused rather than
+   * defaulted — see `MissingSubFamilyError`.
    */
   subFamily(value: string): MosaicBuildableSubFamily {
     if (!this.isSubFamily(value)) {

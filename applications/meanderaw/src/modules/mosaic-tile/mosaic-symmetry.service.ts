@@ -8,7 +8,7 @@ import type {
   MosaicTile,
   MosaicTransform,
   MosaicTransformChoice,
-} from "./mosaic-motif.types";
+} from "./mosaic-tile.types";
 
 /**
  * The symmetries under which two `mosaic` tiles draw the same pattern, and

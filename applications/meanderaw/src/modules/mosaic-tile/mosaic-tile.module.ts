@@ -2,11 +2,9 @@ import { Module } from "@nestjs/common";
 
 import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
 import { MeanderTopologyModule } from "../meander-topology/meander-topology.module";
-import { MotifTransformsModule } from "../motif-transforms/motif-transforms.module";
 import { SvgRenderingModule } from "../svg-rendering/svg-rendering.module";
 
 import { MosaicConnectivityService } from "./mosaic-connectivity.service";
-import { MosaicMotifService } from "./mosaic-motif.service";
 import { MosaicSubFamilyService } from "./mosaic-sub-family.service";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "./mosaic-tile-generation.service";
@@ -15,13 +13,17 @@ import { MosaicTileService } from "./mosaic-tile.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
 
 /**
- * Wires up the whole `mosaic` family: the motif the main generator
- * dispatches to, and the tile enumeration behind it — the tile vocabulary
- * every other service reads a tile through, symmetry canonicalization, the
- * subset enumeration over a tile's edges, the sub-family predicates that
- * name its regions, the per-tile motif, the reading of a tile's ink as a
- * graph, and the standalone generator that renders one enumerated tile to a
- * document.
+ * Wires up the whole `mosaic` family, which is its tile enumeration and
+ * nothing else — the tile vocabulary every other service reads a tile
+ * through, symmetry canonicalization, the subset enumeration over a tile's
+ * edges, the sub-family predicates that name its regions, the per-tile
+ * motif, the reading of a tile's ink as a graph, and the standalone
+ * generator that renders one enumerated tile to a document.
+ *
+ * There is no motif for `MeanderGenerationService` to dispatch to, and that
+ * absence is the family's shape rather than a gap in it: every mosaic is a
+ * member of the enumerated space, so a drawing is asked for by naming a
+ * member. `MotifTransformsModule` left with the motif that used it.
  *
  * {@link MeanderTopologyModule} is the one import that is not a drawing
  * concern, and the direction it runs in is the point of it.
@@ -36,7 +38,6 @@ import { MosaicTilesService } from "./mosaic-tiles.service";
   controllers: [],
   exports: [
     MosaicConnectivityService,
-    MosaicMotifService,
     MosaicSubFamilyService,
     MosaicSymmetryService,
     MosaicTileGenerationService,
@@ -44,15 +45,9 @@ import { MosaicTilesService } from "./mosaic-tiles.service";
     MosaicTileService,
     MosaicTilesService,
   ],
-  imports: [
-    GridGeometryModule,
-    MeanderTopologyModule,
-    MotifTransformsModule,
-    SvgRenderingModule,
-  ],
+  imports: [GridGeometryModule, MeanderTopologyModule, SvgRenderingModule],
   providers: [
     MosaicConnectivityService,
-    MosaicMotifService,
     MosaicSubFamilyService,
     MosaicSymmetryService,
     MosaicTileGenerationService,
@@ -61,4 +56,4 @@ import { MosaicTilesService } from "./mosaic-tiles.service";
     MosaicTilesService,
   ],
 })
-export class MosaicMotifModule {}
+export class MosaicTileModule {}

@@ -1,13 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
 import {
   MOSAIC_TILE_MAXIMUM_ROWS,
   MOSAIC_TILE_MINIMUM_ROWS,
-} from "../mosaic-motif/mosaic-motif.constants";
-import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
-import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
-import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
-import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+} from "../mosaic-tile/mosaic-tile.constants";
+import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import { PERMUTATION_REPEAT_COUNT } from "./draw.constants";

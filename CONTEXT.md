@@ -102,17 +102,20 @@ _Avoid_: Cell, unit, permutation
 
 **Sub-family**:
 A named, recognizable class of meanders within one family — `dots`, `lines`, `dashes`,
-`diamond`. Some sub-families arise by applying a modifier, others by recognizing a
-structural property of a tile; both routes produce the same kind of thing.
+`diamond`. A sub-family is recognized as a structural property of a tile; it may also be
+constructible by a modifier, though for `mosaic` — the only family that has
+sub-families — none is, since every member of its space is already enumerated.
 _Avoid_: Variant, subtype, group
 
 **Modifier**:
 A named transform applied to a family's units — rotation (`spin`), mirroring (`flip`),
 border-closing (`edge`), the `cross`-specific `interrupted`, the `negative`-specific
-`brick` and `ruled`, the `branch`-specific `rung` and `stagger`, the `parallel`-specific
-`plied`, or the `mosaic`-specific `alternated`, `split`, and `dot`.
-One route by which a sub-family comes about, not a separate level of the model. Only
-certain modifiers are compatible with each family.
+`brick` and `ruled`, the `branch`-specific `rung` and `stagger`, or the
+`parallel`-specific `plied`.
+One route by which a sub-family may come about, not a separate level of the model. Only
+certain modifiers are compatible with each family, and `mosaic` accepts none: a modifier
+constructs a member of a unit space, and every member of that family's space is already
+enumerated.
 _Avoid_: Variant, option, flag
 
 **Rows**:

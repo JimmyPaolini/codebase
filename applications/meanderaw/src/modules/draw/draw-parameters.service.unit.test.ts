@@ -48,15 +48,14 @@ describe(DrawParametersService, () => {
 
   describe("modifierName", () => {
     it.each([
-      "alternated",
-      "dot",
+      "comb",
       "edge",
       "edge-flip",
       "flip",
       "plied",
       "spin",
       "spin-flip",
-      "split",
+      "stagger",
     ])("passes the %s modifier through unchanged", (modifier) => {
       expect(service.modifierName(modifier)).toBe(modifier);
     });
@@ -78,24 +77,9 @@ describe(DrawParametersService, () => {
 
     // 🎯 `dot` is a modifier and `dots` is a sub-family: different things one
     // letter apart, and only the plural belongs here.
-    it("rejects the dot modifier it sounds like", () => {
+    it("rejects the singular the dot sub-family sounds like", () => {
       expect(() => service.subFamily("dot")).toThrow(
         /Unsupported sub-family "dot"/,
-      );
-    });
-  });
-
-  describe("dotShape", () => {
-    it.each(["bounce", "up"])(
-      "passes the %s shape through unchanged",
-      (shape) => {
-        expect(service.dotShape(shape)).toBe(shape);
-      },
-    );
-
-    it("rejects an unsupported shape", () => {
-      expect(() => service.dotShape("sideways")).toThrow(
-        /Unsupported shape "sideways"/,
       );
     });
   });
@@ -114,14 +98,6 @@ describe(DrawParametersService, () => {
     });
 
     it.each([
-      {
-        expected: { name: "alternated", period: 2 },
-        options: { modifier: "alternated" as const, period: 2 },
-      },
-      {
-        expected: { name: "dot", shape: "bounce" },
-        options: { modifier: "dot" as const, shape: "bounce" as const },
-      },
       {
         expected: { name: "plied", strands: 3 },
         options: { modifier: "plied" as const, strands: 3 },
@@ -150,8 +126,6 @@ describe(DrawParametersService, () => {
     // 🎯 Defaulting the missing parameter would draw something other than
     // what was asked for, under a filename that claims otherwise.
     it.each([
-      { flag: "--period", modifier: "alternated" as const },
-      { flag: "--shape", modifier: "dot" as const },
       { flag: "--strands", modifier: "plied" as const },
       { flag: "--branches", modifier: "stagger" as const },
     ])("refuses $modifier without $flag", ({ flag, modifier }) => {
@@ -202,16 +176,16 @@ describe(DrawParametersService, () => {
       expect(
         service.single({
           ...baseOptions,
-          modifier: "dot",
+          modifier: "plied",
           rows: 6,
-          shape: "up",
-          type: "mosaic",
+          strands: 3,
+          type: "parallel",
         }),
       ).toStrictEqual({
-        modifier: { name: "dot", shape: "up" },
+        modifier: { name: "plied", strands: 3 },
         repeatCount: 6,
         rows: 6,
-        type: "mosaic",
+        type: "parallel",
       });
     });
 
