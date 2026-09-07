@@ -20,9 +20,10 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
  *
  * - the workspace runs `--check depth`, and its committed report is published
  *   on `main` only, because the call graph moves on nearly every change;
- * - this package runs `--check reports`, because its traced source is frozen
- *   fixture code. A report here goes stale only when a fixture changed or the
- *   resolver did — which is exactly what the check should catch.
+ * - this package runs `--check reports`, because its fixtures are frozen. A
+ *   report here goes stale when a fixture changed, when the resolver did, or
+ *   when one of the three dependency packages the run's closure reaches did —
+ *   all three of which are exactly what the check should catch.
  */
 const callidescopeConfiguration: CallidescopeConfiguration = {
   limits: {

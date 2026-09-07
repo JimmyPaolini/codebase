@@ -97,9 +97,11 @@ hanging it off a lint-style aggregate.
 
 ### `--directories`, and why a run is slow without it
 
-This is the difference between a whole-workspace analysis and a one-second
-check. Each directory named needs its own `tsconfig.json`, and only those
-TypeScript programs get built:
+This is the difference between a whole-workspace analysis and a check that
+finishes in seconds. Each directory named needs its own `tsconfig.json`, and
+the programs built are those plus the ones of every project those directories
+transitively import — so a call into a dependency still resolves to a real
+frame:
 
 ```bash
 npx callidescope -d packages/foo,packages/bar --check depth
@@ -115,18 +117,20 @@ contract, and it holds in a monorepo, in a single package, or in neither. The
 same list can be set once as `directories` in the configuration file.
 
 There is a real trade-off when narrowing a `breadth` lookup: **callers outside
-the named directories do not exist to the run.** For a rename whose blast
-radius is the whole point, trace wide enough to contain every consumer — a
-narrowed lookup reporting two callers when there are nine is worse than a slow
-one.
+the named directories and the closure below them do not exist to the run** —
+the closure runs downward, so a dependent that calls in is never built. For a
+rename whose blast radius is the whole point, trace wide enough to contain
+every consumer — a narrowed lookup reporting two callers when there are nine is
+worse than a slow one.
 
 An Nx workspace can hand the selecting to Nx instead, through the separate
 `@callidescope/nx` plugin, which infers `trace`, `depth`, and `breadth` targets
-onto every project and traces each one _with its Nx dependencies_ — so a stack
-is not truncated the moment it crosses a package boundary. It is a separate
-package rather than a flag here on purpose: this CLI depends on nothing
-Nx-shaped, and a flag that worked only when an optional package happened to be
-installed would advertise in `--help` something that silently did nothing.
+onto every project and traces each one _with its Nx dependencies_ — so those
+dependencies are projects the run is scoped to rather than ones it merely
+reached through a closure. It is a separate package rather than a flag here on
+purpose: this CLI depends on nothing Nx-shaped, and a flag that worked only
+when an optional package happened to be installed would advertise in `--help`
+something that silently did nothing.
 
 ### `--format` decides what prints, not what is written
 
