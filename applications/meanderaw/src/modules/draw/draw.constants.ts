@@ -2,23 +2,6 @@
 
 /**
 
- * `isUpward` values swept for the `comb` modifier's batch combinations.
- *
- * One value rather than two, and deliberately not the mode's own default:
- * the unmodified sweep already draws the downward comb, and
- * `--modifier comb` naming it produces a byte-identical document under a
- * second filename — `branch-motif.service.unit.test.ts` asserts that
- * identity, exactly as `parallel`'s does for a two-strand `plied`. Sweeping
- * the upward one alone is what puts the direction the corpus did not have
- * into it without putting the one it already had into it twice.
- *
- * `rung` sweeps both of its directions because neither is what the
- * unmodified drawing is — that one is a `comb`.
- */
-export const COMB_SWEEP_UPWARD_VALUES: readonly boolean[] = [true];
-
-/**
-
  * `isLeftward` values swept for the `rung` modifier's batch combinations.
  *
  * Both of them, which is the modifier's whole domain rather than a sample of

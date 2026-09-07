@@ -9,10 +9,9 @@
  * so every mode forks and every mode closes loops. They differ only in
  * *which* steps they keep between those rules.
  *
- * - `comb` runs a rail along one of the band's border rows and reaches a
- *   full tooth from it into every lattice column. Its modifier carries
- *   which border row that is, so the teeth hang down from the top or stand
- *   up from the bottom; drawn with no modifier at all they hang down.
+ * - `comb` runs a rail along the band's top border row and reaches a full
+ *   tooth from it into every lattice column, hanging down. It has no
+ *   modifier of its own — it is what a bare `--type branch` inks.
  * - `stagger` keeps the same teeth and moves the rail: it runs along the
  *   top for one repeat unit and along the bottom for the next, so the
  *   figure reads as a crenellation rather than a fringe. Its modifier
@@ -30,12 +29,12 @@ export type BranchMode = "comb" | "rung" | "stagger";
  * The modifier names the `branch` family draws a mode for.
  *
  * It is deliberately narrower than `Modifier["name"]`: this family knows
- * its own three modifiers and nothing about anybody else's, so a family
+ * its own two modifiers and nothing about anybody else's, so a family
  * added later with a modifier of its own forces no edit here. What keeps it
  * honest is `branch-motif.service.unit.test.ts`, which asserts these are
  * exactly the names `COMPATIBLE_MODIFIERS.branch` lists.
  */
-export type BranchModifierName = "comb" | "rung" | "stagger";
+export type BranchModifierName = "rung" | "stagger";
 
 /** One inclusive run along a single lattice line, in lattice indices. */
 export interface BranchSpan {

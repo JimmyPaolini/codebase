@@ -6,7 +6,6 @@ import {
   BRANCH_MODES_BY_MODIFIER_NAME,
   BRANCH_UNIT_COLUMNS,
   DEFAULT_BRANCH_MODE,
-  DEFAULT_COMB_IS_UPWARD,
   DEFAULT_RUNG_IS_LEFTWARD,
   UnknownBranchModeError,
 } from "./branch-motif.constants";
@@ -135,19 +134,6 @@ export class BranchMotifService implements MotifService {
       : DEFAULT_RUNG_IS_LEFTWARD;
   }
 
-  /**
-   * Which way a `comb` drawing's teeth reach, read off its own modifier.
-   *
-   * Only `comb` answers anything but {@link DEFAULT_COMB_IS_UPWARD}, and
-   * only `comb` could: `stagger` puts its rail on both border rows already,
-   * and `rung`'s rail is not what its teeth hang from.
-   */
-  private isUpward(modifier: Modifier | undefined): boolean {
-    return modifier?.name === "comb"
-      ? modifier.isUpward
-      : DEFAULT_COMB_IS_UPWARD;
-  }
-
   /** The lattice column the drawing ends at: one short of the columns its repeat units span, since the units count lattice columns rather than the gaps between them. */
   private lastColumn(pattern: RepeatPatternOptions): number {
     return this.unitColumns(pattern.modifier) * pattern.repeatCount - 1;
@@ -229,27 +215,22 @@ export class BranchMotifService implements MotifService {
    * Which of the band's two border rows a unit's rail runs along.
    *
    * `stagger` decides it per unit — every second one runs along the bottom,
-   * which is the crenellation. Every other spine drawing puts every unit's
-   * rail on the same row, and `comb`'s modifier says which: the top by
-   * default, so its teeth hang down, or the bottom under `--upward`, so
-   * they stand up.
+   * which is the crenellation. Every other spine drawing (`comb`, the
+   * family's default) puts every unit's rail on the top row.
    *
    * Moving the rail costs the figure nothing structurally — the number of
    * rail steps is the same wherever it runs, and both of the rows it can run
    * along are ruled end to end anyway, so a rail is redundant ink either
    * way. What it still decides is the reading: under `stagger` the rail
-   * changes side once per unit, which is the crenellation, and a `comb`
-   * moves its rail as a whole and reads as a fringe hanging from one border.
+   * changes side once per unit, which is the crenellation.
    */
   private spineRow(
     placement: BranchUnitPlacement,
     modifier: Modifier | undefined,
   ): number {
-    if (modifier?.name === "stagger") {
-      return placement.unitIndex % 2 === 1 ? placement.rows : 0;
-    }
-
-    return this.isUpward(modifier) ? placement.rows : 0;
+    return modifier?.name === "stagger" && placement.unitIndex % 2 === 1
+      ? placement.rows
+      : 0;
   }
 
   /**
@@ -268,9 +249,8 @@ export class BranchMotifService implements MotifService {
    * {@link border} already covers it and the forks belong to the rules:
    * every interior column of either border carries one.
    *
-   * The teeth span the whole band in both modes, so which border row the
-   * rail runs along is the only thing left for a direction to change — see
-   * {@link spineRow}.
+   * The teeth span the whole band in both modes; see {@link spineRow} for
+   * which border row the rail runs along.
    */
   private spineUnit(
     geometry: GridGeometry,

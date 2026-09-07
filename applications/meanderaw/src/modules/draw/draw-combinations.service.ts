@@ -17,7 +17,6 @@ import {
 import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 
 import {
-  COMB_SWEEP_UPWARD_VALUES,
   RUNG_SWEEP_LEFTWARD_VALUES,
   STAGGER_SWEEP_BRANCH_COUNTS,
 } from "./draw.constants";
@@ -34,7 +33,7 @@ import type {
  * crossed with every modifier `COMPATIBLE_MODIFIERS` lists for it plus "no
  * modifier", crossed with every row count from that type's own
  * `STRUCTURAL_MINIMUM_ROWS` through its own `FAMILY_MAXIMUM_ROWS`.
- * `comb`, `plied`, `rung`, and `stagger` each expand
+ * `plied`, `rung`, and `stagger` each expand
  * to the representative values `draw.constants.ts` names rather than their
  * full range, and `repeatCount` is
  * `DEFAULT_REPEAT_COUNT` except for the spin family, which is rounded up to
@@ -91,7 +90,7 @@ export class DrawCombinationsService {
    * Expands one modifier name into every {@link Modifier} value the sweep
    * covers at `rowCount`.
    *
-   * `comb`, `rung`, and `stagger` ignore the row count and expand to the
+   * `rung` and `stagger` ignore the row count and expand to the
    * representative values `draw.constants.ts` names. `plied` does not: its
    * range *is* the row count, so it is the one modifier whose expansion has
    * to be asked per row rather than once per family — see
@@ -101,10 +100,6 @@ export class DrawCombinationsService {
     name: Modifier["name"],
     rowCount: number,
   ): Modifier[] {
-    if (name === "comb") {
-      return COMB_SWEEP_UPWARD_VALUES.map((isUpward) => ({ isUpward, name }));
-    }
-
     if (name === "serpentine") {
       return this.strandCounts(rowCount).flatMap((strands) =>
         this.parallelSerpentineService

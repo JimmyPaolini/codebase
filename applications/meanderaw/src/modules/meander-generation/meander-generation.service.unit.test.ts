@@ -13,7 +13,6 @@ import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import {
-  COMB_SWEEP_UPWARD_VALUES,
   RUNG_SWEEP_LEFTWARD_VALUES,
   STAGGER_SWEEP_BRANCH_COUNTS,
 } from "../draw/draw.constants";
@@ -154,12 +153,6 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "brick-upright": {
       return [{ name: "brick-upright" }];
     }
-    case "comb": {
-      return COMB_SWEEP_UPWARD_VALUES.map((isUpward) => ({
-        isUpward,
-        name: "comb",
-      }));
-    }
     case "edge": {
       return [{ name: "edge" }];
     }
@@ -252,7 +245,7 @@ const sweptTypes: readonly MeanderType[] = [
  * row counts each type supports, at the repeat count its modifier's own
  * cycle admits — `SPIN_CYCLE_LENGTH` for the spin family, the shared
  * default otherwise.
- * `comb`, `rung`, and `stagger` are swept over the sweep's own constants, and every
+ * `rung` and `stagger` are swept over the sweep's own constants, and every
  * ply-carrying modifier over {@link PLY_SWEEP_STRAND_COUNTS}, for the same
  * reason.
  */

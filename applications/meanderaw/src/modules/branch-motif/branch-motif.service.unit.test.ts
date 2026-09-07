@@ -32,7 +32,6 @@ import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 import {
   BRANCH_MODES_BY_MODIFIER_NAME,
   BRANCH_UNIT_COLUMNS,
-  DEFAULT_COMB_IS_UPWARD,
   DEFAULT_RUNG_IS_LEFTWARD,
   MINIMUM_STAGGER_BRANCHES,
   UnknownBranchModeError,
@@ -73,13 +72,10 @@ const SWEPT_ROWS: readonly number[] = [2, 3, 4, 5, 6, 7, 8];
  * `unitColumns` is how wide one repeat unit is, and only `stagger` varies
  * it: its crenel spans the branches one rail joins, so a run of `b`
  * branches is a unit `b - 1` lattice columns wide and the whole drawing is
- * that much wider. The upward `comb` and the two `rung` rows carry the same
- * numbers as the drawings they are reflections of, which is asserted below
- * rather than assumed here — no count in this table could tell a reflection
- * from its original. A `comb` drawn explicitly downward has no row of its
- * own for the opposite reason: it is byte-identical to the unmodified
- * drawing rather than merely equal to it in every count, which "the comb
- * direction" block asserts directly.
+ * that much wider. The two `rung` rows carry the same numbers as the
+ * drawings they are reflections of, which is asserted below rather than
+ * assumed here — no count in this table could tell a reflection from its
+ * original.
  *
  * `README.md`'s own table under "The Branching Family" still carries the
  * counts this family measured while one of its borders was open. Correcting
@@ -98,14 +94,6 @@ const MODES: readonly {
     cycles: 11,
     freeEnds: [0, 0, 0, 0, 0, 0, 0],
     label: "comb",
-    tJunctions: [20, 20, 20, 20, 20, 20, 20],
-    unitColumns: BRANCH_UNIT_COLUMNS,
-  },
-  {
-    cycles: 11,
-    freeEnds: [0, 0, 0, 0, 0, 0, 0],
-    label: "comb standing up",
-    modifier: { isUpward: true, name: "comb" },
     tJunctions: [20, 20, 20, 20, 20, 20, 20],
     unitColumns: BRANCH_UNIT_COLUMNS,
   },
@@ -393,7 +381,7 @@ describe(BranchMotifService, () => {
     // would quietly measure fewer drawings — or none — without failing.
     it("covers every mode at every swept row count", () => {
       expect(BRANCH_CASES).toHaveLength(MODES.length * SWEPT_ROWS.length);
-      expect(BRANCH_CASES).toHaveLength(56);
+      expect(BRANCH_CASES).toHaveLength(49);
     });
 
     it("starts at the family's own structural minimum", () => {
@@ -632,70 +620,6 @@ describe(BranchMotifService, () => {
     });
   });
 
-  describe("the comb direction", () => {
-    const drawing = (modifier?: Modifier): string =>
-      generationService.generate({
-        repeatCount: REPEAT_COUNT,
-        rows: 5,
-        type: "branch",
-        ...(modifier ? { modifier } : {}),
-      });
-
-    // 🎯 The claim `--upward` rests on, and the reason its two rows of
-    // `MODES` repeat the unmodified row's numbers: the drawing is the same
-    // figure turned upside down. Every tooth already spans the whole band,
-    // so the rail's own border row is the only thing left for a direction to
-    // move — and reflecting one drawing across the band has to reproduce the
-    // other exactly. It reproduces it more than exactly now: both border
-    // rows are ruled, so the rail is subsumed and the two directions ink the
-    // same set rather than a mirrored one. What the flag still changes is
-    // which row the unit emits its own rail along, which the block below
-    // reads off `path` directly.
-    it.each(SWEPT_ROWS)("turns the comb upside down at %i rows", (rows) => {
-      const comb = (isUpward: boolean): string =>
-        generationService.generate({
-          modifier: { isUpward, name: "comb" },
-          repeatCount: REPEAT_COUNT,
-          rows,
-          type: "branch",
-        });
-      const geometry = gridGeometryService.compute(rows);
-      const axis = 2 * geometry.offset + rows * geometry.unit;
-
-      expect(reflectedSegments(comb(true), axis, "y")).toStrictEqual(
-        segments(comb(false)),
-      );
-    });
-
-    // 🎯 `--modifier comb` is not a second spelling of "no modifier" — it
-    // takes a direction the unmodified drawing cannot be given — but with
-    // no direction asked for it has to draw exactly what the unmodified one
-    // does, or the family would have two defaults. A byte identity rather
-    // than a topology comparison, because that is the whole claim.
-    it("draws what no modifier draws when no direction is asked for", () => {
-      expect(drawing({ isUpward: DEFAULT_COMB_IS_UPWARD, name: "comb" })).toBe(
-        drawing(),
-      );
-    });
-
-    // 🎯 The one thing the two directions genuinely disagree about: which
-    // border row carries the rail. It is read off one unit's own path rather
-    // than off the finished drawing, because both border rules run along
-    // both of the rows a rail can take — so the document no longer says
-    // which of them the mode chose, and asking it would assert nothing.
-    it.each([
-      { isUpward: false, railRow: 0 },
-      { isUpward: true, railRow: 5 },
-    ])(
-      "runs an upward=$isUpward rail along row $railRow",
-      ({ isUpward, railRow }) => {
-        expect(unitRailRows({ isUpward, name: "comb" }, 5)).toStrictEqual([
-          railRow,
-        ]);
-      },
-    );
-  });
-
   describe("the stagger crenel", () => {
     /**
      * A `stagger` drawn straight through the motif service, at a branch
@@ -753,6 +677,20 @@ describe(BranchMotifService, () => {
         branches - 1,
         5,
       );
+    });
+
+    // 🎯 What `spineRow` still decides now that `comb` draws no direction
+    // of its own: `stagger` alone moves its rail per unit, changing border
+    // row from one unit to the next. Read off the units' own paths, since
+    // both border rules run along both rows and the finished drawing no
+    // longer says which one a unit's own rail chose.
+    it("alternates its rail between both border rows", () => {
+      expect(
+        unitRailRows(
+          { branches: MINIMUM_STAGGER_BRANCHES, name: "stagger" },
+          5,
+        ),
+      ).toStrictEqual([0, 5]);
     });
 
     // 🎯 The reason `MINIMUM_STAGGER_BRANCHES` is 3 rather than 2, measured
@@ -953,14 +891,6 @@ describe(BranchMotifService, () => {
       {
         expected: "rung" as const,
         modifier: { isLeftward: true, name: "rung" as const },
-      },
-      {
-        expected: "comb" as const,
-        modifier: { isUpward: false, name: "comb" as const },
-      },
-      {
-        expected: "comb" as const,
-        modifier: { isUpward: true, name: "comb" as const },
       },
       {
         expected: "stagger" as const,

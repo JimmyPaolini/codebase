@@ -72,18 +72,14 @@ export class OutputPathService {
    * sweep's own values would collide on one path and `CollidingPathsError`
    * would fire rather than a drawing being written. Two spellings, and which
    * one a modifier takes is decided by whether the value reads on its own:
-   * `comb`'s and `rung`'s directions are words, so they
-   * follow the name unadorned, while a bare number would say nothing — so
+   * `rung`'s direction is a word, so it
+   * follows the name unadorned, while a bare number would say nothing — so
    * `stagger` and the ply-carrying modifiers name their
    * parameter before it. The last of those are spelled by
    * {@link plySlug}, since all three spell it the same way and one of them
    * carries a second parameter besides.
    */
   private modifierSlug(modifier: Modifier): string {
-    if (modifier.name === "comb") {
-      return `comb-${modifier.isUpward ? "upward" : "downward"}`;
-    }
-
     if (modifier.name === "rung") {
       return `rung-${modifier.isLeftward ? "leftward" : "rightward"}`;
     }

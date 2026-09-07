@@ -161,9 +161,7 @@ describe(DrawCommand, () => {
         // own `FAMILY_MAXIMUM_ROWS`: 2..12 (branch, parallel), 3..12 (boxes,
         // negative), 4..12 (chain, snake, swirl, whirl), or 6..12 (cross),
         // crossed with "no modifier" plus every compatible modifier (rung
-        // expands to 2 representative values, stagger to 4, and
-        // comb to 1 — its other direction is what "no modifier" already
-        // draws):
+        // expands to 2 representative values, stagger to 4):
 
         // `mosaic` contributes nothing. It is drawn from its enumerated
         // space rather than from a motif — see `TILE_DRAWN_TYPES` — so
@@ -178,7 +176,7 @@ describe(DrawCommand, () => {
         // whirl: 9 rows * (1 + 1) modifiers = 18
         // cross: 7 rows * (1 + 1) modifiers = 14
         // negative: 10 rows * (1 + 9) modifiers = 100
-        // branch: 11 rows * (1 + 1 + 2 + 4) modifiers = 88
+        // branch: 11 rows * (1 + 2 + 4) modifiers = 77
 
         // `parallel` is the one family whose modifiers do not expand to a
         // fixed number of values, so it is the one row here that is neither a
@@ -215,7 +213,7 @@ describe(DrawCommand, () => {
           0,
         );
         const expectedNamedTypeCount =
-          30 + 36 + 36 + 18 + 18 + 14 + 100 + 88 + expectedParallelCount;
+          30 + 36 + 36 + 18 + 18 + 14 + 100 + 77 + expectedParallelCount;
 
         const writtenFileNames = vi
           .mocked(mockWriteFile)
@@ -277,7 +275,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("9918 drawings");
+      expect(index?.[1]).toContain("9907 drawings");
 
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/1-columns/00000-dots.svg"',
@@ -595,8 +593,8 @@ describe(DrawCommand, () => {
       expect(command[method](value)).toBe(2);
     });
 
-    // 🎯 The two boolean flags the command takes. Bare is the ordinary way
-    // to pass either, and the two spellings that turn one off are there so
+    // 🎯 The one boolean flag the command takes. Bare is the ordinary way
+    // to pass it, and the two spellings that turn it off are there so
     // `--leftward false` means what a reader would expect rather than
     // silently meaning `true` — which is what a bare presence check would
     // have made it mean.
@@ -607,14 +605,6 @@ describe(DrawCommand, () => {
       { expected: false, given: '"0"', value: "0" },
     ])("parses --leftward $given as $expected", ({ expected, value }) => {
       expect(command.parseLeftward(value)).toBe(expected);
-    });
-
-    it.each([
-      { expected: true, given: "bare", value: undefined },
-      { expected: false, given: '"false"', value: "false" },
-      { expected: false, given: '"0"', value: "0" },
-    ])("parses --upward $given as $expected", ({ expected, value }) => {
-      expect(command.parseUpward(value)).toBe(expected);
     });
 
     it("passes the output directory through unchanged", () => {
@@ -654,14 +644,14 @@ describe(DrawCommand, () => {
           realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
         ).resolves.toBeUndefined();
 
-        // 🎯 every one of the 1,159 enumerated named-type combinations, every
+        // 🎯 every one of the 1,148 enumerated named-type combinations, every
         // one of the 8,551 mosaic tiles, and every one of the 208 one-column
         // negative sources, reached its real generation
         // service and real validators without throwing — this is the
         // regression guard the mocked tests above can't provide, since they
         // replace the generation services entirely. The extra file is the
         // single index page listing all of them.
-        expect(mockWriteFile).toHaveBeenCalledTimes(1159 + 8551 + 208 + 1);
+        expect(mockWriteFile).toHaveBeenCalledTimes(1148 + 8551 + 208 + 1);
       },
       FULL_SWEEP_TIMEOUT_MILLISECONDS,
     );

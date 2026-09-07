@@ -52,7 +52,6 @@ export type Modifier =
       readonly strands: number;
     }
   | { readonly isLeftward: boolean; readonly name: "rung" }
-  | { readonly isUpward: boolean; readonly name: "comb" }
   | { readonly name: "aligned"; readonly strands: number }
   | { readonly name: "brick-staggered" }
   | { readonly name: "brick-straight" }

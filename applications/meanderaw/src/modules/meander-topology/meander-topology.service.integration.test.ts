@@ -167,7 +167,7 @@ interface CharterRelaxation {
  * entry names no modifier either. It inks a spine and teeth over the band's
  * lattice — every lattice point painted — run between rules along both of
  * the band's borders, so it forks at most of its columns. The fewest forks
- * any of its 88 documents leaves is 16, so the relaxation is exercised
+ * any of its 77 documents leaves is 16, so the relaxation is exercised
  * rather than merely permitted. Nothing else is declared for it: no lattice
  * point in any of its modes carries four arms, so invariant 4 holds, and
  * every lattice point carries ink, so space-filling holds.
@@ -226,10 +226,6 @@ const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
 
 /** How a modifier reads in a test name, including whichever parameter it carries. */
 const modifierLabel = (modifier: Modifier): string => {
-  if (modifier.name === "comb") {
-    return `comb ${modifier.isUpward ? "standing up" : "hanging down"}`;
-  }
-
   if ("strands" in modifier) {
     return `${modifier.name} ${modifier.strands}`;
   }
@@ -345,7 +341,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 
 /**
  * How long a corpus-wide measurement may take. Each of the three tests that
- * use it reads all 9,918 committed documents from disk and measures every
+ * use it reads all 9,907 committed documents from disk and measures every
  * one, which takes well under a second locally but several times that on a
  * shared CI runner — past vitest's five-second default, which is what failed
  * there while passing everywhere else, back when the corpus was three times
@@ -355,7 +351,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
 
 /**
- * How many documents `DrawCommand` commits: 1,159 named patterns beside two
+ * How many documents `DrawCommand` commits: 1,148 named patterns beside two
  * exhaustive halves — 8,551 enumerated `mosaic` tiles and 208 enumerated
  * one-column `negative` sources.
  *
@@ -386,7 +382,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
  * but not committed, which is why the corridor-identity gate below covers
  * rows 3 through 5 of it rather than all of it.
  */
-const COMMITTED_CORPUS_SIZE = 1159 + 8551 + 208;
+const COMMITTED_CORPUS_SIZE = 1148 + 8551 + 208;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -716,7 +712,7 @@ describe(MeanderTopologyService, () => {
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
 
-    // The count also pins where the sweep stops, on every axis. 1,159 is
+    // The count also pins where the sweep stops, on every axis. 1,148 is
     // every combination up to each family's own `FAMILY_MAXIMUM_ROWS`; 174
     // was every combination up to 8, and the row counts issue #507 was
     // reachable at and untested at are most of the difference. Reverting
@@ -738,7 +734,7 @@ describe(MeanderTopologyService, () => {
     // corpus does not commit is the same blind spot #507 was, one modifier
     // over.
     it("sweeps every named-type combination DrawCommand writes, out to the deepest row count the command line accepts", () => {
-      expect(charterSweep).toHaveLength(1159);
+      expect(charterSweep).toHaveLength(1148);
 
       expect(
         Math.max(...charterSweep.map(({ parameters }) => parameters.rows)),
@@ -845,7 +841,7 @@ describe(MeanderTopologyService, () => {
     // was left unruled; `parallel`'s one-strand serpentine was a single
     // ribbon that ran the whole band without stopping, which is the
     // degenerate tree. Ruling both borders of both families closes a loop in
-    // each, so all 88 `branch` documents and all 22 of those ribbons move
+    // each, so all 77 `branch` documents and all 22 of those ribbons move
     // into the looped set instead. No charter invariant is about a loop, and
     // both families still fill space, so this is their shape as a graph
     // changing rather than their compliance.
@@ -920,7 +916,7 @@ describe(MeanderTopologyService, () => {
         // 🎯 Where the loops are: 294 of `negative`'s 308 corridor networks,
         // 3,099 `mosaic` drawings, `cross`'s seven solid crossings, the
         // eighteen `snake` drawings whose `edge` pitch closes a loop against
-        // the band border, all 88 of `branch`'s, and 675 of `parallel`'s 819.
+        // the band border, all 77 of `branch`'s, and 675 of `parallel`'s 819.
 
         // `parallel` is the newest arrival, and its 675 are exactly the
         // drawings a border rule added ink to — so the count is the same 675
@@ -945,7 +941,7 @@ describe(MeanderTopologyService, () => {
         // band's own rules and nothing joining them, so it is one component
         // per lattice row with no loop anywhere, and the one corner of this
         // family that is a forest like the six oldest.
-        expect(looped).toHaveLength(4181);
+        expect(looped).toHaveLength(4170);
         expect(
           [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
         ).toStrictEqual([
@@ -970,8 +966,11 @@ describe(MeanderTopologyService, () => {
     // both of its own: those 819 documents carry 18,034 of these where they
     // carried none. The document count moved with it this time — 214 to 889,
     // and `parallel` is a fifth family in the set — where `branch` moved the
-    // total alone, having already forked in every one of its 88. That is why
-    // the total, the count, and the set are three assertions rather than one.
+    // total alone, having already forked in every one of its 77. Both
+    // numbers moved once more, to 24,352 and 878, when the eleven `comb`
+    // documents that duplicated `plain` were deleted from `branch`'s own 88.
+    // That is why the total, the count, and the set are three assertions
+    // rather than one.
 
     // 144 `parallel` documents are still absent, and they are the same 144
     // the looped test above leaves out — the `serpentine` drawings whose two
@@ -996,10 +995,10 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(documents).toHaveLength(1159);
+      expect(documents).toHaveLength(1148);
 
-      expect(tJunctions).toBe(24572);
-      expect(branching).toHaveLength(889);
+      expect(tJunctions).toBe(24352);
+      expect(branching).toHaveLength(878);
       expect(
         [...new Set(branching.map((name) => familyOf(name)))].toSorted(),
       ).toStrictEqual(["branch", "chain", "negative", "parallel", "snake"]);
