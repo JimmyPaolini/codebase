@@ -9,8 +9,12 @@ import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { LoggerService } from "@codebase/logger";
 
 import { CommentsService } from "./comments.service";
+import { CssCommentsService } from "./css-comments.service";
 import { HashCommentsService } from "./hash-comments.service";
+import { HclCommentsService } from "./hcl-comments.service";
 import { LanguageCommentsService } from "./language-comments.service";
+import { SqlCommentsService } from "./sql-comments.service";
+import { TypescriptCommentsService } from "./typescript-comments.service";
 import { YamlCommentsService } from "./yaml-comments.service";
 
 import type { LanguageCommentFiles } from "./comments.types";
@@ -36,7 +40,16 @@ describe(LanguageCommentsService, () => {
   function discovered(
     overrides: Partial<LanguageCommentFiles>,
   ): LanguageCommentFiles {
-    return { shellFiles: [], tomlFiles: [], yamlFiles: [], ...overrides };
+    return {
+      cssFiles: [],
+      hclFiles: [],
+      shellFiles: [],
+      sourceFiles: [],
+      sqlFiles: [],
+      tomlFiles: [],
+      yamlFiles: [],
+      ...overrides,
+    };
   }
 
   /** Writes files into a fresh directory and returns where they landed. */
@@ -53,12 +66,27 @@ describe(LanguageCommentsService, () => {
 
   /** A resolved configuration whose named languages carry the budget. */
   function configuration(
-    languages: ("python" | "shell" | "toml" | "yaml")[],
+    languages: (
+      | "css"
+      | "hcl"
+      | "python"
+      | "shell"
+      | "sql"
+      | "toml"
+      | "typescript"
+      | "yaml"
+    )[],
   ): ResolvedCodometerConfiguration {
     return createMock<ResolvedCodometerConfiguration>({
+      css: { comments: languages.includes("css") ? budget : undefined },
+      hcl: { comments: languages.includes("hcl") ? budget : undefined },
       python: { comments: languages.includes("python") ? budget : undefined },
       shell: { comments: languages.includes("shell") ? budget : undefined },
+      sql: { comments: languages.includes("sql") ? budget : undefined },
       toml: { comments: languages.includes("toml") ? budget : undefined },
+      typescript: {
+        comments: languages.includes("typescript") ? budget : undefined,
+      },
       yaml: { comments: languages.includes("yaml") ? budget : undefined },
     });
   }
@@ -67,8 +95,12 @@ describe(LanguageCommentsService, () => {
     const module = await Test.createTestingModule({
       providers: [
         CommentsService,
+        CssCommentsService,
         HashCommentsService,
+        HclCommentsService,
         LanguageCommentsService,
+        SqlCommentsService,
+        TypescriptCommentsService,
         YamlCommentsService,
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
@@ -102,19 +134,85 @@ describe(LanguageCommentsService, () => {
   });
 
   it.each<{
+    content: string;
     extension: string;
     files: Partial<LanguageCommentFiles>;
     language: "shell" | "toml" | "yaml";
   }>([
-    { extension: "sh", files: { shellFiles: ["a.sh"] }, language: "shell" },
-    { extension: "toml", files: { tomlFiles: ["a.toml"] }, language: "toml" },
-    { extension: "yaml", files: { yamlFiles: ["a.yaml"] }, language: "yaml" },
+    {
+      content: "# one two three four\n",
+      extension: "sh",
+      files: { shellFiles: ["a.sh"] },
+      language: "shell",
+    },
+    {
+      content: "# one two three four\n",
+      extension: "toml",
+      files: { tomlFiles: ["a.toml"] },
+      language: "toml",
+    },
+    {
+      content: "# one two three four\n",
+      extension: "yaml",
+      files: { yamlFiles: ["a.yaml"] },
+      language: "yaml",
+    },
   ])(
     "measures $language comment blocks when it declares a budget",
-    ({ extension, files, language }) => {
-      const workingDirectory = writeFiles({
-        [`a.${extension}`]: "# one two three four\n",
+    ({ content, extension, files, language }) => {
+      const workingDirectory = writeFiles({ [`a.${extension}`]: content });
+
+      const measurements = service.measure({
+        configuration: configuration([language]),
+        files: discovered(files),
+        pythonComments: [],
+        workingDirectory,
       });
+
+      expect(measurements).toHaveLength(1);
+      expect(measurements[0]).toMatchObject({
+        breached: true,
+        file: `a.${extension}`,
+        measured: 4,
+        unit: "words",
+      });
+    },
+  );
+
+  it.each<{
+    content: string;
+    extension: string;
+    files: Partial<LanguageCommentFiles>;
+    language: "css" | "hcl" | "sql" | "typescript";
+  }>([
+    {
+      content: "/* one two three four */\n.order {}\n",
+      extension: "css",
+      files: { cssFiles: ["a.css"] },
+      language: "css",
+    },
+    {
+      content: "# one two three four\n",
+      extension: "tf",
+      files: { hclFiles: ["a.tf"] },
+      language: "hcl",
+    },
+    {
+      content: "-- one two three four\nSELECT 1;\n",
+      extension: "sql",
+      files: { sqlFiles: ["a.sql"] },
+      language: "sql",
+    },
+    {
+      content: "// one two three four\nconst value = 1;\n",
+      extension: "ts",
+      files: { sourceFiles: ["a.ts"] },
+      language: "typescript",
+    },
+  ])(
+    "measures $language comment blocks when it declares a budget",
+    ({ content, extension, files, language }) => {
+      const workingDirectory = writeFiles({ [`a.${extension}`]: content });
 
       const measurements = service.measure({
         configuration: configuration([language]),

@@ -17,17 +17,21 @@ function buildConfiguration(
   overrides: Partial<ResolvedCodometerConfiguration> = {},
 ): ResolvedCodometerConfiguration {
   return {
+    css: { comments: undefined },
     defaultTarget: undefined,
     documentation: undefined,
     exclude: [],
     excludeFrom: [],
+    hcl: { comments: undefined },
     limits: [],
     output: { json: undefined, markdown: undefined },
     python: { command: "python", comments: undefined },
     shell: { comments: undefined },
+    sql: { comments: undefined },
     statistics: [],
     targets: [],
     toml: { comments: undefined },
+    typescript: { comments: undefined },
     yaml: { comments: undefined },
     ...overrides,
   };

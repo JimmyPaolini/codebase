@@ -389,6 +389,12 @@ export class ConfigurationService {
     configuration: CodometerConfiguration,
   ): ResolvedCodometerConfiguration {
     return {
+      css: {
+        comments: this.resolveLanguageComments(
+          configuration.comments,
+          configuration.css?.comments,
+        ),
+      },
       defaultTarget: configuration.defaultTarget,
       documentation: this.resolveDocumentation(configuration.documentation),
       // Additive rather than a replacement: the defaults are directories no
@@ -401,6 +407,12 @@ export class ConfigurationService {
         ]),
       ],
       excludeFrom: configuration.excludeFrom ?? [],
+      hcl: {
+        comments: this.resolveLanguageComments(
+          configuration.comments,
+          configuration.hcl?.comments,
+        ),
+      },
       limits: this.resolveLimits(configuration.limits),
       output: {
         json: this.resolveJsonOutput(configuration.output),
@@ -419,12 +431,24 @@ export class ConfigurationService {
           configuration.shell?.comments,
         ),
       },
+      sql: {
+        comments: this.resolveLanguageComments(
+          configuration.comments,
+          configuration.sql?.comments,
+        ),
+      },
       statistics: this.resolveCustomStatistics(configuration.statistics),
       targets: this.resolveTargets(configuration.targets),
       toml: {
         comments: this.resolveLanguageComments(
           configuration.comments,
           configuration.toml?.comments,
+        ),
+      },
+      typescript: {
+        comments: this.resolveLanguageComments(
+          configuration.comments,
+          configuration.typescript?.comments,
         ),
       },
       yaml: {

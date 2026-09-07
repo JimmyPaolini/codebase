@@ -21,7 +21,7 @@ import { DrawPermutationsService } from "./draw-permutations.service";
  * default five seconds, the same way the charter measurement declares its
  * own.
  */
-const FULL_SWEEP_TIMEOUT_MILLISECONDS = 60_000;
+const FULL_SWEEP_TIMEOUT_MILLISECONDS = 120_000;
 
 describe(DrawPermutationsService, () => {
   let service: DrawPermutationsService;

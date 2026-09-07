@@ -787,11 +787,12 @@ When a file nears 512 lines, split it along the module file suffixes (`*.types.t
 **Comment blocks are capped at 128 words**, declared as
 `comments: { maximumWords: 128 }` in
 [`configuration/codometer.config.ts`](configuration/codometer.config.ts) and
-enforced by codometer rather than by ESLint. It reaches **Python, shell, TOML,
-and YAML** — every language whose comments start with `#`. A block is the run
-of comment lines a reader takes as one thought: a blank line ends one, a
-comment trailing a value is never part of the block above it, and a `#!`
-shebang is never a comment at all. A breach names its file and line.
+enforced by codometer rather than by ESLint. It reaches **every language this
+tool measures comments in** — Python, shell, TOML, YAML, CSS, HCL, SQL, and
+TypeScript/JavaScript's non-JSDoc comments. A block is the run of comment
+lines a reader takes as one thought: a blank line ends one, a comment
+trailing a value is never part of the block above it, and a `#!` shebang is
+never a comment at all. A breach names its file and line.
 
 It budgets **what a comment says, not how wide it is** — every linter here
 already holds a line to 80 columns, so a character budget would only restate
@@ -824,12 +825,15 @@ single essay, and a file-wide number cannot tell them apart. A `file` block can
 be added beside the block maxima to measure a whole file's comments as well —
 both are then reported — but this repository declares only the block ones.
 
-Python and YAML read their comments from real tokenizers: `tokenize` inside the
-Python analysis subprocess, and the `yaml` package's CST. Neither mistakes a
-`#` inside a string literal for a comment. Shell and TOML use a line scanner
-that does, exactly as those analyzers' own `comments` counters already do. CSS,
-SQL, HCL, and non-JSDoc `//` runs are not measured yet — see
-[#636](https://github.com/JimmyPaolini/codebase/issues/636).
+Python, YAML, CSS, and TypeScript/JavaScript's non-JSDoc comments all read from
+a real parser or tokenizer: `tokenize` inside the Python analysis subprocess,
+the `yaml` package's CST, postcss's own parse, and the TypeScript compiler's
+scanner. None of the four mistakes a comment marker inside a string literal for
+a comment. Shell, TOML, SQL, and HCL use a line scanner instead — SQL's through
+the same patterns `SqlService` already strips comments with — which cannot
+tell the two apart, exactly as those analyzers' own `comments` counters
+already cannot. CSS has only the one comment syntax; HCL is the one language
+measured with three, `#`, `//`, and `/* */` alike.
 
 Python's comments therefore depend on `uv` being present, the same way every
 other Python metric already does: an unreachable interpreter leaves them

@@ -95,6 +95,7 @@ export interface CodometerConfiguration {
    * the one language that needs it.
    */
   comments?: CodometerLanguageCommentsConfiguration | undefined;
+  css?: CodometerLanguageConfiguration | undefined;
   /**
    * Target a limit's metric path belongs to when it names none itself.
    *
@@ -118,6 +119,7 @@ export interface CodometerConfiguration {
    * mention at all: discovery reads those files itself.
    */
   excludeFrom?: string[] | undefined;
+  hcl?: CodometerLanguageConfiguration | undefined;
   /**
    * How high each measured metric may go.
    *
@@ -128,6 +130,7 @@ export interface CodometerConfiguration {
   output?: CodometerOutputConfiguration | undefined;
   python?: CodometerPythonConfiguration | undefined;
   shell?: CodometerLanguageConfiguration | undefined;
+  sql?: CodometerLanguageConfiguration | undefined;
   /**
    * Counters for the conventions a repository holds itself to.
    *
@@ -147,6 +150,8 @@ export interface CodometerConfiguration {
    */
   targets?: CodometerTarget[] | undefined;
   toml?: CodometerLanguageConfiguration | undefined;
+  /** How TypeScript and JavaScript sources are analyzed for non-JSDoc comments. */
+  typescript?: CodometerLanguageConfiguration | undefined;
   yaml?: CodometerLanguageConfiguration | undefined;
 }
 

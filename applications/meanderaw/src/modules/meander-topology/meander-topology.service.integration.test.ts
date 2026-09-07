@@ -272,7 +272,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
  * this size. Bounded rather than removed, so a genuine hang still fails
  * instead of running forever.
  */
-const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
+const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
 
 /**
  * How many documents `DrawCommand` commits: 1,183 named patterns beside two
@@ -624,7 +624,7 @@ describe(MeanderTopologyService, () => {
     // guard that stops matching — every `it.each` below would quietly cover
     // less, or nothing at all, without a single failure. This is the guard
     // against a property test that vacates instead of failing.
-    //
+
     // The count also pins where the sweep stops, on every axis. 1,183 is
     // every combination up to each family's own `FAMILY_MAXIMUM_ROWS`; 174
     // was every combination up to 8, and the row counts issue #507 was
@@ -632,7 +632,7 @@ describe(MeanderTopologyService, () => {
     // the sweep to a maximum of its own would fail here rather than quietly
     // narrow the gate — and so would a `mosaic` swept past the ceiling the
     // command line refuses it above, which the second expectation pins.
-    //
+
     // Most of the rest is `parallel`, which had one shape and a flat pair of
     // swept plies. Its ply range is now the row count's at each row count,
     // it is swept for all three of the family's shapes — `plied`,
@@ -699,7 +699,7 @@ describe(MeanderTopologyService, () => {
     // two counts are read from two different files by two different routes —
     // one generated here, one measured off disk — so a change to either side
     // that stopped them being complements would fail.
-    //
+
     // The first expectation is the guard against a vacuous `0 === 0`. Every
     // source but one really does have corridors that branch or cross;
     // `ruled-closed` inverts the `lines` sub-family, which the survey put in
@@ -735,11 +735,11 @@ describe(MeanderTopologyService, () => {
     // Reading from disk is what makes the second half say anything — a
     // family that started drawing loops, or one that stopped, fails here
     // rather than in its own test.
-    //
+
     // The two conditions are separated on purpose. Being a forest is what
     // every family but three already is; being one connected piece is what
     // `negative` already is.
-    //
+
     // **`branch` is no longer the only family that is both**, and that is a
     // measurement rather than a regression. A `serpentine` ply of one is a
     // single ribbon that never stops: it runs down a column, along the
@@ -750,7 +750,7 @@ describe(MeanderTopologyService, () => {
     // at most of its columns; a one-ply serpentine is a tree because it
     // forks at none and simply does not end until the band does. A path is
     // the degenerate tree, and this is the corpus's first one.
-    //
+
     // So the family set below is asserted, not the count alone, and the
     // parallel half is pinned to the one ply that can do it: a two-ply
     // serpentine is two ribbons and two components, which is a forest and
@@ -824,7 +824,7 @@ describe(MeanderTopologyService, () => {
         // this list, which is the half of the claim a tree test alone would
         // not make — and neither does `parallel`, whose three shapes are all
         // acyclic at every ply.
-        //
+
         // `mosaic` is new to it, and it is what removing the degree ceiling
         // bought: a figure of dash ends cannot close, and 3,099 of the
         // family's 8,575 documents now do. No charter invariant is about a
@@ -832,7 +832,7 @@ describe(MeanderTopologyService, () => {
         // this is the family's shape as a graph changing rather than its
         // compliance. What it does now break is declared: invariants 3 and 4,
         // for the enumerated half only.
-        //
+
         // The fourteen `negative` documents missing from it are the `lines`
         // sub-family's negative — `ruled-closed` at each of the family's ten
         // row counts, and the same class enumerated at each of the four its

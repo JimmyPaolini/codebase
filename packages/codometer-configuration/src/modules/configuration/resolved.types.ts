@@ -48,6 +48,7 @@ export interface ResolvedCodometerCommentsConfiguration {
  * to know which fields a configuration file may omit.
  */
 export interface ResolvedCodometerConfiguration {
+  css: ResolvedCodometerLanguageConfiguration;
   /** Stays `undefined` when nothing named one, so every path must qualify. */
   defaultTarget: string | undefined;
   /**
@@ -58,13 +59,16 @@ export interface ResolvedCodometerConfiguration {
   documentation: ResolvedCodometerDocumentationConfiguration | undefined;
   exclude: string[];
   excludeFrom: string[];
+  hcl: ResolvedCodometerLanguageConfiguration;
   limits: ResolvedCodometerLimit[];
   output: ResolvedCodometerOutputConfiguration;
   python: ResolvedCodometerPythonConfiguration;
   shell: ResolvedCodometerLanguageConfiguration;
+  sql: ResolvedCodometerLanguageConfiguration;
   statistics: ResolvedCodometerCustomStatistic[];
   targets: ResolvedCodometerTarget[];
   toml: ResolvedCodometerLanguageConfiguration;
+  typescript: ResolvedCodometerLanguageConfiguration;
   yaml: ResolvedCodometerLanguageConfiguration;
 }
 

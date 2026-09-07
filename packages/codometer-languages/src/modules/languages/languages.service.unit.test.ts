@@ -5,8 +5,12 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { LoggerService } from "@codebase/logger";
 
 import { CommentsService } from "../comments/comments.service";
+import { CssCommentsService } from "../comments/css-comments.service";
 import { HashCommentsService } from "../comments/hash-comments.service";
+import { HclCommentsService } from "../comments/hcl-comments.service";
 import { LanguageCommentsService } from "../comments/language-comments.service";
+import { SqlCommentsService } from "../comments/sql-comments.service";
+import { TypescriptCommentsService } from "../comments/typescript-comments.service";
 import { YamlCommentsService } from "../comments/yaml-comments.service";
 import { CssService } from "../css/css.service";
 import { HclService } from "../hcl/hcl.service";
@@ -55,9 +59,13 @@ describe(LanguagesService, () => {
     const module = await Test.createTestingModule({
       providers: [
         CommentsService,
+        CssCommentsService,
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         HashCommentsService,
+        HclCommentsService,
         LanguageCommentsService,
+        SqlCommentsService,
+        TypescriptCommentsService,
         YamlCommentsService,
         LanguagesService,
         { provide: CssService, useValue: createMock<CssService>() },

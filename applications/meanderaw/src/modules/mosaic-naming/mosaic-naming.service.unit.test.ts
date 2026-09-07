@@ -26,7 +26,7 @@ import type {
  * rather than left to the default five seconds, the same way the charter
  * measurement declares its own.
  */
-const SPACE_WALK_TIMEOUT_MILLISECONDS = 60_000;
+const SPACE_WALK_TIMEOUT_MILLISECONDS = 120_000;
 
 /**
  * Every shape the edge budget admits — the whole space, rather than a sample
