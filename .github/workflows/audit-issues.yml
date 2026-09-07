@@ -28,18 +28,16 @@ permissions:
 concurrency:
   # One group per run, so no run of this workflow ever waits behind another.
   # A per-issue group with `cancel-in-progress: false` looked like it said
-  # exactly that and did not: GitHub keeps at most one *pending* run per
-  # group, so a third event cancels the queued second one whatever the flag
-  # says. One `gh issue edit` that adds a few labels fires several of the
-  # events above within seconds, which left 24 of the last 40 runs concluding
-  # `cancelled` — and this workflow's README badge renders `cancelled` red,
-  # so the badge reported a queue rather than a mislabeled issue.
-  #
-  # Running them all at once is safe because only one of them writes: the
-  # reconciliation step below is gated on `opened`, which fires exactly once
-  # per issue. Every other run is a read-only check, and reads the issue's
-  # labels live rather than from its own event payload — see the audit step
-  # for why that second half is what makes this safe.
+  # exactly that and did not: GitHub keeps at most one *pending* run per group,
+  # so a third event cancels the queued second whatever the flag says. One
+  # `gh issue edit` adding a few labels fires several of the events above
+  # within seconds, which left 24 of the last 40 runs `cancelled` — which this
+  # workflow's badge renders red, reporting a queue rather than a bad issue.
+
+  # Running them all at once is safe because only one writes: the
+  # reconciliation step below is gated on `opened`, which fires once per issue.
+  # Every other run is a read-only check reading the issue's labels live rather
+  # than from its own event payload — see the audit step for why that matters.
   group: ${{ github.workflow }}-${{ github.run_id }}
   cancel-in-progress: false
 
