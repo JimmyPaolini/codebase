@@ -142,15 +142,20 @@ interface CharterRelaxation {
  * every mode, so space-filling holds throughout.
  *
  * `branch` relaxes no-branching in every one of its modes, which is why its
- * entry names no modifier either. It inks a spanning tree of the band's
- * lattice — every lattice point painted, joined by exactly one fewer step
- * than there are points — so it forks at most of its columns and closes a
- * loop at none. Nothing else is declared for it: no lattice point in any of
- * its modes carries four arms, so invariant 4 holds, and every lattice
- * point carries ink, so space-filling holds. What separates it from
- * `negative` is not the relaxation, which is the same one, but the loops:
- * `negative` is one to five pieces with 10 to 45 cycles among them, and
- * `branch` has none. Both are measured below, not asserted here.
+ * entry names no modifier either. It inks a spine and teeth over the band's
+ * lattice — every lattice point painted — run between rules along both of
+ * the band's borders, so it forks at most of its columns. The fewest forks
+ * any of its 88 documents leaves is 16, so the relaxation is exercised
+ * rather than merely permitted. Nothing else is declared for it: no lattice
+ * point in any of its modes carries four arms, so invariant 4 holds, and
+ * every lattice point carries ink, so space-filling holds.
+ *
+ * It closed a loop nowhere while one of those two borders was left open, and
+ * that was the only thing separating it from `negative`, whose relaxation is
+ * the same one. Both borders being ruled closes a loop in every column pair,
+ * so it now closes 5 to 29 of them — against `negative`'s one to five pieces
+ * with 0 to 65 cycles among them. Both are measured below, not asserted
+ * here, and no charter invariant is about a loop.
  *
  * `parallel` declares nothing at all, and that empty row is the whole point
  * of the family rather than an omission. Its ink is `N` strands running
@@ -736,26 +741,33 @@ describe(MeanderTopologyService, () => {
       },
     );
 
-    // 🎯 The `branch` family's claim, taken over the corpus rather than over
-    // a family's own drawings: its eighty-eight documents are trees.
-    // Reading from disk is what makes the second half say anything — a
-    // family that started drawing loops, or one that stopped, fails here
-    // rather than in its own test.
+    // 🎯 Which families draw a tree, and which draw loops, taken over the
+    // corpus rather than over a family's own drawings. Reading from disk is
+    // what makes both halves say anything — a family that started drawing
+    // loops, or one that stopped, fails here rather than in its own test.
 
-    // The two conditions are separated on purpose. Being a forest is what
-    // every family but three already is; being one connected piece is what
-    // `negative` already is.
+    // The two conditions are separated on purpose. Being a forest throughout
+    // is what five of the ten families are — the five absent from the looped
+    // set below; being one connected piece is what `negative` already is.
 
-    // **`branch` is no longer the only family that is both**, and that is a
-    // measurement rather than a regression. A `serpentine` ply of one is a
-    // single ribbon that never stops: it runs down a column, along the
-    // bottom of the only strip there is, up the next column, and on across
-    // the whole band — one component, every lattice point on it, and not a
-    // step repeated. That is the definition of a tree, arrived at from the
-    // opposite direction to `branch`'s. `branch` is a tree because it forks
-    // at most of its columns; a one-ply serpentine is a tree because it
-    // forks at none and simply does not end until the band does. A path is
-    // the degenerate tree, and this is the corpus's first one.
+    // **`branch` used to be the only family that was both**, and it is no
+    // longer either: it drew a spanning tree only while one of its two
+    // border rows was left unruled, and ruling both closes a loop in every
+    // column pair. All 88 of its documents move out of the tree set and into
+    // the looped one in the same change, which is what the two counts below
+    // record. No charter invariant is about a loop, and it still forks and
+    // still fills space, so this is the family's shape as a graph changing
+    // rather than its compliance.
+
+    // What is left in the tree set is `parallel`, and it arrived from the
+    // opposite direction. A `serpentine` ply of one is a single ribbon that
+    // never stops: it runs down a column, along the bottom of the only strip
+    // there is, up the next column, and on across the whole band — one
+    // component, every lattice point on it, and not a step repeated. `branch`
+    // was a tree because it forked at most of its columns; a one-ply
+    // serpentine is a tree because it forks at none and simply does not end
+    // until the band does. A path is the degenerate tree, and it is now the
+    // corpus's only one.
 
     // So the family set below is asserted, not the count alone, and the
     // parallel half is pinned to the one ply that can do it: a two-ply
@@ -764,7 +776,7 @@ describe(MeanderTopologyService, () => {
     // into one figure, they would land here and fail rather than pass
     // quietly.
     it(
-      "draws a tree in exactly the branching family's documents",
+      "draws a tree in exactly the one-strand serpentine documents",
       async () => {
         const documents = await readCommittedCorpus();
         const trees: string[] = [];
@@ -802,10 +814,10 @@ describe(MeanderTopologyService, () => {
         expect(Math.min(...negativeComponents)).toBe(1);
         expect(Math.max(...negativeComponents)).toBe(13);
 
-        expect(trees).toHaveLength(110);
+        expect(trees).toHaveLength(22);
         expect(
           [...new Set(trees.map((name) => familyOf(name)))].toSorted(),
-        ).toStrictEqual(["branch", "parallel"]);
+        ).toStrictEqual(["parallel"]);
 
         // 🎯 Every parallel tree is a single-strand serpentine — two of them
         // at each of the eleven row counts the family draws at, since a lone
@@ -823,21 +835,23 @@ describe(MeanderTopologyService, () => {
           ),
         ).toBe(true);
 
-        // 🎯 The loops are all somewhere else: 294 of `negative`'s 308
-        // corridor networks, 3,099 `mosaic` drawings, `cross`'s seven solid
-        // crossings, and the eighteen `snake` drawings whose `edge` pitch
-        // closes a loop against the band border. `branch` appears nowhere in
-        // this list, which is the half of the claim a tree test alone would
-        // not make — and neither does `parallel`, whose three shapes are all
-        // acyclic at every ply.
+        // 🎯 Where the loops are: 294 of `negative`'s 308 corridor networks,
+        // 3,099 `mosaic` drawings, `cross`'s seven solid crossings, the
+        // eighteen `snake` drawings whose `edge` pitch closes a loop against
+        // the band border, and all 88 of `branch`'s. `parallel` appears
+        // nowhere in this list, which is the half of the claim a tree test
+        // alone would not make: its three shapes are acyclic at every ply.
 
-        // `mosaic` is new to it, and it is what removing the degree ceiling
-        // bought: a figure of dash ends cannot close, and 3,099 of the
-        // family's 8,575 documents now do. No charter invariant is about a
-        // loop — the ink stays orthogonal and every point stays inked — so
-        // this is the family's shape as a graph changing rather than its
-        // compliance. What it does now break is declared: invariants 3 and 4,
-        // for the enumerated half only.
+        // `branch` is the newest arrival and the one that moved: it is here
+        // because both of its border rows are ruled end to end now, so every
+        // pair of adjacent lattice columns is closed by the two rules and the
+        // ink between them. `mosaic` arrived earlier, and it is what removing
+        // the degree ceiling bought: a figure of dash ends cannot close, and
+        // 3,099 of the family's 8,575 documents now do. No charter invariant
+        // is about a loop — the ink stays orthogonal and every point stays
+        // inked — so both are a family's shape as a graph changing rather
+        // than its compliance. What `mosaic` does now break is declared:
+        // invariants 3 and 4, for the enumerated half only.
 
         // The fourteen `negative` documents missing from it are the `lines`
         // sub-family's negative — `ruled-closed` at each of the family's ten
@@ -847,10 +861,10 @@ describe(MeanderTopologyService, () => {
         // band's own rules and nothing joining them, so it is one component
         // per lattice row with no loop anywhere, and the one corner of this
         // family that is a forest like the six oldest.
-        expect(looped).toHaveLength(3418);
+        expect(looped).toHaveLength(3506);
         expect(
           [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
-        ).toStrictEqual(["cross", "mosaic", "negative", "snake"]);
+        ).toStrictEqual(["branch", "cross", "mosaic", "negative", "snake"]);
       },
       CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
     );
@@ -859,6 +873,14 @@ describe(MeanderTopologyService, () => {
     // read off the named patterns the charter counts them over. Prose and
     // measurement were authored at different moments and nothing else makes
     // them agree, so the count is taken here rather than restated there.
+
+    // The junction total moved from 5,152 to 6,538 when `branch` gained a
+    // rule along its second border: every interior column of that rule meets
+    // a tooth, so its 88 documents carry 3,124 of these where they carried
+    // 1,738. The document count did not move at all — `branch` already
+    // forked in every one of the 88, and the other three families are
+    // untouched — so the total and the set say different things here, which
+    // is why both are asserted.
     it("branches in exactly the families the charter names, measured from disk", async () => {
       const corpus = await readCommittedCorpus();
       const documents = corpus.filter(
@@ -879,7 +901,7 @@ describe(MeanderTopologyService, () => {
 
       expect(documents).toHaveLength(1159);
 
-      expect(tJunctions).toBe(5152);
+      expect(tJunctions).toBe(6538);
       expect(branching).toHaveLength(214);
       expect(
         [...new Set(branching.map((name) => familyOf(name)))].toSorted(),

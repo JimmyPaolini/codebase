@@ -51,19 +51,24 @@ const SWEPT_ROWS: readonly number[] = [2, 3, 4, 5, 6, 7, 8];
 
 /**
  * Every mode the family draws — no modifier, and each parameterization of
- * the two modifiers it declares compatible — beside the ink T-junction
- * count each produces at every swept row count, in {@link SWEPT_ROWS}
- * order.
+ * the two modifiers it declares compatible — beside the ink T-junction count
+ * and free-end count each produces at every swept row count, in
+ * {@link SWEPT_ROWS} order, and the number of loops each closes.
  *
- * These fifty-six numbers are the table `README.md` publishes under "The
- * Branching Family", and this is the only thing making that table true. All
- * but the two `rung` rows are flat, because their forks live on the rail
- * rather than on the teeth: a `comb` forks at every lattice column whose
- * rail continues on both sides, and a `stagger` only where a whole crenel's
- * rail does, neither of which depends on how tall the band is. `rung`'s
- * forks are on its stiles, so its row climbs by one per unit per row
- * added — which is also the reason for the family's minimum row count,
- * pinned below.
+ * `cycles` is one number per mode rather than one per row count because it
+ * is a property of the band's width: both border rules now run the whole
+ * repeat, so every pair of adjacent lattice columns is closed by them and
+ * the teeth between. So the comb and stagger modes close `columns - 1`
+ * loops, and `rung` closes `repeatCount - 1` — the steps its bottom row was
+ * already missing.
+ *
+ * All but the two `rung` rows are flat, because their forks live on the two
+ * border rules rather than on the teeth, and a rule's length does not depend
+ * on how tall the band is. `rung`'s forks are on its stiles as well, so its
+ * row climbs by one per unit per row added — which is also the reason for the
+ * family's minimum row count, pinned below. The comb and stagger modes leave
+ * no free end at all now: a tooth that once stopped in mid-air meets a rule
+ * at both of its ends.
  *
  * `unitColumns` is how wide one repeat unit is, and only `stagger` varies
  * it: its crenel spans the branches one rail joins, so a run of `b`
@@ -75,8 +80,14 @@ const SWEPT_ROWS: readonly number[] = [2, 3, 4, 5, 6, 7, 8];
  * own for the opposite reason: it is byte-identical to the unmodified
  * drawing rather than merely equal to it in every count, which "the comb
  * direction" block asserts directly.
+ *
+ * `README.md`'s own table under "The Branching Family" still carries the
+ * counts this family measured while one of its borders was open. Correcting
+ * that prose is issue #670's, which lands with the charter amendment; these
+ * are the numbers a fresh run gives.
  */
 const MODES: readonly {
+  readonly cycles: number;
   readonly freeEnds: readonly number[];
   readonly label: string;
   readonly modifier?: Modifier;
@@ -84,58 +95,66 @@ const MODES: readonly {
   readonly unitColumns: number;
 }[] = [
   {
-    freeEnds: [12, 12, 12, 12, 12, 12, 12],
+    cycles: 11,
+    freeEnds: [0, 0, 0, 0, 0, 0, 0],
     label: "comb",
-    tJunctions: [10, 10, 10, 10, 10, 10, 10],
+    tJunctions: [20, 20, 20, 20, 20, 20, 20],
     unitColumns: BRANCH_UNIT_COLUMNS,
   },
   {
-    freeEnds: [12, 12, 12, 12, 12, 12, 12],
+    cycles: 11,
+    freeEnds: [0, 0, 0, 0, 0, 0, 0],
     label: "comb standing up",
     modifier: { isUpward: true, name: "comb" },
-    tJunctions: [10, 10, 10, 10, 10, 10, 10],
+    tJunctions: [20, 20, 20, 20, 20, 20, 20],
     unitColumns: BRANCH_UNIT_COLUMNS,
   },
   {
-    freeEnds: [13, 19, 25, 31, 37, 43, 49],
+    cycles: 5,
+    freeEnds: [8, 14, 20, 26, 32, 38, 44],
     label: "rung pointing right",
     modifier: { isLeftward: false, name: "rung" },
-    tJunctions: [11, 17, 23, 29, 35, 41, 47],
+    tJunctions: [16, 22, 28, 34, 40, 46, 52],
     unitColumns: BRANCH_UNIT_COLUMNS,
   },
   {
-    freeEnds: [13, 19, 25, 31, 37, 43, 49],
+    cycles: 5,
+    freeEnds: [8, 14, 20, 26, 32, 38, 44],
     label: "rung pointing left",
     modifier: { isLeftward: true, name: "rung" },
-    tJunctions: [11, 17, 23, 29, 35, 41, 47],
+    tJunctions: [16, 22, 28, 34, 40, 46, 52],
     unitColumns: BRANCH_UNIT_COLUMNS,
   },
   {
-    freeEnds: [7, 7, 7, 7, 7, 7, 7],
+    cycles: 11,
+    freeEnds: [0, 0, 0, 0, 0, 0, 0],
     label: "stagger over 3 branches",
     modifier: { branches: 3, name: "stagger" },
-    tJunctions: [5, 5, 5, 5, 5, 5, 5],
+    tJunctions: [20, 20, 20, 20, 20, 20, 20],
     unitColumns: 2,
   },
   {
-    freeEnds: [13, 13, 13, 13, 13, 13, 13],
+    cycles: 17,
+    freeEnds: [0, 0, 0, 0, 0, 0, 0],
     label: "stagger over 4 branches",
     modifier: { branches: 4, name: "stagger" },
-    tJunctions: [11, 11, 11, 11, 11, 11, 11],
+    tJunctions: [32, 32, 32, 32, 32, 32, 32],
     unitColumns: 3,
   },
   {
-    freeEnds: [19, 19, 19, 19, 19, 19, 19],
+    cycles: 23,
+    freeEnds: [0, 0, 0, 0, 0, 0, 0],
     label: "stagger over 5 branches",
     modifier: { branches: 5, name: "stagger" },
-    tJunctions: [17, 17, 17, 17, 17, 17, 17],
+    tJunctions: [44, 44, 44, 44, 44, 44, 44],
     unitColumns: 4,
   },
   {
-    freeEnds: [25, 25, 25, 25, 25, 25, 25],
+    cycles: 29,
+    freeEnds: [0, 0, 0, 0, 0, 0, 0],
     label: "stagger over 6 branches",
     modifier: { branches: 6, name: "stagger" },
-    tJunctions: [23, 23, 23, 23, 23, 23, 23],
+    tJunctions: [56, 56, 56, 56, 56, 56, 56],
     unitColumns: 5,
   },
 ];
@@ -167,6 +186,7 @@ const BRANCH_CASES = MODES.flatMap((mode) =>
       ? []
       : [
           {
+            cycles: mode.cycles,
             freeEnds,
             label: `${mode.label} at ${rows} rows`,
             latticeColumns: mode.unitColumns * REPEAT_COUNT,
@@ -274,6 +294,7 @@ const reflectedSegments = (
 describe(BranchMotifService, () => {
   let generationService: MeanderGenerationService;
   let gridGeometryService: GridGeometryService;
+  let latticeService: MeanderLatticeService;
   let renderingService: SvgRenderingService;
   let service: BranchMotifService;
   let topologyService: MeanderTopologyService;
@@ -310,10 +331,57 @@ describe(BranchMotifService, () => {
 
     generationService = await module.resolve(MeanderGenerationService);
     gridGeometryService = await module.resolve(GridGeometryService);
+    latticeService = await module.resolve(MeanderLatticeService);
     renderingService = await module.resolve(SvgRenderingService);
     service = await module.resolve(BranchMotifService);
     topologyService = await module.resolve(MeanderTopologyService);
   });
+
+  /**
+   * Every horizontal run one repeat unit emits, in lattice steps and lattice
+   * rows.
+   *
+   * The unit's own path rather than the finished drawing, because both border
+   * rules now cover both of the rows a rail runs along: a rail is a subset of
+   * the rule above or below it, so the document cannot say which row a mode
+   * chose or how far one run reached. `path` is the seam that can, and it is
+   * public.
+   */
+  const unitRails = (
+    modifier: Modifier,
+    rows: number,
+  ): { rows: number[]; steps: number[] } => {
+    const geometry = gridGeometryService.compute(rows);
+    const runs = Array.from({ length: REPEAT_COUNT }, (_value, unitIndex) =>
+      service.path(geometry, {
+        isLastUnit: unitIndex === REPEAT_COUNT - 1,
+        modifier,
+        rows,
+        unitIndex,
+      }),
+    )
+      .flatMap((pathData) => parseSegments(pathData))
+      .filter((segment) => segment.axis === "H");
+
+    return {
+      rows: [
+        ...new Set(
+          runs.map((segment) =>
+            Math.round((segment.level - geometry.offset) / geometry.unit),
+          ),
+        ),
+      ],
+      steps: runs.map((segment) => (segment.to - segment.from) / geometry.unit),
+    };
+  };
+
+  /** Which lattice rows one mode's own rails run along, in first-emitted order. */
+  const unitRailRows = (modifier: Modifier, rows: number): number[] =>
+    unitRails(modifier, rows).rows;
+
+  /** How many lattice steps the longest of one mode's own rail runs covers. */
+  const longestUnitRail = (modifier: Modifier, rows: number): number =>
+    Math.max(...unitRails(modifier, rows).steps);
 
   it("is defined", () => {
     expect(service).toBeDefined();
@@ -339,22 +407,65 @@ describe(BranchMotifService, () => {
     });
   });
 
-  describe("bounded-tree ink", () => {
-    // 🎯 The family's whole claim, in the two numbers a tree is defined by.
-    // `nodes` is every lattice point of the band, so it is invariant 2
-    // measured as a count rather than as a boolean — and it counts the
-    // first and last lattice column too, which `channelWidthCompliant`
-    // exempts, so this family has no band-termination gap at all. `edges`
-    // one short of it, over a single component, is exactly a tree: a
-    // connected figure with a loop would need at least as many edges as
-    // nodes.
-
-    // `freeEnds` is the fourth number and it is not structural. It is what
-    // keeps the figure reading as a meander rather than as a grille, and it
-    // is the column the README's unbounded-branching write-up compares
-    // against: both looped constructions measured there have none.
+  describe("the closed borders", () => {
+    // 🎯 The one thing every mode now shares, read off the lattice rather
+    // than off the path data: an unbroken rule along both border rows,
+    // covering every lattice step of the repeat. Before this the borders were
+    // whatever a mode's own rails happened to leave — `comb` ruled the top and
+    // left the bottom to twelve tooth ends, `stagger` alternated, `rung` left
+    // every second step of its bottom row bare — so a drawing's interior alone
+    // could not say which mode drew it.
     it.each(BRANCH_CASES)(
-      "$label inks a spanning tree with $freeEnds free ends",
+      "$label rules both borders end to end",
+      (testCase) => {
+        const graph = latticeService.build(
+          generationService.generate({
+            repeatCount: REPEAT_COUNT,
+            rows: testCase.rows,
+            type: "branch",
+            ...(testCase.modifier ? { modifier: testCase.modifier } : {}),
+          }),
+        );
+        const bareSteps = (row: number): string[] =>
+          Array.from(
+            { length: graph.columns },
+            (_value, column) => `${column},${row}`,
+          ).filter((step) => !graph.horizontalEdges.has(step));
+
+        expect({
+          bottom: bareSteps(graph.rows),
+          columns: graph.columns,
+          top: bareSteps(0),
+        }).toStrictEqual({
+          bottom: [],
+          columns: testCase.latticeColumns - 1,
+          top: [],
+        });
+      },
+    );
+  });
+
+  describe("looped, connected ink", () => {
+    // 🎯 The family's claim in the numbers it is made of. `nodes` is every
+    // lattice point of the band, so it is invariant 2 measured as a count
+    // rather than as a boolean — and it counts the first and last lattice
+    // column too, which `channelWidthCompliant` exempts, so this family has
+    // no band-termination gap at all. One component over that many nodes is
+    // a single figure, and `edges` above `nodes - 1` is exactly what a loop
+    // costs: `cycles` is the excess, taken through the service's own
+    // `isAcyclic` rather than restated as arithmetic here.
+
+    // This is where closing the second border rule shows. The family drew a
+    // spanning tree while one border was open — `edges === nodes - 1`, in
+    // every mode at every row count — and a rule across the opposite border
+    // closes one loop per column pair. It still fills space and still forks;
+    // it no longer avoids loops, which was never a charter invariant.
+
+    // `freeEnds` is not structural. It is what keeps the figure reading as a
+    // meander rather than as a grille, and only `rung` has any left: a comb
+    // or stagger tooth that once stopped in mid-air now meets a rule.
+    it.each(BRANCH_CASES)(
+      "$label closes $cycles loops in one piece with $freeEnds free ends",
       (testCase) => {
         const document = generationService.generate({
           repeatCount: REPEAT_COUNT,
@@ -362,12 +473,22 @@ describe(BranchMotifService, () => {
           type: "branch",
           ...(testCase.modifier ? { modifier: testCase.modifier } : {}),
         });
+        const connectivity = topologyService.connectivity(document);
+        const nodes = testCase.latticeColumns * (testCase.rows + 1);
 
-        expect(topologyService.connectivity(document)).toStrictEqual({
-          components: 1,
-          edges: testCase.latticeColumns * (testCase.rows + 1) - 1,
-          freeEnds: testCase.freeEnds,
-          nodes: testCase.latticeColumns * (testCase.rows + 1),
+        expect({
+          acyclic: topologyService.isAcyclic(connectivity),
+          connectivity,
+          oneComponent: topologyService.isOneComponent(connectivity),
+        }).toStrictEqual({
+          acyclic: false,
+          connectivity: {
+            components: 1,
+            edges: nodes - 1 + testCase.cycles,
+            freeEnds: testCase.freeEnds,
+            nodes,
+          },
+          oneComponent: true,
         });
       },
     );
@@ -452,7 +573,7 @@ describe(BranchMotifService, () => {
     // also the one that changes where the band ends. A right edge computed
     // off the family's fixed unit width would clip every crenel wider than
     // the minimum, and nothing else in this suite would notice: the ink
-    // would still be a tree, still orthogonal, still the same height.
+    // would still fork, still be orthogonal, still be the same height.
     it.each([
       { branches: MINIMUM_STAGGER_BRANCHES, unitColumns: 2 },
       { branches: 4, unitColumns: 3 },
@@ -525,7 +646,11 @@ describe(BranchMotifService, () => {
     // figure turned upside down. Every tooth already spans the whole band,
     // so the rail's own border row is the only thing left for a direction to
     // move — and reflecting one drawing across the band has to reproduce the
-    // other exactly.
+    // other exactly. It reproduces it more than exactly now: both border
+    // rows are ruled, so the rail is subsumed and the two directions ink the
+    // same set rather than a mirrored one. What the flag still changes is
+    // which row the unit emits its own rail along, which the block below
+    // reads off `path` directly.
     it.each(SWEPT_ROWS)("turns the comb upside down at %i rows", (rows) => {
       const comb = (isUpward: boolean): string =>
         generationService.generate({
@@ -553,23 +678,20 @@ describe(BranchMotifService, () => {
       );
     });
 
-    // 🎯 The one thing the two directions genuinely disagree about, read
-    // off the drawing: which border row carries the rail. Every tooth spans
-    // both rows either way, so this is what a reader would point at.
+    // 🎯 The one thing the two directions genuinely disagree about: which
+    // border row carries the rail. It is read off one unit's own path rather
+    // than off the finished drawing, because both border rules run along
+    // both of the rows a rail can take — so the document no longer says
+    // which of them the mode chose, and asking it would assert nothing.
     it.each([
       { isUpward: false, railRow: 0 },
       { isUpward: true, railRow: 5 },
     ])(
       "runs an upward=$isUpward rail along row $railRow",
       ({ isUpward, railRow }) => {
-        const geometry = gridGeometryService.compute(5);
-        const railLevels = segments(drawing({ isUpward, name: "comb" }))
-          .filter((segment) => segment.axis === "H")
-          .map((segment) => (segment.level - geometry.offset) / geometry.unit);
-
-        expect([
-          ...new Set(railLevels.map((level) => Math.round(level))),
-        ]).toStrictEqual([railRow]);
+        expect(unitRailRows({ isUpward, name: "comb" }, 5)).toStrictEqual([
+          railRow,
+        ]);
       },
     );
   });
@@ -580,10 +702,16 @@ describe(BranchMotifService, () => {
      * count `MeanderGenerationService.generate` refuses. The bound lives on
      * that service rather than here, which is what lets the reason for the
      * floor be measured at the value it excludes.
+     *
+     * The border rules are appended exactly as
+     * `MeanderGenerationService.buildPaths` appends them, so what is measured
+     * is the drawing the family would make at that branch count rather than
+     * its units alone.
      */
     const belowBranchMinimum = (branches: number, rows: number): string => {
       const geometry = gridGeometryService.compute(rows);
       const modifier: Modifier = { branches, name: "stagger" };
+      const pattern = { modifier, repeatCount: REPEAT_COUNT, rows };
       const format = (value: number): string =>
         gridGeometryService.formatCoordinate(value);
 
@@ -591,66 +719,68 @@ describe(BranchMotifService, () => {
         height: format(
           geometry.offset + geometry.height + geometry.strokeWidth / 2,
         ),
-        paths: Array.from({ length: REPEAT_COUNT }, (_value, unitIndex) =>
-          service.path(geometry, {
-            isLastUnit: unitIndex === REPEAT_COUNT - 1,
-            modifier,
-            rows,
-            unitIndex,
-          }),
-        ),
+        paths: [
+          ...Array.from({ length: REPEAT_COUNT }, (_value, unitIndex) =>
+            service.path(geometry, {
+              isLastUnit: unitIndex === REPEAT_COUNT - 1,
+              modifier,
+              rows,
+              unitIndex,
+            }),
+          ),
+          service.border(geometry, pattern),
+        ],
         strokeWidth: format(geometry.strokeWidth),
         width: format(
-          service.rightEdge(geometry, {
-            modifier,
-            repeatCount: REPEAT_COUNT,
-            rows,
-          }) +
-            geometry.strokeWidth / 2,
+          service.rightEdge(geometry, pattern) + geometry.strokeWidth / 2,
         ),
       });
     };
 
-    // 🎯 The parameter's whole job, read off the drawing rather than off the
+    // 🎯 The parameter's whole job, read off the ink rather than off the
     // modifier: a rail joins exactly `branches` teeth before it changes
     // side. Measured as the longest horizontal run in lattice steps, which
-    // is one fewer than the teeth it touches.
+    // is one fewer than the teeth it touches — and taken from the units'
+    // own paths, since the border rules span the whole repeat and would be
+    // the longest run in every drawing whatever the crenel does.
     it.each([
       { branches: MINIMUM_STAGGER_BRANCHES },
       { branches: 4 },
       { branches: 5 },
       { branches: 8 },
     ])("joins $branches branches per rail run", ({ branches }) => {
-      const geometry = gridGeometryService.compute(5);
-      const document = generationService.generate({
-        modifier: { branches, name: "stagger" },
-        repeatCount: REPEAT_COUNT,
-        rows: 5,
-        type: "branch",
-      });
-      const railSteps = segments(document)
-        .filter((segment) => segment.axis === "H")
-        .map((segment) => (segment.to - segment.from) / geometry.unit);
-
-      expect(Math.max(...railSteps)).toBeCloseTo(branches - 1, 5);
+      expect(longestUnitRail({ branches, name: "stagger" }, 5)).toBeCloseTo(
+        branches - 1,
+        5,
+      );
     });
 
     // 🎯 The reason `MINIMUM_STAGGER_BRANCHES` is 3 rather than 2, measured
-    // at the value it excludes. A two-branch run has no tooth strictly
-    // inside it, so nothing forks: the figure is still connected and still
-    // `nodes - 1` edges, but every lattice point carries at most two arms
-    // and it is a simple path rather than a branching tree. `branch`
-    // declares invariant 3 relaxed in every mode and the charter property
-    // test asserts a declared relaxation is present, so this drawing would
-    // fail the charter — which is what the floor is for.
-    it("stops forking altogether at two branches", () => {
-      const document = belowBranchMinimum(2, 5);
+    // at the value it excludes. A two-branch crenel is one lattice step
+    // wide, and a rail always runs along a border row — so at two branches
+    // every rail run lies inside the rule it sits on, contributes nothing,
+    // and the crenellation the mode is named for is not in the drawing at
+    // all. What is left is a plain comb half as wide: the two records below
+    // are measured from two different drawings and agree in every number.
+    it("draws a plain comb at two branches", () => {
+      const twoBranch = belowBranchMinimum(2, 5);
+      const plain = generationService.generate({
+        repeatCount: REPEAT_COUNT / 2,
+        rows: 5,
+        type: "branch",
+      });
 
-      expect(topologyService.measure(document).inkTJunctions).toBe(0);
-      expect(topologyService.connectivity(document)).toStrictEqual({
+      expect(longestUnitRail({ branches: 2, name: "stagger" }, 5)).toBe(1);
+      expect(topologyService.connectivity(twoBranch)).toStrictEqual(
+        topologyService.connectivity(plain),
+      );
+      expect(topologyService.measure(twoBranch)).toStrictEqual(
+        topologyService.measure(plain),
+      );
+      expect(topologyService.connectivity(twoBranch)).toStrictEqual({
         components: 1,
-        edges: REPEAT_COUNT * 6 - 1,
-        freeEnds: 2,
+        edges: 40,
+        freeEnds: 0,
         nodes: REPEAT_COUNT * 6,
       });
     });
@@ -678,9 +808,19 @@ describe(BranchMotifService, () => {
      * service rather than here, which is what lets the reason for the
      * minimum be measured at the row count it excludes — for the mode the
      * minimum is set by, and for the two it is not.
+     *
+     * The border rules are appended exactly as
+     * `MeanderGenerationService.buildPaths` appends them, so what is measured
+     * is the drawing the family would make at that row count rather than its
+     * units alone.
      */
     const belowMinimum = (rows: number, modifier?: Modifier): string => {
       const geometry = gridGeometryService.compute(rows);
+      const pattern = {
+        repeatCount: REPEAT_COUNT,
+        rows,
+        ...(modifier ? { modifier } : {}),
+      };
       const format = (value: number): string =>
         gridGeometryService.formatCoordinate(value);
 
@@ -688,46 +828,53 @@ describe(BranchMotifService, () => {
         height: format(
           geometry.offset + geometry.height + geometry.strokeWidth / 2,
         ),
-        paths: Array.from({ length: REPEAT_COUNT }, (_value, unitIndex) =>
-          service.path(geometry, {
-            isLastUnit: unitIndex === REPEAT_COUNT - 1,
-            rows,
-            unitIndex,
-            ...(modifier ? { modifier } : {}),
-          }),
-        ),
+        paths: [
+          ...Array.from({ length: REPEAT_COUNT }, (_value, unitIndex) =>
+            service.path(geometry, {
+              isLastUnit: unitIndex === REPEAT_COUNT - 1,
+              rows,
+              unitIndex,
+              ...(modifier ? { modifier } : {}),
+            }),
+          ),
+          service.border(geometry, pattern),
+        ],
         strokeWidth: format(geometry.strokeWidth),
         width: format(
-          service.rightEdge(geometry, {
-            repeatCount: REPEAT_COUNT,
-            rows,
-            ...(modifier ? { modifier } : {}),
-          }) +
-            geometry.strokeWidth / 2,
+          service.rightEdge(geometry, pattern) + geometry.strokeWidth / 2,
         ),
       });
     };
 
     // 🎯 `rung`'s forks decompose into two terms: one per stile per interior
-    // lattice row, and `repeatCount - 1` where the rail arrives at a stile's
-    // head — one fewer than the stiles, since the first has no rail on its
-    // left, which is what `railForks` below spells out. At one row a
-    // stile has no interior row, so the first term is zero and every fork
-    // left is a rail junction — the mode draws a plain bracket per unit and
-    // the junction it is named for is absent. That is the whole reason the
-    // family's minimum is 2 rather than 1, measured rather than argued.
+    // lattice row, and `2 × (repeatCount - 1)` where a border rule runs past
+    // a stile's own end — two per stile, top and bottom, except the one at
+    // the drawing's far edge, which is what `borderForks` below spells out.
+    // At one row a stile has no interior row, so the first term is zero and
+    // every fork left belongs to the borders: the mode draws a ladder and
+    // the rung-into-stile junction it is named for is absent. That is the
+    // whole reason the family's minimum is 2 rather than 1, measured rather
+    // than argued.
     it.each([
-      { railForks: REPEAT_COUNT - 1, rows: 1, stileForks: 0 },
-      { railForks: REPEAT_COUNT - 1, rows: 2, stileForks: REPEAT_COUNT },
-      { railForks: REPEAT_COUNT - 1, rows: 3, stileForks: REPEAT_COUNT * 2 },
+      { borderForks: 2 * (REPEAT_COUNT - 1), rows: 1, stileForks: 0 },
+      {
+        borderForks: 2 * (REPEAT_COUNT - 1),
+        rows: 2,
+        stileForks: REPEAT_COUNT,
+      },
+      {
+        borderForks: 2 * (REPEAT_COUNT - 1),
+        rows: 3,
+        stileForks: REPEAT_COUNT * 2,
+      },
     ])(
       "leaves rung with $stileForks stile forks at $rows rows",
-      ({ railForks, rows, stileForks }) => {
+      ({ borderForks, rows, stileForks }) => {
         expect(
           topologyService.measure(
             belowMinimum(rows, { isLeftward: false, name: "rung" }),
           ).inkTJunctions,
-        ).toBe(railForks + stileForks);
+        ).toBe(borderForks + stileForks);
       },
     );
 
@@ -739,22 +886,23 @@ describe(BranchMotifService, () => {
     // rail's length does not depend on the band's height. So 2 is `rung`'s
     // floor rather than the lattice's.
     it.each([
-      { freeEnds: 12, label: "comb", tJunctions: 10 },
+      { cycles: 11, freeEnds: 0, label: "comb", tJunctions: 20 },
       {
-        freeEnds: 7,
+        cycles: 11,
+        freeEnds: 0,
         label: "stagger",
         modifier: {
           branches: MINIMUM_STAGGER_BRANCHES,
           name: "stagger" as const,
         },
-        tJunctions: 5,
+        tJunctions: 20,
       },
     ])("still draws $label at one row", (testCase) => {
       const document = belowMinimum(1, testCase.modifier);
 
       expect(topologyService.connectivity(document)).toStrictEqual({
         components: 1,
-        edges: LATTICE_COLUMNS * 2 - 1,
+        edges: LATTICE_COLUMNS * 2 - 1 + testCase.cycles,
         freeEnds: testCase.freeEnds,
         nodes: LATTICE_COLUMNS * 2,
       });
@@ -763,16 +911,16 @@ describe(BranchMotifService, () => {
       );
     });
 
-    // 🎯 The drawing below the minimum is still a tree and still
-    // space-filling, so no charter gate would have caught it. The minimum is
-    // this family's own legibility floor, exactly as `cross`'s is.
-    it("still measures as a space-filling tree at one row", () => {
+    // 🎯 The drawing below the minimum is still one connected, space-filling
+    // piece, so no charter gate would have caught it. The minimum is this
+    // family's own legibility floor, exactly as `cross`'s is.
+    it("still measures as space-filling and connected at one row", () => {
       const document = belowMinimum(1, { isLeftward: false, name: "rung" });
 
       expect(topologyService.connectivity(document)).toStrictEqual({
         components: 1,
-        edges: LATTICE_COLUMNS * 2 - 1,
-        freeEnds: 7,
+        edges: LATTICE_COLUMNS * 2 - 1 + 5,
+        freeEnds: 2,
         nodes: LATTICE_COLUMNS * 2,
       });
       expect(topologyService.measure(document).channelWidthCompliant).toBe(

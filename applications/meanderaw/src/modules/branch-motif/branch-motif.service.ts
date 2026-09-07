@@ -26,42 +26,52 @@ import type {
 } from "./branch-motif.types";
 
 /**
- * Draws the `branch` motif: ink that forks and never closes a loop.
+ * Draws the `branch` motif: ink that forks, fills the band, and closes
+ * loops.
  *
  * Every other family's ink is a **forest** — a disjoint union of simple
  * arcs, `edges = nodes − components` with the component count in the
  * dozens. `negative`'s is one to five pieces, every one of them full of
  * loops: 10 to 45 of them in the eighteen drawings it commits, because a
- * corridor network closes a loop through each of its own repeats. Not one of
- * the
- * 3,317 documents this repository committed before this family is a
- * **tree**, and every one of this family's is. That is the whole of what
- * `branch` adds, and it is a measurement rather than a description —
- * `MeanderTopologyService.connectivity` reports the three numbers and
- * `branch-motif.service.unit.test.ts` asserts `components === 1` and
- * `edges === nodes − 1` at every row count, in every mode.
+ * corridor network closes a loop through each of its own repeats. This
+ * family was the corpus's first **tree**, and it is one no longer: it was a
+ * tree only while one of its two borders was left open, and a rule now runs
+ * the full width of the repeat along both. Closing the second rule closes a
+ * loop in every column pair.
  *
- * The construction is one idea in three dresses, and the tree property
- * falls out of it rather than being checked for afterwards. Every lattice
- * point of the band carries ink, which is invariant 2; the ink joining them
- * is a **spine and teeth**, arranged so that the number of steps is exactly
- * one fewer than the number of points, and so that the figure stays in one
- * piece. A connected figure with `nodes − 1` edges cannot contain a loop,
- * so no mode has to be searched for cycles — it has no room for one. See
- * {@link BranchMode} for what the three modes keep.
+ * What `branch` adds is therefore the forking rather than the absence of
+ * loops, and both are measurements rather than descriptions —
+ * `MeanderTopologyService.connectivity` reports the numbers, and
+ * `branch-motif.service.unit.test.ts` pins the loop count, the fork count,
+ * and the free-end count per mode at every row count. Nothing in the
+ * charter is about a loop, so this is the family's shape as a graph
+ * changing and not its compliance: the drawings that were trees are now
+ * counted among the corpus's looped documents instead.
  *
- * Two further consequences, both measured rather than assumed:
+ * The construction is one idea in three dresses. Every lattice point of the
+ * band carries ink, which is invariant 2; the ink joining them is a **spine
+ * and teeth** run between the two border rules. See {@link BranchMode} for
+ * what the three modes keep and {@link border} for the rules. A mode's own
+ * rail along a border row is a subset of the rule beside it — redundant ink
+ * rather than a second edge, since the lattice records each step once.
+ *
+ * Three further consequences, all measured rather than assumed:
  *
  * - **It forks, and never crosses.** No lattice point in any mode has four
- *   arms: a rail meets a tooth at its end, never through its middle, so the
- *   most that ever meets is three. Invariant 3 is relaxed on purpose and
- *   declared as such in the charter property test; invariant 4 holds.
+ *   arms: a border rule meets a tooth at its end, never through its middle,
+ *   so the most that ever meets is three. Invariant 3 is relaxed on purpose
+ *   and declared as such in the charter property test; invariant 4 holds.
+ *   The fewest forks any mode leaves is sixteen, at `rung`'s own minimum row
+ *   count, so the relaxation is genuinely exercised everywhere.
  * - **It stays orthogonal and stays a band.** Every stroke is a run along a
  *   lattice line, so only `M`, `H`, and `V` are emitted (invariant 1), and
  *   the canvas height comes from the shared geometry like every other
  *   family's (invariant 5). Every lattice column is inked including the
- *   first and last, so unlike 2,176 documents in the corpus this family
+ *   first and last, so unlike 6,005 documents in the corpus this family
  *   leaves no gap even at the band's own termination.
+ * - **Its interior identifies it.** Which border a mode left bare used to be
+ *   the only thing separating some of its drawings from each other. With
+ *   both ruled, whatever a reader can tell apart is in the ink between them.
  *
  * The geometry is **derived**, not attested. There is no hand-drawn
  * reference for a branching meander — the six older families have
@@ -153,7 +163,7 @@ export class BranchMotifService implements MotifService {
    * stops short because there is no further stile to reach. Pointing left
    * it runs back into the unit before it, and the *first* unit stops short
    * for the same reason at the other end. Nothing else changes: the number
-   * of rail steps is identical either way, so the figure is the same tree
+   * of rail steps is identical either way, so the figure is the same one
    * seen in a mirror.
    */
   private rungRail(
@@ -225,11 +235,11 @@ export class BranchMotifService implements MotifService {
    * they stand up.
    *
    * Moving the rail costs the figure nothing structurally — the number of
-   * rail steps is the same wherever it runs, so the tree property is
-   * untouched. Under `stagger` it also changes which lattice points fork: a
-   * column where the rail changes side carries only one rail step, so it is
-   * a corner rather than a fork. A `comb` that moves its rail as a whole
-   * forks in exactly the same places, one border row down.
+   * rail steps is the same wherever it runs, and both of the rows it can run
+   * along are ruled end to end anyway, so a rail is redundant ink either
+   * way. What it still decides is the reading: under `stagger` the rail
+   * changes side once per unit, which is the crenellation, and a `comb`
+   * moves its rail as a whole and reads as a fringe hanging from one border.
    */
   private spineRow(
     placement: BranchUnitPlacement,
@@ -252,10 +262,11 @@ export class BranchMotifService implements MotifService {
    * would reach a column with no tooth under it.
    *
    * Under `stagger` the unit is as wide as its own crenel, so a rail run
-   * covers `unitColumns + 1` teeth — the `branches` its modifier names —
-   * and the teeth strictly inside that run are the mode's forks. Under
-   * `comb` the rail never changes side, so the unit width is only a tiling
-   * step and every interior column forks whatever it is.
+   * covers `unitColumns + 1` teeth — the `branches` its modifier names.
+   * Under `comb` the rail never changes side, so the unit width is only a
+   * tiling step. Either way the rail runs along a border row, so
+   * {@link border} already covers it and the forks belong to the rules:
+   * every interior column of either border carries one.
    *
    * The teeth span the whole band in both modes, so which border row the
    * rail runs along is the only thing left for a direction to change — see
@@ -331,6 +342,32 @@ export class BranchMotifService implements MotifService {
   // 🌎 Public Methods
 
   /**
+   * The rule along both border rows, drawn once across the whole repeat
+   * rather than per unit.
+   *
+   * Every mode used to leave one border to whatever its own rails reached:
+   * `comb` ruled the top and left twelve tooth ends at the bottom, `stagger`
+   * alternated, `rung` left every second step of its bottom row bare. So the
+   * border read as the mode's signature rather than the band's, and two modes
+   * could draw the same interior. Ruling both closes a loop in every column
+   * pair — see the class comment. A unit rail that runs along a border row is
+   * now a subset of this rule and harmless: the lattice records each step
+   * once.
+   */
+  border(geometry: GridGeometry, pattern: RepeatPatternOptions): string {
+    const leftX = this.gridGeometryService.formatCoordinate(geometry.offset);
+    const rightX = this.gridGeometryService.formatCoordinate(
+      this.rightEdge(geometry, pattern),
+    );
+    const topY = this.gridGeometryService.formatCoordinate(geometry.offset);
+    const bottomY = this.gridGeometryService.formatCoordinate(
+      geometry.offset + geometry.height,
+    );
+
+    return `M${rightX} ${bottomY}H${leftX}M${rightX} ${topY}H${leftX}`;
+  }
+
+  /**
    * Which mode a drawing's modifier selects; no modifier inks
    * {@link DEFAULT_BRANCH_MODE}.
    *
@@ -355,7 +392,7 @@ export class BranchMotifService implements MotifService {
     return BRANCH_MODES_BY_MODIFIER_NAME[modifier.name];
   }
 
-  /** Draws one repeat unit of whichever spanning tree the modifier selects. */
+  /** Draws one repeat unit of whichever spine-and-teeth figure the modifier selects; {@link border} rules the two borders it runs between. */
   path(geometry: GridGeometry, unit: MotifUnit): string {
     const mode = this.mode(unit.modifier);
     const unitColumns = this.unitColumns(unit.modifier);

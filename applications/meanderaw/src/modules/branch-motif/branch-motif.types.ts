@@ -1,12 +1,13 @@
 // 🏷️ Types
 
 /**
- * Which spanning tree of the band's lattice a `branch` drawing inks.
+ * Which spine-and-teeth figure over the band's lattice a `branch` drawing
+ * inks.
  *
  * Every mode paints the same lattice points — that is invariant 2 — and
- * every mode joins them with exactly one fewer step than there are points,
- * which is what makes each a tree rather than a figure with loops. They
- * differ only in *which* steps they keep.
+ * every mode runs its spine between rules along both of the band's borders,
+ * so every mode forks and every mode closes loops. They differ only in
+ * *which* steps they keep between those rules.
  *
  * - `comb` runs a rail along one of the band's border rows and reaches a
  *   full tooth from it into every lattice column. Its modifier carries

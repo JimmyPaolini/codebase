@@ -275,10 +275,11 @@ export class MeanderTopologyService {
    * these three numbers report the drawing's *shape as a graph*, which no
    * charter invariant fixes — the six original families are forests of many
    * components, `negative` is one to five components full of loops, and
-   * `branch` is a single loop-free tree. See {@link InkConnectivity} for
-   * the arithmetic that turns them into those words, and
-   * `meander-topology.service.integration.test.ts` for the assertion that
-   * fixes both ends of `negative`'s range.
+   * `branch` is one connected piece with a loop in every column pair. See
+   * {@link InkConnectivity} for the arithmetic that turns them into those
+   * words, and `meander-topology.service.integration.test.ts` for the
+   * assertion that fixes both ends of `negative`'s range and names which
+   * families draw a tree at all.
    */
   connectivity(document: string): InkConnectivity {
     const graph = this.meanderLatticeService.build(document);

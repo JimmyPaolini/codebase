@@ -86,21 +86,19 @@ export const DEFAULT_RUNG_IS_LEFTWARD = false;
 /**
  * The fewest branches one `stagger` rail run may join before changing side.
  *
- * Three, and it is a structural floor rather than a taste one. A run
- * spanning `branches` teeth forks at the teeth strictly inside it, so a
- * two-branch run — a rail crossing a single lattice step from one tooth to
- * the next — has no interior tooth and forks nowhere. The whole figure
- * would then be a `nodes - 1` edge graph of maximum degree two: a simple
- * path, still a tree and still space-filling, but with zero T-junctions.
+ * Three, and it is a structural floor rather than a taste one. A rail
+ * always runs along one of the band's two border rows, and both of those
+ * rows are ruled end to end — so a two-branch run, which crosses a single
+ * lattice step from one tooth to the next, lies entirely inside the rule it
+ * sits on and contributes nothing at all. The crenellation the parameter
+ * names would then be absent from the ink, and what is left is a plain comb
+ * half as wide.
  *
- * That is not a stricter drawing, it is a different family. `branch`
- * declares invariant 3 relaxed in *every* mode, and the charter property
- * test asserts a declared relaxation is present rather than merely
- * permitted — so a branching family that stopped branching would fail its
- * own charter rather than draw something new.
+ * That is not a stricter drawing, it is another mode's drawing under this
+ * mode's name — a parameter advertising a choice it cannot make.
  * `branch-motif.service.unit.test.ts` renders the two-branch figure this
- * constant excludes and measures every claim in the paragraph above, so the
- * number and its reason cannot drift apart.
+ * constant excludes and measures it against that comb, so the number and
+ * its reason cannot drift apart.
  */
 export const MINIMUM_STAGGER_BRANCHES = 3;
 
