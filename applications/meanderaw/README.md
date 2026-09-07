@@ -398,6 +398,48 @@ where the number of levels is even and none at all where it is odd. Asking for a
 than a coincidence: every rule requires the _absence_ of the directions the others are
 about, so nothing that branches or crosses satisfies one.
 
+### Every name is a constructor as well as a predicate
+
+A name is a rule, so recognizing a region costs nothing; building its aligned
+representative is the separate job `MosaicSubFamilyService` does, and for a while only
+five of the seven names had one. `mesh` and `zigzag` did not, because the shape table
+could say one thing — one direction's edges, anchored in the first column, every
+`levelStep` levels — and neither of those two is that. `mesh` uses both directions at
+once. `zigzag` needs its eastward edges to start a column further along at every level,
+which no single anchor expresses.
+
+Each sub-family's tile is now **two rules, one per edge grid**, each an edge every
+`levelStep` levels and every `columnStep` columns, optionally _phased_ so the column
+offset advances by one per level. The family's pairings then fall out one number apart:
+`bars` and `diamond` are the same southward rule at `levelStep` 1 and 2, `lines` and
+`dashes` the same eastward rule at `columnStep` 1 and 2, `dots` no rule at all, and
+`mesh` both rules at every step of one.
+
+`zigzag` is the only one needing a phase, and the phase is what makes it a staircase
+rather than a stack of closed boxes. Every point turning a corner means exactly one
+horizontal bit and one vertical bit **at every point**, and that pins both rules down:
+
+- **The southward edges have to alternate level by level.** A point's `north` is the
+  edge above it and its `south` the edge below, so a point can have exactly one of them
+  only if the edges down a column are on, off, on, off. The first level has no `north`,
+  so the run starts on — and the last level has no `south`, so it must end on the level
+  above. That happens only when the interior's level count is **even**, which is
+  `diamond`'s constraint arriving for a different reason: `zigzag` exists at 3, 5, 7 …
+  rows and nowhere else, and is refused rather than approximated at 4 and 6.
+- **The eastward edges have to alternate column by column**, since a point's `east` and
+  `west` are the edges either side of it. Alternating has to survive the wrap from the
+  last column into the next repeat, so the column span must be **even** — two, which is
+  why `zigzag` is empty at a single column rather than merely unaligned there.
+- **The alternation has to shift by one at every level.** Hold the phase fixed and each
+  level's eastward edge sits directly above the next level's, the ink turns back on
+  itself, and the tile is a stack of closed rectangles — every point still a corner, but
+  not a staircase. Advance it and each level's horizontal run starts where the one above
+  it ended, so the ink turns the other way at every level and walks sideways through the
+  repeats.
+
+The smallest one is `56a9` — two columns, two interior levels — and the smallest `mesh`
+is `7b`, a single column with every edge it has.
+
 Ask for a sub-family by name:
 
 ```bash

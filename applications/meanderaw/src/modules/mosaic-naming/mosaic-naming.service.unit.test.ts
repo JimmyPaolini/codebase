@@ -52,13 +52,15 @@ const NAMES: readonly MosaicSubFamily[] = [
   "zigzag",
 ];
 
-/** The names that also have a builder, which is what the round trip below can go through. */
+/** The names that also have a builder, which is what the round trip below can go through — every one of them now. */
 const BUILDABLE_NAMES: readonly MosaicBuildableSubFamily[] = [
   "bars",
   "dashes",
   "diamond",
   "dots",
   "lines",
+  "mesh",
+  "zigzag",
 ];
 
 /** One canonical tile per name, written out by hand so a rule is checked against a shape rather than against its own builder. */

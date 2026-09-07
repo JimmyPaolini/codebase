@@ -37,6 +37,8 @@ const NAMED_SUB_FAMILIES: readonly MosaicBuildableSubFamily[] = [
   "diamond",
   "dots",
   "lines",
+  "mesh",
+  "zigzag",
 ];
 
 // 🧪 Tests
@@ -87,16 +89,43 @@ describe(MosaicSubFamilyService, () => {
       expect(service.tile("diamond", 7)).toBeDefined();
     });
 
-    it("has no tile at all where the bar has no interior level to mark", () => {
-      expect(service.tile("dots", 1)).toBeUndefined();
+    it("builds the two ends of the space, the tile with no edge at all and the tile with every edge there is", () => {
+      const dots = service.tile("dots", 3);
+      const mesh = service.tile("mesh", 3);
+
+      expect(dots && mosaicSymmetryService.identify(dots)).toBe("00");
+      expect(mesh && mosaicSymmetryService.identify(mesh)).toBe("7b");
     });
 
-    it("spans two columns for dashes, whose edge reaches into the column beside it, and one for the rest", () => {
+    it("builds a staircase for zigzag, whose horizontal run starts a column further along at every level", () => {
+      const zigzag = service.tile("zigzag", 3);
+
+      expect(zigzag && mosaicSymmetryService.canonicalIdentifier(zigzag)).toBe(
+        "56a9",
+      );
+    });
+
+    it("has no zigzag tile where the interior has an odd number of levels, since a corner's southward edges cover levels in pairs", () => {
+      expect(service.tile("zigzag", 4)).toBeUndefined();
+      expect(service.tile("zigzag", 6)).toBeUndefined();
+      expect(service.tile("zigzag", 3)).toBeDefined();
+      expect(service.tile("zigzag", 5)).toBeDefined();
+    });
+
+    it("has no tile at all where the bar has no interior level to mark", () => {
+      expect(service.tile("dots", 1)).toBeUndefined();
+      expect(service.tile("mesh", 1)).toBeUndefined();
+      expect(service.tile("zigzag", 1)).toBeUndefined();
+    });
+
+    it("spans two columns for dashes and zigzag, whose edges reach into the column beside them, and one for the rest", () => {
       expect(service.tile("bars", 6)?.columns).toBe(1);
       expect(service.tile("dashes", 6)?.columns).toBe(2);
       expect(service.tile("diamond", 5)?.columns).toBe(1);
       expect(service.tile("dots", 6)?.columns).toBe(1);
       expect(service.tile("lines", 6)?.columns).toBe(1);
+      expect(service.tile("mesh", 6)?.columns).toBe(1);
+      expect(service.tile("zigzag", 5)?.columns).toBe(2);
     });
 
     it("anchors every edge in the tile's first column, which is the representative the region is named after", () => {
