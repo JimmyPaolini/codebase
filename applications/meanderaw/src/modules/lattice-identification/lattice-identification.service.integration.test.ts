@@ -16,6 +16,7 @@ import { MeanderGenerationService } from "../meander-generation/meander-generati
 import { MotifPitchService } from "../meander-generation/motif-pitch.service";
 import { MeanderLatticeModule } from "../meander-lattice/meander-lattice.module";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import {
   MOSAIC_TILE_EDGE_BUDGET,
   MOSAIC_TILE_MAXIMUM_ROWS,
@@ -34,7 +35,10 @@ import type {
   MotifDrawnType,
   MotifPitchOptions,
 } from "../meander-generation/meander-generation.types";
-import type { MosaicTileShape } from "../mosaic-tile/mosaic-tile.types";
+import type {
+  MosaicSubFamily,
+  MosaicTileShape,
+} from "../mosaic-tile/mosaic-tile.types";
 
 // 🔧 Configuration
 
@@ -418,5 +422,114 @@ describe("a rendered meander is addressed by its lattice", () => {
         }
       },
     );
+  });
+
+  /**
+   * `MosaicNamingService`'s rules read a tile's own points and consult no
+   * family, so a reading addressed from any family's drawing is exactly the
+   * input a rule already knows how to answer for — the same claim
+   * `mosaic-naming.service.unit.test.ts` makes over the enumerated `mosaic`
+   * space, made here over every other family the corpus draws.
+   *
+   * `branch`, `negative`, and `parallel` are the three that earn a name at
+   * all: a `branch` drawn with no modifier is bare bars, a `negative ruled`
+   * or `grid` is the `lines` or `mesh` a one-column source inverts into, and
+   * a `parallel serpentine` sometimes closes into the `mosaic` family's own
+   * `zigzag`. The other six families in {@link SWEPT_FAMILIES} — `boxes`,
+   * `chain`, `cross`, `snake`, `swirl`, `whirl` — earn none at any swept
+   * combination, and that is not a gap in the rules: their motifs turn a
+   * corner without every point doing so, or run ink no rule reads as
+   * unbroken, so nothing here is forced to name them the nearest region
+   * anyway.
+   */
+  describe("structural sub-family naming reaches every family's drawing", () => {
+    let meanderGenerationService: MeanderGenerationService;
+    let meanderLatticeService: MeanderLatticeService;
+    let mosaicNamingService: MosaicNamingService;
+    let motifPitchService: MotifPitchService;
+    let service: LatticeIdentificationService;
+
+    beforeAll(async () => {
+      const module = await Test.createTestingModule({
+        imports: [
+          LatticeIdentificationModule,
+          MeanderGenerationModule,
+          MeanderLatticeModule,
+        ],
+      }).compile();
+
+      meanderGenerationService = await module.resolve(MeanderGenerationService);
+      meanderLatticeService = await module.resolve(MeanderLatticeService);
+      mosaicNamingService = await module.resolve(MosaicNamingService);
+      motifPitchService = await module.resolve(MotifPitchService);
+      service = await module.resolve(LatticeIdentificationService);
+    });
+
+    /**
+     * Every rule a tile addressed from `drawing` matches, read the same way
+     * the consecutive-repeat-unit sweep above reads one: rendered wide
+     * enough to clear both band terminations, then windowed at its own span.
+     */
+    const matchingRules = (drawing: MotifPitchOptions): MosaicSubFamily[] => {
+      const pitch = motifPitchService.columnPitch(drawing);
+      const span = motifPitchService.columnSpan(drawing);
+      const repeatCount = repeatCountFor(
+        drawing.modifier,
+        span / pitch + 2 * TERMINATION_MARGIN_PITCHES,
+      );
+      const graph = meanderLatticeService.build(
+        meanderGenerationService.generate({ ...drawing, repeatCount }),
+      );
+      const shape = { columns: span, rows: graph.rows };
+      const start = TERMINATION_MARGIN_PITCHES * pitch;
+
+      return mosaicNamingService.matching(
+        service.readTile(graph, shape, start),
+      );
+    };
+
+    it("never lets a tile addressed from any family's drawing earn two names, exactly as the enumerated mosaic space never does", () => {
+      const ambiguous: MosaicSubFamily[][] = [];
+
+      for (const { drawings } of SWEPT_FAMILIES) {
+        for (const drawing of drawings) {
+          const matching = matchingRules(drawing);
+
+          if (matching.length > 1) {
+            ambiguous.push(matching);
+          }
+        }
+      }
+
+      expect(ambiguous).toStrictEqual([]);
+    });
+
+    it("earns a name for a small minority of the swept corpus, leaving the rest anonymous", () => {
+      const namedByFamily: Record<string, Record<string, number>> = {};
+      let named = 0;
+
+      for (const { drawings, type } of SWEPT_FAMILIES) {
+        for (const drawing of drawings) {
+          const [earned] = matchingRules(drawing);
+
+          if (earned) {
+            named += 1;
+            namedByFamily[type] = namedByFamily[type] ?? {};
+            namedByFamily[type][earned] =
+              (namedByFamily[type][earned] ?? 0) + 1;
+          }
+        }
+      }
+
+      expect({ named, total: SWEPT_COMBINATION_COUNT }).toStrictEqual({
+        named: 121,
+        total: SWEPT_COMBINATION_COUNT,
+      });
+      expect(namedByFamily).toStrictEqual({
+        branch: { bars: 40, dashes: 2, dots: 4 },
+        negative: { lines: 13, mesh: 11, zigzag: 1 },
+        parallel: { bars: 10, dashes: 37, dots: 1, zigzag: 2 },
+      });
+    });
   });
 });
