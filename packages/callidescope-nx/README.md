@@ -414,6 +414,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 <!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
+  file_callidescope_config_ts["callidescope.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_executors_address_types_ts["src/executors/address.types.ts"]
@@ -565,40 +566,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3824-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-139.54_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-42-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5798-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-213.72_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-13-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-52-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-18.67_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-26.58_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-41-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-15-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-51-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-19-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-9-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-124-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-11-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-167-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-1-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-10-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-14-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-9-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-198-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-48-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-166-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-80-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-109-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-155-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-47-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-214-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-479-475569?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-13-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-15-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-11-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-277-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-57-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-203-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-131-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-166-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-210-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-61-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-319-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-803-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -618,17 +619,17 @@ graph LR
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-8-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-312-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-73-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-19-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-226-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-179-16a34a?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-9-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-346-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-82-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-20-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-253-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-197-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-11-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-12-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-49-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-283-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-50-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-312-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
@@ -709,15 +710,15 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-5-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-4-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-6-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-5-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-6-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-5-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-8-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-3-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-10-ca8a04?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-12-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 
 ### Jupyter
@@ -746,7 +747,7 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-243-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-258-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-12-a78bfa?style=flat-square)
@@ -762,7 +763,7 @@ graph LR
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-11-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-98-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-105-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
@@ -775,13 +776,22 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
 
 | Measure | Value |
 | --- | --- |
-| Callables | 66 |
-| Files | 29 |
-| Calls traced | 87 |
-| Call stacks | 5 |
+| Callables | 79 |
+| Files | 36 |
+| Calls traced | 111 |
+| Call stacks | 6 |
 | Deepest stack | 17 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 1 |
+| Unfollowable calls | 2 |
+
+### Limits
+
+What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+
+| Limit | Value | Origin |
+| --- | --- | --- |
+| `maximumDepth` | 17 | declared |
+| `maximumBreadth` | 7 | declared |
 
 ### Call stacks (depth)
 
@@ -798,7 +808,7 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
          ↳ Traces the selection, then matches every address against it.
         └─> AddressLookupService.locate(options: AddressCommandOptions): Promise<LocatedWorkspace> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:87]
            ↳ Loads the configuration and traces the workspace, matching nothing yet.
-          └─> CallidescopeService.locate(args: TraceArguments): Promise<LocateOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:399]
+          └─> CallidescopeService.locate(args: TraceArguments): Promise<LocateOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:414]
              ↳ Collects every callable and assembles the graph over them, without running the analysis a full trace does.
             └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
                ↳ Builds the call graph and everything derived from it.
@@ -835,7 +845,7 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
          ↳ Traces the selection, then matches every address against it.
         └─> AddressLookupService.locate(options: AddressCommandOptions): Promise<LocatedWorkspace> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:87]
            ↳ Loads the configuration and traces the workspace, matching nothing yet.
-          └─> CallidescopeService.locate(args: TraceArguments): Promise<LocateOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:399]
+          └─> CallidescopeService.locate(args: TraceArguments): Promise<LocateOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:414]
              ↳ Collects every callable and assembles the graph over them, without running the analysis a full trace does.
             └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
                ↳ Builds the call graph and everything derived from it.
@@ -859,16 +869,16 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
                                 └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:163]
 ```
 
-**3. `traceExecutor`** — depth ≥ 15 · orphan-root
+**3. `gateExecutor`** — depth ≥ 15 · orphan-root
 
 ```text
-🚀 traceExecutor(…): Promise<{ success: boolean; }> [packages/callidescope-nx/src/executors/trace/executor.ts:25]
-   ↳ Traces one selection of Nx projects with callidescope.
-  └─> PluginService.runTrace(args: RunTraceArguments): Promise<RunTraceResult> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:221]
-     ↳ Traces the resolved directories and renders the report.
-    └─> CallidescopeService.trace(args: TraceArguments): Promise<TraceOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:413]
+🚀 gateExecutor(…): Promise<{ success: boolean; }> [packages/callidescope-nx/src/executors/gate/executor.ts:28]
+   ↳ Fails one project's task when its call stacks broke the limits it is held to.
+  └─> PluginService.runGate(args: RunGateArguments): Promise<RunTraceResult> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:427]
+     ↳ Traces the resolved directories and judges what it found against the limits every project in scope declared.
+    └─> CallidescopeService.trace(args: TraceArguments): Promise<TraceOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:428]
        ↳ Traces a workspace and returns everything the run found.
-      └─> CallidescopeService.analyze(…): AnalyzeOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:284]
+      └─> CallidescopeService.analyze(…): AnalyzeOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:291]
          ↳ Derives every finding from the collected callables.
         └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
            ↳ Builds the call graph and everything derived from it.
@@ -893,21 +903,59 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
 ```
 
 <details>
-<summary>2 more call stacks</summary>
+<summary>3 more call stacks</summary>
 
-**4. `anonymous`** — depth 4 · orphan-root
+**4. `traceExecutor`** — depth ≥ 15 · orphan-root
 
 ```text
-🚀 anonymous(…): Promise<CreateNodesResultArray> [packages/callidescope-nx/src/index.ts:58]
-  └─> PluginService.inferTargets(args: InferTargetsArguments): Map<string, InferredTargets> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:117]
-     ↳ Infers a trace target onto every project holding a `tsconfig.json`.
-    └─> OptionsService.resolvePluginOptions(options: unknown): CallidescopePluginOptions [packages/callidescope-nx/src/modules/options/options.service.ts:158]
-       ↳ Resolves the effective plugin options from an untrusted value.
-      └─> OptionsService.readString(args: { key: string; options: Record<string, unknown>; }): string | undefined [packages/callidescope-nx/src/modules/options/options.service.ts:90]
-         ↳ Reads a string field from an untrusted record, or `undefined`.
+🚀 traceExecutor(…): Promise<{ success: boolean; }> [packages/callidescope-nx/src/executors/trace/executor.ts:25]
+   ↳ Traces one selection of Nx projects with callidescope.
+  └─> PluginService.runTrace(args: RunTraceArguments): Promise<RunTraceResult> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:471]
+     ↳ Traces the resolved directories and renders the report.
+    └─> CallidescopeService.trace(args: TraceArguments): Promise<TraceOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:428]
+       ↳ Traces a workspace and returns everything the run found.
+      └─> CallidescopeService.analyze(…): AnalyzeOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:291]
+         ↳ Derives every finding from the collected callables.
+        └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
+           ↳ Builds the call graph and everything derived from it.
+          └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-graph/src/modules/edges/edges.service.ts:251]
+             ↳ Builds every edge in the graph, and records the calls it could not.
+            └─> EdgesService.buildSiteEdges(…): { edges: CallEdge[]; unresolved: UnresolvedCall[]; } [packages/callidescope-graph/src/modules/edges/edges.service.ts:59]
+               ↳ Turns one call site into the edges and non-resolutions it produced.
+              └─> EdgesService.resolveSite(…): ResolvedCallSite | undefined [packages/callidescope-graph/src/modules/edges/edges.service.ts:226]
+                 ↳ Resolves one call site, choosing the right strategy for its shape.
+                └─> SymbolResolutionService.resolve(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:267]
+                   ↳ Resolves a call expression to every declaration it can reach.
+                  └─> SymbolResolutionService.resolveSymbol(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:165]
+                     ↳ Resolves an already-identified callee symbol to its declarations.
+                    └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
+                       ↳ Expands an interface or abstract member to its implementations.
+                      └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
+                         ↳ Finds the concrete declarations one interface member resolves to.
+                        └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:235]
+                          └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:149]
+                             ↳ Reads one member's concrete declarations off a candidate class.
+                            └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:163]
 ```
 
-**5. `resolveProjectsService`** — depth 2 · orphan-root
+**5. `anonymous`** — depth ≥ 7 · orphan-root
+
+```text
+🚀 anonymous(…): Promise<CreateNodesResultArray> [packages/callidescope-nx/src/index.ts:59]
+  └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:333]
+     ↳ Infers this plugin's targets onto every project holding a `tsconfig.json`.
+    └─> PluginService.buildExclusionFilter(…): Promise<FileFilter> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:92]
+       ↳ Builds the predicate deciding which projects the workspace configuration keeps out of every trace.
+      └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedCallidescopeConfiguration> [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:390]
+         ↳ Loads a configuration, and says what the file itself declared and which file answered.
+        └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): string [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:178]
+           ↳ Resolves a configuration path against the cwd, then the repository root.
+          └─> ConfigurationService.findRepositoryRoot(): string | undefined [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:110]
+             ↳ Walks upward from the process cwd looking for the repository root.
+            └─> ConfigurationService.some(…)(marker: ".git" | "pnpm-workspace.yaml"): boolean [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:115]
+```
+
+**6. `resolveProjectsService`** — depth 2 · orphan-root
 
 ```text
 🚀 resolveProjectsService(): Promise<ProjectsService> [packages/callidescope-nx/src/modules/plugin/plugin-context.utilities.ts:39]
@@ -922,7 +970,8 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runTrace` | 16 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-configuration:modules/configuration`, `packages/callidescope-nx:modules/options`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:221` |
+| `PluginService.runGate` | 17 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-nx:modules/run-configuration`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:427` |
+| `PluginService.runTrace` | 17 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-nx:modules/run-configuration`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:471` |
 
 ### Breadth
 
@@ -930,36 +979,43 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
 | --- | --- | --- | --- |
 | `runAddressExecutor` | 7 | `filter(…)`, `resolveExecutorScope`, `resolveOptionsService`, `resolveAddressService`, `OptionsService.readFormat`, `AddressService.runDepth`, `AddressService.runBreadth` | `packages/callidescope-nx/src/modules/address/address.utilities.ts:19` |
 | `ProjectsService.resolveProjectNames` | 6 | `ProjectsService.readProjects`, `ProjectsService.map(…)`, `ProjectsService.resolveTaggedNames`, `ProjectsService.map(…)`, `ProjectsService.readTags`, `ProjectsService.toSorted(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:195` |
-| `OptionsService.readStringList` | 5 | `OptionsService.isUnknownArray`, `OptionsService.filter(…)`, `OptionsService.map(…)`, `OptionsService.flatMap(…)`, `OptionsService.filter(…)` | `packages/callidescope-nx/src/modules/options/options.service.ts:123` |
+| `PluginService.runGate` | 6 | `RunConfigurationService.load`, `CallidescopeService.trace`, `PluginService.judge`, `PluginService.explainVerdict`, `MarkdownReportService.renderFindings`, `RunConfigurationService.readPreviewCount` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:427` |
 
 <details>
-<summary>29 more callables</summary>
+<summary>36 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runTrace` | 5 | `OptionsService.resolveConfigurationPath`, `PluginService.readNxConfiguration`, `ConfigurationService.loadConfigurationFile`, `CallidescopeService.trace`, `MarkdownReportService.renderRun` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:221` |
+| `PluginService.runTrace` | 6 | `RunConfigurationService.load`, `CallidescopeService.trace`, `PluginService.judge`, `MarkdownReportService.renderRun`, `RunConfigurationService.readPreviewCount`, `PluginService.explainVerdict` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:471` |
+| `OptionsService.readStringList` | 5 | `OptionsService.isUnknownArray`, `OptionsService.filter(…)`, `OptionsService.map(…)`, `OptionsService.flatMap(…)`, `OptionsService.filter(…)` | `packages/callidescope-nx/src/modules/options/options.service.ts:124` |
+| `PluginService.inferTargets` | 5 | `OptionsService.resolvePluginOptions`, `PluginService.buildExclusionFilter`, `PluginService.holdsProgram`, `PluginService.buildInferredTargets`, `PluginService.isExcludedProject` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:333` |
 | `resolveExecutorScope` | 5 | `resolveOptionsService`, `OptionsService.readStringList`, `resolvePluginService`, `PluginService.resolveTraceScope`, `PluginService.describeRefusedScope` | `packages/callidescope-nx/src/modules/plugin/plugin.utilities.ts:24` |
 | `traceExecutor` | 5 | `resolveExecutorScope`, `resolveOptionsService`, `resolvePluginService`, `PluginService.runTrace`, `OptionsService.readFormat` | `packages/callidescope-nx/src/executors/trace/executor.ts:25` |
-| `PluginService.resolveTraceScope` | 4 | `ProjectsService.readProjectGraph`, `ProjectsService.resolveProjectNames`, `ProjectsService.resolveDependencyClosure`, `ProjectsService.resolveDirectories` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:184` |
-| `anonymous` | 4 | `resolvePluginService`, `PluginService.inferTargets`, `filter(…)`, `map(…)` | `packages/callidescope-nx/src/index.ts:58` |
+| `PluginService.resolveTraceScope` | 4 | `ProjectsService.readProjectGraph`, `ProjectsService.resolveProjectNames`, `ProjectsService.resolveDependencyClosure`, `ProjectsService.resolveDirectories` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:383` |
+| `anonymous` | 4 | `resolvePluginService`, `PluginService.inferTargets`, `filter(…)`, `map(…)` | `packages/callidescope-nx/src/index.ts:59` |
 | `AddressService.runBreadth` | 3 | `AddressService.locate`, `BreadthService.describeDirectCalls`, `AddressReportService.renderBreadthReports` | `packages/callidescope-nx/src/modules/address/address.service.ts:107` |
 | `AddressService.runDepth` | 3 | `AddressService.locate`, `AddressReportService.renderDepthReports`, `AddressService.map(…)` | `packages/callidescope-nx/src/modules/address/address.service.ts:151` |
 | `ProjectsService.toDirectories` | 3 | `ProjectsService.map(…)`, `ProjectsService.readProjects`, `ProjectsService.toSorted(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:233` |
+| `RunConfigurationService.load` | 3 | `OptionsService.resolveConfigurationPath`, `RunConfigurationService.readNxConfiguration`, `ConfigurationService.loadConfigurationFile` | `packages/callidescope-nx/src/modules/run-configuration/run-configuration.service.ts:73` |
+| `gateExecutor` | 3 | `resolveExecutorScope`, `resolvePluginService`, `PluginService.runGate` | `packages/callidescope-nx/src/executors/gate/executor.ts:28` |
 | `AddressService.identify` | 2 | `AddressLookupService.resolve`, `AddressLookupService.describeProblem` | `packages/callidescope-nx/src/modules/address/address.service.ts:44` |
 | `AddressService.locate` | 2 | `AddressLookupService.locate`, `AddressService.identify` | `packages/callidescope-nx/src/modules/address/address.service.ts:71` |
 | `AddressService.map(…)` | 2 | `AddressDepthService.buildDownwardStacks`, `AddressDepthService.buildUpwardStacks` | `packages/callidescope-nx/src/modules/address/address.service.ts:164` |
-| `OptionsService.readRegisteredConfigurationPath` | 2 | `OptionsService.isUnknownArray`, `OptionsService.readEntryConfigurationPath` | `packages/callidescope-nx/src/modules/options/options.service.ts:65` |
-| `OptionsService.resolveConfigurationPath` | 2 | `OptionsService.readRegisteredConfigurationPath`, `OptionsService.find(…)` | `packages/callidescope-nx/src/modules/options/options.service.ts:144` |
+| `OptionsService.readRegisteredConfigurationPath` | 2 | `OptionsService.isUnknownArray`, `OptionsService.readEntryConfigurationPath` | `packages/callidescope-nx/src/modules/options/options.service.ts:66` |
+| `OptionsService.resolveConfigurationPath` | 2 | `OptionsService.readRegisteredConfigurationPath`, `OptionsService.find(…)` | `packages/callidescope-nx/src/modules/options/options.service.ts:145` |
 | `ProjectsService.readTags` | 2 | `ProjectsService.toSorted(…)`, `ProjectsService.flatMap(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:37` |
 | `ProjectsService.resolveTaggedNames` | 2 | `ProjectsService.filter(…)`, `ProjectsService.map(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:53` |
 | `ProjectsService.readProjects` | 2 | `ProjectsService.toSorted(…)`, `ProjectsService.map(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:92` |
 | `ProjectsService.resolveDependencyClosure` | 2 | `ProjectsService.filter(…)`, `ProjectsService.toSorted(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:122` |
 | `ProjectsService.resolveDirectories` | 2 | `ProjectsService.resolveProjectNames`, `ProjectsService.toDirectories` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:171` |
-| `PluginService.inferTargets` | 2 | `OptionsService.resolvePluginOptions`, `PluginService.holdsProgram` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:117` |
-| `OptionsService.readEntryConfigurationPath` | 1 | `OptionsService.readString` | `packages/callidescope-nx/src/modules/options/options.service.ts:41` |
-| `OptionsService.readFormat` | 1 | `OptionsService.find(…)` | `packages/callidescope-nx/src/modules/options/options.service.ts:108` |
-| `OptionsService.resolvePluginOptions` | 1 | `OptionsService.readString` | `packages/callidescope-nx/src/modules/options/options.service.ts:158` |
-| `PluginService.describeRefusedScope` | 1 | `PluginService.filter(…)` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:94` |
+| `PluginService.buildExclusionFilter` | 2 | `ConfigurationService.loadConfigurationFile`, `FileFilterService.buildFileFilter` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:92` |
+| `PluginService.judge` | 2 | `ProjectReportsService.findOwnedFindings`, `ProjectReportsService.findUnreadProjects` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:263` |
+| `OptionsService.readEntryConfigurationPath` | 1 | `OptionsService.readString` | `packages/callidescope-nx/src/modules/options/options.service.ts:42` |
+| `OptionsService.readFormat` | 1 | `OptionsService.find(…)` | `packages/callidescope-nx/src/modules/options/options.service.ts:109` |
+| `OptionsService.resolvePluginOptions` | 1 | `OptionsService.readString` | `packages/callidescope-nx/src/modules/options/options.service.ts:159` |
+| `reportUnreadProjects` | 1 | `map(…)` | `packages/callidescope-nx/src/modules/plugin/plugin.constants.ts:72` |
+| `PluginService.explainVerdict` | 1 | `reportUnreadProjects` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:185` |
+| `PluginService.describeRefusedScope` | 1 | `PluginService.filter(…)` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:305` |
 | `resolveAddressService` | 1 | `resolvePluginContext` | `packages/callidescope-nx/src/modules/plugin/plugin-context.utilities.ts:18` |
 | `resolveOptionsService` | 1 | `resolvePluginContext` | `packages/callidescope-nx/src/modules/plugin/plugin-context.utilities.ts:25` |
 | `resolvePluginService` | 1 | `resolvePluginContext` | `packages/callidescope-nx/src/modules/plugin/plugin-context.utilities.ts:32` |
@@ -973,5 +1029,7 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
 
 | Callable | Declared in | Called from | Callers |
 | --- | --- | --- | --- |
+| `RunConfigurationService.load` | `packages/callidescope-nx:modules/run-configuration` | `packages/callidescope-nx:modules/plugin` | 2/2 |
+| `RunConfigurationService.readPreviewCount` | `packages/callidescope-nx:modules/run-configuration` | `packages/callidescope-nx:modules/plugin` | 2/2 |
 | `runAddressExecutor` | `packages/callidescope-nx:modules/address` | `packages/callidescope-nx:executors` | 2/2 |
 <!-- CALL_STACKS_END -->

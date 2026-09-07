@@ -63,6 +63,15 @@ Call stacks traced through `packages/conformetry-jupyter`, deepest first. Each f
 | Stacks through recursion | 1 |
 | Unfollowable calls | 0 |
 
+### Limits
+
+What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+
+| Limit | Value | Origin |
+| --- | --- | --- |
+| `maximumDepth` | 17 | inherited |
+| `maximumBreadth` | none | — |
+
 ### Call stacks (depth)
 
 **1. `JupyterValidatorService.validateDocument`** — depth 13 · orphan-root

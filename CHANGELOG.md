@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.0](https://github.com/JimmyPaolini/codebase/compare/v2.0.0...v2.1.0) (2026-09-07)
+
 ## [2.0.0](https://github.com/JimmyPaolini/codebase/compare/v1.64.0...v2.0.0) (2026-09-07)
 
 ## [1.64.0](https://github.com/JimmyPaolini/codebase/compare/v1.63.0...v1.64.0) (2026-09-07)

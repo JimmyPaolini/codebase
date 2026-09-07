@@ -98,7 +98,7 @@ _This project has no internal file imports._
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-191-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-73.87_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-81.25_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-5-3178c6?style=flat-square)
 
@@ -274,23 +274,23 @@ _This project has no internal file imports._
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-4-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1261-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1397-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-4-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-32-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-18-a78bfa?style=flat-square)
+![H2](https://img.shields.io/badge/H2-35-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-19-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-206-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-21-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-61-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-230-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-24-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-70-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-11-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-69-0ea5e9?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-70-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-5-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-20-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-429-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-23-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-473-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
@@ -310,6 +310,15 @@ Call stacks traced through `packages/callidescope-agents`, deepest first. Each f
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
+
+### Limits
+
+What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+
+| Limit | Value | Origin |
+| --- | --- | --- |
+| `maximumDepth` | 17 | inherited |
+| `maximumBreadth` | none | — |
 
 ### Call stacks (depth)
 

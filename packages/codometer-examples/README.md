@@ -532,6 +532,15 @@ Call stacks traced through `packages/codometer-examples`, deepest first. Each fr
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
 
+### Limits
+
+What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+
+| Limit | Value | Origin |
+| --- | --- | --- |
+| `maximumDepth` | 17 | inherited |
+| `maximumBreadth` | none | — |
+
 ### Call stacks (depth)
 
 **1. `codometerConfiguration`** — depth 2 · orphan-root

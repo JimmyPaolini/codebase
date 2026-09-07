@@ -68,6 +68,15 @@ Call stacks traced through `packages/conformetry-typescript`, deepest first. Eac
 | Stacks through recursion | 1 |
 | Unfollowable calls | 0 |
 
+### Limits
+
+What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+
+| Limit | Value | Origin |
+| --- | --- | --- |
+| `maximumDepth` | 17 | inherited |
+| `maximumBreadth` | none | — |
+
 ### Call stacks (depth)
 
 **1. `TypescriptValidatorService.validateDocument`** — depth 12 · orphan-root
