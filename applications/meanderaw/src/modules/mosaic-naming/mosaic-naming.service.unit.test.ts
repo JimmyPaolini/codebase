@@ -49,7 +49,7 @@ const NAMES: readonly MosaicSubFamily[] = [
   "dots",
   "lines",
   "mesh",
-  "steps",
+  "zigzag",
 ];
 
 /** The names that also have a builder, which is what the round trip below can go through. */
@@ -69,7 +69,7 @@ const CANONICAL_TILES: readonly (readonly [MosaicSubFamily, MosaicTile])[] = [
   ["dots", mosaicTile([".", ".", "."])],
   ["lines", mosaicTile(["ee", "ee", "ee"])],
   ["mesh", mosaicTile(["bb", "bb", "ee"])],
-  ["steps", mosaicTile(["sb", "e."])],
+  ["zigzag", mosaicTile(["sb", "e."])],
 ];
 
 // 🧪 Tests
@@ -207,8 +207,8 @@ describe(MosaicNamingService, () => {
           dots: 11,
           lines: 11,
           mesh: 11,
-          steps: 10,
           unnamed: 8424,
+          zigzag: 10,
         });
       },
       SPACE_WALK_TIMEOUT_MILLISECONDS,

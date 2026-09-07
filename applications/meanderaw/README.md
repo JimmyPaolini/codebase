@@ -323,7 +323,7 @@ than listed. Seven regions have names, and six of them come in pairs.
 | `dashes` | is on a run across the band, broken somewhere | `2121` | broken horizontal rules |
 | `bars` | is on a run down the band, unbroken | `4c8` | unbroken vertical rules |
 | `diamond` | is on a run down the band, broken somewhere | `4848` | a dashed vertical bar |
-| `steps` | turns a corner | `56a9` | a staircase |
+| `zigzag` | turns a corner | `56a9` | a staircase |
 
 **Unbroken or broken is the question**, and it is asked of the edges rather than of the
 points. A point in the middle of a rule and a point at the end of a dash both carry ink
@@ -333,7 +333,7 @@ how a solid bar came to be called a `diamond` — a `diamond` being a _dashed_ b
 two-column tile of unbroken rules came to be called `dashes`.
 
 `dots` and `mesh` are the two ends of the space rather than a pair: the tile with no edge
-and the tile with every edge, one of each per shape. `steps` is the only rule about a
+and the tile with every edge, one of each per shape. `zigzag` is the only rule about a
 point's own shape rather than about which directions a tile uses, and it is empty at a
 single column, where a point's eastward edge wraps onto itself and gives it two
 horizontal bits rather than one.
@@ -378,7 +378,7 @@ is exactly what the sweep commits:
 | `dots` | 11 |
 | `lines` | 11 |
 | `mesh` | 11 |
-| `steps` | 10 |
+| `zigzag` | 10 |
 | `diamond` | 4 |
 | unnamed | 8,424 |
 
