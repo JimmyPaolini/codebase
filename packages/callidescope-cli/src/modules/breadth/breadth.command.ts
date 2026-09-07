@@ -1,12 +1,14 @@
-import { InputError, InputService } from "@callidescope/configuration";
+import { InputService } from "@callidescope/configuration";
 import { BreadthService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { REJECTED_ADDRESS } from "../address-lookup/address-lookup.constants";
 import { AddressLookupService } from "../address-lookup/address-lookup.service";
 import { AddressReportService } from "../address-report/address-report.service";
+import { readRefusalHeadline } from "../callidescope/callidescope.constants";
 
 import type {
   AddressCommandOptions,
@@ -14,6 +16,7 @@ import type {
 } from "../address-lookup/address-lookup.types";
 import type { BreadthReport } from "../address-report/address-report.types";
 import type { CallidescopeOutputFormat } from "@callidescope/configuration";
+import type { LogData } from "@codebase/logger";
 
 /**
  * CLI entry point that prints one callable's direct callers and callees.
@@ -74,7 +77,7 @@ export class BreadthCommand extends CommandRunner {
     }
 
     if (problems.length > 0) {
-      this.rejectAddresses(problems);
+      this.reject(REJECTED_ADDRESS, { problems });
       return undefined;
     }
 
@@ -149,19 +152,16 @@ export class BreadthCommand extends CommandRunner {
     );
   }
 
-  /** Logs why one or more addresses could not be acted on, and fails the run. */
-  private rejectAddresses(problems: readonly string[]): void {
-    this.logger.error("🔭 Rejected a callable address", undefined, {
-      problems,
-    });
-    process.exitCode = 1;
-  }
-
-  /** Logs a command line the input service refused, and fails the run. */
-  private rejectCommandLine(error: InputError): void {
-    this.logger.error("🔭 Rejected the command line", undefined, {
-      reason: error.message,
-    });
+  /**
+   * Logs one refusal under its own headline, and fails the run.
+   *
+   * One method for every refusal channel, because they are one act: a message
+   * rather than a stack trace, because each is about a file somebody wrote or
+   * a command line somebody typed. Nothing has been printed and no destination
+   * has been touched by the time any of them runs.
+   */
+  private reject(headline: string, data: LogData): void {
+    this.logger.error(headline, undefined, data);
     process.exitCode = 1;
   }
 
@@ -233,9 +233,11 @@ export class BreadthCommand extends CommandRunner {
   /**
    * Prints each named callable's direct callers and callees.
    *
-   * Only a refused command line is caught: it is the reader's own typing to
-   * fix, so it is reported as such rather than as a crash. Anything else
-   * propagates with its stack intact.
+   * Three failures are caught, all because they are a file a person wrote —
+   * or left unwritten — rather than a fault in callidescope: a refused
+   * command line, a project whose `tsconfig.json` is missing or will not
+   * parse, and a project configuration refused for a field it may not set or
+   * for not loading at all. Anything else propagates with its stack intact.
    */
   public async run(
     _passedParameters: string[],
@@ -244,11 +246,13 @@ export class BreadthCommand extends CommandRunner {
     try {
       await this.printBreadth(options);
     } catch (error) {
-      if (!(error instanceof InputError)) {
+      const headline = readRefusalHeadline(error);
+
+      if (headline === undefined || !(error instanceof Error)) {
         throw error;
       }
 
-      this.rejectCommandLine(error);
+      this.reject(headline, { reason: error.message });
     }
   }
 }

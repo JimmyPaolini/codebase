@@ -17,6 +17,7 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
     allowSpreadFor: [],
     directories: [],
     entryPoints: {
+      addresses: [],
       decorators: [],
       includeExportedFunctions: true,
       includeOrphans: true,
@@ -96,10 +97,12 @@ describe(AddressLookupService, () => {
     const located = buildLocated();
 
     runPlanService.prepareLookup.mockResolvedValue({
+      authoredLimits: undefined,
       configuration,
+      configurationPath: undefined,
       workspaceRoot: "/workspace",
     });
-    callidescopeService.locate.mockReturnValue(located);
+    callidescopeService.locate.mockResolvedValue(located);
     addressService.resolve.mockReturnValue({ id: "a#0", kind: "resolved" });
 
     const workspace = await service.locate({});
@@ -125,10 +128,12 @@ describe(AddressLookupService, () => {
     const located = buildLocated();
 
     runPlanService.prepareLookup.mockResolvedValue({
+      authoredLimits: undefined,
       configuration: buildConfiguration(),
+      configurationPath: undefined,
       workspaceRoot: "/workspace",
     });
-    callidescopeService.locate.mockReturnValue(located);
+    callidescopeService.locate.mockResolvedValue(located);
     addressService.listAddresses.mockReturnValue(["a.ts#Foo.bar"]);
 
     const workspace = await service.locate({});
@@ -142,10 +147,12 @@ describe(AddressLookupService, () => {
 
   it("scopes the trace to the directories a flag named", async () => {
     runPlanService.prepareLookup.mockResolvedValue({
+      authoredLimits: undefined,
       configuration: buildConfiguration(),
+      configurationPath: undefined,
       workspaceRoot: "/workspace",
     });
-    callidescopeService.locate.mockReturnValue(buildLocated());
+    callidescopeService.locate.mockResolvedValue(buildLocated());
     addressService.resolve.mockReturnValue({ kind: "not-found" });
 
     await service.locate({ directories: ["alpha"] });
@@ -184,19 +191,31 @@ describe(AddressLookupService, () => {
     ).toContain("a.ts#Foo.bar");
   });
 
+  // The candidates are rendered by `AddressService`, so a reader is handed
+  // the same addresses to paste back here as in the workspace run's own refusal.
+  // What is asserted here is that this hands them on; what they say is
+  // asserted where they are written.
   it("lists every candidate an ambiguous address matched", () => {
+    const candidates = [
+      { id: "a#0", location: { column: 1, filePath: "a.ts", line: 3 } },
+      { id: "a#1", location: { column: 1, filePath: "a.ts", line: 8 } },
+    ];
+
+    addressService.describeCandidates.mockReturnValue(
+      `Candidates: a.ts#Foo.bar:3, a.ts#Foo.bar:8. Add ":<line>" to the address to pick one.`,
+    );
+
     const problem = service.describeProblem({
       address: "a.ts#Foo.bar",
-      resolution: {
-        candidates: [
-          { id: "a#0", location: { column: 1, filePath: "a.ts", line: 3 } },
-          { id: "a#1", location: { column: 1, filePath: "a.ts", line: 8 } },
-        ],
-        kind: "ambiguous",
-      },
+      resolution: { candidates, kind: "ambiguous" },
     });
 
-    expect(problem).toContain("a.ts:3");
-    expect(problem).toContain("a.ts:8");
+    expect(problem).toBe(
+      `"a.ts#Foo.bar" matches more than one declaration. Candidates: a.ts#Foo.bar:3, a.ts#Foo.bar:8. Add ":<line>" to the address to pick one.`,
+    );
+    expect(addressService.describeCandidates).toHaveBeenCalledExactlyOnceWith({
+      address: "a.ts#Foo.bar",
+      candidates,
+    });
   });
 });

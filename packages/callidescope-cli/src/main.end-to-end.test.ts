@@ -22,6 +22,21 @@ const ENTRY_POINT = path.resolve(import.meta.dirname, "main.ts");
 const LOADER_HOOK = import.meta.resolve("@swc-node/register/esm");
 
 /**
+ * Milliseconds one spawned run is allowed, well above what it needs.
+ *
+ * Every test below spawns this package's real `main.ts` through the TypeScript
+ * loader and lets it build a `ts.Program` per project in a throwaway
+ * workspace. Vitest's default is five seconds, which is a unit-test budget: on
+ * a developer machine each of these takes one to two, and on a continuous
+ * integration runner two of them measured 5.4 and 5.7 — so the default failed
+ * them for being what they are rather than for anything they did. This
+ * repository's own guidance puts an end-to-end test at thirty to sixty
+ * seconds, and thirty leaves several times the headroom the slowest observed
+ * run used.
+ */
+const SPAWNED_RUN_TIMEOUT = 30_000;
+
+/**
  * The compiler options the spawned run reads.
  *
  * Not optional: NestJS constructor injection reads the metadata
@@ -140,43 +155,47 @@ describe("main end-to-end suite", () => {
     });
   });
 
-  describe("the exit code of a run that could not trace", () => {
-    it("passes a workspace it traced without finding anything", () => {
-      expect.hasAssertions();
+  describe(
+    "the exit code of a run that could not trace",
+    () => {
+      it("passes a workspace it traced without finding anything", () => {
+        expect.hasAssertions();
 
-      const workspaceRoot = writeWorkspace();
+        const workspaceRoot = writeWorkspace();
 
-      writeReadableProject(workspaceRoot, "readable");
+        writeReadableProject(workspaceRoot, "readable");
 
-      expect(runCallidescope(workspaceRoot).status).toBe(0);
-    });
+        expect(runCallidescope(workspaceRoot).status).toBe(0);
+      });
 
-    it("fails a workspace whose only project cannot be read", () => {
-      expect.hasAssertions();
+      it("fails a workspace whose only project cannot be read", () => {
+        expect.hasAssertions();
 
-      // The regression. This used to print the parsing failure and exit 0,
-      // so the depth gate passed for having traced nothing at all.
-      const workspaceRoot = writeWorkspace();
+        // The regression. This used to print the parsing failure and exit 0,
+        // so the depth gate passed for having traced nothing at all.
+        const workspaceRoot = writeWorkspace();
 
-      writeUnreadableProject(workspaceRoot, "broken");
+        writeUnreadableProject(workspaceRoot, "broken");
 
-      expect(runCallidescope(workspaceRoot).status).toBe(1);
-    });
+        expect(runCallidescope(workspaceRoot).status).toBe(1);
+      });
 
-    it("fails a workspace holding one unreadable project among readable ones", () => {
-      expect.hasAssertions();
+      it("fails a workspace holding one unreadable project among readable ones", () => {
+        expect.hasAssertions();
 
-      const workspaceRoot = writeWorkspace();
+        const workspaceRoot = writeWorkspace();
 
-      writeReadableProject(workspaceRoot, "readable");
-      writeUnreadableProject(workspaceRoot, "broken");
+        writeReadableProject(workspaceRoot, "readable");
+        writeUnreadableProject(workspaceRoot, "broken");
 
-      const { output, status } = runCallidescope(workspaceRoot);
+        const { output, status } = runCallidescope(workspaceRoot);
 
-      // Fails on the project it could not read, rather than on anything it
-      // measured through a workspace that was missing one.
-      expect(status).toBe(1);
-      expect(output).toContain("Rejected a project it could not read");
-    });
-  });
+        // Fails on the project it could not read, rather than on anything it
+        // measured through a workspace that was missing one.
+        expect(status).toBe(1);
+        expect(output).toContain("Rejected a project it could not read");
+      });
+    },
+    SPAWNED_RUN_TIMEOUT,
+  );
 });

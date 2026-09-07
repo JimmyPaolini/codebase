@@ -3,6 +3,8 @@
 import { z } from "zod";
 
 import type {
+  CallidescopeConfiguration,
+  CallidescopeLimits,
   RenderMarkdownOutput,
   WriteMarkdownOutput,
 } from "./configuration.types";
@@ -160,6 +162,104 @@ export const DEFAULT_MARKDOWN_START_MARKER = "<!-- CALL_STACKS_START -->";
 /** Closing anchor of the generated markdown block. */
 export const DEFAULT_MARKDOWN_END_MARKER = "<!-- CALL_STACKS_END -->";
 
+// 🔒 Project Configuration
+
+/** Writes a list of names as an English sentence fragment. */
+const joinFieldNames = (names: readonly string[]): string => {
+  const last = names.at(-1);
+
+  if (last === undefined || names.length === 1) {
+    return last ?? "";
+  }
+
+  return `${names.slice(0, -1).join(", ")}, and ${last}`;
+};
+
+/**
+ * Every run-level field, and whether a project's own configuration may set it.
+ *
+ * A record keyed by the interface rather than a list of the forbidden ones,
+ * because a list only ever proves that what it names is a field — never that
+ * every field is named, which is the direction that fails open. A tenth field
+ * added to `CallidescopeConfiguration` fails to compile here until somebody
+ * classifies it, instead of silently becoming settable by any project with
+ * nothing in the output to say so.
+ *
+ * Every field marked `forbidden` names where a run reads from, where it writes
+ * to, or how it partitions the workspace — decisions one project cannot make
+ * differently from the run tracing it. `limits` is `delegated` because it is
+ * neither: its members are judged one at a time below.
+ */
+export const PROJECT_CONFIGURATION_FIELD_PERMISSIONS = {
+  allowSpreadFor: "forbidden",
+  directories: "forbidden",
+  entryPoints: "permitted",
+  exclude: "permitted",
+  excludeFrom: "forbidden",
+  ignoreCallees: "forbidden",
+  limits: "delegated",
+  output: "forbidden",
+  workspaceStructure: "forbidden",
+} as const satisfies Record<
+  keyof CallidescopeConfiguration,
+  "delegated" | "forbidden" | "permitted"
+>;
+
+/**
+ * Every limit, and whether a project's own configuration may set it.
+ *
+ * `maximumDepth` and `maximumBreadth` are the two a project gates itself
+ * against. Every other limit shapes how the call graph itself is built, which
+ * has to stay one answer for the whole workspace.
+ */
+export const PROJECT_CONFIGURATION_LIMIT_PERMISSIONS = {
+  callerMajorityRatio: "forbidden",
+  directSpreadThreshold: "forbidden",
+  maximumBreadth: "permitted",
+  maximumDepth: "permitted",
+  maximumImplementationCandidates: "forbidden",
+  minimumCallers: "forbidden",
+  spreadThreshold: "forbidden",
+} as const satisfies Record<
+  keyof CallidescopeLimits,
+  "forbidden" | "permitted"
+>;
+
+/**
+ * The names a project may set, looked up by a field name read off a file.
+ *
+ * A set of strings rather than the record itself, because the name comes from
+ * an authored object rather than from the interface — so a field nothing here
+ * classifies is refused rather than waved through, which is the one direction
+ * a permission check may be wrong in.
+ */
+export const PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES = new Set(
+  Object.entries(PROJECT_CONFIGURATION_FIELD_PERMISSIONS)
+    .filter(([, permission]) => permission === "permitted")
+    .map(([field]) => field),
+);
+
+/** The limits a project may set, looked up the same way and for the reason. */
+export const PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES = new Set(
+  Object.entries(PROJECT_CONFIGURATION_LIMIT_PERMISSIONS)
+    .filter(([, permission]) => permission === "permitted")
+    .map(([limit]) => limit),
+);
+
+/**
+ * The fields named in a refusal, so an agent can fix a project configuration
+ * without opening the docs.
+ *
+ * Derived from the permissions above rather than written out, so the sentence
+ * a refusal prints cannot come to disagree with the rule that produced it.
+ */
+export const PROJECT_CONFIGURATION_PERMITTED_FIELDS = joinFieldNames([
+  ...PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES,
+  ...[...PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES].map(
+    (limit) => `limits.${limit}`,
+  ),
+]);
+
 /** Raised when a configuration file has an extension nothing can read. */
 export class UnknownConfigurationFileTypeError extends Error {
   constructor(filePath: string) {
@@ -194,6 +294,7 @@ const limitsSchema = z
 
 const entryPointsSchema = z
   .object({
+    addresses: z.array(z.string()).optional(),
     decorators: z.array(z.string()).optional(),
     includeExportedFunctions: z.boolean().optional(),
     includeOrphans: z.boolean().optional(),
@@ -269,5 +370,46 @@ export class ConfigurationFileNotFoundError extends Error {
   constructor(filePath: string) {
     super(`Configuration file not found: ${filePath}`);
     this.name = "ConfigurationFileNotFoundError";
+  }
+}
+
+/**
+ * Raised when a project's own configuration file cannot be read or parsed.
+ *
+ * Names the project rather than only the path, because a run resolves a file
+ * per project and the failure has to say which one to go and fix. The original
+ * failure is kept as `cause` so nothing a reader would need is thrown away.
+ */
+export class ProjectConfigurationError extends Error {
+  constructor(args: {
+    cause: unknown;
+    configurationPath: string;
+    project: string;
+  }) {
+    const reason =
+      args.cause instanceof Error ? args.cause.message : "It could not be read";
+
+    super(
+      `Failed to read the callidescope configuration for ${args.project} at ${args.configurationPath}: ${reason}`,
+      { cause: args.cause },
+    );
+    this.name = "ProjectConfigurationError";
+  }
+}
+
+/**
+ * Raised when a project's own configuration sets a field only the workspace
+ * configuration may set.
+ *
+ * Names the project, the offending field, and the four fields a project
+ * configuration may set, so the message is actionable without opening a
+ * README.
+ */
+export class ProjectConfigurationFieldNotPermittedError extends Error {
+  constructor(args: { field: string; project: string }) {
+    super(
+      `${args.project} sets ${args.field}, which only the workspace configuration may set. A project configuration may set ${PROJECT_CONFIGURATION_PERMITTED_FIELDS}.`,
+    );
+    this.name = "ProjectConfigurationFieldNotPermittedError";
   }
 }

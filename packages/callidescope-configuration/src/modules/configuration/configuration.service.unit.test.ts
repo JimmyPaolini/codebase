@@ -127,6 +127,7 @@ describe(ConfigurationService, () => {
     const configuration = service.resolveConfiguration({});
 
     expect(configuration.entryPoints).toStrictEqual({
+      addresses: [],
       decorators: [...DEFAULT_ENTRY_POINT_DECORATORS],
       includeExportedFunctions: true,
       includeOrphans: true,
@@ -176,6 +177,7 @@ describe(ConfigurationService, () => {
   it("keeps authored entry-point rules, including disabling them", () => {
     const configuration = service.resolveConfiguration({
       entryPoints: {
+        addresses: ["packages/example/src/index.ts#publicApi"],
         decorators: ["Get"],
         includeExportedFunctions: false,
         includeOrphans: false,
@@ -184,6 +186,7 @@ describe(ConfigurationService, () => {
     });
 
     expect(configuration.entryPoints).toStrictEqual({
+      addresses: ["packages/example/src/index.ts#publicApi"],
       decorators: ["Get"],
       includeExportedFunctions: false,
       includeOrphans: false,
@@ -627,5 +630,48 @@ describe(ConfigurationService, () => {
     });
 
     expect(configuration.limits.maximumDepth).toBe(5);
+  });
+
+  // 🗂️ Loaded Files
+
+  it("reports the file a configuration came from, and what it authored", async () => {
+    const configurationPath = await writeConfiguration({
+      limits: { maximumDepth: 9 },
+    });
+
+    const loaded = await service.loadConfigurationFile({ configurationPath });
+
+    expect(loaded.path).toBe(configurationPath);
+    expect(loaded.authored.limits?.maximumDepth).toBe(9);
+    expect(loaded.authored.exclude).toBeUndefined();
+    expect(loaded.configuration.limits.maximumDepth).toBe(9);
+  });
+
+  it("reports no file when the search found none", async () => {
+    const searchDirectory = await mkdtemp(
+      path.join(tmpdir(), "callidescope-empty-"),
+    );
+
+    const loaded = await service.loadConfigurationFile({ searchDirectory });
+
+    expect(loaded.path).toBeUndefined();
+    expect(loaded.authored).toStrictEqual({});
+    expect(loaded.configuration.limits.maximumDepth).toBe(
+      DEFAULT_MAXIMUM_DEPTH,
+    );
+  });
+
+  it("finds a configuration file sitting directly in a directory", async () => {
+    const configurationPath = await writeConfiguration({});
+
+    expect(
+      service.findConfigurationFileAt(path.dirname(configurationPath)),
+    ).toBe(configurationPath);
+  });
+
+  it("finds nothing in a directory holding no configuration file", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "callidescope-empty-"));
+
+    expect(service.findConfigurationFileAt(directory)).toBeUndefined();
   });
 });

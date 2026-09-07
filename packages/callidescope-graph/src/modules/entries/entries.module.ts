@@ -2,6 +2,8 @@ import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
 
+import { CallablesModule } from "../callables/callables.module";
+
 import { EntriesService } from "./entries.service";
 
 /**
@@ -10,7 +12,7 @@ import { EntriesService } from "./entries.service";
 @Module({
   controllers: [],
   exports: [EntriesService],
-  imports: [LoggerModule],
+  imports: [CallablesModule, LoggerModule],
   providers: [EntriesService],
 })
 export class EntriesModule {}

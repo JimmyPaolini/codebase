@@ -2,7 +2,10 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { DIGITS_ONLY_PATTERN } from "./address.constants";
+import {
+  DIGITS_ONLY_PATTERN,
+  LINE_DISAMBIGUATOR_PATTERN,
+} from "./address.constants";
 
 import type {
   CallableAddressCandidate,
@@ -38,6 +41,21 @@ export class AddressService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /** Counts how many candidates were declared on each line. */
+  private countCandidatesByLine(
+    candidates: readonly CallableAddressCandidate[],
+  ): Map<number, number> {
+    const countsByLine = new Map<number, number>();
+
+    for (const candidate of candidates) {
+      const { line } = candidate.location;
+
+      countsByLine.set(line, (countsByLine.get(line) ?? 0) + 1);
+    }
+
+    return countsByLine;
+  }
 
   /** States the accepted shape, in front of whatever went wrong. */
   private describeInvalidAddress(address: string): string {
@@ -139,6 +157,48 @@ export class AddressService {
   }
 
   // 🌎 Public Methods
+
+  /**
+   * Names what an ambiguous address could have meant, and how to pick one.
+   *
+   * Each candidate is written as the address that would have picked it —
+   * built from the declared address, whose file path and qualified name every
+   * candidate already agrees on, since that agreement is what made it
+   * ambiguous — so the fix is a copy away rather than a file location to go
+   * translate back into an address. Any `:<line>` already on the declared
+   * address is replaced rather than doubled up.
+   *
+   * Two declarations on one line are the case no address can separate: the
+   * matcher filters on the line, so every candidate carries the same one and
+   * the same address would be printed twice. Those name their column instead,
+   * which locates them without pretending to be an address, and the advice
+   * changes to the only fix there is.
+   *
+   * Rendered here rather than by each caller, so the refusal a run prints for
+   * a declared entry point and the one `depth` and `breadth` print for an
+   * address typed at a prompt are one rendering of one concept.
+   */
+  public describeCandidates(args: {
+    address: string;
+    candidates: readonly CallableAddressCandidate[];
+  }): string {
+    const baseAddress = args.address.replace(LINE_DISAMBIGUATOR_PATTERN, "");
+    const countsByLine = this.countCandidatesByLine(args.candidates);
+    const sharesALine = [...countsByLine.values()].some((count) => count > 1);
+    const described = args.candidates.map((candidate) => {
+      const { column, line } = candidate.location;
+      const address = `${baseAddress}:${String(line)}`;
+
+      return countsByLine.get(line) === 1
+        ? address
+        : `${address} (column ${String(column)})`;
+    });
+    const advice = sharesALine
+      ? `Two declarations on one line cannot be told apart by ":<line>" — rename one, or name a different callable.`
+      : `Add ":<line>" to the address to pick one.`;
+
+    return `Candidates: ${[...new Set(described)].join(", ")}. ${advice}`;
+  }
 
   /**
    * Every callable a run discovered, written as an address that resolves to it.

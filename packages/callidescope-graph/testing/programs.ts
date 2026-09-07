@@ -152,6 +152,7 @@ export function collectFixtureCallables(args: {
   return args.services.callables.collect({
     fileFilter: { isExcluded: () => false },
     includeTests: true,
+    includeTestsByProject: new Map(),
     ownerByFilePath: new Map(
       [...args.projectProgram.ownedFilePaths].map((filePath) => [
         filePath,

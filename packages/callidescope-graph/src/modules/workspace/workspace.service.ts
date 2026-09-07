@@ -1,4 +1,3 @@
-import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 
@@ -22,7 +21,6 @@ import {
 } from "./workspace.constants";
 
 import type {
-  BuildExclusionsArguments,
   DiscoverProjectsArguments,
   FileFilter,
   WalkImportedProjectClosureArguments,
@@ -175,77 +173,7 @@ export class WorkspaceService {
     );
   }
 
-  /**
-   * Asks git which tracked files an ignore file excludes.
-   *
-   * Delegating to git rather than reimplementing gitignore matching is what
-   * makes `.callidescopeignore` behave the way its syntax promises. The
-   * argument vector form of `execFileSync` keeps a configured path out of a
-   * shell.
-   */
-  private listIgnoredFiles(args: {
-    ignorePath: string;
-    workspaceRoot: string;
-  }): string[] {
-    try {
-      const output = execFileSync(
-        "git",
-        [
-          "ls-files",
-          "--cached",
-          "--ignored",
-          `--exclude-from=${args.ignorePath}`,
-        ],
-        { cwd: args.workspaceRoot, encoding: "utf8" },
-      );
-
-      return output.trim().split("\n").filter(Boolean);
-    } catch {
-      this.logger.warn("🔭 Skipped an unreadable ignore file", undefined, {
-        ignorePath: args.ignorePath,
-      });
-
-      return [];
-    }
-  }
-
   // 🌎 Public Methods
-
-  /**
-   * Builds the predicate deciding which files stay out of the graph.
-   *
-   * Exclusion globs are matched with Node's own `path.matchesGlob` rather than
-   * a dependency, and gitignore-syntax files are resolved through git itself.
-   */
-  public buildFileFilter(args: BuildExclusionsArguments): FileFilter {
-    const ignored = new Set<string>();
-
-    for (const ignoreFile of args.excludeFrom) {
-      const ignorePath = path.resolve(args.workspaceRoot, ignoreFile);
-
-      if (!existsSync(ignorePath)) {
-        this.logger.warn("🔭 Skipped a missing ignore file", undefined, {
-          ignoreFile,
-        });
-        continue;
-      }
-
-      for (const filePath of this.listIgnoredFiles({
-        ignorePath,
-        workspaceRoot: args.workspaceRoot,
-      })) {
-        ignored.add(filePath);
-      }
-    }
-
-    const globs = [...args.exclude];
-
-    return {
-      isExcluded: (workspaceRelativePath: string): boolean =>
-        ignored.has(workspaceRelativePath) ||
-        globs.some((glob) => path.matchesGlob(workspaceRelativePath, glob)),
-    };
-  }
 
   /**
    * Points module identity at a workspace's own layout.

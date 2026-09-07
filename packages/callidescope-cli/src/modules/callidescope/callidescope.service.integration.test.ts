@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, realpath, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -30,6 +30,13 @@ import type {
  * somebody checked instead of on two absent lookups.
  */
 const SCOPED_COMMAND_DEPTH = 3;
+
+/** Where the configured fixture's own configuration file sits. */
+const LIBRARY_CONFIGURATION_PATH = path.join(
+  "packages",
+  "library",
+  "callidescope.config.json",
+);
 
 /**
  * Adds a second project whose `tsconfig.json` names a compiler target
@@ -64,6 +71,7 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
     allowSpreadFor: [],
     directories: [],
     entryPoints: {
+      addresses: [],
       decorators: ["Command"],
       includeExportedFunctions: true,
       includeOrphans: true,
@@ -92,6 +100,61 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       rootModuleSegment: "src",
     },
   };
+}
+
+/**
+ * Writes two projects, and gives the one nothing points the run at a
+ * configuration file of its own.
+ *
+ * The shape criterion the per-project resolution has to satisfy: `library` is
+ * reached only through `application`'s imports, so a run started anywhere else
+ * still has to judge its callables by the rules it declared for itself.
+ */
+async function buildConfiguredWorkspace(
+  libraryConfiguration: Record<string, unknown>,
+): Promise<string> {
+  // Resolved through the symlink `mkdtemp` hands back on macOS, where the
+  // temporary directory really lives under `/private`. A declared address is
+  // matched against paths the compiler reported, and those come back resolved —
+  // so an unresolved root here would make every file path relative to nothing.
+  const workspaceRoot = await realpath(
+    await mkdtemp(path.join(tmpdir(), "callidescope-project-")),
+  );
+
+  await writeProject({
+    name: "library",
+    sources: {
+      // `open` calls something, because a root that calls nothing makes a
+      // one-frame stack and no report lists one.
+      "src/repository.ts": `
+        export class Repository {
+          public open(): void { this.connect(); }
+          private connect(): void {}
+        }
+      `,
+    },
+    workspaceRoot,
+  });
+  await writeFile(
+    path.join(workspaceRoot, LIBRARY_CONFIGURATION_PATH),
+    JSON.stringify(libraryConfiguration),
+    "utf8",
+  );
+  await writeProject({
+    name: "application",
+    sources: {
+      "src/main.ts": `
+        import { Repository } from "../../library/src/repository";
+
+        export function bootstrap(repository: Repository): void {
+          repository.open();
+        }
+      `,
+    },
+    workspaceRoot,
+  });
+
+  return workspaceRoot;
 }
 
 /**
@@ -229,6 +292,9 @@ async function buildWorkspace(): Promise<string> {
   return workspaceRoot;
 }
 
+/** The configuration file name a project declares itself through. */
+const PROJECT_CONFIGURATION = "callidescope.config.json";
+
 /** Reads the deepest depth a project's report measured for one type. */
 function readTypeDepth(args: {
   projectName: string;
@@ -280,6 +346,23 @@ async function writeProject(args: {
   }
 }
 
+/** Adds one test file to the traced workspace, inside the project's own tree. */
+async function writeTestFile(workspaceRoot: string): Promise<void> {
+  await writeFile(
+    path.join(
+      workspaceRoot,
+      "packages",
+      "example",
+      "src",
+      "modules",
+      "example",
+      "example.service.unit.test.ts",
+    ),
+    "export function assertLoads(): void { assertLoads(); }\n",
+    "utf8",
+  );
+}
+
 describe(`${CallidescopeService.name} (integration)`, () => {
   let result: CallGraphResult;
   let frames: string[];
@@ -304,7 +387,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
     service = await module.resolve(CallidescopeService);
 
-    const outcome = service.trace({
+    const outcome = await service.trace({
       configuration: buildConfiguration(),
       directories: [],
       workspaceRoot,
@@ -320,11 +403,11 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     expect(result.summary.fileCount).toBe(2);
   });
 
-  it("logs the workspace it traces", () => {
+  it("logs the workspace it traces", async () => {
     // The global test setup clears mocks before every `it`, so the trace
     // recorded in `beforeAll` is invisible here — this exercises the same
     // resolved service again to see its own logger calls.
-    service.trace({
+    await service.trace({
       configuration: buildConfiguration(),
       directories: [],
       workspaceRoot: tracedWorkspaceRoot,
@@ -369,8 +452,8 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
   // 🔍 Locating callables
 
-  it("collects the same callables locate would need to resolve an address", () => {
-    const located = service.locate({
+  it("collects the same callables locate would need to resolve an address", async () => {
+    const located = await service.locate({
       configuration: buildConfiguration(),
       directories: [],
       workspaceRoot: tracedWorkspaceRoot,
@@ -396,6 +479,93 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     expect(located.startingProjectRoots.get(projectRoot)).toBe(projectRoot);
   });
 
+  // 🙈 A project's own exclusions
+
+  it("leaves out the files a project's own configuration excluded", async () => {
+    // The whole wiring in one run: a file sitting at a project root, read
+    // only after discovery has found that root, deciding what the run's own
+    // filter had no way to decide. Resolved through the symlink `mkdtemp`
+    // hands back on macOS, for the reason `buildConfiguredWorkspace` gives.
+    const workspaceRoot = await realpath(await buildWorkspace());
+
+    await writeFile(
+      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
+      JSON.stringify({ exclude: ["src/modules/example/example.command.ts"] }),
+      "utf8",
+    );
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(outcome.result.summary.fileCount).toBe(1);
+  });
+
+  it("matches a project's globs against its root rather than the workspace", async () => {
+    // The same glob written the other way round. A path that would be right
+    // in the run's own configuration names nothing from inside the project,
+    // which is what "anchored to the project" costs and buys.
+    const workspaceRoot = await realpath(await buildWorkspace());
+
+    await writeFile(
+      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
+      JSON.stringify({
+        exclude: ["packages/example/src/modules/example/example.command.ts"],
+      }),
+      "utf8",
+    );
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(outcome.result.summary.fileCount).toBe(2);
+  });
+
+  // 🧪 A project's own test files
+
+  it("walks a project's test files when that project asked for them", async () => {
+    // The fifth `entryPoints` field, and the one that is spent at collection
+    // rather than when roots are chosen: a project that asks for its tests
+    // gets them walked even though the run said no.
+    const workspaceRoot = await realpath(await buildWorkspace());
+
+    await writeTestFile(workspaceRoot);
+    await writeFile(
+      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
+      JSON.stringify({ entryPoints: { includeTests: true } }),
+      "utf8",
+    );
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(outcome.result.summary.fileCount).toBe(3);
+  });
+
+  it("leaves a project's test files out when the run said so", async () => {
+    // The same workspace with nothing declared, which is what makes the
+    // count above the project's own answer rather than the run's.
+    const workspaceRoot = await realpath(await buildWorkspace());
+
+    await writeTestFile(workspaceRoot);
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(outcome.result.summary.fileCount).toBe(2);
+  });
+
   // 🚧 A project that cannot be read
 
   it("refuses to trace a workspace holding a project it cannot read", async () => {
@@ -406,13 +576,13 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
     await addUnreadableProject(workspaceRoot);
 
-    expect(() =>
+    await expect(
       service.trace({
         configuration: buildConfiguration(),
         directories: [],
         workspaceRoot,
       }),
-    ).toThrow(ProgramConfigurationError);
+    ).rejects.toThrow(ProgramConfigurationError);
   });
 
   it("names the configuration it could not read", async () => {
@@ -420,13 +590,13 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
     await addUnreadableProject(workspaceRoot);
 
-    expect(() =>
+    await expect(
       service.trace({
         configuration: buildConfiguration(),
         directories: [],
         workspaceRoot,
       }),
-    ).toThrow(/packages[\\/]broken[\\/]tsconfig\.json/);
+    ).rejects.toThrow(/packages[\\/]broken[\\/]tsconfig\.json/);
   });
 
   it("traces the rest of a workspace whose broken project is excluded", async () => {
@@ -438,7 +608,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
     await addUnreadableProject(workspaceRoot);
 
-    const outcome = service.trace({
+    const outcome = await service.trace({
       configuration: {
         ...buildConfiguration(),
         exclude: ["packages/broken/**"],
@@ -466,7 +636,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
     await addUnreadableProject(workspaceRoot);
 
-    const outcome = service.trace({
+    const outcome = await service.trace({
       configuration: {
         ...buildConfiguration(),
         exclude: ["packages/broken/**"],
@@ -484,17 +654,17 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
   describe("scoped to one project", () => {
     let layeredWorkspaceRoot: string;
-    let scoped: ReturnType<CallidescopeService["trace"]>;
-    let unscoped: ReturnType<CallidescopeService["trace"]>;
+    let scoped: Awaited<ReturnType<CallidescopeService["trace"]>>;
+    let unscoped: Awaited<ReturnType<CallidescopeService["trace"]>>;
 
     beforeAll(async () => {
       layeredWorkspaceRoot = await buildLayeredWorkspace();
-      scoped = service.trace({
+      scoped = await service.trace({
         configuration: buildConfiguration(),
         directories: [path.join("packages", "application")],
         workspaceRoot: layeredWorkspaceRoot,
       });
-      unscoped = service.trace({
+      unscoped = await service.trace({
         configuration: buildConfiguration(),
         directories: [],
         workspaceRoot: layeredWorkspaceRoot,
@@ -600,22 +770,125 @@ describe(`${CallidescopeService.name} (integration)`, () => {
       ]);
     });
 
-    it("refuses a named directory holding no tsconfig.json", () => {
+    it("refuses a named directory holding no tsconfig.json", async () => {
       // Reported through the same channel as a project it could not read,
       // rather than warned past — a run that quietly traced one project fewer
       // than it was told to is a gate that passed for having looked at less.
-      expect(() =>
+      await expect(
         service.trace({
           configuration: buildConfiguration(),
           directories: [path.join("packages", "missing")],
           workspaceRoot: layeredWorkspaceRoot,
         }),
-      ).toThrow(ProgramConfigurationError);
+      ).rejects.toThrow(ProgramConfigurationError);
     });
   });
 
-  it("builds the same graph a full trace would, without any analysis", () => {
-    const located = service.locate({
+  // 🗂️ A project that configures itself
+
+  describe("a project with a configuration of its own", () => {
+    /** Reads the kind every stack in one project was rooted under. */
+    function readEntryPointKinds(args: {
+      outcome: Awaited<ReturnType<CallidescopeService["trace"]>>;
+      projectName: string;
+    }): Record<string, string> {
+      const report = args.outcome.result.projects.find(
+        (candidate) => candidate.projectName === args.projectName,
+      );
+      const kinds: Record<string, string> = {};
+
+      for (const stack of report?.stacks ?? []) {
+        const displayName = stack.frames[0]?.displayName;
+
+        if (displayName !== undefined) {
+          kinds[displayName] = stack.entryPointKind;
+        }
+      }
+
+      return kinds;
+    }
+
+    it("roots the callable its own configuration declared by address", async () => {
+      const workspaceRoot = await buildConfiguredWorkspace({
+        entryPoints: {
+          addresses: ["packages/library/src/repository.ts#Repository.open"],
+        },
+      });
+
+      const outcome = await service.trace({
+        configuration: buildConfiguration(),
+        directories: [],
+        workspaceRoot,
+      });
+
+      expect(
+        readEntryPointKinds({
+          outcome,
+          projectName: path.join("packages", "library"),
+        }),
+      ).toStrictEqual({ "Repository.open": "declared" });
+    });
+
+    it("applies those rules to a run started from another project", async () => {
+      // The criterion the per-project resolution exists for. `library` is in
+      // this run only because `application`'s imports reach it, and it is
+      // still judged by what it declared rather than by whoever reached it.
+      const workspaceRoot = await buildConfiguredWorkspace({
+        entryPoints: {
+          addresses: ["packages/library/src/repository.ts#Repository.open"],
+        },
+      });
+
+      const outcome = await service.trace({
+        configuration: buildConfiguration(),
+        directories: [path.join("packages", "application")],
+        workspaceRoot,
+      });
+
+      expect(
+        readEntryPointKinds({
+          outcome,
+          projectName: path.join("packages", "library"),
+        }),
+      ).toStrictEqual({ "Repository.open": "declared" });
+    });
+
+    it("refuses a project setting a field only the workspace may set", async () => {
+      const workspaceRoot = await buildConfiguredWorkspace({
+        output: { json: { path: "report.json" } },
+      });
+
+      await expect(
+        service.trace({
+          configuration: buildConfiguration(),
+          directories: [],
+          workspaceRoot,
+        }),
+      ).rejects.toThrow(/only the workspace configuration may set/);
+    });
+
+    it("reads the file the run was pointed at as the workspace's alone", async () => {
+      // One file, one role per run. A package whose task names its own file
+      // would otherwise have it read a second time as that package's project
+      // configuration, and refused for the very fields it may set as a
+      // workspace configuration.
+      const workspaceRoot = await buildConfiguredWorkspace({
+        output: { json: { path: "report.json" } },
+      });
+
+      const outcome = await service.trace({
+        configuration: buildConfiguration(),
+        configurationPath: LIBRARY_CONFIGURATION_PATH,
+        directories: [],
+        workspaceRoot,
+      });
+
+      expect(outcome.result.summary.projectCount).toBe(2);
+    });
+  });
+
+  it("builds the same graph a full trace would, without any analysis", async () => {
+    const located = await service.locate({
       configuration: buildConfiguration(),
       directories: [],
       workspaceRoot: tracedWorkspaceRoot,

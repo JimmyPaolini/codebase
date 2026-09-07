@@ -31,7 +31,7 @@ call resolves into real code instead of stopping at the package boundary:
 ```text
 🚀 DependencyClosureService.allowsDepth(…): boolean [.../dependency-closure/dependency-closure.ts:32]
   └─> DependencyClosureService.readDepthLimit(…): number [.../dependency-closure/dependency-closure.ts:24]
-    └─> ConfigurationService.resolveConfiguration(…) [packages/callidescope-configuration/.../configuration.service.ts:375]
+    └─> ConfigurationService.resolveConfiguration(…) [packages/callidescope-configuration/.../configuration.service.ts:431]
       └─> ConfigurationService.resolveAllowSpreadFor(…) [packages/callidescope-configuration/.../configuration.service.ts:170]
 ```
 
@@ -46,12 +46,15 @@ code a run can see, so a run that cannot see a dependency reports a stack that
 ends where the package does — an answer that is not wrong so much as scoped, and
 scoped in a way nothing in the report said out loud.
 
-Four projects are traced when this package is the starting root:
+Six projects are traced when this run starts here. Three of them are named as
+starting roots and three arrive through the closure:
 
 | Project | Reached because |
 | ------- | --------------- |
-| `packages/callidescope-examples` | The directory the run was pointed at |
-| `packages/callidescope-configuration` | The fixture above imports it, and [`callidescope.config.ts`](../../callidescope.config.ts) imports a type from it |
+| `packages/callidescope-examples` | Named — the directory the run was pointed at |
+| `.../examples/gated-leaf` | Named — a nested project [`gated-leaf`](../gated-leaf/README.md) explains, and says why it is named rather than reached |
+| `.../examples/inherited-limits` | Named, for the same reason |
+| `packages/callidescope-configuration` | The fixture above imports it, and [`callidescope.workspace.config.ts`](../../callidescope.workspace.config.ts) imports a type from it |
 | `packages/codometer-configuration` | Reached through the shared `configuration/codometer.config.ts` that this package's own [`codometer.config.ts`](../../codometer.config.ts) spreads |
 | `packages/logger` | Reached through the shared `configuration/eslint.config.ts`, which imports `@codebase/logger/eslint` |
 
@@ -72,7 +75,7 @@ if some file the compiler read imported it — which is how `packages/logger`
 gets into this run, through a shared configuration file rather than through
 anything this package declares.
 
-A type-only import is enough. `callidescope.config.ts` imports a type from
+A type-only import is enough. `callidescope.workspace.config.ts` imports a type from
 `@callidescope/configuration` and nothing else, and the compiler reads the
 package all the same — so the dependency would be in this closure even without
 the fixture above.
@@ -103,12 +106,13 @@ frame, the way every call out of a package did before closures existed.
 ## What a closure never widens
 
 Publishing. A run writes a `## 🔭 Callidescope` section for the projects it was
-**scoped** to and for no others, so this run publishes into this package's guide
-and leaves the three dependency packages alone — measurement reaches into a
-dependency, publishing does not. A closure that widened both would have this
-target rewriting an anchor block in three packages that never asked for it, and
-`nx run codebase:callidescope:write` — which reads different limits — writing
-the opposite content back into the same three blocks on its next run.
+**scoped** to and for no others, so this run publishes into the three guides of
+its three starting projects and leaves the three dependency packages alone —
+measurement reaches into a dependency, publishing does not. A closure that
+widened both would have this target rewriting an anchor block in three packages
+that never asked for it, and `nx run codebase:callidescope:write` — which reads
+different limits — writing the opposite content back into the same three
+blocks on its next run.
 
 The whole-workspace run is unaffected, for the same reason the two rules above
 leave a starting project alone: a run naming no directory has every project as a
