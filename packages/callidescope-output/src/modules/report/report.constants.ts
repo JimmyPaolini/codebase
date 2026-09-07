@@ -45,9 +45,6 @@ export const DEPRECATED_MARKER = "⚠ deprecated";
 /** Introduces the documentation line printed under a frame. */
 export const SUMMARY_PREFIX = "↳";
 
-/** Heading a whole-run report is written under. */
-export const RUN_HEADING = "# 🔭 Callidescope";
-
 /**
  * Opens every diagram.
  *
@@ -90,3 +87,54 @@ export const MARKDOWN_MISPLACED_HEADER =
 /** Header of the breadth table. */
 export const MARKDOWN_WIDE_CALLABLES_HEADER =
   "| Callable | Breadth | Calls directly | Location |\n| --- | --- | --- | --- |";
+
+/** Stands in for the workspace root when it is itself a traced project. */
+export const ROOT_PROJECT_LABEL = ".";
+
+/** Header of the per-project index table. */
+export const MARKDOWN_PROJECT_INDEX_HEADER =
+  "| Project | Deepest | Limit | Headroom | Widest | Spread | Misplaced |\n| --- | --- | --- | --- | --- | --- | --- |";
+
+/** Header of the depth-headroom scoreboard. */
+export const MARKDOWN_HEADROOM_HEADER =
+  "| Headroom | Projects |\n| --- | --- |";
+
+/** Bucket holding the projects whose deepest stack broke their own limit. */
+export const HEADROOM_BUCKET_OVER_LIMIT = "over limit";
+
+/** Bucket holding the projects sitting exactly on their own limit. */
+export const HEADROOM_BUCKET_AT_LIMIT = "0 — at limit";
+
+/** Bucket holding the projects one frame from their own limit. */
+export const HEADROOM_BUCKET_ONE = "1";
+
+/** Bucket holding the projects two or three frames from their own limit. */
+export const HEADROOM_BUCKET_TWO_TO_THREE = "2–3";
+
+/** Bucket holding the projects with room to spare. */
+export const HEADROOM_BUCKET_FOUR_PLUS = "4+";
+
+/**
+ * Bucket holding the projects that measured no stack at all.
+ *
+ * Named rather than folded into the widest headroom bucket: a project whose
+ * deepest stack is zero is not a project with room to spare, it is a project
+ * whose limit gates nothing, and those are opposite findings.
+ */
+export const HEADROOM_BUCKET_UNMEASURED = "no stacks";
+
+/**
+ * The order the scoreboard prints its buckets in, tightest first.
+ *
+ * A fixed list rather than the keys a run happened to produce, so a bucket
+ * nothing fell into is still printed as a zero. "Nothing is over its limit" is
+ * the row a reader came for, and an absent row cannot say it.
+ */
+export const HEADROOM_BUCKET_ORDER = [
+  HEADROOM_BUCKET_OVER_LIMIT,
+  HEADROOM_BUCKET_AT_LIMIT,
+  HEADROOM_BUCKET_ONE,
+  HEADROOM_BUCKET_TWO_TO_THREE,
+  HEADROOM_BUCKET_FOUR_PLUS,
+  HEADROOM_BUCKET_UNMEASURED,
+] as const;

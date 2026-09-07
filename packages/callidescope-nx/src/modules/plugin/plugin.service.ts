@@ -5,6 +5,7 @@ import { CallidescopeService } from "@callidescope/cli";
 import {
   ConfigurationService,
   DEFAULT_PREVIEW_COUNT,
+  DEFAULT_RUN_HEADING,
 } from "@callidescope/configuration";
 import { MarkdownReportService } from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
@@ -254,6 +255,11 @@ export class PluginService {
         outcome.result.deepStacks.length === 0 &&
         outcome.result.wideCallables.length === 0,
       report: this.markdownReportService.renderRun({
+        // Returned to an executor to print, not spliced into a file, so there
+        // is no destination to take a heading or a description from.
+        description: undefined,
+        heading: DEFAULT_RUN_HEADING,
+        limits: outcome.projectLimits,
         previewCount:
           configuration.output.projectReadmes?.previewCount ??
           DEFAULT_PREVIEW_COUNT,

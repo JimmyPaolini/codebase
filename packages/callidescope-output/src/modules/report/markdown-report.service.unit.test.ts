@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import {
   buildCallGraphResult,
+  buildProjectLimitsLookup,
   buildSourceLocation,
   buildStackFrame,
 } from "../../../testing/mocks";
@@ -226,6 +227,9 @@ describe(MarkdownReportService, () => {
 
   it("heads a whole run and counts the stacks over the depth limit", () => {
     const rendered = service.renderRun({
+      description: undefined,
+      heading: "# 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
       result: buildCallGraphResult({
@@ -239,6 +243,9 @@ describe(MarkdownReportService, () => {
 
   it("heads a run's wide-callable section with its count", () => {
     const rendered = service.renderRun({
+      description: undefined,
+      heading: "# 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
       result: buildCallGraphResult({
@@ -259,9 +266,52 @@ describe(MarkdownReportService, () => {
     expect(rendered).toContain("## Callables over the breadth limit (1)");
   });
 
+  it("places a destination's description under the heading", () => {
+    const rendered = service.renderRun({
+      description: "Traced on every release.",
+      heading: "# 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
+      previewCount: 3,
+      rendering: "tree",
+      result: buildCallGraphResult(),
+    });
+
+    expect(rendered).toContain("# 🔭 Callidescope\n\nTraced on every release.");
+  });
+
+  it("writes its subsections one level below the heading it was given", () => {
+    const rendered = service.renderRun({
+      description: undefined,
+      heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
+      previewCount: 3,
+      rendering: "tree",
+      result: buildCallGraphResult(),
+    });
+
+    expect(rendered).toContain("\n### Projects\n");
+    expect(rendered).not.toContain("\n## Projects\n");
+  });
+
+  it("falls back to second-level subsections for a heading with no hashes", () => {
+    const rendered = service.renderRun({
+      description: undefined,
+      heading: "**Callidescope**",
+      limits: buildProjectLimitsLookup(),
+      previewCount: 3,
+      rendering: "tree",
+      result: buildCallGraphResult(),
+    });
+
+    expect(rendered).toContain("\n## Projects\n");
+  });
+
   it("renders a run that found nothing without failing", () => {
     expect(
       service.renderRun({
+        description: undefined,
+        heading: "# 🔭 Callidescope",
+        limits: buildProjectLimitsLookup(),
         previewCount: 3,
         rendering: "tree",
         result: buildCallGraphResult(),

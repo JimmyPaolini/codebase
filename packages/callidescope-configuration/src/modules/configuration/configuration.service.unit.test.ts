@@ -23,6 +23,7 @@ import {
   DEFAULT_PREVIEW_COUNT,
   DEFAULT_PROJECT_README_HEADING,
   DEFAULT_ROOT_MODULE_SEGMENT,
+  DEFAULT_RUN_HEADING,
   DEFAULT_SPREAD_THRESHOLD,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
@@ -252,6 +253,7 @@ describe(ConfigurationService, () => {
     expect(configuration.output.markdown).toStrictEqual({
       description: undefined,
       endMarker: DEFAULT_MARKDOWN_END_MARKER,
+      heading: DEFAULT_RUN_HEADING,
       path: "REPORT.md",
       render: undefined,
       startMarker: DEFAULT_MARKDOWN_START_MARKER,
@@ -283,6 +285,35 @@ describe(ConfigurationService, () => {
     expect(configuration.output.markdown?.write).toBe(write);
   });
 
+  it("keeps an authored markdown heading", () => {
+    const configuration = service.resolveConfiguration({
+      output: {
+        markdown: { heading: "## 🔭 Callidescope", path: "README.md" },
+      },
+    });
+
+    expect(configuration.output.markdown?.heading).toBe("## 🔭 Callidescope");
+  });
+
+  it("carries an authored heading through the file schema, not only the resolver", async () => {
+    // Resolution is not the whole path a configured value travels: a loaded
+    // file is parsed by the schema first, and a field the schema does not name
+    // is stripped there — silently, with the default appearing in its place
+    // and nothing to say the file asked for anything else. That is how the
+    // heading configured for this repository's own README came out at `#`
+    // while the file said `##`, so the schema is asserted through
+    // `loadConfiguration` rather than only through `resolveConfiguration`.
+    const configurationPath = await writeConfiguration({
+      output: { markdown: { heading: "### Deep", path: "README.md" } },
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.output.markdown?.heading).toBe("### Deep");
+  });
+
   it("leaves the diagram destination alone until it is asked for", () => {
     expect(
       service.resolveConfiguration({ output: {} }).output.mermaid,
@@ -297,6 +328,7 @@ describe(ConfigurationService, () => {
     ).toStrictEqual({
       description: undefined,
       endMarker: DEFAULT_MARKDOWN_END_MARKER,
+      heading: DEFAULT_RUN_HEADING,
       path: "GRAPH.md",
       render: undefined,
       startMarker: DEFAULT_MARKDOWN_START_MARKER,

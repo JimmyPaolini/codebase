@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   DEFAULT_JSON_INDENTATION,
   DEFAULT_PREVIEW_COUNT,
+  DEFAULT_RUN_HEADING,
   InputService,
 } from "@callidescope/configuration";
 import { AddressService } from "@callidescope/graph";
@@ -38,6 +39,7 @@ import type {
 import type {
   CallGraphResult,
   CallidescopeOutputFormat,
+  ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeProjectReadmeConfiguration,
 } from "@callidescope/configuration";
@@ -185,6 +187,7 @@ export class CallidescopeCommand extends CommandRunner {
    */
   private report(args: {
     configuration: ResolvedCallidescopeConfiguration;
+    projectLimits: ProjectLimitsLookup;
     result: CallGraphResult;
   }): void {
     const { format, json } = args.configuration.output;
@@ -205,6 +208,11 @@ export class CallidescopeCommand extends CommandRunner {
 
     process.stdout.write(
       this.markdownReportService.renderRun({
+        // Printed rather than spliced, so there is no destination to take a
+        // heading or a description from and nothing above it to sit under.
+        description: undefined,
+        heading: DEFAULT_RUN_HEADING,
+        limits: args.projectLimits,
         previewCount: this.readPreviewCount(args.configuration),
         rendering: format === "mermaid" ? "diagram" : "tree",
         result: args.result,
@@ -239,6 +247,9 @@ export class CallidescopeCommand extends CommandRunner {
         !this.outputMarkdownService.sync({
           check: args.check,
           content: this.markdownReportService.renderRun({
+            description: destination.description,
+            heading: destination.heading,
+            limits: args.projectLimits,
             previewCount: this.readPreviewCount(args.configuration),
             rendering,
             result: args.result,
@@ -324,7 +335,11 @@ export class CallidescopeCommand extends CommandRunner {
       );
     }
 
-    this.report({ configuration, result: outcome.result });
+    this.report({
+      configuration,
+      projectLimits: outcome.projectLimits,
+      result: outcome.result,
+    });
 
     // Reports are produced before either finding is weighed, so a run that
     // writes and gates leaves its reports behind even when the gate trips.
@@ -332,6 +347,7 @@ export class CallidescopeCommand extends CommandRunner {
       ? this.syncDestinations({
           check: mode.checksReports,
           configuration,
+          projectLimits: outcome.projectLimits,
           result: outcome.result,
           startingProjectRoots: outcome.startingProjectRoots,
         })

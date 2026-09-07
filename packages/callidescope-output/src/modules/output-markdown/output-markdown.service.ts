@@ -249,6 +249,10 @@ export class OutputMarkdownService {
         destination: {
           description: undefined,
           endMarker: args.destination.endMarker,
+          // Carried for completeness rather than used: the section's content
+          // is already rendered by the time it reaches here, and only the
+          // markers decide where it lands.
+          heading: args.destination.heading,
           path: section.path,
           render: undefined,
           startMarker: args.destination.startMarker,
