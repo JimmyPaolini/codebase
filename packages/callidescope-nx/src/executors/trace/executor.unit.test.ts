@@ -47,6 +47,7 @@ function buildScope(
     knownNames: ["alpha"],
     knownTags: ["type:package"],
     projectNames: ["alpha"],
+    selectedDirectories: ["packages/alpha"],
     unknownNames: [],
     unmatchedTags: [],
     ...overrides,
@@ -73,6 +74,27 @@ describe(traceExecutor, () => {
       tags: [],
       withDependencies: true,
     });
+  });
+
+  it("hands the trace the closure to read and the selection to judge", async () => {
+    expect.hasAssertions();
+
+    pluginService.resolveTraceScope.mockResolvedValue(
+      buildScope({
+        directories: ["packages/alpha", "packages/beta"],
+        projectNames: ["alpha", "beta"],
+        selectedDirectories: ["packages/alpha"],
+      }),
+    );
+
+    await traceExecutor({}, buildContext("alpha"));
+
+    expect(pluginService.runTrace).toHaveBeenCalledWith(
+      expect.objectContaining({
+        directories: ["packages/alpha", "packages/beta"],
+        judgedProjectNames: ["packages/alpha"],
+      }),
+    );
   });
 
   it("prints the report to stdout", async () => {

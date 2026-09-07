@@ -30,8 +30,12 @@ for their code, and every one of them leaves a leaf with no limit that binds:
 
 That last row is the real workspace, and the number is pinned by the single
 deepest stack anywhere in it. The motivating measurement behind all of this was
-`codometer-changes`: ten frames of its own, held to seventeen, which is to say
-held to nothing.
+`codometer-changes`: ten frames of its own, held to seventeen, which was to say
+held to nothing. It now declares those ten in a
+[`callidescope.config.ts`](../../../codometer-changes/callidescope.config.ts) of
+its own, which is this example's argument having been acted on rather than an
+argument it has stopped needing to make — every leaf added after it starts out
+in the row above.
 
 ## Two things had to be true before a limit here meant anything
 
@@ -58,13 +62,13 @@ part of a passing measurement one project up, which is what "downward only"
 buys: this project's gate answers for this project's code and for nothing that
 reaches into it.
 
-## Breadth can be gated at all only because this file exists
+## Breadth can be gated at all only because some project declares a limit
 
 `maximumBreadth` has no tool default and no workspace default — a single breadth
 number was never something anybody could pick for a whole workspace — so
-`--check breadth` is refused until some project in scope declares one. This is
-the only project in this repository that does, which makes the two halves of
-that rule runnable side by side:
+`--check breadth` is refused until some project in scope declares one. This
+project is one of the several that now do, and the two halves of that rule are
+runnable side by side:
 
 ```bash
 # In scope: this project declares maximumBreadth, so the gate runs and fails.
@@ -79,11 +83,12 @@ node --import @swc-node/register/esm-register packages/callidescope-cli/src/main
 ```
 
 ```bash
-# Out of scope: name the package alone and no project in scope declares one.
+# Out of scope: name the fixture next door, whose closure reaches no package
+# at all, and nothing in scope declares a breadth limit.
 node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts \
   callidescope --check breadth \
   --config packages/callidescope-examples/callidescope.workspace.config.ts \
-  --directories packages/callidescope-examples
+  --directories packages/callidescope-examples/examples/inherited-limits
 ```
 
 ```text
@@ -167,6 +172,15 @@ Call stacks traced through `packages/callidescope-examples/examples/gated-leaf`,
 | Deepest stack | 4 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
+
+### Limits
+
+What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+
+| Limit | Value | Origin |
+| --- | --- | --- |
+| `maximumDepth` | 3 | declared |
+| `maximumBreadth` | 2 | declared |
 
 ### Call stacks (depth)
 

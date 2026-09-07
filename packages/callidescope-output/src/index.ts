@@ -21,7 +21,11 @@ export type {
 export { MINIMUM_STACK_FRAMES } from "./modules/project-reports/project-reports.constants";
 export { ProjectReportsModule } from "./modules/project-reports/project-reports.module";
 export { ProjectReportsService } from "./modules/project-reports/project-reports.service";
-export type { BuildProjectReportsArguments } from "./modules/project-reports/project-reports.types";
+export type {
+  BuildProjectReportsArguments,
+  FindOwnedFindingsArguments,
+  OwnedFindings,
+} from "./modules/project-reports/project-reports.types";
 export { MarkdownReportService } from "./modules/report/markdown-report.service";
 export { MermaidReportService } from "./modules/report/mermaid-report.service";
 export {
@@ -36,12 +40,14 @@ export {
   HEADROOM_BUCKET_OVER_LIMIT,
   HEADROOM_BUCKET_TWO_TO_THREE,
   HEADROOM_BUCKET_UNMEASURED,
+  MARKDOWN_DEEP_STACKS_HEADING,
   MARKDOWN_HEADROOM_HEADER,
   MARKDOWN_MISPLACED_HEADER,
   MARKDOWN_PROJECT_INDEX_HEADER,
   MARKDOWN_SPREAD_HEADER,
   MARKDOWN_SUMMARY_HEADER,
   MARKDOWN_WIDE_CALLABLES_HEADER,
+  MARKDOWN_WIDE_CALLABLES_HEADING,
   MAXIMUM_DIAGRAM_NODES,
   MERMAID_FLOWCHART_HEADER,
   MERMAID_LABEL_ESCAPES,
@@ -59,6 +65,7 @@ export type {
   FramedStack,
   MermaidDiagram,
   ProjectIndexRow,
+  RenderFindingsArguments,
   RenderProjectIndexArguments,
   RenderProjectSectionArguments,
   RenderRunArguments,

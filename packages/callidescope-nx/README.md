@@ -42,6 +42,7 @@ Register it in `nx.json`:
 | `traceTargetName` | Name of the inferred trace target. `trace` when omitted |
 | `depthTargetName` | Name of the inferred depth target. `depth` when omitted |
 | `breadthTargetName` | Name of the inferred breadth target. `breadth` when omitted |
+| `gateTargetName` | Name of the inferred gate target. `gate` when omitted |
 
 The target names are short because they read better on the command line than
 repeating the tool's name on both sides of the colon. Rename any of them from
@@ -49,7 +50,7 @@ the registration if a workspace already uses one.
 
 ## Usage
 
-Three targets are inferred onto every project holding a `tsconfig.json`, so
+Four targets are inferred onto every project holding a `tsconfig.json`, so
 selection is Nx's job rather than a flag of this package's own:
 
 ```bash
@@ -69,6 +70,7 @@ nx run callidescope-nx:depth --addresses="src/a.service.ts#A.b,src/c.service.ts#
 
 | Target | Answers |
 | ------ | ------- |
+| `gate` | Whether anything in the project broke the limits it is held to |
 | `trace` | Every call stack in the project, and which ones broke a limit |
 | `depth` | Every stack above and below each callable — callers up to a root, callees down to a leaf |
 | `breadth` | Each callable's direct callers and callees, side by side |
@@ -88,9 +90,87 @@ the address count, matching what the command line prints.
 Unlike the command line, a missing `--addresses` is **refused rather than
 prompted for**: a task runner has nobody to ask.
 
-Two projects are deliberately skipped: the **workspace-root project**, whose
-targets would trace everything under one uncacheable task, and any project with
-**no `tsconfig.json`**, whose targets would be permanently empty.
+### The gate
+
+`gate` is the one of the four a pipeline is meant to read an exit code from,
+and the only one that prints nothing but its findings — the stacks and callables that
+decided the verdict, rather than every stack in the project. `nx affected -t gate`
+therefore gates a branch by the projects it changed, and the task that fails is
+named after the project that regressed, which one workspace-wide task never
+could.
+
+**A dependency's breach is that dependency's gate's business.** The trace
+reaches into the projects a gate's project depends on, because a stack that
+stops at a package boundary measures the wrong thing — but the verdict covers
+only the projects the task was scoped to. This is the line the publishing side
+already draws, one step further along: measurement reaches into dependencies,
+publishing does not, and judging does not either. Nothing escapes a verdict,
+because `nx affected` selects a changed dependency too and its own gate names
+it. `trace` narrows its verdict the same way, so the two targets on one project
+can never disagree about whose regression it was; its report still shows the
+whole closure, since only the verdict narrows.
+
+**Depth is gated always, breadth wherever a limit exists.** Not two modes to be
+selected between: `maximumDepth` has a default, so every project has a number
+and is judged by it, while `maximumBreadth` has none at any level — so a project
+that declared no breadth limit is judged against `Infinity` and can produce no
+breadth finding at all.
+
+**A gate that opened none of the judged project's own files fails.** A project
+reporting zero files of its own is not a clean project — it is a project
+nothing looked at, and a green task there would say the opposite with nothing
+in the output to correct it. The `callidescope` command fails the same case for
+the same reason.
+
+**`trace` prints that same block and passes on it** — the one rule the two
+targets act on differently, and the only place their verdicts part. A project
+the configuration excludes reads nothing of its own by definition and is given
+no `gate` for exactly that reason, so failing its `trace` as well would leave
+the one target it has permanently red for being configured as it was asked to
+be, and a red task that is always red is one a reader learns to ignore. It
+still prints, because whether a project's own code was read is a fact about the
+run either way and a reader has to be able to see it. Everything else — a stack
+over a depth limit, a callable over a breadth limit, a run that read nothing at
+all — fails both.
+
+**Asked per judged project, not of the whole run**, because narrowing the
+verdict made those two different questions. A project with dependencies has a
+non-empty run whatever became of its own sources, so an `exclude` that
+over-matches — which a project's own `callidescope.config.*` may write — leaves
+it owning no report content, owning no finding, and passing green over code
+nothing read. Demonstrated: `packages/codometer-output` given
+`{"exclude": ["**"]}` of its own traces its dependency's 102 callables and
+contributes none, which is a green gate on the run-wide question and a red one
+on this. The projects that went unread are named back, since `--projects` may
+judge several.
+
+**Files rather than callables**, which is the weaker question and the right
+one. A project can hold files that declare no callable at all — one whose
+`tsconfig.json` names only its own configuration files and its tests is the
+shape, and this repository has five — and those files were read, so a verdict
+on them is a verdict on something. Asking for a callable fails all five for
+holding no functions, which is a finding about nothing. The cost, stated
+plainly: a project whose sources are excluded while a configuration file of its
+own survives counts as read.
+
+Two adjacent cases fail alongside it, each saying what happened rather than
+failing mutely: a run that read **nothing at all**, which is what an unread
+leaf project looks like, and an Nx selection that resolved to **no directory**.
+
+Its cache key names the project's own `callidescope.config.*` alongside the
+workspace configuration, so editing one project's limits re-runs that project's
+gate and no other project's. A dependency's sources are covered by `^default`,
+because a run measures its dependencies even though it does not judge them.
+
+Two projects are deliberately skipped by all four targets: the **workspace-root
+project**, whose targets would trace everything under one uncacheable task, and
+any project with **no `tsconfig.json`**, whose targets would be permanently
+empty. A project the configuration **excludes** — `exclude` or `excludeFrom` in
+the workspace file — additionally gets no `gate`: its own code is never traced,
+so a gate there would own no finding at all and report green for code it never
+read. It keeps the three that print something, `trace` included, which is what
+the unread exemption above is there to preserve: `packages/callidescope-examples`
+is the case, and its stacks are still a report a reader can open.
 
 ### Why the trace follows dependencies
 
@@ -271,6 +351,7 @@ flowchart LR
   ProjectsModule
   ReportFindingsModule
   ReportModule
+  RunConfigurationModule
   RunPlanModule
   SignaturesModule
   WorkspaceModule
@@ -312,11 +393,16 @@ flowchart LR
   PluginModule --> CallidescopeModule
   PluginModule --> ConfigurationModule
   PluginModule --> OptionsModule
+  PluginModule --> ProjectReportsModule
   PluginModule --> ProjectsModule
   PluginModule --> ReportModule
+  PluginModule --> RunConfigurationModule
+  PluginModule --> WorkspaceModule
   ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
   ProjectReportsModule --> SignaturesModule
+  RunConfigurationModule --> ConfigurationModule
+  RunConfigurationModule --> OptionsModule
   RunPlanModule --> ConfigurationModule
 ```
 
@@ -335,6 +421,10 @@ graph LR
   file_src_executors_breadth_executor_unit_test_ts["src/executors/breadth/executor.unit.test.ts"]
   file_src_executors_depth_executor_ts["src/executors/depth/executor.ts"]
   file_src_executors_depth_executor_unit_test_ts["src/executors/depth/executor.unit.test.ts"]
+  file_src_executors_gate_executor_integration_test_ts["src/executors/gate/executor.integration.test.ts"]
+  file_src_executors_gate_executor_ts["src/executors/gate/executor.ts"]
+  file_src_executors_gate_executor_types_ts["src/executors/gate/executor.types.ts"]
+  file_src_executors_gate_executor_unit_test_ts["src/executors/gate/executor.unit.test.ts"]
   file_src_executors_trace_executor_ts["src/executors/trace/executor.ts"]
   file_src_executors_trace_executor_types_ts["src/executors/trace/executor.types.ts"]
   file_src_executors_trace_executor_unit_test_ts["src/executors/trace/executor.unit.test.ts"]
@@ -366,6 +456,11 @@ graph LR
   file_src_modules_projects_projects_service_ts["src/modules/projects/projects.service.ts"]
   file_src_modules_projects_projects_service_unit_test_ts["src/modules/projects/projects.service.unit.test.ts"]
   file_src_modules_projects_projects_types_ts["src/modules/projects/projects.types.ts"]
+  file_src_modules_run_configuration_run_configuration_constants_ts["src/modules/run-configuration/run-configuration.constants.ts"]
+  file_src_modules_run_configuration_run_configuration_module_ts["src/modules/run-configuration/run-configuration.module.ts"]
+  file_src_modules_run_configuration_run_configuration_service_ts["src/modules/run-configuration/run-configuration.service.ts"]
+  file_src_modules_run_configuration_run_configuration_service_unit_test_ts["src/modules/run-configuration/run-configuration.service.unit.test.ts"]
+  file_src_modules_run_configuration_run_configuration_types_ts["src/modules/run-configuration/run-configuration.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
@@ -377,6 +472,19 @@ graph LR
   file_src_executors_depth_executor_ts --> file_src_modules_address_address_utilities_ts
   file_src_executors_depth_executor_unit_test_ts --> file_src_executors_depth_executor_ts
   file_src_executors_depth_executor_unit_test_ts --> file_src_modules_address_address_utilities_ts
+  file_src_executors_gate_executor_integration_test_ts --> file_src_executors_gate_executor_ts
+  file_src_executors_gate_executor_integration_test_ts --> file_src_executors_gate_executor_types_ts
+  file_src_executors_gate_executor_integration_test_ts --> file_src_modules_plugin_plugin_constants_ts
+  file_src_executors_gate_executor_integration_test_ts --> file_src_modules_projects_projects_service_ts
+  file_src_executors_gate_executor_ts --> file_src_executors_gate_executor_types_ts
+  file_src_executors_gate_executor_ts --> file_src_modules_plugin_plugin_context_utilities_ts
+  file_src_executors_gate_executor_ts --> file_src_modules_plugin_plugin_constants_ts
+  file_src_executors_gate_executor_ts --> file_src_modules_plugin_plugin_utilities_ts
+  file_src_executors_gate_executor_unit_test_ts --> file_src_executors_gate_executor_ts
+  file_src_executors_gate_executor_unit_test_ts --> file_src_modules_options_options_service_ts
+  file_src_executors_gate_executor_unit_test_ts --> file_src_modules_plugin_plugin_constants_ts
+  file_src_executors_gate_executor_unit_test_ts --> file_src_modules_plugin_plugin_service_ts
+  file_src_executors_gate_executor_unit_test_ts --> file_src_modules_plugin_plugin_types_ts
   file_src_executors_trace_executor_ts --> file_src_executors_trace_executor_types_ts
   file_src_executors_trace_executor_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_executors_trace_executor_ts --> file_src_modules_plugin_plugin_utilities_ts
@@ -421,21 +529,33 @@ graph LR
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_options_options_module_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_plugin_plugin_service_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_projects_projects_module_ts
+  file_src_modules_plugin_plugin_module_ts --> file_src_modules_run_configuration_run_configuration_module_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_options_options_constants_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_options_options_service_ts
+  file_src_modules_plugin_plugin_service_ts --> file_src_modules_options_options_types_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_plugin_plugin_constants_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_plugin_plugin_types_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_projects_projects_service_ts
+  file_src_modules_plugin_plugin_service_ts --> file_src_modules_run_configuration_run_configuration_service_ts
   file_src_modules_plugin_plugin_service_unit_test_ts --> file_src_modules_options_options_service_ts
+  file_src_modules_plugin_plugin_service_unit_test_ts --> file_src_modules_plugin_plugin_constants_ts
   file_src_modules_plugin_plugin_service_unit_test_ts --> file_src_modules_plugin_plugin_service_ts
   file_src_modules_plugin_plugin_service_unit_test_ts --> file_src_modules_plugin_plugin_types_ts
   file_src_modules_plugin_plugin_service_unit_test_ts --> file_src_modules_projects_projects_service_ts
+  file_src_modules_plugin_plugin_service_unit_test_ts --> file_src_modules_run_configuration_run_configuration_service_ts
   file_src_modules_plugin_plugin_types_ts --> file_src_modules_plugin_plugin_constants_ts
   file_src_modules_plugin_plugin_utilities_ts --> file_src_modules_plugin_plugin_context_utilities_ts
   file_src_modules_plugin_plugin_utilities_ts --> file_src_modules_plugin_plugin_types_ts
   file_src_modules_projects_projects_module_ts --> file_src_modules_projects_projects_service_ts
   file_src_modules_projects_projects_service_ts --> file_src_modules_projects_projects_types_ts
   file_src_modules_projects_projects_service_unit_test_ts --> file_src_modules_projects_projects_service_ts
+  file_src_modules_run_configuration_run_configuration_module_ts --> file_src_modules_options_options_module_ts
+  file_src_modules_run_configuration_run_configuration_module_ts --> file_src_modules_run_configuration_run_configuration_service_ts
+  file_src_modules_run_configuration_run_configuration_service_ts --> file_src_modules_options_options_service_ts
+  file_src_modules_run_configuration_run_configuration_service_ts --> file_src_modules_run_configuration_run_configuration_constants_ts
+  file_src_modules_run_configuration_run_configuration_service_ts --> file_src_modules_run_configuration_run_configuration_types_ts
+  file_src_modules_run_configuration_run_configuration_service_unit_test_ts --> file_src_modules_options_options_service_ts
+  file_src_modules_run_configuration_run_configuration_service_unit_test_ts --> file_src_modules_run_configuration_run_configuration_service_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 

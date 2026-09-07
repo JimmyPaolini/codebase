@@ -5,7 +5,7 @@
 | Measure | Value |
 | --- | --- |
 | Callables | 230 |
-| Files | 81 |
+| Files | 84 |
 | Calls traced | 200 |
 | Call stacks | 76 |
 | Deepest stack | 8 |
@@ -17,19 +17,19 @@
 | Project | Deepest | Limit | Headroom | Widest | Spread | Misplaced |
 | --- | --- | --- | --- | --- | --- | --- |
 | `packages/callidescope-examples` | 8 | 5 declared | -3 | 5 | 1 | 1 |
-| `packages/codometer-configuration` | 8 | 6 inherited | -2 | 7 | 0 | 0 |
 | `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 declared | -1 | 3 | 0 | 0 |
 | `packages/callidescope-examples/examples/inherited-limits` | 7 | 6 inherited | -1 | 1 | 0 | 0 |
-| `packages/callidescope-configuration` | 6 | 6 inherited | 0 | 8 | 0 | 0 |
-| `packages/logger` | 5 | 6 inherited | 1 | 2 | 0 | 0 |
+| `packages/logger` | 5 | 4 declared | -1 | 2 | 0 | 0 |
+| `packages/callidescope-configuration` | 6 | 6 declared | 0 | 8 | 0 | 0 |
+| `packages/codometer-configuration` | 8 | 8 declared | 0 | 7 | 0 | 0 |
 
 ## Depth headroom
 
 | Headroom | Projects |
 | --- | --- |
 | over limit | 4 |
-| 0 — at limit | 1 |
-| 1 | 1 |
+| 0 — at limit | 2 |
+| 1 | 0 |
 | 2–3 | 0 |
 | 4+ | 0 |
 | no stacks | 0 |
@@ -102,26 +102,7 @@
 <details>
 <summary>5 more call stacks</summary>
 
-**4. `ConfigurationService.loadConfiguration`** — depth ≥ 8 · orphan-root
-
-```text
-🚀 ConfigurationService.loadConfiguration(args?: LoadConfigurationArguments): Promise<ResolvedCodometerConfiguration> [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:348]
-   ↳ Loads and validates a codometer configuration file.
-  └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedConfiguration> [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:365]
-     ↳ Loads a configuration and says which file answered.
-    └─> ConfigurationService.resolveConfiguration(configuration: CodometerConfiguration): ResolvedCodometerConfiguration [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:388]
-       ↳ Fills in every field a configuration file may leave out.
-      └─> ConfigurationService.resolveLimits(limits: CodometerLimit[] | undefined): ResolvedCodometerLimit[] [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:270]
-         ↳ Gives every limit its severity and a value read as a number.
-        └─> ConfigurationService.map(…)(…): { label: string | undefined; metric: string; severity: CodometerSeverity; value: number; } [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:273]
-          └─> ConfigurationService.parseLimitValue(limit: CodometerLimit): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:80]
-             ↳ Reads a limit's value, in decimal units when it was written as a string.
-            └─> ConfigurationService.parseLimitValueText(metric: string, text: string): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:100]
-               ↳ Reads a limit written as a string, unit and all.
-              └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:496]
-```
-
-**5. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
+**4. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
 
 ```text
 🚀 FrameAnnotationsService.trace(value: string): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:95]
@@ -140,7 +121,7 @@
                ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
-**6. `InheritedLimitsService.request`** — depth 7 · orphan-root
+**5. `InheritedLimitsService.request`** — depth 7 · orphan-root
 
 ```text
 🚀 InheritedLimitsService.request(key: string): string [packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts:38]
@@ -159,7 +140,7 @@
                ↳ Ends the chain, which is where the fourth frame is.
 ```
 
-**7. `ProjectDepthLimitService.judge`** — depth 6 · orphan-root
+**6. `ProjectDepthLimitService.judge`** — depth 6 · orphan-root
 
 ```text
 🚀 ProjectDepthLimitService.judge(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:45]
@@ -174,6 +155,21 @@
            ↳ States the verdict, and where the number behind it came from.
           └─> ProjectDepthLimitService.readDeclaringFile(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:23]
              ↳ Reads the file the number the verdict used was written in.
+```
+
+**7. `LoggerService.log`** — depth 5 · orphan-root
+
+```text
+🚀 LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
+   ↳ Logs an informational message at the `info` level.
+  └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+     ↳ Logs an informational message at the `info` level.
+    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:158]
+       ↳ Assembles the object pino merges into the line.
+      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:125]
+         ↳ Fails a malformed message in development, and never in production.
+        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:183]
+           ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **8. `GatedLeafService.read`** — depth 4 · declared

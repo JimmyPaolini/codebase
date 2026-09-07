@@ -6,6 +6,15 @@ import {
 /**
  * What every project in this repository is held to unless it says otherwise.
  *
+ * **Defaults, never ceilings.** Each limit here is what a project falls back
+ * to, and a project declaring a number *higher* than one of these keeps its
+ * own — nothing clamps it. That has to be true for the numbers below to mean
+ * anything: a workspace limit is pinned by the single worst stack anywhere in
+ * the repository, so reading it as a ceiling would hold every project to the
+ * worst one's allowance, which is the arrangement the per-project gate exists
+ * to replace. The gate a branch runs reads a project's own resolved limit and
+ * never this object directly.
+ *
  * A project's own `callidescope.config.ts` writes only the limits it overrides
  * — `limits: { maximumDepth: 10 }`, and nothing beside it. **Never spread this
  * object into one.** `spreadThreshold` is a limit only a workspace may set, and
@@ -27,6 +36,70 @@ import {
  * lose every counter it did not restate, which is what lexico did. A limit is
  * neither a list element nor incomplete, and does have that fallback.
  *
+ * A project's file also carries no type annotation, and so no import of
+ * `CallidescopeConfiguration`. An `import type` is still an Nx dependency
+ * edge: it puts `@callidescope/configuration` into that project's graph, it
+ * widens what the project's own `gate` target has to trace, and it asks the
+ * manifest of a project like `logger` to declare a toolchain package that
+ * project does not use. What it would buy is a second check of something
+ * already checked: the four fields a project may set are validated when the
+ * file is read and a fifth is refused by name, and every project's
+ * `tsconfig.json` names its own file, so the object literal is compiled either
+ * way. `packages/callidescope-examples` is the annotated exception on purpose:
+ * its two configuration files are the worked examples of this shape, and it
+ * depends on the configuration package for real.
+ *
+ * ## The projects that override nothing
+ *
+ * Thirty-one projects under `packages/` now declare their own measured depth,
+ * and eleven declare nothing and are held to the number below. Three reasons,
+ * none of them that nobody got to them. The four skill packages —
+ * `callidescope-agents`, `codependix-agents`, `codometer-agents`,
+ * `conformetry-agents` — and `codependix-examples` hold between zero and three
+ * callables, so there is no stack of theirs to gate. The five conformetry leaf
+ * analyzers hold real code that roots nothing: `conformetry-typescript` has
+ * forty callables, `-json` twenty-three, `-jupyter` twenty-two, `-python`
+ * eleven, and `-text` five, and every one of them is reached from
+ * `conformetry-generation` above rather than entered directly, so each
+ * measures zero however much it does. Gating either kind at zero would fail on
+ * the first stack of any length, which is a landmine rather than a ratchet.
+ *
+ * `codometer-examples` is the eleventh, and it is the same landmine one frame
+ * along. It measures two, over two callables in a package that is a corpus and
+ * a test suite rather than a library, and a limit at two breaches the moment
+ * either of those callables gains a single frame — which, in a fixture corpus,
+ * is a thing somebody adds casually and correctly. Headroom is not the
+ * alternative: a limit set above what a project measures gates nothing and
+ * lies about having been measured. So this one inherits, and the honest record
+ * of its two is a `breadth`/`depth` run against it rather than a number in a
+ * file.
+ *
+ * The dependency closure a scoped run traces did fix this for
+ * `codometer-changes`, which measured zero before it and ten after. The ten
+ * with no caller are a different phenomenon and the closure does not reach
+ * them: it supplies the callees a stack descends into, and what these are
+ * missing is a caller.
+ *
+ * Six projects under `applications/` and `tools/` declare their own measured
+ * depth the same way, and none of them inherit — but two more things sit
+ * outside what either task covers and still need writing down rather than
+ * left implicit.
+ *
+ * `configuration/` measures depth 3 and holds its own `tsconfig.json`, so it
+ * appears as a traced root — but it is not an Nx project, so no target can
+ * ever be inferred onto it, and it is gated by nothing. It keeps being traced
+ * and published by the workspace `write` run.
+ *
+ * `applications/JimmyPaolini` and `applications/affirmations` have no `gate`
+ * target at all — a different fact from inheriting one. Inheriting means a
+ * gate that runs and passes against the workspace number; these two have no
+ * gate to pass. `JimmyPaolini` holds only a `package.json`, being the git
+ * submodule this repository leaves deliberately uninitialized everywhere (see
+ * `AGENTS.md`'s `### Git Worktrees`); `affirmations` is a Python Jupyter
+ * notebook application holding no `tsconfig.json`, and the plugin infers its
+ * targets only onto a project that holds one
+ * (`packages/callidescope-nx/src/modules/plugin/plugin.service.ts:353`).
+ *
  * Still exported although nothing imports it, because a rule needs a name to
  * be about, and narrowing it to the one limit a project may override was
  * considered and rejected — that leaves an object whose only member every
@@ -37,27 +110,49 @@ import {
  */
 export const workspaceLimits = {
   /**
-   * The deepest stack this repository currently has, so the gate starts
-   * green and only fails on a regression past today's worst.
+   * The default a project that declares nothing is judged by — and no longer
+   * this repository's ratchet.
    *
-   * A ratchet rather than a target. Set to the issue's suggested six, this
-   * fails on arrival with dozens of findings — which is a backlog, not a
-   * gate, and a red pipeline nobody can act on teaches people to ignore it.
-   * Lower it as the outliers come down; the distribution today runs
-   * 17, 17, 17, 16, 16, 16, then six at 15, four at 14, four at 13, five at
-   * 12, and a long tail at 11 and below.
+   * **The ratchet is thirty-eight numbers now**, one per project that declares
+   * its own, every one of them set from a boundary-tested run at its gate's own
+   * scope: it passes at the number written and fails one below it. That is what
+   * a ratchet is, and it is what this single number could never be. Seventeen
+   * is the deepest stack anywhere in the repository, so as one workspace-wide
+   * limit it gated the three projects near it and nothing else — `logger` at
+   * four had thirteen frames of free rein, which is to say no gate at all.
+   * `nx run callidescope-cli:start -- limits --config
+   * configuration/callidescope.config.ts` prints the whole set and the file
+   * each number is written in.
    *
-   * Came down from 19 by removing three frames that were not layers: a
-   * `FormsService` method that forwarded its arguments unchanged to the
-   * forms builder, a rung of lexico-ingestion's finite-verb cascade whose
-   * whole body re-ran three guards the rungs above had already applied, and
-   * a caelundas method that destructured six fields and passed the same six
-   * on. Nothing was merged that was doing work.
+   * **Lowering this number is not how the ratchet descends.** It reaches only
+   * the projects that declare none of their own, and those are the ones with
+   * no stack to gate — the four skill packages and `codependix-examples` hold
+   * barely a callable between them, and the conformetry leaf analyzers root
+   * nothing, so each measures zero however much it does. A number lowered here
+   * fires on the first stack any of them grows rather than on a regression, and
+   * the value it stands in for is exactly the one they cannot pick for
+   * themselves. To tighten a project, write the boundary-tested number in that
+   * project's own `callidescope.config.ts`; `## The projects that override
+   * nothing` above says which projects those are and why each one inherits.
    *
-   * Three stacks now sit at 17 and pin the ratchet: `LexicoIngestionCommand.run`,
-   * and callidescope-nx's `depthExecutor` and `breadthExecutor`. Sixteen is
-   * one frame from each, and neither one is obviously spare — lexico's
-   * remaining seventeen are a command, a recursion pair, a parse, and the
+   * The history is still worth keeping, because it is what the per-project
+   * numbers were measured against. Set to the issue's suggested six, one
+   * workspace limit failed on arrival with dozens of findings — a backlog
+   * rather than a gate, and a red pipeline nobody can act on teaches people to
+   * ignore it. It came down from 19 by removing three frames that were not
+   * layers: a `FormsService` method that forwarded its arguments unchanged to
+   * the forms builder, a rung of lexico-ingestion's finite-verb cascade whose
+   * whole body re-ran three guards the rungs above had already applied, and a
+   * caelundas method that destructured six fields and passed the same six on.
+   * Nothing was merged that was doing work.
+   *
+   * Three stacks sit at 17 and are why it stopped there:
+   * `LexicoIngestionCommand.run`, and callidescope-nx's `depthExecutor` and
+   * `breadthExecutor`. Both of those projects now write that number in a file
+   * of their own, where it gates the project owning the stack and nobody
+   * else — which is the whole difference this ticket made. Sixteen
+   * is one frame from each and neither frame is obviously spare — lexico's
+   * seventeen are a command, a recursion pair, a parse, and the
    * mood/voice/tense/number/person descent, each of which earns its frame.
    * Reaching 16 by collapsing one of those would buy the number and cost the
    * code, which is the trade this comment exists to refuse.
@@ -77,14 +172,17 @@ export const workspaceLimits = {
  * would fail every pull request whose call graph moved until the author reran
  * the writer, burying the depth findings the gate exists to surface.
  *
- * So the two are split at the flag rather than by leaving the destination unset.
- * `nx run codebase:callidescope:check` passes `--check depth`, which reads no
- * destination at all, so its exit code is purely the depth verdict.
+ * So the two are split at the mechanism rather than by leaving the destination
+ * unset. Depth — and, wherever a project declares `limits.maximumBreadth`,
+ * breadth too — is gated by the inferred per-project `gate` target, an
+ * executor of its own rather than a flag on this one, scoped by `nx affected`
+ * to whatever a change touched. It reads no destination at all, so its exit
+ * code is purely the depth (and, where judged, breadth) verdict.
  * `nx run codebase:callidescope:write` passes `--write`, and the release
- * workflow runs it on main. Two configurations carry that split with no third,
- * because the target hangs off nothing: `lint-codebase` does not depend on it,
- * so no run of it ever forwards `write` here, and the pull request names
- * `check` itself.
+ * workflow runs it on main. That is the only configuration this target
+ * carries now: `lint-codebase` does not depend on it, so no run of it ever
+ * forwards `write` here, and `defaultConfiguration` is `write` for the same
+ * reason — there is nothing else left to default to.
  *
  * Every rule and finding this configuration turns on has a worked example in
  * `packages/callidescope-examples`, which also demonstrates the opposite half

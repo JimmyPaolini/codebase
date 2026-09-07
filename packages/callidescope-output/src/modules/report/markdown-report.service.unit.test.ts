@@ -10,10 +10,20 @@ import {
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { MarkdownReportService } from "./markdown-report.service";
+import {
+  LIMIT_ABSENT_LABEL,
+  MARKDOWN_DEEP_STACKS_HEADING,
+  MARKDOWN_PROJECT_LIMITS_HEADING,
+  MARKDOWN_PROJECT_LIMITS_SUMMARY,
+  MARKDOWN_WIDE_CALLABLES_HEADING,
+  NO_LIMIT_LABEL,
+} from "./report.constants";
 
 import type {
   CallableBreadthReport,
   CallStack,
+  ProjectLimits,
+  ProjectLimitsLookup,
   ProjectReport,
 } from "@callidescope/configuration";
 
@@ -29,6 +39,14 @@ function callableBreadth(args: {
     id: args.name,
     location: buildSourceLocation({ filePath: `${args.name}.ts` }),
     signature: undefined,
+  };
+}
+
+/** A lookup whose only project is the one `report` names, holding `limits`. */
+function limitsLookup(limits: ProjectLimits): ProjectLimitsLookup {
+  return {
+    byProject: new Map([["example", limits]]),
+    workspace: limits,
   };
 }
 
@@ -111,6 +129,7 @@ describe(MarkdownReportService, () => {
   it("draws a mermaid diagram instead of a tree when asked to", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "diagram",
       report: report([stack({ entry: "Resolver.read" })]),
@@ -182,6 +201,7 @@ describe(MarkdownReportService, () => {
     expect(
       service.renderProjectSection({
         heading: "## 🔭 Callidescope",
+        limits: buildProjectLimitsLookup(),
         previewCount: 3,
         rendering: "tree",
         report: report([stack({ entry: "Resolver.read" })]),
@@ -193,6 +213,7 @@ describe(MarkdownReportService, () => {
     expect(
       service.renderProjectSection({
         heading: "## 🔭 Callidescope",
+        limits: buildProjectLimitsLookup(),
         previewCount: 3,
         rendering: "tree",
         report: report([]),
@@ -203,6 +224,7 @@ describe(MarkdownReportService, () => {
   it("reports a project's counts, spreads, breadth, and misplaced callables", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
       report: report([]),
@@ -217,6 +239,7 @@ describe(MarkdownReportService, () => {
   it("names the call-stacks section as depth, distinct from breadth", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
       report: report([]),
@@ -319,11 +342,178 @@ describe(MarkdownReportService, () => {
     ).toContain("None.");
   });
 
+  // 🚦 Gate findings
+
+  it("renders the two findings a gate weighs and nothing else", () => {
+    const rendered = service.renderFindings({
+      deepStacks: [],
+      previewCount: 3,
+      wideCallables: [],
+    });
+
+    expect(rendered).toBe(
+      [
+        "## Call stacks over the depth limit (0)",
+        "",
+        "None.",
+        "",
+        "## Callables over the breadth limit (0)",
+        "",
+        "None.",
+      ].join("\n"),
+    );
+  });
+
+  it("heads a gate's sections with the same headings a whole run uses", () => {
+    const deepStacks = [{ ...stack({ entry: "Resolver.read" }), limit: 1 }];
+    const run = service.renderRun({
+      description: undefined,
+      heading: "# 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
+      previewCount: 3,
+      rendering: "tree",
+      result: buildCallGraphResult({ deepStacks }),
+    });
+
+    // The headings live in one constant each, so a reader grepping a failed
+    // pipeline for a run's heading finds a gate's, and vice versa.
+    expect(run).toContain(`## ${MARKDOWN_DEEP_STACKS_HEADING} (1)`);
+    expect(
+      service.renderFindings({
+        deepStacks,
+        previewCount: 3,
+        wideCallables: [],
+      }),
+    ).toContain(`## ${MARKDOWN_DEEP_STACKS_HEADING} (1)`);
+  });
+
+  it("names a wide callable with the limit it broke and where it lives", () => {
+    const rendered = service.renderFindings({
+      deepStacks: [],
+      previewCount: 3,
+      wideCallables: [
+        {
+          breadth: 12,
+          callees: [],
+          displayName: "AlphaService.orchestrate",
+          id: "orchestrate",
+          limit: 8,
+          location: buildSourceLocation({ filePath: "alpha.service.ts" }),
+          signature: undefined,
+        },
+      ],
+    });
+
+    // The limit is per project, so it cannot be inferred from the run and has
+    // to be printed beside the breadth that broke it.
+    expect(rendered).toContain(`## ${MARKDOWN_WIDE_CALLABLES_HEADING} (1)`);
+    expect(rendered).toContain(
+      "- `AlphaService.orchestrate` — 12 direct callees, limit 8 (alpha.service.ts)",
+    );
+  });
+
+  it("prints a gate's deep stacks as trees rather than as a table", () => {
+    const rendered = service.renderFindings({
+      deepStacks: [{ ...stack({ entry: "Resolver.read" }), limit: 1 }],
+      previewCount: 3,
+      wideCallables: [],
+    });
+
+    expect(rendered).toContain("**1. `Resolver.read`** — depth 2");
+  });
+
+  // 🔭 A project's own limits
+
+  it("states both limits a project declared for itself, marked as its own", () => {
+    const rendered = service.renderProjectSection({
+      heading: "## 🔭 Callidescope",
+      limits: limitsLookup({
+        maximumBreadth: {
+          origin: "declared",
+          path: "packages/example/callidescope.config.ts",
+          value: 7,
+        },
+        maximumDepth: {
+          origin: "declared",
+          path: "packages/example/callidescope.config.ts",
+          value: 4,
+        },
+      }),
+      previewCount: 3,
+      rendering: "tree",
+      report: report([]),
+    });
+
+    expect(rendered).toContain(`### ${MARKDOWN_PROJECT_LIMITS_HEADING}`);
+    expect(rendered).toContain(MARKDOWN_PROJECT_LIMITS_SUMMARY);
+    expect(rendered).toContain("| `maximumDepth` | 4 | declared |");
+    expect(rendered).toContain("| `maximumBreadth` | 7 | declared |");
+  });
+
+  it("marks a limit the project took from the workspace as inherited", () => {
+    // The distinction the column exists for: a declared number is a decision
+    // about this project, an inherited one is the default nobody picked for it.
+    const rendered = service.renderProjectSection({
+      heading: "## 🔭 Callidescope",
+      limits: limitsLookup({
+        maximumBreadth: undefined,
+        maximumDepth: {
+          origin: "inherited",
+          path: "configuration/callidescope.config.ts",
+          value: 17,
+        },
+      }),
+      previewCount: 3,
+      rendering: "tree",
+      report: report([]),
+    });
+
+    expect(rendered).toContain("| `maximumDepth` | 17 | inherited |");
+  });
+
+  it("says a limit nothing anywhere declares is none rather than a number", () => {
+    // Breadth's usual case. Printing the workspace's number, or any number,
+    // would claim a gate this project does not have.
+    const rendered = service.renderProjectSection({
+      heading: "## 🔭 Callidescope",
+      limits: limitsLookup({
+        maximumBreadth: undefined,
+        maximumDepth: { origin: "declared", path: undefined, value: 4 },
+      }),
+      previewCount: 3,
+      rendering: "tree",
+      report: report([]),
+    });
+
+    expect(rendered).toContain(
+      `| \`maximumBreadth\` | ${NO_LIMIT_LABEL} | ${LIMIT_ABSENT_LABEL} |`,
+    );
+    expect(rendered).toContain("| `maximumDepth` | 4 | declared |");
+  });
+
+  it("reads the row for the project the section is about", () => {
+    // Through the same `limitsFor` the index and the gate read, so a project's
+    // own block cannot disagree with the workspace's view of that project.
+    const rendered = service.renderProjectSection({
+      heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup({
+        byProject: { example: 3 },
+        maximumDepth: 17,
+      }),
+      previewCount: 3,
+      rendering: "tree",
+      report: report([]),
+    });
+
+    expect(rendered).toContain("| `maximumDepth` | 3 | declared |");
+  });
+
   // 📊 Finding tables
 
   it("gives a spread finding a row naming what it calls and where it lives", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
       report: {
@@ -353,6 +543,7 @@ describe(MarkdownReportService, () => {
   it("gives a misplaced finding a row naming both modules and the split", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
       report: {
@@ -380,6 +571,7 @@ describe(MarkdownReportService, () => {
   it("gives a wide callable a row naming its breadth and direct callees", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
       report: {
@@ -412,6 +604,7 @@ describe(MarkdownReportService, () => {
   it("shows every breadth row openly while they fit in the preview", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
       report: {
@@ -430,6 +623,7 @@ describe(MarkdownReportService, () => {
   it("hides the breadth rows past the preview behind a disclosure", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 1,
       rendering: "tree",
       report: {
@@ -449,6 +643,7 @@ describe(MarkdownReportService, () => {
   it("still publishes the hidden breadth rows in full", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
+      limits: buildProjectLimitsLookup(),
       previewCount: 1,
       rendering: "tree",
       report: {

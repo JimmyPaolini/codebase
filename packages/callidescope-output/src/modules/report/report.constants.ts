@@ -88,6 +88,19 @@ export const MARKDOWN_MISPLACED_HEADER =
 export const MARKDOWN_WIDE_CALLABLES_HEADER =
   "| Callable | Breadth | Calls directly | Location |\n| --- | --- | --- | --- |";
 
+/**
+ * Heading over the call stacks that ran deeper than their project allows.
+ *
+ * A constant rather than a literal because two renderings write it — the
+ * whole-run report, and the findings-only rendering a gate prints — and a
+ * reader who greps a failed pipeline for one of them must find the other.
+ */
+export const MARKDOWN_DEEP_STACKS_HEADING = "Call stacks over the depth limit";
+
+/** Heading over the callables that called more directly than allowed. */
+export const MARKDOWN_WIDE_CALLABLES_HEADING =
+  "Callables over the breadth limit";
+
 /** Stands in for the workspace root when it is itself a traced project. */
 export const ROOT_PROJECT_LABEL = ".";
 
@@ -98,6 +111,57 @@ export const MARKDOWN_PROJECT_INDEX_HEADER =
 /** Header of the depth-headroom scoreboard. */
 export const MARKDOWN_HEADROOM_HEADER =
   "| Headroom | Projects |\n| --- | --- |";
+
+/** Heading over the limits one project's own section is judged against. */
+export const MARKDOWN_PROJECT_LIMITS_HEADING = "Limits";
+
+/**
+ * Header of a project's own resolved-limits table.
+ *
+ * Three columns rather than the `limits` command's four: that listing spans
+ * every project and has to name the file each number came from, where here the
+ * origin already settles it. `declared` is the `callidescope.config.ts` beside
+ * this very readme, and `inherited` is whatever the run supplies — so a fourth
+ * column would repeat the third, and would have to carry an absolute path to
+ * do it, which is not a thing a committed file can hold.
+ */
+export const MARKDOWN_PROJECT_LIMITS_HEADER =
+  "| Limit | Value | Origin |\n| --- | --- | --- |";
+
+/**
+ * States what the two origins mean, so the table needs no second reading.
+ *
+ * Worded as the `limits` command words it, because the two answer the same
+ * question at two scopes — one project's block and the whole set — and a
+ * reader who learns the vocabulary in one should not have to learn it again in
+ * the other. "The run supplies" rather than "the workspace declares", since a
+ * run with no configuration file of its own still supplies a depth limit.
+ */
+export const MARKDOWN_PROJECT_LIMITS_SUMMARY =
+  "What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.";
+
+/**
+ * The two gated limits, in the order a project's block prints them.
+ *
+ * Depth first because depth is judged always and breadth only where a limit
+ * exists, so the first row is the one every project has an answer for.
+ */
+export const MARKDOWN_PROJECT_LIMIT_NAMES = [
+  "maximumDepth",
+  "maximumBreadth",
+] as const;
+
+/** Stands in for a cell a limit left empty, so no cell is ever blank. */
+export const LIMIT_ABSENT_LABEL = "—";
+
+/**
+ * What a value cell says when nothing anywhere declares the limit.
+ *
+ * Breadth has no workspace default and no tool default, so a project that
+ * declares none is gated by nothing at all — and printing a number here, the
+ * workspace's or an invented one, would say the opposite.
+ */
+export const NO_LIMIT_LABEL = "none";
 
 /** Bucket holding the projects whose deepest stack broke their own limit. */
 export const HEADROOM_BUCKET_OVER_LIMIT = "over limit";

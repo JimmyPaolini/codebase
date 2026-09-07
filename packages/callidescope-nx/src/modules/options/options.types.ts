@@ -8,6 +8,8 @@ export interface CallidescopePluginOptions {
   readonly configurationPath: string;
   /** Name of the inferred per-project depth-lookup target. */
   readonly depthTargetName: string;
+  /** Name of the inferred per-project gate target. */
+  readonly gateTargetName: string;
   /** Name of the inferred per-project trace target. */
   readonly traceTargetName: string;
 }

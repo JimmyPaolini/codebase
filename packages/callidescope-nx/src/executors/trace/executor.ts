@@ -44,6 +44,7 @@ export default async function traceExecutor(
       : { configurationPath: options.configurationPath }),
     directories: scope.directories,
     format: optionsService.readFormat(options.format),
+    judgedProjectNames: scope.selectedDirectories,
     workspaceRoot: context.root,
   });
 

@@ -262,6 +262,7 @@ graph LR
   file_src_modules_report_markdown_report_service_ts --> file_src_modules_report_report_types_ts
   file_src_modules_report_markdown_report_service_ts --> file_src_modules_report_workspace_report_service_ts
   file_src_modules_report_markdown_report_service_unit_test_ts --> file_src_modules_report_markdown_report_service_ts
+  file_src_modules_report_markdown_report_service_unit_test_ts --> file_src_modules_report_report_constants_ts
   file_src_modules_report_markdown_report_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_report_markdown_report_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_report_mermaid_report_service_ts --> file_src_modules_report_report_constants_ts
@@ -278,6 +279,7 @@ graph LR
   file_src_modules_report_report_service_unit_test_ts --> file_src_modules_report_report_service_ts
   file_src_modules_report_report_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_report_report_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_report_report_types_ts --> file_src_modules_project_reports_project_reports_types_ts
   file_src_modules_report_workspace_report_service_ts --> file_src_modules_report_report_constants_ts
   file_src_modules_report_workspace_report_service_ts --> file_src_modules_report_report_types_ts
   file_src_modules_report_workspace_report_service_unit_test_ts --> file_src_modules_report_report_constants_ts

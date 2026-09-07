@@ -86,15 +86,22 @@ const config = {
   // instances need not match a template-pattern glob to have drifted, so it
   // cannot be scoped to `affected`.
 
-  // `callidescope` and each derivation synchronization are named alongside
-  // `lint-codebase` rather than reached through its `dependsOn`, for the
-  // reason the Lint Codebase workflow names them: callidescope also publishes
-  // a report on the default branch, and Nx forwards an explicit configuration
-  // down `dependsOn`, so an edge there would let `lint-codebase
-  // --configuration=write` publish from a branch. Naming them in this same
-  // invocation is what keeps a commit gating call-stack depth and derivation
-  // drift; a second `nx affected` call would have cost another project graph
-  // build for nothing.
+  // Each derivation synchronization is named alongside `lint-codebase` rather
+  // than reached through its `dependsOn`, for the reason the Lint Codebase
+  // workflow names them: each also publishes on the default branch, and Nx
+  // forwards an explicit configuration down `dependsOn`, so an edge there
+  // would let `lint-codebase --configuration=write` publish from a branch.
+
+  // `gate` is named the same way, but for a different reason: the callidescope
+  // Nx plugin infers it with no configuration at all, so it has nothing for
+  // `dependsOn` to forward in the first place. It stays a sibling target
+  // because `nx affected` scopes it to the projects a commit actually
+  // touched, the same way it scopes `lint-codebase` itself — a commit that
+  // deepens one project's call stacks fails that project's own task, which
+  // the workspace-wide `callidescope --check depth` run this replaced never
+  // named. Naming both in this same invocation is what keeps a commit gating
+  // call-stack depth and derivation drift; a second `nx affected` call would
+  // have cost another project graph build for nothing.
 
   // There is no aggregate `synchronize` target to name instead: each
   // synchronization is its own Nx target on the `synchronization` project, run
@@ -111,7 +118,7 @@ const config = {
   // without a shell, so `NX_DAEMON=false nx ...` would be parsed as the
   // executable name.
   "*": (files: string[]): string[] => [
-    `pnpm exec nx affected --target=lint-codebase --target=callidescope --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
+    `pnpm exec nx affected --target=lint-codebase --target=gate --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
     "pnpm exec nx run-many --targets=conformetry-validate --outputStyle=static",
   ],
 };

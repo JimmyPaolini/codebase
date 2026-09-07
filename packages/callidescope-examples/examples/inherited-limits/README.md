@@ -35,28 +35,51 @@ limits both unnecessary and — since such an object carries workspace-only limi
 
 This project shows the same rule with nothing on its side of it. It inherits
 `maximumDepth` as `6`, and it inherits `maximumBreadth` as nothing at all,
-because no configuration this run reads declares one. A limit nobody sets stays
-unset: it is not defaulted to the depth limit, and not invented. Breadth
-therefore gates nothing here, and
-[`gated-leaf`](../gated-leaf/README.md) — the one project in scope that does
-declare a breadth limit — is the only reason `--check breadth` can run at all.
+because the configuration this run is handed declares none and inheritance has
+nowhere else to look — a project inherits from the run, never from a sibling
+that happened to declare one. A limit nobody sets stays unset: it is not
+defaulted to the depth limit, and not invented. Breadth therefore gates nothing
+here. `--check breadth` still runs over this report, because some project in
+scope has to declare a limit before it can and three do:
+[`gated-leaf`](../gated-leaf/README.md) next door, and two of the real packages
+the closure reaches.
 
-## Three real packages inherit the same number, and one of them suffers for it
+## Three real packages inherited this same number, and no longer do
+
+Which is this example's argument having been acted on — the ratchet arriving —
+rather than an argument it has stopped needing to make. This fixture is now the
+only project in the run whose depth limit is a number somebody else wrote.
 
 This run reaches `packages/callidescope-configuration`,
 `packages/codometer-configuration`, and `packages/logger` through its dependency
-closure, and none of the three carries a configuration of its own either. They
-are held to the same six, and six was chosen to make deliberately deep fixtures
-into findings.
+closure. All three once carried no configuration at all and were held to the
+same six — and all three now carry a `callidescope.config.ts` of their own,
+declaring what they actually measure: six frames and eight direct callees,
+eight frames and seven callees, and four frames. Two real breadth limits and
+three real depth limits, where a moment ago there were none.
 
-So `ConfigurationService.loadConfiguration` in `packages/codometer-configuration`
-is reported at eight frames against a limit of six. It is ordinary code that has
-done nothing wrong, and the report is not lying — it really is eight frames
-against the only limit anything told this run about that package. **Do not
-restructure it to quiet this run.** The answer is the one this whole set of
-examples is about: a `callidescope.config.ts` in that package, saying what that
-package should be held to. Until then, the workspace default is the honest
-answer to a question nobody there has answered.
+The clearest thing that bought is a finding that stopped existing.
+`ConfigurationService.loadConfiguration` in `packages/codometer-configuration`
+heads eight frames. Held to the six this run defaults to, that was a finding
+about ordinary code which had done nothing wrong; held to the eight that package
+now declares for itself, it is silent. Nothing in the code moved — only which
+file the number was written in, which is the same sentence
+[`project-depth-limit`](../project-depth-limit/README.md) ends on, arrived at
+from the other direction.
+
+One dependency finding is left, and it is not the same phenomenon:
+`LoggerService.log` is five frames here against the four `packages/logger`
+declares. That package is judged at four because the whole-workspace run ignores
+calls to `LoggerService.*` and measures four; this run deliberately does not
+ignore them and measures five. So the same declared number is a pass there and a
+finding here, on purpose, and
+[`packages/logger/callidescope.config.ts`](../../../logger/callidescope.config.ts)
+says so beside it. **Do not restructure the logger to quiet this run**, and do
+not raise its four — that would buy headroom on the one gate that matters to
+tidy a fixture package.
+
+What is left inheriting is this fixture, which declares nothing because
+declaring nothing is what it is for.
 
 ## Next
 
@@ -77,6 +100,15 @@ Call stacks traced through `packages/callidescope-examples/examples/inherited-li
 | Deepest stack | 7 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
+
+### Limits
+
+What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+
+| Limit | Value | Origin |
+| --- | --- | --- |
+| `maximumDepth` | 6 | inherited |
+| `maximumBreadth` | none | — |
 
 ### Call stacks (depth)
 

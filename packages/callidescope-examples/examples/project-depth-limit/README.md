@@ -12,16 +12,18 @@ nx run callidescope-examples:examples
 Then read `deepStacks` in [`output/report.json`](../../output/report.json). Every
 entry carries the `limit` it was judged against, and the entries do not agree:
 `ProjectDepthLimitService.judge` says `"limit": 5`, and
-`ConfigurationService.loadConfiguration` in `packages/codometer-configuration`
-says `"limit": 6`. One run, two numbers, because the depth limit is a fact about
-a project rather than about a run.
+`InheritedLimitsService.request` in
+[`inherited-limits`](../inherited-limits/README.md) says `"limit": 6`. One run,
+two numbers, because the depth limit is a fact about a project rather than about
+a run.
 
 `ProjectDepthLimitService.judge` heads a chain of six ordinary frames. Six is
 what this package would inherit: `limits.maximumDepth` is `6` in
 [`callidescope.workspace.config.ts`](../../callidescope.workspace.config.ts),
 and every project in this run that declares nothing of its own is judged by it —
-the three dependency packages the closure reaches, and
-[`inherited-limits`](../inherited-limits/README.md). Six frames pass six.
+which, now that the three dependency packages the closure reaches all declare
+their own, is [`inherited-limits`](../inherited-limits/README.md) and nothing
+else. Six frames pass six.
 
 This package declares five for itself, in the
 [`callidescope.config.ts`](../../callidescope.config.ts) at its root, so the

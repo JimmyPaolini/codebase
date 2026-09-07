@@ -21,6 +21,7 @@ export {
   CALLIDESCOPE_NX_PLUGIN_NAME,
   DEFAULT_BREADTH_TARGET_NAME,
   DEFAULT_DEPTH_TARGET_NAME,
+  DEFAULT_GATE_TARGET_NAME,
   DEFAULT_TRACE_TARGET_NAME,
 } from "./modules/options/options.constants";
 export { OptionsModule } from "./modules/options/options.module";
@@ -47,7 +48,7 @@ export type {
 } from "./modules/projects/projects.types";
 
 /**
- * Infers a trace target onto every project holding a `tsconfig.json`.
+ * Infers this plugin's targets onto every project holding a `tsconfig.json`.
  *
  * Nx hands this every `project.json` at once, which is why inference reads the
  * plugin options a single time inside `inferTargets` rather than once per
@@ -61,7 +62,7 @@ const createNodes: CreateNodes = [
     context: CreateNodesContext,
   ): Promise<CreateNodesResultArray> => {
     const pluginService = await resolvePluginService();
-    const targetsByProjectRoot = pluginService.inferTargets({
+    const targetsByProjectRoot = await pluginService.inferTargets({
       options,
       projectConfigurationFiles,
       workspaceRoot: context.workspaceRoot,

@@ -1,6 +1,6 @@
 ---
 name: callidescope-triage
-description: Act on a callidescope run that failed — a depth gate that reported a stack over the limit, a breadth gate, a stale committed report, a module-spread or possibly-misplaced finding, a project whose tsconfig could not be read, a run that traced nothing, a rejected command line, a project's own callidescope.config.ts refused for a workspace-only field or an unresolved entry-point address, or a configuration refused before anything was traced. Use when callidescope exits non-zero, when a call stack got deeper in a change, when a committed report or diagram disagrees with a fresh run, when a depth is printed as a floor rather than a number, when a declared entryPoints.addresses entry resolves to nothing or to more than one declaration, when --check breadth is refused for want of a declared limit, or before reaching for maximumDepth to make a failing check pass.
+description: Act on a callidescope run that failed — a per-project gate reporting a stack over that project's limit, a breadth gate, a gate that read none of its project's own files, a stale committed report, a module-spread or possibly-misplaced finding, an unreadable tsconfig, a run that traced nothing, or a rejected command line or configuration. Use when callidescope or an inferred gate target exits non-zero, when a stack got deeper in a change, when deciding whether a failing gate is a code fix or a limit fix, when picking or moving a project's own maximumDepth or maximumBreadth, when a printed maximumDepth disagrees with the number a gate judged, when a committed report disagrees with a fresh run, when a declared entry-point address resolves to nothing or to several, when --check breadth is refused for want of a declared limit, or before reaching for maximumDepth to make a failing check pass.
 license: MIT
 ---
 
@@ -14,6 +14,7 @@ occurred is most of the work. Separate them first:
 | `🚨 [DEPTH n > limit]` | A **finding** about the code. Fix the layering |
 | A breadth row over the limit | A **finding**. Split the callable |
 | `A configured destination is stale` | **Drift**. Re-run `--write` |
+| `## Read nothing of its own (0 files)` | A gate **judged a project whose own files it never read**. Its verdict means nothing |
 | `🔭 Rejected a project it could not read` | A `tsconfig.json` **is missing or did not parse**. The trace stopped there |
 | `🔭 Traced nothing` | The run **saw no code at all**. Nothing below it means anything |
 | `🔭 Rejected the command line` | A **mistake** in the flags. Nothing was traced |
@@ -35,6 +36,18 @@ A stack ran deeper than `limits.maximumDepth`. **The change that made it longer
 is the change that fixes it** — that is the whole reason depth is the gate and
 staleness is not.
 
+**A failed gate is about one project.** Limits resolve per project, and a
+project's gate judges only the findings that project owns — a stack is charged
+to the project owning its **root**, and a dependency's breach belongs to that
+dependency's own gate. So there are exactly two places the fix can go: that
+project's code, or that project's own `callidescope.config.ts`. Read the second
+option with the whole of the section below in mind before taking it.
+
+In an Nx workspace this arrives as a failing `gate` target rather than as a
+whole-workspace `--check depth`, and the task name says which project to open.
+Elsewhere, the finding's own `limit` says which number it was weighed against,
+and `callidescope limits` says which file that number is written in.
+
 Read the printed stack before doing anything. The frames carry each callable's
 signature and the one-line summary of its documentation, and those summaries
 are how you tell the two cases apart:
@@ -52,9 +65,31 @@ are how you tell the two cases apart:
 **Raising `maximumDepth` is not a fix.** The limit describes the shape the
 repository wants; moving it to fit today's worst stack means the gate stops
 gating, and every later stack gets a free pass to that new number. If the limit
-is genuinely wrong for the repository, change it as its own decision, on its
-own, with the reasoning written down — not as the thing that unblocks a pull
-request.
+is genuinely wrong for the project, change it as its own decision, on its own,
+with the reasoning written down — not as the thing that unblocks a pull request.
+Raising a **project's** number is the smaller version of the same mistake, not
+an exemption from it: it is exactly the one number that was boundary-tested to
+sit one frame above what that project measured, so raising it by one converts a
+gate into headroom for the one project the finding is about.
+
+### The summary's depth is not the project's depth
+
+The number to take is the one a **verdict** gives you, and never the one a
+summary line prints. `readMaximumDepth` reduces over the whole of a run's
+measurement — the entire dependency-widened trace — so the `maximumDepth` in a
+`🔭 Finished an analysis` log line is the deepest stack anywhere the run
+reached, dependencies included. The per-project scoping that decides a gate's
+verdict is a different code path entirely.
+
+The two routinely disagree by several frames. `tools/synchronization`'s scoped
+run prints `maximumDepth:13`, while its gate passes at the declared 10 and
+fails at 9 — ten is the number that project owns, and thirteen belongs to a
+dependency it was traced alongside.
+
+So do not set a project's limit from that line. **Boundary-test instead**: write
+a candidate, run the gate, and let a failure name the real number. A limit worth
+having passes at the number written and fails at one below it, and the only
+thing that can tell you where that boundary is, is a gate verdict.
 
 ### `≥ n` rather than `n`
 
@@ -88,13 +123,44 @@ runs — do not try to "fix" the recursion because callidescope mentioned it.
 
 A callable calls more callables directly than `limits.maximumBreadth`. Unlike
 depth, this one has no default limit at all, so a breadth failure only ever
-happens in a repository that chose a number.
+happens in a **project** that chose a number — no workspace can pick one on a
+project's behalf and have it gate.
 
 The fix is to **split the callable along the responsibilities its callees
 already group into**, not to inline anything. Run the `breadth` command against
 the callable's address to see the direct callees and callers side by side
 before deciding where the seam goes — the `callidescope-trace` skill covers
 reading that.
+
+## A gate that read nothing of its own
+
+```text
+## Read nothing of its own (0 files)
+
+This run judged a project whose own code it never read:
+
+- `packages/thing`
+```
+
+The run itself was not empty — the dependencies it traced were read — so this is
+narrower than `🔭 Traced nothing`: only the judged project's own sources went
+missing. A gate fails on it and a `trace` prints it and passes, because a gate
+that never looked cannot tell a clean project from an unread one, where a trace
+decides nothing and is a report for a reader to open.
+
+Two things to check, in this order:
+
+1. **An `exclude` that over-matched.** The project's own `exclude` globs are
+   anchored to its root, so one written workspace-relative matches nothing, and
+   one written too broadly matches everything. Check the run's `exclude` and
+   `excludeFrom` for a pattern covering the whole project as well.
+2. **A project that no longer holds sources its `tsconfig.json` includes.** A
+   moved or emptied source root reads exactly the same way.
+
+**Do not silence it by dropping the gate.** A project the workspace
+configuration excludes is denied a gate deliberately and never reaches this
+message; a project that still has one is expected to have code, and a green
+verdict over nothing is the failure this exists to prevent.
 
 ## A module-spread row
 

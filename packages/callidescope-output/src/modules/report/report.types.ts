@@ -1,5 +1,6 @@
 // 🏷️ Types
 
+import type { OwnedFindings } from "../project-reports/project-reports.types";
 import type {
   CallableId,
   CallGraphResult,
@@ -48,6 +49,21 @@ export interface ProjectIndexRow {
   readonly widest: number;
 }
 
+/**
+ * Arguments for rendering only the findings a gate weighs.
+ *
+ * No `rendering`, unlike `RenderRunArguments`: a gate's product is the list of
+ * things to go and fix, and a diagram of them is not that list.
+ *
+ * The findings themselves rather than the run that produced them, also unlike
+ * `RenderRunArguments`: a scoped gate judges fewer findings than its trace
+ * measured, and a renderer handed the whole run would print the ones it was
+ * not judged on.
+ */
+export interface RenderFindingsArguments extends OwnedFindings {
+  readonly previewCount: number;
+}
+
 /** Arguments for rendering the per-project index and its scoreboard. */
 export interface RenderProjectIndexArguments {
   readonly limits: ProjectLimitsLookup;
@@ -57,6 +73,14 @@ export interface RenderProjectIndexArguments {
 /** Arguments for rendering one project's section. */
 export interface RenderProjectSectionArguments {
   readonly heading: string;
+  /**
+   * The lookup the whole run resolved, rather than this project's two numbers.
+   *
+   * The renderer reads its own row out of it through the same `limitsFor` the
+   * index and the gate read, so a project's block and the workspace's view of
+   * that project cannot come to disagree about which limit applied.
+   */
+  readonly limits: ProjectLimitsLookup;
   readonly previewCount: number;
   readonly rendering: StackRendering;
   readonly report: ProjectReport;

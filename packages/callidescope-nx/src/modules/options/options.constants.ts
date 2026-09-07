@@ -20,6 +20,16 @@ export const DEFAULT_DEPTH_TARGET_NAME = "depth";
 export const DEFAULT_BREADTH_TARGET_NAME = "breadth";
 
 /**
+ * Name of the inferred per-project gate target.
+ *
+ * Named after what it decides rather than after what it measures. `trace`,
+ * `depth`, and `breadth` all print something a reader asked for; this one is
+ * the target here a pipeline is meant to read an exit code from, so it says
+ * `gate`.
+ */
+export const DEFAULT_GATE_TARGET_NAME = "gate";
+
+/**
  * Where the callidescope configuration lives, when the registration names no
  * path.
  *

@@ -2,6 +2,7 @@
 
 import type { PLUGIN_CONTEXT_GLOBAL_KEY } from "./plugin.constants";
 import type { CallidescopeOutputFormat } from "@callidescope/configuration";
+import type { OwnedFindings } from "@callidescope/output";
 import type { INestApplicationContext } from "@nestjs/common";
 
 /** The scoping options every executor in this plugin accepts. */
@@ -46,6 +47,15 @@ export interface ResolvedTraceScope {
   readonly knownTags: string[];
   /** Every project the selection reached, including pulled-in dependencies. */
   readonly projectNames: string[];
+  /**
+   * Directories of the projects the selection itself named, before the
+   * dependency widening.
+   *
+   * What a verdict covers, where `directories` is what a trace reads: a
+   * dependency pulled in to keep a stack from stopping at a package boundary
+   * is measured by this run and judged by its own.
+   */
+  readonly selectedDirectories: string[];
   /** Names the workspace does not have. */
   readonly unknownNames: string[];
   /** Tags no project in the workspace carries. */
@@ -62,6 +72,14 @@ export interface ResolveTraceScopeArguments {
   readonly withDependencies: boolean;
 }
 
+/**
+ * Arguments for gating one resolved selection against its limits.
+ *
+ * The trace's arguments without `format`: a gate's output is the findings that
+ * decided its exit code, so there is no second rendering of it to ask for.
+ */
+export type RunGateArguments = Omit<RunTraceArguments, "format">;
+
 /** Arguments for tracing one resolved selection. */
 export interface RunTraceArguments {
   /** Resolved from this plugin's `nx.json` registration when omitted. */
@@ -69,6 +87,19 @@ export interface RunTraceArguments {
   readonly directories: readonly string[];
   /** Overrides the configured format. The configured one when omitted. */
   readonly format?: CallidescopeOutputFormat | undefined;
+  /**
+   * The projects whose findings decide the verdict.
+   *
+   * A subset of `directories`, which is what gets traced: a run reaches into
+   * the dependencies of what it was pointed at, and a finding there belongs
+   * to the task named after the project that owns it.
+   *
+   * Workspace-relative roots, because that is what callidescope calls a
+   * project name — `WorkspaceService.discoverProjects` names each project by
+   * the directory holding its `tsconfig.json`, and a report's `projectName`
+   * is that same string. An Nx project name would match nothing.
+   */
+  readonly judgedProjectNames: readonly string[];
   readonly workspaceRoot: string;
 }
 
@@ -76,4 +107,34 @@ export interface RunTraceArguments {
 export interface RunTraceResult {
   readonly ok: boolean;
   readonly report: string;
+}
+
+/**
+ * What one predicate decided about a traced result.
+ *
+ * The findings come back with the verdict so the rendering shows what was
+ * judged rather than what was measured — the two differ for every scoped run.
+ *
+ * `reason` carries the rendering a verdict owes the reader when the findings
+ * cannot explain it themselves — a run that read nothing has no finding to
+ * show, and a bare red task there is the guessing game this rule exists to
+ * end.
+ */
+export interface RunVerdict {
+  readonly findings: OwnedFindings;
+  /** Whether every rule both targets share was cleared. */
+  readonly ok: boolean;
+  readonly reason: string | undefined;
+  /**
+   * Judged projects none of whose own files were read.
+   *
+   * Reported beside `ok` rather than folded into it, because this is the one
+   * rule the two targets act on differently: a `gate` fails on it, a `trace`
+   * prints it and passes. Every project the workspace configuration excludes
+   * reads nothing of its own and keeps its trace while losing its gate, so a
+   * trace failing here would be permanently red for being configured as asked.
+   * The rule itself still lives in one place — `PluginService.judge` — and only
+   * the consequence is the caller's.
+   */
+  readonly unreadProjectNames: readonly string[];
 }

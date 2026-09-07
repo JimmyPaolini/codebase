@@ -1,6 +1,6 @@
 ---
 name: callidescope-trace
-description: Run callidescope and read what it printed — a whole-workspace trace, or the depth and breadth commands against one or more callables, each addressed as file#qualified-name. Use when running callidescope or npx callidescope, when reading a call stack, a module-spread row, a breadth row, or a possibly-misplaced row, when a depth printed as "≥ n" needs interpreting, when reading a committed markdown report, mermaid diagram, or JSON report, when a run narrowed with --directories reports a frame, a stack, or a project the run was never pointed at, when a depth moved without an edit that explains it, or when asking who calls this, what does it call, what would this rename touch, and where should this callable be split before a refactor starts.
+description: Run callidescope and read what it printed — a whole-workspace trace, one project's gate verdict, or the depth and breadth commands against one or more callables, each addressed as file#qualified-name. Use when running callidescope or npx callidescope, when reading a call stack, a module-spread row, a breadth row, or a possibly-misplaced row, when reading what a per-project gate or trace target printed, when reading a project readme's Limits table and deciding whether a limit was declared or inherited, when a depth printed as "≥ n" needs interpreting, when reading a committed markdown report, mermaid diagram, or JSON report, when a run narrowed with --directories reports a frame, a stack, or a project the run was never pointed at, when a depth moved without an edit that explains it, or when asking who calls this, what does it call, what would this rename touch, and where should this callable be split before a refactor starts.
 license: MIT
 ---
 
@@ -42,6 +42,12 @@ a callable _personally orchestrating_ unrelated concerns.
 **Breadth.** How many callables one callable calls directly. Reported always;
 gated only when `limits.maximumBreadth` is set, which is the one limit with no
 default.
+
+**Each finding carries the limit it was weighed against**, because that limit is
+a fact about the project owning the stack's root rather than about the run. One
+report routinely holds several different numbers, and two identical stacks in
+two projects can be a finding in one and silent in the other with nothing about
+the code differing.
 
 **Possibly misplaced callables.** A callable whose callers nearly all sit in
 one _other_ module of the same project. The output is a concrete move.
@@ -86,6 +92,69 @@ are stadiums and everything else boxes, shape rather than color because the
 diagram is read in whichever theme the reader has. A diagram stops at 300
 callables, drops whole stacks rather than trimming so it never contains an edge
 into something it did not draw, and says how many it left out.
+
+## Reading a per-project verdict
+
+In a workspace using `@callidescope/nx`, the thing a branch actually runs is one
+project's `gate`, and what it prints is **not** a smaller report. It prints the
+two findings it weighed and nothing else:
+
+```text
+## Call stacks over the depth limit (1)
+...the stack, as a tree...
+
+## Callables over the breadth limit (1)
+- `GatedLeafService.read` — 3 direct callees, limit 2 (…/gated-leaf.ts)
+```
+
+Four things to hold on to when reading one:
+
+- **The findings are the judged project's own.** A gate traces its project
+  together with that project's Nx dependencies, and then judges only what the
+  project it is named after owns. A dependency's breach is that dependency's own
+  gate's business — so a gate that failed is telling you about one project, and
+  the fix is that project's code or that project's limit.
+- **A gate's exit code is the verdict and nothing else.** It reads no
+  destination, so a failing gate has changed no committed file, and a passing
+  one has published nothing.
+- **The summary's `Deepest stack` is not the number the verdict used.** A
+  scoped run's counts describe the whole trace, dependency closure included, so
+  the deepest stack it reports is routinely deeper than anything the judged
+  project owns. Take the number a verdict gives you, never the one a summary
+  line prints. The same caution applies to a `🔭 Finished an analysis` log
+  line — see the `callidescope-triage` skill.
+- **`## Read nothing of its own (0 files)` is a failure about the run, not the
+  code.** The gate judged a project whose own sources it never opened, so a
+  green verdict would mean only that it never looked. The `trace` target prints
+  the same block and passes; the gate is the one that fails on it.
+
+The sibling `trace` target prints the whole report instead — the summary, a
+`Projects` index with one row per project against **its own** limit, and a
+`Depth headroom` scoreboard. Reach for `trace` to understand a project, and
+read a `gate` to understand why a pipeline is red.
+
+## Reading a committed project block
+
+Every traced project's own readme carries a `## 🔭 Callidescope` section, and
+its `### Limits` table is what says which numbers that project is held to:
+
+```text
+| Limit | Value | Origin |
+| --- | --- | --- |
+| `maximumDepth` | 4 | declared |
+| `maximumBreadth` | none | — |
+```
+
+- **`declared`** means the number is written in that project's own
+  `callidescope.config.ts`, beside the readme.
+- **`inherited`** means the run supplied it, because the project named none.
+  Those are the rows where a ratchet has not started.
+- **`none`** means nothing anywhere declares the limit, so that dimension is
+  gated by nothing at all — breadth's usual state, since it has no default at
+  any level.
+
+Read the `Deepest stack` row of the summary above it against the depth limit
+here: the two together are the whole of what that project's gate decides.
 
 ## Addressing one callable
 

@@ -5,7 +5,7 @@
 | Measure | Value |
 | --- | --- |
 | Callables | 230 |
-| Files | 81 |
+| Files | 84 |
 | Calls traced | 200 |
 | Call stacks | 76 |
 | Deepest stack | 8 |
@@ -17,19 +17,19 @@
 | Project | Deepest | Limit | Headroom | Widest | Spread | Misplaced |
 | --- | --- | --- | --- | --- | --- | --- |
 | `packages/callidescope-examples` | 8 | 5 declared | -3 | 5 | 1 | 1 |
-| `packages/codometer-configuration` | 8 | 6 inherited | -2 | 7 | 0 | 0 |
 | `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 declared | -1 | 3 | 0 | 0 |
 | `packages/callidescope-examples/examples/inherited-limits` | 7 | 6 inherited | -1 | 1 | 0 | 0 |
-| `packages/callidescope-configuration` | 6 | 6 inherited | 0 | 8 | 0 | 0 |
-| `packages/logger` | 5 | 6 inherited | 1 | 2 | 0 | 0 |
+| `packages/logger` | 5 | 4 declared | -1 | 2 | 0 | 0 |
+| `packages/callidescope-configuration` | 6 | 6 declared | 0 | 8 | 0 | 0 |
+| `packages/codometer-configuration` | 8 | 8 declared | 0 | 7 | 0 | 0 |
 
 ## Depth headroom
 
 | Headroom | Projects |
 | --- | --- |
 | over limit | 4 |
-| 0 — at limit | 1 |
-| 1 | 1 |
+| 0 — at limit | 2 |
+| 1 | 0 |
 | 2–3 | 0 |
 | 4+ | 0 |
 | no stacks | 0 |
@@ -61,34 +61,31 @@ flowchart LR
   n20["ForwardingStackService.perform"]
   n21["ForwardingStackService.relay"]
   n22["ForwardingStackService.finish"]
-  n23(["ConfigurationService.loadConfiguration"])
-  n24["ConfigurationService.loadConfigurationFile"]
-  n25["ConfigurationService.resolveConfiguration"]
-  n26["ConfigurationService.resolveLimits"]
-  n27["ConfigurationService.map(…)"]
-  n28["ConfigurationService.parseLimitValue"]
-  n29["ConfigurationService.parseLimitValueText"]
-  n30["InvalidLimitValueError.constructor"]
-  n31(["FrameAnnotationsService.trace"])
-  n32["FrameAnnotationsService.render"]
-  n33["FrameAnnotationsService.summarize"]
-  n34["FrameAnnotationsService.describe"]
-  n35["FrameAnnotationsService.compose"]
-  n36["FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong"]
-  n37["FrameAnnotationsService.finish"]
-  n38(["InheritedLimitsService.request"])
-  n39["InheritedLimitsService.prepare"]
-  n40["InheritedLimitsService.forward"]
-  n41["GatedLeafService.read"]
-  n42["GatedLeafService.parse"]
-  n43["GatedLeafService.normalize"]
-  n44["GatedLeafService.finish"]
-  n45(["ProjectDepthLimitService.judge"])
-  n46["ProjectDepthLimitService.resolveConfiguration"]
-  n47["ProjectDepthLimitService.readLimit"]
-  n48["ProjectDepthLimitService.applyLimit"]
-  n49["ProjectDepthLimitService.reportVerdict"]
-  n50["ProjectDepthLimitService.readDeclaringFile"]
+  n23(["FrameAnnotationsService.trace"])
+  n24["FrameAnnotationsService.render"]
+  n25["FrameAnnotationsService.summarize"]
+  n26["FrameAnnotationsService.describe"]
+  n27["FrameAnnotationsService.compose"]
+  n28["FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong"]
+  n29["FrameAnnotationsService.finish"]
+  n30(["InheritedLimitsService.request"])
+  n31["InheritedLimitsService.prepare"]
+  n32["InheritedLimitsService.forward"]
+  n33["GatedLeafService.read"]
+  n34["GatedLeafService.parse"]
+  n35["GatedLeafService.normalize"]
+  n36["GatedLeafService.finish"]
+  n37(["ProjectDepthLimitService.judge"])
+  n38["ProjectDepthLimitService.resolveConfiguration"]
+  n39["ProjectDepthLimitService.readLimit"]
+  n40["ProjectDepthLimitService.applyLimit"]
+  n41["ProjectDepthLimitService.reportVerdict"]
+  n42["ProjectDepthLimitService.readDeclaringFile"]
+  n43(["LoggerService.log"])
+  n44["LoggerService.info"]
+  n45["LoggerService.buildBindings"]
+  n46["LoggerService.assertConventionalMessage"]
+  n47["LoggerService.isConventionalVerb"]
   n0 --> n1
   n1 --> n2
   n2 --> n3
@@ -116,24 +113,21 @@ flowchart LR
   n26 --> n27
   n27 --> n28
   n28 --> n29
-  n29 --> n30
+  n30 --> n31
   n31 --> n32
   n32 --> n33
   n33 --> n34
   n34 --> n35
   n35 --> n36
-  n36 --> n37
+  n37 --> n38
   n38 --> n39
   n39 --> n40
   n40 --> n41
   n41 --> n42
-  n42 --> n43
   n43 --> n44
+  n44 --> n45
   n45 --> n46
   n46 --> n47
-  n47 --> n48
-  n48 --> n49
-  n49 --> n50
 ```
 
 ## Module spread

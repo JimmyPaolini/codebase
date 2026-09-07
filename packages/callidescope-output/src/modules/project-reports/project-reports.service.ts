@@ -3,7 +3,11 @@ import { Injectable } from "@nestjs/common";
 
 import { MINIMUM_STACK_FRAMES } from "./project-reports.constants";
 
-import type { BuildProjectReportsArguments } from "./project-reports.types";
+import type {
+  BuildProjectReportsArguments,
+  FindOwnedFindingsArguments,
+  OwnedFindings,
+} from "./project-reports.types";
 import type {
   CallableBreadthReport,
   CallGraphSummary,
@@ -287,6 +291,69 @@ export class ProjectReportsService {
         }),
       )
       .toSorted((first, second) => second.depth - first.depth);
+  }
+
+  /**
+   * Picks the findings a named set of projects owns, and nothing else.
+   *
+   * For a run whose verdict covers fewer projects than its measurement did. A
+   * finding's owner is already decided — `build` files a stack under the
+   * project owning its entry point and a breadth report under the project
+   * declaring the callable — so this selects among those reports rather than
+   * deciding ownership a second way.
+   *
+   * A named project the reports do not hold contributes nothing rather than
+   * being an error: a run may be pointed at a project whose files it then
+   * found nothing in, and having read nothing is a fact for the caller's own
+   * rules to judge.
+   */
+  public findOwnedFindings(args: FindOwnedFindingsArguments): OwnedFindings {
+    const reports = args.reports.filter((report) =>
+      args.projectNames.includes(report.projectName),
+    );
+
+    return {
+      deepStacks: this.findDeepStacks({ limits: args.limits, reports }),
+      wideCallables: this.findWideCallables({ limits: args.limits, reports }),
+    };
+  }
+
+  /**
+   * Picks the named projects a run opened no file of its own from.
+   *
+   * The companion to `findOwnedFindings`, and the reason it needs one: owning
+   * no finding is what a clean project and an unread one look like from the
+   * outside, and a caller judging only the findings cannot tell them apart.
+   * The project's own `fileCount` is what separates them — `collect` counts a
+   * file per project once the run's exclusions and the per-project ones have
+   * had their say, so a project whose files were all filtered away reports
+   * zero however much the rest of the run read.
+   *
+   * **Files rather than callables**, which is the weaker of the two questions
+   * and the right one. A project can hold files that declare no callable at
+   * all — one whose `tsconfig.json` names only its own configuration files and
+   * its tests is the shape, and this repository has five — and those were
+   * read, so a verdict on them is a verdict on something. Asking for a
+   * callable would fail every one of them for containing no functions, which
+   * is not a finding about anything. The cost is stated plainly: a project
+   * whose sources are excluded while a configuration file of its own survives
+   * counts as read.
+   *
+   * A named project with no report at all counts as unread rather than as an
+   * error, the same way `findOwnedFindings` treats one: a run pointed at a
+   * project the workspace configuration excludes never discovers it, and that
+   * is exactly the case worth failing.
+   */
+  public findUnreadProjects(args: {
+    /** The projects entitled to fail on what they own. */
+    projectNames: readonly string[];
+    reports: readonly ProjectReport[];
+  }): string[] {
+    return args.projectNames.filter(
+      (projectName) =>
+        (args.reports.find((report) => report.projectName === projectName)
+          ?.summary.fileCount ?? 0) === 0,
+    );
   }
 
   /**
