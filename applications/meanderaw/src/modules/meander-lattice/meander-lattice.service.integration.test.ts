@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-tile/mosaic-tile-motif.service";
@@ -12,11 +13,7 @@ import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { MeanderLatticeService } from "./meander-lattice.service";
 
-import type {
-  MosaicTile,
-  MosaicTileShape,
-} from "../mosaic-tile/mosaic-tile.types";
-import type { LatticeGraph } from "./meander-lattice.types";
+import type { MosaicTileShape } from "../mosaic-tile/mosaic-tile.types";
 
 // 🔧 Configuration
 
@@ -58,10 +55,11 @@ const SWEPT_SHAPES: readonly MosaicTileShape[] = [3, 4, 5, 6].flatMap((rows) =>
  * the sweep commits is rendered to a real document, read back by
  * {@link MeanderLatticeService} — the same reader the charter measurement
  * uses, which knows nothing about tiles — and the lattice it produces is
- * turned back into the tile it must have come from. A rendering bug cannot
- * hide behind a passing enumeration, and a renderer and a reader that were
- * both wrong the same way would have to agree through a representation
- * neither of them shares.
+ * turned back into the tile it must have come from by
+ * `LatticeIdentificationService.readTile`. A rendering bug cannot hide behind
+ * a passing enumeration, and a renderer and a reader that were both wrong the
+ * same way would have to agree through a representation neither of them
+ * shares.
  *
  * It lives here rather than in `mosaic-tile` because the lattice is the
  * thing being crossed: this module is the vocabulary the drawing side and
@@ -69,15 +67,16 @@ const SWEPT_SHAPES: readonly MosaicTileShape[] = [3, 4, 5, 6].flatMap((rows) =>
  * it the same way.
  */
 describe("mosaic tiles round-trip through the lattice", () => {
+  let latticeIdentificationService: LatticeIdentificationService;
   let meanderLatticeService: MeanderLatticeService;
   let mosaicTileGenerationService: MosaicTileGenerationService;
-  let mosaicTileService: MosaicTileService;
   let mosaicTilesService: MosaicTilesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         GridGeometryService,
+        LatticeIdentificationService,
         MeanderLatticeService,
         MosaicSymmetryService,
         MosaicTileGenerationService,
@@ -88,48 +87,15 @@ describe("mosaic tiles round-trip through the lattice", () => {
       ],
     }).compile();
 
+    latticeIdentificationService = await module.resolve(
+      LatticeIdentificationService,
+    );
     meanderLatticeService = await module.resolve(MeanderLatticeService);
     mosaicTileGenerationService = await module.resolve(
       MosaicTileGenerationService,
     );
-    mosaicTileService = await module.resolve(MosaicTileService);
     mosaicTilesService = await module.resolve(MosaicTilesService);
   });
-
-  /**
-   * The tile one repeat unit of a rendered document draws.
-   *
-   * A tile point `(level, column)` is the lattice point at column
-   * `unit × columns + column` and row `level + 1` — the `+ 1` being the top
-   * cap tick, which sits on grid level `0` and is not a tile point. An
-   * eastward edge is the one-pitch step right from there, a southward edge
-   * the step down.
-   */
-  const readTile = (
-    graph: LatticeGraph,
-    shape: MosaicTileShape,
-  ): MosaicTile => {
-    const start = READ_UNIT * shape.columns;
-    const edges = mosaicTileService.blankEdges(shape);
-
-    for (const [level, row] of edges.horizontal.entries()) {
-      for (const [column] of row.entries()) {
-        if (graph.horizontalEdges.has(`${start + column},${level + 1}`)) {
-          mosaicTileService.mark(edges.horizontal, level, column);
-        }
-      }
-    }
-
-    for (const [level, row] of edges.vertical.entries()) {
-      for (const [column] of row.entries()) {
-        if (graph.verticalEdges.has(`${start + column},${level + 1}`)) {
-          mosaicTileService.mark(edges.vertical, level, column);
-        }
-      }
-    }
-
-    return mosaicTileService.build(shape, edges);
-  };
 
   it.each(SWEPT_SHAPES)(
     "renders and reads back every tile at $rows rows and $columns columns as the tile enumerated",
@@ -145,7 +111,11 @@ describe("mosaic tiles round-trip through the lattice", () => {
         );
 
         expect(
-          readTile(meanderLatticeService.build(document), shape),
+          latticeIdentificationService.readTile(
+            meanderLatticeService.build(document),
+            shape,
+            READ_UNIT,
+          ),
         ).toStrictEqual(tile);
       }
     },

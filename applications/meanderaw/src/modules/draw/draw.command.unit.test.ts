@@ -5,6 +5,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { LoggerService } from "@codebase/logger";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { LatticeIdentificationModule } from "../lattice-identification/lattice-identification.module";
+import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
@@ -77,6 +79,7 @@ describe(DrawCommand, () => {
         MosaicTileGenerationService,
         MosaicTileMotifService,
         MosaicTileService,
+        LatticeIdentificationService,
         MosaicSymmetryService,
         MosaicTilesService,
         NegativeMotifService,
@@ -126,6 +129,7 @@ describe(DrawCommand, () => {
         MosaicTileGenerationService,
         MosaicTileMotifService,
         MosaicTileService,
+        LatticeIdentificationService,
         MosaicSymmetryService,
         MosaicTilesService,
         NegativeMotifService,
@@ -622,7 +626,11 @@ describe(DrawCommand, () => {
       "generates every enumerated combination through the real generation service without throwing",
       async () => {
         const module = await Test.createTestingModule({
-          imports: [MeanderGenerationModule, MosaicNamingModule],
+          imports: [
+            LatticeIdentificationModule,
+            MeanderGenerationModule,
+            MosaicNamingModule,
+          ],
           providers: [
             DrawCombinationsService,
             GridGeometryService,

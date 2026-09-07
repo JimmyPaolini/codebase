@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
@@ -57,6 +58,7 @@ describe(DrawNegativePermutationsService, () => {
       providers: [
         DrawNegativePermutationsService,
         GridGeometryService,
+        LatticeIdentificationService,
         MosaicSymmetryService,
         MosaicTileService,
         MosaicTilesService,

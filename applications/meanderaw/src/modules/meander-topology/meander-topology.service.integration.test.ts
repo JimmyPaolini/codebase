@@ -11,6 +11,7 @@ import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { DrawCombinationsService } from "../draw/draw-combinations.service";
 import { COLUMN_SPAN_PATTERN } from "../draw/draw.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { TILE_DRAWN_TYPES } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MotifRegistryService } from "../meander-generation/motif-registry.service";
@@ -580,9 +581,9 @@ const NEGATIVE_SPACE_SURVEYED_FAMILIES: ReadonlySet<MeanderType> = new Set([
  * above, which measures them like every other drawing.
  */
 /**
- * The three services the source paths below are derived from, constructed by
- * hand for the same reason {@link charterSweep} is: `it.each` needs its table
- * at collection time, before any `beforeAll` has run.
+ * The services the source paths below are derived from, constructed by hand
+ * for the same reason {@link charterSweep} is: `it.each` needs its table at
+ * collection time, before any `beforeAll` has run.
  *
  * Deriving the path rather than writing it out is what keeps this list
  * honest. Each entry has to name a file the `mosaic` half of the sweep really
@@ -592,6 +593,10 @@ const NEGATIVE_SPACE_SURVEYED_FAMILIES: ReadonlySet<MeanderType> = new Set([
  */
 const mosaicTileService = new MosaicTileService();
 const mosaicSymmetryService = new MosaicSymmetryService(mosaicTileService);
+const latticeIdentificationService = new LatticeIdentificationService(
+  mosaicSymmetryService,
+  mosaicTileService,
+);
 const mosaicNamingService = new MosaicNamingService(mosaicTileService);
 const mosaicTilesService = new MosaicTilesService(
   mosaicSymmetryService,
@@ -634,7 +639,7 @@ const NEGATIVE_SOURCE_DOCUMENTS: readonly {
       return [];
     }
 
-    const identifier = mosaicSymmetryService.canonicalIdentifier(tile);
+    const identifier = latticeIdentificationService.canonicalIdentifier(tile);
     const earned = mosaicNamingService.name(tile);
     const stem = earned ? `${identifier}-${earned}` : identifier;
 

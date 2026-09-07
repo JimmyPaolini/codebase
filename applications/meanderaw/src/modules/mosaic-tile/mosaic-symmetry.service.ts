@@ -12,12 +12,17 @@ import type {
 
 /**
  * The symmetries under which two `mosaic` tiles draw the same pattern, and
- * the identifier that names a tile independently of which of them produced
- * it. A tile repeats forever in both directions, so shifting its columns
- * only re-phases the same wallpaper; reversing its columns or flipping its
- * levels mirrors it. Enumerating every tile and keeping one representative
- * per symmetry class is what turns a combinatorial blow-up into a set small
- * enough to look through.
+ * the tile-shaped operations that act under them. A tile repeats forever in
+ * both directions, so shifting its columns only re-phases the same
+ * wallpaper; reversing its columns or flipping its levels mirrors it.
+ * Enumerating every tile and keeping one representative per symmetry class
+ * is what turns a combinatorial blow-up into a set small enough to look
+ * through.
+ *
+ * What a representative is *called* is not here. `LatticeIdentificationService`
+ * spells a tile out, because that spelling is the lattice's rather than this
+ * family's, and it reaches this service for {@link canonicalTile} on its way
+ * to a canonical name. Nothing here reaches back.
  *
  * The group has order `4 × columns` — `columns` translations, times a
  * horizontal mirror, times a level flip — and it acts on the tile's edges
@@ -43,25 +48,6 @@ export class MosaicSymmetryService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /**
-   * A tile's edges as a bit string, one character each, every eastward edge
-   * in reading order and then every southward one.
-   *
-   * It is not what a drawing is named — {@link identify} is, and it writes
-   * points rather than edges — and the two are kept apart deliberately.
-   * This one is the tile's own degrees of freedom with nothing counted
-   * twice, which is what a tie-break wants; how a filename is spelled is a
-   * separate question, and changing the spelling must not move which member
-   * of a symmetry class the corpus draws.
-   */
-  private edgeKey(tile: MosaicTile): string {
-    const { horizontal, vertical } = this.mosaicTileService.edges(tile);
-
-    return [...horizontal, ...vertical]
-      .flatMap((row) => row.map((isSet) => (isSet ? "1" : "0")))
-      .join("");
-  }
 
   /**
    * Where an edge's column lands under one group element. A horizontal
@@ -191,18 +177,6 @@ export class MosaicSymmetryService {
   // 🌎 Public Methods
 
   /**
-   * The identifier every tile in a symmetry class shares: {@link identify}
-   * of the one member {@link canonicalTile} picks. Two tiles draw the same
-   * pattern exactly when their canonical identifiers match, so this doubles
-   * as the deduplication key — and because it is the representative's own
-   * bit string, a committed drawing's filename is a complete description of
-   * the tile that drew it.
-   */
-  canonicalIdentifier(tile: MosaicTile): string {
-    return this.identify(this.canonicalTile(tile));
-  }
-
-  /**
    * The one tile of a symmetry class the corpus draws. Every member draws
    * the same pattern up to a shift or a mirror, so which one is committed
    * is a choice rather than a fact, and {@link rank} is where that choice
@@ -225,41 +199,22 @@ export class MosaicSymmetryService {
   }
 
   /**
-   * Names a tile by its own points: one hexadecimal character each, in
-   * reading order, worth `8` for `north`, `4` for `south`, `2` for `east`
-   * and `1` for `west`.
+   * A tile's edges as a bit string, one character each, every eastward edge
+   * in reading order and then every southward one.
    *
-   * So `0` is a dot, `3` a point on a horizontal run, `c` one on a vertical
-   * run, `6` a corner turning south and east, `e` a T-junction, and `f` a
-   * crossing. A reader can decode a filename point by point without a table,
-   * which is the whole reason the identifier exists.
-   *
-   * It names a tile completely — the points determine every edge, since each
-   * one owns its `east` and its `south` — so two tiles of one shape share a
-   * string only when they are the same tile. It does *not* name the shape:
-   * the directory a drawing is filed under carries the row count and the
-   * column span, so two tiles of different shapes may share a string.
-   *
-   * The string is deliberately redundant. Four bits per point describes
-   * `4 * columns * (rows - 1)` bits where the tile has only
-   * `columns * (2 * rows - 3)` degrees of freedom, because every edge is
-   * written twice — once at each end. That is the same redundancy
-   * `MosaicTileService.assertWellFormed` checks, and paying it here buys a
-   * filename whose characters are the tile's own points rather than a packed
-   * edge list nobody can read.
+   * It is not what a drawing is named — `LatticeIdentificationService.identify`
+   * is, and it writes points rather than edges — and the two are kept apart
+   * deliberately. This one is the tile's own degrees of freedom with nothing
+   * counted twice, which is what a tie-break wants, and what
+   * {@link MosaicTilesService.enumerate} folds its walk on; how a filename is
+   * spelled is a separate question, and changing the spelling must not move
+   * which member of a symmetry class the corpus draws.
    */
-  identify(tile: MosaicTile): string {
-    return tile.points
-      .flatMap((row) =>
-        row.map((point) =>
-          (
-            (point.north ? 8 : 0) +
-            (point.south ? 4 : 0) +
-            (point.east ? 2 : 0) +
-            (point.west ? 1 : 0)
-          ).toString(16),
-        ),
-      )
+  edgeKey(tile: MosaicTile): string {
+    const { horizontal, vertical } = this.mosaicTileService.edges(tile);
+
+    return [...horizontal, ...vertical]
+      .flatMap((row) => row.map((isSet) => (isSet ? "1" : "0")))
       .join("");
   }
 

@@ -1,6 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
+
 import { MosaicSubFamilyService } from "./mosaic-sub-family.service";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { SUPPORTED_SUB_FAMILIES } from "./mosaic-tile.constants";
@@ -46,12 +48,13 @@ const NAMED_SUB_FAMILIES: readonly MosaicBuildableSubFamily[] = [
 
 describe(MosaicSubFamilyService, () => {
   let service: MosaicSubFamilyService;
-  let mosaicSymmetryService: MosaicSymmetryService;
+  let latticeIdentificationService: LatticeIdentificationService;
   let mosaicTilesService: MosaicTilesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
+        LatticeIdentificationService,
         MosaicSubFamilyService,
         MosaicSymmetryService,
         MosaicTileService,
@@ -60,7 +63,9 @@ describe(MosaicSubFamilyService, () => {
     }).compile();
 
     service = await module.resolve(MosaicSubFamilyService);
-    mosaicSymmetryService = await module.resolve(MosaicSymmetryService);
+    latticeIdentificationService = await module.resolve(
+      LatticeIdentificationService,
+    );
     mosaicTilesService = await module.resolve(MosaicTilesService);
   });
 
@@ -79,8 +84,10 @@ describe(MosaicSubFamilyService, () => {
       const bars = service.tile("bars", 5);
       const diamond = service.tile("diamond", 5);
 
-      expect(bars && mosaicSymmetryService.identify(bars)).toBe("4cc8");
-      expect(diamond && mosaicSymmetryService.identify(diamond)).toBe("4848");
+      expect(bars && latticeIdentificationService.identify(bars)).toBe("4cc8");
+      expect(diamond && latticeIdentificationService.identify(diamond)).toBe(
+        "4848",
+      );
     });
 
     it("has no diamond tile where the interior has an odd number of levels, since southward edges cover levels in pairs", () => {
@@ -94,24 +101,24 @@ describe(MosaicSubFamilyService, () => {
       const dots = service.tile("dots", 3);
       const mesh = service.tile("mesh", 3);
 
-      expect(dots && mosaicSymmetryService.identify(dots)).toBe("00");
-      expect(mesh && mosaicSymmetryService.identify(mesh)).toBe("7b");
+      expect(dots && latticeIdentificationService.identify(dots)).toBe("00");
+      expect(mesh && latticeIdentificationService.identify(mesh)).toBe("7b");
     });
 
     it("builds a staircase for zigzag, whose horizontal run starts a column further along at every level", () => {
       const zigzag = service.tile("zigzag", 3);
 
-      expect(zigzag && mosaicSymmetryService.canonicalIdentifier(zigzag)).toBe(
-        "56a9",
-      );
+      expect(
+        zigzag && latticeIdentificationService.canonicalIdentifier(zigzag),
+      ).toBe("56a9");
     });
 
     it("builds closed squares for square, the same two rules with the phase off, so its horizontal runs sit directly above one another", () => {
       const square = service.tile("square", 3);
 
-      expect(square && mosaicSymmetryService.canonicalIdentifier(square)).toBe(
-        "65a9",
-      );
+      expect(
+        square && latticeIdentificationService.canonicalIdentifier(square),
+      ).toBe("65a9");
     });
 
     it.each(["square", "zigzag"] as const)(
@@ -144,7 +151,9 @@ describe(MosaicSubFamilyService, () => {
     it("anchors every edge in the tile's first column, which is the representative the region is named after", () => {
       const dashes = service.tile("dashes", 4);
 
-      expect(dashes && mosaicSymmetryService.identify(dashes)).toBe("212121");
+      expect(dashes && latticeIdentificationService.identify(dashes)).toBe(
+        "212121",
+      );
     });
 
     /**
@@ -177,11 +186,13 @@ describe(MosaicSubFamilyService, () => {
               rows,
               built.columns,
             )) {
-              enumerated.push(mosaicSymmetryService.canonicalIdentifier(tile));
+              enumerated.push(
+                latticeIdentificationService.canonicalIdentifier(tile),
+              );
             }
 
             expect(enumerated).toContain(
-              mosaicSymmetryService.canonicalIdentifier(built),
+              latticeIdentificationService.canonicalIdentifier(built),
             );
           }
         }
