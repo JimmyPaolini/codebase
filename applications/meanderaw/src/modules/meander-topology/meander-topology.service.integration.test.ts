@@ -21,6 +21,7 @@ import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
 import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
+import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { NegativeMotifService } from "../negative-motif/negative-motif.service";
@@ -219,7 +220,7 @@ const modifierLabel = (modifier: Modifier): string => {
  * given ply is a fact about the geometry, and asking the geometry is what
  * keeps the sweep from committing the same drawing twice.
  *
- * The sweep stops short of `mosaic`'s 290 enumerated tiles for one reason:
+ * The sweep stops short of `mosaic`'s 2,406 enumerated tiles for one reason:
  * those are reachable only through a motif service, and the charter is
  * tested through `MeanderGenerationService.generate`, the single seam every
  * family, modifier, and validation rule already passes through. Those tiles
@@ -251,7 +252,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 
 /**
  * How long a corpus-wide measurement may take. Each of the three tests that
- * use it reads all 1,632 committed documents from disk and measures every
+ * use it reads all 3,797 committed documents from disk and measures every
  * one, which takes well under a second locally but several times that on a
  * shared CI runner — past vitest's five-second default, which is what failed
  * there while passing everywhere else, back when the corpus was three times
@@ -262,7 +263,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
 
 /**
  * How many documents `DrawCommand` commits: 1,183 named patterns beside two
- * exhaustive halves — 290 enumerated `mosaic` tiles and 159 enumerated
+ * exhaustive halves — 2,406 enumerated `mosaic` tiles and 208 enumerated
  * one-column `negative` sources.
  *
  * The named half was 174 until issue #507. It sampled row counts up to 8
@@ -274,19 +275,19 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 60_000;
  *
  * Nine of the ten families read the shared `MAXIMUM_VALUE` there. `mosaic`
  * is the tenth, at 6, and its lower ceiling is why the named half is 1,183
- * rather than 1,219 and why the exhaustive `mosaic` half is 290 rather than
+ * rather than 1,219 and why the exhaustive `mosaic` half is 2,406 rather than
  * 3,179. The reason is a budget on an exhaustively enumerated space rather
  * than anything the geometry does — `MOSAIC_TILE_MAXIMUM_ROWS` carries the
  * count per row, and the whole family stopping at the same number is what
  * keeps this from being a charter blind spot: a `mosaic` above 6 rows is
  * refused rather than drawn uncommitted.
  *
- * The `negative` half stops at the same 6, so it is 159 rather than 375.
+ * The `negative` half stops at the same 6, so it is 208 rather than 375.
  * Its deepest row count now inverts a seven-row source that is enumerated
  * but not committed, which is why the corridor-identity gate below covers
  * rows 3 through 5 of it rather than all of it.
  */
-const COMMITTED_CORPUS_SIZE = 1183 + 290 + 159;
+const COMMITTED_CORPUS_SIZE = 1183 + 2406 + 208;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -297,16 +298,18 @@ const COMMITTED_CORPUS_SIZE = 1183 + 290 + 159;
  * Published in seven places and computed in none until this assertion, at a
  * value of 2,114 measured over the six original families' 3,293 documents.
  * It reached 2,120 when `cross` added six, 2,176 when the named half of the
- * sweep grew to `MAXIMUM_VALUE`, and 273 when `mosaic` — which leaves such
- * a gap in every one of its documents, named and enumerated alike — was
- * capped at 6 rows. Nothing would have caught any of those drifts:
+ * sweep grew to `MAXIMUM_VALUE`, 273 when `mosaic` — which leaves such a gap
+ * in every one of its documents, named and enumerated alike — was capped at
+ * 6 rows, and 1,513 when that family's edge budget widened its enumerated
+ * half from 290 tiles to 2,406. Nothing would have caught any of those
+ * drifts:
  * `channelWidthCompliant` passes either way, because skipping those two
  * columns is exactly what it does. `negative`, `branch`, and `parallel` add
  * none at any row count — each covers its own first and last lattice column
  * — so this number moving by anything other than a change of row range is a
  * family changing how its band ends.
  */
-const TERMINATION_GAP_DOCUMENTS = 273;
+const TERMINATION_GAP_DOCUMENTS = 1513;
 
 /** Where `DrawCommand` writes those documents, and where they are committed. */
 const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../../output");
@@ -442,6 +445,10 @@ const NEGATIVE_SPACE_SURVEYED_FAMILIES: ReadonlySet<MeanderType> = new Set([
 const mosaicTileService = new MosaicTileService();
 const mosaicSymmetryService = new MosaicSymmetryService(mosaicTileService);
 const mosaicNamingService = new MosaicNamingService(mosaicTileService);
+const mosaicTilesService = new MosaicTilesService(
+  mosaicSymmetryService,
+  mosaicTileService,
+);
 const negativeSourceService = new NegativeSourceService(mosaicTileService);
 
 const NEGATIVE_SOURCE_DOCUMENTS: readonly {
@@ -464,25 +471,36 @@ const NEGATIVE_SOURCE_DOCUMENTS: readonly {
     repeatCount?: number;
   }[]
 ).flatMap(({ modifierName, repeatCount }) =>
-  [3, 4, 5].map((rows) => {
+  [3, 4, 5].flatMap((rows) => {
     const modifier = modifierName ? { name: modifierName } : undefined;
     const tile = negativeSourceService.tile(
       negativeSourceService.source(modifier),
       rows,
     );
+
+    // 🎯 A source the `mosaic` half never committed has nothing to compare
+    // against. The edge budget admits one column at six rows and no more, so
+    // the two-column sources stop a row shallower than the one-column ones
+    // rather than being listed and then not found.
+    if (!mosaicTilesService.isAdmitted(tile)) {
+      return [];
+    }
+
     const identifier = mosaicSymmetryService.canonicalIdentifier(tile);
     const earned = mosaicNamingService.name(tile);
     const stem = earned ? `${identifier}-${earned}` : identifier;
 
-    return {
-      parameters: {
-        repeatCount: repeatCount ?? 6,
-        rows,
-        type: "negative" as const,
-        ...(modifier ? { modifier } : {}),
+    return [
+      {
+        parameters: {
+          repeatCount: repeatCount ?? 6,
+          rows,
+          type: "negative" as const,
+          ...(modifier ? { modifier } : {}),
+        },
+        sourceName: `mosaic/${tile.rows}-rows/${tile.columns}-columns/${stem}.svg`,
       },
-      sourceName: `mosaic/${tile.rows}-rows/${tile.columns}-columns/${stem}.svg`,
-    };
+    ];
   }),
 );
 
@@ -723,7 +741,7 @@ describe(MeanderTopologyService, () => {
         // one thing. Published in three places and computed in none until
         // this assertion: the cycle count is `edges - nodes + components`,
         // which this loop already had all three inputs for.
-        expect(negativeCycles).toHaveLength(259);
+        expect(negativeCycles).toHaveLength(308);
         expect(Math.min(...negativeCycles)).toBe(0);
         expect(Math.max(...negativeCycles)).toBe(65);
         expect(Math.min(...negativeComponents)).toBe(1);
@@ -750,12 +768,20 @@ describe(MeanderTopologyService, () => {
           ),
         ).toBe(true);
 
-        // 🎯 The loops are all somewhere else: 245 of `negative`'s 259
-        // corridor networks, `cross`'s seven solid crossings, and the eighteen
-        // `snake` drawings whose `edge` pitch closes a loop against the band
-        // border. `branch` appears nowhere in this list, which is the half of
-        // the claim a tree test alone would not make — and neither does
-        // `parallel`, whose three shapes are all acyclic at every ply.
+        // 🎯 The loops are all somewhere else: 294 of `negative`'s 308
+        // corridor networks, 150 `mosaic` drawings, `cross`'s seven solid
+        // crossings, and the eighteen `snake` drawings whose `edge` pitch
+        // closes a loop against the band border. `branch` appears nowhere in
+        // this list, which is the half of the claim a tree test alone would
+        // not make — and neither does `parallel`, whose three shapes are all
+        // acyclic at every ply.
+        //
+        // `mosaic` is new to it, and it is what letting a point turn a corner
+        // bought: a figure of dash ends cannot close, and 150 of the family's
+        // 2,430 documents now do. No charter invariant is about a loop — the
+        // ink stays orthogonal, every point stays inked, and nothing branches
+        // or crosses — so this is the family's shape as a graph changing
+        // rather than its compliance.
         //
         // The fourteen `negative` documents missing from it are the `lines`
         // sub-family's negative — `ruled-closed` at each of the family's ten
@@ -765,10 +791,10 @@ describe(MeanderTopologyService, () => {
         // band's own rules and nothing joining them, so it is one component
         // per lattice row with no loop anywhere, and the one corner of this
         // family that is a forest like the six oldest.
-        expect(looped).toHaveLength(270);
+        expect(looped).toHaveLength(469);
         expect(
           [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
-        ).toStrictEqual(["cross", "negative", "snake"]);
+        ).toStrictEqual(["cross", "mosaic", "negative", "snake"]);
       },
       CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
     );
@@ -821,7 +847,7 @@ describe(MeanderTopologyService, () => {
             .map(({ name }) => name),
         ).toStrictEqual([]);
 
-        // 🎯 Ink crosses in exactly two families across all 1,632 files, and
+        // 🎯 Ink crosses in exactly two families across all 3,797 files, and
         // in neither of them by accident. Taken as three statements rather
         // than one list, so each says something a longer list would bury.
         const crossing = measured.filter(
@@ -876,9 +902,9 @@ describe(MeanderTopologyService, () => {
         ]);
         expect(namedCrossing).toHaveLength(30);
 
-        // 🎯 And the permutation half's 106, which is a different kind of
+        // 🎯 And the permutation half's 136, which is a different kind of
         // statement: not a charter declaration but a measurement of the space
-        // itself. 106 of its 159 one-column sources cross, 49 branch without
+        // itself. 136 of its 208 one-column sources cross, 68 branch without
         // crossing, and 4 do neither — the `lines` class at each swept row
         // count. The named half draws six members of this space, and the
         // proportions here are why naming more of them would not have found
@@ -888,7 +914,7 @@ describe(MeanderTopologyService, () => {
             ({ name }) =>
               familyOf(name) === "negative" && COLUMN_SPAN_PATTERN.test(name),
           ),
-        ).toHaveLength(106);
+        ).toHaveLength(136);
       },
       CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
     );

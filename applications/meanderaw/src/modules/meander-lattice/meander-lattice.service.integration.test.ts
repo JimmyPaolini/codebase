@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { MOSAIC_TILE_EDGE_BUDGET } from "../mosaic-motif/mosaic-motif.constants";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
@@ -30,9 +31,16 @@ const REPEAT_COUNT = 3;
 /** The repeat unit the tile is read back out of. */
 const READ_UNIT = 1;
 
-/** Every shape the sweep commits, which is the whole space this asserts over rather than a sample of it. */
-const SWEPT_SHAPES: readonly MosaicTileShape[] = [4, 5, 6].flatMap((rows) =>
-  [1, 2].map((columns) => ({ columns, rows })),
+/**
+ * Every shape the edge budget admits, which is the whole space this asserts
+ * over rather than a sample of it — eleven shapes and 2,406 tiles, each one
+ * rendered to a real document and read back.
+ */
+const SWEPT_SHAPES: readonly MosaicTileShape[] = [3, 4, 5, 6].flatMap((rows) =>
+  Array.from(
+    { length: Math.floor(MOSAIC_TILE_EDGE_BUDGET / (2 * rows - 3)) },
+    (_column, index) => ({ columns: index + 1, rows }),
+  ),
 );
 
 // 🧪 Tests

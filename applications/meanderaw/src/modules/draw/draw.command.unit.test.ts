@@ -234,7 +234,7 @@ describe(DrawCommand, () => {
       // named-type half runs on to `MAXIMUM_VALUE` for nine of its ten
       // families, because both of these enumerate their space exhaustively
       // rather than sampling it.
-      expect(permutations).toHaveLength(290 + 159);
+      expect(permutations).toHaveLength(2406 + 208);
       expect(permutations).toContain(
         "output/mosaic/6-rows/1-columns/00000-dots.svg",
       );
@@ -252,7 +252,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("1632 drawings");
+      expect(index?.[1]).toContain("3797 drawings");
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/1-columns/00000-dots.svg"',
       );
@@ -653,13 +653,13 @@ describe(DrawCommand, () => {
       ).resolves.toBeUndefined();
 
       // 🎯 every one of the 1,183 enumerated named-type combinations, every
-      // one of the 290 mosaic tiles, and every one of the 159 one-column
+      // one of the 2,406 mosaic tiles, and every one of the 208 one-column
       // negative sources, reached its real generation
       // service and real validators without throwing — this is the
       // regression guard the mocked tests above can't provide, since they
       // replace the generation services entirely. The extra file is the
       // single index page listing all of them.
-      expect(mockWriteFile).toHaveBeenCalledTimes(1183 + 290 + 159 + 1);
+      expect(mockWriteFile).toHaveBeenCalledTimes(1183 + 2406 + 208 + 1);
     });
   });
 });

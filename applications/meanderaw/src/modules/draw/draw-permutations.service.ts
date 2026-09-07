@@ -1,7 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import {
-  MOSAIC_TILE_MAXIMUM_COLUMNS,
   MOSAIC_TILE_MAXIMUM_ROWS,
   MOSAIC_TILE_MINIMUM_ROWS,
 } from "../mosaic-motif/mosaic-motif.constants";
@@ -23,10 +22,10 @@ import type { RenderedDocument } from "./draw.types";
  * representative periods, a couple of shapes — this half enumerates one
  * exhaustively. Every tile the family's own ceiling admits is generated, one
  * per symmetry class, so nothing in it repeats a re-phasing or a mirror of
- * anything else. It stays bounded
- * by capping the tile's column span at {@link MOSAIC_TILE_MAXIMUM_COLUMNS},
- * since the count grows exponentially in that span and only mildly in
- * `rows`.
+ * anything else. It stays bounded by one edge budget, which the tile
+ * service turns into a column span per row count — five at the shallowest
+ * band and one at the deepest, since a tile's edge count grows in both
+ * dimensions at once.
  *
  * Thousands of files is what makes the directories load-bearing rather than
  * decorative: nested under `<rows>-rows/<columns>-columns/`, each one holds
@@ -87,7 +86,7 @@ export class DrawPermutationsService {
 
     for (
       let columns = 1;
-      columns <= MOSAIC_TILE_MAXIMUM_COLUMNS;
+      columns <= this.mosaicTilesService.maximumColumns(rows);
       columns += 1
     ) {
       for (const tile of this.mosaicTilesService.enumerate(rows, columns)) {

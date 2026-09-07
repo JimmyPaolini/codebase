@@ -140,7 +140,7 @@ describe(MosaicTileGenerationService, () => {
     });
 
     it("throws below the mosaic's own minimum rows", () => {
-      expect(() => service.generate(mosaicTile([".", "."]), 6)).toThrow(
+      expect(() => service.generate(mosaicTile(["."]), 6)).toThrow(
         InvalidRowsError,
       );
     });
@@ -167,12 +167,16 @@ describe(MosaicTileGenerationService, () => {
       expect(() => service.generate(dots, 13)).toThrow(InvalidRepeatCountError);
     });
 
-    it.each([4, 5, 6])(
+    it.each([3, 4, 5, 6])(
       "renders every enumerated tile space-filling at %i rows",
       (rows) => {
         const geometry = gridGeometryService.compute(rows);
+        const spans = Array.from(
+          { length: mosaicTilesService.maximumColumns(rows) },
+          (_column, index) => index + 1,
+        );
 
-        for (const columns of [1, 2]) {
+        for (const columns of spans) {
           for (const tile of mosaicTilesService.enumerate(rows, columns)) {
             expect(
               longestBlank(service.generate(tile, 3), geometry.strokeWidth),

@@ -28,46 +28,57 @@ export const MOSAIC_SUB_FAMILY_SHAPES: Record<
 };
 
 /**
- * The most edges one point of a `mosaic` tile may be touched by.
+ * How many edges one `mosaic` tile may hold, which is the one knob the size
+ * of its space depends on.
  *
- * One, and that one number is the whole of the family's original rule. A
- * tile was an exact cover of its cells: every cell claimed exactly once, by
- * a dot on its own or by one half of a one-unit dash. On the lattice that is
- * a matching — no two edges meet — and a matching is exactly what a ceiling
- * of one on a point's incident edges describes.
+ * A tile of `rows` by `columns` holds exactly `columns * (2 * rows - 3)`
+ * edges, and every subset of them is a tile — so a shape holds
+ * `2 ** edges` tiles and rows and columns are not independent knobs.
+ * Capping each alone caps neither: 6 rows is fine, 6 columns is fine, and a
+ * 6 by 6 tile is 2 ** 54 of them.
  *
- * The single-column wrapped edge counts as the one edge it is, which is why
- * the continuous rule `lines` draws sits inside this ceiling: it is one edge
- * looping from its point back to itself, even though the ink really does
- * leave that point both east and west.
+ * Sixteen admits eleven shapes and 2,406 distinct tiles, which is a corpus
+ * a person can look through. Twenty admits about 116,000, which is not.
+ * Raising it is a one-line change with a visible effect on the counts
+ * `mosaic-tiles.service.unit.test.ts` asserts, which is the point of making
+ * it one number.
+ *
+ * It replaces a maximum column span, which was the knob when the degree
+ * ceiling was doing most of the clamping. It no longer is: at 6 rows adding
+ * one column multiplies the space by 2 ** 9, which is about what letting
+ * every point turn a corner costs in total.
  */
-export const MOSAIC_TILE_MAXIMUM_INCIDENT_EDGES = 1;
+export const MOSAIC_TILE_EDGE_BUDGET = 16;
 
 /**
- * The most columns one `mosaic` repeat tile may span. The tile count grows
- * exponentially in this — at 8 rows, 1 column yields 216 distinct tiles and
- * 2 yields 1,098 — so the sweep stays bounded by capping it rather than by
- * sampling.
+ * The most direction bits one point of a `mosaic` tile may carry.
+ *
+ * Two, which is a corner — `1100` and its rotations — or a straight run
+ * through. That is what every named meander is built from, and a ceiling of
+ * one structurally excluded it: one bit is a dash end, and a figure of dash
+ * ends cannot turn.
+ *
+ * A single column's wrapped edge counts twice, because the ink really does
+ * leave that point both east and west, so the continuous rule `lines` draws
+ * sits exactly at this ceiling rather than under it.
+ *
+ * The family's original rule was one *incident edge* per point — an exact
+ * cover of cells, which on the lattice is a matching. That region is inside
+ * this one and `MosaicTilesService.isMatching` still recovers it, which is
+ * what makes the widening provably a widening rather than a replacement.
  */
-export const MOSAIC_TILE_MAXIMUM_COLUMNS = 2;
+export const MOSAIC_TILE_MAXIMUM_DEGREE = 2;
 
 /**
  * The deepest band the `mosaic` family is drawn in, and so the highest
  * `rows` value a tile is enumerated at.
  *
  * Six, where every other family runs to the shared `MAXIMUM_VALUE` of 12.
- * This family is the one whose space is enumerated exhaustively rather than
- * sampled, and the count grows about 3.4x per row. Counted off
- * `MosaicTilesService.enumerate` across both column spans:
- *
- * | rows  |  4 |  5 |   6 |   7 |    8 |    9 |    10 |     11 |      12 |
- * | ----- | -- | -- | --- | --- | ---- | ---- | ----- | ------ | ------- |
- * | tiles | 23 | 68 | 199 | 660 | 2229 | 7977 | 29002 | 108089 |  406934 |
- *
- * Rows 4 through 6 are the 290 tiles committed today; carrying the
- * enumeration to 12 would commit 554,891 more. Sampling the space instead
- * is not on offer — enumerating it is this family's whole claim — so the
- * bounded thing to do is to stop the family lower down than the rest.
+ * {@link MOSAIC_TILE_EDGE_BUDGET} would admit a little past it on its own —
+ * a one-column tile stays inside the budget out to 9 rows — but a family
+ * that ran deeper at one column than at any other would be describing its
+ * own ceiling with two numbers that disagree, and the sweep would file a
+ * `9-rows` directory holding a single column and nothing beside it.
  *
  * It is a budget rather than a structural claim: nothing about the geometry
  * fails at 7 rows, which is why this is not the opposite number of
@@ -89,11 +100,20 @@ export const MOSAIC_TILE_MAXIMUM_COLUMNS = 2;
 export const MOSAIC_TILE_MAXIMUM_ROWS = 6;
 
 /**
- * The smallest `rows` value a `mosaic` tile is worth enumerating at. Below
- * 4 rows the bar's interior is a single grid level, so the only tiles are
- * one dot or one line and there is nothing to permute.
+ * The smallest `rows` value a `mosaic` tile is worth enumerating at.
+ *
+ * Three, where a tile's interior is two grid levels — enough for a southward
+ * edge to join them, which is the shallowest tile that can hold one. Below
+ * it the interior is a single level with nothing under it, so the only
+ * tiles are a bare point and the wrapped rule and there is nothing to
+ * permute.
+ *
+ * It was 4 while the space at three rows held four tiles. The budget is
+ * what makes three worth sweeping: it admits five column spans there,
+ * against one at six rows, so the shallowest band is where the family is
+ * widest.
  */
-export const MOSAIC_TILE_MINIMUM_ROWS = 4;
+export const MOSAIC_TILE_MINIMUM_ROWS = 3;
 
 /**
  * Every named sub-family, as `readonly string[]` — mirroring
@@ -127,5 +147,24 @@ export class MalformedMosaicTileError extends Error {
   constructor(reason: string) {
     super(`direction bits do not describe a mosaic tile: ${reason}`);
     this.name = "MalformedMosaicTileError";
+  }
+}
+
+/**
+ * Thrown when a tile shape holds more edges than
+ * {@link MOSAIC_TILE_EDGE_BUDGET} admits.
+ *
+ * Refusing is the useful answer rather than a strict one. Enumeration walks
+ * `2 ** edges` assignments, so a shape a little past the budget is not a
+ * slow run but one that does not finish — and the budget exists precisely so
+ * that the size of the space is a decision somebody made rather than a
+ * surprise somebody discovers.
+ */
+export class OversizedMosaicTileError extends Error {
+  constructor(shape: { columns: number; rows: number }, edges: number) {
+    super(
+      `a ${shape.rows}-row tile of ${shape.columns} columns holds ${edges} edges, past the budget of ${MOSAIC_TILE_EDGE_BUDGET}`,
+    );
+    this.name = "OversizedMosaicTileError";
   }
 }

@@ -1,10 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import {
-  MOSAIC_TILE_MAXIMUM_COLUMNS,
-  SUPPORTED_SUB_FAMILIES,
-} from "./mosaic-motif.constants";
+import { SUPPORTED_SUB_FAMILIES } from "./mosaic-motif.constants";
 import { MosaicSubFamilyService } from "./mosaic-sub-family.service";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { MosaicTileService } from "./mosaic-tile.service";
@@ -18,23 +15,21 @@ import type {
 // 🔧 Configuration
 
 /**
- * The row counts every claim below is checked against, rather than a sample
- * of them. Two rows deeper than `DrawPermutationsService.rowsSweep` writes,
- * which stops at `MOSAIC_TILE_MAXIMUM_ROWS`: what a sub-family's tile is at
- * a given row count is a property of the rule rather than of the corpus, so
- * checking past the sweep's own ceiling is worth more than matching it.
+ * The row counts the aligned tiles below are checked against, which is every
+ * one the sweep enumerates at. A sub-family's tile has to be a real member of
+ * the space it names a region of, and the space is exactly what the edge
+ * budget admits — so the assertion is bounded by the enumeration rather than
+ * by a sample of it.
  */
-const SWEPT_ROWS: readonly number[] = [4, 5, 6, 7, 8];
+const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6];
 
 /**
- * How long the assertion that walks the deeper end of the space is given.
+ * How long the assertion that walks every admitted shape is given.
  *
- * Eight rows at two columns is 2 ** 26 edge assignments to walk before the
- * matching filter cuts them to 11,275, which is real work rather than a hang
- * — so it is declared rather than left to the default five seconds, the same
- * way the charter measurement declares its own. It passes locally in about
- * five and fails on a slower runner, which is exactly the kind of flake a
- * declared timeout exists to prevent.
+ * The edge budget admits eleven of them and the widest is 2 ** 15 edge
+ * assignments, which is real work rather than a hang — so it is declared
+ * rather than left to the default five seconds, the same way the charter
+ * measurement declares its own.
  */
 const SPACE_WALK_TIMEOUT_MILLISECONDS = 60_000;
 
@@ -145,7 +140,11 @@ describe(MosaicSubFamilyService, () => {
           for (const subFamily of NAMED_SUB_FAMILIES) {
             const built = service.tile(subFamily, rows);
 
-            if (!built || !withinCeiling(built)) {
+            if (
+              !built ||
+              built.columns > mosaicTilesService.maximumColumns(rows) ||
+              !withinCeiling(built)
+            ) {
               continue;
             }
 
@@ -170,13 +169,5 @@ describe(MosaicSubFamilyService, () => {
       },
       SPACE_WALK_TIMEOUT_MILLISECONDS,
     );
-
-    it("never builds a tile wider than the sweep's own column cap", () => {
-      for (const subFamily of NAMED_SUB_FAMILIES) {
-        expect(service.tile(subFamily, 6)?.columns ?? 1).toBeLessThanOrEqual(
-          MOSAIC_TILE_MAXIMUM_COLUMNS,
-        );
-      }
-    });
   });
 });
