@@ -880,12 +880,12 @@
         },
         {
           "displayName": "InvalidLimitValueError.constructor",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16614",
           "isCycle": false,
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 492
+            "line": 496
           },
           "signature": {
             "parameters": [
@@ -1647,43 +1647,43 @@
           "callees": [
             {
               "displayName": "ConfigurationService.resolveAllowSpreadFor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5160"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5183"
             },
             {
               "displayName": "ConfigurationService.resolveEntryPoints",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#6259"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#6282"
             },
             {
               "displayName": "ConfigurationService.resolveExclude",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7061"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7084"
             },
             {
               "displayName": "ConfigurationService.resolveLimits",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7674"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7697"
             },
             {
               "displayName": "ConfigurationService.resolveJsonOutput",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7283"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7306"
             },
             {
               "displayName": "ConfigurationService.resolveMarkdownDestination",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#8673"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#8696"
             },
             {
               "displayName": "ConfigurationService.resolveProjectReadmes",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#9464"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#9546"
             },
             {
               "displayName": "ConfigurationService.resolveWorkspaceStructure",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10275"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10357"
             }
           ],
           "displayName": "ConfigurationService.resolveConfiguration",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14073",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14155",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 431
+            "line": 433
           },
           "signature": {
             "parameters": [
@@ -1703,31 +1703,31 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findConfigurationFile",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#2521"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#2544"
             },
             {
               "displayName": "ConfigurationService.resolveConfigurationPath",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5398"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5421"
             },
             {
               "displayName": "ConfigurationService.resolveConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14073"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14155"
             },
             {
               "displayName": "UnknownConfigurationFileTypeError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#8491"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#8835"
             },
             {
               "displayName": "ConfigurationService.loadConfigurationModule",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3983"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4006"
             }
           ],
           "displayName": "ConfigurationService.loadConfigurationFile",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12813",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12895",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 388
+            "line": 390
           },
           "signature": {
             "parameters": [
@@ -1827,7 +1827,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findConfigurationFileAt",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10955"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11037"
             },
             {
               "displayName": "ProjectConfigurationService.loadProjectConfiguration",
@@ -1899,19 +1899,19 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findRepositoryRoot",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3346"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3369"
             },
             {
               "displayName": "ConfigurationFileNotFoundError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#11865"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#12245"
             }
           ],
           "displayName": "ConfigurationService.resolveConfigurationPath",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5398",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5421",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 177
+            "line": 178
           },
           "signature": {
             "parameters": [
@@ -1935,7 +1935,7 @@
             },
             {
               "displayName": "ProjectConfigurationFieldNotPermittedError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#13148"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#13528"
             }
           ],
           "displayName": "ProjectConfigurationService.assertNoForbiddenFields",
@@ -1963,11 +1963,11 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12813"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12895"
             },
             {
               "displayName": "ProjectConfigurationError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#12389"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#12769"
             }
           ],
           "displayName": "ProjectConfigurationService.loadProjectConfiguration",
@@ -2091,15 +2091,15 @@
           "callees": [
             {
               "displayName": "custom(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9016"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9360"
             }
           ],
           "displayName": "callbackSchema",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#8955",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9299",
           "location": {
             "column": 24,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 278
+            "line": 287
           },
           "signature": {
             "parameters": [],
@@ -2112,15 +2112,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findConfigurationFileAt",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10955"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11037"
             }
           ],
           "displayName": "ConfigurationService.findConfigurationFile",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#2521",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#2544",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 82
+            "line": 83
           },
           "signature": {
             "parameters": [
@@ -2140,15 +2140,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.some(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3565"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3588"
             }
           ],
           "displayName": "ConfigurationService.findRepositoryRoot",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3346",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3369",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 109
+            "line": 110
           },
           "signature": {
             "parameters": [],
@@ -2161,15 +2161,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadJsonConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4752"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4775"
             }
           ],
           "displayName": "ConfigurationService.loadConfigurationModule",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3983",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4006",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 133
+            "line": 134
           },
           "signature": {
             "parameters": [
@@ -2189,15 +2189,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12813"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12895"
             }
           ],
           "displayName": "ConfigurationService.loadConfiguration",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11591",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11673",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 360
+            "line": 362
           },
           "signature": {
             "parameters": [
@@ -2478,12 +2478,12 @@
                 "summary": "Loads a configuration, and says what the file itself declared and which file answered. The same work as `loadConfiguration`, keeping two facts it throws away. The path is what tells a caller resolving a configuration beside every project which file it has already read as the run's own, so that one file is never given two roles. The authored object is what a refusal has to name fields from, since resolution manufactures the rest. Naming a path guarantees one back, which is why that case has an overload of its own: the alternative is every caller of the narrow case carrying a fallback that can never fire, and picking its own path when it does.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12813",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12895",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 388
+                "line": 390
               },
               "signature": {
                 "parameters": [
@@ -2505,12 +2505,12 @@
                 "summary": "Resolves a configuration path against the cwd, then the repository root.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5398",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5421",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 177
+                "line": 178
               },
               "signature": {
                 "parameters": [
@@ -2532,12 +2532,12 @@
                 "summary": "Walks upward from the process cwd looking for the repository root. Used to resolve a configuration path given relative to that root even when the command was invoked from a nested directory, which is what a task runner does whenever it sets the cwd to the project rather than the workspace.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3346",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3369",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 109
+                "line": 110
               },
               "signature": {
                 "parameters": [],
@@ -2547,12 +2547,12 @@
             },
             {
               "displayName": "ConfigurationService.some(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3565",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3588",
               "isCycle": false,
               "location": {
                 "column": 51,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 114
+                "line": 115
               },
               "signature": {
                 "parameters": [
@@ -2581,12 +2581,12 @@
                 "summary": "Loads and validates a callidescope configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly trace the repository with defaults it never asked for. A path that was not named is searched for, and its absence is legal.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11591",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11673",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 360
+                "line": 362
               },
               "signature": {
                 "parameters": [
@@ -2608,12 +2608,12 @@
                 "summary": "Loads a configuration, and says what the file itself declared and which file answered. The same work as `loadConfiguration`, keeping two facts it throws away. The path is what tells a caller resolving a configuration beside every project which file it has already read as the run's own, so that one file is never given two roles. The authored object is what a refusal has to name fields from, since resolution manufactures the rest. Naming a path guarantees one back, which is why that case has an overload of its own: the alternative is every caller of the narrow case carrying a fallback that can never fire, and picking its own path when it does.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12813",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12895",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 388
+                "line": 390
               },
               "signature": {
                 "parameters": [
@@ -2635,12 +2635,12 @@
                 "summary": "Resolves a configuration path against the cwd, then the repository root.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5398",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5421",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 177
+                "line": 178
               },
               "signature": {
                 "parameters": [
@@ -2662,12 +2662,12 @@
                 "summary": "Walks upward from the process cwd looking for the repository root. Used to resolve a configuration path given relative to that root even when the command was invoked from a nested directory, which is what a task runner does whenever it sets the cwd to the project rather than the workspace.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3346",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3369",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 109
+                "line": 110
               },
               "signature": {
                 "parameters": [],
@@ -2677,12 +2677,12 @@
             },
             {
               "displayName": "ConfigurationService.some(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3565",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3588",
               "isCycle": false,
               "location": {
                 "column": 51,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 114
+                "line": 115
               },
               "signature": {
                 "parameters": [
@@ -3146,12 +3146,12 @@
                 "summary": "Accepts a function-valued option without inspecting its signature. Zod cannot describe a callback's parameters, and parsing one would replace the caller's function with a wrapper. Checking that it is callable is the whole of what validation can honestly assert here.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#8955",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9299",
               "isCycle": false,
               "location": {
                 "column": 24,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 278
+                "line": 287
               },
               "signature": {
                 "parameters": [],
@@ -3161,12 +3161,12 @@
             },
             {
               "displayName": "custom(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9016",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9360",
               "isCycle": false,
               "location": {
                 "column": 23,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 279
+                "line": 288
               },
               "signature": {
                 "parameters": [
@@ -3951,7 +3951,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.resolveConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14073"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14155"
             }
           ],
           "displayName": "DependencyClosureService.readDepthLimit",
@@ -6201,12 +6201,12 @@
                 "summary": "Fills in every field a configuration file may leave out. Exposed so a host embedding callidescope can hand over a configuration object it assembled itself and get the same shape a configuration file produces.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14073",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14155",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 431
+                "line": 433
               },
               "signature": {
                 "parameters": [
@@ -6228,12 +6228,12 @@
                 "summary": "Applies the default globs exempt from the module-spread finding.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5160",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5183",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 170
+                "line": 171
               },
               "signature": {
                 "parameters": [
@@ -7814,6 +7814,10 @@
           "breadth": 7,
           "callees": [
             {
+              "displayName": "ConfigurationService.resolveLanguageComments",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8246"
+            },
+            {
               "displayName": "ConfigurationService.resolveDocumentation",
               "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6456"
             },
@@ -7828,10 +7832,6 @@
             {
               "displayName": "ConfigurationService.resolveMarkdownOutput",
               "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9307"
-            },
-            {
-              "displayName": "ConfigurationService.resolveLanguageComments",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8246"
             },
             {
               "displayName": "ConfigurationService.resolveCustomStatistics",
@@ -7983,7 +7983,7 @@
             },
             {
               "displayName": "ConfigurationFileNotFoundError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15970"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16113"
             }
           ],
           "displayName": "ConfigurationLoaderService.resolveConfigurationPath",
@@ -8015,7 +8015,7 @@
             },
             {
               "displayName": "InvalidLimitValueError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16614"
             }
           ],
           "displayName": "ConfigurationService.parseLimitValue",
@@ -8160,15 +8160,15 @@
           "callees": [
             {
               "displayName": "every(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10192"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10226"
             }
           ],
           "displayName": "refine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10144",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10178",
           "location": {
             "column": 11,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 324
+            "line": 325
           },
           "signature": {
             "parameters": [
@@ -8188,15 +8188,15 @@
           "callees": [
             {
               "displayName": "some(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14482"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14584"
             }
           ],
           "displayName": "superRefine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14398",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14500",
           "location": {
             "column": 22,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 438
+            "line": 441
           },
           "signature": {
             "parameters": [
@@ -8222,15 +8222,15 @@
           "callees": [
             {
               "displayName": "map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15616"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15718"
             }
           ],
           "displayName": "refine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15575",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15677",
           "location": {
             "column": 7,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 465
+            "line": 468
           },
           "signature": {
             "parameters": [
@@ -8305,7 +8305,7 @@
           "callees": [
             {
               "displayName": "InvalidLimitValueError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16614"
             }
           ],
           "displayName": "ConfigurationService.parseLimitValueText",
@@ -8765,12 +8765,12 @@
             },
             {
               "displayName": "InvalidLimitValueError.constructor",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16471",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#16614",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 492
+                "line": 496
               },
               "signature": {
                 "parameters": [
@@ -8943,12 +8943,12 @@
           "frames": [
             {
               "displayName": "refine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10144",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10178",
               "isCycle": false,
               "location": {
                 "column": 11,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 324
+                "line": 325
               },
               "signature": {
                 "parameters": [
@@ -8965,12 +8965,12 @@
             },
             {
               "displayName": "every(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10192",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#10226",
               "isCycle": false,
               "location": {
                 "column": 38,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 325
+                "line": 326
               },
               "signature": {
                 "parameters": [
@@ -8994,12 +8994,12 @@
           "frames": [
             {
               "displayName": "superRefine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14398",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14500",
               "isCycle": false,
               "location": {
                 "column": 22,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 438
+                "line": 441
               },
               "signature": {
                 "parameters": [
@@ -9022,12 +9022,12 @@
             },
             {
               "displayName": "some(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14482",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#14584",
               "isCycle": false,
               "location": {
                 "column": 13,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 440
+                "line": 443
               },
               "signature": {
                 "parameters": [
@@ -9051,12 +9051,12 @@
           "frames": [
             {
               "displayName": "refine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15575",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15677",
               "isCycle": false,
               "location": {
                 "column": 7,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 465
+                "line": 468
               },
               "signature": {
                 "parameters": [
@@ -9073,12 +9073,12 @@
             },
             {
               "displayName": "map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15616",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts#15718",
               "isCycle": false,
               "location": {
                 "column": 29,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 466
+                "line": 469
               },
               "signature": {
                 "parameters": [
@@ -9100,7 +9100,7 @@
       "summary": {
         "callableCount": 52,
         "cyclicComponentCount": 0,
-        "edgeCount": 50,
+        "edgeCount": 54,
         "entryPointCount": 6,
         "fileCount": 17,
         "maximumDepth": 8,
@@ -10444,7 +10444,7 @@
   "summary": {
     "callableCount": 230,
     "cyclicComponentCount": 1,
-    "edgeCount": 196,
+    "edgeCount": 200,
     "entryPointCount": 76,
     "fileCount": 81,
     "maximumDepth": 8,

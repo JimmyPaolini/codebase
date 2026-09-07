@@ -27,6 +27,7 @@ import {
   DEFAULT_PREVIEW_COUNT,
   DEFAULT_PROJECT_README_HEADING,
   DEFAULT_ROOT_MODULE_SEGMENT,
+  DEFAULT_RUN_HEADING,
   DEFAULT_SPREAD_THRESHOLD,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
@@ -283,6 +284,7 @@ export class ConfigurationService {
     return {
       description: destination.description,
       endMarker: destination.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
+      heading: destination.heading ?? DEFAULT_RUN_HEADING,
       path: destination.path,
       // Left unset rather than defaulted: the built-in rendering and writing
       // live in the CLI that calls them, so "unset" is what selects them.

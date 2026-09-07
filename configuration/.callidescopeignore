@@ -31,3 +31,14 @@ packages/callidescope-examples/
 # reading a project's configuration is what fails, so a project has to be
 # excluded before discovery rather than after.
 packages/codependix-examples/examples/typescript-resolution/broken/
+
+# The workspace root, as a project of its own. It holds a `tsconfig.json`, so
+# discovery finds it, and what it owns is whatever that config's `include`
+# catches and no other project claims — the handful of loose maintenance
+# scripts under `scripts/` and `.devcontainer/scripts/`. Those are not the
+# workspace, and a section describing them is what the root README carried
+# until `output.markdown` took that block over. Excluded here rather than left
+# in: a project named by its root-relative path has no name at all when that
+# path is the root, so its section was headed with empty backticks, and both
+# destinations default to the same markers and would fight over the same file.
+/tsconfig.json

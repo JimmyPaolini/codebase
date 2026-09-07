@@ -43,13 +43,13 @@ Call stacks traced through `packages/callidescope-graph`, deepest first. Each fr
 
 | Measure | Value |
 | --- | --- |
-| Callables | 207 |
-| Files | 63 |
-| Calls traced | 193 |
-| Call stacks | 3 |
+| Callables | 224 |
+| Files | 64 |
+| Calls traced | 210 |
+| Call stacks | 4 |
 | Deepest stack | 5 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 4 |
+| Unfollowable calls | 5 |
 
 ### Call stacks (depth)
 
@@ -70,7 +70,7 @@ Call stacks traced through `packages/callidescope-graph`, deepest first. Each fr
 
 ```text
 🚀 CallablesService.visit(node: ts.Node): void [packages/callidescope-graph/src/modules/callables/callables.service.ts:49]
-  └─> CallablesService.describe(args: DescribeCallableArguments): DiscoveredCallable [packages/callidescope-graph/src/modules/callables/callables.service.ts:116]
+  └─> CallablesService.describe(args: DescribeCallableArguments): DiscoveredCallable [packages/callidescope-graph/src/modules/callables/callables.service.ts:122]
      ↳ Turns one declaration into a fully described node.
     └─> CallableIdentityService.readDisplayName(declaration: CallableDeclaration): string [packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:131]
        ↳ Builds the qualified name a report prints for a callable.
@@ -80,12 +80,29 @@ Call stacks traced through `packages/callidescope-graph`, deepest first. Each fr
            ↳ Reads the name a property, variable, or parameter declaration binds.
 ```
 
-**3. `WorkspaceService.isExcluded`** — depth 2 · orphan-root
+**3. `FileFilterService.isExcluded`** — depth ≥ 4 · orphan-root
 
 ```text
-🚀 WorkspaceService.isExcluded(workspaceRelativePath: string): boolean [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:244]
-  └─> WorkspaceService.some(…)(glob: string): boolean [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:246]
+🚀 FileFilterService.isExcluded(workspaceRelativePath: string): boolean [packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:206]
+  └─> FileFilterService.isExcludedByOwningProject(…): boolean [packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:60]
+     ↳ True when the project owning a file excludes it with a glob of its own.
+    └─> WorkspaceService.resolveOwningProject(…): WorkspaceProject | undefined [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:331]
+       ↳ Names the traced project whose root most narrowly contains a file. "Contains" means the deepest of `args.projects`…
+      └─> WorkspaceService.isContainedByRoot(args: { root: string; workspaceRelativePath: string; }): boolean [packages/callidescope-graph/src/modules/workspace/workspace.service.ts:131]
+         ↳ True when a project's root is a path-segment prefix of a file's path.
 ```
+
+<details>
+<summary>1 more call stacks</summary>
+
+**4. `FileFilterService.isExcluded`** — depth 2 · orphan-root
+
+```text
+🚀 FileFilterService.isExcluded(workspaceRelativePath: string): boolean [packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:161]
+  └─> FileFilterService.some(…)(glob: string): boolean [packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:163]
+```
+
+</details>
 
 ### Module spread
 
@@ -95,23 +112,25 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CallablesService.describe` | 9 | `CallableIdentityService.readDisplayName`, `CallableIdentityService.readEnclosingTypeName`, `CallableIdentityService.buildId`, `CallableIdentityService.isExported`, `CallableIdentityService.readKind`, `CallableIdentityService.readLocation`, `CallableIdentityService.readMemberName`, `WorkspaceService.resolveModuleId`, `CallableIdentityService.countStatements` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:116` |
+| `CallablesService.describe` | 9 | `CallableIdentityService.readDisplayName`, `CallableIdentityService.readEnclosingTypeName`, `CallableIdentityService.buildId`, `CallableIdentityService.isExported`, `CallableIdentityService.readKind`, `CallableIdentityService.readLocation`, `CallableIdentityService.readMemberName`, `WorkspaceService.resolveModuleId`, `CallableIdentityService.countStatements` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:122` |
 | `EdgesService.buildSiteEdges` | 7 | `EdgesService.collectCallbackEdges`, `EdgesService.resolveSite`, `EdgesService.filter(…)`, `EdgesService.filter(…)`, `EdgesService.map(…)`, `EdgesService.filter(…)`, `EdgesService.readLocation` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:59` |
 | `SymbolResolutionService.resolveSymbol` | 6 | `SymbolResolutionService.unwrapAlias`, `SymbolResolutionService.every(…)`, `SymbolResolutionService.readBodied`, `SymbolResolutionService.readResolution`, `SymbolResolutionService.find(…)`, `SymbolResolutionService.resolveThroughHierarchy` | `packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:165` |
 
 <details>
-<summary>92 more callables</summary>
+<summary>100 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `GraphAssemblyService.assemble` | 6 | `GraphService.assemble`, `EdgesService.build`, `ComponentsService.condense`, `GraphAssemblyService.map(…)`, `BreadthService.measure`, `GraphDepthService.measure` | `packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44` |
-| `WorkspaceService.discoverProjects` | 5 | `WorkspaceService.map(…)`, `WorkspaceService.findAllProjectDirectories`, `WorkspaceService.isExcludedProject`, `ProgramConfigurationError.constructor`, `WorkspaceService.toSorted(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:286` |
+| `WorkspaceService.discoverProjects` | 5 | `WorkspaceService.map(…)`, `WorkspaceService.findAllProjectDirectories`, `WorkspaceService.isExcludedProject`, `ProgramConfigurationError.constructor`, `WorkspaceService.toSorted(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:214` |
 | `ProgramService.assignOwnership` | 5 | `ProgramService.toRealPath`, `ProgramService.map(…)`, `WorkspaceService.toWorkspaceRelative`, `WorkspaceService.resolveOwningProject`, `ProgramService.find(…)` | `packages/callidescope-graph/src/modules/program/program.service.ts:64` |
-| `AddressService.resolve` | 4 | `AddressService.parseAddress`, `AddressService.describeInvalidAddress`, `AddressService.findMatches`, `AddressService.toCandidates` | `packages/callidescope-graph/src/modules/callables/address.service.ts:175` |
+| `EntriesService.resolve` | 5 | `EntriesService.toRules`, `EntriesService.map(…)`, `EntriesService.classifyEveryCallable`, `EntriesService.rootDeclaredAddresses`, `EntriesService.promoteOrphans` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:312` |
+| `AddressService.resolve` | 4 | `AddressService.parseAddress`, `AddressService.describeInvalidAddress`, `AddressService.findMatches`, `AddressService.toCandidates` | `packages/callidescope-graph/src/modules/callables/address.service.ts:235` |
 | `ClassesService.resolveImplementations` | 4 | `ClassesService.collectDerived`, `ClassesService.filter(…)`, `ClassesService.filterAssignable`, `ClassesService.flatMap(…)` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:207` |
 | `CohesionService.findModuleSpreads` | 4 | `CohesionService.isSpreadAllowed`, `CohesionService.readDepth`, `CohesionService.readDirectModuleIds`, `CohesionService.toSorted(…)` | `packages/callidescope-graph/src/modules/cohesion/cohesion.service.ts:202` |
 | `DocumentationService.read` | 4 | `DocumentationService.readSymbol`, `DocumentationService.readSummary`, `DocumentationService.filter(…)`, `DocumentationService.map(…)` | `packages/callidescope-graph/src/modules/documentation/documentation.service.ts:78` |
-| `AddressService.listAddresses` | 3 | `AddressService.toAddress`, `AddressService.map(…)`, `AddressService.toSorted(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:152` |
+| `AddressService.describeCandidates` | 3 | `AddressService.countCandidatesByLine`, `AddressService.some(…)`, `AddressService.map(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:181` |
+| `AddressService.listAddresses` | 3 | `AddressService.toAddress`, `AddressService.map(…)`, `AddressService.toSorted(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:212` |
 | `ProgramService.buildProgram` | 3 | `ProgramService.parseConfiguration`, `CompilerHostService.createHost`, `ProgramService.map(…)` | `packages/callidescope-graph/src/modules/program/program.service.ts:115` |
 | `ProgramService.parseConfiguration` | 3 | `ProgramService.readJsonConfigFile(…)`, `ProgramConfigurationError.constructor`, `ProgramService.map(…)` | `packages/callidescope-graph/src/modules/program/program.service.ts:147` |
 | `ProgramService.buildPrograms` | 3 | `WorkspaceService.walkImportedProjectClosure`, `ProgramService.toSorted(…)`, `ProgramService.assignOwnership` | `packages/callidescope-graph/src/modules/program/program.service.ts:254` |
@@ -119,18 +138,19 @@ None.
 | `ClassesService.indexProgram` | 3 | `ExternalService.isExternal`, `ClassesService.indexMembers`, `ClassesService.indexHeritage` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:181` |
 | `CohesionService.summarizeTypeDepths` | 3 | `CohesionService.readDepth`, `CohesionService.extendTypeSummary`, `CohesionService.toSorted(…)` | `packages/callidescope-graph/src/modules/cohesion/cohesion.service.ts:256` |
 | `EdgesService.collectCallbackEdges` | 3 | `EdgesService.map(…)`, `EdgesService.filter(…)`, `EdgesService.map(…)` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:127` |
-| `EntriesService.classify` | 3 | `EntriesService.hasConfiguredDecorator`, `EntriesService.isCommandRunnerMethod`, `EntriesService.isBootstrapFunction` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:49` |
+| `EntriesService.classify` | 3 | `EntriesService.hasConfiguredDecorator`, `EntriesService.isCommandRunnerMethod`, `EntriesService.isBootstrapFunction` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:67` |
 | `ComponentsService.condense` | 3 | `ComponentsService.openNode`, `ComponentsService.step`, `ComponentsService.buildSuccessors` | `packages/callidescope-graph/src/modules/graph/components.service.ts:183` |
 | `GraphDepthService.measure` | 3 | `GraphDepthService.combine`, `GraphDepthService.readOwnModules`, `GraphDepthService.hasUnresolved` | `packages/callidescope-graph/src/modules/graph/graph-depth.service.ts:132` |
-| `AddressService.parseAddress` | 2 | `AddressService.parseSymbolPath`, `AddressService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/callables/address.service.ts:71` |
+| `AddressService.parseAddress` | 2 | `AddressService.parseSymbolPath`, `AddressService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/callables/address.service.ts:89` |
 | `CallableIdentityService.readDisplayName` | 2 | `CallableIdentityService.readMemberName`, `CallableIdentityService.readEnclosingTypeName` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:131` |
 | `CallableIdentityService.readMemberName` | 2 | `CallableIdentityService.readBindingName`, `CallableIdentityService.describeCallbackArgument` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:193` |
-| `WorkspaceService.findProjectDirectories` | 2 | `WorkspaceService.toWorkspaceRelative`, `WorkspaceService.isExcludedFromScan` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:84` |
-| `WorkspaceService.walkImportedProjectClosure` | 2 | `WorkspaceService.resolveOwningProject`, `WorkspaceService.isClosureDestination` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:474` |
+| `WorkspaceService.findProjectDirectories` | 2 | `WorkspaceService.toWorkspaceRelative`, `WorkspaceService.isExcludedFromScan` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:82` |
+| `WorkspaceService.walkImportedProjectClosure` | 2 | `WorkspaceService.resolveOwningProject`, `WorkspaceService.isClosureDestination` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:402` |
+| `FileFilterService.isExcludedByOwningProject` | 2 | `WorkspaceService.resolveOwningProject`, `FileFilterService.some(…)` | `packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:60` |
 | `ProgramService.readPulledInPaths` | 2 | `ProgramService.toRealPath`, `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/program/program.service.ts:195` |
 | `ProgramService.resolveProjectFiles` | 2 | `ProgramService.buildProgram`, `ProgramService.readPulledInPaths` | `packages/callidescope-graph/src/modules/program/program.service.ts:262` |
 | `CallablesService.visit` | 2 | `CallablesService.isCallableDeclaration`, `CallablesService.describe` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:49` |
-| `CallablesService.readOwnedPath` | 2 | `ProgramService.toRealPath`, `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:162` |
+| `CallablesService.readOwnedPath` | 2 | `ProgramService.toRealPath`, `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:168` |
 | `ClassesService.readMemberDeclarations` | 2 | `ClassesService.filter(…)`, `ClassesService.filter(…)` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:149` |
 | `CohesionService.findMisplacedCallables` | 2 | `CohesionService.readCallerDistribution`, `CohesionService.toSorted(…)` | `packages/callidescope-graph/src/modules/cohesion/cohesion.service.ts:161` |
 | `CallSitesService.visit` | 2 | `CallSitesService.isNestedBody`, `CallSitesService.readFunctionArguments` | `packages/callidescope-graph/src/modules/edges/call-sites.service.ts:62` |
@@ -140,7 +160,9 @@ None.
 | `EdgesService.resolveCallableId` | 2 | `WorkspaceService.toWorkspaceRelative`, `ProgramService.toRealPath` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:202` |
 | `EdgesService.resolveSite` | 2 | `SymbolResolutionService.resolveConstructor`, `SymbolResolutionService.resolve` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:226` |
 | `EdgesService.build` | 2 | `CallSitesService.collect`, `EdgesService.buildSiteEdges` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:251` |
-| `EntriesService.hasConfiguredDecorator` | 2 | `EntriesService.some(…)`, `EntriesService.readDecoratorNames` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:85` |
+| `EntriesService.classifyEveryCallable` | 2 | `EntriesService.classify`, `EntriesService.readRules` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:102` |
+| `EntriesService.hasConfiguredDecorator` | 2 | `EntriesService.some(…)`, `EntriesService.readDecoratorNames` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:117` |
+| `EntriesService.rootDeclaredAddresses` | 2 | `EntriesService.listDeclaringConfigurations`, `EntriesService.rootDeclaredAddress` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:262` |
 | `PathsService.buildDeepestPath` | 2 | `PathsService.orderMembers`, `PathsService.buildFrame` | `packages/callidescope-graph/src/modules/graph/paths.service.ts:59` |
 | `PathsService.buildFrame` | 2 | `DocumentationService.read`, `SignaturesService.read` | `packages/callidescope-graph/src/modules/graph/paths.service.ts:103` |
 | `AddressDepthService.toStack` | 2 | `PathsService.buildFrame`, `AddressDepthService.isLowerBound` | `packages/callidescope-graph/src/modules/graph/address-depth.service.ts:105` |
@@ -150,21 +172,22 @@ None.
 | `ComponentsService.step` | 2 | `ComponentsService.finishFrame`, `ComponentsService.visitSuccessor` | `packages/callidescope-graph/src/modules/graph/components.service.ts:116` |
 | `ComponentsService.visitSuccessor` | 2 | `ComponentsService.openNode`, `ComponentsService.liftLowLink` | `packages/callidescope-graph/src/modules/graph/components.service.ts:139` |
 | `GraphService.assemble` | 2 | `GraphService.append`, `GraphService.map(…)` | `packages/callidescope-graph/src/modules/graph/graph.service.ts:44` |
-| `AddressService.toCandidates` | 1 | `AddressService.map(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:119` |
-| `AddressService.map(…)` | 1 | `AddressService.toAddress` | `packages/callidescope-graph/src/modules/callables/address.service.ts:163` |
+| `AddressService.toCandidates` | 1 | `AddressService.map(…)` | `packages/callidescope-graph/src/modules/callables/address.service.ts:137` |
+| `AddressService.map(…)` | 1 | `AddressService.toAddress` | `packages/callidescope-graph/src/modules/callables/address.service.ts:223` |
 | `CallableIdentityService.isExported` | 1 | `CallableIdentityService.findAncestor(…)` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:111` |
 | `CallableIdentityService.readEnclosingTypeName` | 1 | `CallableIdentityService.findAncestor(…)` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:139` |
 | `CallableIdentityService.readKind` | 1 | `CallableIdentityService.readBoundKind` | `packages/callidescope-graph/src/modules/callables/callable-identity.service.ts:152` |
-| `WorkspaceService.findAllProjectDirectories` | 1 | `WorkspaceService.findProjectDirectories` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:62` |
-| `WorkspaceService.isExcludedProject` | 1 | `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:163` |
-| `WorkspaceService.buildFileFilter` | 1 | `WorkspaceService.listIgnoredFiles` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:220` |
-| `WorkspaceService.isExcluded` | 1 | `WorkspaceService.some(…)` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:244` |
-| `WorkspaceService.map(…)` | 1 | `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:289` |
-| `WorkspaceService.resolveOwningProject` | 1 | `WorkspaceService.isContainedByRoot` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:403` |
+| `WorkspaceService.findAllProjectDirectories` | 1 | `WorkspaceService.findProjectDirectories` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:60` |
+| `WorkspaceService.isExcludedProject` | 1 | `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:161` |
+| `WorkspaceService.map(…)` | 1 | `WorkspaceService.toWorkspaceRelative` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:217` |
+| `WorkspaceService.resolveOwningProject` | 1 | `WorkspaceService.isContainedByRoot` | `packages/callidescope-graph/src/modules/workspace/workspace.service.ts:331` |
+| `FileFilterService.buildFileFilter` | 1 | `FileFilterService.listIgnoredFiles` | `packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:137` |
+| `FileFilterService.isExcluded` | 1 | `FileFilterService.some(…)` | `packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:161` |
+| `FileFilterService.isExcluded` | 1 | `FileFilterService.isExcludedByOwningProject` | `packages/callidescope-graph/src/modules/workspace/file-filter.service.ts:206` |
 | `CompilerHostService.resolveModuleCache` | 1 | `CompilerHostService.createModuleResolutionCache(…)` | `packages/callidescope-graph/src/modules/program/compiler-host.service.ts:40` |
 | `CompilerHostService.createHost` | 1 | `CompilerHostService.resolveModuleCache` | `packages/callidescope-graph/src/modules/program/compiler-host.service.ts:76` |
 | `ProgramService.map(…)` | 1 | `ProgramService.toRealPath` | `packages/callidescope-graph/src/modules/program/program.service.ts:133` |
-| `CallablesService.collect` | 1 | `CallablesService.collectFromProgram` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:189` |
+| `CallablesService.collect` | 1 | `CallablesService.collectFromProgram` | `packages/callidescope-graph/src/modules/callables/callables.service.ts:195` |
 | `ExternalService.isExternal` | 1 | `ExternalService.computeVerdict` | `packages/callidescope-graph/src/modules/classes/external.service.ts:64` |
 | `ClassesService.filterAssignable` | 1 | `ClassesService.filter(…)` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:87` |
 | `ClassesService.build` | 1 | `ClassesService.indexProgram` | `packages/callidescope-graph/src/modules/classes/classes.service.ts:172` |
@@ -182,9 +205,11 @@ None.
 | `EdgesService.map(…)` | 1 | `EdgesService.resolveCallableId` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:134` |
 | `EdgesService.map(…)` | 1 | `EdgesService.readLocation` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:142` |
 | `EdgesService.isIgnoredCallee` | 1 | `EdgesService.some(…)` | `packages/callidescope-graph/src/modules/edges/edges.service.ts:162` |
-| `EntriesService.isCommandRunnerMethod` | 1 | `EntriesService.hasConfiguredDecorator` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:103` |
-| `EntriesService.readDecoratorNames` | 1 | `EntriesService.map(…)` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:121` |
-| `EntriesService.resolve` | 1 | `EntriesService.classify` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:139` |
+| `EntriesService.isCommandRunnerMethod` | 1 | `EntriesService.hasConfiguredDecorator` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:135` |
+| `EntriesService.promoteOrphans` | 1 | `EntriesService.readRules` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:171` |
+| `EntriesService.readDecoratorNames` | 1 | `EntriesService.map(…)` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:192` |
+| `EntriesService.rootDeclaredAddress` | 1 | `AddressService.resolve` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:233` |
+| `EntriesService.map(…)` | 1 | `EntriesService.toRules` | `packages/callidescope-graph/src/modules/entries/entries.service.ts:320` |
 | `SignaturesService.read` | 1 | `SignaturesService.map(…)` | `packages/callidescope-graph/src/modules/signatures/signatures.service.ts:65` |
 | `SignaturesService.map(…)` | 1 | `SignaturesService.readParameter` | `packages/callidescope-graph/src/modules/signatures/signatures.service.ts:75` |
 | `AddressDepthService.isLowerBound` | 1 | `AddressDepthService.some(…)` | `packages/callidescope-graph/src/modules/graph/address-depth.service.ts:71` |
@@ -251,6 +276,7 @@ flowchart LR
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
+  EntriesModule --> CallablesModule
   GraphModule --> DocumentationModule
   GraphModule --> EdgesModule
   GraphModule --> SignaturesModule
@@ -344,6 +370,8 @@ graph LR
   file_src_modules_signatures_signatures_service_ts["src/modules/signatures/signatures.service.ts"]
   file_src_modules_signatures_signatures_service_unit_test_ts["src/modules/signatures/signatures.service.unit.test.ts"]
   file_src_modules_signatures_signatures_types_ts["src/modules/signatures/signatures.types.ts"]
+  file_src_modules_workspace_file_filter_service_ts["src/modules/workspace/file-filter.service.ts"]
+  file_src_modules_workspace_file_filter_service_unit_test_ts["src/modules/workspace/file-filter.service.unit.test.ts"]
   file_src_modules_workspace_workspace_constants_ts["src/modules/workspace/workspace.constants.ts"]
   file_src_modules_workspace_workspace_module_ts["src/modules/workspace/workspace.module.ts"]
   file_src_modules_workspace_workspace_service_ts["src/modules/workspace/workspace.service.ts"]
@@ -454,15 +482,22 @@ graph LR
   file_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_src_modules_edges_symbol_resolution_service_ts
   file_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_testing_programs_ts
+  file_src_modules_entries_entries_module_ts --> file_src_modules_callables_callables_module_ts
   file_src_modules_entries_entries_module_ts --> file_src_modules_entries_entries_service_ts
+  file_src_modules_entries_entries_service_ts --> file_src_modules_callables_address_service_ts
   file_src_modules_entries_entries_service_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_entries_entries_service_ts --> file_src_modules_entries_entries_constants_ts
   file_src_modules_entries_entries_service_ts --> file_src_modules_entries_entries_types_ts
+  file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_callables_address_service_ts
+  file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_entries_entries_service_ts
+  file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_entries_entries_types_ts
   file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_entries_entries_service_unit_test_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_entries_entries_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_entries_entries_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_entries_entries_service_unit_test_ts --> file_testing_programs_ts
+  file_src_modules_entries_entries_types_ts --> file_src_modules_callables_address_types_ts
   file_src_modules_entries_entries_types_ts --> file_src_modules_callables_callables_types_ts
   file_src_modules_entries_entries_types_ts --> file_src_modules_graph_graph_types_ts
   file_src_modules_graph_address_depth_service_ts --> file_src_modules_callables_callables_types_ts
@@ -568,6 +603,13 @@ graph LR
   file_src_modules_signatures_signatures_service_unit_test_ts --> file_testing_modules_ts
   file_src_modules_signatures_signatures_service_unit_test_ts --> file_testing_programs_ts
   file_src_modules_signatures_signatures_types_ts --> file_src_modules_callables_callables_types_ts
+  file_src_modules_workspace_file_filter_service_ts --> file_src_modules_workspace_workspace_service_ts
+  file_src_modules_workspace_file_filter_service_ts --> file_src_modules_workspace_workspace_types_ts
+  file_src_modules_workspace_file_filter_service_unit_test_ts --> file_src_modules_workspace_file_filter_service_ts
+  file_src_modules_workspace_file_filter_service_unit_test_ts --> file_src_modules_workspace_workspace_service_ts
+  file_src_modules_workspace_file_filter_service_unit_test_ts --> file_src_modules_workspace_workspace_types_ts
+  file_src_modules_workspace_file_filter_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_workspace_workspace_module_ts --> file_src_modules_workspace_file_filter_service_ts
   file_src_modules_workspace_workspace_module_ts --> file_src_modules_workspace_workspace_service_ts
   file_src_modules_workspace_workspace_service_ts --> file_src_modules_program_program_constants_ts
   file_src_modules_workspace_workspace_service_ts --> file_src_modules_workspace_workspace_constants_ts
@@ -607,40 +649,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-12036-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-379.38_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-13173-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-419.13_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-13-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-89-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-91-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-54.31_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-58.86_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-89-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-49-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-91-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-55-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-32-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-286-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-33-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-324-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-22-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-23-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-12-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-33-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-529-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-184-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-649-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-64-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-743-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-431-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-122-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-539-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1124-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-34-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-566-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-200-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-701-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-65-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-792-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-457-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-130-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-600-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1309-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -752,13 +794,13 @@ graph LR
 ### Conventions
 
 ![Module Files](https://img.shields.io/badge/Module_Files-10-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-22-0284c7?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-23-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
 ![Constants Files](https://img.shields.io/badge/Constants_Files-13-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-14-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-22-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-23-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 

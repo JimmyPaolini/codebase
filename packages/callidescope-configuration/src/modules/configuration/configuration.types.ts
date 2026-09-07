@@ -105,6 +105,17 @@ export interface CallidescopeLimits {
 export interface CallidescopeMarkdownOutputConfiguration {
   description?: string | undefined;
   endMarker?: string | undefined;
+  /**
+   * Heading the block is written under, `# 🔭 Callidescope` by default.
+   *
+   * Configurable for the same reason `projectReadmes.heading` is, and it is
+   * the level rather than the words that usually needs changing: a block
+   * spliced into a file that already has a title needs an `##` here, or the
+   * file ends up with two first-level headings and every markdown linter
+   * rejects it. The subsection levels follow whatever this is set to, so the
+   * block stays a well-formed subtree of the document it lands in.
+   */
+  heading?: string | undefined;
   path: string;
   render?: RenderMarkdownOutput | undefined;
   startMarker?: string | undefined;
@@ -365,6 +376,7 @@ export interface ResolvedCallidescopeLimits {
 export interface ResolvedCallidescopeMarkdownOutputConfiguration {
   description: string | undefined;
   endMarker: string;
+  heading: string;
   path: string;
   render: RenderMarkdownOutput | undefined;
   startMarker: string;

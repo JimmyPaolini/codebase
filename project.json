@@ -527,15 +527,6 @@
         "cwd": "{workspaceRoot}"
       }
     },
-    "orchestrate-agents": {
-      "cache": false,
-      "description": "Run the multi-agent prompt orchestration script",
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsx scripts/orchestrate-agents.ts",
-        "cwd": "{workspaceRoot}"
-      }
-    },
     "oxfmt": {
       "cache": true,
       "configurations": {
@@ -562,14 +553,14 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "oxlint --config configuration/oxlint.config.ts --ignore-path configuration/.oxlintignore '*.ts' '*.js' 'scripts/' 'documentation/' 'infrastructure/' --ignore-pattern='infrastructure/helm/**/templates'"
+          "command": "oxlint --config configuration/oxlint.config.ts --ignore-path configuration/.oxlintignore '*.ts' '*.js' '.devcontainer/scripts/' 'scripts/' 'documentation/' 'infrastructure/' --ignore-pattern='infrastructure/helm/**/templates'"
         },
         "write": {
-          "command": "oxlint --config configuration/oxlint.config.ts --ignore-path configuration/.oxlintignore {args} '*.ts' '*.js' 'scripts/' 'documentation/' 'infrastructure/' --ignore-pattern='infrastructure/helm/**/templates'"
+          "command": "oxlint --config configuration/oxlint.config.ts --ignore-path configuration/.oxlintignore {args} '*.ts' '*.js' '.devcontainer/scripts/' 'scripts/' 'documentation/' 'infrastructure/' --ignore-pattern='infrastructure/helm/**/templates'"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Run Oxlint on workspace root files (config files, scripts, documentation, infrastructure)",
+      "description": "Run Oxlint on workspace root files \u2014 config files, scripts, documentation, infrastructure, and the devcontainer sync scripts. That last path is named because the others hold no TypeScript at all today: `scripts/` went shell-only when the two dead root scripts were deleted, and oxlint exits non-zero when its paths match nothing, so a target covering only empty directories fails rather than passing vacuously. The devcontainer scripts are real TypeScript that nothing else here was linting.",
       "executor": "nx:run-commands",
       "inputs": ["{workspaceRoot}/configuration/oxlint.config.ts", "default"],
       "options": {

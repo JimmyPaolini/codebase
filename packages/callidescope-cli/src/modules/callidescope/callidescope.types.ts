@@ -100,6 +100,8 @@ export interface ProjectDeclarations {
 export interface SyncDestinationsArguments {
   readonly check: boolean;
   readonly configuration: ResolvedCallidescopeConfiguration;
+  /** The depth and breadth limits each traced project is judged against. */
+  readonly projectLimits: ProjectLimitsLookup;
   readonly result: CallGraphResult;
   /**
    * Workspace-relative root of each project the run was scoped to, keyed by

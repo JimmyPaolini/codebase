@@ -6,9 +6,9 @@ import {
   MARKDOWN_SPREAD_HEADER,
   MARKDOWN_SUMMARY_HEADER,
   MARKDOWN_WIDE_CALLABLES_HEADER,
-  RUN_HEADING,
 } from "./report.constants";
 import { ReportService } from "./report.service";
+import { WorkspaceReportService } from "./workspace-report.service";
 
 import type {
   RenderProjectSectionArguments,
@@ -38,6 +38,7 @@ export class MarkdownReportService {
   constructor(
     private readonly mermaidReportService: MermaidReportService,
     private readonly reportService: ReportService,
+    private readonly workspaceReportService: WorkspaceReportService,
   ) {}
 
   // 🔐 Private Fields
@@ -170,6 +171,18 @@ export class MarkdownReportService {
       : `${args.header}\n${args.rows.join("\n")}`;
   }
 
+  /**
+   * The heading prefix one level below the block's own.
+   *
+   * Derived rather than fixed, so a block spliced under an `##` heading writes
+   * `###` subsections and stays a well-formed subtree of the file it landed
+   * in. A heading carrying no leading `#` at all yields `##`, which is the
+   * level these sections had before the heading was configurable.
+   */
+  private subsectionPrefix(heading: string): string {
+    return "#".repeat((/^#+/.exec(heading)?.[0].length ?? 1) + 1);
+  }
+
   // 🌎 Public Methods
 
   /** Renders one project's section, for splicing into its own README. */
@@ -208,16 +221,42 @@ export class MarkdownReportService {
     ].join("\n");
   }
 
-  /** Renders a whole run, for a terminal or a report file. */
+  /**
+   * Renders a whole run, for a terminal or a report file.
+   *
+   * Opens with what the run adds up to rather than with its findings: the
+   * summary, the per-project index, and the headroom each project has left.
+   * A workspace holding fifty projects is not readable as a list of
+   * callables, and every section below these three is one — so a reader
+   * arriving at this block learns which project to look at before being
+   * handed the stacks.
+   */
   public renderRun(args: RenderRunArguments): string {
     const { result } = args;
+    const subsection = this.subsectionPrefix(args.heading);
+    const rows = this.workspaceReportService.buildRows({
+      limits: args.limits,
+      projects: result.projects,
+    });
 
     return [
-      RUN_HEADING,
+      args.heading,
       "",
+      ...(args.description === undefined ? [] : [args.description, ""]),
       this.renderSummaryTable(result.summary),
       "",
-      `## Call stacks over the depth limit (${String(result.deepStacks.length)})`,
+      `${subsection} Projects`,
+      "",
+      this.workspaceReportService.renderProjectIndex({
+        limits: args.limits,
+        projects: result.projects,
+      }),
+      "",
+      `${subsection} Depth headroom`,
+      "",
+      this.workspaceReportService.renderHeadroom(rows),
+      "",
+      `${subsection} Call stacks over the depth limit (${String(result.deepStacks.length)})`,
       "",
       this.renderStacksAs({
         previewCount: args.previewCount,
@@ -225,18 +264,18 @@ export class MarkdownReportService {
         stacks: result.deepStacks,
       }),
       "",
-      "## Module spread",
+      `${subsection} Module spread`,
       "",
       this.renderSpreads(result.moduleSpreads),
       "",
-      `## Callables over the breadth limit (${String(result.wideCallables.length)})`,
+      `${subsection} Callables over the breadth limit (${String(result.wideCallables.length)})`,
       "",
       this.renderCallableBreadths({
         previewCount: args.previewCount,
         reports: result.wideCallables,
       }),
       "",
-      "## Possibly misplaced",
+      `${subsection} Possibly misplaced`,
       "",
       this.renderMisplaced(result.misplacedCallables),
       "",

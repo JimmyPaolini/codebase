@@ -663,7 +663,7 @@ Call stacks traced through `packages/codometer-cli`, deepest first. Each frame s
                  ↳ Reads a limit's value, in decimal units when it was written as a string.
                 └─> ConfigurationService.parseLimitValueText(metric: string, text: string): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:100]
                    ↳ Reads a limit written as a string, unit and all.
-                  └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:492]
+                  └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:496]
 ```
 
 <details>
@@ -1171,8 +1171,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8625-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-280.07_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8649-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-280.95_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-10-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-61-3178c6?style=flat-square)
 

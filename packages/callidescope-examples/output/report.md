@@ -6,11 +6,33 @@
 | --- | --- |
 | Callables | 230 |
 | Files | 81 |
-| Calls traced | 196 |
+| Calls traced | 200 |
 | Call stacks | 76 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 12 |
+
+## Projects
+
+| Project | Deepest | Limit | Headroom | Widest | Spread | Misplaced |
+| --- | --- | --- | --- | --- | --- | --- |
+| `packages/callidescope-examples` | 8 | 5 declared | -3 | 5 | 1 | 1 |
+| `packages/codometer-configuration` | 8 | 6 inherited | -2 | 7 | 0 | 0 |
+| `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 declared | -1 | 3 | 0 | 0 |
+| `packages/callidescope-examples/examples/inherited-limits` | 7 | 6 inherited | -1 | 1 | 0 | 0 |
+| `packages/callidescope-configuration` | 6 | 6 inherited | 0 | 8 | 0 | 0 |
+| `packages/logger` | 5 | 6 inherited | 1 | 2 | 0 | 0 |
+
+## Depth headroom
+
+| Headroom | Projects |
+| --- | --- |
+| over limit | 4 |
+| 0 — at limit | 1 |
+| 1 | 1 |
+| 2–3 | 0 |
+| 4+ | 0 |
+| no stacks | 0 |
 
 ## Call stacks over the depth limit (8)
 
@@ -96,7 +118,7 @@
              ↳ Reads a limit's value, in decimal units when it was written as a string.
             └─> ConfigurationService.parseLimitValueText(metric: string, text: string): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:100]
                ↳ Reads a limit written as a string, unit and all.
-              └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:492]
+              └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:496]
 ```
 
 **5. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
