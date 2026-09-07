@@ -1,11 +1,8 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import path from "node:path";
 
 import { CallidescopeService } from "@callidescope/cli";
-import {
-  ConfigurationService,
-  DEFAULT_PREVIEW_COUNT,
-} from "@callidescope/configuration";
+import { ConfigurationService } from "@callidescope/configuration";
 import { FileFilterService } from "@callidescope/graph";
 import {
   MarkdownReportService,
@@ -20,6 +17,7 @@ import {
 } from "../options/options.constants";
 import { OptionsService } from "../options/options.service";
 import { ProjectsService } from "../projects/projects.service";
+import { RunConfigurationService } from "../run-configuration/run-configuration.service";
 
 import {
   EMPTY_TRACE_REPORT,
@@ -41,7 +39,6 @@ import type {
 import type {
   CallGraphResult,
   ProjectLimitsLookup,
-  ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 import type { FileFilter } from "@callidescope/graph";
 
@@ -64,6 +61,7 @@ export class PluginService {
     private readonly optionsService: OptionsService,
     private readonly projectReportsService: ProjectReportsService,
     private readonly projectsService: ProjectsService,
+    private readonly runConfigurationService: RunConfigurationService,
   ) {}
 
   // 🔐 Private Fields
@@ -235,7 +233,6 @@ export class PluginService {
       projectNames: args.judgedProjectNames,
       reports: args.result.projects,
     });
-
     if (args.result.summary.callableCount === 0) {
       return { findings, ok: false, reason: EMPTY_TRACE_REPORT };
     }
@@ -246,62 +243,6 @@ export class PluginService {
         findings.deepStacks.length === 0 && findings.wideCallables.length === 0,
       reason: undefined,
     };
-  }
-
-  /**
-   * Resolves and loads the configuration one run is judged by.
-   *
-   * The file-aware load rather than the plain one: a run resolves a
-   * configuration beside every project it reaches, and skips whichever file is
-   * already serving as this run's own. The path the loader settled on comes
-   * back, never the one it was handed, since a search may have answered.
-   */
-  private async loadRunConfiguration(args: {
-    configurationPath?: string | undefined;
-    workspaceRoot: string;
-  }): Promise<{
-    configuration: ResolvedCallidescopeConfiguration;
-    path: string | undefined;
-  }> {
-    const configurationPath =
-      args.configurationPath ??
-      this.optionsService.resolveConfigurationPath({
-        exists: (candidatePath) =>
-          existsSync(path.join(args.workspaceRoot, candidatePath)),
-        nxConfiguration: this.readNxConfiguration(args.workspaceRoot),
-      });
-    const loaded = await this.configurationService.loadConfigurationFile({
-      configurationPath,
-      searchDirectory: args.workspaceRoot,
-    });
-
-    return { configuration: loaded.configuration, path: loaded.path };
-  }
-
-  /**
-   * Reads the workspace's `nx.json`, so this plugin's own registration can be
-   * consulted for a configuration path an executor was not given.
-   *
-   * Unreadable or malformed is not an error: the caller falls back to the
-   * conventional filenames, which a workspace with no registration gets anyway.
-   */
-  private readNxConfiguration(workspaceRoot: string): unknown {
-    try {
-      return JSON.parse(
-        readFileSync(path.join(workspaceRoot, "nx.json"), "utf8"),
-      ) as unknown;
-    } catch {
-      return undefined;
-    }
-  }
-
-  /** How many stacks a rendering shows before the rest are folded away. */
-  private readPreviewCount(
-    configuration: ResolvedCallidescopeConfiguration,
-  ): number {
-    return (
-      configuration.output.projectReadmes?.previewCount ?? DEFAULT_PREVIEW_COUNT
-    );
   }
 
   // 🌎 Public Methods
@@ -434,7 +375,7 @@ export class PluginService {
    */
   public async runGate(args: RunGateArguments): Promise<RunTraceResult> {
     const { configuration, path: configurationPath } =
-      await this.loadRunConfiguration(args);
+      await this.runConfigurationService.load(args);
     const outcome = await this.callidescopeService.trace({
       configuration,
       configurationPath,
@@ -453,7 +394,8 @@ export class PluginService {
         verdict.reason ??
         this.markdownReportService.renderFindings({
           ...verdict.findings,
-          previewCount: this.readPreviewCount(configuration),
+          previewCount:
+            this.runConfigurationService.readPreviewCount(configuration),
         }),
     };
   }
@@ -473,7 +415,7 @@ export class PluginService {
    */
   public async runTrace(args: RunTraceArguments): Promise<RunTraceResult> {
     const { configuration: loaded, path: loadedPath } =
-      await this.loadRunConfiguration(args);
+      await this.runConfigurationService.load(args);
     const configuration = {
       ...loaded,
       output: {
@@ -495,7 +437,8 @@ export class PluginService {
       result: outcome.result,
     });
     const report = this.markdownReportService.renderRun({
-      previewCount: this.readPreviewCount(configuration),
+      previewCount:
+        this.runConfigurationService.readPreviewCount(configuration),
       rendering: configuration.output.format === "mermaid" ? "diagram" : "tree",
       result: outcome.result,
     });

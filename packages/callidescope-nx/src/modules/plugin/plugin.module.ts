@@ -8,6 +8,7 @@ import { LoggerModule } from "@codebase/logger";
 
 import { OptionsModule } from "../options/options.module";
 import { ProjectsModule } from "../projects/projects.module";
+import { RunConfigurationModule } from "../run-configuration/run-configuration.module";
 
 import { PluginService } from "./plugin.service";
 
@@ -23,6 +24,7 @@ import { PluginService } from "./plugin.service";
     ProjectReportsModule,
     ProjectsModule,
     ReportModule,
+    RunConfigurationModule,
     WorkspaceModule,
   ],
   providers: [PluginService],

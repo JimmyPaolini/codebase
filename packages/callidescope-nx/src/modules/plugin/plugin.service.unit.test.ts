@@ -13,6 +13,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { OptionsService } from "../options/options.service";
 import { ProjectsService } from "../projects/projects.service";
+import { RunConfigurationService } from "../run-configuration/run-configuration.service";
 
 import { EMPTY_TRACE_REPORT } from "./plugin.constants";
 import { PluginService } from "./plugin.service";
@@ -92,6 +93,10 @@ describe(PluginService, () => {
         OptionsService,
         { provide: ProjectReportsService, useValue: projectReportsService },
         { provide: ProjectsService, useValue: projectsService },
+        // The real one, over the mocked `ConfigurationService` beside it: what
+        // configuration a run resolves is the thing several cases below pin,
+        // and a stub of it would pin the stub instead.
+        RunConfigurationService,
       ],
     }).compile();
 

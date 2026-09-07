@@ -12,11 +12,11 @@ callidescope over that project **and its Nx dependencies**, resolved from the
 Nx project graph. `gate` is the one a pipeline is meant to read an exit code
 from, and the only one a project the workspace configuration **excludes** does
 not get: its own code is never traced, so a gate there would own no finding at
-all. A run **traces** the dependencies and **judges** only the projects it was
-scoped to, so a dependency's breach fails the dependency's own gate rather than
-every task downstream of it. A gate that read no code fails
-rather than passing, because a verdict on nothing is not a clean project. This
-is the
+all. Both `gate` and `trace` **trace** the dependencies and **judge** only the
+projects they were scoped to, so a dependency's breach fails the dependency's
+own gate rather than every task downstream of it. A gate that read no code
+fails rather than passing, because a verdict on nothing is not a clean
+project. This is the
 only package in the callidescope toolchain that depends on `@nx/devkit`:
 `@callidescope/cli` and `@callidescope/graph` are deliberately Nx-free and take
 plain `--directories`.
@@ -26,11 +26,14 @@ runner's job — `nx affected`, `nx run-many --projects=tag:…` — so a second
 binary would only duplicate it with flags that drift.
 
 `ProjectsService` (`src/modules/projects`) reads the Nx graph and takes it as an
-argument everywhere but `readProjectGraph`, so every resolution rule is testable
-without a workspace. `PluginService` (`src/modules/plugin`) does inference, the trace, and
-the gate; `AddressService` (`src/modules/address`) does the `depth` and
-`breadth` lookups, and `address.utilities.ts` holds the one prologue those two
-executors share. `src/index.ts` is the plugin entry Nx loads through `src/index.cjs`,
+argument everywhere but `readProjectGraph`, so every resolution rule is
+testable without a workspace. `PluginService` (`src/modules/plugin`) does
+inference, the trace, and the gate; `RunConfigurationService`
+(`src/modules/run-configuration`) answers the question every one of those
+starts with — which configuration file is this run's;
+`AddressService` (`src/modules/address`) does the `depth` and `breadth`
+lookups, and `address.utilities.ts` holds the one prologue those two executors
+share. `src/index.ts` is the plugin entry Nx loads through `src/index.cjs`,
 which registers `@swc-node` first — esbuild does not emit `design:paramtypes`,
 and without it every constructor injection here resolves to `undefined`.
 
