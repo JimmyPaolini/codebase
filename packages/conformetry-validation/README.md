@@ -158,7 +158,7 @@ None.
 | `ValidationService.readTemplateExtensions` | 1 | `ValidationService.flatMap(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:50` |
 | `ValidationService.flatMap(…)` | 1 | `ValidationService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:53` |
 | `ValidationService.selectValidators` | 1 | `ValidationService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:63` |
-| `ValidationService.map(…)` | 1 | `LanguageService.runValidator` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:100` |
+| `ValidationService.map(…)` | 1 | `RunnerService.runValidator` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:100` |
 | `ValidationService.map(…)` | 1 | `ValidationService.validateInstance` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:150` |
 
 </details>
@@ -216,9 +216,9 @@ flowchart LR
   DifferencesModule
   FilesModule
   InstanceDiscoveryModule
-  LanguageModule
   RenderingModule
   ReportingModule
+  RunnerModule
   ScoringModule
   TemplateDiscoveryModule
   ValidationModule
@@ -231,8 +231,8 @@ flowchart LR
   TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
   ValidationModule --> InstanceDiscoveryModule
-  ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
+  ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule
 ```
 <!-- codependix:end name="codependix-nestjs" -->

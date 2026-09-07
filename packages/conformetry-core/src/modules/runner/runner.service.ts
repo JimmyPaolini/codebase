@@ -8,7 +8,7 @@ import type {
   PreparedValidationDocument,
   RunLanguageValidatorArguments,
   ValidationFileResult,
-} from "./language.types";
+} from "./runner.types";
 
 /**
  * Runs a language validator over a prepared document set.
@@ -20,7 +20,7 @@ import type {
  * validator reports its outcome identically.
  */
 @Injectable()
-export class LanguageService {
+export class RunnerService {
   // 🏗 Dependency Injection
 
   constructor() {}

@@ -19,7 +19,7 @@ import {
 } from "./reporting.constants";
 
 import type { ConformetryDifference } from "../differences/differences.types";
-import type { ValidationFileResult } from "../language/language.types";
+import type { ValidationFileResult } from "../runner/runner.types";
 import type { InstanceScore } from "../scoring/scoring.types";
 import type {
   FormatLocationArguments,

@@ -5,7 +5,7 @@ import { ScoringService } from "../scoring/scoring.service";
 
 import { ReportingService } from "./reporting.service";
 
-import type { ValidationFileResult } from "../language/language.types";
+import type { ValidationFileResult } from "../runner/runner.types";
 import type { InstanceScore } from "../scoring/scoring.types";
 
 const WORKING_DIRECTORY = "/workspace";

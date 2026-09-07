@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { ValidationFileResult } from "../language/language.types";
+import type { ValidationFileResult } from "../runner/runner.types";
 import type { InstanceScore } from "../scoring/scoring.types";
 
 /** Arguments for rendering one instance/template location line. */

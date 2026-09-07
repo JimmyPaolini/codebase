@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import { InstanceDiscoveryService } from "@conformetry/configuration";
-import { LanguageService } from "@conformetry/core";
+import { RunnerService } from "@conformetry/core";
 import { FilesService } from "@conformetry/files";
 import { Injectable } from "@nestjs/common";
 
@@ -33,7 +33,7 @@ export class ValidationService {
   constructor(
     private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly filesService: FilesService,
-    private readonly languageService: LanguageService,
+    private readonly runnerService: RunnerService,
     private readonly validationDeduplicationService: ValidationDeduplicationService,
     private readonly validationFindingsService: ValidationFindingsService,
     private readonly validationLanguagesService: ValidationLanguagesService,
@@ -98,7 +98,7 @@ export class ValidationService {
       instances: [args.instance],
     });
     const languages = args.validators.map((validator) => {
-      return this.languageService.runValidator({
+      return this.runnerService.runValidator({
         checkedPaths: [args.instance.instance.path],
         documents: prepared?.documents ?? [],
         validator,

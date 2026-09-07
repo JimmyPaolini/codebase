@@ -1,7 +1,7 @@
 import { InstanceDiscoveryModule } from "@conformetry/configuration";
 import {
-  LanguageModule,
   ReportingModule,
+  RunnerModule,
   ScoringModule,
 } from "@conformetry/core";
 import { FilesModule } from "@conformetry/files";
@@ -25,7 +25,7 @@ import { ValidationService } from "./validation.service";
   exports: [
     InstanceDiscoveryModule,
     FilesModule,
-    LanguageModule,
+    RunnerModule,
     ReportingModule,
     ScoringModule,
     ValidationDeduplicationService,
@@ -37,7 +37,7 @@ import { ValidationService } from "./validation.service";
   imports: [
     InstanceDiscoveryModule,
     FilesModule,
-    LanguageModule,
+    RunnerModule,
     ReportingModule,
     ScoringModule,
   ],
