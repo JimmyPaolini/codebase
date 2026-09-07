@@ -211,11 +211,49 @@ describe(CallidescopeService, () => {
         callableCount: 1,
         edgeCount: 0,
         entryPointCount: 1,
-        maximumDepth: 1,
+        maximumDepthTraced: 1,
         misplacedCount: 0,
         spreadCount: 0,
       },
     );
+  });
+
+  it("names the logged depth for the trace rather than for one project", () => {
+    // A scoped run builds programs for its whole dependency closure, so this
+    // number routinely belongs to a project the run was never pointed at —
+    // `tools/synchronization` printed a traced seventeen while owning ten.
+    // Under a bare `maximumDepth` it reads as the number to write into that
+    // project's own limit, which would be headroom. Pinned here because the
+    // name is the entire fix, and a rename back would be silent.
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/index.ts": `
+        function inner(): void {}
+        export function outer(): void { inner(); }
+      `,
+    });
+    const fixture = buildFixtureServices({ projectProgram });
+    const collection = collectFixtureCallables({
+      projectProgram,
+      services: fixture,
+    });
+    const logger = createMock<LoggerService>();
+
+    buildSubject({ fixture, logger }).analyze({
+      callablesById: collection.byId,
+      configuration: buildConfiguration(),
+      entryPointsByProject: new Map(),
+      fileCount: collection.fileCount,
+      fileCountByProject: collection.fileCountByProject,
+      projectCount: 1,
+      projectLimits: resolveLimits({}),
+      projectNames: ["example"],
+      workspaceRoot: FIXTURE_ROOT,
+    });
+
+    const fields = logger.info.mock.calls[0]?.[2];
+
+    expect(fields).toHaveProperty("maximumDepthTraced");
+    expect(fields).not.toHaveProperty("maximumDepth");
   });
 
   it("reports a stack deeper than the configured limit", () => {

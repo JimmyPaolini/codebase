@@ -270,7 +270,14 @@ export class CallidescopeService {
     };
   }
 
-  /** Reads the deepest depth any component reached. */
+  /**
+   * Reads the deepest depth any component reached, closure included.
+   *
+   * The whole trace's number, closure included, which is what belongs in a
+   * summary describing everything a run measured. It is **not** what a scoped
+   * run is judged on, which is why the log line names it `maximumDepthTraced`
+   * rather than `maximumDepth`.
+   */
   private readMaximumDepth(measurement: DepthMeasurement): number {
     return measurement.byComponent.reduce(
       (deepest, entry) => Math.max(deepest, entry.depth),
@@ -351,11 +358,19 @@ export class CallidescopeService {
       unresolvedCallCount: graph.unresolvedCalls.length,
     };
 
+    // `maximumDepthTraced`, never `maximumDepth`. A scoped run builds programs
+    // for its whole dependency closure, so this number routinely belongs to a
+    // project the run was never pointed at — `tools/synchronization` printed a
+    // traced seventeen while owning ten. Under the bare name it reads as the
+    // number to write into that project's own limit, which would be headroom:
+    // a limit above what a project measures gates nothing while claiming to
+    // have been measured. The name is the whole fix — the owned number is a
+    // gate's verdict to give, and `depth` and `breadth` report it per project.
     this.logger.info("🔭 Finished an analysis", undefined, {
       callableCount: summary.callableCount,
       edgeCount: summary.edgeCount,
       entryPointCount: summary.entryPointCount,
-      maximumDepth: summary.maximumDepth,
+      maximumDepthTraced: summary.maximumDepth,
       misplacedCount: misplacedCallables.length,
       spreadCount: moduleSpreads.length,
     });
