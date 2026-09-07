@@ -1613,7 +1613,7 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | --- | --- |
 | Callables | 494 |
 | Files | 96 |
-| Calls traced | 685 |
+| Calls traced | 686 |
 | Call stacks | 47 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
@@ -1743,11 +1743,11 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 ```text
 🚀 NegativeMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:277]
    ↳ The x-coordinate of the drawing's last lattice column, before the stroke-width margin.
-  └─> NegativeSourceService.tile(source: NegativeSource, rows: number): MosaicTile [applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:235]
+  └─> NegativeSourceService.tile(source: NegativeSource, rows: number): MosaicTile [applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:232]
      ↳ The source tile a `negative` drawing of `rows` rows inverts, built at `rows + NEGATIVE_SOURCE_ROW_OFFSET` rows — see…
-    └─> NegativeSourceService.tileSource(source: NegativeTileSource, rows: number): MosaicTile [applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:190]
+    └─> NegativeSourceService.tileSource(source: NegativeTileSource, rows: number): MosaicTile [applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:187]
        ↳ The two-column tile a source names, built at the source's own row count.
-      └─> NegativeSourceService.brickEdges(rows: number, staggered: boolean): MosaicEdgesDraft [applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:81]
+      └─> NegativeSourceService.brickEdges(rows: number, staggered: boolean): MosaicEdgesDraft [applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:78]
          ↳ A `brick` source's edges: one eastward edge per interior level, each reaching the point to its right and wrapping into…
         └─> MosaicTileService.blankEdges(shape: MosaicTileShape): MosaicEdgesDraft [applications/meanderaw/src/modules/mosaic-motif/mosaic-tile.service.ts:151]
            ↳ A tile's worth of unset edges, ready to be marked one at a time and handed to {@link build}.
@@ -1992,7 +1992,7 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
      ↳ Refuses one point whose bits disagree with its neighbors'.
     └─> MosaicTileService.assertPointJoinsBelow(…): void [applications/meanderaw/src/modules/mosaic-motif/mosaic-tile.service.ts:76]
        ↳ Refuses one point whose southward bit the point below does not answer, or whose north is claimed where the cap tick…
-      └─> MalformedMosaicTileError.constructor(reason: string): MalformedMosaicTileError [applications/meanderaw/src/modules/mosaic-motif/mosaic-motif.constants.ts:147]
+      └─> MalformedMosaicTileError.constructor(reason: string): MalformedMosaicTileError [applications/meanderaw/src/modules/mosaic-motif/mosaic-motif.constants.ts:130]
 ```
 
 **24. `MosaicNamingService.matches`** — depth ≥ 4 · orphan-root
@@ -2094,7 +2094,7 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 **33. `MosaicTilesService.isMatching`** — depth 3 · orphan-root
 
 ```text
-🚀 MosaicTilesService.isMatching(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:257]
+🚀 MosaicTilesService.isMatching(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:225]
    ↳ Whether every point of a tile is touched by at most one edge — the family's original exact-cover rule, restated over…
   └─> MosaicTileService.incidentEdges(tile: MosaicTile, level: number, column: number): number [applications/meanderaw/src/modules/mosaic-motif/mosaic-tile.service.ts:226]
      ↳ How many distinct edges touch a point, which differs from {@link degree} at one column and nowhere else: there a set…
@@ -2240,15 +2240,14 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | `MosaicTileGenerationService.generate` | 8 | `InvalidRowsError.constructor`, `InvalidRepeatCountError.constructor`, `GridGeometryService.compute`, `MosaicTileGenerationService.from(…)`, `MosaicTileMotifService.leadingOverhang`, `MosaicTileMotifService.rightEdge`, `SvgRenderingService.render`, `MosaicTileGenerationService.format` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-generation.service.ts:59` |
 
 <details>
-<summary>297 more callables</summary>
+<summary>300 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MosaicTilesService.enumerate` | 8 | `MosaicTilesService.isAdmitted`, `OversizedMosaicTileError.constructor`, `MosaicTilesService.edges`, `MosaicTileService.blankEdges`, `MosaicTilesService.from(…)`, `MosaicTilesService.assign`, `MosaicTilesService.map(…)`, `MosaicTilesService.toSorted(…)` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:215` |
 | `DrawCommand.sweep` | 8 | `DrawCommand.renderCombinations`, `DrawCommand.assertNoPathCollisions`, `DrawCommand.writeDocuments`, `DrawPermutationsService.rowsSweep`, `DrawPermutationsService.render`, `DrawNegativePermutationsService.rowsSweep`, `DrawNegativePermutationsService.render`, `DrawIndexService.render` | `applications/meanderaw/src/modules/draw/draw.command.ts:148` |
+| `MosaicTilesService.enumerate` | 7 | `MosaicTilesService.isAdmitted`, `OversizedMosaicTileError.constructor`, `MosaicTilesService.edges`, `MosaicTileService.blankEdges`, `MosaicTilesService.assign`, `MosaicTilesService.map(…)`, `MosaicTilesService.toSorted(…)` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:174` |
 | `DrawParametersService.modifier` | 7 | `DrawParametersService.alternatedModifier`, `DrawParametersService.combModifier`, `DrawParametersService.dotModifier`, `DrawParametersService.isPlyModifierName`, `DrawParametersService.plyModifier`, `DrawParametersService.rungModifier`, `DrawParametersService.staggerModifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:217` |
 | `ChainMotifService.path` | 6 | `SnakeSequenceService.unitPoints`, `ChainMotifService.flipSubpaths`, `ChainMotifService.splitIndex`, `SnakeMotifService.unitWidth`, `ChainMotifService.map(…)`, `SnakeMotifService.borderSegment` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:88` |
-| `MosaicTilesService.assign` | 6 | `MosaicTilesService.edges`, `MosaicTilesService.record`, `MosaicTilesService.endpoints`, `MosaicTilesService.some(…)`, `MosaicTilesService.set`, `MosaicTilesService.clear` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:92` |
 | `NegativeTileGenerationService.generate` | 6 | `NegativeTileGenerationService.validate`, `GridGeometryService.compute`, `NegativeTileGenerationService.from(…)`, `SvgRenderingService.render`, `NegativeTileGenerationService.format`, `NegativeMotifService.tileRightEdge` | `applications/meanderaw/src/modules/negative-motif/negative-tile-generation.service.ts:77` |
 | `DrawPermutationsService.render` | 6 | `OutputPathService.familyDirectory`, `MosaicTilesService.maximumColumns`, `MosaicTilesService.enumerate`, `MosaicSymmetryService.canonicalIdentifier`, `MosaicNamingService.name`, `MosaicTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:80` |
 | `MeanderLatticeService.build` | 6 | `MeanderLatticeService.strokeWidth`, `MeanderLatticeService.pathData`, `MeanderLatticeService.trace`, `MeanderLatticeService.commands`, `MeanderLatticeService.snap`, `MeanderLatticeService.dimension` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:233` |
@@ -2264,13 +2263,15 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | `SnakeMotifService.path` | 4 | `SnakeSequenceService.unitPoints`, `SnakeMotifService.unitWidth`, `MotifTransformsService.pointsToPathData`, `SnakeMotifService.borderSegment` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:79` |
 | `MosaicMotifService.dotPath` | 4 | `MotifTransformsService.dotLevels`, `MosaicMotifService.map(…)`, `MosaicMotifService.format`, `MosaicMotifService.capColumns` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-motif.service.ts:151` |
 | `MosaicSymmetryService.transform` | 4 | `MosaicTileService.edges`, `MosaicTileService.blankEdges`, `MosaicSymmetryService.place`, `MosaicTileService.build` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-symmetry.service.ts:164` |
-| `NegativeSourceService.tile` | 4 | `NegativeSourceService.isColumnSource`, `MosaicTileService.build`, `NegativeSourceService.columnEdges`, `NegativeSourceService.tileSource` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:235` |
+| `MosaicTilesService.assign` | 4 | `MosaicTilesService.edges`, `MosaicTilesService.record`, `MosaicTilesService.set`, `MosaicTilesService.clear` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:102` |
+| `NegativeSourceService.tile` | 4 | `NegativeSourceService.isColumnSource`, `MosaicTileService.build`, `NegativeSourceService.columnEdges`, `NegativeSourceService.tileSource` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:232` |
 | `ParallelMotifService.path` | 4 | `ParallelMotifService.strandCount`, `ParallelSerpentineService.path`, `ParallelMotifService.opensUp`, `ParallelMotifService.from(…)` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:172` |
 | `SwirlMotifService.borderSegment` | 4 | `MotifTransformsService.rightmostLevel`, `SwirlMotifService.subpaths`, `SwirlMotifService.unitWidth`, `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:135` |
 | `SwirlMotifService.path` | 4 | `SwirlMotifService.unitWidth`, `SwirlMotifService.map(…)`, `SwirlMotifService.subpaths`, `SwirlMotifService.borderSegment` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:157` |
 | `WhirlMotifService.borderSegment` | 4 | `MotifTransformsService.rightmostLevel`, `WhirlMotifService.subpaths`, `WhirlMotifService.unitWidth`, `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:126` |
 | `WhirlMotifService.path` | 4 | `WhirlMotifService.unitWidth`, `WhirlMotifService.map(…)`, `WhirlMotifService.subpaths`, `WhirlMotifService.borderSegment` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:148` |
 | `MeanderGenerationService.buildPaths` | 4 | `MotifRegistryService.resolve`, `MeanderGenerationService.from(…)`, `BoxesMotifService.border`, `CrossMotifService.border` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:73` |
+| `DrawNegativePermutationsService.render` | 4 | `OutputPathService.familyDirectory`, `DrawNegativePermutationsService.map(…)`, `DrawNegativePermutationsService.filter(…)`, `MosaicTilesService.enumerate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:140` |
 | `DrawCommand.writeDocuments` | 4 | `DrawCommand.map(…)`, `DrawCommand.map(…)`, `DrawCommand.map(…)`, `DrawCommand.map(…)` | `applications/meanderaw/src/modules/draw/draw.command.ts:186` |
 | `MeanderTopologyService.connectivity` | 4 | `MeanderLatticeService.build`, `MeanderTopologyService.key`, `MeanderTopologyService.inkDegree`, `MeanderTopologyService.walk` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:213` |
 | `BoxesMotifService.unitPoints` | 3 | `BoxesMotifService.spiralPoints`, `BoxesMotifService.centerPoint`, `MotifTransformsService.rotate` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:129` |
@@ -2282,8 +2283,8 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | `MosaicMotifService.map(…)` | 3 | `MosaicMotifService.format`, `MosaicMotifService.filter(…)`, `MosaicMotifService.spanSegments` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-motif.service.ts:163` |
 | `MosaicSubFamilyService.tile` | 3 | `MosaicTileService.build`, `MosaicSubFamilyService.from(…)`, `MosaicSubFamilyService.from(…)` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-sub-family.service.ts:54` |
 | `MosaicTileMotifService.path` | 3 | `MosaicTileMotifService.unitSegments`, `MosaicTileMotifService.format`, `MosaicTileMotifService.rightEdge` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-motif.service.ts:140` |
-| `MosaicTilesService.record` | 3 | `MosaicTileService.build`, `MosaicSymmetryService.canonicalIdentifier`, `MosaicSymmetryService.canonicalTile` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:161` |
-| `NegativeSourceService.tileSource` | 3 | `NegativeSourceService.brickEdges`, `NegativeSourceService.stairEdges`, `MosaicTileService.build` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:190` |
+| `MosaicTilesService.record` | 3 | `MosaicTileService.build`, `MosaicSymmetryService.canonicalIdentifier`, `MosaicSymmetryService.canonicalTile` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:132` |
+| `NegativeSourceService.tileSource` | 3 | `NegativeSourceService.brickEdges`, `NegativeSourceService.stairEdges`, `MosaicTileService.build` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:187` |
 | `NegativeMotifService.columnPath` | 3 | `NegativeMotifService.from(…)`, `NegativeMotifService.mergeRuns(…)`, `NegativeMotifService.mergeRuns` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:86` |
 | `NegativeMotifService.rowPath` | 3 | `NegativeMotifService.from(…)`, `NegativeMotifService.mergeRuns(…)`, `NegativeMotifService.mergeRuns` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:226` |
 | `NegativeMotifService.path` | 3 | `NegativeMotifService.tilePath`, `NegativeSourceService.tile`, `NegativeSourceService.source` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:265` |
@@ -2296,8 +2297,7 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | `MosaicNamingService.matching` | 3 | `MosaicNamingService.map(…)`, `MosaicNamingService.filter(…)`, `MosaicNamingService.rules` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:121` |
 | `DrawIndexService.renderSection` | 3 | `DrawIndexService.map(…)`, `DrawIndexService.escape`, `DrawIndexService.slug` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:111` |
 | `DrawIndexService.render` | 3 | `DrawIndexService.groupByDirectory`, `DrawIndexService.map(…)`, `DrawIndexService.renderContents` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:148` |
-| `DrawNegativePermutationsService.render` | 3 | `OutputPathService.familyDirectory`, `DrawNegativePermutationsService.map(…)`, `MosaicTilesService.enumerate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:130` |
-| `DrawNegativePermutationsService.map(…)` | 3 | `MosaicSymmetryService.canonicalIdentifier`, `DrawNegativePermutationsService.classify`, `NegativeTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:139` |
+| `DrawNegativePermutationsService.map(…)` | 3 | `MosaicSymmetryService.canonicalIdentifier`, `DrawNegativePermutationsService.classify`, `NegativeTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:154` |
 | `MeanderLatticeService.trace` | 3 | `MeanderLatticeService.snap`, `MeanderLatticeService.addHorizontal`, `MeanderLatticeService.addVertical` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:204` |
 | `MeanderTopologyService.neighbors` | 3 | `MeanderTopologyService.key`, `MeanderTopologyService.map(…)`, `MeanderTopologyService.filter(…)` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:123` |
 | `BoxesMotifService.border` | 2 | `GridGeometryService.formatCoordinate`, `BoxesMotifService.rightEdge` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:165` |
@@ -2320,11 +2320,11 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | `MosaicSymmetryService.canonicalTile` | 2 | `MosaicSymmetryService.signature`, `MosaicSymmetryService.orbit` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-symmetry.service.ts:211` |
 | `MosaicSymmetryService.variants` | 2 | `MosaicSymmetryService.orbit`, `MosaicSymmetryService.edgeKey` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-symmetry.service.ts:275` |
 | `MosaicTileMotifService.pointSegments` | 2 | `MosaicTileMotifService.format`, `MosaicTileService.isBare` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-motif.service.ts:51` |
-| `MosaicTilesService.set` | 2 | `MosaicTilesService.address`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:175` |
-| `NegativeSourceService.brickEdges` | 2 | `MosaicTileService.blankEdges`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:81` |
-| `NegativeSourceService.columnEdges` | 2 | `MosaicTileService.blankEdges`, `NegativeSourceService.markColumn` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:111` |
-| `NegativeSourceService.stairEdges` | 2 | `MosaicTileService.blankEdges`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:173` |
-| `NegativeSourceService.source` | 2 | `NegativeSourceService.isNegativeModifierName`, `UnknownNegativeSourceError.constructor` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:218` |
+| `MosaicTilesService.set` | 2 | `MosaicTilesService.address`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:146` |
+| `NegativeSourceService.brickEdges` | 2 | `MosaicTileService.blankEdges`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:78` |
+| `NegativeSourceService.columnEdges` | 2 | `MosaicTileService.blankEdges`, `NegativeSourceService.markColumn` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:108` |
+| `NegativeSourceService.stairEdges` | 2 | `MosaicTileService.blankEdges`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:170` |
+| `NegativeSourceService.source` | 2 | `NegativeSourceService.isNegativeModifierName`, `UnknownNegativeSourceError.constructor` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:215` |
 | `NegativeTileGenerationService.validate` | 2 | `InvalidRowsError.constructor`, `InvalidRepeatCountError.constructor` | `applications/meanderaw/src/modules/negative-motif/negative-tile-generation.service.ts:54` |
 | `ParallelSerpentineService.from(…)` | 2 | `ParallelSerpentineService.connectorRow`, `ParallelSerpentineService.coordinate` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:156` |
 | `ParallelSerpentineService.path` | 2 | `ParallelSerpentineService.map(…)`, `ParallelSerpentineService.strips` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:216` |
@@ -2348,8 +2348,8 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | `DrawCombinationsService.enumerate` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:252` |
 | `DrawIndexService.groupByDirectory` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:74` |
 | `DrawIndexService.map(…)` | 2 | `DrawIndexService.escape`, `DrawIndexService.slug` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:102` |
-| `DrawNegativePermutationsService.classify` | 2 | `MosaicSymmetryService.canonicalIdentifier`, `DrawNegativePermutationsService.find(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:108` |
-| `DrawNegativePermutationsService.find(…)` | 2 | `MosaicSymmetryService.canonicalIdentifier`, `NegativeSourceService.tile` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:112` |
+| `DrawNegativePermutationsService.classify` | 2 | `MosaicSymmetryService.canonicalIdentifier`, `DrawNegativePermutationsService.find(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:112` |
+| `DrawNegativePermutationsService.find(…)` | 2 | `MosaicSymmetryService.canonicalIdentifier`, `NegativeSourceService.tile` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:116` |
 | `DrawParametersService.plyModifier` | 2 | `MissingModifierParameterError.constructor`, `DrawParametersService.serpentineModifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:135` |
 | `DrawParametersService.dotShape` | 2 | `DrawParametersService.isDotShape`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:201` |
 | `DrawParametersService.modifierName` | 2 | `DrawParametersService.isModifierName`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:252` |
@@ -2426,6 +2426,9 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | `MosaicTileService.map(…)` | 1 | `MosaicTileService.map(…)` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile.service.ts:211` |
 | `MosaicTileService.incidentEdges` | 1 | `MosaicTileService.degree` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile.service.ts:226` |
 | `MosaicTileService.isBare` | 1 | `MosaicTileService.degree` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile.service.ts:239` |
+| `MosaicTileService.maximumDegree` | 1 | `MosaicTileService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile.service.ts:253` |
+| `MosaicTileService.flatMap(…)` | 1 | `MosaicTileService.map(…)` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile.service.ts:256` |
+| `MosaicTileService.map(…)` | 1 | `MosaicTileService.degree` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile.service.ts:256` |
 | `MosaicSubFamilyService.anchors` | 1 | `MosaicSubFamilyService.isAnchored` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-sub-family.service.ts:67` |
 | `MosaicSubFamilyService.from(…)` | 1 | `MosaicSubFamilyService.from(…)` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-sub-family.service.ts:76` |
 | `MosaicSubFamilyService.from(…)` | 1 | `MosaicSubFamilyService.anchors` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-sub-family.service.ts:77` |
@@ -2448,11 +2451,10 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | `MosaicTileMotifService.flatMap(…)` | 1 | `MosaicTileMotifService.map(…)` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-motif.service.ts:173` |
 | `MosaicTileGenerationService.from(…)` | 1 | `MosaicTileMotifService.path` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-generation.service.ts:85` |
 | `MosaicTileGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tile-generation.service.ts:98` |
-| `MosaicTilesService.some(…)` | 1 | `MosaicTilesService.ceiling` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:105` |
-| `MosaicTilesService.clear` | 1 | `MosaicTilesService.address` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:123` |
-| `MosaicTilesService.isAdmitted` | 1 | `MosaicTilesService.edges` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:237` |
-| `MosaicTilesService.isMatching` | 1 | `MosaicTileService.incidentEdges` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:257` |
-| `NegativeSourceService.markColumn` | 1 | `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:151` |
+| `MosaicTilesService.clear` | 1 | `MosaicTilesService.address` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:118` |
+| `MosaicTilesService.isAdmitted` | 1 | `MosaicTilesService.edges` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:205` |
+| `MosaicTilesService.isMatching` | 1 | `MosaicTileService.incidentEdges` | `applications/meanderaw/src/modules/mosaic-motif/mosaic-tiles.service.ts:225` |
+| `NegativeSourceService.markColumn` | 1 | `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:148` |
 | `NegativeMotifService.from(…)` | 1 | `NegativeMotifService.hasMark` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:93` |
 | `NegativeMotifService.mergeRuns(…)` | 1 | `NegativeMotifService.verticalRun` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:96` |
 | `NegativeMotifService.coordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:102` |
@@ -2520,7 +2522,8 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | `DrawIndexService.renderContents` | 1 | `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:99` |
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.escape` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:116` |
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.renderSection` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:151` |
-| `DrawNegativePermutationsService.rowsSweep` | 1 | `DrawNegativePermutationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:155` |
+| `DrawNegativePermutationsService.filter(…)` | 1 | `MosaicTileService.maximumDegree` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:150` |
+| `DrawNegativePermutationsService.rowsSweep` | 1 | `DrawNegativePermutationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:170` |
 | `DrawParametersService.alternatedModifier` | 1 | `MissingModifierParameterError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:66` |
 | `DrawParametersService.dotModifier` | 1 | `MissingModifierParameterError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:87` |
 | `DrawParametersService.staggerModifier` | 1 | `MissingModifierParameterError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:190` |
@@ -2917,6 +2920,7 @@ graph LR
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_constants_ts
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_motif_types_ts
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_symmetry_service_ts
+  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_tile_service_ts
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_motif_mosaic_tiles_service_ts
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_negative_motif_negative_motif_constants_ts
   file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_negative_motif_negative_motif_types_ts
@@ -3437,14 +3441,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-22569-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-7.35_MB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-22699-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-17.63_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-141-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-140-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-132.57_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-132.47_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -3452,8 +3456,8 @@ graph LR
 ![Interfaces](https://img.shields.io/badge/Interfaces-62-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-140-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-461-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-141-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-459-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -3462,15 +3466,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-40-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-12-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-78-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-1121-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-1134-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-433-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-1466-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-1479-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-88-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-1179-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-797-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-798-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-221-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-1112-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-4022-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-1101-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-4012-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -3618,23 +3622,23 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-383-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-416-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-70-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-74-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-8-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-38-22c55e?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-40-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-2-0284c7?style=flat-square)
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-23-059669?style=flat-square)
+![Links](https://img.shields.io/badge/Links-24-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-15-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-161-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-183-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
