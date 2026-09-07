@@ -11,7 +11,8 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  *
  * `kinds` is what stops one repository-wide number having to be either loose
  * enough to permit a property essay or tight enough to forbid a class overview
- * that should exist. The corpus measures 26 documented declarations under this
+ * that should exist. A kind's entry is merged field by field over the block's
+ * own maxima, so one naming only `maximumLines` still inherits the rest. The corpus measures 26 documented declarations under this
  * configuration and two of them breach: `CatalogService`, whose eight-line
  * overview is longer than a class's 4, and `Receipt.blank`, whose seven-line
  * note is longer than a method's 2. Every other declaration is reported too,
@@ -32,10 +33,14 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  */
 const codometerConfiguration: CodometerConfiguration = {
   documentation: {
-    default: 3,
-    kinds: { class: 4, interface: 3, method: 2, property: 2 },
+    kinds: {
+      class: { maximumLines: 4 },
+      interface: { maximumLines: 3 },
+      method: { maximumLines: 2 },
+      property: { maximumLines: 2 },
+    },
+    maximumLines: 3,
     severity: "fail",
-    unit: "lines",
   },
   python: { command: "uv run python" },
 };

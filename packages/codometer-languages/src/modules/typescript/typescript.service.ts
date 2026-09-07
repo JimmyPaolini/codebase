@@ -123,14 +123,9 @@ export class TypescriptService {
     node: tsCompiler.Node,
     context: TypescriptWalkContext,
   ): void {
-    const measurement = this.documentationMeasurementService.measure(
-      node,
-      context,
+    context.stats.documentation.push(
+      ...this.documentationMeasurementService.measure(node, context),
     );
-
-    if (measurement !== undefined) {
-      context.stats.documentation.push(measurement);
-    }
   }
 
   /** Count a discovered comment and update the appropriate metrics. */

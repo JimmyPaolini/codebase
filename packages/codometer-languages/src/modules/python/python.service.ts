@@ -55,7 +55,7 @@ export class PythonService {
    */
   analyze(args: AnalyzePythonArguments): PythonResult {
     if (args.pythonFiles.length === 0) {
-      return { ...EMPTY_PYTHON_RESULT };
+      return { ...EMPTY_PYTHON_RESULT, commentTokens: [] };
     }
 
     try {
@@ -71,7 +71,7 @@ export class PythonService {
       this.logger.warn(`🐍 Skipped Python analysis`, undefined, {
         reason: message,
       });
-      return { ...EMPTY_PYTHON_RESULT };
+      return { ...EMPTY_PYTHON_RESULT, commentTokens: [] };
     }
   }
 
@@ -86,7 +86,7 @@ export class PythonService {
    */
   analyzeContents(args: AnalyzePythonContentsArguments): PythonResult {
     if (args.contents.length === 0) {
-      return { ...EMPTY_PYTHON_RESULT };
+      return { ...EMPTY_PYTHON_RESULT, commentTokens: [] };
     }
 
     const stagingDirectory = mkdtempSync(

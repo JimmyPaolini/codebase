@@ -1,74 +1,34 @@
 import { Injectable } from "@nestjs/common";
 import tsCompiler from "typescript";
 
+import { CommentsService } from "../comments/comments.service";
+
 import { SYMBOL_KIND_BY_SYNTAX_KIND } from "./typescript.constants";
 
-import type {
-  TypescriptDocumentationMeasurement,
-  TypescriptWalkContext,
-} from "./typescript.types";
-import type { CodometerDocumentationUnit } from "@codometer/configuration";
+import type { CommentMeasurement } from "../comments/comments.types";
+import type { TypescriptWalkContext } from "./typescript.types";
 
 /**
- * Measures a documentable declaration's leading JSDoc comment against the
- * limit its kind carries.
+ * Finds a documentable declaration's leading JSDoc comment and hands it to be
+ * measured.
  *
- * Split out of `TypescriptService` so the three counting strategies — lines,
- * characters, words — and the comment-range lookup they share have a home of
- * their own, separate from the AST walk that finds the declarations to
- * measure.
+ * Only the finding is TypeScript's: which declarations can carry a limit,
+ * where the `/**` range sits, and what the declaration is called. How long the
+ * comment is comes from `CommentsService`, the same counting every other
+ * language's comments go through, so a word means one thing across the tool
+ * rather than one thing per analyzer.
  */
 @Injectable()
 export class DocumentationMeasurementService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly comments: CommentsService) {}
 
   // 🔐 Private Fields
 
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /**
-   * Counts every character of the comment, whitespace and markers and all.
-   *
-   * The raw slice, deliberately: it is the one unit a reader can check against
-   * their editor's own column count, and stripping the delimiters first would
-   * make a limit written in characters mean something different from the
-   * length the file actually carries. `countWords` strips them because a
-   * marker is not a word; a marker is very much a character.
-   */
-  private countCharacters(text: string): number {
-    return text.length;
-  }
-
-  /** Counts the lines the comment block spans, markers and all. */
-  private countLines(text: string): number {
-    return text.split("\n").length;
-  }
-
-  /**
-   * Counts the words in the comment's prose.
-   *
-   * The opening and closing comment delimiters and each line's leading `*` are stripped first,
-   * so they are never themselves counted as a word — a five-line comment
-   * whose every line opens with `*` would otherwise measure five words too
-   * many.
-   */
-  private countWords(text: string): number {
-    const prose = text
-      .replace(/^\/\*\*/, "")
-      .replace(/\*\/$/, "")
-      .split("\n")
-      .map((line) => line.replace(/^\s*\*\s?/, ""))
-      .join(" ");
-
-    return prose
-      .trim()
-      .split(/\s+/)
-      .filter((word) => word.length > 0).length;
-  }
 
   /** Reads a declaration's own name, or `"(anonymous)"` when it has none. */
   private getDeclarationName(node: tsCompiler.Node): string {
@@ -96,20 +56,20 @@ export class DocumentationMeasurementService {
     );
   }
 
-  /** Measures a comment's raw text in the configured unit. */
-  private measureLength(
-    text: string,
-    unit: CodometerDocumentationUnit,
-  ): number {
-    if (unit === "characters") {
-      return this.countCharacters(text);
-    }
-
-    if (unit === "words") {
-      return this.countWords(text);
-    }
-
-    return this.countLines(text);
+  /**
+   * The comment's prose, with its delimiters and each line's `*` stripped.
+   *
+   * Stripped for the word count only. A character count stays the raw slice —
+   * it is the one unit a reader can check against their editor's own column
+   * count, and a marker is very much a character even though it is not a word.
+   */
+  private readProse(text: string): string {
+    return text
+      .replace(/^\/\*\*/u, "")
+      .replace(/\*\/$/u, "")
+      .split("\n")
+      .map((line) => line.replace(/^\s*\*\s?/u, ""))
+      .join(" ");
   }
 
   // 🌎 Public Methods
@@ -117,46 +77,43 @@ export class DocumentationMeasurementService {
   /**
    * Measures one declaration's leading JSDoc comment, if it has one.
    *
-   * `undefined` when the node's kind is not one a documentation limit can
-   * name, or when it carries no `/**` comment at all — neither is a
-   * measurement, and pushing one would report a declaration nothing
-   * documented.
+   * Empty when the node's kind is not one a documentation limit can name, or
+   * when it carries no `/**` comment at all — neither is a measurement, and
+   * reporting one would name a declaration nothing documented. A declaration
+   * is measured once per maximum its kind declares, because the maxima are not
+   * alternatives: one can hold while another breaks.
    */
   measure(
     node: tsCompiler.Node,
     context: TypescriptWalkContext,
-  ): TypescriptDocumentationMeasurement | undefined {
+  ): CommentMeasurement[] {
     const { documentation, sourceFile } = context;
     const kind = SYMBOL_KIND_BY_SYNTAX_KIND[node.kind];
 
     if (documentation === undefined || kind === undefined) {
-      return undefined;
+      return [];
     }
 
     const range = this.getJsDocRange(node, sourceFile);
 
     if (range === undefined) {
-      return undefined;
+      return [];
     }
 
-    const text = sourceFile.text
+    const source = sourceFile.text
       .slice(range.pos, range.end)
       .replaceAll("\r\n", "\n");
-    const measured = this.measureLength(text, documentation.unit);
-    const limit = documentation.kinds[kind] ?? documentation.default;
 
-    return {
-      breached: measured > limit,
+    return this.comments.measureText({
+      comments: documentation.kinds[kind] ?? documentation,
       declaration: this.getDeclarationName(node),
-      file: context.filePath,
+      filePath: context.filePath,
       kind,
-      limit,
       line:
         sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile))
           .line + 1,
-      measured,
-      severity: documentation.severity,
-      unit: documentation.unit,
-    };
+      prose: this.readProse(source),
+      source,
+    });
   }
 }

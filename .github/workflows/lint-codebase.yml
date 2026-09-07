@@ -60,26 +60,22 @@ jobs:
       # named alongside `lint-codebase` rather than hanging off its
       # `dependsOn`, because callidescope also publishes a report on the
       # default branch and Nx forwards an explicit configuration down
-      # `dependsOn` — reachable from
-      # `lint-codebase`, it would take `write` from
-      # `lint-codebase --configuration=write` and publish its report from a
-      # branch. Naming them here is what keeps their gates on every pull
-      # request: depth for callidescope, a broken boundary rule for codependix,
-      # derivation drift for each synchronization, none of which writes a file.
-      # `codependix --check boundaries` is the whole reason its `check`
-      # configuration is safe here: it reads no export destination, so it never
-      # fails a branch for exports that are behind the workspace they describe.
-      # It is deliberately not in `configuration/lint-staged.config.ts`: it
-      # builds a `ts.Program` per project and takes about twenty seconds over
-      # the whole workspace, which is a pre-commit hook nobody keeps.
-      #
-      # There is no aggregate `synchronize` target: each synchronization is
-      # its own Nx target on the `synchronization` project, named here the
-      # same way `codometer` and
-      # `callidescope` are named by their own callers. They join the same
-      # `nx affected` invocation rather than taking steps of their own, so one
-      # task graph and one scheduler still own the whole run, and `affected`
-      # still decides whether any of them has anything to look at.
+      # `dependsOn`: reachable from `lint-codebase --configuration=write`, it
+      # would publish its report from a branch. Naming them here keeps their
+      # gates on every pull request — depth, a broken boundary rule, derivation
+      # drift — none of which writes a file. `codependix --check boundaries`
+      # reads no export destination, so it never fails a branch for stale
+      # exports; it stays out of lint-staged because a `ts.Program` per project
+      # takes twenty seconds.
+
+      # `codometer` is absent on purpose: all fifty projects declare that
+      # target, so naming it here would fan out over every one and wait on each
+      # build. 👷 Make Projects gates it instead, which already fans
+      # `make-projects` out over them.
+
+      # There is no aggregate `synchronize` target: each is its own Nx target,
+      # joining the same `nx affected` invocation, so one task graph owns the
+      # run.
       - name: 🧑‍💻 Lint Codebase
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}

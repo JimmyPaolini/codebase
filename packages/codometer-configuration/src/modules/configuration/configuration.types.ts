@@ -1,9 +1,6 @@
 // 🏷️ Types
 
-import type {
-  CodometerOutputConfiguration,
-  ResolvedCodometerOutputConfiguration,
-} from "./output.types";
+import type { CodometerOutputConfiguration } from "./output.types";
 import type { CodometerStatisticGroup } from "./statistics.types";
 
 /**
@@ -14,6 +11,64 @@ import type { CodometerStatisticGroup } from "./statistics.types";
  * thing separating a source tree from build output.
  */
 export type CodometerAnalysis = "language" | "size";
+
+/**
+ * One comment measured against the limit its kind carries.
+ *
+ * Shared by every analyzer that measures comment length, so a JSDoc block and
+ * a YAML comment block reach the report through one channel and render with
+ * one line of markdown. `kind` is a plain string for that reason: a symbol
+ * kind and a comment kind are both written into it, and narrowing it here
+ * would make the union the property of whichever analyzer was added first.
+ */
+export interface CodometerCommentMeasurement {
+  breached: boolean;
+  /** What the comment documents: a declaration's name, or the comment itself. */
+  declaration: string;
+  file: string;
+  kind: string;
+  limit: number;
+  /** 1-indexed line the measured thing starts on. */
+  line: number;
+  measured: number;
+  severity: CodometerSeverity;
+  unit: CodometerDocumentationUnit;
+}
+
+/**
+ * How long one comment block may run.
+ *
+ * A block is the run of comment lines a reader takes as one thought: a blank
+ * line ends one, and a comment trailing a value is never part of the block
+ * above it.
+ *
+ * One field per unit rather than a `maximum` paired with a `unit`, because the
+ * three are not alternatives — a repository can hold prose to a word budget
+ * and still refuse a block that sprawls over forty lines, and a shape that
+ * makes them exclusive cannot say that. A field left out is not measured, and
+ * a block is reported once per declared limit.
+ *
+ * Configured apart from `documentation` rather than as a kind within it. The
+ * two are written by different hands for different readers — a JSDoc comment
+ * documents a declaration a caller will meet, a YAML comment explains a
+ * setting to whoever edits it next — so one number would have to be wrong for
+ * one of them, and enabling either check would otherwise silently enable the
+ * other.
+ *
+ * Not YAML-specific, though YAML is the only language reading it today: every
+ * comment syntax this tool knows reduces to the same three counts, so a second
+ * language needs a `comments` key of its own and nothing here.
+ */
+export interface CodometerCommentsConfiguration {
+  /** How many characters a block may hold, markers and newlines and all. */
+  maximumCharacters?: number | undefined;
+  /** How many lines a block may span. */
+  maximumLines?: number | undefined;
+  /** How many words of prose a block may hold, once markers are stripped. */
+  maximumWords?: number | undefined;
+  /** How loudly a breach is reported. Defaults to `fail`, as limits do. */
+  severity?: CodometerSeverity | undefined;
+}
 
 /**
  * How a target's files are compressed before size analysis counts them.
@@ -32,6 +87,14 @@ export type CodometerCompression = "brotli" | "gzip" | "none";
  * decided what their exclusions or output destinations should be.
  */
 export interface CodometerConfiguration {
+  /**
+   * How long a comment block may run, for every language that has comments.
+   *
+   * The repository-wide default. A language's own `comments` block is merged
+   * field by field over it, so one budget can be written once and loosened for
+   * the one language that needs it.
+   */
+  comments?: CodometerLanguageCommentsConfiguration | undefined;
   /**
    * Target a limit's metric path belongs to when it names none itself.
    *
@@ -64,6 +127,7 @@ export interface CodometerConfiguration {
   limits?: CodometerLimit[] | undefined;
   output?: CodometerOutputConfiguration | undefined;
   python?: CodometerPythonConfiguration | undefined;
+  shell?: CodometerLanguageConfiguration | undefined;
   /**
    * Counters for the conventions a repository holds itself to.
    *
@@ -82,6 +146,8 @@ export interface CodometerConfiguration {
    * its ignore files keep out of the codebase measurement on purpose.
    */
   targets?: CodometerTarget[] | undefined;
+  toml?: CodometerLanguageConfiguration | undefined;
+  yaml?: CodometerLanguageConfiguration | undefined;
 }
 
 /**
@@ -151,23 +217,56 @@ export interface CodometerCustomStatistic {
 }
 
 /**
- * How high one documented declaration's JSDoc comment may run, by kind.
+ * How long a documented declaration's JSDoc comment may run, by kind.
  *
- * Mirrors `CodometerLimit`: absolute, no baseline. `kinds` earns a class more
- * room than a property without forcing one repository-wide number to be either
- * loose enough to permit a property essay or tight enough to forbid a class
- * overview that should exist. A kind naming no entry in `kinds` falls back to
- * `default`.
+ * The same three maxima every other comment is judged by, plus `kinds`, which
+ * earns a class more room than a property without forcing one repository-wide
+ * number to be either loose enough to permit a property essay or tight enough
+ * to forbid a class overview that should exist.
+ *
+ * A kind's entry is merged field by field over the block's own maxima, so a
+ * kind naming only `maximumLines` still inherits the `maximumWords` written
+ * beside it. That is the one merge rule, and it is the same one a language's
+ * `comments` block follows over the top-level `comments` default.
  */
-export interface CodometerDocumentationConfiguration {
-  default?: number | undefined;
-  kinds?: Partial<Record<CodometerSymbolKind, number>> | undefined;
-  severity?: CodometerSeverity | undefined;
-  unit?: CodometerDocumentationUnit | undefined;
+export interface CodometerDocumentationConfiguration extends CodometerCommentsConfiguration {
+  kinds?:
+    | Partial<Record<CodometerSymbolKind, CodometerCommentsConfiguration>>
+    | undefined;
 }
 
 /** Unit a documentation length is measured in. */
 export type CodometerDocumentationUnit = "characters" | "lines" | "words";
+
+/**
+ * How long a language's comments may run, per block and optionally per file.
+ *
+ * The maxima written directly here are **per block** — the run of comment
+ * lines a reader takes as one thought — because that is what a comment budget
+ * is normally about: one explanation that got away from its author. A file
+ * holding forty well-sized comments is not the same problem as one holding a
+ * single essay, and a file-wide number cannot tell them apart.
+ *
+ * `file` adds the other reading for repositories that want it: every comment
+ * in one file, measured together. Declaring it does not change the block
+ * budgets, and a file is reported against both.
+ */
+export interface CodometerLanguageCommentsConfiguration extends CodometerCommentsConfiguration {
+  file?: CodometerCommentsConfiguration | undefined;
+}
+
+/**
+ * What a language may configure beyond the repository-wide defaults.
+ *
+ * A key of its own per language, the way `python` already had one, so what is
+ * being configured is readable from the path rather than the field name alone.
+ * A language's `comments` block is merged field by field over the top-level
+ * `comments` default, so naming one maximum there never silently drops the
+ * others.
+ */
+export interface CodometerLanguageConfiguration {
+  comments?: CodometerLanguageCommentsConfiguration | undefined;
+}
 
 /**
  * How high one measured metric may go.
@@ -209,8 +308,8 @@ export interface CodometerLimit {
   value: number | string;
 }
 
-/** How Python sources are analyzed. */
-export interface CodometerPythonConfiguration {
+/** How Python sources are analyzed, and how long their comments may run. */
+export interface CodometerPythonConfiguration extends CodometerLanguageConfiguration {
   command?: string | undefined;
 }
 
@@ -308,95 +407,4 @@ export interface CodometerTarget {
 export interface LoadConfigurationArguments {
   configurationPath?: string | undefined;
   searchDirectory?: string | undefined;
-}
-
-/**
- * A resolved configuration and the file it was resolved from.
- *
- * `path` stays `undefined` when the upward walk reached the filesystem root
- * without finding a file, which is legal and leaves every default in place.
- */
-export interface LoadedConfiguration {
-  configuration: ResolvedCodometerConfiguration;
-  path: string | undefined;
-}
-
-/**
- * Configuration with every default applied.
- *
- * Consumers read this shape rather than the authored one, so no analyzer has
- * to know which fields a configuration file may omit.
- */
-export interface ResolvedCodometerConfiguration {
-  /** Stays `undefined` when nothing named one, so every path must qualify. */
-  defaultTarget: string | undefined;
-  /**
-   * Stays `undefined` when a configuration names no `documentation` block at
-   * all, which is what leaves the check off rather than gating every
-   * documented declaration against a default nobody chose.
-   */
-  documentation: ResolvedCodometerDocumentationConfiguration | undefined;
-  exclude: string[];
-  excludeFrom: string[];
-  limits: ResolvedCodometerLimit[];
-  output: ResolvedCodometerOutputConfiguration;
-  python: ResolvedCodometerPythonConfiguration;
-  statistics: ResolvedCodometerCustomStatistic[];
-  targets: ResolvedCodometerTarget[];
-}
-
-/** A configured counter with its badge color and group filled in. */
-export interface ResolvedCodometerCustomStatistic {
-  color: string;
-  group: CodometerStatisticGroup;
-  label: string;
-  /** Empty for a symbol counter naming none, which then searches every file. */
-  patterns: string[];
-  symbols?: CodometerSymbolMatcher | undefined;
-}
-
-/** Documentation-length configuration with every default applied. */
-export interface ResolvedCodometerDocumentationConfiguration {
-  default: number;
-  kinds: Partial<Record<CodometerSymbolKind, number>>;
-  severity: CodometerSeverity;
-  unit: CodometerDocumentationUnit;
-}
-
-/**
- * A limit with its severity filled in and its value read as a number.
- *
- * The unit is gone by this point: a limit written `"8 KB"` arrives here as
- * 8000, so nothing downstream has to know that limits can be written with
- * units at all.
- */
-export interface ResolvedCodometerLimit {
-  /** Stays `undefined` when none was written; a report falls back to the path. */
-  label: string | undefined;
-  metric: string;
-  severity: CodometerSeverity;
-  value: number;
-}
-
-/** Python analysis settings with defaults applied. */
-export interface ResolvedCodometerPythonConfiguration {
-  command: string;
-}
-
-/**
- * A target with its compression filled in and its negations collected.
- *
- * `include` holds only patterns that add files and `exclude` only patterns
- * that remove them, whichever list they were authored in. Order carries no
- * meaning in either: a file is in the target when some include glob claims it
- * and no exclude glob does.
- */
-export interface ResolvedCodometerTarget {
-  analyses: CodometerAnalysis[];
-  compression: CodometerCompression;
-  /** `"."` when the target never named one, meaning the measured directory. */
-  directory: string;
-  exclude: string[];
-  include: string[];
-  name: string;
 }

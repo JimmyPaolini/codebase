@@ -5,10 +5,16 @@ import { Test } from "@nestjs/testing";
 import tsCompiler from "typescript";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { CommentsService } from "../comments/comments.service";
+
 import { DocumentationMeasurementService } from "./documentation-measurement.service";
 import { TypescriptService } from "./typescript.service";
 
 import type { TypescriptSymbolCounter } from "./typescript.types";
+import type {
+  ResolvedCodometerCommentsConfiguration,
+  ResolvedCodometerDocumentationConfiguration,
+} from "@codometer/configuration";
 
 const { readFileSyncMock } = vi.hoisted(() => ({
   readFileSyncMock: vi.fn<(filePath: string, encoding: string) => string>(),
@@ -21,7 +27,11 @@ describe(TypescriptService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [DocumentationMeasurementService, TypescriptService],
+      providers: [
+        CommentsService,
+        DocumentationMeasurementService,
+        TypescriptService,
+      ],
     }).compile();
     service = await module.resolve(TypescriptService);
   });
@@ -648,11 +658,24 @@ describe(TypescriptService, () => {
   });
 
   describe("documentation length measurement", () => {
-    const documentation = {
-      default: 6,
-      kinds: { class: 6, interface: 5, method: 4, property: 3 },
-      severity: "fail" as const,
-      unit: "lines" as const,
+    /** A kind's entry, spelled out the way resolution leaves it. */
+    const inLines = (
+      maximumLines: number,
+    ): ResolvedCodometerCommentsConfiguration => ({
+      maximumCharacters: undefined,
+      maximumLines,
+      maximumWords: undefined,
+      severity: "fail",
+    });
+
+    const documentation: ResolvedCodometerDocumentationConfiguration = {
+      kinds: {
+        class: inLines(6),
+        interface: inLines(5),
+        method: inLines(4),
+        property: inLines(3),
+      },
+      ...inLines(6),
     };
 
     it("does nothing when no documentation configuration is given", () => {
@@ -734,7 +757,7 @@ describe(TypescriptService, () => {
       );
 
       const [measurement] = service.analyze({
-        documentation: { ...documentation, kinds: { class: 2 } },
+        documentation: { ...documentation, kinds: { class: inLines(2) } },
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
@@ -770,7 +793,12 @@ describe(TypescriptService, () => {
       );
 
       const [measurement] = service.analyze({
-        documentation: { ...documentation, unit: "characters" },
+        documentation: {
+          ...documentation,
+          kinds: {},
+          maximumCharacters: 1,
+          maximumLines: undefined,
+        },
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
@@ -789,7 +817,12 @@ describe(TypescriptService, () => {
       );
 
       const [measurement] = service.analyze({
-        documentation: { ...documentation, unit: "words" },
+        documentation: {
+          ...documentation,
+          kinds: {},
+          maximumLines: undefined,
+          maximumWords: 1,
+        },
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",

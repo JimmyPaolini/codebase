@@ -1,5 +1,7 @@
 // 🏷️ Types
 
+import type { LocatedCommentToken } from "../comments/comments.types";
+
 /** Arguments accepted by the Python analyzer. */
 export interface AnalyzePythonArguments {
   command: string;
@@ -21,6 +23,8 @@ export interface PythonResult {
   classes: number;
   commentLines: number;
   comments: number;
+  /** Every comment `tokenize` found, with the file it was found in. */
+  commentTokens: LocatedCommentToken[];
   constants: number;
   decorators: number;
   docstringLines: number;

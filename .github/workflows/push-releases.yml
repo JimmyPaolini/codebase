@@ -21,23 +21,18 @@ jobs:
   push-releases:
     name: 🦸 Push Releases
     runs-on: ubuntu-latest
-    # Two populations of run hide behind one average, and only the larger one
-    # sets this number. Most pushes to main release nothing — semantic-release
-    # decides there is no bump to make and returns in about 3 seconds, so the
-    # job finishes in 6–7 minutes. A push that does release spends 8–10 minutes
-    # in that same step, because `@semantic-release/git` makes the version
-    # commit with a plain `git commit`, and the pre-commit hook runs the whole
-    # `lint-codebase` gate over it. Measured end to end with a warm setup,
-    # releasing runs have taken 14m24s, 15m46s, 15m55s and 16m18s.
+    # Two populations of run hide behind one average. Most pushes to main
+    # release nothing — semantic-release returns in about 3 seconds and the job
+    # finishes in 6–7 minutes. A push that does release spends 8–10 minutes in
+    # that step, because `@semantic-release/git` makes the version commit with a
+    # plain `git commit` and the pre-commit hook runs the whole `lint-codebase`
+    # gate over it. Measured end to end, releasing runs have taken 14m24s to
+    # 16m18s.
     #
     # So 12 minutes is not available, however comfortably the common run fits
-    # inside it: it would pass every no-op and kill every actual release, and
-    # kill it inside the publish step — precisely the interruption the
-    # concurrency note above exists to prevent. 18 leaves roughly 10% over the
-    # slowest release yet seen. What made this worth revisiting was never the
-    # release itself but `📦 Setup pnpm`, which fetched pnpm from the npm
-    # registry on every run and ranged from 5 seconds to 7 minutes; it is
-    # cached now, so the figures above are the whole of the variance left.
+    # inside it: it would pass every no-op and kill every real release, inside
+    # the publish step — precisely what the concurrency note above exists to
+    # prevent. 18 leaves roughly 10% over the slowest release yet seen.
     timeout-minutes: 18
 
     steps:
@@ -82,31 +77,21 @@ jobs:
       - name: 👷 Build Projects
         run: pnpm exec nx run-many --target=build
 
-      # Every report is published here rather than on pull requests: each one is
-      # regenerated from whatever main now holds, and `@semantic-release/git`
-      # commits it with the changelog. A release that does not happen leaves the
-      # rewrites uncommitted, which is the same thing the changelog does.
+      # Every report is published here rather than on pull requests: each one
+      # is regenerated from whatever main now holds, and `@semantic-release/git`
+      # commits it with the changelog.
       #
-      # Ordering is load-bearing, and the rule is that a writer which counts
-      # files another writer produces has to go second. Callidescope, the
-      # module-graph synchronization, and codependix all splice blocks into
-      # project README.md and AGENTS.md files; codometer counts the lines of
-      # those same files, so codometer goes last — measuring first would
-      # publish figures one release behind the documents they describe. The
-      # three splicers may run in any order relative to each other: each
-      # writes between its own markers and leaves the rest of the file as it
-      # found it.
+      # Ordering is load-bearing: a writer that counts files another writer
+      # produces has to go second. Callidescope, the module-graph
+      # synchronization, and codependix all splice blocks into project
+      # README.md and AGENTS.md files; codometer counts the lines of those
+      # files, so codometer goes last. The three splicers may run in any order
+      # relative to each other, each writing between its own markers.
       #
-      # `--write` exits 1 when it could not measure something it was asked to
-      # measure, so a transient failure fails this job rather than committing a
-      # half-written set of READMEs. Nothing here amends or force-pushes: the
-      # rewrites ride along in the release commit or wait for the next one.
-      #
-      # Every step below is the `write` configuration of a target none of the
-      # pull-request workflows can reach with a configuration of their own:
-      # none of them hangs off `lint-codebase`'s `dependsOn`, so `write` means
-      # publish here and nowhere else. Their gates run on a pull request under
-      # `check`, named directly by the workflow that owns them.
+      # `--write` exits 1 when it could not measure something, so a transient
+      # failure fails this job rather than committing half-written READMEs.
+      # Every step below is a `write` configuration no pull-request workflow
+      # can reach; their gates run there under `check`.
       - name: 🔭 Trace Call Stacks
         run: pnpm exec nx run codebase:callidescope:write
 
@@ -143,22 +128,20 @@ jobs:
           pnpm exec nx run-many --target=codometer --configuration=write --exclude=codebase
           pnpm exec nx run codebase:codometer:write
 
-      # The committer is overridden so GitHub can verify the signature that
-      # `🔐 Import GPG Key` already produces. semantic-release forces author and
+      # The committer is overridden so GitHub can verify the signature that `🔐
+      # Import GPG Key` already produces. semantic-release forces author and
       # committer to `semantic-release-bot <semantic-release-bot@martynus.net>`,
-      # and GitHub verifies a GPG signature by matching the *committer* email
-      # against an address the signing key carries and the account has
-      # verified — a domain nobody here owns can never be one, so every release
-      # commit read `Unverified` despite being correctly signed. `index.js`
-      # spreads its own `...env` after those defaults, so what is set here wins.
+      # and GitHub verifies by matching the *committer* email against an address
+      # the signing key carries and the account has verified — a domain nobody
+      # here owns never is, so every release commit read `Unverified` despite
+      # being correctly signed. `index.js` spreads its own `...env` after those
+      # defaults, so what is set here wins.
       #
-      # Only the committer pair is set: the author stays the bot, so the log
-      # still says a release was cut by a machine, exactly the way GitHub's own
-      # squash merges read `authored by a person, committed by GitHub`.
+      # Only the committer pair is set; the author stays the bot, so the log
+      # still says a machine cut the release.
       #
-      # This is not cosmetic. `main`'s ruleset has `required_signatures` active,
-      # and these commits land only because the admin role holds an always
-      # bypass. Verified commits stop the release depending on that bypass.
+      # Not cosmetic: `main`'s ruleset has `required_signatures`, and these
+      # commits land only because the admin role holds an always bypass.
       - name: 🦸 Push Releases
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}

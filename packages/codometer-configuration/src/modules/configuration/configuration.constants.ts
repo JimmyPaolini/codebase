@@ -283,6 +283,30 @@ const callbackSchema = <CallbackType>(): z.ZodType<CallbackType> =>
   });
 
 /**
+ * How long a comment block may run.
+ *
+ * One shape, reused everywhere a comment is judged: the top-level default,
+ * each language's own block, `documentation`, and each of its kinds. Written
+ * once so those five can never disagree about what a budget looks like.
+ */
+const commentsSchema = z.object({
+  maximumCharacters: z.number().int().min(1).optional(),
+  maximumLines: z.number().int().min(1).optional(),
+  maximumWords: z.number().int().min(1).optional(),
+  severity: z.enum(CODOMETER_SEVERITIES).optional(),
+});
+
+/** A language's comment budgets: per block, and optionally per file. */
+const languageCommentsSchema = commentsSchema.extend({
+  file: commentsSchema.optional(),
+});
+
+/** What a language may configure beyond the repository-wide defaults. */
+const languageSchema = z.object({
+  comments: languageCommentsSchema.optional(),
+});
+
+/**
  * Validates a configuration file's contents.
  *
  * Zod strips unknown keys rather than rejecting them, so a configuration
@@ -290,12 +314,12 @@ const callbackSchema = <CallbackType>(): z.ZodType<CallbackType> =>
  * failing on a field it has no opinion about.
  */
 export const codometerConfigurationSchema = z.object({
+  comments: languageCommentsSchema.optional(),
   defaultTarget: z.string().min(1).optional(),
-  documentation: z
-    .object({
-      default: z.number().int().min(1).optional(),
+  documentation: commentsSchema
+    .extend({
       kinds: z
-        .record(z.string(), z.number().int().min(1))
+        .record(z.string(), commentsSchema)
         .refine(
           (kinds) =>
             Object.keys(kinds).every((kind) =>
@@ -307,8 +331,6 @@ export const codometerConfigurationSchema = z.object({
           },
         )
         .optional(),
-      severity: z.enum(CODOMETER_SEVERITIES).optional(),
-      unit: z.enum(CODOMETER_DOCUMENTATION_UNITS).optional(),
     })
     .optional(),
   exclude: z.array(z.string()).optional(),
@@ -359,7 +381,8 @@ export const codometerConfigurationSchema = z.object({
         .optional(),
     })
     .optional(),
-  python: z.object({ command: z.string().optional() }).optional(),
+  python: languageSchema.extend({ command: z.string().optional() }).optional(),
+  shell: languageSchema.optional(),
   statistics: z
     .array(
       z
@@ -444,6 +467,8 @@ export const codometerConfigurationSchema = z.object({
       { message: "Every target needs its own name." },
     )
     .optional(),
+  toml: languageSchema.optional(),
+  yaml: languageSchema.optional(),
 });
 
 // 🚨 Errors

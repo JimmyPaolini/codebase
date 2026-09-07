@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
+import { LanguageCommentsService } from "../comments/language-comments.service";
 import { CssService } from "../css/css.service";
 import { HclService } from "../hcl/hcl.service";
 import { JsonService } from "../json/json.service";
@@ -30,6 +31,7 @@ export class LanguagesService {
 
   constructor(
     private readonly cssService: CssService,
+    private readonly languageComments: LanguageCommentsService,
     private readonly hclService: HclService,
     private readonly jsonService: JsonService,
     private readonly jupyterService: JupyterService,
@@ -53,8 +55,24 @@ export class LanguagesService {
   /** Analyze every language present in the discovered files. */
   analyze(args: AnalyzeLanguagesArguments): LanguageResults {
     const { discoveredFiles, workingDirectory } = args;
+    // Analyzed first: its comments come from `tokenize` in the subprocess, so
+    // comment measurement below reads them rather than the files.
+    const python = this.pythonService.analyze({
+      command: args.configuration.python.command,
+      pythonFiles: discoveredFiles.pyFiles,
+      workingDirectory,
+    });
 
     return {
+      // Comment budgets are measured here rather than inside each analyzer:
+      // Python's runs in a subprocess that returns zeros when the interpreter
+      // is unreachable, and a gate living there would quietly stop gating.
+      comments: this.languageComments.measure({
+        configuration: args.configuration,
+        files: discoveredFiles,
+        pythonComments: python.commentTokens,
+        workingDirectory,
+      }),
       css: this.cssService.analyze({
         cssFiles: discoveredFiles.cssFiles,
         workingDirectory,
@@ -76,11 +94,7 @@ export class LanguagesService {
         markdownFiles: discoveredFiles.markdownFiles,
         workingDirectory,
       }),
-      python: this.pythonService.analyze({
-        command: args.configuration.python.command,
-        pythonFiles: discoveredFiles.pyFiles,
-        workingDirectory,
-      }),
+      python,
       shell: this.shellService.analyze({
         shellFiles: discoveredFiles.shellFiles,
         workingDirectory,

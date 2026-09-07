@@ -54,14 +54,23 @@ function buildConfiguration(
 ): ResolvedCodometerConfiguration {
   return {
     defaultTarget,
-    documentation: { default: 6, kinds: {}, severity: "fail", unit: "lines" },
+    documentation: {
+      kinds: {},
+      maximumCharacters: undefined,
+      maximumLines: 6,
+      maximumWords: undefined,
+      severity: "fail",
+    },
     exclude: [],
     excludeFrom: [],
     limits,
     output: { json: undefined, markdown: undefined },
-    python: { command: "python3" },
+    python: { command: "python3", comments: undefined },
+    shell: { comments: undefined },
     statistics: [],
     targets: [],
+    toml: { comments: undefined },
+    yaml: { comments: undefined },
   };
 }
 

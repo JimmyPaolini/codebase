@@ -121,29 +121,19 @@ runs:
       run: echo "/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_PATH"
       shell: bash
 
-    # Keyed per job. Every workflow previously shared one key, so concurrent
-    # jobs on a single SHA raced and all but one failed to reserve it — the
-    # cache was effectively write-only.
+    # Keyed per job: one shared key made concurrent jobs race, leaving the
+    # cache write-only.
     #
-    # The task-result database is cached here rather than with the graph,
-    # because it is the index of these files and the two must never come from
-    # different tarballs. Nx splits a cached task across two directories:
-    # `.nx/cache/<hash>` holds the output files and
-    # `.nx/cache/terminalOutputs/<hash>` the recorded log, while the row saying
-    # the task is cached at all lives in `.nx/workspace-data/*.db`. Nx decides
-    # a hit from that row alone, so a job holding a row whose files it never
-    # restored reports `[local cache]`, prints an empty terminal output,
-    # restores nothing, and exits 0 — a build that leaves no `dist/` behind and
-    # says nothing about it. That is what failed 🦸 Push Releases run
-    # 33827705049 at `📊 Measure Codebase`: `logger:build` hit hollow, so
-    # `packages/logger/dist` never appeared and codometer measured a project
-    # whose compiled output was not there. Which tasks hit hollow is a lottery,
-    # because the two keys are matched independently and a re-run draws a
-    # different pair — attempt 2 of that same run restored another database,
-    # rebuilt `logger`, and got through the step. A green re-run is luck rather
-    # than a fix, which is what makes this worth keying correctly instead of
-    # retrying. The reverse mismatch is safe: files with no row are an ordinary
-    # cache miss.
+    # The task-result database is cached here rather than with the graph
+    # because it indexes these files, and the two must never come from
+    # different tarballs. Nx splits a cached task across `.nx/cache/<hash>`
+    # for outputs and `.nx/cache/terminalOutputs/<hash>` for the log, while
+    # the row saying it is cached lives in `.nx/workspace-data/*.db`. Nx
+    # decides a hit from that row alone, so a job holding a row whose files
+    # it never restored reports `[local cache]`, restores nothing, exits 0 —
+    # a build leaving no `dist/` behind. Which tasks hit hollow is a lottery,
+    # so a green re-run is luck. The reverse mismatch is safe: files with no
+    # row are an ordinary miss.
     - name: ♻️ Sync Nx Cache
       if: inputs.nx-cache == 'true'
       uses: actions/cache@v6
@@ -165,14 +155,14 @@ runs:
     # The task-result database is excluded and cached with `.nx/cache` above —
     # see that step for what restoring the two from different tarballs does.
     # This key is shared by every job and matched on `project.json` content
-    # alone, which is exactly the sharing the database must not have. Nothing
-    # is lost by leaving it out: what this cache saves lives in
-    # `project-graph.json` and `file-map.json`, and a data directory holding
-    # those but no database builds the graph just as fast as a complete one.
+    # alone, exactly the sharing the database must not have. Nothing is lost by
+    # leaving it out: what this cache saves lives in `project-graph.json` and
+    # `file-map.json`, and a data directory holding those builds the graph just
+    # as fast.
     #
     # `v2` retires every tarball written before the exclusion. `path` decides
-    # what is archived, not what is extracted, so an entry saved under the old
-    # key would still deliver the database it was saved with.
+    # what is archived, not what is extracted, so an old-key entry would still
+    # deliver its database.
     - name: 🕸️ Sync Nx Graph
       if: inputs.nx-graph-cache == 'true'
       uses: actions/cache@v6

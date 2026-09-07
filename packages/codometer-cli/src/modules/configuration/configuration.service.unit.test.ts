@@ -23,9 +23,12 @@ function buildConfiguration(
     excludeFrom: [],
     limits: [],
     output: { json: undefined, markdown: undefined },
-    python: { command: "python" },
+    python: { command: "python", comments: undefined },
+    shell: { comments: undefined },
     statistics: [],
     targets: [],
+    toml: { comments: undefined },
+    yaml: { comments: undefined },
     ...overrides,
   };
 }

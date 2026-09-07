@@ -287,6 +287,56 @@ describe("every example configuration this package ships", () => {
 
       expect(run.exitCode).toBe(1);
     });
+
+    it("measures a YAML comment block through the same channel", () => {
+      const report = measureExample("documentation", "yaml-comments.config.ts");
+
+      // One block, the note above `pipeline.yaml`'s anchor, reported once per
+      // declared maximum. A configuration naming no `documentation` block
+      // measures no JSDoc comment at all, so every entry here is a YAML one.
+      expect(
+        report.documentation.map((entry) => [
+          entry.unit,
+          entry.measured,
+          entry.limit,
+          entry.breached,
+        ]),
+      ).toStrictEqual([
+        ["lines", 1, 1, false],
+        ["words", 12, 5, true],
+      ]);
+      expect(report.documentation[0]).toMatchObject({
+        file: "yaml/pipeline.yaml",
+        kind: "comment",
+        line: 2,
+      });
+    });
+
+    it("measures every `#` language, and honours a language override", () => {
+      const report = measureExample("documentation", "comments.config.ts");
+
+      expect(
+        report.documentation.map((entry) => [
+          entry.file,
+          entry.line,
+          entry.measured,
+          entry.limit,
+        ]),
+      ).toStrictEqual([
+        ["python/inventory.py", 7, 10, 3],
+        // Line 2, not line 1: a `#!` shebang is never a comment.
+        ["shell/release.sh", 2, 11, 8],
+        ["shell/release.sh", 8, 6, 8],
+        ["toml/service.toml", 1, 5, 3],
+        ["yaml/pipeline.yaml", 2, 12, 3],
+      ]);
+    });
+
+    it("gates a YAML comment breach the same way", () => {
+      const run = gateExample("documentation", "yaml-comments.config.ts");
+
+      expect(run.exitCode).toBe(1);
+    });
   });
 
   describe("configuration discovery", () => {

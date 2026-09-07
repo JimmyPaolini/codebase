@@ -1,5 +1,6 @@
 // 🏷️ Types
 
+import type { CommentMeasurement } from "../comments/comments.types";
 import type { CssResult } from "../css/css.types";
 import type { HclResult } from "../hcl/hcl.types";
 import type { JsonResult } from "../json/json.types";
@@ -42,6 +43,8 @@ export interface DiscoveredLanguageFiles {
 
 /** What every language analyzer reported, keyed by language. */
 export interface LanguageResults {
+  /** Every measured comment block, across every language configured for one. */
+  comments: CommentMeasurement[];
   css: CssResult;
   hcl: HclResult;
   json: JsonResult;

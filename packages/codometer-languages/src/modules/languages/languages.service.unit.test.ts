@@ -2,6 +2,12 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
+import { CommentsService } from "../comments/comments.service";
+import { HashCommentsService } from "../comments/hash-comments.service";
+import { LanguageCommentsService } from "../comments/language-comments.service";
+import { YamlCommentsService } from "../comments/yaml-comments.service";
 import { CssService } from "../css/css.service";
 import { HclService } from "../hcl/hcl.service";
 import { JsonService } from "../json/json.service";
@@ -20,7 +26,7 @@ import type { DiscoveredLanguageFiles } from "./languages.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 const configuration = createMock<ResolvedCodometerConfiguration>({
-  documentation: { default: 6, kinds: {}, severity: "fail", unit: "lines" },
+  documentation: { maximumLines: 6 },
   python: { command: "uv run python" },
 });
 
@@ -48,6 +54,11 @@ describe(LanguagesService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
+        CommentsService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+        HashCommentsService,
+        LanguageCommentsService,
+        YamlCommentsService,
         LanguagesService,
         { provide: CssService, useValue: createMock<CssService>() },
         { provide: HclService, useValue: createMock<HclService>() },
@@ -115,6 +126,10 @@ describe(LanguagesService, () => {
     const module = await Test.createTestingModule({
       providers: [
         LanguagesService,
+        {
+          provide: LanguageCommentsService,
+          useValue: createMock<LanguageCommentsService>(),
+        },
         { provide: CssService, useValue: createMock<CssService>() },
         { provide: HclService, useValue: createMock<HclService>() },
         { provide: JsonService, useValue: createMock<JsonService>() },
@@ -156,6 +171,7 @@ describe(LanguagesService, () => {
     });
 
     expect(Object.keys(results).toSorted()).toStrictEqual([
+      "comments",
       "css",
       "hcl",
       "json",
