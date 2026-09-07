@@ -300,12 +300,14 @@ describe(PluginService, () => {
         wideCallables?: WideCallableFinding[];
       } = {},
     ): void {
-      configurationService.loadConfiguration.mockResolvedValue(
-        createMock<ResolvedCallidescopeConfiguration>({
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: createMock<ResolvedCallidescopeConfiguration>({
           output: { format: args.format ?? "markdown" },
         }),
-      );
-      callidescopeService.trace.mockReturnValue(
+        path: undefined,
+      });
+      callidescopeService.trace.mockResolvedValue(
         createMock<TraceOutcome>({
           result: createMock<CallGraphResult>({
             deepStacks: args.deepStacks ?? [],
@@ -345,7 +347,7 @@ describe(PluginService, () => {
         workspaceRoot: "/workspace",
       });
 
-      expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
+      expect(configurationService.loadConfigurationFile).toHaveBeenCalledWith({
         configurationPath: "callidescope.config.ts",
         searchDirectory: "/workspace",
       });
@@ -366,7 +368,7 @@ describe(PluginService, () => {
         workspaceRoot: "/workspace",
       });
 
-      expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
+      expect(configurationService.loadConfigurationFile).toHaveBeenCalledWith({
         configurationPath: "callidescope.config.ts",
         searchDirectory: "/workspace",
       });
@@ -383,7 +385,7 @@ describe(PluginService, () => {
         workspaceRoot: "/workspace",
       });
 
-      expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
+      expect(configurationService.loadConfigurationFile).toHaveBeenCalledWith({
         configurationPath: "elsewhere.ts",
         searchDirectory: "/workspace",
       });

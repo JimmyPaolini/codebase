@@ -1,4 +1,14 @@
 import {
+  type CallGraphResult,
+  type CallidescopeLimits,
+  type ConfigurationService,
+  type LoadedProjectConfiguration,
+  ProjectConfigurationService,
+  type ProjectLimitsLookup,
+  type ResolvedCallidescopeConfiguration,
+} from "@callidescope/configuration";
+import {
+  AddressService,
   BreadthService,
   CohesionService,
   ComponentsService,
@@ -28,16 +38,13 @@ import {
 import { CallidescopeService } from "./callidescope.service";
 
 import type { FixtureServices } from "../../../testing/programs";
-import type {
-  CallGraphResult,
-  ResolvedCallidescopeConfiguration,
-} from "@callidescope/configuration";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** Analyzes in-memory files end to end, short of reading the disk. */
 function analyze(args: {
   configuration?: ResolvedCallidescopeConfiguration;
   files: Record<string, string>;
+  projectLimits?: ProjectLimitsLookup;
 }): CallGraphResult {
   const projectProgram = buildFixtureProgram(args.files);
   const fixture = buildFixtureServices({ projectProgram });
@@ -45,16 +52,21 @@ function analyze(args: {
     projectProgram,
     services: fixture,
   });
+  const configuration = args.configuration ?? buildConfiguration();
 
   return buildSubject({ fixture }).analyze({
     callablesById: collection.byId,
-    configuration: args.configuration ?? buildConfiguration(),
+    configuration,
+    entryPointsByProject: new Map(),
     fileCount: collection.fileCount,
     fileCountByProject: collection.fileCountByProject,
     projectCount: 1,
+    projectLimits:
+      args.projectLimits ??
+      resolveLimits({ workspaceConfiguration: configuration }),
     projectNames: ["example"],
     workspaceRoot: FIXTURE_ROOT,
-  });
+  }).result;
 }
 
 /** Builds a resolved configuration with the defaults this suite assumes. */
@@ -65,6 +77,7 @@ function buildConfiguration(
     allowSpreadFor: [],
     directories: [],
     entryPoints: {
+      addresses: [],
       decorators: ["Command", "Get"],
       includeExportedFunctions: true,
       includeOrphans: true,
@@ -105,8 +118,9 @@ function buildSubject(args: {
     args.fixture.callables,
     args.fixture.hierarchy,
     new CohesionService(),
-    new EntriesService(createMock<LoggerService>()),
+    new EntriesService(new AddressService(), createMock<LoggerService>()),
     args.fixture.external,
+    args.fixture.fileFilter,
     new GraphAssemblyService(
       new BreadthService(),
       new ComponentsService(),
@@ -115,6 +129,7 @@ function buildSubject(args: {
       new GraphService(),
     ),
     args.fixture.programService,
+    createMock<ProjectConfigurationService>(),
     new ProjectReportsService(
       new PathsService(new DocumentationService(), new SignaturesService()),
       new SignaturesService(),
@@ -122,6 +137,28 @@ function buildSubject(args: {
     args.fixture.workspace,
     args.logger ?? createMock<LoggerService>(),
   );
+}
+
+/**
+ * Resolves limits the way a real run does, through the real resolver.
+ *
+ * The one resolver rather than a second copy of the inheritance rules: a test
+ * that worked them out for itself could pass while the tool disagreed.
+ */
+function resolveLimits(args: {
+  projectConfigurations?: readonly LoadedProjectConfiguration[];
+  workspaceAuthoredLimits?: CallidescopeLimits | undefined;
+  workspaceConfiguration?: ResolvedCallidescopeConfiguration;
+}): ProjectLimitsLookup {
+  return new ProjectConfigurationService(
+    createMock<ConfigurationService>(),
+  ).resolveLimits({
+    projectConfigurations: args.projectConfigurations ?? [],
+    projects: ["example"],
+    workspaceAuthoredLimits: args.workspaceAuthoredLimits,
+    workspaceConfiguration: args.workspaceConfiguration ?? buildConfiguration(),
+    workspaceConfigurationPath: "callidescope.config.ts",
+  });
 }
 
 describe(CallidescopeService, () => {
@@ -158,9 +195,11 @@ describe(CallidescopeService, () => {
     buildSubject({ fixture, logger }).analyze({
       callablesById: collection.byId,
       configuration: buildConfiguration(),
+      entryPointsByProject: new Map(),
       fileCount: collection.fileCount,
       fileCountByProject: collection.fileCountByProject,
       projectCount: 1,
+      projectLimits: resolveLimits({}),
       projectNames: ["example"],
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -202,6 +241,64 @@ describe(CallidescopeService, () => {
     });
 
     expect(result.deepStacks).toStrictEqual([]);
+  });
+
+  it("leaves a project alone when it declared a limit above the workspace's", () => {
+    const result = analyze({
+      files: {
+        "packages/example/src/index.ts": `
+          function three(): void {}
+          function two(): void { three(); }
+          export function one(): void { two(); }
+        `,
+      },
+      projectLimits: resolveLimits({
+        projectConfigurations: [
+          {
+            authored: { limits: { maximumDepth: 3 } },
+            configuration: buildConfiguration({
+              limits: {
+                ...buildConfiguration().limits,
+                maximumDepth: 3,
+              },
+            }),
+            path: "packages/example/callidescope.config.ts",
+            project: "example",
+          },
+        ],
+      }),
+    });
+
+    expect(result.deepStacks).toStrictEqual([]);
+  });
+
+  it("stamps a finding with the limit the project declared for itself", () => {
+    const result = analyze({
+      files: {
+        "packages/example/src/index.ts": `
+          function three(): void {}
+          function two(): void { three(); }
+          export function one(): void { two(); }
+        `,
+      },
+      projectLimits: resolveLimits({
+        projectConfigurations: [
+          {
+            authored: { limits: { maximumDepth: 1 } },
+            configuration: buildConfiguration({
+              limits: {
+                ...buildConfiguration().limits,
+                maximumDepth: 1,
+              },
+            }),
+            path: "packages/example/callidescope.config.ts",
+            project: "example",
+          },
+        ],
+      }),
+    });
+
+    expect(result.deepStacks[0]?.limit).toBe(1);
   });
 
   it("names every frame of a reported stack", () => {
@@ -314,5 +411,88 @@ describe(CallidescopeService, () => {
       memberCount: 2,
       minimumDepth: 1,
     });
+  });
+  // 📮 Roots a callable the configuration declared by address
+
+  it("roots a callable the configuration declared as an entry point", () => {
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/modules/a/a.service.ts": `
+        export class Service {
+          public read(): void { this.parse(); }
+          private parse(): void {}
+        }
+      `,
+    });
+    const fixture = buildFixtureServices({ projectProgram });
+    const collection = collectFixtureCallables({
+      projectProgram,
+      services: fixture,
+    });
+
+    const { result } = buildSubject({ fixture }).analyze({
+      callablesById: collection.byId,
+      configuration: buildConfiguration({
+        entryPoints: {
+          addresses: [
+            "packages/example/src/modules/a/a.service.ts#Service.read",
+          ],
+          decorators: [],
+          includeExportedFunctions: false,
+          includeOrphans: false,
+          includeTests: true,
+        },
+      }),
+      entryPointsByProject: new Map(),
+      fileCount: collection.fileCount,
+      fileCountByProject: collection.fileCountByProject,
+      projectCount: 1,
+      projectLimits: resolveLimits({}),
+      projectNames: ["example"],
+      workspaceRoot: FIXTURE_ROOT,
+    });
+
+    expect(result.projects[0]?.stacks).toStrictEqual([
+      expect.objectContaining({ entryPointKind: "declared" }),
+    ]);
+  });
+
+  it("reports a declared address that named no callable", () => {
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/modules/a/a.service.ts":
+        "export class Service { public read(): void {} }",
+    });
+    const fixture = buildFixtureServices({ projectProgram });
+    const collection = collectFixtureCallables({
+      projectProgram,
+      services: fixture,
+    });
+
+    const { unresolvedAddresses } = buildSubject({ fixture }).analyze({
+      callablesById: collection.byId,
+      configuration: buildConfiguration({
+        entryPoints: {
+          addresses: ["packages/example/src/modules/a/a.service.ts#Gone.away"],
+          decorators: [],
+          includeExportedFunctions: false,
+          includeOrphans: false,
+          includeTests: true,
+        },
+      }),
+      entryPointsByProject: new Map(),
+      fileCount: collection.fileCount,
+      fileCountByProject: collection.fileCountByProject,
+      projectCount: 1,
+      projectLimits: resolveLimits({}),
+      projectNames: ["example"],
+      workspaceRoot: FIXTURE_ROOT,
+    });
+
+    expect(unresolvedAddresses).toStrictEqual([
+      {
+        address: "packages/example/src/modules/a/a.service.ts#Gone.away",
+        projectName: undefined,
+        resolution: { kind: "not-found" },
+      },
+    ]);
   });
 });

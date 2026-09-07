@@ -33,19 +33,30 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
 export default callidescopeConfiguration;
 ```
 
+That file is the **workspace** configuration, and every section below describes
+it. A project may also configure itself, from a much smaller surface —
+see [Project Configuration](#project-configuration).
+
 ## Limits
 
-Every threshold has a default, so a configuration file names only what it wants
-to change.
+Every threshold but one has a default, so a configuration file names only what
+it wants to change.
 
 | Limit | Default | Meaning |
 | ----- | ------- | ------- |
 | `maximumDepth` | `6` | Frames a call stack may hold, entry point inclusive |
+| `maximumBreadth` | **none** | Callables one callable may call directly |
 | `spreadThreshold` | `4` | Distinct modules a callable's transitive callees may touch |
 | `directSpreadThreshold` | `3` | Modules a callable must call _directly_ before spread is reported |
 | `maximumImplementationCandidates` | `8` | Implementations one interface member may resolve to |
 | `minimumCallers` | `2` | Callers a callable needs before its placement is judged |
 | `callerMajorityRatio` | `0.8` | Share of callers in one foreign module that marks a callable misplaced |
+
+`maximumBreadth` is the one limit with no default. Until something declares a
+number nothing can exceed it, so breadth is measured and reported without being
+gated — and a run given `--check breadth` is refused rather than passing over a
+limit nobody chose. It is also the one limit a workspace cannot usefully pick
+alone: see [Project Configuration](#project-configuration).
 
 `directSpreadThreshold` exists because transitive spread on its own flags every
 entry point — an entry point legitimately reaches the whole program. Requiring
@@ -63,10 +74,21 @@ as roots is configurable.
 
 | Option | Default | Meaning |
 | ------ | ------- | ------- |
+| `addresses` | none | Callables named outright as roots, each `<file>#<qualified-name>` |
 | `decorators` | 13 framework decorators | Decorators whose methods a framework invokes |
 | `includeExportedFunctions` | `true` | Treat every `src/index.ts` export as a root |
 | `includeOrphans` | `true` | Promote callables nothing in the repository calls |
 | `includeTests` | `false` | Trace test files too |
+
+`addresses` takes the same `<file>#<qualified-name>` form the `depth` and
+`breadth` commands accept and every stack frame prints, so an address can be
+copied out of a report straight into a configuration. A trailing `:<line>`
+disambiguates a file holding two declarations under one qualified name.
+Declared addresses are **additive**: the rules below keep running, orphan
+promotion still catches whatever nobody named, and an address landing on a
+callable a rule already rooted is one root rather than two. An address that
+resolves to nothing, to more than one declaration, or to nothing parseable
+fails the run — see [Refusals](#refusals).
 
 `includeOrphans` is a safety net rather than a feature. Without it, a missing
 entry-point rule silently removes whole subtrees from every measurement; with
@@ -81,6 +103,25 @@ its own noise does not have to restate them.
 
 `excludeFrom` names gitignore-syntax files, which is how a long exclusion list
 stays out of the configuration file itself.
+
+### An exclusion drops the callables, not the file
+
+`exclude` decides what is **collected**, and nothing else. The file is still in
+the `ts.Program`, so it is still compiled and still type-checked — what changes
+is that its callables are never collected, and a call reaching into it becomes
+an unfollowable call rather than disappearing. A stack therefore stops at the
+excluded boundary instead of routing around it.
+
+Two consequences worth knowing before reaching for `exclude`:
+
+- **It cannot un-project a directory.** A project is the directory holding a
+  `tsconfig.json`, and discovery has already happened by the time collection is
+  filtered — so a project cannot exclude its own `tsconfig.json`, and excluding
+  every file it holds leaves it a project that traced nothing rather than no
+  project at all.
+- **A `tsconfig.json` that will not parse still ends the run**, because it is
+  opened before any of this. Use the run's `exclude` to drop such a project,
+  which is settled early enough to keep discovery from opening it at all.
 
 ## Output
 
@@ -115,6 +156,224 @@ A markdown destination may supply `render` to replace the built-in tables, or
 splice rather than reimplementing it. Returning `false` reports the destination
 as stale; anything else, `undefined` included, counts as current.
 
+## Project Configuration
+
+Everything above describes the file a run is pointed at — the **workspace**
+configuration. A second `callidescope.config.ts` may also sit at any traced
+project's own root, the directory holding the `tsconfig.json` that makes it a
+project. It is found by name in that directory alone, with no upward walk, and
+may use any of the same eight extensions.
+
+A project with no file of its own is configured entirely by the run. That is
+what every project did before per-project configuration existed and what most
+projects keep doing.
+
+One file, one role per run: the file a run was pointed at is never also read as
+a project's. A package whose task names its own configuration and then traces
+itself would otherwise have that file judged as a project's — a refusal for the
+workspace-only fields it legitimately sets.
+
+### What a project may set
+
+| Field | What it does |
+| ----- | ------------ |
+| `entryPoints` | Which of that project's callables root a stack, `addresses` included |
+| `limits.maximumDepth` | The depth every stack rooted in that project is judged against |
+| `limits.maximumBreadth` | The breadth every callable that project declares is judged against |
+| `exclude` | Globs naming that project's own files to leave untraced |
+
+**A project's `exclude` globs are anchored to that project's root**, never to
+the workspace: `exclude: ["src/generated/**"]` in `packages/thing`'s own file
+names `packages/thing/src/generated/**`, and there is no spelling of it that
+reaches a sibling. Write the path as the project sees it — a workspace-relative
+glob here matches nothing, and the files it meant to drop stay traced.
+
+The run's own `exclude` keeps its workspace-relative meaning and is layered
+underneath, so a project can leave more out and can never put back what the run
+left out. Noise spanning several projects still belongs in the workspace file.
+
+It also filters **collection** and nothing else, exactly as the run's own does —
+see [An exclusion drops the callables, not the file](#an-exclusion-drops-the-callables-not-the-file).
+A project cannot exclude its own `tsconfig.json`, and a call into a file it
+excluded becomes an unfollowable call rather than vanishing.
+
+Every other field is refused by name before anything is traced.
+
+### Write the override, never a spread
+
+```ts
+import { type CallidescopeConfiguration } from "@callidescope/configuration";
+
+const projectConfiguration: CallidescopeConfiguration = {
+  limits: { maximumDepth: 10 },
+};
+
+export default projectConfiguration;
+```
+
+**Do not spread a workspace limits object into a project's `limits`.** Such an
+object carries `spreadThreshold` and the rest of the graph-shaping limits, every
+one of which only a workspace may set, so a project file holding one is rejected
+before anything is traced.
+
+Nothing is lost by writing the override alone, because **a project inherits per
+limit rather than per object**. Each limit falls back to the workspace's number
+on its own, so a project naming `maximumDepth` still inherits `maximumBreadth`,
+and a project naming neither is handed the workspace's object itself. A spread
+would have nothing left to contribute either: depth and breadth are the only two
+limits a project may set, so it would supply exactly the field being overridden
+plus the one that gets the file rejected.
+
+The workspace number is a **default rather than a ceiling**. A project declaring
+a higher limit than the workspace keeps its own — a workspace number pinned by
+the single worst stack anywhere in it gates nothing for the projects nowhere
+near it, which is the whole reason a project gets to say.
+
+`entryPoints` does not work that way: a project declaring any entry-point rule
+replaces the rule set for its own callables outright, and the fields it leaves
+out fall back to this package's defaults rather than to the workspace file's.
+A project that declares `addresses` and wants a decorator list the workspace
+customized has to restate that list too.
+
+`includeTests` is the one field in that set that decides which of a project's
+files are **collected** rather than which of its callables root a stack, so it
+takes effect at the same layer `exclude` does: a project that asks for its test
+files gets them walked in a run that left every other project's out, and a
+project that refuses them keeps them out of a run that asked for everyone's.
+
+### Why the other limits cannot vary per project
+
+`maximumDepth` and `maximumBreadth` **judge** a call graph: the graph is built
+once, and each project asks a different question of the same edges. Two answers
+are two opinions about one artifact, which is coherent.
+
+Every other limit **shapes what the graph is**. `spreadThreshold` and
+`directSpreadThreshold` decide which callables become findings,
+`maximumImplementationCandidates` decides which structural matches become edges
+at all, and `minimumCallers` with `callerMajorityRatio` decides what counts as a
+misplacement. Two projects disagreeing about any of them would each be
+describing a different graph over the same shared code — and a run measures one
+graph, so there is one set of those. The same reasoning puts `ignoreCallees`,
+`allowSpreadFor`, `directories`, `excludeFrom`, `output`, and
+`workspaceStructure` in the workspace file: they name what a run reads, what it
+writes, or how it partitions the workspace, and a project cannot answer those
+differently from the run tracing it.
+
+### Reading the resolved set
+
+A ratchet written one file per project is no longer reviewable in the single
+file it used to live in. `@callidescope/cli`'s `limits` command is where it is
+reviewable as a set instead — every project in scope, the number it is judged
+against, and the file that number is written in, with an `Origin` column saying
+`declared` for the project's own and `inherited` for the workspace default it
+fell back to. It resolves configuration and measures nothing, so it costs
+milliseconds rather than a trace.
+
+It is also the answer to a limit that seems not to have taken effect. The schema
+strips keys it does not recognize rather than refusing them, so a misspelled
+`limits.maxDepth` loads cleanly and changes nothing — and an `Origin` of
+`inherited` where `declared` was expected is what says so.
+
+### Refusals
+
+Each of these ends the run before anything is printed or written, so a checkout
+is left exactly as the run found it. `<project>` is the workspace-relative
+project root; the workspace configuration's own declared addresses are labelled
+`the workspace configuration` instead.
+
+Six of them. Each is shown under the headline it is logged with — five of the
+six share one — and quoted as the tool writes it.
+
+**`🔭 Rejected a project configuration` — the file could not be read.**
+
+```text
+Failed to read the callidescope configuration for <project> at <path>: <reason>
+```
+
+The read failed or the shape did not pass the schema. `<reason>` is the
+underlying failure, which is also kept as the error's `cause`. Fix the named
+file; nothing else was traced.
+
+**`🔭 Rejected a project configuration` — a workspace-only field.**
+
+```text
+<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, limits.maximumBreadth, and limits.maximumDepth.
+```
+
+Move that field to the workspace file. `<field>` is printed as
+`limits.spreadThreshold` for a limit and as a bare name for a top-level field,
+so the message says which of the two is wrong. Spreading the workspace limits
+into a project is the usual way this happens.
+
+**`🔭 Rejected a project configuration` — a declared address resolved to
+nothing.**
+
+```text
+<project> declares an entryPoints.addresses entry that resolves to nothing: "<address>". Check the file path and the qualified name callidescope prints for it in a stack.
+```
+
+The callable was renamed, moved, or excluded from the run. Correct the address
+or drop it. This refusal is the point of the field rather than an
+inconvenience: a rename that silently dropped a declared root would lower the
+project's measured depth with nothing in the output to say so, and loosen a gate
+in the one commit nobody would think to check it in.
+
+**`🔭 Rejected a project configuration` — a declared address was ambiguous.**
+
+```text
+<project> declares an entryPoints.addresses entry that matches more than one declaration: "<address>". Candidates: <address>:<line>, <address>:<line>. Add ":<line>" to the address to pick one.
+```
+
+Every candidate is rendered as an address that would have picked it, so the fix
+is a copy rather than a file location to translate back. Two declarations on one
+line are the case no address can separate; those name their column instead and
+the advice changes to `Two declarations on one line cannot be told apart by
+":<line>" — rename one, or name a different callable.`
+
+**`🔭 Rejected a project configuration` — a declared address was malformed.**
+
+```text
+<project> declares an invalid entryPoints.addresses entry. "<address>" is not a callable address. It needs a file path and a qualified name joined by "#", as in "src/foo.service.ts#FooService.bar", optionally followed by ":<line>" to disambiguate.
+```
+
+**`🔭 Rejected the configuration` — `--check breadth` with nothing to gate on.**
+
+```text
+--check breadth requires at least one project in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <number> }` to that project's callidescope.config.ts before running --check breadth.
+```
+
+A **project's own** file has to declare it. A workspace-declared
+`maximumBreadth` is inherited rather than declared, so it reports breadth
+findings without satisfying this. The check runs after the trace rather than
+before it, because which projects were in scope is something only the trace
+knows.
+
+A run collects **every** unresolved address before it refuses, so several
+mistakes are fixed from one message rather than one refusal at a time. More
+than one arrives numbered, behind
+`<count> declared entry points did not resolve.`
+
+The headlines belong to the command rather than to the message. The first two
+reach the `limits` command as well, where they are printed under
+`🔭 Rejected a configuration`; a listing that quietly skipped the one project
+whose configuration is wrong would be at its least trustworthy exactly when it
+is most wanted. The three address refusals need a resolved call graph and the
+breadth refusal needs to know which projects were in scope, so only a trace
+raises those four.
+
+### Worked examples
+
+Four runnable examples in
+[`@callidescope/examples`](../callidescope-examples/README.md) demonstrate the
+whole of this, each against real traced code:
+
+| Example | What it shows |
+| ------- | ------------- |
+| [`declared-entry-points`](../callidescope-examples/examples/declared-entry-points/README.md) | `entryPoints.addresses`, what declaring adds, and the refusals |
+| [`project-depth-limit`](../callidescope-examples/examples/project-depth-limit/README.md) | One run, two depth limits, and why the two files at that package's root are separate |
+| [`inherited-limits`](../callidescope-examples/examples/inherited-limits/README.md) | A project with no file at all, and per-limit inheritance |
+| [`gated-leaf`](../callidescope-examples/examples/gated-leaf/README.md) | A leaf gated at three, and both halves of the `--check breadth` rule side by side |
+
 ## Call Graph Types
 
 The result types define the JSON report's shape, so a consumer types against
@@ -136,6 +395,15 @@ types and the `CallGraphResult` types that define the JSON report's shape.
 defaulting. They are split so that a host embedding callidescope can hand over a
 configuration object it assembled itself and get the same resolved shape a file
 produces, without touching the disk.
+
+`ProjectConfigurationService` is the second service, and the only place a
+per-project refusal is raised: `loadProjectConfigurations` reads the file beside
+each traced project and rejects the ones setting a workspace-only field, and
+`resolveLimits` says what every project is judged against, each number carrying
+the file it was written in. One resolver rather than one per reader — a gate and
+a listing that each worked the inheritance out for themselves could disagree
+about the same number, and a limit two answers can be given for is worse than
+no limit.
 
 ## Test
 

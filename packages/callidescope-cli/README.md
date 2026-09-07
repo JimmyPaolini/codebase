@@ -49,6 +49,19 @@ Two questions this answers that reading code does not:
 
 ## Usage
 
+Tracing the workspace is the **default command**, so the flags below sit
+directly on `callidescope`:
+
+```bash
+npx callidescope --check depth
+```
+
+`callidescope callidescope --check depth` is the same run written out, which is
+what a task runner that always names a command spells. `depth`, `breadth`, and
+`limits` are matched by name before anything falls through to the default, so
+they are unaffected — and a word that names none of them is refused rather than
+quietly traced.
+
 | Flag | Meaning |
 | ---- | ------- |
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |
@@ -56,29 +69,36 @@ Two questions this answers that reading code does not:
 | `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default |
 | `--json` | Path to write the machine-readable report to |
 | `-m, --markdown` | Path to splice the markdown block into |
-| `--check` | Fail on a comma-separated set drawn from `depth` and `reports` |
+| `--check` | Fail on a comma-separated set drawn from `breadth`, `depth`, and `reports` |
 | `--write` | Write every configured destination |
 
-### Two findings, two flags
+### Three findings, named separately
 
-A stack that runs deeper than the configured limit and a report that no longer
-matches the code are separate findings, and `--check` names them separately.
-`depth` is callidescope's own word for the magnitude it measures — `limit`
-belongs to codometer, and blurring the two makes the messages unreadable.
+A stack that runs deeper than the configured limit, a callable that calls more
+others directly than its project allows, and a report that no longer matches the
+code are separate findings, and `--check` names them separately. `depth` is
+callidescope's own word for the magnitude it measures — `limit` belongs to
+codometer, and blurring the two makes the messages unreadable.
 
 | `--check` value | What fails the run |
 | --------------- | ------------------ |
+| `breadth` | A callable calling more callables directly than `limits.maximumBreadth` |
 | `depth` | A call stack deeper than `limits.maximumDepth` |
 | `reports` | A configured destination no longer holding what a fresh run would write |
 
 `--check` refuses a value it does not recognize, and refuses a flag carrying no
 value at all. A set with nothing in it looks exactly like the flag having been
 left off, so it is a mistake rather than a shorthand: read as "gate nothing" it
-would be a gate that cannot fail.
+would be a gate that cannot fail. `--check breadth` is refused too when no
+project in scope declares `limits.maximumBreadth`: breadth is the one limit with
+no default, so falling back to an unbounded one would look exactly like passing.
+A workspace-declared number does not satisfy it — every project inherits that
+one, and inheriting is not declaring. That refusal comes after the trace, since
+which projects were in scope is something only the trace knows.
 
-The two are separate because they belong on opposite sides of a pull request.
-Depth is the gate — a stack got longer in this change, and this change is what
-fixes it:
+`depth` and `reports` are separate because they belong on opposite sides of a
+pull request. Depth is the gate — a stack got longer in this change, and this
+change is what fixes it:
 
 ```bash
 nx run codebase:callidescope:check

@@ -9,6 +9,8 @@ import type {
   CallGraphSummary,
   CallStack,
   DeepStackFinding,
+  ProjectLimits,
+  ProjectLimitsLookup,
   ProjectReport,
   WideCallableFinding,
 } from "@callidescope/configuration";
@@ -157,6 +159,26 @@ export class ProjectReportsService {
     };
   }
 
+  /** Picks the stacks one project's own depth limit fails on. */
+  private findProjectDeepStacks(args: {
+    limit: number;
+    report: ProjectReport;
+  }): DeepStackFinding[] {
+    return args.report.stacks
+      .filter((stack) => stack.depth > args.limit)
+      .map((stack) => ({ ...stack, limit: args.limit }));
+  }
+
+  /** Picks the callables one project's own breadth limit fails on. */
+  private findProjectWideCallables(args: {
+    limit: number;
+    report: ProjectReport;
+  }): WideCallableFinding[] {
+    return args.report.callableBreadths
+      .filter((breadth) => breadth.breadth > args.limit)
+      .map((breadth) => ({ ...breadth, limit: args.limit }));
+  }
+
   /** Reads the depth measured for one callable, or nothing if unmeasured. */
   private readDepth(args: {
     callableId: string;
@@ -179,6 +201,20 @@ export class ProjectReportsService {
           depth: measured.depth,
           reachesUnresolved: measured.reachesUnresolved,
         };
+  }
+
+  /**
+   * Reads the limits one project is judged against.
+   *
+   * A project the lookup does not name falls back to the workspace's, which is
+   * what a project declaring nothing is given anyway — so a report arriving
+   * from outside the resolved set is judged rather than silently exempted.
+   */
+  private readProjectLimits(args: {
+    limits: ProjectLimitsLookup;
+    projectName: string;
+  }): ProjectLimits {
+    return args.limits.byProject.get(args.projectName) ?? args.limits.workspace;
   }
 
   // 🌎 Public Methods
@@ -227,17 +263,29 @@ export class ProjectReportsService {
    * traversal: reconstructing the same paths twice would let the number the
    * gate fails on drift from the number the README publishes.
    *
+   * Each project is judged against its own limit rather than one number for
+   * the whole workspace, so a stack deeper than the project that roots it
+   * allows is reported even when a noisier project elsewhere allows more.
+   * The stack is judged by the project owning its entry point, which is the
+   * project `build` already filed it under.
+   *
    * `maximumDepth` is a positive integer, so a stack past it is at least two
    * deep and therefore survived the minimum-frame filter above.
    */
   public findDeepStacks(args: {
-    limit: number;
+    limits: ProjectLimitsLookup;
     reports: readonly ProjectReport[];
   }): DeepStackFinding[] {
     return args.reports
-      .flatMap((report) => report.stacks)
-      .filter((stack) => stack.depth > args.limit)
-      .map((stack) => ({ ...stack, limit: args.limit }))
+      .flatMap((report) =>
+        this.findProjectDeepStacks({
+          limit: this.readProjectLimits({
+            limits: args.limits,
+            projectName: report.projectName,
+          }).maximumDepth.value,
+          report,
+        }),
+      )
       .toSorted((first, second) => second.depth - first.depth);
   }
 
@@ -246,16 +294,29 @@ export class ProjectReportsService {
    *
    * A filter over the breadth reports the reports already hold, mirroring
    * `findDeepStacks`, so the number the gate fails on cannot drift from the
-   * number the README publishes.
+   * number the README publishes. A callable is judged by the project that
+   * declares it, which is the project `build` already filed it under.
+   *
+   * No default exists for `maximumBreadth`: until a configuration sets one,
+   * nothing can exceed it, so a project with no limit anywhere in its
+   * inheritance reports nothing rather than being judged against a number
+   * nobody chose.
    */
   public findWideCallables(args: {
-    limit: number;
+    limits: ProjectLimitsLookup;
     reports: readonly ProjectReport[];
   }): WideCallableFinding[] {
     return args.reports
-      .flatMap((report) => report.callableBreadths)
-      .filter((report) => report.breadth > args.limit)
-      .map((report) => ({ ...report, limit: args.limit }))
+      .flatMap((report) =>
+        this.findProjectWideCallables({
+          limit:
+            this.readProjectLimits({
+              limits: args.limits,
+              projectName: report.projectName,
+            }).maximumBreadth?.value ?? Infinity,
+          report,
+        }),
+      )
       .toSorted((first, second) => second.breadth - first.breadth);
   }
 }

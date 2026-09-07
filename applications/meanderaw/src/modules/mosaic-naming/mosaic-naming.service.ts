@@ -149,7 +149,7 @@ export class MosaicNamingService {
    * is one tile per shape, and between them they are what the family looks
    * like at its two extremes.
    *
-   * `steps` is the only rule about a point's *shape* rather than about which
+   * `zigzag` is the only rule about a point's *shape* rather than about which
    * directions a tile uses. Every point turning a corner is a staircase, and
    * it is the closest thing in the space to the fret the project is named
    * after. It is empty at a single column, where a point's eastward edge
@@ -192,7 +192,7 @@ export class MosaicNamingService {
       {
         matches: (tile) =>
           this.everyPoint(tile, (point) => this.isCorner(point)),
-        name: "steps",
+        name: "zigzag",
       },
     ];
   }

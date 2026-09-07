@@ -473,6 +473,7 @@ describe(EdgesService, () => {
       // declaration no callable was described for.
       fileFilter: { isExcluded: (filePath) => filePath.includes("/a/") },
       includeTests: true,
+      includeTestsByProject: new Map(),
       ownerByFilePath: new Map(
         [...projectProgram.ownedFilePaths].map((filePath) => [
           filePath,

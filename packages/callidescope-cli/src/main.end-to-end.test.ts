@@ -12,15 +12,6 @@ import { environmentSchema } from "./constants";
 const ENTRY_POINT = path.resolve(import.meta.dirname, "main.ts");
 
 /**
- * How long a real `runCallidescope` spawn is given, well past vitest's 5s
- * default.
- *
- * A real child process under a loaded CI runner can outrun that default even
- * though it normally finishes in a fraction of a second locally.
- */
-const PROCESS_SPAWN_TIMEOUT_MILLISECONDS = 15_000;
-
-/**
  * The TypeScript loader, as an absolute URL resolved from this file.
  *
  * The package's own `esm-register` entry registers the hook against the
@@ -29,6 +20,21 @@ const PROCESS_SPAWN_TIMEOUT_MILLISECONDS = 15_000;
  * what makes the loader independent of where the command is run from.
  */
 const LOADER_HOOK = import.meta.resolve("@swc-node/register/esm");
+
+/**
+ * Milliseconds one spawned run is allowed, well above what it needs.
+ *
+ * Every test below spawns this package's real `main.ts` through the TypeScript
+ * loader and lets it build a `ts.Program` per project in a throwaway
+ * workspace. Vitest's default is five seconds, which is a unit-test budget: on
+ * a developer machine each of these takes one to two, and on a continuous
+ * integration runner two of them measured 5.4 and 5.7 — so the default failed
+ * them for being what they are rather than for anything they did. This
+ * repository's own guidance puts an end-to-end test at thirty to sixty
+ * seconds, and thirty leaves several times the headroom the slowest observed
+ * run used.
+ */
+const SPAWNED_RUN_TIMEOUT = 30_000;
 
 /**
  * The compiler options the spawned run reads.
@@ -149,10 +155,10 @@ describe("main end-to-end suite", () => {
     });
   });
 
-  describe("the exit code of a run that could not trace", () => {
-    it(
-      "passes a workspace it traced without finding anything",
-      () => {
+  describe(
+    "the exit code of a run that could not trace",
+    () => {
+      it("passes a workspace it traced without finding anything", () => {
         expect.hasAssertions();
 
         const workspaceRoot = writeWorkspace();
@@ -160,13 +166,9 @@ describe("main end-to-end suite", () => {
         writeReadableProject(workspaceRoot, "readable");
 
         expect(runCallidescope(workspaceRoot).status).toBe(0);
-      },
-      PROCESS_SPAWN_TIMEOUT_MILLISECONDS,
-    );
+      });
 
-    it(
-      "fails a workspace whose only project cannot be read",
-      () => {
+      it("fails a workspace whose only project cannot be read", () => {
         expect.hasAssertions();
 
         // The regression. This used to print the parsing failure and exit 0,
@@ -176,13 +178,9 @@ describe("main end-to-end suite", () => {
         writeUnreadableProject(workspaceRoot, "broken");
 
         expect(runCallidescope(workspaceRoot).status).toBe(1);
-      },
-      PROCESS_SPAWN_TIMEOUT_MILLISECONDS,
-    );
+      });
 
-    it(
-      "fails a workspace holding one unreadable project among readable ones",
-      () => {
+      it("fails a workspace holding one unreadable project among readable ones", () => {
         expect.hasAssertions();
 
         const workspaceRoot = writeWorkspace();
@@ -196,8 +194,8 @@ describe("main end-to-end suite", () => {
         // measured through a workspace that was missing one.
         expect(status).toBe(1);
         expect(output).toContain("Rejected a project it could not read");
-      },
-      PROCESS_SPAWN_TIMEOUT_MILLISECONDS,
-    );
-  });
+      });
+    },
+    SPAWNED_RUN_TIMEOUT,
+  );
 });

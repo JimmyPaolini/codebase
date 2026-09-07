@@ -155,8 +155,16 @@ export interface EntryPoint {
   readonly kind: EntryPointKind;
 }
 
-/** What promoted a callable to the root of a call stack. */
+/**
+ * What promoted a callable to the root of a call stack.
+ *
+ * `declared` is the only one a person chose: a configuration named that
+ * callable's address outright, saying "this is the surface this package has".
+ * Every other kind is inferred — from a decorator, a file name, an export, or
+ * from nothing at all having called it.
+ */
 export type EntryPointKind =
+  | "declared"
   | "decorated-method"
   | "exported-function"
   | "lifecycle"

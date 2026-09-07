@@ -39,3 +39,14 @@ export interface ResolveAddressArguments {
   readonly callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
   readonly workspaceRoot: string;
 }
+
+/**
+ * A resolution that did not name exactly one callable.
+ *
+ * Derived from `CallableAddressResolution` rather than restated, so anything
+ * acting on a failure keeps covering every way one can happen.
+ */
+export type UnresolvedCallableAddress = Exclude<
+  CallableAddressResolution,
+  { readonly kind: "resolved" }
+>;

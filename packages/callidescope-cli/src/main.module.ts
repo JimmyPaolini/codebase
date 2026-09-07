@@ -9,6 +9,7 @@ import { environmentSchema } from "./constants";
 import { BreadthModule } from "./modules/breadth/breadth.module";
 import { CallidescopeModule } from "./modules/callidescope/callidescope.module";
 import { DepthModule } from "./modules/depth/depth.module";
+import { LimitsModule } from "./modules/limits/limits.module";
 
 /**
  * Root NestJS application module.
@@ -26,6 +27,7 @@ import { DepthModule } from "./modules/depth/depth.module";
     BreadthModule,
     CallidescopeModule,
     DepthModule,
+    LimitsModule,
     ConfigurationModule,
   ],
 })

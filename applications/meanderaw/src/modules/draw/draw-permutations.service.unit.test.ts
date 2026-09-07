@@ -99,7 +99,9 @@ describe(DrawPermutationsService, () => {
       () => {
         const paths = sweepPaths();
         const named = paths.filter((filePath) =>
-          /-(?:bars|dashes|diamond|dots|lines|mesh|steps)\.svg$/.test(filePath),
+          /-(?:bars|dashes|diamond|dots|lines|mesh|zigzag)\.svg$/.test(
+            filePath,
+          ),
         );
 
         // The tile whose only edge is a southward one over the lower two

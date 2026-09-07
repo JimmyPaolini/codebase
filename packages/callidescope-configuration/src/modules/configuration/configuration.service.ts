@@ -41,6 +41,8 @@ import type {
   CallidescopeOutputConfiguration,
   CallidescopeWorkspaceStructure,
   LoadConfigurationArguments,
+  LoadedCallidescopeConfiguration,
+  LoadedCallidescopeConfigurationFile,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeEntryPoints,
   ResolvedCallidescopeJsonOutputConfiguration,
@@ -81,12 +83,10 @@ export class ConfigurationService {
     let candidateDirectory = path.resolve(searchDirectory);
 
     for (;;) {
-      for (const fileName of CONFIGURATION_FILE_NAMES) {
-        const candidatePath = path.join(candidateDirectory, fileName);
+      const found = this.findConfigurationFileAt(candidateDirectory);
 
-        if (existsSync(candidatePath)) {
-          return candidatePath;
-        }
+      if (found !== undefined) {
+        return found;
       }
 
       const parentDirectory = path.dirname(candidateDirectory);
@@ -212,6 +212,7 @@ export class ConfigurationService {
     const authored = entryPoints ?? {};
 
     return {
+      addresses: authored.addresses ?? [],
       decorators: authored.decorators ?? [...DEFAULT_ENTRY_POINT_DECORATORS],
       includeExportedFunctions: authored.includeExportedFunctions ?? true,
       includeOrphans: authored.includeOrphans ?? true,
@@ -330,6 +331,25 @@ export class ConfigurationService {
   // 🌎 Public Methods
 
   /**
+   * Finds a configuration file sitting directly at one directory.
+   *
+   * No upward walk, which is what makes this the search a project root needs:
+   * walking up from one would find the workspace file and hand every project a
+   * copy of it.
+   */
+  public findConfigurationFileAt(directory: string): string | undefined {
+    for (const fileName of CONFIGURATION_FILE_NAMES) {
+      const candidatePath = path.join(directory, fileName);
+
+      if (existsSync(candidatePath)) {
+        return candidatePath;
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
    * Loads and validates a callidescope configuration file.
    *
    * A path that was named explicitly must exist — a typo in a task runner's
@@ -340,13 +360,45 @@ export class ConfigurationService {
   public async loadConfiguration(
     args: LoadConfigurationArguments = {},
   ): Promise<ResolvedCallidescopeConfiguration> {
+    const { configuration } = await this.loadConfigurationFile(args);
+
+    return configuration;
+  }
+
+  /**
+   * Loads a configuration, and says what the file itself declared and which
+   * file answered.
+   *
+   * The same work as `loadConfiguration`, keeping two facts it throws away. The
+   * path is what tells a caller resolving a configuration beside every project
+   * which file it has already read as the run's own, so that one file is never
+   * given two roles. The authored object is what a refusal has to name fields
+   * from, since resolution manufactures the rest.
+   *
+   * Naming a path guarantees one back, which is why that case has an overload
+   * of its own: the alternative is every caller of the narrow case carrying a
+   * fallback that can never fire, and picking its own path when it does.
+   */
+  public loadConfigurationFile(
+    args: LoadConfigurationArguments & { configurationPath: string },
+  ): Promise<LoadedCallidescopeConfigurationFile>;
+  public loadConfigurationFile(
+    args?: LoadConfigurationArguments,
+  ): Promise<LoadedCallidescopeConfiguration>;
+  public async loadConfigurationFile(
+    args: LoadConfigurationArguments = {},
+  ): Promise<LoadedCallidescopeConfiguration> {
     const resolvedPath =
       args.configurationPath === undefined
         ? this.findConfigurationFile(args.searchDirectory ?? process.cwd())
         : this.resolveConfigurationPath(args.configurationPath);
 
     if (resolvedPath === undefined) {
-      return this.resolveConfiguration({});
+      return {
+        authored: {},
+        configuration: this.resolveConfiguration({}),
+        path: undefined,
+      };
     }
 
     const extension = path.extname(resolvedPath).toLowerCase();
@@ -355,14 +407,18 @@ export class ConfigurationService {
       throw new UnknownConfigurationFileTypeError(resolvedPath);
     }
 
-    const configurationModule = await this.loadConfigurationModule({
-      configurationPath: resolvedPath,
-      extension,
-    });
-
-    return this.resolveConfiguration(
-      callidescopeConfigurationSchema.parse(configurationModule),
+    const authored = callidescopeConfigurationSchema.parse(
+      await this.loadConfigurationModule({
+        configurationPath: resolvedPath,
+        extension,
+      }),
     );
+
+    return {
+      authored,
+      configuration: this.resolveConfiguration(authored),
+      path: resolvedPath,
+    };
   }
 
   /**

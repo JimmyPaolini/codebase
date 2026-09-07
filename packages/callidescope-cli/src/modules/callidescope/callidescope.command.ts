@@ -3,10 +3,9 @@ import path from "node:path";
 import {
   DEFAULT_JSON_INDENTATION,
   DEFAULT_PREVIEW_COUNT,
-  InputError,
   InputService,
 } from "@callidescope/configuration";
-import { ProgramConfigurationError } from "@callidescope/graph";
+import { AddressService } from "@callidescope/graph";
 import {
   MarkdownReportService,
   OutputJsonService,
@@ -17,13 +16,21 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { ADDRESS_NOT_FOUND_ADVICE } from "../address-lookup/address-lookup.constants";
+import { ReportFindingsService } from "../report-findings/report-findings.service";
 import { CHECK_NAMES } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
-import { PROJECT_README_NAME } from "./callidescope.constants";
+import {
+  buildUnknownCommandMessage,
+  PROJECT_README_NAME,
+  readRefusalHeadline,
+  REJECTED_COMMAND_LINE,
+  REJECTED_CONFIGURATION,
+  UnresolvedEntryPointAddressError,
+} from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
 
-import type { ReportFindingsArguments } from "../run-plan/run-plan.types";
 import type {
   CallidescopeCommandOptions,
   SyncDestinationsArguments,
@@ -34,25 +41,37 @@ import type {
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeProjectReadmeConfiguration,
 } from "@callidescope/configuration";
+import type { UnresolvedEntryPointAddress } from "@callidescope/graph";
 import type { ProjectSection } from "@callidescope/output";
+import type { LogData } from "@codebase/logger";
 
 /**
  * CLI entry point for the call-stack tracing workflow.
+ *
+ * `isDefault` is what makes `callidescope --check depth` work, which is the
+ * invocation every piece of documentation here has always shown and the only
+ * one a reader would think to type — the honest alternative was
+ * `callidescope callidescope`. It stays a named command as well, so the Nx
+ * targets that spell it out keep working unchanged, and `depth`, `breadth`,
+ * and `limits` are still matched by name before anything falls through here.
  */
 @Command({
   description: "Run the callidescope command",
   name: "callidescope",
+  options: { isDefault: true },
 })
 @Injectable()
 export class CallidescopeCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly addressService: AddressService,
     private readonly callidescopeService: CallidescopeService,
     private readonly inputService: InputService,
     private readonly outputJsonService: OutputJsonService,
     private readonly outputMarkdownService: OutputMarkdownService,
     private readonly markdownReportService: MarkdownReportService,
+    private readonly reportFindingsService: ReportFindingsService,
     private readonly runPlanService: RunPlanService,
     private readonly logger: LoggerService,
   ) {
@@ -99,6 +118,39 @@ export class CallidescopeCommand extends CommandRunner {
     });
   }
 
+  /**
+   * States why one declared address failed to resolve, naming the project and
+   * the field that declared it.
+   *
+   * The field is named rather than left to be inferred, matching the sibling
+   * refusal this shares a catch with — which says outright which fields a
+   * project configuration may set instead of leaving the reader to guess.
+   *
+   * An ambiguous address's candidates are rendered by `AddressService`, the
+   * same renderer `depth` and `breadth` print, so what a reader is handed for
+   * a declared entry point and what they are handed for an address they typed
+   * are one thing said one way.
+   */
+  private describeUnresolvedAddress(
+    unresolvedAddress: UnresolvedEntryPointAddress,
+  ): string {
+    const label =
+      unresolvedAddress.projectName ?? "the workspace configuration";
+    const { address, resolution } = unresolvedAddress;
+
+    if (resolution.kind === "not-found") {
+      return `${label} declares an entryPoints.addresses entry that resolves to nothing: "${address}". ${ADDRESS_NOT_FOUND_ADVICE}`;
+    }
+
+    if (resolution.kind === "invalid") {
+      return `${label} declares an invalid entryPoints.addresses entry. ${resolution.reason}`;
+    }
+
+    return `${label} declares an entryPoints.addresses entry that matches more than one declaration: "${address}". ${this.addressService.describeCandidates(
+      { address, candidates: resolution.candidates },
+    )}`;
+  }
+
   /** How many stacks a section shows before the rest are folded away. */
   private readPreviewCount(
     configuration: ResolvedCallidescopeConfiguration,
@@ -108,26 +160,17 @@ export class CallidescopeCommand extends CommandRunner {
     );
   }
 
-  /** Logs a command line the input service refused, and fails the run. */
-  private rejectCommandLine(error: InputError): void {
-    this.logger.error("🔭 Rejected the command line", undefined, {
-      reason: error.message,
-    });
-    process.exitCode = 1;
-  }
-
   /**
-   * Logs a project whose configuration could not be read, and fails the run.
+   * Logs one refusal under its own headline, and fails the run.
    *
-   * Reached only by an exception, because that failure ends the trace where it
-   * happens — which is the point of it. Nothing has been printed and no
-   * destination has been touched by the time this runs, so the checkout is
-   * left exactly as the run found it.
+   * One method for four refusal channels, because they are one act: a message
+   * rather than a stack trace, because every one of them is about a file
+   * somebody wrote or a command line somebody typed. Each is reached before
+   * anything has been printed and before any destination has been touched, so
+   * a refused run leaves the checkout exactly as it found it.
    */
-  private rejectProject(error: ProgramConfigurationError): void {
-    this.logger.error("🔭 Rejected a project it could not read", undefined, {
-      reason: error.message,
-    });
+  private reject(headline: string, data: LogData): void {
+    this.logger.error(headline, undefined, data);
     process.exitCode = 1;
   }
 
@@ -167,113 +210,6 @@ export class CallidescopeCommand extends CommandRunner {
         result: args.result,
       }),
     );
-  }
-
-  /**
-   * Names the stacks that ran deeper than callidescope allows.
-   *
-   * Reported whether or not the run gates on them — a stack this long is worth
-   * saying out loud even in a run that only wrote a report — but only a run
-   * asked to fail on depth fails on it.
-   */
-  private reportDeepStacks(args: ReportFindingsArguments): boolean {
-    const { deepStacks } = args.result;
-
-    if (deepStacks.length === 0) {
-      return false;
-    }
-
-    this.logger.error(`🔭 Found call stacks too deep`, undefined, {
-      count: deepStacks.length,
-      deepest: Math.max(...deepStacks.map((stack) => stack.depth)),
-      entryPoints: deepStacks.map((stack) => stack.frames[0]?.displayName),
-    });
-
-    return args.mode.checksDepth;
-  }
-
-  /**
-   * Fails a run that traced nothing at all.
-   *
-   * Unconditional, and not something `--check` turns on. Every other finding
-   * is a verdict on code that was read; this one says no code was read, and a
-   * gate that passes because it never looked is worse than one that fails —
-   * it reports the workspace as clean and there is nothing in the output to
-   * say otherwise.
-   */
-  private reportEmptyTrace(args: ReportFindingsArguments): boolean {
-    if (args.result.summary.callableCount > 0) {
-      return false;
-    }
-
-    this.logger.error("🔭 Traced nothing", undefined, {
-      projectCount: args.result.summary.projectCount,
-    });
-
-    return true;
-  }
-
-  /**
-   * Weighs every finding a run can produce, and fails on any of them.
-   *
-   * They are weighed separately and announced separately. A stack that is too
-   * deep is something the code does; a callable calling too many things is
-   * something else the code does; a stale report is something the checkout
-   * has not caught up with. Reading one as another sends the author to fix
-   * the wrong thing.
-   *
-   * A project that could not be read never reaches here: it ends the trace
-   * before anything is printed or written, and is reported by `rejectProject`.
-   */
-  private reportFindings(args: ReportFindingsArguments): void {
-    const stale = this.reportStaleness(args);
-    const deep = this.reportDeepStacks(args);
-    const wide = this.reportWideCallables(args);
-    const empty = this.reportEmptyTrace(args);
-
-    if (deep || empty || stale || wide) {
-      process.exitCode = 1;
-    }
-  }
-
-  /** Names the destinations that no longer hold what a fresh run would write. */
-  private reportStaleness(args: ReportFindingsArguments): boolean {
-    if (args.stalePaths.length === 0) {
-      return false;
-    }
-
-    this.logger.error(`🔭 Found stale reports`, undefined, {
-      paths: args.stalePaths,
-    });
-
-    return true;
-  }
-
-  /**
-   * Names the callables that called more things directly than callidescope
-   * allows.
-   *
-   * Reported whether or not the run gates on them, mirroring
-   * `reportDeepStacks` — but only a run asked to fail on breadth fails on it.
-   */
-  private reportWideCallables(args: ReportFindingsArguments): boolean {
-    const { wideCallables } = args.result;
-
-    if (wideCallables.length === 0) {
-      return false;
-    }
-
-    this.logger.error(
-      `🔭 Found callables calling too much directly`,
-      undefined,
-      {
-        callables: wideCallables.map((finding) => finding.displayName),
-        count: wideCallables.length,
-        widest: Math.max(...wideCallables.map((finding) => finding.breadth)),
-      },
-    );
-
-    return args.mode.checksBreadth;
   }
 
   /** Writes every configured destination, returning the stale ones. */
@@ -346,13 +282,47 @@ export class CallidescopeCommand extends CommandRunner {
       return;
     }
 
-    const { configuration, mode, workspaceRoot } = prepared;
-
-    const outcome = this.callidescopeService.trace({
+    const {
+      authoredLimits,
       configuration,
+      configurationPath,
+      mode,
+      workspaceRoot,
+    } = prepared;
+
+    const outcome = await this.callidescopeService.trace({
+      authoredLimits,
+      configuration,
+      configurationPath,
       directories: resolvedOptions.directories ?? configuration.directories,
       workspaceRoot,
     });
+
+    // Checked only now, and not inside `prepareRun`: whether any project in
+    // scope declared `limits.maximumBreadth` is a question the trace above
+    // just answered, and `prepareRun` runs before a single project has been
+    // reached.
+    const projectLimitErrors = this.runPlanService.validateProjectLimits({
+      mode,
+      projectLimits: outcome.projectLimits,
+    });
+
+    if (projectLimitErrors.length > 0) {
+      this.reject(REJECTED_CONFIGURATION, {
+        reasons: projectLimitErrors,
+        workspaceRoot,
+      });
+      return;
+    }
+
+    // Checked before anything is printed or written, like every other refusal.
+    if (outcome.unresolvedAddresses.length > 0) {
+      throw new UnresolvedEntryPointAddressError(
+        outcome.unresolvedAddresses.map((unresolvedAddress) =>
+          this.describeUnresolvedAddress(unresolvedAddress),
+        ),
+      );
+    }
 
     this.report({ configuration, result: outcome.result });
 
@@ -373,7 +343,11 @@ export class CallidescopeCommand extends CommandRunner {
       wideCallableCount: outcome.result.wideCallables.length,
     });
 
-    this.reportFindings({ mode, result: outcome.result, stalePaths });
+    this.reportFindingsService.reportFindings({
+      mode,
+      result: outcome.result,
+      stalePaths,
+    });
   }
 
   // 🌎 Public Methods
@@ -462,24 +436,36 @@ export class CallidescopeCommand extends CommandRunner {
    * stale report, `--check depth` fails on a stack that ran too deep, and none
    * of them turns another on. A run given neither `--write` nor
    * `--check reports` leaves every file alone.
+   *
+   * A positional argument is refused rather than ignored. This command is the
+   * default one, so anything commander could not match as a subcommand arrives
+   * here as an operand instead of as `unknown command` — and a `deep` typed
+   * where `depth` was meant, quietly tracing the whole workspace and passing,
+   * would be a worse answer than the error it replaced.
    */
   public async run(
-    _passedParameters: string[],
+    passedParameters: string[],
     options: CallidescopeCommandOptions,
   ): Promise<void> {
+    const [unexpected] = passedParameters;
+
+    if (unexpected !== undefined) {
+      this.reject(REJECTED_COMMAND_LINE, {
+        reason: buildUnknownCommandMessage(unexpected),
+      });
+      return;
+    }
+
     try {
       await this.traceWorkspace(options);
     } catch (error) {
-      if (error instanceof ProgramConfigurationError) {
-        this.rejectProject(error);
-        return;
-      }
+      const headline = readRefusalHeadline(error);
 
-      if (!(error instanceof InputError)) {
+      if (headline === undefined || !(error instanceof Error)) {
         throw error;
       }
 
-      this.rejectCommandLine(error);
+      this.reject(headline, { reason: error.message });
     }
   }
 }

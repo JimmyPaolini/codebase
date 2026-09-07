@@ -7,7 +7,7 @@
  * Fewer than {@link MosaicSubFamily} names, because a name is a predicate
  * over the space and only some predicates have an obvious representative to
  * construct. `mesh` has one tile per shape and could gain a constructor
- * whenever one is wanted; `steps` has no tile at all at a single column, so
+ * whenever one is wanted; `zigzag` has no tile at all at a single column, so
  * what it would build is a question rather than a formality.
  */
 export type MosaicBuildableSubFamily =
@@ -113,7 +113,7 @@ export type MosaicPointRank = 0 | 1 | 2 | 3;
  * broken somewhere (`diamond`) — a `diamond` being a *dashed* bar, which is
  * the distinction that makes those two different names rather than one.
  * `dots` and `mesh` are the two ends of the space, the tile with no edge and
- * the tile with every edge. `steps` is the odd one: every point turning a
+ * the tile with every edge. `zigzag` is the odd one: every point turning a
  * corner, which is a staircase and the closest thing here to the fret the
  * project is named after.
  *
@@ -134,7 +134,7 @@ export type MosaicSubFamily =
   | "dots"
   | "lines"
   | "mesh"
-  | "steps";
+  | "zigzag";
 
 /**
  * How to build the tile a {@link MosaicSubFamily} is named for: the column

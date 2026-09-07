@@ -8,7 +8,11 @@ import { LoggerService } from "@codebase/logger";
 import { RunPlanService } from "./run-plan.service";
 
 import type { RunMode } from "./run-plan.types";
-import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
+import type {
+  ProjectLimits,
+  ProjectLimitsLookup,
+  ResolvedCallidescopeConfiguration,
+} from "@callidescope/configuration";
 
 /** What `--check` says it accepts, quoted the way every message quotes it. */
 const ACCEPTED =
@@ -23,6 +27,7 @@ function buildConfiguration(
     allowSpreadFor: [],
     directories: [],
     entryPoints: {
+      addresses: [],
       decorators: [],
       includeExportedFunctions: true,
       includeOrphans: true,
@@ -63,6 +68,24 @@ function buildMode(overrides: Partial<RunMode> = {}): RunMode {
     writes: false,
     ...overrides,
   };
+}
+
+/** A project's own limits, inheriting depth and declaring no breadth. */
+function buildProjectLimits(
+  overrides: Partial<ProjectLimits> = {},
+): ProjectLimits {
+  return {
+    maximumBreadth: undefined,
+    maximumDepth: { origin: "inherited", path: undefined, value: 6 },
+    ...overrides,
+  };
+}
+
+/** A lookup naming every project a run reached, declaring no breadth anywhere. */
+function buildProjectLimitsLookup(
+  byProject: ReadonlyMap<string, ProjectLimits> = new Map(),
+): ProjectLimitsLookup {
+  return { byProject, workspace: buildProjectLimits() };
 }
 
 describe(RunPlanService, () => {
@@ -270,36 +293,109 @@ describe(RunPlanService, () => {
     ).toBe(false);
   });
 
-  // 🌐 Validating the configuration
+  // 🌐 Validating the projects' own limits
 
-  it("passes a configuration that already sets the breadth limit", () => {
+  it("passes when a project in scope declares its own breadth limit", () => {
     expect(
-      service.validateConfiguration({
-        configuration: buildConfiguration({
-          limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
-        }),
+      service.validateProjectLimits({
         mode: buildMode({ checksBreadth: true }),
+        projectLimits: buildProjectLimitsLookup(
+          new Map([
+            [
+              "packages/example",
+              buildProjectLimits({
+                maximumBreadth: {
+                  origin: "declared",
+                  path: "packages/example/callidescope.config.ts",
+                  value: 3,
+                },
+              }),
+            ],
+          ]),
+        ),
       }),
     ).toStrictEqual([]);
   });
 
-  it("passes an unset breadth limit when breadth is not gated", () => {
+  it("passes no project declaring a breadth limit when breadth is not gated", () => {
     expect(
-      service.validateConfiguration({
-        configuration: buildConfiguration(),
+      service.validateProjectLimits({
         mode: buildMode(),
+        projectLimits: buildProjectLimitsLookup(),
       }),
     ).toStrictEqual([]);
   });
 
-  it("refuses to gate breadth without a configured limit", () => {
+  it("refuses to gate breadth when no project in scope declares a limit", () => {
     expect(
-      service.validateConfiguration({
-        configuration: buildConfiguration(),
+      service.validateProjectLimits({
         mode: buildMode({ checksBreadth: true }),
+        projectLimits: buildProjectLimitsLookup(
+          new Map([["packages/example", buildProjectLimits()]]),
+        ),
       }),
     ).toStrictEqual([
-      "--check breadth requires limits.maximumBreadth to be set. Add `limits: { maximumBreadth: <number> }` to your callidescope.config.ts before running --check breadth.",
+      "--check breadth requires at least one project in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <number> }` to that project's callidescope.config.ts before running --check breadth.",
+    ]);
+  });
+
+  it(
+    "does not let a project without a breadth limit block a project that " +
+      "has one",
+    () => {
+      // The easy way to get this subtly wrong: falling back to "does every
+      // project declare a limit" instead of "does any project declare one".
+      // A workspace is never all-or-nothing about this — a project that never
+      // picked a breadth number is simply not gated on it, and its absence
+      // must not silence the project that did pick one.
+      expect(
+        service.validateProjectLimits({
+          mode: buildMode({ checksBreadth: true }),
+          projectLimits: buildProjectLimitsLookup(
+            new Map([
+              [
+                "packages/declared",
+                buildProjectLimits({
+                  maximumBreadth: {
+                    origin: "declared",
+                    path: "packages/declared/callidescope.config.ts",
+                    value: 5,
+                  },
+                }),
+              ],
+              ["packages/undeclared", buildProjectLimits()],
+            ]),
+          ),
+        }),
+      ).toStrictEqual([]);
+    },
+  );
+
+  it("does not read an inherited breadth limit as a project declaring one", () => {
+    // The workspace deliberately has no breadth default, but a workspace
+    // configuration could still set one, and every project would inherit it.
+    // That is not what makes breadth a number a project can choose for
+    // itself — so only `origin === "declared"` may pass this.
+    expect(
+      service.validateProjectLimits({
+        mode: buildMode({ checksBreadth: true }),
+        projectLimits: buildProjectLimitsLookup(
+          new Map([
+            [
+              "packages/example",
+              buildProjectLimits({
+                maximumBreadth: {
+                  origin: "inherited",
+                  path: "callidescope.config.ts",
+                  value: 3,
+                },
+              }),
+            ],
+          ]),
+        ),
+      }),
+    ).toStrictEqual([
+      "--check breadth requires at least one project in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <number> }` to that project's callidescope.config.ts before running --check breadth.",
     ]);
   });
 
@@ -309,9 +405,11 @@ describe(RunPlanService, () => {
     it("resolves the workspace root to the working directory", async () => {
       const configurationService = createMock<ConfigurationService>();
 
-      configurationService.loadConfiguration.mockResolvedValue(
-        buildConfiguration(),
-      );
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration(),
+        path: undefined,
+      });
 
       const subject = new RunPlanService(
         configurationService,
@@ -321,7 +419,7 @@ describe(RunPlanService, () => {
       const prepared = await subject.prepareLookup({});
 
       expect(prepared.workspaceRoot).toBe(process.cwd());
-      expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
+      expect(configurationService.loadConfigurationFile).toHaveBeenCalledWith({
         configurationPath: undefined,
         searchDirectory: process.cwd(),
       });
@@ -330,9 +428,11 @@ describe(RunPlanService, () => {
     it("prefers the format a flag named over the configured one", async () => {
       const configurationService = createMock<ConfigurationService>();
 
-      configurationService.loadConfiguration.mockResolvedValue(
-        buildConfiguration(),
-      );
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration(),
+        path: undefined,
+      });
 
       const subject = new RunPlanService(
         configurationService,
@@ -347,8 +447,9 @@ describe(RunPlanService, () => {
     it("falls back to the configured format when a flag names none", async () => {
       const configurationService = createMock<ConfigurationService>();
 
-      configurationService.loadConfiguration.mockResolvedValue(
-        buildConfiguration({
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration({
           output: {
             format: "mermaid",
             json: undefined,
@@ -357,7 +458,8 @@ describe(RunPlanService, () => {
             projectReadmes: undefined,
           },
         }),
-      );
+        path: undefined,
+      });
 
       const subject = new RunPlanService(
         configurationService,
@@ -367,6 +469,30 @@ describe(RunPlanService, () => {
       const prepared = await subject.prepareLookup({});
 
       expect(prepared.configuration.output.format).toBe("mermaid");
+    });
+
+    // Without the path a lookup pointed at a configuration sitting at some
+    // project's root reads that same file again as that project's own, and
+    // refuses it for the workspace-only fields it legitimately sets.
+    it("reports the file the configuration was read from", async () => {
+      const configurationService = createMock<ConfigurationService>();
+
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration(),
+        path: "/workspace/configuration/callidescope.config.ts",
+      });
+
+      const subject = new RunPlanService(
+        configurationService,
+        createMock<LoggerService>(),
+      );
+
+      const prepared = await subject.prepareLookup({});
+
+      expect(prepared.configurationPath).toBe(
+        "/workspace/configuration/callidescope.config.ts",
+      );
     });
   });
 });

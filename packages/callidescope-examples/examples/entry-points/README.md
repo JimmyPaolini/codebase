@@ -8,11 +8,12 @@
 nx run callidescope-examples:examples
 ```
 
-Then read `entryPointCount` in the `packages/callidescope-examples` entry of [`output/report.json`](../../output/report.json)'s `projects`, and the `🚀` lines in [`output/report.md`](../../output/report.md) for the roots deep enough to be reported. The top-level summary counts the closure's dependency packages too, so it is the wrong place to look for the five kinds below.
+Then read `entryPointCount` in the `packages/callidescope-examples` entry of [`output/report.json`](../../output/report.json)'s `projects`, and the `🚀` lines in [`output/report.md`](../../output/report.md) for the roots deep enough to be reported. The top-level summary counts the closure's dependency packages too, so it is the wrong place to look for the kinds below.
 
 Depth is only meaningful relative to a root, and most code in a repository like
 this one is called by a framework rather than by the repository. So roots are
-named by rules, and every rule has a fixture:
+named by rules, and every rule has a fixture — plus one kind that is no rule at
+all, which [`declared-entry-points`](../declared-entry-points/README.md) is for:
 
 | Kind | Fixture | Rule |
 | ---- | ------- | ---- |
@@ -21,6 +22,7 @@ named by rules, and every rule has a fixture:
 | `module-bootstrap` | `bootstrap` in [`src/main.ts`](../../src/main.ts) | A function named `bootstrap` or `main` in `src/main.ts` |
 | `exported-function` | `normalizeExampleLabel` in [`src/index.ts`](../../src/index.ts) | Exported from the barrel |
 | `orphan-root` | `summarizeOrphanedWork`, here | Nothing calls it |
+| `declared` | [`DeclaredEntryPointsService.collect`](../declared-entry-points/README.md) | No rule at all — a project named its address |
 
 ## Why two of them live in `src/`
 
@@ -42,4 +44,4 @@ file on every run, which is two tools independently noticing the same thing.
 
 ## Next
 
-[deep stack](../deep-stack/README.md).
+[declared entry points](../declared-entry-points/README.md).

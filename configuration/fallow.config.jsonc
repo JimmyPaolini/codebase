@@ -44,6 +44,11 @@
     // Read by the codometer command line, one per documented behavior, and
     // reached by nothing in the module graph for the same reason.
     "packages/codometer-examples/examples/**/*.config.ts",
+    // A project's own callidescope configuration, found the same way: a run
+    // resolves one beside every project it traces, by name, never by import.
+    // The workspace file this repository passes with `--config` sits under
+    // `configuration/` and is already covered by the entry below.
+    "{applications,packages,tools}/*/callidescope.config.ts",
     "configuration/**",
     // Every fixture in the callidescope examples package exists to be traced,
     // not imported — an orphan-root fixture is *defined* by having no caller.

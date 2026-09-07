@@ -1,26 +1,33 @@
 // 🏷️ Types
 
 import type {
-  CallGraphResult,
+  CallidescopeLimits,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 
 /** What a command line and its configuration resolved to. */
 export interface PreparedRun {
+  /**
+   * The limits the workspace file itself wrote down, exactly as authored.
+   *
+   * Carried beside the resolved configuration because resolution manufactures
+   * a default for every limit, so only this can say which numbers that file
+   * really chose — and an inherited limit names a file only when one did.
+   */
+  readonly authoredLimits: CallidescopeLimits | undefined;
   readonly configuration: ResolvedCallidescopeConfiguration;
+  /**
+   * The file the configuration was read from, or `undefined` when the search
+   * found none and the run is on the tool's defaults.
+   *
+   * The trace resolves a configuration beside every project it reaches, and
+   * skips this one: a file a run was pointed at is already that run's workspace
+   * configuration, and reading it again as a project's would refuse it for the
+   * workspace-only fields it is entitled to set.
+   */
+  readonly configurationPath: string | undefined;
   readonly mode: RunMode;
   readonly workspaceRoot: string;
-}
-
-/** Arguments accepted when weighing what a run found. */
-export interface ReportFindingsArguments {
-  readonly mode: RunMode;
-  readonly result: CallGraphResult;
-  /**
-   * Destinations found not to hold the current report. Only ever non-empty
-   * when the run was comparing, since nothing else reads a destination.
-   */
-  readonly stalePaths: readonly string[];
 }
 
 /**
