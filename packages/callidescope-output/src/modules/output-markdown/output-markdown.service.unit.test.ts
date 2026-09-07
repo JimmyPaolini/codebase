@@ -27,6 +27,7 @@ function buildDestination(
   return {
     description: undefined,
     endMarker: "<!-- CALL_STACKS_END -->",
+    heading: "# 🔭 Callidescope",
     path: filePath,
     render: undefined,
     startMarker: "<!-- CALL_STACKS_START -->",

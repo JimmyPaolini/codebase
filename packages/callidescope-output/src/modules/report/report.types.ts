@@ -5,6 +5,7 @@ import type {
   CallableId,
   CallGraphResult,
   CallStack,
+  ProjectLimitsLookup,
   ProjectReport,
   StackFrame,
 } from "@callidescope/configuration";
@@ -35,6 +36,19 @@ export interface MermaidDiagram {
   readonly nodes: string[];
 }
 
+/** One project's row in the index, and the numbers the scoreboard buckets it by. */
+export interface ProjectIndexRow {
+  readonly deepest: number;
+  readonly headroom: number;
+  /** True when the project's own configuration set the limit it is judged by. */
+  readonly isDeclared: boolean;
+  readonly limit: number;
+  readonly misplacedCount: number;
+  readonly projectName: string;
+  readonly spreadCount: number;
+  readonly widest: number;
+}
+
 /**
  * Arguments for rendering only the findings a gate weighs.
  *
@@ -50,6 +64,12 @@ export interface RenderFindingsArguments extends OwnedFindings {
   readonly previewCount: number;
 }
 
+/** Arguments for rendering the per-project index and its scoreboard. */
+export interface RenderProjectIndexArguments {
+  readonly limits: ProjectLimitsLookup;
+  readonly projects: readonly ProjectReport[];
+}
+
 /** Arguments for rendering one project's section. */
 export interface RenderProjectSectionArguments {
   readonly heading: string;
@@ -60,6 +80,10 @@ export interface RenderProjectSectionArguments {
 
 /** Arguments for rendering a whole run. */
 export interface RenderRunArguments {
+  /** Prose placed under the heading, from the destination that asked for it. */
+  readonly description: string | undefined;
+  readonly heading: string;
+  readonly limits: ProjectLimitsLookup;
   readonly previewCount: number;
   readonly rendering: StackRendering;
   readonly result: CallGraphResult;

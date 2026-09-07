@@ -4,6 +4,8 @@ import { afterEach, beforeEach, vi } from "vitest";
 import type {
   CallableNode,
   CallGraphResult,
+  ProjectLimits,
+  ProjectLimitsLookup,
   SourceLocation,
   StackFrame,
 } from "@callidescope/configuration";
@@ -84,6 +86,45 @@ export function buildDiscoveredCallable(
     declaration: createMock<DiscoveredCallable["declaration"]>(),
     node: buildCallableNode(overrides),
     projectProgram: createMock<DiscoveredCallable["projectProgram"]>(),
+  };
+}
+
+/**
+ * Builds the limits lookup a run hands the renderers.
+ *
+ * The workspace row is what an unlisted project falls back to, so a test that
+ * cares about nothing but the number can pass `{ maximumDepth: 6 }` and leave
+ * `byProject` empty — every project then resolves to that, which is exactly
+ * what a workspace whose projects declare nothing does.
+ */
+export function buildProjectLimitsLookup(
+  args: {
+    byProject?: Record<string, number>;
+    maximumDepth?: number;
+  } = {},
+): ProjectLimitsLookup {
+  const workspaceDepth = args.maximumDepth ?? 6;
+
+  const declared = (value: number): ProjectLimits => ({
+    maximumBreadth: undefined,
+    maximumDepth: { origin: "declared", path: "callidescope.config.ts", value },
+  });
+
+  return {
+    byProject: new Map(
+      Object.entries(args.byProject ?? {}).map(([project, value]) => [
+        project,
+        declared(value),
+      ]),
+    ),
+    workspace: {
+      maximumBreadth: undefined,
+      maximumDepth: {
+        origin: "inherited",
+        path: "configuration/callidescope.config.ts",
+        value: workspaceDepth,
+      },
+    },
   };
 }
 

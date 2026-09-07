@@ -343,6 +343,15 @@ output: {
 },
 ```
 
+Both take a `description`, placed under the heading, and a `heading`, which
+defaults to `# 🔭 Callidescope`. **Set it when the block is spliced into a file
+that already has a title** — most markdown linters reject a second first-level
+heading — and the subsections follow the level down. A whole-run block opens
+with the summary counts, one row per project against **its own** depth limit,
+and a scoreboard of how many sit over, on, or clear of theirs, counting a
+project that measured nothing apart from one with room to spare. The findings
+tables follow.
+
 `output.projectReadmes` takes `heading` (`## 🔭 Callidescope` by default),
 `previewCount` (stacks shown before the rest fold into a disclosure, three by
 default), and the same `startMarker`/`endMarker` pair the markdown destination

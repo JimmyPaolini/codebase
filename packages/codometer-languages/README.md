@@ -12,20 +12,73 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
 
 | Measure | Value |
 | --- | --- |
-| Callables | 160 |
-| Files | 60 |
-| Calls traced | 160 |
-| Call stacks | 14 |
-| Deepest stack | 4 |
+| Callables | 211 |
+| Files | 65 |
+| Calls traced | 214 |
+| Call stacks | 18 |
+| Deepest stack | 5 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 4 |
+| Unfollowable calls | 6 |
 
 ### Call stacks (depth)
 
-**1. `LanguageCommentsService.read`** — depth 4 · orphan-root
+**1. `LanguageCommentsService.read`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 LanguageCommentsService.read(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/language-comments.service.ts:154]
+🚀 LanguageCommentsService.read(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/language-comments.service.ts:155]
+  └─> HclCommentsService.read(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:122]
+     ↳ Reads every `#`, `//`, and `/* *\/` comment, in the order they appear.
+    └─> HclCommentsService.readBlocks(content: string): { end: number; start: number; token: CommentToken; }[] [packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:75]
+       ↳ Every block comment's span, as a positioned token.
+      └─> HclCommentsService.map(…)(…): { end: number; start: number; token: { line: number; ownLine: boolean; prose: string; source: string; }; } [packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:78]
+        └─> HclCommentsService.lineOf(content: string, index: number): number [packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:70]
+           ↳ The 1-indexed line an offset sits on.
+```
+
+**2. `LanguageCommentsService.read`** — depth ≥ 5 · orphan-root
+
+```text
+🚀 LanguageCommentsService.read(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/language-comments.service.ts:168]
+  └─> SqlCommentsService.read(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/sql-comments.service.ts:118]
+     ↳ Reads every `--` and `/* *\/` comment, in the order they appear.
+    └─> SqlCommentsService.readBlocks(content: string): { end: number; start: number; token: CommentToken; }[] [packages/codometer-languages/src/modules/comments/sql-comments.service.ts:70]
+       ↳ Every block comment's span, as a positioned token.
+      └─> SqlCommentsService.map(…)(…): { end: number; start: number; token: { line: number; ownLine: boolean; prose: string; source: string; }; } [packages/codometer-languages/src/modules/comments/sql-comments.service.ts:73]
+        └─> SqlCommentsService.lineOf(content: string, index: number): number [packages/codometer-languages/src/modules/comments/sql-comments.service.ts:65]
+           ↳ The 1-indexed line an offset sits on.
+```
+
+**3. `LanguageCommentsService.read`** — depth 5 · orphan-root
+
+```text
+🚀 LanguageCommentsService.read(content: string, filePath: string): CommentToken[] [packages/codometer-languages/src/modules/comments/language-comments.service.ts:180]
+  └─> TypescriptCommentsService.read(content: string, filePath: string): CommentToken[] [packages/codometer-languages/src/modules/comments/typescript-comments.service.ts:140]
+     ↳ Reads every non-JSDoc comment the parse finds, in source order.
+    └─> TypescriptCommentsService.flatMap(…)(this: undefined, range: tsCompiler.CommentRange): CommentToken[] [packages/codometer-languages/src/modules/comments/typescript-comments.service.ts:154]
+      └─> TypescriptCommentsService.toToken(range: tsCompiler.CommentRange, content: string): CommentToken | undefined [packages/codometer-languages/src/modules/comments/typescript-comments.service.ts:119]
+         ↳ Turns one comment range into a token, unless it is a JSDoc block.
+        └─> TypescriptCommentsService.isJsDoc(range: tsCompiler.CommentRange, source: string): boolean [packages/codometer-languages/src/modules/comments/typescript-comments.service.ts:90]
+           ↳ Whether this range is a JSDoc block, measured elsewhere.
+```
+
+<details>
+<summary>15 more call stacks</summary>
+
+**4. `LanguageCommentsService.read`** — depth 4 · orphan-root
+
+```text
+🚀 LanguageCommentsService.read(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/language-comments.service.ts:149]
+  └─> CssCommentsService.read(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/css-comments.service.ts:70]
+     ↳ Reads every comment postcss's parse finds, in document order.
+    └─> CssCommentsService.walkComments(…)(comment: postcss.Comment): void [packages/codometer-languages/src/modules/comments/css-comments.service.ts:74]
+      └─> CssCommentsService.toBody(comment: Comment): string [packages/codometer-languages/src/modules/comments/css-comments.service.ts:36]
+         ↳ A comment's text with the whitespace postcss split off restored. `raws.left`/`raws.right` are typed optional, but…
+```
+
+**5. `LanguageCommentsService.read`** — depth 4 · orphan-root
+
+```text
+🚀 LanguageCommentsService.read(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/language-comments.service.ts:187]
   └─> YamlCommentsService.read(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/yaml-comments.service.ts:103]
      ↳ Reads every comment the tokenizer found, in the order they appear.
     └─> YamlCommentsService.collectComments(candidate: unknown, scan: YamlCommentScan): void [packages/codometer-languages/src/modules/comments/yaml-comments.service.ts:43]
@@ -34,7 +87,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
          ↳ Whether a parsed token is a comment carrying an offset.
 ```
 
-**2. `TypescriptService.anonymous`** — depth 4 · orphan-root
+**6. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:62]
@@ -45,7 +98,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
       └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:384]
 ```
 
-**3. `TypescriptService.anonymous`** — depth 4 · orphan-root
+**7. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:67]
@@ -56,10 +109,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
       └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:384]
 ```
 
-<details>
-<summary>11 more call stacks</summary>
-
-**4. `TypescriptService.anonymous`** — depth 4 · orphan-root
+**8. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:69]
@@ -70,7 +120,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
       └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:384]
 ```
 
-**5. `TypescriptService.anonymous`** — depth 4 · orphan-root
+**9. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:71]
@@ -81,7 +131,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
       └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:384]
 ```
 
-**6. `TypescriptService.anonymous`** — depth 4 · orphan-root
+**10. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:73]
@@ -92,7 +142,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
       └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:372]
 ```
 
-**7. `TypescriptService.anonymous`** — depth 4 · orphan-root
+**11. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:77]
@@ -103,7 +153,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
       └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:384]
 ```
 
-**8. `TypescriptService.anonymous`** — depth 4 · orphan-root
+**12. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:79]
@@ -114,7 +164,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
       └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:372]
 ```
 
-**9. `TypescriptService.anonymous`** — depth 4 · orphan-root
+**13. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:81]
@@ -125,7 +175,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
       └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:372]
 ```
 
-**10. `TypescriptService.anonymous`** — depth 4 · orphan-root
+**14. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:83]
@@ -136,7 +186,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
       └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:384]
 ```
 
-**11. `TypescriptService.anonymous`** — depth 4 · orphan-root
+**15. `TypescriptService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:85]
@@ -147,7 +197,7 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
       └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-languages/src/modules/typescript/typescript.service.ts:384]
 ```
 
-**12. `CommentsService.measured`** — depth 3 · orphan-root
+**16. `CommentsService.measured`** — depth 3 · orphan-root
 
 ```text
 🚀 CommentsService.measured(): number [packages/codometer-languages/src/modules/comments/comments.service.ts:79]
@@ -156,17 +206,17 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
     └─> CommentsService.filter(…)(word: string): boolean [packages/codometer-languages/src/modules/comments/comments.service.ts:54]
 ```
 
-**13. `LanguageCommentsService.readHash`** — depth 3 · orphan-root
+**17. `LanguageCommentsService.readHash`** — depth 3 · orphan-root
 
 ```text
-🚀 LanguageCommentsService.readHash(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/language-comments.service.ts:134]
+🚀 LanguageCommentsService.readHash(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/language-comments.service.ts:142]
   └─> HashCommentsService.read(content: string): CommentToken[] [packages/codometer-languages/src/modules/comments/hash-comments.service.ts:49]
      ↳ Reads every `#` comment in a file, with its line and its placement.
     └─> HashCommentsService.isShebang(index: number, marker: number, line: string): boolean [packages/codometer-languages/src/modules/comments/hash-comments.service.ts:42]
        ↳ Whether this is the interpreter line rather than a comment. `#!` on the first line is an instruction to the kernel, not…
 ```
 
-**14. `TypescriptService.anonymous`** — depth 2 · orphan-root
+**18. `TypescriptService.anonymous`** — depth 2 · orphan-root
 
 ```text
 🚀 TypescriptService.anonymous(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:75]
@@ -187,16 +237,20 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `LanguagesService.analyze` | 12 | `PythonService.analyze`, `LanguageCommentsService.measure`, `CssService.analyze`, `HclService.analyze`, `JsonService.analyze`, `JupyterService.analyze`, `MarkdownService.analyze`, `ShellService.analyze`, `SqlService.analyze`, `TomlService.analyze`, `TypescriptService.analyze`, `YamlService.analyze` | `packages/codometer-languages/src/modules/languages/languages.service.ts:56` |
-| `TypescriptService.walkNode` | 6 | `TypescriptService.countSymbols`, `TypescriptService.collectDocumentation`, `TypescriptService.handleClass`, `TypescriptService.forEachChild(…)`, `TypescriptService.dispatchNode`, `TypescriptService.forEachChild(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:425` |
-| `JsonService.countNode` | 5 | `JsonService.isArrayNode`, `JsonService.countArrayNode`, `JsonService.isRecordNode`, `JsonService.countRecordNode`, `JsonService.countPrimitiveNode` | `packages/codometer-languages/src/modules/json/json.service.ts:111` |
+| `HclCommentsService.read` | 8 | `HclCommentsService.readBlocks`, `HclCommentsService.filter(…)`, `HclCommentsService.readMatches(…)`, `HclCommentsService.readMatches`, `HclCommentsService.filter(…)`, `HclCommentsService.readMatches(…)`, `HclCommentsService.map(…)`, `HclCommentsService.toSorted(…)` | `packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:122` |
+| `SqlCommentsService.read` | 6 | `SqlCommentsService.readBlocks`, `SqlCommentsService.filter(…)`, `SqlCommentsService.readMatches(…)`, `SqlCommentsService.readMatches`, `SqlCommentsService.map(…)`, `SqlCommentsService.toSorted(…)` | `packages/codometer-languages/src/modules/comments/sql-comments.service.ts:118` |
 
 <details>
-<summary>80 more callables</summary>
+<summary>103 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `TypescriptService.walkNode` | 6 | `TypescriptService.countSymbols`, `TypescriptService.collectDocumentation`, `TypescriptService.handleClass`, `TypescriptService.forEachChild(…)`, `TypescriptService.dispatchNode`, `TypescriptService.forEachChild(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:425` |
+| `JsonService.countNode` | 5 | `JsonService.isArrayNode`, `JsonService.countArrayNode`, `JsonService.isRecordNode`, `JsonService.countRecordNode`, `JsonService.countPrimitiveNode` | `packages/codometer-languages/src/modules/json/json.service.ts:111` |
 | `JupyterService.analyze` | 5 | `JupyterService.collectParts`, `JsonService.analyze`, `PythonService.analyzeContents`, `MarkdownService.analyzeContents`, `JupyterService.countHeadings` | `packages/codometer-languages/src/modules/jupyter/jupyter.service.ts:166` |
 | `CommentsService.flatMap(…)` | 4 | `CommentsService.readProse`, `CommentsService.measureText`, `CommentsService.toExcerpt`, `CommentsService.readSource` | `packages/codometer-languages/src/modules/comments/comments.service.ts:182` |
+| `TypescriptCommentsService.toToken` | 4 | `TypescriptCommentsService.isJsDoc`, `TypescriptCommentsService.lineOf`, `TypescriptCommentsService.isOwnLine`, `TypescriptCommentsService.toProse` | `packages/codometer-languages/src/modules/comments/typescript-comments.service.ts:119` |
+| `TypescriptCommentsService.read` | 4 | `TypescriptCommentsService.getScriptKind`, `TypescriptCommentsService.collectComments`, `TypescriptCommentsService.flatMap(…)`, `TypescriptCommentsService.toSorted(…)` | `packages/codometer-languages/src/modules/comments/typescript-comments.service.ts:140` |
 | `JsonService.consumeJsoncCharacter` | 4 | `JsonService.handleLineCommentState`, `JsonService.handleBlockCommentState`, `JsonService.handleStringState`, `JsonService.consumeCharacterOutsideComments` | `packages/codometer-languages/src/modules/json/json.service.ts:66` |
 | `DocumentationMeasurementService.measure` | 4 | `DocumentationMeasurementService.getJsDocRange`, `CommentsService.measureText`, `DocumentationMeasurementService.getDeclarationName`, `DocumentationMeasurementService.readProse` | `packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:86` |
 | `TypescriptService.createEmptyResult` | 4 | `TypescriptService.filter(…)`, `TypescriptService.map(…)`, `TypescriptService.filter(…)`, `TypescriptService.filter(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:195` |
@@ -210,9 +264,16 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
 | `TypescriptService.handleFunction` | 3 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasAsyncKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:288` |
 | `TypescriptService.analyze` | 3 | `TypescriptService.createEmptyResult`, `TypescriptService.analyzeFile`, `TypescriptService.getCountersForFile` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:451` |
 | `CommentsService.measureText` | 2 | `CommentsService.map(…)`, `CommentsService.declaredLimits` | `packages/codometer-languages/src/modules/comments/comments.service.ts:206` |
+| `CssCommentsService.walkComments(…)` | 2 | `CssCommentsService.toBody`, `CssCommentsService.toOwnLine` | `packages/codometer-languages/src/modules/comments/css-comments.service.ts:74` |
+| `HclCommentsService.readBlocks` | 2 | `HclCommentsService.map(…)`, `HclCommentsService.findBlockComments` | `packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:75` |
+| `HclCommentsService.map(…)` | 2 | `HclCommentsService.lineOf`, `HclCommentsService.isOwnLine` | `packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:78` |
+| `HclCommentsService.map(…)` | 2 | `HclCommentsService.lineOf`, `HclCommentsService.isOwnLine` | `packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:96` |
+| `SqlCommentsService.readBlocks` | 2 | `SqlCommentsService.map(…)`, `SqlCommentsService.findBlockComments` | `packages/codometer-languages/src/modules/comments/sql-comments.service.ts:70` |
+| `SqlCommentsService.map(…)` | 2 | `SqlCommentsService.lineOf`, `SqlCommentsService.isOwnLine` | `packages/codometer-languages/src/modules/comments/sql-comments.service.ts:73` |
+| `SqlCommentsService.map(…)` | 2 | `SqlCommentsService.lineOf`, `SqlCommentsService.isOwnLine` | `packages/codometer-languages/src/modules/comments/sql-comments.service.ts:91` |
 | `YamlCommentsService.collectComments` | 2 | `YamlCommentsService.isCommentToken`, `YamlCommentsService.toToken` | `packages/codometer-languages/src/modules/comments/yaml-comments.service.ts:43` |
-| `LanguageCommentsService.measureLanguage` | 2 | `LanguageCommentsService.readFile`, `CommentsService.measure` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:51` |
-| `LanguageCommentsService.measure` | 2 | `LanguageCommentsService.measurePython`, `LanguageCommentsService.measureLanguage` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:132` |
+| `LanguageCommentsService.measureLanguage` | 2 | `LanguageCommentsService.readFile`, `CommentsService.measure` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:59` |
+| `LanguageCommentsService.measure` | 2 | `LanguageCommentsService.measureLanguage`, `LanguageCommentsService.measurePython` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:140` |
 | `MarkdownService.countNode` | 2 | `MarkdownService.countHeading`, `MarkdownService.countListItem` | `packages/codometer-languages/src/modules/markdown/markdown.service.ts:62` |
 | `PythonService.analyzeContents` | 2 | `PythonService.map(…)`, `PythonService.analyze` | `packages/codometer-languages/src/modules/python/python.service.ts:87` |
 | `JupyterService.collectParts` | 2 | `JupyterService.readNotebook`, `JupyterService.collectCell` | `packages/codometer-languages/src/modules/jupyter/jupyter.service.ts:88` |
@@ -229,11 +290,23 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
 | `CommentsService.measured` | 1 | `CommentsService.countWords` | `packages/codometer-languages/src/modules/comments/comments.service.ts:79` |
 | `CommentsService.readProse` | 1 | `CommentsService.map(…)` | `packages/codometer-languages/src/modules/comments/comments.service.ts:119` |
 | `CommentsService.readSource` | 1 | `CommentsService.map(…)` | `packages/codometer-languages/src/modules/comments/comments.service.ts:127` |
+| `CssCommentsService.read` | 1 | `CssCommentsService.walkComments(…)` | `packages/codometer-languages/src/modules/comments/css-comments.service.ts:70` |
 | `HashCommentsService.read` | 1 | `HashCommentsService.isShebang` | `packages/codometer-languages/src/modules/comments/hash-comments.service.ts:49` |
-| `LanguageCommentsService.measurePython` | 1 | `LanguageCommentsService.flatMap(…)` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:89` |
-| `LanguageCommentsService.flatMap(…)` | 1 | `CommentsService.measure` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:106` |
-| `LanguageCommentsService.readHash` | 1 | `HashCommentsService.read` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:134` |
-| `LanguageCommentsService.read` | 1 | `YamlCommentsService.read` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:154` |
+| `HclCommentsService.readMatches` | 1 | `HclCommentsService.map(…)` | `packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:91` |
+| `HclCommentsService.overlapsBlock` | 1 | `HclCommentsService.some(…)` | `packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:124` |
+| `HclCommentsService.filter(…)` | 1 | `HclCommentsService.overlapsBlock` | `packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:131` |
+| `HclCommentsService.filter(…)` | 1 | `HclCommentsService.overlapsBlock` | `packages/codometer-languages/src/modules/comments/hcl-comments.service.ts:136` |
+| `SqlCommentsService.readMatches` | 1 | `SqlCommentsService.map(…)` | `packages/codometer-languages/src/modules/comments/sql-comments.service.ts:86` |
+| `SqlCommentsService.filter(…)` | 1 | `SqlCommentsService.some(…)` | `packages/codometer-languages/src/modules/comments/sql-comments.service.ts:125` |
+| `TypescriptCommentsService.flatMap(…)` | 1 | `TypescriptCommentsService.toToken` | `packages/codometer-languages/src/modules/comments/typescript-comments.service.ts:154` |
+| `LanguageCommentsService.measurePython` | 1 | `LanguageCommentsService.flatMap(…)` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:97` |
+| `LanguageCommentsService.flatMap(…)` | 1 | `CommentsService.measure` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:114` |
+| `LanguageCommentsService.readHash` | 1 | `HashCommentsService.read` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:142` |
+| `LanguageCommentsService.read` | 1 | `CssCommentsService.read` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:149` |
+| `LanguageCommentsService.read` | 1 | `HclCommentsService.read` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:155` |
+| `LanguageCommentsService.read` | 1 | `SqlCommentsService.read` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:168` |
+| `LanguageCommentsService.read` | 1 | `TypescriptCommentsService.read` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:180` |
+| `LanguageCommentsService.read` | 1 | `YamlCommentsService.read` | `packages/codometer-languages/src/modules/comments/language-comments.service.ts:187` |
 | `CssService.analyze` | 1 | `CssService.walk(…)` | `packages/codometer-languages/src/modules/css/css.service.ts:74` |
 | `CssService.walk(…)` | 1 | `CssService.countNode` | `packages/codometer-languages/src/modules/css/css.service.ts:88` |
 | `HclService.countLine` | 1 | `HclService.countBlock` | `packages/codometer-languages/src/modules/hcl/hcl.service.ts:60` |
@@ -360,10 +433,19 @@ graph LR
   file_src_modules_comments_comments_service_ts["src/modules/comments/comments.service.ts"]
   file_src_modules_comments_comments_service_unit_test_ts["src/modules/comments/comments.service.unit.test.ts"]
   file_src_modules_comments_comments_types_ts["src/modules/comments/comments.types.ts"]
+  file_src_modules_comments_css_comments_service_ts["src/modules/comments/css-comments.service.ts"]
+  file_src_modules_comments_css_comments_service_unit_test_ts["src/modules/comments/css-comments.service.unit.test.ts"]
   file_src_modules_comments_hash_comments_service_ts["src/modules/comments/hash-comments.service.ts"]
   file_src_modules_comments_hash_comments_service_unit_test_ts["src/modules/comments/hash-comments.service.unit.test.ts"]
+  file_src_modules_comments_hcl_comments_service_ts["src/modules/comments/hcl-comments.service.ts"]
+  file_src_modules_comments_hcl_comments_service_unit_test_ts["src/modules/comments/hcl-comments.service.unit.test.ts"]
   file_src_modules_comments_language_comments_service_ts["src/modules/comments/language-comments.service.ts"]
   file_src_modules_comments_language_comments_service_unit_test_ts["src/modules/comments/language-comments.service.unit.test.ts"]
+  file_src_modules_comments_sql_comments_service_ts["src/modules/comments/sql-comments.service.ts"]
+  file_src_modules_comments_sql_comments_service_unit_test_ts["src/modules/comments/sql-comments.service.unit.test.ts"]
+  file_src_modules_comments_typescript_comments_constants_ts["src/modules/comments/typescript-comments.constants.ts"]
+  file_src_modules_comments_typescript_comments_service_ts["src/modules/comments/typescript-comments.service.ts"]
+  file_src_modules_comments_typescript_comments_service_unit_test_ts["src/modules/comments/typescript-comments.service.unit.test.ts"]
   file_src_modules_comments_yaml_comments_service_ts["src/modules/comments/yaml-comments.service.ts"]
   file_src_modules_comments_yaml_comments_service_unit_test_ts["src/modules/comments/yaml-comments.service.unit.test.ts"]
   file_src_modules_css_css_constants_ts["src/modules/css/css.constants.ts"]
@@ -444,30 +526,57 @@ graph LR
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_comments_comments_module_ts --> file_src_modules_comments_comments_service_ts
+  file_src_modules_comments_comments_module_ts --> file_src_modules_comments_css_comments_service_ts
   file_src_modules_comments_comments_module_ts --> file_src_modules_comments_hash_comments_service_ts
+  file_src_modules_comments_comments_module_ts --> file_src_modules_comments_hcl_comments_service_ts
   file_src_modules_comments_comments_module_ts --> file_src_modules_comments_language_comments_service_ts
+  file_src_modules_comments_comments_module_ts --> file_src_modules_comments_sql_comments_service_ts
+  file_src_modules_comments_comments_module_ts --> file_src_modules_comments_typescript_comments_service_ts
   file_src_modules_comments_comments_module_ts --> file_src_modules_comments_yaml_comments_service_ts
   file_src_modules_comments_comments_module_unit_test_ts --> file_src_modules_comments_comments_module_ts
   file_src_modules_comments_comments_module_unit_test_ts --> file_src_modules_comments_comments_service_ts
+  file_src_modules_comments_comments_module_unit_test_ts --> file_src_modules_comments_css_comments_service_ts
   file_src_modules_comments_comments_module_unit_test_ts --> file_src_modules_comments_hash_comments_service_ts
+  file_src_modules_comments_comments_module_unit_test_ts --> file_src_modules_comments_hcl_comments_service_ts
   file_src_modules_comments_comments_module_unit_test_ts --> file_src_modules_comments_language_comments_service_ts
+  file_src_modules_comments_comments_module_unit_test_ts --> file_src_modules_comments_sql_comments_service_ts
+  file_src_modules_comments_comments_module_unit_test_ts --> file_src_modules_comments_typescript_comments_service_ts
   file_src_modules_comments_comments_module_unit_test_ts --> file_src_modules_comments_yaml_comments_service_ts
   file_src_modules_comments_comments_service_ts --> file_src_modules_comments_comments_constants_ts
   file_src_modules_comments_comments_service_ts --> file_src_modules_comments_comments_types_ts
   file_src_modules_comments_comments_service_unit_test_ts --> file_src_modules_comments_comments_service_ts
   file_src_modules_comments_comments_service_unit_test_ts --> file_src_modules_comments_hash_comments_service_ts
+  file_src_modules_comments_css_comments_service_ts --> file_src_modules_comments_comments_types_ts
+  file_src_modules_comments_css_comments_service_unit_test_ts --> file_src_modules_comments_css_comments_service_ts
   file_src_modules_comments_hash_comments_service_ts --> file_src_modules_comments_comments_constants_ts
   file_src_modules_comments_hash_comments_service_ts --> file_src_modules_comments_comments_types_ts
   file_src_modules_comments_hash_comments_service_unit_test_ts --> file_src_modules_comments_hash_comments_service_ts
+  file_src_modules_comments_hcl_comments_service_ts --> file_src_modules_comments_comments_constants_ts
+  file_src_modules_comments_hcl_comments_service_ts --> file_src_modules_comments_comments_types_ts
+  file_src_modules_comments_hcl_comments_service_unit_test_ts --> file_src_modules_comments_hcl_comments_service_ts
   file_src_modules_comments_language_comments_service_ts --> file_src_modules_comments_comments_service_ts
   file_src_modules_comments_language_comments_service_ts --> file_src_modules_comments_comments_types_ts
+  file_src_modules_comments_language_comments_service_ts --> file_src_modules_comments_css_comments_service_ts
   file_src_modules_comments_language_comments_service_ts --> file_src_modules_comments_hash_comments_service_ts
+  file_src_modules_comments_language_comments_service_ts --> file_src_modules_comments_hcl_comments_service_ts
+  file_src_modules_comments_language_comments_service_ts --> file_src_modules_comments_sql_comments_service_ts
+  file_src_modules_comments_language_comments_service_ts --> file_src_modules_comments_typescript_comments_service_ts
   file_src_modules_comments_language_comments_service_ts --> file_src_modules_comments_yaml_comments_service_ts
   file_src_modules_comments_language_comments_service_unit_test_ts --> file_src_modules_comments_comments_service_ts
   file_src_modules_comments_language_comments_service_unit_test_ts --> file_src_modules_comments_comments_types_ts
+  file_src_modules_comments_language_comments_service_unit_test_ts --> file_src_modules_comments_css_comments_service_ts
   file_src_modules_comments_language_comments_service_unit_test_ts --> file_src_modules_comments_hash_comments_service_ts
+  file_src_modules_comments_language_comments_service_unit_test_ts --> file_src_modules_comments_hcl_comments_service_ts
   file_src_modules_comments_language_comments_service_unit_test_ts --> file_src_modules_comments_language_comments_service_ts
+  file_src_modules_comments_language_comments_service_unit_test_ts --> file_src_modules_comments_sql_comments_service_ts
+  file_src_modules_comments_language_comments_service_unit_test_ts --> file_src_modules_comments_typescript_comments_service_ts
   file_src_modules_comments_language_comments_service_unit_test_ts --> file_src_modules_comments_yaml_comments_service_ts
+  file_src_modules_comments_sql_comments_service_ts --> file_src_modules_comments_comments_types_ts
+  file_src_modules_comments_sql_comments_service_ts --> file_src_modules_sql_sql_constants_ts
+  file_src_modules_comments_sql_comments_service_unit_test_ts --> file_src_modules_comments_sql_comments_service_ts
+  file_src_modules_comments_typescript_comments_service_ts --> file_src_modules_comments_comments_types_ts
+  file_src_modules_comments_typescript_comments_service_ts --> file_src_modules_comments_typescript_comments_constants_ts
+  file_src_modules_comments_typescript_comments_service_unit_test_ts --> file_src_modules_comments_typescript_comments_service_ts
   file_src_modules_comments_yaml_comments_service_ts --> file_src_modules_comments_comments_constants_ts
   file_src_modules_comments_yaml_comments_service_ts --> file_src_modules_comments_comments_types_ts
   file_src_modules_comments_yaml_comments_service_unit_test_ts --> file_src_modules_comments_yaml_comments_service_ts
@@ -539,8 +648,12 @@ graph LR
   file_src_modules_languages_languages_service_ts --> file_src_modules_typescript_typescript_service_ts
   file_src_modules_languages_languages_service_ts --> file_src_modules_yaml_yaml_service_ts
   file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_comments_service_ts
+  file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_css_comments_service_ts
   file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_hash_comments_service_ts
+  file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_hcl_comments_service_ts
   file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_language_comments_service_ts
+  file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_sql_comments_service_ts
+  file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_typescript_comments_service_ts
   file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_yaml_comments_service_ts
   file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_css_css_service_ts
   file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_hcl_hcl_service_ts
@@ -642,40 +755,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8813-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-266.18_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-9915-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-299.99_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-16-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-93-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-102-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-40.33_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-47.61_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-92-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-40-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-101-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-41-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-30-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-228-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-34-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-258-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-30-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-34-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-20-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-30-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-316-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-143-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-431-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-28-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-463-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-442-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-115-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-467-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-736-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-34-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-369-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-190-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-527-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-32-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-518-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-490-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-124-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-535-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-878-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
@@ -787,13 +900,13 @@ graph LR
 ### Conventions
 
 ![Module Files](https://img.shields.io/badge/Module_Files-13-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-17-0284c7?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-21-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-13-ea580c?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-14-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-13-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-30-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-34-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 

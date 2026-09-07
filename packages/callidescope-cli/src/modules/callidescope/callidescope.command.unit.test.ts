@@ -14,6 +14,7 @@ import {
   OutputJsonService,
   OutputMarkdownService,
   ReportService,
+  WorkspaceReportService,
 } from "@callidescope/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -292,6 +293,7 @@ describe(CallidescopeCommand, () => {
           useValue: new MarkdownReportService(
             new MermaidReportService(),
             new ReportService(),
+            new WorkspaceReportService(),
           ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
@@ -334,6 +336,7 @@ describe(CallidescopeCommand, () => {
           useValue: new MarkdownReportService(
             new MermaidReportService(),
             new ReportService(),
+            new WorkspaceReportService(),
           ),
         },
         { provide: LoggerService, useValue: logger },
@@ -373,6 +376,7 @@ describe(CallidescopeCommand, () => {
           useValue: new MarkdownReportService(
             new MermaidReportService(),
             new ReportService(),
+            new WorkspaceReportService(),
           ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
@@ -572,6 +576,7 @@ describe(CallidescopeCommand, () => {
     const destination = {
       description: undefined,
       endMarker: "<!-- END -->",
+      heading: "# 🔭 Callidescope",
       path: "DIAGRAM.md",
       render: undefined,
       startMarker: "<!-- START -->",
@@ -604,6 +609,7 @@ describe(CallidescopeCommand, () => {
     const destination = {
       description: undefined,
       endMarker: "<!-- END -->",
+      heading: "# 🔭 Callidescope",
       path: "DIAGRAM.md",
       render: undefined,
       startMarker: "<!-- START -->",
@@ -1359,6 +1365,7 @@ describe(CallidescopeCommand, () => {
           markdown: {
             description: undefined,
             endMarker: "<!-- END -->",
+            heading: "# 🔭 Callidescope",
             path: "flagged.md",
             render: undefined,
             startMarker: "<!-- START -->",
@@ -1413,6 +1420,7 @@ describe(CallidescopeCommand, () => {
           markdown: {
             description: undefined,
             endMarker: "<!-- END -->",
+            heading: "# 🔭 Callidescope",
             path: "REPORT.md",
             render: undefined,
             startMarker: "<!-- START -->",

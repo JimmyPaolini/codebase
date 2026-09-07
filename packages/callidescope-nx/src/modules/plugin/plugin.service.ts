@@ -2,7 +2,10 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 
 import { CallidescopeService } from "@callidescope/cli";
-import { ConfigurationService } from "@callidescope/configuration";
+import {
+  ConfigurationService,
+  DEFAULT_RUN_HEADING,
+} from "@callidescope/configuration";
 import { FileFilterService } from "@callidescope/graph";
 import {
   MarkdownReportService,
@@ -489,6 +492,11 @@ export class PluginService {
       result: outcome.result,
     });
     const report = this.markdownReportService.renderRun({
+      // Returned to an executor to print, not spliced into a file, so there is
+      // no destination to take a heading or a description from.
+      description: undefined,
+      heading: DEFAULT_RUN_HEADING,
+      limits: outcome.projectLimits,
       previewCount:
         this.runConfigurationService.readPreviewCount(configuration),
       rendering: configuration.output.format === "mermaid" ? "diagram" : "tree",
