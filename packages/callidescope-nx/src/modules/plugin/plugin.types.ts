@@ -62,6 +62,14 @@ export interface ResolveTraceScopeArguments {
   readonly withDependencies: boolean;
 }
 
+/**
+ * Arguments for gating one resolved selection against its limits.
+ *
+ * The trace's arguments without `format`: a gate's output is the findings that
+ * decided its exit code, so there is no second rendering of it to ask for.
+ */
+export type RunGateArguments = Omit<RunTraceArguments, "format">;
+
 /** Arguments for tracing one resolved selection. */
 export interface RunTraceArguments {
   /** Resolved from this plugin's `nx.json` registration when omitted. */

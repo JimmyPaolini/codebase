@@ -1,5 +1,6 @@
 import { CallidescopeModule } from "@callidescope/cli";
 import { ConfigurationModule } from "@callidescope/configuration";
+import { WorkspaceModule } from "@callidescope/graph";
 import { ReportModule } from "@callidescope/output";
 import { Module } from "@nestjs/common";
 
@@ -21,6 +22,7 @@ import { PluginService } from "./plugin.service";
     OptionsModule,
     ProjectsModule,
     ReportModule,
+    WorkspaceModule,
   ],
   providers: [PluginService],
 })

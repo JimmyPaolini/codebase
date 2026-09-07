@@ -6,6 +6,7 @@ import {
   DEFAULT_BREADTH_TARGET_NAME,
   DEFAULT_CONFIGURATION_PATHS,
   DEFAULT_DEPTH_TARGET_NAME,
+  DEFAULT_GATE_TARGET_NAME,
   DEFAULT_TRACE_TARGET_NAME,
 } from "./options.constants";
 
@@ -169,6 +170,9 @@ export class OptionsService {
       depthTargetName:
         this.readString({ key: "depthTargetName", options: record }) ??
         DEFAULT_DEPTH_TARGET_NAME,
+      gateTargetName:
+        this.readString({ key: "gateTargetName", options: record }) ??
+        DEFAULT_GATE_TARGET_NAME,
       traceTargetName:
         this.readString({ key: "traceTargetName", options: record }) ??
         DEFAULT_TRACE_TARGET_NAME,

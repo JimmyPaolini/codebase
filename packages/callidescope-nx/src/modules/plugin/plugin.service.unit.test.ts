@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 
 import { CallidescopeService } from "@callidescope/cli";
 import { ConfigurationService } from "@callidescope/configuration";
+import { FileFilterService } from "@callidescope/graph";
 import { MarkdownReportService } from "@callidescope/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -19,6 +20,7 @@ import type {
   CallidescopeOutputFormat,
   DeepStackFinding,
   ResolvedCallidescopeConfiguration,
+  SourceLocation,
   WideCallableFinding,
 } from "@callidescope/configuration";
 import type { ProjectGraph } from "@nx/devkit";
@@ -43,6 +45,7 @@ const GRAPH: ProjectGraph = {
 describe(PluginService, () => {
   let callidescopeService: ReturnType<typeof createMock<CallidescopeService>>;
   let configurationService: ReturnType<typeof createMock<ConfigurationService>>;
+  let fileFilterService: ReturnType<typeof createMock<FileFilterService>>;
   let markdownReportService: ReturnType<
     typeof createMock<MarkdownReportService>
   >;
@@ -52,6 +55,7 @@ describe(PluginService, () => {
   beforeAll(async () => {
     callidescopeService = createMock<CallidescopeService>();
     configurationService = createMock<ConfigurationService>();
+    fileFilterService = createMock<FileFilterService>();
     markdownReportService = createMock<MarkdownReportService>();
     projectsService = new ProjectsService();
 
@@ -60,6 +64,7 @@ describe(PluginService, () => {
         PluginService,
         { provide: CallidescopeService, useValue: callidescopeService },
         { provide: ConfigurationService, useValue: configurationService },
+        { provide: FileFilterService, useValue: fileFilterService },
         { provide: MarkdownReportService, useValue: markdownReportService },
         OptionsService,
         { provide: ProjectsService, useValue: projectsService },
@@ -73,6 +78,17 @@ describe(PluginService, () => {
     vi.mocked(existsSync).mockReturnValue(true);
     vi.mocked(readFileSync).mockReturnValue("{}");
     vi.spyOn(projectsService, "readProjectGraph").mockResolvedValue(GRAPH);
+    configurationService.loadConfigurationFile.mockResolvedValue({
+      authored: {},
+      configuration: createMock<ResolvedCallidescopeConfiguration>({
+        exclude: [],
+        excludeFrom: [],
+      }),
+      path: undefined,
+    });
+    fileFilterService.buildFileFilter.mockReturnValue({
+      isExcluded: (): boolean => false,
+    });
   });
 
   it("is defined", () => {
@@ -81,29 +97,54 @@ describe(PluginService, () => {
   });
 
   describe("inferTargets", () => {
-    it("infers all three targets onto a project holding a tsconfig", () => {
+    /** The three targets every covered project carries, plus the gate. */
+    const INPUTS = [
+      "default",
+      "^default",
+      "{workspaceRoot}/callidescope.config.ts",
+    ];
+
+    it("infers all four targets onto a project holding a tsconfig", async () => {
       expect.hasAssertions();
 
-      const inferred = service.inferTargets({
+      const inferred = await service.inferTargets({
         options: { traceTargetName: "callidescope-trace" },
         projectConfigurationFiles: ["packages/alpha/project.json"],
         workspaceRoot: "/workspace",
       });
 
       expect([...inferred.keys()]).toStrictEqual(["packages/alpha"]);
-      // The registration renamed one of them; the other two keep their
+      // The registration renamed one of them; the other three keep their
       // defaults, so a workspace only overrides what it needs to.
       expect(Object.keys(inferred.get("packages/alpha") ?? {})).toStrictEqual([
         "breadth",
         "depth",
         "callidescope-trace",
+        "gate",
       ]);
     });
 
-    it("points each target at its own executor, cached on the configuration", () => {
+    it("names the gate target from the registration", async () => {
       expect.hasAssertions();
 
-      const targets = service.inferTargets({
+      const inferred = await service.inferTargets({
+        options: { gateTargetName: "callidescope-gate" },
+        projectConfigurationFiles: ["packages/alpha/project.json"],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(Object.keys(inferred.get("packages/alpha") ?? {})).toStrictEqual([
+        "breadth",
+        "depth",
+        "trace",
+        "callidescope-gate",
+      ]);
+    });
+
+    it("points each target at its own executor, cached on the configuration", async () => {
+      expect.hasAssertions();
+
+      const targets = await service.inferTargets({
         options: {},
         projectConfigurationFiles: ["packages/alpha/project.json"],
         workspaceRoot: "/workspace",
@@ -113,75 +154,156 @@ describe(PluginService, () => {
         breadth: {
           cache: true,
           executor: "@callidescope/nx:breadth",
-          inputs: [
-            "default",
-            "^default",
-            "{workspaceRoot}/callidescope.config.ts",
-          ],
+          inputs: INPUTS,
           options: {},
         },
         depth: {
           cache: true,
           executor: "@callidescope/nx:depth",
-          inputs: [
-            "default",
-            "^default",
-            "{workspaceRoot}/callidescope.config.ts",
-          ],
+          inputs: INPUTS,
+          options: {},
+        },
+        gate: {
+          cache: true,
+          executor: "@callidescope/nx:gate",
+          // The project's own limits join the workspace's, and they join as a
+          // `{projectRoot}` glob: a workspace-wide one would invalidate every
+          // project's gate whenever any project changed a limit.
+          inputs: [...INPUTS, "{projectRoot}/callidescope.config.*"],
           options: {},
         },
         trace: {
           cache: true,
           executor: "@callidescope/nx:trace",
-          inputs: [
-            "default",
-            "^default",
-            "{workspaceRoot}/callidescope.config.ts",
-          ],
+          inputs: INPUTS,
           options: {},
         },
       });
     });
 
-    it("skips the workspace-root project", () => {
+    it("gates a project that configures nothing of its own", async () => {
+      expect.hasAssertions();
+
+      const targets = await service.inferTargets({
+        options: {},
+        projectConfigurationFiles: ["packages/beta/project.json"],
+        workspaceRoot: "/workspace",
+      });
+
+      // Nothing is read from beside the project to decide this: the input
+      // glob matches no file, so the target is there and the limits it
+      // enforces are the ones the workspace declared.
+      expect(targets.get("packages/beta")?.["gate"]).toBeDefined();
+    });
+
+    it("gives a project the configuration excludes no gate target", async () => {
+      expect.hasAssertions();
+
+      // Its own code is never traced, so a gate there would judge the
+      // project's dependencies and report green for code it never read.
+      fileFilterService.buildFileFilter.mockReturnValue({
+        isExcluded: (candidatePath: string): boolean =>
+          candidatePath === "packages/callidescope-examples/tsconfig.json",
+      });
+
+      const targets = await service.inferTargets({
+        options: {},
+        projectConfigurationFiles: [
+          "packages/callidescope-examples/project.json",
+          "packages/alpha/project.json",
+        ],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(
+        Object.keys(targets.get("packages/callidescope-examples") ?? {}),
+      ).toStrictEqual(["breadth", "depth", "trace"]);
+      // The exclusion is one project's, never the run's.
+      expect(targets.get("packages/alpha")?.["gate"]).toBeDefined();
+    });
+
+    it("excludes nothing when the configuration cannot be loaded", async () => {
+      expect.hasAssertions();
+
+      configurationService.loadConfigurationFile.mockRejectedValue(
+        new Error("Cannot find module"),
+      );
+
+      // Inference runs while Nx builds the project graph, where a throw stops
+      // every command in the workspace rather than one task.
+      const targets = await service.inferTargets({
+        options: {},
+        projectConfigurationFiles: ["packages/alpha/project.json"],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(targets.get("packages/alpha")?.["gate"]).toBeDefined();
+    });
+
+    it("reads the workspace configuration once rather than once per project", async () => {
+      expect.hasAssertions();
+
+      await service.inferTargets({
+        options: {},
+        projectConfigurationFiles: [
+          "packages/alpha/project.json",
+          "packages/beta/project.json",
+        ],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(configurationService.loadConfigurationFile).toHaveBeenCalledTimes(
+        1,
+      );
+    });
+
+    it("skips the workspace-root project", async () => {
       expect.hasAssertions();
 
       // Its target would trace every other project under one uncacheable task.
-      expect(
-        service.inferTargets({
-          options: {},
-          projectConfigurationFiles: ["project.json"],
-          workspaceRoot: "/workspace",
-        }).size,
-      ).toBe(0);
+      await expect(
+        service
+          .inferTargets({
+            options: {},
+            projectConfigurationFiles: ["project.json"],
+            workspaceRoot: "/workspace",
+          })
+          .then((targets) => targets.size),
+      ).resolves.toBe(0);
     });
 
-    it("skips a project with no TypeScript program of its own", () => {
+    it("skips a project with no TypeScript program of its own", async () => {
       expect.hasAssertions();
 
       vi.mocked(existsSync).mockReturnValue(false);
 
-      expect(
-        service.inferTargets({
-          options: {},
-          projectConfigurationFiles: ["applications/affirmations/project.json"],
-          workspaceRoot: "/workspace",
-        }).size,
-      ).toBe(0);
+      await expect(
+        service
+          .inferTargets({
+            options: {},
+            projectConfigurationFiles: [
+              "applications/affirmations/project.json",
+            ],
+            workspaceRoot: "/workspace",
+          })
+          .then((targets) => targets.size),
+      ).resolves.toBe(0);
     });
 
-    it("ignores a matched file that is not a project description", () => {
+    it("ignores a matched file that is not a project description", async () => {
       expect.hasAssertions();
 
       // The glob also matches the callidescope configuration, so that editing
       // it re-runs inference — but it describes no project.
-      expect(
-        service.inferTargets({
-          options: {},
-          projectConfigurationFiles: ["configuration/callidescope.config.ts"],
-          workspaceRoot: "/workspace",
-        }).size,
-      ).toBe(0);
+      await expect(
+        service
+          .inferTargets({
+            options: {},
+            projectConfigurationFiles: ["configuration/callidescope.config.ts"],
+            workspaceRoot: "/workspace",
+          })
+          .then((targets) => targets.size),
+      ).resolves.toBe(0);
     });
   });
 
@@ -427,6 +549,123 @@ describe(PluginService, () => {
           workspaceRoot: "/workspace",
         }),
       ).resolves.toMatchObject({ ok: false });
+    });
+  });
+
+  describe("runGate", () => {
+    /** Stubs one gated trace, typed rather than cast. */
+    function stubGate(
+      args: {
+        deepStacks?: DeepStackFinding[];
+        wideCallables?: WideCallableFinding[];
+      } = {},
+    ): void {
+      callidescopeService.trace.mockResolvedValue(
+        createMock<TraceOutcome>({
+          result: createMock<CallGraphResult>({
+            deepStacks: args.deepStacks ?? [],
+            wideCallables: args.wideCallables ?? [],
+          }),
+        }),
+      );
+      markdownReportService.renderStacks.mockReturnValue("None.");
+    }
+
+    it("passes a workspace with nothing over a limit", async () => {
+      expect.hasAssertions();
+
+      stubGate();
+
+      await expect(
+        service.runGate({
+          directories: ["packages/alpha"],
+          workspaceRoot: "/workspace",
+        }),
+      ).resolves.toMatchObject({ ok: true });
+    });
+
+    it("fails on a stack that ran deeper than the project allows", async () => {
+      expect.hasAssertions();
+
+      stubGate({ deepStacks: [createMock<DeepStackFinding>()] });
+
+      await expect(
+        service.runGate({
+          directories: ["packages/alpha"],
+          workspaceRoot: "/workspace",
+        }),
+      ).resolves.toMatchObject({ ok: false });
+    });
+
+    it("fails on a callable wider than the limit its project declared", async () => {
+      expect.hasAssertions();
+
+      // Breadth needs no mode of its own: no limit resolves to `Infinity`, so
+      // a project that declared none produces no finding to fail on, and a
+      // gate can never be refused for wanting to check it.
+      stubGate({
+        wideCallables: [
+          createMock<WideCallableFinding>({
+            breadth: 12,
+            displayName: "AlphaService.orchestrate",
+            limit: 8,
+            location: createMock<SourceLocation>({
+              filePath: "packages/alpha/src/alpha.service.ts",
+            }),
+          }),
+        ],
+      });
+
+      const result = await service.runGate({
+        directories: ["packages/alpha"],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(result.ok).toBe(false);
+      expect(result.report).toContain(
+        "`AlphaService.orchestrate` — 12 direct callees, limit 8 (packages/alpha/src/alpha.service.ts)",
+      );
+    });
+
+    it("reports only the findings, never the whole run", async () => {
+      expect.hasAssertions();
+
+      stubGate();
+
+      const result = await service.runGate({
+        directories: ["packages/alpha"],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(result.report).toBe(
+        [
+          "## Call stacks over the depth limit (0)",
+          "",
+          "None.",
+          "",
+          "## Callables over the breadth limit (0)",
+          "",
+          "None.",
+        ].join("\n"),
+      );
+      expect(markdownReportService.renderRun).not.toHaveBeenCalled();
+    });
+
+    it("prefers a configuration path it was handed", async () => {
+      expect.hasAssertions();
+
+      stubGate();
+
+      await service.runGate({
+        configurationPath: "elsewhere.ts",
+        directories: ["packages/alpha"],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(configurationService.loadConfigurationFile).toHaveBeenCalledWith({
+        configurationPath: "elsewhere.ts",
+        searchDirectory: "/workspace",
+      });
     });
   });
 });

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "description": "Fail a project whose call stacks broke the depth or breadth limits it is held to, resolved against the project and its Nx dependencies.",
+  "properties": {
+    "configurationPath": {
+      "description": "Path to the callidescope configuration file, relative to the workspace root.",
+      "type": "string"
+    },
+    "projects": {
+      "description": "Nx project names to gate, replacing the project this target belongs to.",
+      "items": { "type": "string" },
+      "type": "array"
+    },
+    "tags": {
+      "description": "Nx project tags to gate, selecting every project carrying ANY of them.",
+      "items": { "type": "string" },
+      "type": "array"
+    },
+    "withDependencies": {
+      "default": true,
+      "description": "Widen the selection along the Nx dependency graph, so a call stack is not truncated at a project boundary.",
+      "type": "boolean"
+    }
+  },
+  "required": [],
+  "title": "Callidescope gate",
+  "type": "object"
+}

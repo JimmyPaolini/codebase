@@ -41,7 +41,7 @@ async function createNodes(
 describe("callidescopePlugin", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    pluginService.inferTargets.mockReturnValue(new Map());
+    pluginService.inferTargets.mockResolvedValue(new Map());
   });
 
   it("declares the glob and name Nx registers it under", () => {
@@ -58,7 +58,7 @@ describe("callidescopePlugin", () => {
   it("attaches inferred targets to the project root that owns them", async () => {
     expect.hasAssertions();
 
-    pluginService.inferTargets.mockReturnValue(
+    pluginService.inferTargets.mockResolvedValue(
       new Map([["packages/alpha", TARGETS]]),
     );
 
@@ -75,7 +75,7 @@ describe("callidescopePlugin", () => {
   it("drops a matched file that inference gave no targets", async () => {
     expect.hasAssertions();
 
-    pluginService.inferTargets.mockReturnValue(
+    pluginService.inferTargets.mockResolvedValue(
       new Map([["packages/alpha", TARGETS]]),
     );
 

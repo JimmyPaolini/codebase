@@ -28,12 +28,14 @@ describe(OptionsService, () => {
           breadthTargetName: "callidescope-breadth",
           configurationPath: "configuration/callidescope.config.ts",
           depthTargetName: "callidescope-depth",
+          gateTargetName: "callidescope-gate",
           traceTargetName: "callidescope-trace",
         }),
       ).toStrictEqual({
         breadthTargetName: "callidescope-breadth",
         configurationPath: "configuration/callidescope.config.ts",
         depthTargetName: "callidescope-depth",
+        gateTargetName: "callidescope-gate",
         traceTargetName: "callidescope-trace",
       });
     });
@@ -52,6 +54,7 @@ describe(OptionsService, () => {
         breadthTargetName: "breadth",
         configurationPath: "callidescope.config.ts",
         depthTargetName: "depth",
+        gateTargetName: "gate",
         traceTargetName: "trace",
       });
     });
@@ -64,6 +67,7 @@ describe(OptionsService, () => {
       ).toMatchObject({
         breadthTargetName: "breadth",
         depthTargetName: "callidescope-depth",
+        gateTargetName: "gate",
         traceTargetName: "trace",
       });
     });

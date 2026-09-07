@@ -17,6 +17,24 @@ export const PROJECT_CONFIGURATION_GLOB =
 export const PROJECT_CONFIGURATION_FILENAME = "project.json";
 
 /**
+ * Cache input naming the project's own callidescope configuration — the file
+ * the limits its gate enforces are written in.
+ *
+ * `{projectRoot}`-relative rather than a workspace-wide glob, which is the
+ * whole point of it: a glob reaching every project's file would invalidate
+ * every project's gate whenever any one project changed a limit, which is the
+ * uncacheable workspace run this target replaces. A dependency's file is
+ * covered by `^default` instead, because a scoped run measures its
+ * dependencies and is judged by what they declared.
+ *
+ * A glob rather than one filename because the loader reads eight extensions,
+ * and it matches nothing at all in a project that configures nothing — which
+ * is what leaves such a project carrying the target and inheriting the
+ * workspace's limits.
+ */
+export const PROJECT_LIMITS_INPUT = "{projectRoot}/callidescope.config.*";
+
+/**
  * Key the plugin's application context is cached under on `globalThis`.
  *
  * Global rather than module-level so that loading this module twice — which

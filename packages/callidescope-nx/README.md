@@ -42,6 +42,7 @@ Register it in `nx.json`:
 | `traceTargetName` | Name of the inferred trace target. `trace` when omitted |
 | `depthTargetName` | Name of the inferred depth target. `depth` when omitted |
 | `breadthTargetName` | Name of the inferred breadth target. `breadth` when omitted |
+| `gateTargetName` | Name of the inferred gate target. `gate` when omitted |
 
 The target names are short because they read better on the command line than
 repeating the tool's name on both sides of the colon. Rename any of them from
@@ -49,7 +50,7 @@ the registration if a workspace already uses one.
 
 ## Usage
 
-Three targets are inferred onto every project holding a `tsconfig.json`, so
+Four targets are inferred onto every project holding a `tsconfig.json`, so
 selection is Nx's job rather than a flag of this package's own:
 
 ```bash
@@ -69,6 +70,7 @@ nx run callidescope-nx:depth --addresses="src/a.service.ts#A.b,src/c.service.ts#
 
 | Target | Answers |
 | ------ | ------- |
+| `gate` | Whether anything in the project broke the limits it is held to |
 | `trace` | Every call stack in the project, and which ones broke a limit |
 | `depth` | Every stack above and below each callable — callers up to a root, callees down to a leaf |
 | `breadth` | Each callable's direct callers and callees, side by side |
@@ -88,9 +90,33 @@ the address count, matching what the command line prints.
 Unlike the command line, a missing `--addresses` is **refused rather than
 prompted for**: a task runner has nobody to ask.
 
-Two projects are deliberately skipped: the **workspace-root project**, whose
-targets would trace everything under one uncacheable task, and any project with
-**no `tsconfig.json`**, whose targets would be permanently empty.
+### The gate
+
+`gate` is the only one of the four whose exit code a pipeline reads, and the
+only one that prints nothing but its findings — the stacks and callables that
+decided the verdict, rather than every stack in the project. `nx affected -t gate`
+therefore gates a branch by the projects it changed, and the task that fails is
+named after the project that regressed, which one workspace-wide task never
+could.
+
+**Depth is gated always, breadth wherever a limit exists.** Not two modes to be
+selected between: `maximumDepth` has a default, so every project has a number
+and is judged by it, while `maximumBreadth` has none at any level — so a project
+that declared no breadth limit is judged against `Infinity` and can produce no
+breadth finding at all.
+
+Its cache key names the project's own `callidescope.config.*` alongside the
+workspace configuration, so editing one project's limits re-runs that project's
+gate and no other project's. A dependency's limits are covered by `^default`,
+because a run measures its dependencies and is judged by what they declared.
+
+Two projects are deliberately skipped by all four targets: the **workspace-root
+project**, whose targets would trace everything under one uncacheable task, and
+any project with **no `tsconfig.json`**, whose targets would be permanently
+empty. A project the configuration **excludes** — `exclude` or `excludeFrom` in
+the workspace file — additionally gets no `gate`: its own code is never traced,
+so a gate there would judge the project's dependencies and report green for
+code it never read.
 
 ### Why the trace follows dependencies
 
