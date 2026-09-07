@@ -71,6 +71,26 @@ import {
  * them: it supplies the callees a stack descends into, and what these are
  * missing is a caller.
  *
+ * Six projects under `applications/` and `tools/` declare their own measured
+ * depth the same way, and none of them inherit — but two more things sit
+ * outside what either task covers and still need writing down rather than
+ * left implicit.
+ *
+ * `configuration/` measures depth 3 and holds its own `tsconfig.json`, so it
+ * appears as a traced root — but it is not an Nx project, so no target can
+ * ever be inferred onto it, and it is gated by nothing. It keeps being traced
+ * and published by the workspace `write` run.
+ *
+ * `applications/JimmyPaolini` and `applications/affirmations` have no `gate`
+ * target at all — a different fact from inheriting one. Inheriting means a
+ * gate that runs and passes against the workspace number; these two have no
+ * gate to pass. `JimmyPaolini` holds only a `package.json`, being the git
+ * submodule this repository leaves deliberately uninitialized everywhere (see
+ * `AGENTS.md`'s `### Git Worktrees`); `affirmations` is a Python Jupyter
+ * notebook application holding no `tsconfig.json`, and the plugin infers its
+ * targets only onto a project that holds one
+ * (`packages/callidescope-nx/src/modules/plugin/plugin.service.ts:353`).
+ *
  * Still exported although nothing imports it, because a rule needs a name to
  * be about, and narrowing it to the one limit a project may override was
  * considered and rejected — that leaves an object whose only member every
