@@ -12,7 +12,7 @@ import type { ExecutorContext } from "@nx/devkit";
  * Resolves what one executor invocation covers, refusing anything the
  * workspace does not have.
  *
- * Shared by all three executors because the scoping is the same question for
+ * Shared by every executor here because the scoping is the same question for
  * all of them — which projects, widened how far — and only what happens to the
  * result differs. Stating it once also means a refusal reads identically
  * whichever target produced it.

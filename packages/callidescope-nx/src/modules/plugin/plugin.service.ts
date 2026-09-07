@@ -19,6 +19,7 @@ import { OptionsService } from "../options/options.service";
 import { ProjectsService } from "../projects/projects.service";
 
 import {
+  EMPTY_TRACE_REPORT,
   PROJECT_CONFIGURATION_FILENAME,
   PROJECT_LIMITS_INPUT,
 } from "./plugin.constants";
@@ -32,11 +33,11 @@ import type {
   RunGateArguments,
   RunTraceArguments,
   RunTraceResult,
+  RunVerdict,
 } from "./plugin.types";
 import type {
   CallGraphResult,
   ResolvedCallidescopeConfiguration,
-  WideCallableFinding,
 } from "@callidescope/configuration";
 import type { FileFilter } from "@callidescope/graph";
 
@@ -164,30 +165,6 @@ export class PluginService {
     };
   }
 
-  /**
-   * Names the callables that called more things directly than their project
-   * allows.
-   *
-   * A line each rather than the report's table: the gate's product is the list
-   * of things to go and fix, and every one of them carries the limit it broke
-   * because that number is per project now and cannot be inferred from the
-   * run.
-   */
-  private describeWideCallables(
-    findings: readonly WideCallableFinding[],
-  ): string {
-    if (findings.length === 0) {
-      return "None.";
-    }
-
-    return findings
-      .map(
-        (finding) =>
-          `- \`${finding.displayName}\` — ${String(finding.breadth)} direct callees, limit ${String(finding.limit)} (${finding.location.filePath})`,
-      )
-      .join("\n");
-  }
-
   /** Whether a project's directory holds a TypeScript program to trace. */
   private holdsProgram(args: {
     projectRoot: string;
@@ -217,6 +194,43 @@ export class PluginService {
     return args.fileFilter.isExcluded(
       path.posix.join(args.projectRoot, PROJECT_PROGRAM_FILENAME),
     );
+  }
+
+  /**
+   * Decides whether a traced result passes, for every target that reads one.
+   *
+   * One predicate rather than the same expression written beside each caller,
+   * so a rule added here cannot reach one verdict and miss the other — which
+   * is exactly what the empty-trace rule below would have done.
+   *
+   * **A run that read nothing fails.** `callidescope`'s own
+   * `reportEmptyTrace` fails the same case for the same reason: a gate that
+   * passes because it never looked reports the project as clean and leaves
+   * nothing in the output to say otherwise. It is not a theoretical case here
+   * — a project's own `callidescope.config.*` may write an `exclude`, and one
+   * that over-matches would turn that project's gate permanently and silently
+   * green.
+   *
+   * **Depth is judged always, breadth wherever a limit exists.** Not two modes
+   * to be selected between: `maximumDepth` has a default, so every project has
+   * a number and every project is judged by it, while `maximumBreadth` has
+   * none at any level — so a project that declared no breadth limit is judged
+   * against `Infinity` and can produce no breadth finding to fail on. Reading
+   * the findings rather than asking for a check by name is what keeps that
+   * true without a decision: a verdict here cannot be refused for wanting to
+   * check breadth in a project that never asked for it, which is what
+   * `--check breadth` does at a prompt, and cannot silently stop judging depth
+   * either.
+   */
+  private judge(result: CallGraphResult): RunVerdict {
+    if (result.summary.callableCount === 0) {
+      return { ok: false, reason: EMPTY_TRACE_REPORT };
+    }
+
+    return {
+      ok: result.deepStacks.length === 0 && result.wideCallables.length === 0,
+      reason: undefined,
+    };
   }
 
   /**
@@ -275,33 +289,6 @@ export class PluginService {
     return (
       configuration.output.projectReadmes?.previewCount ?? DEFAULT_PREVIEW_COUNT
     );
-  }
-
-  /**
-   * Renders the two findings a gate weighs, and nothing else.
-   *
-   * A gate prints why it decided rather than what it read. The full report is
-   * what the trace target is for, and burying two deep stacks in a listing of
-   * every stack in the project is how a failed pipeline stops being read.
-   */
-  private renderFindings(args: {
-    previewCount: number;
-    result: CallGraphResult;
-  }): string {
-    const { deepStacks, wideCallables } = args.result;
-
-    return [
-      `## Call stacks over the depth limit (${String(deepStacks.length)})`,
-      "",
-      this.markdownReportService.renderStacks({
-        previewCount: args.previewCount,
-        stacks: deepStacks,
-      }),
-      "",
-      `## Callables over the breadth limit (${String(wideCallables.length)})`,
-      "",
-      this.describeWideCallables(wideCallables),
-    ].join("\n");
   }
 
   // 🌎 Public Methods
@@ -422,25 +409,10 @@ export class PluginService {
    * Traces the resolved directories and judges what it found against the
    * limits every project in scope declared.
    *
-   * **Depth is gated always, breadth wherever a limit exists.** Not two modes
-   * to be selected between: `maximumDepth` has a default, so every project has
-   * a number and every project is judged by it, while `maximumBreadth` has
-   * none at any level — so a project that declared no breadth limit is judged
-   * against `Infinity` and can produce no breadth finding to fail on. Reading
-   * the findings rather than asking for a check by name is what keeps that
-   * true without a decision: a gate here cannot be refused for wanting to
-   * check breadth in a project that never asked for it, which is what
-   * `--check breadth` does at a prompt, and cannot silently stop gating depth
-   * either.
-   *
-   * A run that traced nothing is deliberately **not** failed, unlike the
-   * `callidescope` command's own gate. That rule guards a run pointed at a
-   * whole workspace, where reading nothing means the trace itself is broken;
-   * a project can legitimately hold a `tsconfig.json` and almost no source of
-   * its own — the `*-agents` packages ship skills — and failing one for what
-   * it is rather than for what it did is a red gate nobody can act on. A
-   * project whose source really is excluded to nothing gets no gate at all,
-   * which is the case that rule would have caught here.
+   * The verdict is `judge`'s, which is where the rules are written; this
+   * chooses what to print for it. A run that read nothing prints the reason
+   * instead of the findings, because it has no finding to show and a bare red
+   * task would leave a reader guessing why a project that looks fine failed.
    */
   public async runGate(args: RunGateArguments): Promise<RunTraceResult> {
     const { configuration, path: configurationPath } =
@@ -451,14 +423,16 @@ export class PluginService {
       directories: args.directories,
       workspaceRoot: args.workspaceRoot,
     });
-    const { deepStacks, wideCallables } = outcome.result;
+    const verdict = this.judge(outcome.result);
 
     return {
-      ok: deepStacks.length === 0 && wideCallables.length === 0,
-      report: this.renderFindings({
-        previewCount: this.readPreviewCount(configuration),
-        result: outcome.result,
-      }),
+      ok: verdict.ok,
+      report:
+        verdict.reason ??
+        this.markdownReportService.renderFindings({
+          previewCount: this.readPreviewCount(configuration),
+          result: outcome.result,
+        }),
     };
   }
 
@@ -469,6 +443,11 @@ export class PluginService {
    * selection above is Nx's to resolve, and everything below this line is
    * callidescope's own, reached through the same services the `callidescope`
    * command uses rather than through a subprocess.
+   *
+   * Judged by the same predicate the gate is, so the two targets cannot come
+   * to disagree about what a passing run is. A run that read nothing keeps its
+   * report and gains the reason underneath it: a summary table of zeroes is
+   * what happened, not why it failed.
    */
   public async runTrace(args: RunTraceArguments): Promise<RunTraceResult> {
     const { configuration: loaded, path: loadedPath } =
@@ -488,16 +467,17 @@ export class PluginService {
       workspaceRoot: args.workspaceRoot,
     });
 
+    const verdict = this.judge(outcome.result);
+    const report = this.markdownReportService.renderRun({
+      previewCount: this.readPreviewCount(configuration),
+      rendering: configuration.output.format === "mermaid" ? "diagram" : "tree",
+      result: outcome.result,
+    });
+
     return {
-      ok:
-        outcome.result.deepStacks.length === 0 &&
-        outcome.result.wideCallables.length === 0,
-      report: this.markdownReportService.renderRun({
-        previewCount: this.readPreviewCount(configuration),
-        rendering:
-          configuration.output.format === "mermaid" ? "diagram" : "tree",
-        result: outcome.result,
-      }),
+      ok: verdict.ok,
+      report:
+        verdict.reason === undefined ? report : `${report}\n${verdict.reason}`,
     };
   }
 }

@@ -24,7 +24,8 @@ export const DEFAULT_BREADTH_TARGET_NAME = "breadth";
  *
  * Named after what it decides rather than after what it measures. `trace`,
  * `depth`, and `breadth` all print something a reader asked for; this one is
- * the only target here whose exit code a pipeline reads, so it says `gate`.
+ * the target here a pipeline is meant to read an exit code from, so it says
+ * `gate`.
  */
 export const DEFAULT_GATE_TARGET_NAME = "gate";
 

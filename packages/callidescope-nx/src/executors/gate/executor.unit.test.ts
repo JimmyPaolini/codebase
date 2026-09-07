@@ -2,6 +2,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { OptionsService } from "../../modules/options/options.service";
+import { EMPTY_SCOPE_REPORT } from "../../modules/plugin/plugin.constants";
 
 import gateExecutor from "./executor";
 
@@ -165,16 +166,34 @@ describe(gateExecutor, () => {
     );
   });
 
-  it("succeeds without tracing when the selection resolved to nothing", async () => {
+  it("fails without tracing when the selection resolved to nothing", async () => {
     expect.hasAssertions();
 
     pluginService.resolveTraceScope.mockResolvedValue(
       buildScope({ directories: [], projectNames: [] }),
     );
 
+    // A gate with nothing to trace has no verdict to record, so it must not
+    // record a passing one — and it says so, rather than failing mutely.
     await expect(
       gateExecutor({}, buildContext("alpha")),
-    ).resolves.toStrictEqual({ success: true });
+    ).resolves.toStrictEqual({ success: false });
     expect(pluginService.runGate).not.toHaveBeenCalled();
+    expect(process.stdout.write).toHaveBeenCalledWith(
+      `${EMPTY_SCOPE_REPORT}\n`,
+    );
+  });
+
+  it("forwards the resolved scope to the gate unchanged", async () => {
+    expect.hasAssertions();
+
+    await gateExecutor({}, buildContext("alpha"));
+
+    // Pinned exactly rather than partially: the scope-to-gate mapping is the
+    // whole of what this executor does with what it resolved.
+    expect(pluginService.runGate).toHaveBeenCalledWith({
+      directories: ["packages/alpha"],
+      workspaceRoot: "/workspace",
+    });
   });
 });

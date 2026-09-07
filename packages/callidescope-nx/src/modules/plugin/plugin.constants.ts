@@ -41,3 +41,41 @@ export const PROJECT_LIMITS_INPUT = "{projectRoot}/callidescope.config.*";
  * Nx's plugin isolation can do — still yields one NestJS context per process.
  */
 export const PLUGIN_CONTEXT_GLOBAL_KEY = "__callidescopePluginContext";
+
+/**
+ * What a gate prints when the run it judged read no code at all.
+ *
+ * A gate that passes because it never looked reports the project as clean and
+ * leaves nothing in the output to say otherwise, which is why the
+ * `callidescope` command fails the same case. It is reachable here through an
+ * `exclude` that over-matches — a project's own `callidescope.config.*` can
+ * write one — and through a dependency closure whose sources are all excluded.
+ */
+export const EMPTY_TRACE_REPORT = [
+  "## Traced nothing (0 callables)",
+  "",
+  "This gate read no code, so it judged none. It fails rather than passing:",
+  "a gate that never looked cannot tell a clean project from an unread one.",
+  "",
+  "Check `exclude` and `excludeFrom` in the workspace callidescope",
+  "configuration and in this project's own `callidescope.config.*` for a",
+  "pattern matching everything the project holds.",
+].join("\n");
+
+/**
+ * What a gate prints when its Nx selection resolved to no directory.
+ *
+ * The same failure one step earlier: nothing was traced because there was
+ * nothing to point a trace at, so there is no verdict and the task must not
+ * record one.
+ */
+export const EMPTY_SCOPE_REPORT = [
+  "## Traced nothing (no directories in scope)",
+  "",
+  "This gate's Nx selection resolved to no directory, so nothing was traced",
+  "and nothing was judged. It fails rather than passing: a gate that never",
+  "looked cannot tell a clean project from an unread one.",
+  "",
+  "Check the `projects` and `tags` this target was given, and whether the",
+  "projects they name still hold a root of their own.",
+].join("\n");

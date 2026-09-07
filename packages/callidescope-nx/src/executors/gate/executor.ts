@@ -1,6 +1,7 @@
 // 🛠️ Utilities
 
 import { resolvePluginService } from "../../modules/plugin/plugin-context.utilities";
+import { EMPTY_SCOPE_REPORT } from "../../modules/plugin/plugin.constants";
 import { resolveExecutorScope } from "../../modules/plugin/plugin.utilities";
 
 import type { GateExecutorOptions } from "./executor.types";
@@ -32,8 +33,14 @@ export default async function gateExecutor(
     options,
   });
 
+  // A gate with nothing to point a trace at has no verdict to record, so it
+  // records a failure rather than a pass — the same rule the run itself is
+  // held to one step later, and for the same reason: a green task here would
+  // report the project clean without ever having read it.
   if (scope.directories.length === 0) {
-    return { success: true };
+    process.stdout.write(`${EMPTY_SCOPE_REPORT}\n`);
+
+    return { success: false };
   }
 
   const pluginService = await resolvePluginService();

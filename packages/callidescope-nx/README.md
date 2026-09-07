@@ -92,8 +92,8 @@ prompted for**: a task runner has nobody to ask.
 
 ### The gate
 
-`gate` is the only one of the four whose exit code a pipeline reads, and the
-only one that prints nothing but its findings — the stacks and callables that
+`gate` is the one of the four a pipeline is meant to read an exit code from,
+and the only one that prints nothing but its findings — the stacks and callables that
 decided the verdict, rather than every stack in the project. `nx affected -t gate`
 therefore gates a branch by the projects it changed, and the task that fails is
 named after the project that regressed, which one workspace-wide task never
@@ -104,6 +104,14 @@ selected between: `maximumDepth` has a default, so every project has a number
 and is judged by it, while `maximumBreadth` has none at any level — so a project
 that declared no breadth limit is judged against `Infinity` and can produce no
 breadth finding at all.
+
+**A gate that read no code fails.** A run reporting zero callables is not a
+clean project — it is a project nothing looked at, and a green task there would
+say the opposite with nothing in the output to correct it. The `callidescope`
+command fails the same case for the same reason. It is reachable through an
+`exclude` that over-matches, which a project's own `callidescope.config.*` may
+write, and through an Nx selection that resolved to no directory at all; both
+print what happened rather than failing mutely.
 
 Its cache key names the project's own `callidescope.config.*` alongside the
 workspace configuration, so editing one project's limits re-runs that project's

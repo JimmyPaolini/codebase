@@ -9,9 +9,11 @@
 An Nx plugin. It infers `trace`, `depth`, `breadth`, and `gate` targets onto
 every project holding a `tsconfig.json`, each backed by an executor that runs
 callidescope over that project **and its Nx dependencies**, resolved from the
-Nx project graph. `gate` is the only one a pipeline reads an exit code from, and
-the only one a project the workspace configuration **excludes** does not get:
-its own code is never traced, so a gate there would judge its dependencies. This is the
+Nx project graph. `gate` is the one a pipeline is meant to read an exit code
+from, and the only one a project the workspace configuration **excludes** does
+not get: its own code is never traced, so a gate there would judge its
+dependencies. A gate that read no code fails rather than passing, because a
+verdict on nothing is not a clean project. This is the
 only package in the callidescope toolchain that depends on `@nx/devkit`:
 `@callidescope/cli` and `@callidescope/graph` are deliberately Nx-free and take
 plain `--directories`.

@@ -11,16 +11,17 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { OptionsService } from "../options/options.service";
 import { ProjectsService } from "../projects/projects.service";
 
+import { EMPTY_TRACE_REPORT } from "./plugin.constants";
 import { PluginService } from "./plugin.service";
 
 import type { ResolvedTraceScope } from "./plugin.types";
 import type { TraceOutcome } from "@callidescope/cli";
 import type {
   CallGraphResult,
+  CallGraphSummary,
   CallidescopeOutputFormat,
   DeepStackFinding,
   ResolvedCallidescopeConfiguration,
-  SourceLocation,
   WideCallableFinding,
 } from "@callidescope/configuration";
 import type { ProjectGraph } from "@nx/devkit";
@@ -417,6 +418,7 @@ describe(PluginService, () => {
      */
     function stubTrace(
       args: {
+        callableCount?: number;
         deepStacks?: DeepStackFinding[];
         format?: CallidescopeOutputFormat;
         wideCallables?: WideCallableFinding[];
@@ -433,6 +435,11 @@ describe(PluginService, () => {
         createMock<TraceOutcome>({
           result: createMock<CallGraphResult>({
             deepStacks: args.deepStacks ?? [],
+            // Stated rather than left to `createMock`: the verdict reads this
+            // count, so a stub that did not set it would decide the test.
+            summary: createMock<CallGraphSummary>({
+              callableCount: args.callableCount ?? 143,
+            }),
             wideCallables: args.wideCallables ?? [],
           }),
         }),
@@ -538,6 +545,7 @@ describe(PluginService, () => {
         "a callable called too much",
         { wideCallables: [createMock<WideCallableFinding>()] },
       ],
+      ["it read no code at all", { callableCount: 0 }],
     ])("fails when %s", async (_description, findings) => {
       expect.hasAssertions();
 
@@ -550,12 +558,32 @@ describe(PluginService, () => {
         }),
       ).resolves.toMatchObject({ ok: false });
     });
+
+    it("says under the report why a run that read nothing failed", async () => {
+      expect.hasAssertions();
+
+      stubTrace({ callableCount: 0 });
+
+      // The report is kept and the reason appended: a summary table of zeroes
+      // says what happened, never why it counted as a failure. Judged by the
+      // gate's own predicate, so the two targets cannot come to disagree.
+      await expect(
+        service.runTrace({
+          directories: ["packages/alpha"],
+          workspaceRoot: "/workspace",
+        }),
+      ).resolves.toStrictEqual({
+        ok: false,
+        report: `# Report\n${EMPTY_TRACE_REPORT}`,
+      });
+    });
   });
 
   describe("runGate", () => {
     /** Stubs one gated trace, typed rather than cast. */
     function stubGate(
       args: {
+        callableCount?: number;
         deepStacks?: DeepStackFinding[];
         wideCallables?: WideCallableFinding[];
       } = {},
@@ -564,11 +592,14 @@ describe(PluginService, () => {
         createMock<TraceOutcome>({
           result: createMock<CallGraphResult>({
             deepStacks: args.deepStacks ?? [],
+            summary: createMock<CallGraphSummary>({
+              callableCount: args.callableCount ?? 143,
+            }),
             wideCallables: args.wideCallables ?? [],
           }),
         }),
       );
-      markdownReportService.renderStacks.mockReturnValue("None.");
+      markdownReportService.renderFindings.mockReturnValue("## Findings");
     }
 
     it("passes a workspace with nothing over a limit", async () => {
@@ -603,18 +634,23 @@ describe(PluginService, () => {
       // Breadth needs no mode of its own: no limit resolves to `Infinity`, so
       // a project that declared none produces no finding to fail on, and a
       // gate can never be refused for wanting to check it.
-      stubGate({
-        wideCallables: [
-          createMock<WideCallableFinding>({
-            breadth: 12,
-            displayName: "AlphaService.orchestrate",
-            limit: 8,
-            location: createMock<SourceLocation>({
-              filePath: "packages/alpha/src/alpha.service.ts",
-            }),
-          }),
-        ],
-      });
+      stubGate({ wideCallables: [createMock<WideCallableFinding>()] });
+
+      await expect(
+        service.runGate({
+          directories: ["packages/alpha"],
+          workspaceRoot: "/workspace",
+        }),
+      ).resolves.toMatchObject({ ok: false });
+    });
+
+    it("fails a gate whose run read no code at all", async () => {
+      expect.hasAssertions();
+
+      // An `exclude` that over-matches is what reaches this, and a project's
+      // own configuration may write one — so a gate that passed here would go
+      // permanently and silently green.
+      stubGate({ callableCount: 0 });
 
       const result = await service.runGate({
         directories: ["packages/alpha"],
@@ -622,9 +658,11 @@ describe(PluginService, () => {
       });
 
       expect(result.ok).toBe(false);
-      expect(result.report).toContain(
-        "`AlphaService.orchestrate` — 12 direct callees, limit 8 (packages/alpha/src/alpha.service.ts)",
-      );
+      // The reason rather than the findings: there are none to show, and a
+      // bare red task leaves a reader guessing.
+      expect(result.report).toBe(EMPTY_TRACE_REPORT);
+      expect(result.report).toContain("Traced nothing (0 callables)");
+      expect(markdownReportService.renderFindings).not.toHaveBeenCalled();
     });
 
     it("reports only the findings, never the whole run", async () => {
@@ -637,17 +675,10 @@ describe(PluginService, () => {
         workspaceRoot: "/workspace",
       });
 
-      expect(result.report).toBe(
-        [
-          "## Call stacks over the depth limit (0)",
-          "",
-          "None.",
-          "",
-          "## Callables over the breadth limit (0)",
-          "",
-          "None.",
-        ].join("\n"),
-      );
+      // Rendering is the output package's job, so what is pinned here is that
+      // the gate asks it for the findings and never for the whole run.
+      expect(result.report).toBe("## Findings");
+      expect(markdownReportService.renderFindings).toHaveBeenCalledTimes(1);
       expect(markdownReportService.renderRun).not.toHaveBeenCalled();
     });
 

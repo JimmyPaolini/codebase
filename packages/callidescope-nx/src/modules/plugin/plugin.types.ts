@@ -85,3 +85,16 @@ export interface RunTraceResult {
   readonly ok: boolean;
   readonly report: string;
 }
+
+/**
+ * What one predicate decided about a traced result.
+ *
+ * `reason` carries the rendering a verdict owes the reader when the findings
+ * cannot explain it themselves — a run that read nothing has no finding to
+ * show, and a bare red task there is the guessing game this rule exists to
+ * end.
+ */
+export interface RunVerdict {
+  readonly ok: boolean;
+  readonly reason: string | undefined;
+}
