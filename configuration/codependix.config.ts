@@ -374,6 +374,14 @@ const codependixConfiguration: CodependixConfiguration = {
         },
       },
       {
+        from: { tags: ["name:conformetry-languages"] },
+        kind: "allow",
+        message:
+          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+        name: "conformetry-languages-layer",
+        to: { tags: ["name:conformetry-core"] },
+      },
+      {
         from: { tags: ["name:conformetry-validation"] },
         kind: "allow",
         message:
@@ -386,6 +394,7 @@ const codependixConfiguration: CodependixConfiguration = {
             "name:conformetry-files",
             "name:conformetry-json",
             "name:conformetry-jupyter",
+            "name:conformetry-languages",
             "name:conformetry-markdown",
             "name:conformetry-python",
             "name:conformetry-text",

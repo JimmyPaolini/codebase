@@ -1,0 +1,19 @@
+import { ScoringModule } from "@conformetry/core";
+import { Module } from "@nestjs/common";
+
+import { JsonComparisonService } from "./json-comparison.service";
+import { JsonService } from "./json.service";
+
+/**
+ * Provides the JSON language validator.
+ *
+ * `JsonComparisonService` is exported as well, because notebooks are JSON
+ * documents and `conformetry-jupyter` reuses the same structural walk.
+ */
+@Module({
+  controllers: [],
+  exports: [JsonComparisonService, JsonService],
+  imports: [ScoringModule],
+  providers: [JsonComparisonService, JsonService],
+})
+export class JsonModule {}

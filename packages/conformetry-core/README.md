@@ -184,6 +184,7 @@ graph LR
   conformetry_files["conformetry-files"]
   conformetry_json["conformetry-json"]
   conformetry_jupyter["conformetry-jupyter"]
+  conformetry_languages["conformetry-languages"]
   conformetry_markdown["conformetry-markdown"]
   conformetry_nx["conformetry-nx"]
   conformetry_python["conformetry-python"]
@@ -196,6 +197,7 @@ graph LR
   conformetry_files --> conformetry_core
   conformetry_json --> conformetry_core
   conformetry_jupyter --> conformetry_core
+  conformetry_languages --> conformetry_core
   conformetry_markdown --> conformetry_core
   conformetry_nx --> conformetry_core
   conformetry_python --> conformetry_core
