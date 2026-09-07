@@ -70,4 +70,8 @@ describe(SqlCommentsService, () => {
   it("finds nothing in a script with no comments", () => {
     expect(service.read("SELECT 1;\n")).toStrictEqual([]);
   });
+
+  it("ignores an unclosed block comment rather than reading to end of file", () => {
+    expect(service.read("/* never closed\nSELECT 1;\n")).toStrictEqual([]);
+  });
 });

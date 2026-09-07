@@ -79,4 +79,10 @@ describe(HclCommentsService, () => {
   it("finds nothing in a file with no comments", () => {
     expect(service.read('variable "region" {}\n')).toStrictEqual([]);
   });
+
+  it("ignores an unclosed block comment rather than reading to end of file", () => {
+    expect(
+      service.read('/* never closed\nvariable "region" {}\n'),
+    ).toStrictEqual([]);
+  });
 });

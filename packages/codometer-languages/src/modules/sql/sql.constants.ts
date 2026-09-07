@@ -2,8 +2,15 @@
 
 import type { SqlResult } from "./sql.types";
 
-/** Matches a `/* … *\/` comment, including one spanning several lines. */
-export const SQL_BLOCK_COMMENT_PATTERN = /\/\*[\s\S]*?\*\//g;
+/**
+ * Matches a `/* … *\/` comment, including one spanning several lines.
+ *
+ * Written to match one star at a time rather than as `[\s\S]*?\*\/`, whose
+ * backtracking cost grows fast on a long run of unclosed `/*` markers — a
+ * lazy dot-all is the classic shape CodeQL flags as slow on adversarial
+ * input, and an unclosed comment inside a large file is exactly that shape.
+ */
+export const SQL_BLOCK_COMMENT_PATTERN = /\/\*[^*]*\*+(?:[^/*][^*]*\*+)*\//g;
 
 /** Matches a `--` comment through to the end of its line. */
 export const SQL_LINE_COMMENT_PATTERN = /--[^\n]*/g;
