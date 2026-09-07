@@ -7,6 +7,7 @@ import type {
   LatticePoint,
 } from "../meander-lattice/meander-lattice.types";
 import type {
+  InkAdjacency,
   InkConnectivity,
   JunctionCounts,
   MeanderTopology,
@@ -54,6 +55,47 @@ export class MeanderTopologyService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * A document's ink as an {@link InkAdjacency}, so {@link components} can
+   * count its pieces without knowing it came from a lattice.
+   *
+   * The nodes are enumerated in column-then-row order, which is the order
+   * {@link connectivity} used to walk them in. Nothing about a component
+   * count depends on it — it is kept so that a change here is visible as a
+   * change in behavior if it ever is one, rather than hidden behind an
+   * ordering nobody fixed.
+   */
+  private adjacency(graph: LatticeGraph): InkAdjacency<LatticePoint> {
+    const nodes: LatticePoint[] = [];
+
+    for (let column = 0; column <= graph.columns; column += 1) {
+      for (let row = 0; row <= graph.rows; row += 1) {
+        if (graph.nodes.has(this.key(column, row))) {
+          nodes.push({ column, row });
+        }
+      }
+    }
+
+    return {
+      key: ({ column, row }) => this.key(column, row),
+      neighbors: (point) => this.neighbors(graph, point),
+      nodes,
+    };
+  }
+
+  /** How many lattice points carry exactly one arm of ink — where a stroke stops rather than turning, forking, or closing. */
+  private freeEnds(graph: LatticeGraph): number {
+    let freeEnds = 0;
+
+    for (let column = 0; column <= graph.columns; column += 1) {
+      for (let row = 0; row <= graph.rows; row += 1) {
+        freeEnds += this.inkDegree(graph, column, row) === 1 ? 1 : 0;
+      }
+    }
+
+    return freeEnds;
+  }
 
   /** How many arms of ink meet at one lattice point. */
   private inkDegree(graph: LatticeGraph, column: number, row: number): number {
@@ -164,25 +206,25 @@ export class MeanderTopologyService {
     }
   }
 
-  /** Marks every painted lattice point reachable from `start` along ink as visited. */
-  private walk(
-    graph: LatticeGraph,
-    start: LatticePoint,
+  /** Marks every node reachable from `start` along ink as visited. */
+  private walk<Node>(
+    adjacency: InkAdjacency<Node>,
+    start: Node,
     visited: Set<string>,
   ): void {
-    const pending: LatticePoint[] = [start];
+    const pending: Node[] = [start];
 
-    visited.add(this.key(start.column, start.row));
+    visited.add(adjacency.key(start));
 
     while (pending.length > 0) {
-      const point = pending.pop();
+      const node = pending.pop();
 
-      if (point === undefined) {
+      if (node === undefined) {
         break;
       }
 
-      for (const neighbor of this.neighbors(graph, point)) {
-        const key = this.key(neighbor.column, neighbor.row);
+      for (const neighbor of adjacency.neighbors(node)) {
+        const key = adjacency.key(neighbor);
 
         if (!visited.has(key)) {
           visited.add(key);
@@ -193,6 +235,34 @@ export class MeanderTopologyService {
   }
 
   // 🌎 Public Methods
+
+  /**
+   * How many connected pieces an ink graph falls into, which is the one
+   * quantity {@link InkConnectivity}'s two predicates cannot be computed
+   * without and the one that costs a walk.
+   *
+   * It takes an {@link InkAdjacency} rather than a document because the
+   * `mosaic` family asks this of a *tile* — a repeat unit whose ink wraps
+   * east into its own first column — and a tile is not a document and never
+   * becomes one. Rendering a tile in order to measure it would answer a
+   * different question: a rendering of `N` repeats shows `N` copies of
+   * whatever one repeat contains, so its component count says how many
+   * repeats were drawn as much as it says anything about the tile. See
+   * `MosaicConnectivityService`.
+   */
+  components<Node>(adjacency: InkAdjacency<Node>): number {
+    const visited = new Set<string>();
+    let components = 0;
+
+    for (const node of adjacency.nodes) {
+      if (!visited.has(adjacency.key(node))) {
+        components += 1;
+        this.walk(adjacency, node, visited);
+      }
+    }
+
+    return components;
+  }
 
   /**
    * Counts one rendered meander's ink as a graph: its painted lattice
@@ -212,29 +282,35 @@ export class MeanderTopologyService {
    */
   connectivity(document: string): InkConnectivity {
     const graph = this.meanderLatticeService.build(document);
-    const visited = new Set<string>();
-    let components = 0;
-    let freeEnds = 0;
-
-    for (let column = 0; column <= graph.columns; column += 1) {
-      for (let row = 0; row <= graph.rows; row += 1) {
-        const key = this.key(column, row);
-
-        freeEnds += this.inkDegree(graph, column, row) === 1 ? 1 : 0;
-
-        if (graph.nodes.has(key) && !visited.has(key)) {
-          components += 1;
-          this.walk(graph, { column, row }, visited);
-        }
-      }
-    }
 
     return {
-      components,
+      components: this.components(this.adjacency(graph)),
       edges: graph.horizontalEdges.size + graph.verticalEdges.size,
-      freeEnds,
+      freeEnds: this.freeEnds(graph),
       nodes: graph.nodes.size,
     };
+  }
+
+  /**
+   * Whether an ink graph carries no loop anywhere — a forest.
+   *
+   * The whole of it is `edges === nodes - components`, which is stated and
+   * argued in {@link InkConnectivity} rather than here. It lives on this
+   * service because the arithmetic belongs to the counts rather than to
+   * whatever was counted: a tile and a document both reach it through the
+   * same three numbers, and neither should restate the identity.
+   */
+  isAcyclic(connectivity: InkConnectivity): boolean {
+    return connectivity.edges === connectivity.nodes - connectivity.components;
+  }
+
+  /**
+   * Whether an ink graph is a single connected figure. Together with
+   * {@link isAcyclic} this is a tree, which is what
+   * {@link InkConnectivity} spells `components === 1 && edges === nodes - 1`.
+   */
+  isOneComponent(connectivity: InkConnectivity): boolean {
+    return connectivity.components === 1;
   }
 
   /** Measures one rendered meander's channel widths and its ink and negative junction counts. */

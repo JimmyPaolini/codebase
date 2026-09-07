@@ -1,9 +1,11 @@
 import { Module } from "@nestjs/common";
 
 import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
+import { MeanderTopologyModule } from "../meander-topology/meander-topology.module";
 import { MotifTransformsModule } from "../motif-transforms/motif-transforms.module";
 import { SvgRenderingModule } from "../svg-rendering/svg-rendering.module";
 
+import { MosaicConnectivityService } from "./mosaic-connectivity.service";
 import { MosaicMotifService } from "./mosaic-motif.service";
 import { MosaicSubFamilyService } from "./mosaic-sub-family.service";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
@@ -17,12 +19,23 @@ import { MosaicTilesService } from "./mosaic-tiles.service";
  * dispatches to, and the tile enumeration behind it — the tile vocabulary
  * every other service reads a tile through, symmetry canonicalization, the
  * subset enumeration over a tile's edges, the sub-family predicates that
- * name its regions, the per-tile motif, and the standalone generator that
- * renders one enumerated tile to a document.
+ * name its regions, the per-tile motif, the reading of a tile's ink as a
+ * graph, and the standalone generator that renders one enumerated tile to a
+ * document.
+ *
+ * {@link MeanderTopologyModule} is the one import that is not a drawing
+ * concern, and the direction it runs in is the point of it.
+ * {@link MosaicConnectivityService} reads a tile's ink as a graph, and the
+ * walk that counts a graph's connected pieces already lives in that module,
+ * counting them over a rendered document. Depending on it this way round —
+ * mosaic onto topology — is what keeps the topology service free of any
+ * knowledge that a `mosaic` exists, which is the stance its own module
+ * documents.
  */
 @Module({
   controllers: [],
   exports: [
+    MosaicConnectivityService,
     MosaicMotifService,
     MosaicSubFamilyService,
     MosaicSymmetryService,
@@ -31,8 +44,14 @@ import { MosaicTilesService } from "./mosaic-tiles.service";
     MosaicTileService,
     MosaicTilesService,
   ],
-  imports: [GridGeometryModule, MotifTransformsModule, SvgRenderingModule],
+  imports: [
+    GridGeometryModule,
+    MeanderTopologyModule,
+    MotifTransformsModule,
+    SvgRenderingModule,
+  ],
   providers: [
+    MosaicConnectivityService,
     MosaicMotifService,
     MosaicSubFamilyService,
     MosaicSymmetryService,
