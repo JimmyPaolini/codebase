@@ -1,4 +1,10 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -13,6 +19,10 @@ import {
   vi,
 } from "vitest";
 
+import {
+  EMPTY_TRACE_REPORT,
+  reportUnreadProjects,
+} from "../../modules/plugin/plugin.constants";
 import { ProjectsService } from "../../modules/projects/projects.service";
 
 import gateExecutor from "./executor";
@@ -33,10 +43,12 @@ import type { ExecutorContext, ProjectGraph } from "@nx/devkit";
  */
 const BREACHING_PROJECT_NAME = "the-project-that-breaches";
 const DEPENDENT_PROJECT_NAME = "the-project-that-depends";
+const UNREAD_PROJECT_NAME = "the-project-that-reads-nothing";
 
 /** Workspace-relative roots — what callidescope calls a project name. */
 const BREACHING_PROJECT_ROOT = "packages/breaching";
 const DEPENDENT_PROJECT_ROOT = "packages/dependent";
+const UNREAD_PROJECT_ROOT = "packages/unread";
 
 /** The callable whose stack breaches the breaching project's own limit. */
 const BREACHING_ENTRY_POINT = "readBreachingEntryPoint";
@@ -141,6 +153,15 @@ function buildProjectGraph(): ProjectGraph {
           type: "static",
         },
       ],
+      // The dependency is what makes the unread case reachable: it keeps the
+      // run itself non-empty while this project's own sources are all gone.
+      [UNREAD_PROJECT_NAME]: [
+        {
+          source: UNREAD_PROJECT_NAME,
+          target: BREACHING_PROJECT_NAME,
+          type: "static",
+        },
+      ],
     },
     nodes: {
       [BREACHING_PROJECT_NAME]: {
@@ -151,6 +172,11 @@ function buildProjectGraph(): ProjectGraph {
       [DEPENDENT_PROJECT_NAME]: {
         data: { root: DEPENDENT_PROJECT_ROOT, tags: ["type:package"] },
         name: DEPENDENT_PROJECT_NAME,
+        type: "lib",
+      },
+      [UNREAD_PROJECT_NAME]: {
+        data: { root: UNREAD_PROJECT_ROOT, tags: ["type:package"] },
+        name: UNREAD_PROJECT_NAME,
         type: "lib",
       },
     },
@@ -175,7 +201,9 @@ function readDeepStackCount(report: string): number {
 
 /** Writes one fixture project: a program, a manifest, and some source. */
 function writeProject(args: {
-  limits?: undefined | { maximumDepth: number };
+  configuration?:
+    | undefined
+    | { exclude?: string[]; limits?: { maximumDepth: number } };
   projectRoot: string;
   source: string;
   workspaceRoot: string;
@@ -192,10 +220,10 @@ function writeProject(args: {
   );
   writeFileSync(path.join(projectDirectory, "src", "index.ts"), args.source);
 
-  if (args.limits !== undefined) {
+  if (args.configuration !== undefined) {
     writeFileSync(
       path.join(projectDirectory, CONFIGURATION_FILE_NAME),
-      JSON.stringify({ limits: args.limits }),
+      JSON.stringify(args.configuration),
     );
   }
 }
@@ -218,13 +246,24 @@ function writeProject(args: {
  *   — which is why the sweep is not the check and this is.
  * - A gate judging the whole run's findings rather than its own fails the
  *   dependent for a breach in the dependency it merely measured.
+ * - A gate asking whether the *run* read anything rather than whether the
+ *   project it judges did passes a project whose own files were all excluded,
+ *   on the strength of its dependencies' code.
  */
 describe("the gate executor, against a workspace on disk", () => {
   let printed: string[] = [];
   let workspaceRoot = "";
 
   beforeAll(() => {
-    workspaceRoot = mkdtempSync(path.join(tmpdir(), "callidescope-gate-"));
+    // Resolved through its symlinks, which matters on macOS: `tmpdir()` there
+    // is `/var/folders/…`, a link to `/private/var/folders/…`, and a program's
+    // source files come back under the real path. A run rooted at the link
+    // then makes every file's workspace-relative path a `../../..` climb that
+    // no project's root contains, so nothing a project excludes for itself is
+    // treated as belonging to it.
+    workspaceRoot = realpathSync(
+      mkdtempSync(path.join(tmpdir(), "callidescope-gate-")),
+    );
     // High enough that nothing in the fixture reaches it: the breach has to
     // come from the limit the breaching project declared for itself, or the
     // narrowing below proves nothing.
@@ -233,13 +272,22 @@ describe("the gate executor, against a workspace on disk", () => {
       JSON.stringify({ limits: { maximumDepth: 99 } }),
     );
     writeProject({
-      limits: { maximumDepth: 2 },
+      configuration: { limits: { maximumDepth: 2 } },
       projectRoot: BREACHING_PROJECT_ROOT,
       source: BREACHING_SOURCE,
       workspaceRoot,
     });
     writeProject({
       projectRoot: DEPENDENT_PROJECT_ROOT,
+      source: DEPENDENT_SOURCE,
+      workspaceRoot,
+    });
+    // A project that excludes every file it holds — the over-matching
+    // `exclude` a project's own configuration is free to write. It breaks no
+    // limit, because nothing of it was read to break one with.
+    writeProject({
+      configuration: { exclude: ["**"] },
+      projectRoot: UNREAD_PROJECT_ROOT,
       source: DEPENDENT_SOURCE,
       workspaceRoot,
     });
@@ -328,6 +376,33 @@ describe("the gate executor, against a workspace on disk", () => {
       expect(result).toStrictEqual({ success: false });
       expect(readDeepStackCount(report)).toBe(1);
       expect(report).toContain(BREACHING_ENTRY_POINT);
+    },
+  );
+
+  it(
+    "fails a project whose own exclude left it nothing to be judged on",
+    { timeout: 120_000 },
+    async () => {
+      expect.hasAssertions();
+
+      const result = await gateExecutor(
+        buildOptions({ workspaceRoot }),
+        buildContext({
+          projectName: UNREAD_PROJECT_NAME,
+          workspaceRoot,
+        }),
+      );
+      const report = printed.join("");
+
+      expect(result).toStrictEqual({ success: false });
+      // The exact rendering, so the project this gate never read is named back
+      // rather than the reader being left to work out which one it was.
+      expect(report.trim()).toBe(reportUnreadProjects([UNREAD_PROJECT_ROOT]));
+      // And not the whole-run rule: this project's closure holds the breaching
+      // project, so the run read three callables and the old question — did
+      // the *run* read anything — answers yes. That is the door this closes.
+      expect(report).not.toContain(EMPTY_TRACE_REPORT);
+      expect(readDeepStackCount(report)).toBe(-1);
     },
   );
 });

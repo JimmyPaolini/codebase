@@ -319,6 +319,44 @@ export class ProjectReportsService {
   }
 
   /**
+   * Picks the named projects a run opened no file of its own from.
+   *
+   * The companion to `findOwnedFindings`, and the reason it needs one: owning
+   * no finding is what a clean project and an unread one look like from the
+   * outside, and a caller judging only the findings cannot tell them apart.
+   * The project's own `fileCount` is what separates them — `collect` counts a
+   * file per project once the run's exclusions and the per-project ones have
+   * had their say, so a project whose files were all filtered away reports
+   * zero however much the rest of the run read.
+   *
+   * **Files rather than callables**, which is the weaker of the two questions
+   * and the right one. A project can hold files that declare no callable at
+   * all — one whose `tsconfig.json` names only its own configuration files and
+   * its tests is the shape, and this repository has five — and those were
+   * read, so a verdict on them is a verdict on something. Asking for a
+   * callable would fail every one of them for containing no functions, which
+   * is not a finding about anything. The cost is stated plainly: a project
+   * whose sources are excluded while a configuration file of its own survives
+   * counts as read.
+   *
+   * A named project with no report at all counts as unread rather than as an
+   * error, the same way `findOwnedFindings` treats one: a run pointed at a
+   * project the workspace configuration excludes never discovers it, and that
+   * is exactly the case worth failing.
+   */
+  public findUnreadProjects(args: {
+    /** The projects entitled to fail on what they own. */
+    projectNames: readonly string[];
+    reports: readonly ProjectReport[];
+  }): string[] {
+    return args.projectNames.filter(
+      (projectName) =>
+        (args.reports.find((report) => report.projectName === projectName)
+          ?.summary.fileCount ?? 0) === 0,
+    );
+  }
+
+  /**
    * Picks the callables a run should fail on, widest first.
    *
    * A filter over the breadth reports the reports already hold, mirroring

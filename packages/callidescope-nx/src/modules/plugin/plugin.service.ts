@@ -23,6 +23,7 @@ import {
   EMPTY_TRACE_REPORT,
   PROJECT_CONFIGURATION_FILENAME,
   PROJECT_LIMITS_INPUT,
+  reportUnreadProjects,
 } from "./plugin.constants";
 
 import type { CallidescopePluginOptions } from "../options/options.types";
@@ -211,11 +212,14 @@ export class PluginService {
    * does not either. A dependency's breach is its own gate's business, and
    * `nx affected` selects it too when it changes, so nothing escapes a verdict.
    *
-   * **A run that read nothing fails**, the case `callidescope`'s own
-   * `reportEmptyTrace` fails for the same reason: a gate that passes because
-   * it never looked reports the project as clean. Asked of the whole run
-   * rather than of the narrowed findings, since an unread run has no owned
-   * finding to count.
+   * **A judged project none of whose own files were read fails**, the case
+   * `callidescope`'s own `reportEmptyTrace` fails for the same reason: a gate
+   * that passes because it never looked reports the project as clean. Asked of
+   * each judged project rather than of the whole run, because narrowing made
+   * those two different questions — a project with dependencies has a
+   * non-empty run whatever became of its own sources, so its own `exclude`
+   * over-matching would otherwise leave it owning no finding and passing
+   * green. The whole run is asked too, for a run judging no project at all.
    *
    * **Depth is judged always, breadth wherever a limit exists** — not two
    * modes to be selected between. `maximumDepth` has a default and
@@ -233,6 +237,19 @@ export class PluginService {
       projectNames: args.judgedProjectNames,
       reports: args.result.projects,
     });
+    const unreadProjectNames = this.projectReportsService.findUnreadProjects({
+      projectNames: args.judgedProjectNames,
+      reports: args.result.projects,
+    });
+
+    if (unreadProjectNames.length > 0) {
+      return {
+        findings,
+        ok: false,
+        reason: reportUnreadProjects(unreadProjectNames),
+      };
+    }
+
     if (args.result.summary.callableCount === 0) {
       return { findings, ok: false, reason: EMPTY_TRACE_REPORT };
     }

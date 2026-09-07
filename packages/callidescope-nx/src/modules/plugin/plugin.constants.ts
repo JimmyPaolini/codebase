@@ -43,13 +43,52 @@ export const PROJECT_LIMITS_INPUT = "{projectRoot}/callidescope.config.*";
 export const PLUGIN_CONTEXT_GLOBAL_KEY = "__callidescopePluginContext";
 
 /**
+ * What a gate prints when it read none of the code it was judging.
+ *
+ * The whole-run rule below cannot catch this one, and the difference is the
+ * dependency closure. A gate traces the projects its own imports reach and
+ * judges only the projects it was pointed at, so a project whose own sources
+ * were all excluded still has a non-empty run to show — its dependencies' —
+ * while owning no report content and therefore no finding. It would pass green
+ * over code nothing read, which is the failure the whole-run rule exists to
+ * prevent arriving through a second door.
+ *
+ * Files rather than callables, for the reason
+ * `ProjectReportsService.findUnreadProjects` states: a project can legitimately
+ * hold files that declare no callable, and those were read.
+ *
+ * Named rather than counted, because the projects a run judges are not always
+ * the one the task is named after: `--projects` may name several, and a reader
+ * needs to know which of them the run never opened.
+ */
+export const reportUnreadProjects = (projectNames: readonly string[]): string =>
+  [
+    "## Read nothing of its own (0 files)",
+    "",
+    `This gate judged ${projectNames.length === 1 ? "a project" : "projects"} whose own code it never read:`,
+    "",
+    ...projectNames.map((projectName) => `- \`${projectName}\``),
+    "",
+    "It fails rather than passing: a gate that never looked cannot tell a",
+    "clean project from an unread one. The run itself was not empty — the",
+    "dependencies it traced were read — so only the judged project's own",
+    "sources went missing.",
+    "",
+    "Check `exclude` and `excludeFrom` in the workspace callidescope",
+    "configuration and `exclude` in the project's own `callidescope.config.*`",
+    "for a pattern matching everything that project holds, and check that the",
+    "project still holds sources its `tsconfig.json` includes.",
+  ].join("\n");
+
+/**
  * What a gate prints when the run it judged read no code at all.
  *
  * A gate that passes because it never looked reports the project as clean and
  * leaves nothing in the output to say otherwise, which is why the
- * `callidescope` command fails the same case. It is reachable here through an
- * `exclude` that over-matches — a project's own `callidescope.config.*` can
- * write one — and through a dependency closure whose sources are all excluded.
+ * `callidescope` command fails the same case. Reached when a run judges no
+ * project of its own — every scoped run is answered by `reportUnreadProjects`
+ * above, which names what went unread instead of only saying that something
+ * did.
  */
 export const EMPTY_TRACE_REPORT = [
   "## Traced nothing (0 callables)",

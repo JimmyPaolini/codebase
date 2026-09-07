@@ -131,12 +131,16 @@ describe(PluginService, () => {
    * The findings are answered twice: as the whole run's, and as what the
    * projects in scope own. A verdict reads only the second, so a test can set
    * them apart and pin which one decided it.
+   *
+   * Every judged project is answered as read, so a case that means to fail on
+   * something else is not failed by the unread rule first.
    */
   function stubOutcome(args: {
     callableCount: number;
     deepStacks: DeepStackFinding[];
     wideCallables: WideCallableFinding[];
   }): void {
+    projectReportsService.findUnreadProjects.mockReturnValue([]);
     callidescopeService.trace.mockResolvedValue(
       createMock<TraceOutcome>({
         projectLimits: LIMITS,
@@ -646,6 +650,27 @@ describe(PluginService, () => {
       ).resolves.toStrictEqual({ ok: true, report: "# Report" });
     });
 
+    it("fails a trace whose judged project had none of its own files read", async () => {
+      expect.hasAssertions();
+
+      stubTrace();
+      projectReportsService.findUnreadProjects.mockReturnValue([
+        "packages/alpha",
+      ]);
+
+      // Judged by the same predicate the gate is, so one project's two targets
+      // cannot come to disagree about whether it was measured at all.
+      const result = await service.runTrace({
+        directories: ["packages/alpha", "packages/beta"],
+        judgedProjectNames: ["packages/alpha"],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(result.ok).toBe(false);
+      expect(result.report).toContain("# Report");
+      expect(result.report).toContain("Read nothing of its own");
+    });
+
     it("says under the report why a run that read nothing failed", async () => {
       expect.hasAssertions();
 
@@ -749,6 +774,52 @@ describe(PluginService, () => {
       expect(result.report).toBe(EMPTY_TRACE_REPORT);
       expect(result.report).toContain("Traced nothing (0 callables)");
       expect(markdownReportService.renderFindings).not.toHaveBeenCalled();
+    });
+
+    it("fails a gate that opened none of its own project's files", async () => {
+      expect.hasAssertions();
+
+      // The whole run is not empty — a project with dependencies always has
+      // theirs to show — so the run-wide rule above cannot reach this. What
+      // went missing is the judged project's own files, which is what leaves
+      // it owning no finding and passing green over code nothing read.
+      stubGate();
+      projectReportsService.findUnreadProjects.mockReturnValue([
+        "packages/alpha",
+      ]);
+
+      const result = await service.runGate({
+        directories: ["packages/alpha", "packages/beta"],
+        judgedProjectNames: ["packages/alpha"],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(result.ok).toBe(false);
+      expect(result.report).toContain("Read nothing of its own");
+      // Named rather than counted: `--projects` may judge several, and a
+      // reader needs to know which of them the run never opened.
+      expect(result.report).toContain("packages/alpha");
+      expect(markdownReportService.renderFindings).not.toHaveBeenCalled();
+    });
+
+    it("asks whether the projects it judges were read, not whether the run was", async () => {
+      expect.hasAssertions();
+
+      stubGate();
+
+      await service.runGate({
+        directories: ["packages/alpha", "packages/beta"],
+        judgedProjectNames: ["packages/alpha"],
+        workspaceRoot: "/workspace",
+      });
+
+      // The selection and the run's own reports: a project's own `fileCount`
+      // is the only thing that separates a clean project from an unread one,
+      // and it lives on that project's report.
+      expect(projectReportsService.findUnreadProjects).toHaveBeenCalledWith({
+        projectNames: ["packages/alpha"],
+        reports: REPORTS,
+      });
     });
 
     it("reports only the findings, never the whole run", async () => {

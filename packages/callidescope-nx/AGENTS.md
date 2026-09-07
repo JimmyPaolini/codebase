@@ -14,9 +14,10 @@ from, and the only one a project the workspace configuration **excludes** does
 not get: its own code is never traced, so a gate there would own no finding at
 all. Both `gate` and `trace` **trace** the dependencies and **judge** only the
 projects they were scoped to, so a dependency's breach fails the dependency's
-own gate rather than every task downstream of it. A gate that read no code
-fails rather than passing, because a verdict on nothing is not a clean
-project. This is the
+own gate rather than every task downstream of it. A gate that opened none of
+the judged project's own files fails rather than passing, because a verdict on
+nothing is not a clean project — asked per project rather than of the whole
+run, since a project with dependencies always has theirs to show. This is the
 only package in the callidescope toolchain that depends on `@nx/devkit`:
 `@callidescope/cli` and `@callidescope/graph` are deliberately Nx-free and take
 plain `--directories`.
