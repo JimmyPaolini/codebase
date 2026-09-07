@@ -447,13 +447,13 @@ describe(MeanderGenerationService, () => {
     // maximum, so its upper edge is pinned against the same row count the
     // drawing has: one ply past it is refused and the ply that equals it is
     // drawn. A bound read off `MAXIMUM_VALUE` instead would accept both.
-    //
+
     // Its lower edge is `MINIMUM_STRANDS`, which is 1 — so 0 is refused and
     // 1 is not. A single-strand ply used to be refused here too, on the
     // argument that a family named for parallel strands needs two of them;
     // that argument was about the name rather than the geometry, and the
     // constant's own doc comment now says so.
-    //
+
     // Swept over all three ply-carrying modifiers rather than `plied` alone,
     // because the bound is a property of the count and not of the shape the
     // count is drawn as.
@@ -1061,7 +1061,7 @@ describe(MeanderGenerationService, () => {
   // family rather than the six that existed when the defect was found —
   // each one out to its own ceiling, which is 12 for every family but
   // `mosaic`, whose exhaustively enumerated space stops at 6.
-  //
+
   // This is deliberately a rendered measurement. A drawing that *emits*
   // proves nothing here — every family emitted at every row count through
   // 12 while the defect was live, and reading that as "it works" is exactly

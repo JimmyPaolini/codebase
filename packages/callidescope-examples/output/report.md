@@ -6,7 +6,7 @@
 | --- | --- |
 | Callables | 230 |
 | Files | 81 |
-| Calls traced | 196 |
+| Calls traced | 200 |
 | Call stacks | 76 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
@@ -118,7 +118,7 @@
              ↳ Reads a limit's value, in decimal units when it was written as a string.
             └─> ConfigurationService.parseLimitValueText(metric: string, text: string): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:100]
                ↳ Reads a limit written as a string, unit and all.
-              └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:492]
+              └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:496]
 ```
 
 **5. `FrameAnnotationsService.trace`** — depth 7 · orphan-root

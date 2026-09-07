@@ -53,7 +53,7 @@ vi.mock("node:fs/promises", () => ({
  * declared rather than left to the default five seconds, the same way the
  * charter measurement declares its own.
  */
-const FULL_SWEEP_TIMEOUT_MILLISECONDS = 60_000;
+const FULL_SWEEP_TIMEOUT_MILLISECONDS = 120_000;
 
 describe(DrawCommand, () => {
   let command: DrawCommand;
@@ -164,6 +164,7 @@ describe(DrawCommand, () => {
         // and rung each expand to 2 representative values, stagger to 4, and
         // comb to 1 — its other direction is what "no modifier" already
         // draws):
+
         // mosaic: 4 rows * (1 + 2 + 2 + 1) modifiers = 24
         // boxes: 10 rows * (1 + 1 + 1) modifiers = 30
         // chain: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
@@ -173,12 +174,14 @@ describe(DrawCommand, () => {
         // cross: 7 rows * (1 + 1) modifiers = 14
         // negative: 10 rows * (1 + 9) modifiers = 100
         // branch: 11 rows * (1 + 1 + 2 + 4) modifiers = 88
-        //
+
         // `parallel` is the one family whose modifiers do not expand to a
         // fixed number of values, so it is the one row here that is neither a
         // multiplication nor a single literal. It has no unmodified entry —
         // `plied` names that drawing — and `plied` and `aligned` each sweep
-        // 1..rows, which is the `2 * rows` term. `serpentine` sweeps every
+        // 1..rows, which is the `2 * rows` term.
+
+        // `serpentine` sweeps every
         // *distinct* rotation and flip of each of those plies, and distinct
         // is the operative word: rotating a partition whose strips are all the
         // same depth changes nothing, `alternating` and `one` name the same

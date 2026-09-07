@@ -663,7 +663,7 @@ Call stacks traced through `packages/codometer-cli`, deepest first. Each frame s
                  ↳ Reads a limit's value, in decimal units when it was written as a string.
                 └─> ConfigurationService.parseLimitValueText(metric: string, text: string): number [packages/codometer-configuration/src/modules/configuration/configuration.service.ts:100]
                    ↳ Reads a limit written as a string, unit and all.
-                  └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:492]
+                  └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:496]
 ```
 
 <details>

@@ -6,6 +6,28 @@ import type {
 } from "../mosaic-motif/mosaic-motif.types";
 
 /**
+ * How a corner tile's **lanes** read — a lane being one pair of levels its
+ * southward edges join, which for a tile whose every point turns a corner is
+ * the only way those edges can fall.
+ *
+ * `closed` when every lane repeats the columns its horizontal runs start in,
+ * so each lane's ink turns back on itself and shuts into squares inside
+ * the repeat; `stepped` when every lane offsets them instead, so each lane's
+ * ink turns the opposite way at every level and walks out of the repeat into
+ * the next. They are the question `square` and `zigzag` differ on, which is
+ * why it is one answer with two halves rather than two predicates.
+ *
+ * Both are false for a tile that *mixes* the two, closing in one lane and
+ * stepping in another, and both are false for a tile with no lane at all.
+ * That is what makes the two halves disjoint whatever they are asked of,
+ * rather than only over the tiles a corner rule admits.
+ */
+export interface MosaicCornerLanes {
+  readonly closed: boolean;
+  readonly stepped: boolean;
+}
+
+/**
  * One rule that earns a tile a name: the name, and the predicate over the
  * tile's own structure that a tile must satisfy to be called it.
  *

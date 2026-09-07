@@ -350,7 +350,7 @@ describe(BranchMotifService, () => {
     // one short of it, over a single component, is exactly a tree: a
     // connected figure with a loop would need at least as many edges as
     // nodes.
-    //
+
     // `freeEnds` is the fourth number and it is not structural. It is what
     // keeps the figure reading as a meander rather than as a grille, and it
     // is the column the README's unbounded-branching write-up compares

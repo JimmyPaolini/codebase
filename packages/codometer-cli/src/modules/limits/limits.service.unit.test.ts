@@ -53,6 +53,7 @@ function buildConfiguration(
   defaultTarget?: string,
 ): ResolvedCodometerConfiguration {
   return {
+    css: { comments: undefined },
     defaultTarget,
     documentation: {
       kinds: {},
@@ -63,13 +64,16 @@ function buildConfiguration(
     },
     exclude: [],
     excludeFrom: [],
+    hcl: { comments: undefined },
     limits,
     output: { json: undefined, markdown: undefined },
     python: { command: "python3", comments: undefined },
     shell: { comments: undefined },
+    sql: { comments: undefined },
     statistics: [],
     targets: [],
     toml: { comments: undefined },
+    typescript: { comments: undefined },
     yaml: { comments: undefined },
   };
 }

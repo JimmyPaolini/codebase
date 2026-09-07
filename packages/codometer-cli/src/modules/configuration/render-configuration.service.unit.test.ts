@@ -81,14 +81,17 @@ describe(RenderConfigurationService, () => {
       described: [
         {
           configuration: {
+            css: { comments: undefined },
             defaultTarget: undefined,
             documentation: undefined,
             exclude: [],
             excludeFrom: [".codometerignore"],
+            hcl: { comments: undefined },
             limits: [],
             output: { json: undefined, markdown: undefined },
             python: { command: "uv run python", comments: undefined },
             shell: { comments: undefined },
+            sql: { comments: undefined },
             statistics: [
               {
                 color: "166534",
@@ -108,6 +111,7 @@ describe(RenderConfigurationService, () => {
               },
             ],
             toml: { comments: undefined },
+            typescript: { comments: undefined },
             yaml: { comments: undefined },
           } satisfies ResolvedCodometerConfiguration,
           directory: "packages/logger",

@@ -6,7 +6,11 @@ import { Injectable } from "@nestjs/common";
 import { LoggerService } from "@codebase/logger";
 
 import { CommentsService } from "./comments.service";
+import { CssCommentsService } from "./css-comments.service";
 import { HashCommentsService } from "./hash-comments.service";
+import { HclCommentsService } from "./hcl-comments.service";
+import { SqlCommentsService } from "./sql-comments.service";
+import { TypescriptCommentsService } from "./typescript-comments.service";
 import { YamlCommentsService } from "./yaml-comments.service";
 
 import type {
@@ -34,8 +38,12 @@ export class LanguageCommentsService {
 
   constructor(
     private readonly comments: CommentsService,
+    private readonly cssComments: CssCommentsService,
     private readonly hashComments: HashCommentsService,
+    private readonly hclComments: HclCommentsService,
     private readonly logger: LoggerService,
+    private readonly sqlComments: SqlCommentsService,
+    private readonly typescriptComments: TypescriptCommentsService,
     private readonly yamlComments: YamlCommentsService,
   ) {
     this.logger.setContext(LanguageCommentsService.name);
@@ -51,7 +59,7 @@ export class LanguageCommentsService {
   private measureLanguage(args: {
     comments: ResolvedCodometerLanguageCommentsConfiguration | undefined;
     files: readonly string[];
-    read: (content: string) => CommentToken[];
+    read: (content: string, filePath: string) => CommentToken[];
     workingDirectory: string;
   }): CommentMeasurement[] {
     if (args.comments === undefined) {
@@ -71,7 +79,7 @@ export class LanguageCommentsService {
         ...this.comments.measure({
           comments: args.comments,
           filePath,
-          tokens: args.read(content),
+          tokens: args.read(content, filePath),
         }),
       );
     }
@@ -135,6 +143,18 @@ export class LanguageCommentsService {
       this.hashComments.read(content);
 
     return [
+      ...this.measureLanguage({
+        comments: configuration.css.comments,
+        files: files.cssFiles,
+        read: (content) => this.cssComments.read(content),
+        workingDirectory,
+      }),
+      ...this.measureLanguage({
+        comments: configuration.hcl.comments,
+        files: files.hclFiles,
+        read: (content) => this.hclComments.read(content),
+        workingDirectory,
+      }),
       ...this.measurePython(configuration.python.comments, args.pythonComments),
       ...this.measureLanguage({
         comments: configuration.shell.comments,
@@ -143,9 +163,22 @@ export class LanguageCommentsService {
         workingDirectory,
       }),
       ...this.measureLanguage({
+        comments: configuration.sql.comments,
+        files: files.sqlFiles,
+        read: (content) => this.sqlComments.read(content),
+        workingDirectory,
+      }),
+      ...this.measureLanguage({
         comments: configuration.toml.comments,
         files: files.tomlFiles,
         read: readHash,
+        workingDirectory,
+      }),
+      ...this.measureLanguage({
+        comments: configuration.typescript.comments,
+        files: files.sourceFiles,
+        read: (content, filePath) =>
+          this.typescriptComments.read(content, filePath),
         workingDirectory,
       }),
       ...this.measureLanguage({

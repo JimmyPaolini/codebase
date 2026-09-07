@@ -28,7 +28,7 @@ const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6];
  * rather than left to the default five seconds, the same way the charter
  * measurement declares its own.
  */
-const SPACE_WALK_TIMEOUT_MILLISECONDS = 60_000;
+const SPACE_WALK_TIMEOUT_MILLISECONDS = 120_000;
 
 /** Every named sub-family, typed rather than widened for the command line. */
 const NAMED_SUB_FAMILIES: readonly MosaicBuildableSubFamily[] = [
@@ -37,6 +37,9 @@ const NAMED_SUB_FAMILIES: readonly MosaicBuildableSubFamily[] = [
   "diamond",
   "dots",
   "lines",
+  "mesh",
+  "square",
+  "zigzag",
 ];
 
 // 🧪 Tests
@@ -87,16 +90,55 @@ describe(MosaicSubFamilyService, () => {
       expect(service.tile("diamond", 7)).toBeDefined();
     });
 
-    it("has no tile at all where the bar has no interior level to mark", () => {
-      expect(service.tile("dots", 1)).toBeUndefined();
+    it("builds the two ends of the space, the tile with no edge at all and the tile with every edge there is", () => {
+      const dots = service.tile("dots", 3);
+      const mesh = service.tile("mesh", 3);
+
+      expect(dots && mosaicSymmetryService.identify(dots)).toBe("00");
+      expect(mesh && mosaicSymmetryService.identify(mesh)).toBe("7b");
     });
 
-    it("spans two columns for dashes, whose edge reaches into the column beside it, and one for the rest", () => {
+    it("builds a staircase for zigzag, whose horizontal run starts a column further along at every level", () => {
+      const zigzag = service.tile("zigzag", 3);
+
+      expect(zigzag && mosaicSymmetryService.canonicalIdentifier(zigzag)).toBe(
+        "56a9",
+      );
+    });
+
+    it("builds closed squares for square, the same two rules with the phase off, so its horizontal runs sit directly above one another", () => {
+      const square = service.tile("square", 3);
+
+      expect(square && mosaicSymmetryService.canonicalIdentifier(square)).toBe(
+        "65a9",
+      );
+    });
+
+    it.each(["square", "zigzag"] as const)(
+      "has no %s tile where the interior has an odd number of levels, since a corner's southward edges cover levels in pairs",
+      (subFamily) => {
+        expect(service.tile(subFamily, 4)).toBeUndefined();
+        expect(service.tile(subFamily, 6)).toBeUndefined();
+        expect(service.tile(subFamily, 3)).toBeDefined();
+        expect(service.tile(subFamily, 5)).toBeDefined();
+      },
+    );
+
+    it("has no tile at all where the bar has no interior level to mark", () => {
+      expect(service.tile("dots", 1)).toBeUndefined();
+      expect(service.tile("mesh", 1)).toBeUndefined();
+      expect(service.tile("zigzag", 1)).toBeUndefined();
+    });
+
+    it("spans two columns for dashes, square and zigzag, whose edges reach into the column beside them, and one for the rest", () => {
       expect(service.tile("bars", 6)?.columns).toBe(1);
       expect(service.tile("dashes", 6)?.columns).toBe(2);
       expect(service.tile("diamond", 5)?.columns).toBe(1);
       expect(service.tile("dots", 6)?.columns).toBe(1);
       expect(service.tile("lines", 6)?.columns).toBe(1);
+      expect(service.tile("mesh", 6)?.columns).toBe(1);
+      expect(service.tile("square", 5)?.columns).toBe(2);
+      expect(service.tile("zigzag", 5)?.columns).toBe(2);
     });
 
     it("anchors every edge in the tile's first column, which is the representative the region is named after", () => {

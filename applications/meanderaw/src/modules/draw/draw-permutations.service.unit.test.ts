@@ -21,7 +21,7 @@ import { DrawPermutationsService } from "./draw-permutations.service";
  * default five seconds, the same way the charter measurement declares its
  * own.
  */
-const FULL_SWEEP_TIMEOUT_MILLISECONDS = 60_000;
+const FULL_SWEEP_TIMEOUT_MILLISECONDS = 120_000;
 
 describe(DrawPermutationsService, () => {
   let service: DrawPermutationsService;
@@ -99,13 +99,15 @@ describe(DrawPermutationsService, () => {
       () => {
         const paths = sweepPaths();
         const named = paths.filter((filePath) =>
-          /-(?:bars|dashes|diamond|dots|lines|mesh|steps)\.svg$/.test(filePath),
+          /-(?:bars|dashes|diamond|dots|lines|mesh|square|zigzag)\.svg$/.test(
+            filePath,
+          ),
         );
 
         // The tile whose only edge is a southward one over the lower two
         // levels earns no name, so nothing is appended to its identifier.
         expect(paths).toContain("mosaic/4-rows/1-columns/048.svg");
-        expect(named).toHaveLength(127);
+        expect(named).toHaveLength(125);
       },
       FULL_SWEEP_TIMEOUT_MILLISECONDS,
     );

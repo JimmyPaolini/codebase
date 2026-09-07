@@ -8,6 +8,7 @@ import type {
   MosaicTile,
 } from "../mosaic-motif/mosaic-motif.types";
 import type {
+  MosaicCornerLanes,
   MosaicNamingRule,
   MosaicUnbrokenRuns,
 } from "./mosaic-naming.types";
@@ -34,7 +35,10 @@ import type {
  *   space, and the rules are written to be exclusive by construction: each
  *   one requires the *absence* of the directions the others are about, so
  *   they stay disjoint at any degree rather than only where a point can
- *   carry one edge.
+ *   carry one edge. `zigzag` and `square` are the one pair that cannot
+ *   separate that way, since every point turns a corner in both — so they
+ *   split on {@link MosaicCornerLanes} instead, whose two halves are false
+ *   together rather than true together whenever a tile is neither.
  */
 @Injectable()
 export class MosaicNamingService {
@@ -50,6 +54,49 @@ export class MosaicNamingService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * How each of a tile's lanes reads, a lane being one pair of levels joined
+   * by southward edges.
+   *
+   * Reading the lanes off as level pairs `(0, 1)`, `(2, 3)`, … is not a
+   * simplification of where southward edges may sit; for a tile whose every
+   * point turns a corner it is the only place they can sit. A point's `north`
+   * is the edge above it and its `south` the edge below, so exactly one
+   * vertical bit per point forces the edges down a column to run on, off, on,
+   * off — and the first level, having no `north`, has to start that run on.
+   * So levels pair up from the top and no southward edge ever joins one pair
+   * to another. Both rules that read this are conjoined with the corner
+   * predicate, so nothing else is ever asked.
+   *
+   * What is left free is the horizontal grid, one independent choice per
+   * level: exactly one horizontal bit per point makes each level's eastward
+   * edges a run of alternating columns, and the only choice is which columns
+   * it starts on. A lane whose lower level repeats its upper level's choice
+   * closes into squares; a lane that offsets it steps sideways. Comparing
+   * the two rows is therefore the whole question, and it is asked of the rows
+   * rather than of a component count because a component count cannot answer
+   * it — at two columns a closed square and a step that leaves the repeat
+   * are the same four-cycle, differing only in *which* of its edges is the
+   * one that wraps. `README.md` works that through.
+   */
+  private cornerLanes(tile: MosaicTile): MosaicCornerLanes {
+    const { horizontal } = this.mosaicTileService.edges(tile);
+    const repeated = Array.from(
+      { length: Math.floor(horizontal.length / 2) },
+      (_lane, lane) => {
+        const upper = horizontal[lane * 2] ?? [];
+        const lower = horizontal[lane * 2 + 1] ?? [];
+
+        return upper.every((marked, column) => marked === lower[column]);
+      },
+    );
+
+    return {
+      closed: repeated.length > 0 && !repeated.includes(false),
+      stepped: repeated.length > 0 && !repeated.includes(true),
+    };
+  }
 
   /** Whether every point of a tile satisfies `predicate`. */
   private everyPoint(
@@ -134,7 +181,7 @@ export class MosaicNamingService {
    * tile satisfying two of them is a defect rather than a precedence
    * question.
    *
-   * Six of the seven come in pairs, and the pairing is what the earlier rule
+   * All eight come in pairs, and the pairing is what the earlier rule
    * set got wrong. Ink running **across** the band is either a continuous
    * rule at every level (`lines`) or broken somewhere (`dashes`); ink
    * running **down** it is either a continuous bar in every column (`bars`)
@@ -144,20 +191,33 @@ export class MosaicNamingService {
    * rules was called `dashes`. Whether the run is broken is the question,
    * and it is asked of the edges rather than of the points.
    *
-   * The other two are the ends of the space rather than a pair. `dots` is
-   * the tile with no edge at all and `mesh` the tile with every edge; each
-   * is one tile per shape, and between them they are what the family looks
-   * like at its two extremes.
+   * `dots` and `mesh` are the ends of the space: the tile with no edge at all
+   * and the tile with every edge, each one tile per shape, and between them
+   * what the family looks like at its two extremes.
    *
-   * `steps` is the only rule about a point's *shape* rather than about which
-   * directions a tile uses. Every point turning a corner is a staircase, and
-   * it is the closest thing in the space to the fret the project is named
-   * after. It is empty at a single column, where a point's eastward edge
+   * `zigzag` and `square` are the fourth pair, and the only pair about a
+   * point's *shape* rather than about which directions a tile uses. Every
+   * point turns a corner in both, which is why they were one rule until the
+   * drawings were looked at: a corner tile is always a disjoint union of
+   * loops, and it is where each loop *closes* that separates the two. A lane
+   * whose levels offset their horizontal runs steps out of the repeat and into
+   * the next, so the drawing is one staircase per lane marching sideways —
+   * the closest thing in the space to the fret the project is named after. A
+   * lane whose levels repeat them turns the ink back on itself, so it shuts
+   * inside the repeat and the drawing is a row of separated square
+   * loops. Both are empty at a single column, where a point's eastward edge
    * wraps onto itself and gives it two horizontal bits rather than one.
+   *
+   * A corner tile that closes in one lane and steps in another satisfies
+   * neither and keeps its bit string, which is the same answer a tile mixing
+   * horizontal and vertical ink already got. Two tiles in the enumerated space
+   * are like this.
    */
   rules(): readonly MosaicNamingRule[] {
     const bare = (tile: MosaicTile): boolean =>
       this.everyPoint(tile, (point) => this.mosaicTileService.isBare(point));
+    const corner = (tile: MosaicTile): boolean =>
+      this.everyPoint(tile, (point) => this.isCorner(point));
     const horizontal = (tile: MosaicTile): boolean =>
       this.everyPoint(tile, (point) => this.isHorizontal(point));
     const vertical = (tile: MosaicTile): boolean =>
@@ -190,9 +250,12 @@ export class MosaicNamingService {
         name: "mesh",
       },
       {
-        matches: (tile) =>
-          this.everyPoint(tile, (point) => this.isCorner(point)),
-        name: "steps",
+        matches: (tile) => corner(tile) && this.cornerLanes(tile).stepped,
+        name: "zigzag",
+      },
+      {
+        matches: (tile) => corner(tile) && this.cornerLanes(tile).closed,
+        name: "square",
       },
     ];
   }

@@ -7,8 +7,12 @@ export type {
   CommentMeasurement,
   CommentToken,
 } from "./modules/comments/comments.types";
+export { CssCommentsService } from "./modules/comments/css-comments.service";
 export { HashCommentsService } from "./modules/comments/hash-comments.service";
+export { HclCommentsService } from "./modules/comments/hcl-comments.service";
 export { LanguageCommentsService } from "./modules/comments/language-comments.service";
+export { SqlCommentsService } from "./modules/comments/sql-comments.service";
+export { TypescriptCommentsService } from "./modules/comments/typescript-comments.service";
 export { YamlCommentsService } from "./modules/comments/yaml-comments.service";
 export { CssModule } from "./modules/css/css.module";
 export { CssService } from "./modules/css/css.service";

@@ -13,7 +13,7 @@ export default [
   // repository's own rules forbid — so linting them would either force them to
   // stop demonstrating what they demonstrate or bury them under suppression
   // comments, which is the one thing this repository never does.
-  //
+
   // The pattern is what draws the line: one level under `examples/` is the
   // rendered guide and its JSON exports, which stay in scope, and two levels
   // down is the subject, which does not. That is why the committed

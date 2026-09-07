@@ -190,7 +190,7 @@ describe(DrawCombinationsService, () => {
 
     // 🎯 The two figures README.md's discarded-density argument rests on,
     // pinned to the sweep they describe instead of counted by hand.
-    //
+
     // "The 56 combinations the sweep would want" are the six original
     // families' distinct family/rows pairs — the space a
     // `strokeWidth = unit / (2N)` proposal would have had to cover. That
@@ -200,7 +200,7 @@ describe(DrawCombinationsService, () => {
     // inside the shared `MAXIMUM_VALUE` — 36 of them, every pair from 7
     // rows up in every family that reaches them — which `mosaic` no longer
     // does, its own ceiling being 6.
-    //
+
     // That count was 8 until issue #507 was fixed, on a stricter criterion
     // that no longer applies: four of those eight sat *inside* the maximum,
     // so degeneracy rather than the ceiling was what ruled the proposal out.

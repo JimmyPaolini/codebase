@@ -336,19 +336,19 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-252626-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-13.77_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-622-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-2035-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-254301-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-14.03_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-623-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-2036-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1982-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-779-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1983-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-780-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-33-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-1073-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-5477-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-1074-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-5501-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-15-166534?style=flat-square)
 
 ### JavaScript
@@ -356,16 +356,16 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-14-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-484-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-123-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-686-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-10530-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-3823-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-12116-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-2237-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-13449-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-8451-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2640-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-11289-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-25803-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-687-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-10600-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-3835-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-12183-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-2252-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-13538-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-8458-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2646-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-11357-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-26042-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-29-ca8a04?style=flat-square)
 
 ### Python
@@ -386,16 +386,16 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-234-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-17321-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-3160-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1165-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-9618-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-6979-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-600-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1004-0ea5e9?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-21434-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-3901-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1438-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-12366-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-8247-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1030-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1466-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-3063-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-12908-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-3489-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-16082-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
@@ -512,24 +512,24 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-270-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-73585-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-254-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-1794-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-2277-a78bfa?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-271-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-74133-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-255-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-1800-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-2280-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-98-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-10980-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-1218-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-5592-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-11050-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-1222-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-5602-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-643-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-6669-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-1878-059669?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-647-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-6694-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-1903-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-7907-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-2072-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-29150-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-2080-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-29328-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-34-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
@@ -542,13 +542,13 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 
 | Measure | Value |
 | --- | --- |
-| Callables | 4942 |
-| Files | 1373 |
-| Calls traced | 5633 |
-| Call stacks | 1275 |
+| Callables | 5021 |
+| Files | 1379 |
+| Calls traced | 5719 |
+| Call stacks | 1291 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 357 |
+| Unfollowable calls | 363 |
 
 ### Projects
 
@@ -575,8 +575,8 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 | `packages/conformetry-python` | 6 | 17 inherited | 11 | 6 | 0 | 0 |
 | `packages/callidescope-configuration` | 5 | 17 inherited | 12 | 8 | 0 | 0 |
 | `packages/callidescope-graph` | 5 | 17 inherited | 12 | 9 | 0 | 0 |
+| `packages/codometer-languages` | 5 | 17 inherited | 12 | 12 | 1 | 0 |
 | `packages/callidescope-output` | 4 | 17 inherited | 13 | 9 | 0 | 0 |
-| `packages/codometer-languages` | 4 | 17 inherited | 13 | 12 | 1 | 0 |
 | `packages/codometer-output` | 4 | 17 inherited | 13 | 16 | 0 | 0 |
 | `packages/logger` | 4 | 17 inherited | 13 | 2 | 0 | 0 |
 | `configuration` | 3 | 17 inherited | 14 | 2 | 0 | 0 |
@@ -669,8 +669,8 @@ None.
 | `MotifTransformsService.alternate` | `applications/meanderaw:modules/motif-transforms` | `applications/meanderaw:modules/mosaic-motif` | 2/2 |
 | `MotifTransformsService.columnSpans` | `applications/meanderaw:modules/motif-transforms` | `applications/meanderaw:modules/mosaic-motif` | 2/2 |
 | `MotifTransformsService.dotLevels` | `applications/meanderaw:modules/motif-transforms` | `applications/meanderaw:modules/mosaic-motif` | 2/2 |
-| `MosaicTilesService.enumerate` | `applications/meanderaw:modules/mosaic-motif` | `applications/meanderaw:modules/draw` | 2/2 |
 | `MeanderLatticeService.build` | `applications/meanderaw:modules/meander-lattice` | `applications/meanderaw:modules/meander-topology` | 2/2 |
+| `MosaicTilesService.enumerate` | `applications/meanderaw:modules/mosaic-motif` | `applications/meanderaw:modules/draw` | 2/2 |
 | `runAddressExecutor` | `packages/callidescope-nx:modules/address` | `packages/callidescope-nx:executors` | 2/2 |
 | `BoundariesService.evaluate` | `packages/codependix-boundaries:modules/boundaries` | `packages/codependix-boundaries:modules/boundary-check` | 2/2 |
 

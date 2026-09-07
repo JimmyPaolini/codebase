@@ -6,12 +6,24 @@ import type {
 } from "./mosaic-motif.types";
 
 /**
- * The tile each sub-family is named for, as the rule that builds it. A
+ * The tile each sub-family is named for, as the rules that build it. A
  * region holds every tile its predicate accepts, so this is the region's
  * aligned representative rather than its only member.
  *
- * `bars` and `diamond` are the same direction at two level steps, which is
- * the whole difference between an unbroken vertical bar and a dashed one.
+ * Read down the two rule columns and the family's pairings are one number
+ * apart. `bars` and `diamond` are the same southward rule at two level
+ * steps, which is the whole difference between an unbroken vertical bar and
+ * a dashed one; `lines` and `dashes` are the same eastward rule at two
+ * column steps. `dots` has no rule at all and `mesh` has both at every step
+ * of one, which is why those two are the ends of the space rather than a
+ * pair.
+ *
+ * `zigzag` is the only entry needing both a rule and a phase, and it is the
+ * only one whose two rules disagree: `diamond`'s southward period in every
+ * column rather than the first, under an eastward rule whose column offset
+ * moves along by one at every level. That phase is what turns the ink at
+ * every point instead of closing it into a box, and `MosaicEdgeRule` is
+ * where it is explained.
  *
  * `MosaicSubFamilyService`'s round-trip test is what keeps a shape and the
  * predicate that recognizes it agreeing.
@@ -20,11 +32,42 @@ export const MOSAIC_SUB_FAMILY_SHAPES: Record<
   MosaicBuildableSubFamily,
   MosaicSubFamilyShape
 > = {
-  bars: { columns: 1, direction: "south", levelStep: 1 },
-  dashes: { columns: 2, direction: "east", levelStep: 1 },
-  diamond: { columns: 1, direction: "south", levelStep: 2 },
-  dots: { columns: 1, direction: undefined, levelStep: 1 },
-  lines: { columns: 1, direction: "east", levelStep: 1 },
+  bars: {
+    columns: 1,
+    horizontal: undefined,
+    vertical: { columnStep: 1, levelStep: 1, phased: false },
+  },
+  dashes: {
+    columns: 2,
+    horizontal: { columnStep: 2, levelStep: 1, phased: false },
+    vertical: undefined,
+  },
+  diamond: {
+    columns: 1,
+    horizontal: undefined,
+    vertical: { columnStep: 1, levelStep: 2, phased: false },
+  },
+  dots: { columns: 1, horizontal: undefined, vertical: undefined },
+  lines: {
+    columns: 1,
+    horizontal: { columnStep: 1, levelStep: 1, phased: false },
+    vertical: undefined,
+  },
+  mesh: {
+    columns: 1,
+    horizontal: { columnStep: 1, levelStep: 1, phased: false },
+    vertical: { columnStep: 1, levelStep: 1, phased: false },
+  },
+  square: {
+    columns: 2,
+    horizontal: { columnStep: 2, levelStep: 1, phased: false },
+    vertical: { columnStep: 1, levelStep: 2, phased: false },
+  },
+  zigzag: {
+    columns: 2,
+    horizontal: { columnStep: 2, levelStep: 1, phased: true },
+    vertical: { columnStep: 1, levelStep: 2, phased: false },
+  },
 };
 
 /**

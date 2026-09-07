@@ -6,7 +6,7 @@
 | --- | --- |
 | Callables | 230 |
 | Files | 81 |
-| Calls traced | 196 |
+| Calls traced | 200 |
 | Call stacks | 76 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |

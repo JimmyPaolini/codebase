@@ -274,7 +274,8 @@ at all leaves that check off rather than gating every comment against a number
 nobody chose.
 
 One vocabulary serves both. `comments` is the repository-wide budget for every
-language that has comments — Python, shell, TOML, and YAML:
+language that has comments — Python, shell, TOML, YAML, CSS, HCL, SQL, and
+TypeScript/JavaScript's non-JSDoc comments:
 
 ```ts
 comments: { maximumCharacters: 900, maximumLines: 24, maximumWords: 128 },
@@ -329,30 +330,51 @@ budgets the default set.
 
 ### Which languages
 
-| Language | Read by | Knows a `#` from a string? |
-| -------- | ------- | -------------------------- |
+| Language | Read by | Knows a comment marker from a string? |
+| -------- | ------- | -------------------------------------- |
 | Python | `tokenize`, in the analysis subprocess | **Yes** |
 | YAML | the `yaml` package's CST | **Yes** |
+| CSS | postcss's own parse | **Yes** |
+| TypeScript / JavaScript | the TypeScript compiler's scanner, non-JSDoc | **Yes** |
 | Shell, TOML | a line scanner | No |
-| TypeScript / JavaScript | the TypeScript compiler, via `documentation` | Yes, JSDoc only |
+| SQL | the same patterns `SqlService` counts keywords with | No |
+| HCL | a line scanner, plus a span match for `/* */` | No |
 
-The line scanner reads a `#` inside a string literal as a comment, exactly as
-those analyzers' own `comments` counters already do. Python and YAML are read
-by real tokenizers instead — Python because its analysis already runs one, and
-YAML because it puts quoted scalars beside `#` constantly. A `#!` shebang on
-the first line is never a comment in any of them.
+A real parser or tokenizer is used wherever the analyzer already has one —
+Python's `tokenize`, YAML's and CSS's own parse, the TypeScript compiler's
+scanner — so a comment marker inside a string is never mistaken for a real
+comment in any of those four. Shell, TOML, SQL, and HCL are read by a line
+scanner or the same patterns their own analyzers already strip comments with,
+which cannot tell the two apart; SQL's positions come from the identical
+patterns `SqlService` uses to count keywords, so the reading is not new, only
+the position is. A `#!` shebang on the first line is never a comment in any
+language.
+
+`typescript` measures every `//` and plain `/* */` comment; `documentation`
+measures only a documented declaration's JSDoc block, through a separate check
+described above. A JSDoc `/**` comment is never counted twice: `typescript`
+skips exactly the ones `documentation` already measures.
+
+`css`, `hcl`, `sql`, and `typescript` are declared the same way as `shell`,
+`toml`, and `yaml` — a `comments` key merged over the top-level default:
+
+```ts
+css: { comments: { maximumWords: 40 } },
+hcl: { comments: { maximumWords: 40 } },
+sql: { comments: { maximumWords: 40 } },
+typescript: { comments: { maximumWords: 40 } },
+```
 
 Every reader emits comments; none of them measures. That is what keeps one
 definition of a word across the tool rather than one per language.
 
-CSS, SQL, HCL, and non-JSDoc `//` runs are not measured yet — their comments
-span lines with delimiters, which needs more than a line scanner.
-
-A **block** is the run of `#` lines a reader takes as one thought. A blank line
-ends one, and a comment trailing a value is never part of the block above it —
-it is read with that value, not with the prose. Comments are read from the
-tokenizer rather than the text, so a `#` inside a quoted scalar stays a
-character in a string.
+A **block** is the run of comment lines a reader takes as one thought. A blank
+line ends one, and a comment trailing a value is never part of the block above
+it — it is read with that value, not with the prose. A `/* */` block spanning
+several lines is already one block on its own, whatever comment lines sit
+beside it: two of them written back to back merge the way two `#` lines do,
+but a genuinely multi-line block never merges with what follows, because
+nothing after it can start on the line right after where it _started_.
 
 The two are configured apart rather than as one number with a YAML kind. A
 JSDoc comment documents a declaration a caller will meet and a YAML comment
@@ -516,7 +538,7 @@ Call stacks traced through `packages/codometer-configuration`, deepest first. Ea
 | --- | --- |
 | Callables | 52 |
 | Files | 17 |
-| Calls traced | 50 |
+| Calls traced | 54 |
 | Call stacks | 4 |
 | Deepest stack | 2 |
 | Stacks through recursion | 0 |
@@ -535,15 +557,15 @@ Call stacks traced through `packages/codometer-configuration`, deepest first. Ea
 **2. `refine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:324]
-  └─> every(…)(kind: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:325]
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:325]
+  └─> every(…)(kind: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:326]
 ```
 
 **3. `superRefine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:438]
-  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:440]
+🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:441]
+  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:443]
 ```
 
 <details>
@@ -552,8 +574,8 @@ Call stacks traced through `packages/codometer-configuration`, deepest first. Ea
 **4. `refine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:465]
-  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:466]
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:468]
+  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:469]
 ```
 
 </details>
@@ -566,7 +588,7 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.resolveConfiguration` | 7 | `ConfigurationService.resolveDocumentation`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownOutput`, `ConfigurationService.resolveLanguageComments`, `ConfigurationService.resolveCustomStatistics`, `ConfigurationService.resolveTargets` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:388` |
+| `ConfigurationService.resolveConfiguration` | 7 | `ConfigurationService.resolveLanguageComments`, `ConfigurationService.resolveDocumentation`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownOutput`, `ConfigurationService.resolveCustomStatistics`, `ConfigurationService.resolveTargets` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:388` |
 | `ConfigurationLoaderService.load` | 5 | `ConfigurationLoaderService.findConfigurationFile`, `ConfigurationLoaderService.resolveConfigurationPath`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.applyRunContext`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:229` |
 | `ConfigurationService.map(…)` | 3 | `ConfigurationService.map(…)`, `ConfigurationService.filter(…)`, `ConfigurationService.filter(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:314` |
 
@@ -582,9 +604,9 @@ None.
 | `ConfigurationService.resolveLanguageComments` | 2 | `ConfigurationService.resolveComments`, `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:248` |
 | `ConfigurationService.loadConfigurationFile` | 2 | `ConfigurationLoaderService.load`, `ConfigurationService.resolveConfiguration` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:365` |
 | `callbackSchema` | 1 | `custom(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:280` |
-| `refine(…)` | 1 | `every(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:324` |
-| `superRefine(…)` | 1 | `some(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:438` |
-| `refine(…)` | 1 | `map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:465` |
+| `refine(…)` | 1 | `every(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:325` |
+| `superRefine(…)` | 1 | `some(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:441` |
+| `refine(…)` | 1 | `map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:468` |
 | `ConfigurationLoaderService.applyRunContext` | 1 | `ConfigurationLoaderService.isConfigurationFactory` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:54` |
 | `ConfigurationLoaderService.findRepositoryRoot` | 1 | `ConfigurationLoaderService.some(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:102` |
 | `ConfigurationService.parseLimitValueText` | 1 | `InvalidLimitValueError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:100` |

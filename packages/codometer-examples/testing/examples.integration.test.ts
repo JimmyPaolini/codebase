@@ -312,7 +312,7 @@ describe("every example configuration this package ships", () => {
       });
     });
 
-    it("measures every `#` language, and honours a language override", () => {
+    it("measures every language, and honours a language override", () => {
       const report = measureExample("documentation", "comments.config.ts");
 
       expect(
@@ -323,13 +323,31 @@ describe("every example configuration this package ships", () => {
           entry.limit,
         ]),
       ).toStrictEqual([
+        ["css/theme.css", 1, 12, 3],
+        ["hcl/network.tf", 1, 12, 3],
         ["python/inventory.py", 7, 10, 3],
         // Line 2, not line 1: a `#!` shebang is never a comment.
         ["shell/release.sh", 2, 11, 8],
         ["shell/release.sh", 8, 6, 8],
+        ["sql/reporting.sql", 1, 7, 3],
         ["toml/service.toml", 1, 5, 3],
         ["yaml/pipeline.yaml", 2, 12, 3],
       ]);
+    });
+
+    it("never measures a JSDoc comment through the `typescript` channel", () => {
+      // The corpus's TypeScript and JavaScript sources carry only JSDoc
+      // comments, and `typescript` skips exactly those — `documentation`
+      // measures them instead. Nothing from either corpus folder appears here.
+      const report = measureExample("documentation", "comments.config.ts");
+      const files = report.documentation.map((entry) => entry.file);
+
+      expect(
+        files.filter((file) => file.startsWith("typescript/")),
+      ).toStrictEqual([]);
+      expect(
+        files.filter((file) => file.startsWith("javascript/")),
+      ).toStrictEqual([]);
     });
 
     it("gates a YAML comment breach the same way", () => {

@@ -17,6 +17,12 @@ export const FILE_COMMENT_KIND = "file comments";
 /** What a file-wide measurement carries where a block carries its excerpt. */
 export const FILE_COMMENT_DECLARATION = "every comment in the file";
 
+/** Matches an HCL `#` comment through to the end of its line. */
+export const HCL_HASH_LINE_COMMENT_PATTERN = /#[^\n]*/g;
+
+/** Matches an HCL `//` comment through to the end of its line. */
+export const HCL_SLASH_LINE_COMMENT_PATTERN = /\/\/[^\n]*/g;
+
 /**
  * A `#` comment's marker, and the space a writer puts after it.
  *
