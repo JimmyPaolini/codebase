@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-tile/mosaic-tile-motif.service";
@@ -78,6 +79,7 @@ describe("mosaic tiles round-trip through the lattice", () => {
         GridGeometryService,
         LatticeIdentificationService,
         MeanderLatticeService,
+        MosaicNamingService,
         MosaicSymmetryService,
         MosaicTileGenerationService,
         MosaicTileMotifService,

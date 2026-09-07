@@ -9,6 +9,7 @@ import { LatticeIdentificationModule } from "../lattice-identification/lattice-i
 import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
@@ -79,6 +80,7 @@ describe(DrawCommand, () => {
         MosaicTileGenerationService,
         MosaicTileMotifService,
         MosaicTileService,
+        MeanderLatticeService,
         LatticeIdentificationService,
         MosaicSymmetryService,
         MosaicTilesService,
@@ -129,6 +131,7 @@ describe(DrawCommand, () => {
         MosaicTileGenerationService,
         MosaicTileMotifService,
         MosaicTileService,
+        MeanderLatticeService,
         LatticeIdentificationService,
         MosaicSymmetryService,
         MosaicTilesService,

@@ -593,11 +593,13 @@ const NEGATIVE_SPACE_SURVEYED_FAMILIES: ReadonlySet<MeanderType> = new Set([
  */
 const mosaicTileService = new MosaicTileService();
 const mosaicSymmetryService = new MosaicSymmetryService(mosaicTileService);
+const mosaicNamingService = new MosaicNamingService(mosaicTileService);
 const latticeIdentificationService = new LatticeIdentificationService(
+  new MeanderLatticeService(),
+  mosaicNamingService,
   mosaicSymmetryService,
   mosaicTileService,
 );
-const mosaicNamingService = new MosaicNamingService(mosaicTileService);
 const mosaicTilesService = new MosaicTilesService(
   mosaicSymmetryService,
   mosaicTileService,

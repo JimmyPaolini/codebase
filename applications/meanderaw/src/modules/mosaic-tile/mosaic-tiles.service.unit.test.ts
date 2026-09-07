@@ -2,6 +2,8 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { OversizedMosaicTileError } from "./mosaic-tile.constants";
@@ -50,6 +52,8 @@ describe(MosaicTilesService, () => {
     const module = await Test.createTestingModule({
       providers: [
         LatticeIdentificationService,
+        MeanderLatticeService,
+        MosaicNamingService,
         MosaicSymmetryService,
         MosaicTileService,
         MosaicTilesService,

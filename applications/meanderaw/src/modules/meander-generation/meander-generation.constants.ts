@@ -113,6 +113,19 @@ export const MINIMUM_REPEAT_COUNT = 1;
 export const MINIMUM_STRANDS = 1;
 
 /**
+ * The lower of the two repeat counts `MotifPitchService` measures a right
+ * edge at, the higher being one more.
+ *
+ * Every family's right edge is affine in the repeat count — a fixed offset
+ * plus one unit's width per repeat — so any two consecutive counts give the
+ * same difference, and this one is a place to stand rather than a
+ * significant number. It is two rather than one so that the pair sits clear
+ * of a single-unit drawing, where a family whose last unit is clipped flush
+ * with its own motif has no following unit to be measured against.
+ */
+export const PITCH_PROBE_REPEAT_COUNT = 2;
+
+/**
  * Every modifier that carries a `strands` count, and so is bounded by
  * {@link MINIMUM_STRANDS} and the drawing's own row count.
  *

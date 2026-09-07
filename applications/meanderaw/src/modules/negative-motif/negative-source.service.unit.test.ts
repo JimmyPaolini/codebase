@@ -3,6 +3,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { COMPATIBLE_MODIFIERS } from "../meander-generation/meander-generation.constants";
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
@@ -206,6 +208,8 @@ describe(NegativeSourceService, () => {
     const module = await Test.createTestingModule({
       providers: [
         LatticeIdentificationService,
+        MeanderLatticeService,
+        MosaicNamingService,
         MosaicSubFamilyService,
         MosaicSymmetryService,
         MosaicTileService,
