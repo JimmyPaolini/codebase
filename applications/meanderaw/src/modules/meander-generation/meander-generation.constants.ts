@@ -1,10 +1,9 @@
 // ♟️ Constants
 
 import {
-  MOSAIC_TILE_MINIMUM_ROWS,
+  MOSAIC_TILE_MAXIMUM_ROWS,
   SUPPORTED_SUB_FAMILIES,
 } from "../mosaic-motif/mosaic-motif.constants";
-import { NEGATIVE_SOURCE_ROW_OFFSET } from "../negative-motif/negative-motif.constants";
 
 import type {
   DotShape,
@@ -19,12 +18,22 @@ import type {
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
-  branch: ["rung", "stagger"],
+  branch: ["comb", "rung", "stagger"],
   chain: ["edge", "flip", "edge-flip"],
   cross: ["interrupted"],
   mosaic: ["alternated", "dot", "split"],
-  negative: ["brick", "ruled"],
-  parallel: ["plied"],
+  negative: [
+    "brick-staggered",
+    "brick-straight",
+    "brick-upright",
+    "grid",
+    "ruled",
+    "ruled-closed",
+    "ruled-raised",
+    "ruled-spaced",
+    "ruled-tall",
+  ],
+  parallel: ["plied", "aligned", "serpentine"],
   snake: ["edge", "flip", "edge-flip"],
   swirl: ["flip"],
   whirl: ["flip"],
@@ -53,6 +62,27 @@ export const DEFAULT_REPEAT_COUNT = 6;
 /** Highest `rows` or `repeatCount` value the CLI accepts for any type. */
 export const MAXIMUM_VALUE = 12;
 
+/**
+ * Highest `rows` value each family is drawn at, read by both
+ * `MeanderGenerationService.generate` and `DrawCombinationsService` — which
+ * keeps every drawing the command line accepts one this repository commits
+ * and the charter gates, the property issue #507 lived in the absence of.
+ * Nine families sit at the shared {@link MAXIMUM_VALUE}; only `mosaic` is
+ * lower, and {@link MOSAIC_TILE_MAXIMUM_ROWS} carries the counts and why.
+ */
+export const FAMILY_MAXIMUM_ROWS: Record<MeanderType, number> = {
+  boxes: MAXIMUM_VALUE,
+  branch: MAXIMUM_VALUE,
+  chain: MAXIMUM_VALUE,
+  cross: MAXIMUM_VALUE,
+  mosaic: MOSAIC_TILE_MAXIMUM_ROWS,
+  negative: MAXIMUM_VALUE,
+  parallel: MAXIMUM_VALUE,
+  snake: MAXIMUM_VALUE,
+  swirl: MAXIMUM_VALUE,
+  whirl: MAXIMUM_VALUE,
+};
+
 /** Lowest `period` value `alternated` accepts: a run must span at least one grid level. */
 export const MINIMUM_PERIOD = 1;
 
@@ -60,14 +90,49 @@ export const MINIMUM_PERIOD = 1;
 export const MINIMUM_REPEAT_COUNT = 1;
 
 /**
- * Lowest `strands` value `plied` accepts. Two, because a family named for
- * strands running alongside one another needs two of them to have one; see
- * {@link DEFAULT_PARALLEL_STRANDS}, which is the same number for the same
- * reason. The upper bound is not a constant: it is the drawing's own `rows`,
- * because the innermost strand's arms are `rows - strands + 1` lattice steps
- * long and vanish beyond it.
+ * Lowest `strands` value `plied` accepts.
+ *
+ * One, not two. Two was the original floor, on the argument that a family
+ * named for strands running alongside one another needs two of them to have
+ * one. That argument is about the family's *name*, not about its geometry,
+ * and it was the only thing standing between the corpus and a whole end of
+ * this family's range: a single-strand ply is one bracket per repeat unit,
+ * two lattice columns wide, and it is a perfectly good drawing. It covers
+ * both its columns to the full height of the band, so it is space-filling on
+ * the same argument every deeper ply is; its lattice points carry two arms
+ * of ink or one, so it branches and crosses exactly as much as the rest of
+ * the family does, which is not at all. `parallel-motif.service.unit.test.ts`
+ * measures all of that at one strand, and the charter sweep gates it
+ * alongside every other ply.
+ *
+ * What one ply gives up is the *nesting*, not the validity — which is the
+ * point of admitting it. It is the shallow end of the same axis
+ * {@link DEFAULT_PARALLEL_STRANDS} sits two steps up, and a range with no
+ * bottom step is a range the sweep cannot show the shape of.
+ *
+ * The upper bound is not a constant: it is the drawing's own `rows`, because
+ * the innermost strand's arms are `rows - strands + 1` lattice steps long
+ * and vanish beyond it.
  */
-export const MINIMUM_STRANDS = 2;
+export const MINIMUM_STRANDS = 1;
+
+/**
+ * Every modifier that carries a `strands` count, and so is bounded by
+ * {@link MINIMUM_STRANDS} and the drawing's own row count.
+ *
+ * All three belong to `parallel`, and all three name the same axis: how many
+ * strands run alongside one another. They differ in what those strands
+ * *trace* — `plied` nests brackets that flip with every repeat unit,
+ * `aligned` nests the same brackets without flipping them, and `serpentine`
+ * stacks continuous square-wave ribbons — not in how many of them there are.
+ * Validation is a property of the count, so it is written once against this
+ * list rather than three times against three names.
+ */
+export const PLY_MODIFIER_NAMES: readonly Modifier["name"][] = [
+  "aligned",
+  "plied",
+  "serpentine",
+];
 
 /**
  * How many repeat units `spin` and `spin-flip` need before their 90° rotation
@@ -105,11 +170,21 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "split",
   "dot",
   "interrupted",
-  "brick",
+  "brick-staggered",
+  "brick-straight",
+  "brick-upright",
+  "grid",
   "ruled",
+  "ruled-closed",
+  "ruled-raised",
+  "ruled-spaced",
+  "ruled-tall",
+  "comb",
   "rung",
   "stagger",
   "plied",
+  "aligned",
+  "serpentine",
 ] satisfies readonly Modifier["name"][];
 
 /**
@@ -198,14 +273,14 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * family is the model here, so the family takes the stricter of its two
  * modes.
  *
- * `negative`'s minimum is its source's minimum moved down one, and it is
- * written as that subtraction rather than as the 3 it evaluates to, so the
- * two cannot drift. It inks the corridors a `mosaic` tile leaves and puts a
- * lattice point on each of that tile's cells, so its own band is one row
- * shorter than the tile it inverts (see `NEGATIVE_SOURCE_ROW_OFFSET`).
- * `MOSAIC_TILE_MINIMUM_ROWS` is 4 for its own reason — below it a tile's
- * interior is a single level and there is nothing to permute — so 3 rows is
- * the shallowest negative the shallowest enumerable tile can yield.
+ * `negative`'s minimum is **3**, and the link to
+ * `MOSAIC_TILE_MINIMUM_ROWS - NEGATIVE_SOURCE_ROW_OFFSET` is cut
+ * deliberately. That subtraction meant "the shallowest negative the
+ * shallowest enumerable tile can yield", which held while `mosaic`'s minimum
+ * moved for reasons about what a tile is. It now moves for reasons about how
+ * large a space is worth enumerating, which says nothing about how shallow a
+ * band this family can ink the corridors of — so following it down would
+ * widen `negative` as a side effect of a decision about another family.
  *
  * `branch`'s minimum of 2 is its `rung` mode's, and the family takes the
  * stricter of its modes the same way `cross` does. `comb` and `stagger` do
@@ -221,17 +296,27 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * below the minimum and measures every claim in this paragraph there, so
  * the number and its reason cannot drift apart.
  *
- * `parallel`'s minimum of 4 is its deepest ply's rather than its default's,
- * and the family takes the stricter of its modes the same way `cross` and
- * `branch` do. A bundle of `strands` nested brackets needs `strands` rows:
- * the innermost bracket's arms are `rows - strands + 1` lattice steps long,
- * so one ply further collapses them onto its own crossbar and leaves a bare
- * segment running alongside nothing. Four is the deepest ply the sweep
- * draws — `PLIED_SWEEP_STRAND_COUNTS` names them, and
- * `start-combinations.service.unit.test.ts` asserts the two numbers agree.
- * The default two-strand ply draws perfectly well at 2 and 3 rows, which
- * `parallel-motif.service.unit.test.ts` measures below the minimum the same
- * way `branch` does; a deeper ply is admitted at a deeper row count by
+ * `parallel`'s minimum is **2**, and it is the shallowest band that admits
+ * more than one strand rather than anything about a ply's arms.
+ *
+ * It used to be 4, on an argument that no longer exists. The sweep applied
+ * one flat list of plies to every row count alike, so the list's deepest
+ * entry had to be shallow enough for the shallowest row count to accept —
+ * and that entry was 4, which this number was pinned to.
+ * `DrawCombinationsService.strandCounts` asks per row now, so a ply deeper
+ * than the band is never enumerated and the pin is gone.
+ *
+ * What sets 2 is the family's own axis. `strands` is bounded above by the
+ * drawing's `rows`, so a one-row band admits a single ply and nothing else:
+ * the ply axis collapses to one value, and a family whose whole claim is
+ * `N` strands running alongside one another has no room to put a second one
+ * beside the first. Two rows is where that stops being true. It is a floor
+ * on the *family*, not on any one drawing — `parallel-motif.service.unit.test.ts`
+ * renders a one-row band through the motif service and measures it holding
+ * every charter invariant, the same way `branch` measures its own modes
+ * below its minimum, so the number and its reason cannot drift apart.
+ *
+ * A ply deeper than the row count is refused by
  * {@link InvalidStrandCountError} rather than by this number, which is why
  * the bound on `strands` is `rows` and not a constant.
  */
@@ -241,8 +326,8 @@ export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   chain: 4,
   cross: 6,
   mosaic: 3,
-  negative: MOSAIC_TILE_MINIMUM_ROWS - NEGATIVE_SOURCE_ROW_OFFSET,
-  parallel: 4,
+  negative: 3,
+  parallel: 2,
   snake: 4,
   swirl: 4,
   whirl: 4,
@@ -283,6 +368,23 @@ export class InvalidModifierError extends Error {
   }
 }
 
+/**
+ * Thrown when `serpentine`'s `offset` falls outside its own strand count.
+ *
+ * The bound is the strand count rather than a constant because the offset
+ * rotates a cyclic sequence of exactly that length — rotating `strands`
+ * places is rotating none — so the message names the count it was measured
+ * against rather than a number written here.
+ */
+export class InvalidOffsetError extends Error {
+  constructor(offset: number, strands: number) {
+    super(
+      `offset must be between 0 and the strand count ${strands} exclusive, received ${offset}`,
+    );
+    this.name = "InvalidOffsetError";
+  }
+}
+
 /** Thrown when `alternated`'s `period` falls outside the shared bounds, or `repeatCount` isn't a whole multiple of it. */
 export class InvalidPeriodError extends Error {
   constructor(period: number, minimum: number, maximum: number) {
@@ -318,6 +420,25 @@ export class InvalidRowsError extends Error {
   constructor(rows: number, minimum: number, maximum: number) {
     super(`rows must be between ${minimum} and ${maximum}, received ${rows}`);
     this.name = "InvalidRowsError";
+  }
+}
+
+/**
+ * Thrown when `stagger`'s `branches` falls outside
+ * {@link MINIMUM_STAGGER_BRANCHES} and the shared {@link MAXIMUM_VALUE}.
+ *
+ * The minimum is the family's own and the maximum is the command line's,
+ * which is why the message names them rather than restating either: below
+ * the minimum the mode stops forking altogether, and above the maximum
+ * nothing structural fails — a crenel simply grows wider than any other
+ * parameter this application accepts.
+ */
+export class InvalidStaggerBranchCountError extends Error {
+  constructor(branches: number, minimum: number, maximum: number) {
+    super(
+      `branches must be between ${minimum} and ${maximum}, received ${branches}`,
+    );
+    this.name = "InvalidStaggerBranchCountError";
   }
 }
 
@@ -368,3 +489,22 @@ export class UnavailableSubFamilyError extends Error {
     this.name = "UnavailableSubFamilyError";
   }
 }
+
+/**
+ * Types whose unmodified drawing one of their own modifiers already names,
+ * so the sweep draws it once under that name rather than twice under two.
+ *
+ * `parallel` is the only one. Drawn with no modifier it is a two-strand
+ * `plied` bundle, and `plied` naming two strands renders the same bytes —
+ * which used to reach disk as `plain-…svg` while every sibling drawing was
+ * named for its ply. The sweep now omits the unmodified entry for this type
+ * and lets `plied` cover it, so the whole family is named on one scheme and
+ * a reader can tell two drawings apart by their filenames alone.
+ *
+ * Nothing is lost from the corpus by it: the two documents were always
+ * identical, and the command line still accepts `--type parallel` with no
+ * modifier.
+ */
+export const TYPES_WITH_MODIFIER_NAMED_DEFAULT: readonly MeanderType[] = [
+  "parallel",
+];

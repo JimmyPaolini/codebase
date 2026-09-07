@@ -1,5 +1,7 @@
 // ♟️ Constants
 
+import type { SerpentineFlip } from "../meander-generation/meander-generation.types";
+
 /**
  * How many lattice columns one strand of a bundle adds to a repeat unit.
  *
@@ -30,3 +32,54 @@ export class UnknownParallelModifierError extends Error {
     this.name = "UnknownParallelModifierError";
   }
 }
+
+/**
+ * How many lattice columns one `serpentine` repeat unit spans: one full
+ * period of the wave, which is a column that turns at the bottom and a
+ * column that turns at the top.
+ *
+ * It does not scale with the ply, and that is the difference between this
+ * shape and the bracket bundles beside it. A `plied` unit is
+ * `COLUMNS_PER_STRAND × strands` columns wide because its strands nest
+ * across the band; a serpentine's strands stack down it, so a deeper ply
+ * divides the same height into more ribbons and leaves the pitch alone.
+ */
+export const COLUMNS_PER_SERPENTINE_UNIT = 2;
+
+/**
+ * Every modifier name this family draws a ply for.
+ *
+ * All three carry a `strands` count and differ only in what those strands
+ * trace: `plied` nests brackets that flip with every repeat unit, `aligned`
+ * nests the same brackets without flipping them, and `serpentine` stacks
+ * continuous square-wave ribbons down the band instead of nesting brackets
+ * across it. `COMPATIBLE_MODIFIERS.parallel` lists the same three, and
+ * `parallel-motif.service.unit.test.ts` asserts the two agree — a name in
+ * one and not the other is either a modifier the seam admits and this family
+ * refuses, or one this family draws and nothing can ask it for.
+ */
+export const PARALLEL_MODIFIER_NAMES: readonly string[] = [
+  "aligned",
+  "plied",
+  "serpentine",
+];
+
+/**
+ * Every value `serpentine`'s `flip` takes, `undefined` included, in the
+ * order {@link ParallelSerpentineService.variants} enumerates them.
+ *
+ * `undefined` leads, so the in-phase drawing is the one that keeps the bare
+ * `serpentine-strands-N` filename and every flipped variant is named for
+ * what it does to it.
+ */
+export const SERPENTINE_FLIPS: readonly (SerpentineFlip | undefined)[] = [
+  undefined,
+  "alternating",
+  "one",
+];
+
+/** Every `--flip` value the command line accepts, mirroring `SUPPORTED_MODIFIER_NAMES`'s widened declaration so `Array.prototype.includes` stays usable with a plain `string`. */
+export const SUPPORTED_SERPENTINE_FLIPS: readonly string[] = [
+  "alternating",
+  "one",
+] satisfies readonly SerpentineFlip[];

@@ -7,16 +7,19 @@ import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
 import { CANVAS_HEIGHT } from "../grid-geometry/grid-geometry.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { FAMILY_MAXIMUM_ROWS } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { MotifRegistryService } from "../meander-generation/motif-registry.service";
-import { MeanderLatticeService } from "../meander-topology/meander-lattice.service";
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
 import { MosaicMotifService } from "../mosaic-motif/mosaic-motif.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
@@ -36,39 +39,106 @@ import type {
 /** The repeat count every case below is drawn at, matching the sweep's own default. */
 const REPEAT_COUNT = 6;
 
-/** Every row count the sweep draws this family at: its structural minimum through the sweep maximum. */
-const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6, 7, 8];
+/**
+ * Every row count the sweep draws this family at: its structural minimum
+ * through the shared `MAXIMUM_VALUE`, which is what
+ * `DrawCombinationsService` enumerates for every family.
+ */
+const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 /**
- * Every mode the family draws — no modifier, and each of the two the family
- * declares compatible — beside the ink T-junction count each one produces at
- * every swept row count, in {@link SWEPT_ROWS} order.
+ * Every mode the family draws — no modifier, and each of the nine it
+ * declares compatible — beside the ink T- and X-junction counts each one
+ * produces at every swept row count, in {@link SWEPT_ROWS} order.
  *
- * These eighteen numbers are the table `README.md` publishes under "The
- * Negative Space Family", and this is the only thing making that table true.
- * The corridor-identity test in
+ * These two hundred numbers are the tables `README.md` publishes under "The
+ * Negative Space Family", and this is the only thing making them true. The
+ * corridor-identity test in
  * `meander-topology.service.integration.test.ts` equates two computed values
  * against each other, so it would still pass if both drifted together, and it
- * covers only the fifteen drawings whose source the survey enumerated — the
- * 8-row column has no committed source to be compared against at all. Written
- * out here, every published figure is the output of an assertion rather than
- * prose standing beside one.
+ * covers only the drawings whose source the survey enumerated — everything
+ * from 8 rows up has no committed source to be compared against at all.
+ * Written out here, every published figure is the output of an assertion
+ * rather than prose standing beside one.
+ *
+ * The `xJunctions` column is new with the seven modes added beside the
+ * original three, and it is why it exists: three of the ten cross. That is
+ * charter invariant 4 relaxed on purpose, declared in `RELAXED_INVARIANTS`
+ * for exactly those three modifier names, and a mode that started or stopped
+ * crossing would fail here before it reached the charter sweep.
  */
 const MODES: readonly {
   readonly modifier?: Modifier;
   readonly tJunctions: readonly number[];
+  readonly xJunctions: readonly number[];
 }[] = [
-  { tJunctions: [38, 48, 58, 68, 78, 88] },
-  { modifier: { name: "brick" }, tJunctions: [30, 40, 50, 60, 70, 80] },
-  { modifier: { name: "ruled" }, tJunctions: [16, 16, 24, 24, 32, 32] },
+  {
+    tJunctions: [38, 48, 58, 68, 78, 88, 98, 108, 118, 128],
+    xJunctions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  },
+  {
+    modifier: { name: "brick-staggered" },
+    tJunctions: [30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+    xJunctions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  },
+  {
+    modifier: { name: "brick-straight" },
+    tJunctions: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+    xJunctions: [10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
+  },
+  {
+    modifier: { name: "brick-upright" },
+    tJunctions: [10, 10, 12, 12, 14, 14, 16, 16, 18, 18],
+    xJunctions: [4, 4, 8, 8, 12, 12, 16, 16, 20, 20],
+  },
+  {
+    modifier: { name: "grid" },
+    tJunctions: [12, 14, 16, 18, 20, 22, 24, 26, 28, 30],
+    xJunctions: [8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+  },
+  {
+    modifier: { name: "ruled" },
+    tJunctions: [16, 16, 24, 24, 32, 32, 40, 40, 48, 48],
+    xJunctions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  },
+  {
+    modifier: { name: "ruled-closed" },
+    tJunctions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    xJunctions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  },
+  {
+    modifier: { name: "ruled-raised" },
+    tJunctions: [8, 16, 16, 24, 24, 32, 32, 40, 40, 48],
+    xJunctions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  },
+  {
+    modifier: { name: "ruled-spaced" },
+    tJunctions: [8, 16, 16, 16, 24, 24, 24, 32, 32, 32],
+    xJunctions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  },
+  {
+    modifier: { name: "ruled-tall" },
+    tJunctions: [8, 8, 16, 16, 16, 24, 24, 24, 32, 32],
+    xJunctions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  },
 ];
 
-/** Every swept drawing, as the parameters that produce it, the branching it owes, and a label to read it back by. */
+/**
+ * The one mode that branches nowhere: `ruled-closed` inverts the `lines`
+ * sub-family, whose negative is nothing but the band's own rules, and the
+ * survey's "neither" class is exactly that sub-family at every row count.
+ * Named here so the shape guard below can allow a zero without allowing a
+ * table entry to have gone missing.
+ */
+const NON_BRANCHING_MODIFIER_NAME = "ruled-closed";
+
+/** Every swept drawing, as the parameters that produce it, the junctions it owes, and a label to read it back by. */
 const SWEEP: readonly {
   label: string;
   parameters: GenerationParameters;
   tJunctions: number;
-}[] = MODES.flatMap(({ modifier, tJunctions }) =>
+  xJunctions: number;
+}[] = MODES.flatMap(({ modifier, tJunctions, xJunctions }) =>
   SWEPT_ROWS.map((rows, index) => ({
     label: `${rows} rows${modifier ? ` with ${modifier.name}` : ""}`,
     parameters: {
@@ -77,7 +147,10 @@ const SWEEP: readonly {
       type: "negative" as const,
       ...(modifier ? { modifier } : {}),
     },
-    tJunctions: tJunctions[index] ?? 0,
+    // 🎯 `-1` rather than `0`, because zero is a real count for
+    // `ruled-closed` and would hide a table entry that had gone missing.
+    tJunctions: tJunctions[index] ?? -1,
+    xJunctions: xJunctions[index] ?? -1,
   })),
 );
 
@@ -139,11 +212,14 @@ describe(NegativeMotifService, () => {
         MosaicSubFamilyService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
+        MosaicTileService,
         MotifRegistryService,
         MotifTransformsService,
         NegativeMotifService,
         NegativeSourceService,
         ParallelMotifService,
+        ParallelSerpentineService,
+        ParallelSerpentineService,
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,
@@ -169,6 +245,12 @@ describe(NegativeMotifService, () => {
     // as an unrelated failure wherever it happens to surface first, and this
     // is the one invariant the charter marks fixed that a drawing could
     // break with a single character.
+    //
+    // A subset rather than the whole set, because `ruled-closed` really does
+    // emit no `V` at all: it inverts the `lines` sub-family, whose negative
+    // is the band's own rules and nothing between them. Demanding all three
+    // would fail the one mode that draws no corridor, which is a fact about
+    // that mode rather than a diagonal.
     it.each(SWEEP)(
       "$label draws only moves and axis runs",
       ({ parameters }) => {
@@ -180,22 +262,34 @@ describe(NegativeMotifService, () => {
 
         expect(commands.length).toBeGreaterThan(0);
         expect(
-          [...new Set(commands.map((match) => match[0]))].toSorted(),
-        ).toStrictEqual(["H", "M", "V"]);
+          [...new Set(commands.map((match) => match[0]))]
+            .toSorted()
+            .filter((letter) => !["H", "M", "V"].includes(letter)),
+        ).toStrictEqual([]);
       },
     );
   });
 
-  describe("charter invariant 3, relaxed on purpose", () => {
+  describe("charter invariants 3 and 4, relaxed on purpose", () => {
     // 🎯 The guard against the table above vacating: an entry gone missing
-    // would read back as a `?? 0` fallback, and zero asserted against a
-    // drawing that branches would fail loudly — but only if something checks
-    // the table is the length and shape it claims to be.
-    it("owes a published branching count for every drawing the sweep commits", () => {
-      expect(SWEEP).toHaveLength(18);
-      expect(SWEEP.filter(({ tJunctions }) => tJunctions <= 0)).toStrictEqual(
-        [],
-      );
+    // reads back as the `-1` fallback, which no measurement can ever produce.
+    // Zero cannot serve as that sentinel any more — `ruled-closed` really
+    // does branch nowhere — so the two claims are asserted apart: every entry
+    // is present, and exactly one mode is allowed to branch nowhere.
+    it("owes a published junction count for every drawing the sweep commits", () => {
+      expect(SWEEP).toHaveLength(SWEPT_ROWS.length * MODES.length);
+      expect(
+        SWEEP.filter(
+          ({ tJunctions, xJunctions }) => tJunctions < 0 || xJunctions < 0,
+        ),
+      ).toStrictEqual([]);
+      expect([
+        ...new Set(
+          SWEEP.filter(({ tJunctions }) => tJunctions === 0).map(
+            ({ parameters }) => parameters.modifier?.name,
+          ),
+        ),
+      ]).toStrictEqual([NON_BRANCHING_MODIFIER_NAME]);
     });
 
     it.each(SWEEP)(
@@ -208,12 +302,20 @@ describe(NegativeMotifService, () => {
       },
     );
 
-    it.each(SWEEP)("$label does not cross", ({ parameters }) => {
-      expect(
-        topologyService.measure(generationService.generate(parameters))
-          .inkXJunctions,
-      ).toBe(0);
-    });
+    // 🎯 Both directions of the relaxation, from one table. A mode that
+    // stopped crossing would fail here as loudly as one that started, which
+    // is what keeps `RELAXED_INVARIANTS` honest: it declares invariant 4
+    // relaxed for three modifier names, and a declaration nothing measures is
+    // a comment.
+    it.each(SWEEP)(
+      "$label crosses at the $xJunctions ink X-junctions README publishes",
+      ({ parameters, xJunctions }) => {
+        expect(
+          topologyService.measure(generationService.generate(parameters))
+            .inkXJunctions,
+        ).toBe(xJunctions);
+      },
+    );
   });
 
   describe("charter invariant 2, space filling", () => {
@@ -248,34 +350,47 @@ describe(NegativeMotifService, () => {
   });
 
   describe("charter invariant 5, band not field", () => {
-    // 🎯 A band's height is decided by `rows` alone. Comparing against
-    // `mosaic` at the same row count is what makes that concrete: the two
-    // families draw entirely different things and must still declare the
-    // same canvas height, because both take it from the shared geometry.
+    // 🎯 A band's height is decided by `rows` alone: the concrete number
+    // the shared geometry implies, `CANVAS_HEIGHT` plus half a grid unit of
+    // stroke margin. Every row count this family is drawn at, including the
+    // ones past any enumerated source.
     it.each(SWEEP)(
-      "$label is as tall as a mosaic of the same rows",
+      "$label is as tall as the shared geometry declares",
       ({ parameters }) => {
-        const declared = height(generationService.generate(parameters));
-
-        // 🎯 Two independent statements of the same fact, so neither can pass
-        // by accident: the concrete number the shared geometry implies —
-        // `CANVAS_HEIGHT` plus half a grid unit of stroke margin — and the
-        // height a completely different family declares at the same rows.
-        expect(declared).toBeCloseTo(
+        expect(height(generationService.generate(parameters))).toBeCloseTo(
           CANVAS_HEIGHT + CANVAS_HEIGHT / parameters.rows / 2,
           TOLERANCE_DIGITS,
         );
-        expect(declared).toBe(
-          height(
-            generationService.generate({
-              repeatCount: REPEAT_COUNT,
-              rows: parameters.rows,
-              type: "mosaic",
-            }),
-          ),
-        );
       },
     );
+
+    // 🎯 The same fact stated a second way, so neither can pass by
+    // accident: a completely different family declares the same canvas
+    // height at the same row count, because both take it from the shared
+    // geometry rather than from anything either one draws.
+    //
+    // It covers the row counts where both families are drawn rather than
+    // every row count this one is. `mosaic` stops at
+    // `FAMILY_MAXIMUM_ROWS.mosaic` — see `MOSAIC_TILE_MAXIMUM_ROWS` — and
+    // the command line refuses it above that, so there is no mosaic to
+    // compare a deeper `negative` against. Above the overlap the assertion
+    // on the geometry number stands alone, which is why it is written as a
+    // number rather than only as a second family's height.
+    it.each(
+      SWEEP.filter(
+        ({ parameters }) => parameters.rows <= FAMILY_MAXIMUM_ROWS.mosaic,
+      ),
+    )("$label is as tall as a mosaic of the same rows", ({ parameters }) => {
+      expect(height(generationService.generate(parameters))).toBe(
+        height(
+          generationService.generate({
+            repeatCount: REPEAT_COUNT,
+            rows: parameters.rows,
+            type: "mosaic",
+          }),
+        ),
+      );
+    });
 
     it.each(SWEEP)(
       "$label tiles horizontally and only horizontally",

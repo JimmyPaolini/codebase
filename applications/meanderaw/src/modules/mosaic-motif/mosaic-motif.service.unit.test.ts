@@ -6,6 +6,7 @@ import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MotifTransformsService } from "../motif-transforms/motif-transforms.service";
 
 import { MosaicMotifService } from "./mosaic-motif.service";
+import { MosaicTileService } from "./mosaic-tile.service";
 
 import type {
   Modifier,
@@ -169,8 +170,9 @@ describe(MosaicMotifService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        MosaicMotifService,
         GridGeometryService,
+        MosaicMotifService,
+        MosaicTileService,
         MotifTransformsService,
       ],
     }).compile();

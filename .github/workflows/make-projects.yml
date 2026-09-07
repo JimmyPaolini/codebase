@@ -16,8 +16,22 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Per-commit on `main`, per-ref everywhere else. This workflow's README badge
+  # renders every non-`success` conclusion red, `cancelled` among them, so a
+  # merge landing while the previous one still runs leaves the badge reporting
+  # a superseded run rather than a broken one. Roughly a quarter of merges land
+  # inside a run window, and the badge stays red until the next merge clears it.
+  #
+  # `cancel-in-progress: false` alone would not fix that, which is the trap:
+  # GitHub keeps at most one *pending* run per group, so a third push cancels
+  # the queued second whatever this flag says. Only a group nothing else can
+  # join keeps a `main` run out of that queue.
+  #
+  # Pull request branches keep cancelling, where no badge reads the conclusion.
+  group: >-
+    ${{ github.workflow }}-${{ github.ref == 'refs/heads/main'
+    && github.sha || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   make-projects:

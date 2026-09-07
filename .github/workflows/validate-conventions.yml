@@ -1,74 +1,38 @@
 name: 🧑‍⚖️ Validate Conventions
 
 # Pull request metadata — branch name, title, body, labels, and assignees.
-# These are not Nx targets and have no project graph to build, so this
-# workflow deliberately skips `setup-codebase`: no Nx cache, no uv, no
-# Homebrew, no full install.
+# None is an Nx target, so this workflow skips `setup-codebase`: no Nx cache,
+# no uv or Homebrew, no full install. The job is checkout, install, run a
+# check, skipping on `merge_group`.
 #
-# The repository-convention checks that used to live here (conformetry,
-# codometer, and the synchronization checks) are `lint-codebase` dependsOn
-# leaves now, so they run once per change instead of once per workflow. The
-# issue-metadata check that used to sit here as a second job is its own
-# workflow now, 👮 Audit Issues — it fired on `issues` events, so it reported
-# "skipped" on every pull request event and left one badge standing for two
-# unrelated signals.
+# The checks are nest-commander commands in `tools/validation` and, for label
+# reconciliation on `opened`/`reopened`, `tools/synchronization` — invoked
+# through node rather than Nx so no project graph is built. Reconciling first
+# is what lets a newly opened pull request pass. Release significance also
+# needs a token: the `pull_request` payload carries no commit list, so it
+# calls `gh pr view` itself.
 #
-# The job is thin: checkout, install, run a `tools/validation` check. On
-# `merge_group` the job skips, which is the whole point of that trigger; see
-# the note on it below.
-#
-# The README's Validate Conventions badge is this workflow's own status badge,
-# and it must be filtered `?event=pull_request` rather than `?branch=main`.
-# A badge with no filter reports the newest run whose head branch is the
-# default one, and nothing this workflow runs on qualifies: a `pull_request`
-# run carries the pull request's own head ref, and a `merge_group` run carries
-# `gh-readonly-queue/...`. Only the `issues` trigger ever did, because issue
-# events carry the default branch — and that trigger moved to 👮 Audit Issues.
-# So `?branch=main` pinned the badge to the last issue run this workflow will
-# ever have, from before that move, which happened to be `cancelled`: red
-# forever, with no future run able to clear it. 👮 Audit Issues keeps
-# `?branch=main` for the same reason this one cannot use it.
-#
-# On a pull request's `opened`/`reopened`, the conventional label vocabulary
-# is reconciled against the repository first, so a freshly opened pull
-# request has the labels it needs to pass. That reconciliation is a
-# nest-commander command in `tools/synchronization`, run through node
-# directly rather than through Nx — the same invocation that project's own
-# targets use — so this workflow still builds no project graph. It is one of
-# only two synchronizations needing credentials: neither `lint-codebase` nor
-# the release workflow, which run every other synchronization, holds a token,
-# so this is the one caller that asks for `pull-request-labels` by name — the
-# other is 👮 Audit Issues, which asks for `issue-labels` the same way.
-#
-# The metadata, body, and release-significance checks are nest-commander
-# commands in `tools/validation`, invoked the same way and for the same
-# reason. All are one-sided — a `check` with no `write` to reconcile against —
-# which is why they live there rather than beside the label synchronizers.
-#
-# Release significance needs a token: unlike the others, its input is not in
-# the `pull_request` webhook payload — that event never carries a pull
-# request's full commit list — so it calls `gh pr view --json title,commits`
-# itself, the same way the label reconciliation step does.
+# The README badge must be filtered `?event=pull_request`. Nothing here runs
+# on the default branch, so `?branch=main` pins it to a stale run forever.
 
 on:
   pull_request:
     types:
-      [
-        opened,
-        reopened,
-        synchronize,
-        edited,
-        labeled,
-        unlabeled,
-        assigned,
-        unassigned,
-        milestoned,
-        demilestoned,
-        ready_for_review,
-        converted_to_draft,
-        review_requested,
-        review_request_removed,
-      ]
+      - opened
+      - reopened
+      - synchronize
+      - edited
+      - labeled
+      - unlabeled
+      - assigned
+      - unassigned
+      - milestoned
+      - demilestoned
+      - ready_for_review
+      - converted_to_draft
+      - review_requested
+      - review_request_removed
+
   # This workflow is a required status check, so the merge queue waits on its
   # context before it will fast-forward main. Every check it runs reads the
   # `pull_request` payload — a title, a body, labels, assignees, a head ref —
@@ -194,13 +158,13 @@ jobs:
       # a snapshot taken when the event fired, and on `opened` that is before
       # the assignee exists: `gh pr create --assignee` attaches it in a
       # follow-up request, so an `opened` run saw `assignees: []` and failed a
-      # pull request that was correctly assigned a second later. A re-run could
-      # never clear it either, because a re-run replays the same frozen payload.
+      # correctly assigned pull request. A re-run could never clear it either,
+      # because it replays the same frozen payload.
       #
       # The step above already reconciles labels through the API with this same
       # token, so this job was never hermetic and reading live costs it nothing.
-      # It also drops the full JSON label array from the environment, which is
-      # the same argv-and-environment size ceiling the body step avoids.
+      # It also drops the full JSON label array from the environment, the same
+      # argv-and-environment size ceiling the body step avoids.
       - name: 🧾 Validate Pull Request Metadata
         env:
           GH_TOKEN: ${{ github.token }}

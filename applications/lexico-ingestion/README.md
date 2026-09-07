@@ -111,17 +111,17 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 576 |
+| Callables | 574 |
 | Files | 108 |
-| Calls traced | 638 |
+| Calls traced | 633 |
 | Call stacks | 34 |
-| Deepest stack | 19 |
+| Deepest stack | 17 |
 | Stacks through recursion | 3 |
 | Unfollowable calls | 103 |
 
 ### Call stacks (depth)
 
-**1. `LexicoIngestionCommand.run`** — depth ≥ 19 · decorated-method
+**1. `LexicoIngestionCommand.run`** — depth ≥ 17 · decorated-method
 
 ```text
 🚀 LexicoIngestionCommand.run(…): Promise<void> [applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.ts:219]
@@ -136,35 +136,31 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
            ↳ Ingests one lemma by parsing its Wiktionary HTML into lexemes, saving relations, and recursively resolving…
           └─> DictionaryCommand.processTranslationReferences(saved: Lexeme): Promise<void> (cycle) [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:282]
              ↳ Processes one workflow step for dictionary ingestion.
-            └─> LexemesService.parseLexemes(wiktionaryPage: WiktionaryPage): Promise<Lexeme[]> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:305]
+            └─> LexemesService.parseLexemes(wiktionaryPage: WiktionaryPage): Promise<Lexeme[]> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:307]
                ↳ Parses one Wiktionary page into lexemes by iterating `p:has(strong.Latn.headword)` sections and enriching each accepted…
-              └─> LexemesService.parseLexemeFromElement(…): Promise<Lexeme | null> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:144]
+              └─> LexemesService.parseLexemeFromElement(…): Promise<Lexeme | null> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:146]
                  ↳ Parses and normalizes inputs for lexeme parsing and persistence.
-                └─> LexemesService.enrichLexeme(…): Promise<void> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:71]
+                └─> LexemesService.enrichLexeme(…): Promise<void> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:73]
                    ↳ Handles an internal workflow step for lexeme parsing and persistence.
-                  └─> FormsService.buildFormsForPartOfSpeech(pos: PartOfSpeech, rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms.service.ts:127]
-                     ↳ Builds Form entities from the raw parsed forms object for a given POS.
-                    └─> FormsBuilderOtherService.buildFormsForPartOfSpeech(pos: PartOfSpeech, rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:482]
-                       ↳ Builds Form entities for a given part-of-speech category.
-                      └─> FormsBuilderOtherService.buildVerbFormsFromRaw(rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:393]
-                         ↳ Builds structured data used during form entity building.
-                        └─> FormsBuilderOtherService.buildFiniteMoodForms(moodData: Record<string, unknown>, mood: FormMood, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:160]
-                           ↳ Builds structured data used during form entity building.
-                          └─> FormsBuilderOtherService.buildFiniteTenseForms(…): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:237]
-                             ↳ Builds structured data used during form entity building.
-                            └─> FormsBuilderOtherService.buildFiniteNumberForms(…): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:186]
-                               ↳ Builds structured data used during form entity building.
-                              └─> FormsBuilderOtherService.buildFinitePersonForms(…): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:214]
-                                 ↳ Builds structured data used during form entity building.
-                                └─> FormsBuilderVerbService.buildFinitePersonForms(args: BuildFinitePersonFormsArguments): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts:121]
-                                   ↳ Builds finite verb forms for specific persons based on the provided arguments, including lexeme, mood, number, tense,…
-                                  └─> FormsBuilderVerbService.buildFiniteVerbForm(…): Form [applications/lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts:55]
-                                     ↳ Builds a finite verb form for a specific person based on the provided arguments, including lexeme, mood, number, tense,…
-                                    └─> FormsTransientWordsService.setTransientWords(form: Form, words: string[]): void [applications/lexico-ingestion/src/modules/forms/forms-transient-words.service.ts:34]
-                                       ↳ Associates a list of transient words with a given Form entity.
+                  └─> PronunciationService.parse($: cheerio.CheerioAPI, elt: AnyNode, macronizedWord: string): Pronunciation[] [applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:181]
+                     ↳ Parses pronunciation data from the Wiktionary HTML element context.
+                    └─> PronunciationService.getEcclesiasticalPronunciations(word: string): string[] [applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:150]
+                       ↳ Gets ecclesiastical pronunciations used by pronunciation parsing.
+                      └─> PronunciationService.getEcclesiasticalPhonemes(wordString: string): PronunciationPhoneme[] [applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:124]
+                         ↳ Gets ecclesiastical phonemes used by pronunciation parsing.
+                        └─> PronunciationClassifierService.processEcclesiasticalCharacter(args: PronunciationEcclesiasticalCharacterContext): number [applications/lexico-ingestion/src/modules/pronunciation/pronunciation-classifier.service.ts:130]
+                           ↳ Processes one ecclesiastical-character position and returns the next index.
+                          └─> PronunciationEcclesiasticalService.processEcclesiasticalCharacter(args: PronunciationEcclesiasticalCharacterContext): number [applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:305]
+                             ↳ Processes one ecclesiastical-character position and returns the next index.
+                            └─> PronunciationEcclesiasticalService.classifyEcclesiasticalI(…): void [applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:188]
+                               ↳ Classifies ecclesiastical i for pronunciation parsing.
+                              └─> PronunciationEcclesiasticalService.isEcclesiasticalVocalI(index: number, word: string[], isVowel: (letter: string) => boolean): boolean [applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:41]
+                                 ↳ Checks whether ecclesiastical vocal i in pronunciation parsing logic.
+                                └─> PronunciationEcclesiasticalService.isInitialVocalI(index: number, word: string[], isVowel: (letter: string) => boolean): boolean [applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:55]
+                                   ↳ Checks whether initial vocal i in pronunciation parsing logic.
 ```
 
-**2. `DictionaryCommand.run`** — depth ≥ 18 · decorated-method
+**2. `DictionaryCommand.run`** — depth ≥ 16 · decorated-method
 
 ```text
 🚀 DictionaryCommand.run(_arguments: string[], options: DictionaryCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:472]
@@ -177,32 +173,28 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
          ↳ Ingests one lemma by parsing its Wiktionary HTML into lexemes, saving relations, and recursively resolving…
         └─> DictionaryCommand.processTranslationReferences(saved: Lexeme): Promise<void> (cycle) [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:282]
            ↳ Processes one workflow step for dictionary ingestion.
-          └─> LexemesService.parseLexemes(wiktionaryPage: WiktionaryPage): Promise<Lexeme[]> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:305]
+          └─> LexemesService.parseLexemes(wiktionaryPage: WiktionaryPage): Promise<Lexeme[]> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:307]
              ↳ Parses one Wiktionary page into lexemes by iterating `p:has(strong.Latn.headword)` sections and enriching each accepted…
-            └─> LexemesService.parseLexemeFromElement(…): Promise<Lexeme | null> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:144]
+            └─> LexemesService.parseLexemeFromElement(…): Promise<Lexeme | null> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:146]
                ↳ Parses and normalizes inputs for lexeme parsing and persistence.
-              └─> LexemesService.enrichLexeme(…): Promise<void> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:71]
+              └─> LexemesService.enrichLexeme(…): Promise<void> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:73]
                  ↳ Handles an internal workflow step for lexeme parsing and persistence.
-                └─> FormsService.buildFormsForPartOfSpeech(pos: PartOfSpeech, rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms.service.ts:127]
-                   ↳ Builds Form entities from the raw parsed forms object for a given POS.
-                  └─> FormsBuilderOtherService.buildFormsForPartOfSpeech(pos: PartOfSpeech, rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:482]
-                     ↳ Builds Form entities for a given part-of-speech category.
-                    └─> FormsBuilderOtherService.buildVerbFormsFromRaw(rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:393]
-                       ↳ Builds structured data used during form entity building.
-                      └─> FormsBuilderOtherService.buildFiniteMoodForms(moodData: Record<string, unknown>, mood: FormMood, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:160]
-                         ↳ Builds structured data used during form entity building.
-                        └─> FormsBuilderOtherService.buildFiniteTenseForms(…): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:237]
-                           ↳ Builds structured data used during form entity building.
-                          └─> FormsBuilderOtherService.buildFiniteNumberForms(…): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:186]
-                             ↳ Builds structured data used during form entity building.
-                            └─> FormsBuilderOtherService.buildFinitePersonForms(…): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:214]
-                               ↳ Builds structured data used during form entity building.
-                              └─> FormsBuilderVerbService.buildFinitePersonForms(args: BuildFinitePersonFormsArguments): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts:121]
-                                 ↳ Builds finite verb forms for specific persons based on the provided arguments, including lexeme, mood, number, tense,…
-                                └─> FormsBuilderVerbService.buildFiniteVerbForm(…): Form [applications/lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts:55]
-                                   ↳ Builds a finite verb form for a specific person based on the provided arguments, including lexeme, mood, number, tense,…
-                                  └─> FormsTransientWordsService.setTransientWords(form: Form, words: string[]): void [applications/lexico-ingestion/src/modules/forms/forms-transient-words.service.ts:34]
-                                     ↳ Associates a list of transient words with a given Form entity.
+                └─> PronunciationService.parse($: cheerio.CheerioAPI, elt: AnyNode, macronizedWord: string): Pronunciation[] [applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:181]
+                   ↳ Parses pronunciation data from the Wiktionary HTML element context.
+                  └─> PronunciationService.getEcclesiasticalPronunciations(word: string): string[] [applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:150]
+                     ↳ Gets ecclesiastical pronunciations used by pronunciation parsing.
+                    └─> PronunciationService.getEcclesiasticalPhonemes(wordString: string): PronunciationPhoneme[] [applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:124]
+                       ↳ Gets ecclesiastical phonemes used by pronunciation parsing.
+                      └─> PronunciationClassifierService.processEcclesiasticalCharacter(args: PronunciationEcclesiasticalCharacterContext): number [applications/lexico-ingestion/src/modules/pronunciation/pronunciation-classifier.service.ts:130]
+                         ↳ Processes one ecclesiastical-character position and returns the next index.
+                        └─> PronunciationEcclesiasticalService.processEcclesiasticalCharacter(args: PronunciationEcclesiasticalCharacterContext): number [applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:305]
+                           ↳ Processes one ecclesiastical-character position and returns the next index.
+                          └─> PronunciationEcclesiasticalService.classifyEcclesiasticalI(…): void [applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:188]
+                             ↳ Classifies ecclesiastical i for pronunciation parsing.
+                            └─> PronunciationEcclesiasticalService.isEcclesiasticalVocalI(index: number, word: string[], isVowel: (letter: string) => boolean): boolean [applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:41]
+                               ↳ Checks whether ecclesiastical vocal i in pronunciation parsing logic.
+                              └─> PronunciationEcclesiasticalService.isInitialVocalI(index: number, word: string[], isVowel: (letter: string) => boolean): boolean [applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:55]
+                                 ↳ Checks whether initial vocal i in pronunciation parsing logic.
 ```
 
 **3. `LibraryCommand.run`** — depth ≥ 15 · decorated-method
@@ -589,7 +581,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 **29. `FormsService.setTransientWords`** — depth 2 · orphan-root
 
 ```text
-🚀 FormsService.setTransientWords(form: Form, words: string[]): void [applications/lexico-ingestion/src/modules/forms/forms.service.ts:181]
+🚀 FormsService.setTransientWords(form: Form, words: string[]): void [applications/lexico-ingestion/src/modules/forms/forms.service.ts:159]
    ↳ Sets transient word strings for a Form instance.
   └─> FormsTransientWordsService.setTransientWords(form: Form, words: string[]): void [applications/lexico-ingestion/src/modules/forms/forms-transient-words.service.ts:34]
      ↳ Associates a list of transient words with a given Form entity.
@@ -640,8 +632,8 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `LexemesService.enrichLexeme` | 8 | `applications/lexico-ingestion:modules/etymology`, `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/part-of-speech`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/translations` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:71` |
-| `LexemesService.saveLexemeRelations` | 6 | `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/words` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:216` |
+| `LexemesService.enrichLexeme` | 8 | `applications/lexico-ingestion:modules/etymology`, `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/part-of-speech`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/translations` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:73` |
+| `LexemesService.saveLexemeRelations` | 6 | `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/words` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:218` |
 
 ### Breadth
 
@@ -649,24 +641,24 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | --- | --- | --- | --- |
 | `PronunciationEcclesiasticalService.processEcclesiasticalCharacter` | 8 | `PronunciationEcclesiasticalService.classifyEcclesiasticalC`, `PronunciationEcclesiasticalService.classifyEcclesiasticalG`, `PronunciationEcclesiasticalService.classifyEcclesiasticalH`, `PronunciationEcclesiasticalService.classifyEcclesiasticalI`, `PronunciationEcclesiasticalService.classifyEcclesiasticalS`, `PronunciationEcclesiasticalService.classifyEcclesiasticalT`, `PronunciationEcclesiasticalService.classifyEcclesiasticalX`, `PronunciationEcclesiasticalService.lookupMultiCharacterPhoneme` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:305` |
 | `LatinLibraryProvider.ingest` | 8 | `LatinLibraryProvider.readSourceCacheFile`, `LatinLibraryProvider.buildRootAuthors`, `LatinLibraryProvider.expandCategoryAuthors`, `LatinLibraryProvider.sort(…)`, `LatinLibraryProvider.filter(…)`, `LatinLibraryProvider.processAuthorPage`, `LatinLibraryProvider.writeAuthorTexts`, `LatinLibraryProvider.forEach(…)` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:407` |
-| `LexemesService.enrichLexeme` | 7 | `PrincipalPartsService.parsePrincipalParts`, `PartOfSpeechService.ingestInflection`, `TranslationsService.parseTranslations`, `EtymologyService.parse`, `PronunciationService.parse`, `PartOfSpeechService.parseForms`, `FormsService.buildFormsForPartOfSpeech` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:71` |
+| `LexemesService.enrichLexeme` | 7 | `PrincipalPartsService.parsePrincipalParts`, `PartOfSpeechService.ingestInflection`, `TranslationsService.parseTranslations`, `EtymologyService.parse`, `PronunciationService.parse`, `PartOfSpeechService.parseForms`, `FormsBuilderService.buildFormsForPartOfSpeech` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:73` |
 
 <details>
-<summary>282 more callables</summary>
+<summary>280 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `ManualService.ingestManual` | 7 | `ManualService.deleteManual`, `ManualService.createManual`, `buildHicTemplate`, `buildIlleTemplate`, `buildOmnisTemplate`, `ManualService.ingestPraenomenAbbreviations`, `ManualService.ingestRomanNumerals` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:190` |
-| `FormsService.ingestLexemeForms` | 6 | `FormsService.findExistingFormsByLexemeId`, `FormsService.preserveMatchingExistingFormIdentity`, `FormsService.map(…)`, `FormsService.saveFormsForLexeme`, `FormsService.buildFormsByNormalizedWordMap`, `WordsService.upsertWordsAndJunctions` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:151` |
+| `FormsService.ingestLexemeForms` | 6 | `FormsService.findExistingFormsByLexemeId`, `FormsService.preserveMatchingExistingFormIdentity`, `FormsService.map(…)`, `FormsService.saveFormsForLexeme`, `FormsService.buildFormsByNormalizedWordMap`, `WordsService.upsertWordsAndJunctions` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:129` |
 | `PronunciationClassicalService.processClassicalCharacter` | 6 | `PronunciationClassicalService.classifyClassicalH`, `PronunciationClassicalService.classifyClassicalI`, `PronunciationClassicalService.classifyClassicalJ`, `PronunciationClassicalService.classifyClassicalN`, `PronunciationClassicalService.lookupClassicalDevocalizeCharacter`, `PronunciationClassicalService.lookupMultiCharacterPhoneme` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation-classical.service.ts:140` |
-| `LexemesService.saveLexemeRelations` | 6 | `LexemesService.saveInflection`, `PrincipalPartsService.ingestLexemePrincipalParts`, `PronunciationService.ingestLexemePronunciations`, `LexemesService.saveTranslations`, `FormsService.ingestLexemeForms`, `WordsService.ingestLexemeWords` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:216` |
+| `LexemesService.saveLexemeRelations` | 6 | `LexemesService.saveInflection`, `PrincipalPartsService.ingestLexemePrincipalParts`, `PronunciationService.ingestLexemePronunciations`, `LexemesService.saveTranslations`, `FormsService.ingestLexemeForms`, `WordsService.ingestLexemeWords` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:218` |
 | `LatinLibraryProvider.processTextLink` | 6 | `LatinLibraryBuilder.isSkippedHref`, `LatinLibraryBuilder.isTextFileHref`, `LatinLibraryBuilder.isExternalOrSelfLink`, `LatinLibraryBuilder.findRawBookHeading`, `LatinLibraryBuilder.buildTextEntityForLink`, `LatinLibraryProvider.addTextToBook` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:211` |
 | `LatinLibraryProvider.writeWorkText` | 6 | `LatinLibraryProvider.getMetadataString`, `LatinLibraryProvider.readSourceCacheFile`, `LatinLibraryBuilder.parseWorkParagraphs`, `hasValidTextContent`, `LatinLibraryBuilder.buildWorkMarkdownContent`, `LatinLibraryProvider.saveWorkTextMarkdown` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:368` |
 | `LiteratureService.ingestLines` | 6 | `LiteratureService.getWordsCache`, `LiteratureService.filter(…)`, `LiteratureService.map(…)`, `LiteratureService.upsertAndFetchLines`, `LiteratureService.extractTokensFromLine`, `LiteratureService.upsertTokens` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:241` |
 | `LiteratureCommand.run` | 6 | `LiteratureService.scanLibrary`, `LiteratureCommand.parseProvider`, `LiteratureCommand.parseAuthor`, `LiteratureCommand.parseText`, `LiteratureCommand.selectTextsToIngest`, `LiteratureService.ingestAllAuthors` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:257` |
 | `WordsService.ingestLexemeWords` | 5 | `WordsService.getLexemeWords`, `WordsService.filter(…)`, `WordsService.map(…)`, `WordsService.map(…)`, `WordsService.map(…)` | `applications/lexico-ingestion/src/modules/words/words.service.ts:127` |
 | `WordsService.upsertWordsAndJunctions` | 5 | `WordsService.map(…)`, `WordsService.map(…)`, `WordsService.map(…)`, `WordsService.insertWordFormChunks`, `WordsService.buildWordFormValues` | `applications/lexico-ingestion/src/modules/words/words.service.ts:175` |
-| `FormsBuilderOtherService.buildVerbFormsFromRaw` | 5 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isFormMood`, `FormsBuilderOtherService.buildFiniteMoodForms`, `FormsBuilderOtherService.buildVerbNonFiniteForms`, `FormsBuilderOtherService.buildVerbNounForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:393` |
+| `FormsBuilderService.buildVerbFormsFromRaw` | 5 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isFormMood`, `FormsBuilderService.buildFiniteVoiceForms`, `FormsBuilderService.buildVerbNonFiniteForms`, `FormsBuilderService.buildVerbNounForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:394` |
 | `DictionaryCommand.processTranslationReferences` | 5 | `TranslationsService.extractTranslationReferences`, `LexemesService.existsByLemma`, `DictionaryCommand.ingestLexeme`, `TranslationsService.findTranslationsWithReferences`, `DictionaryCommand.ingestTranslationReference` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:282` |
 | `LatinLibraryCommand.run` | 5 | `LatinLibraryCommand.fetchAndCachePage`, `LatinLibraryCommand.getAuthorUrls`, `LatinLibraryCommand.getFinalAuthorUrls`, `LatinLibraryCommand.enqueueAuthorUrls`, `LatinLibraryCommand.from(…)` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:381` |
 | `LibraryCommand.getTextChoices` | 5 | `LibraryCommand.scanLibrary`, `LibraryCommand.filter(…)`, `LibraryCommand.filter(…)`, `LibraryCommand.map(…)`, `LibraryCommand.map(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:101` |
@@ -675,16 +667,15 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `LiteratureCommand.getTextChoices` | 5 | `LiteratureService.scanLibrary`, `LiteratureCommand.filter(…)`, `LiteratureCommand.filter(…)`, `LiteratureCommand.map(…)`, `LiteratureCommand.map(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:104` |
 | `LexicoIngestionCommand.executeStages` | 5 | `WiktionaryCommand.run`, `DictionaryCommand.ingestAll`, `LexicoIngestionCommand.runLibrarySourcesStage`, `LibraryCommand.run`, `LiteratureCommand.run` | `applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.ts:54` |
 | `CorpusScriptorumEcclesiasticorumLatinorumCommand.run` | 4 | `CorpusScriptorumEcclesiasticorumLatinorumCommand.fetchTree`, `CorpusScriptorumEcclesiasticorumLatinorumCommand.map(…)`, `CorpusScriptorumEcclesiasticorumLatinorumCommand.filter(…)`, `CorpusScriptorumEcclesiasticorumLatinorumCommand.downloadSourceXmlFileIfMissing` | `applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:127` |
-| `FormsBuilderOtherService.buildAdjectivalNumberForms` | 4 | `FormsBuilderGuardsService.isFormCase`, `FormsBuilderGuardsService.isFormNumber`, `FormsBuilderGuardsService.isStringArray`, `FormsBuilderOtherService.createAdjectivalForm` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:110` |
-| `FormsBuilderOtherService.buildFinitePersonForms` | 4 | `FormsBuilderGuardsService.isFormNumber`, `FormsBuilderGuardsService.isFormTense`, `FormsBuilderGuardsService.isFormVoice`, `FormsBuilderVerbService.buildFinitePersonForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:214` |
-| `FormsBuilderOtherService.buildNominalNumberForms` | 4 | `FormsBuilderGuardsService.isFormCase`, `FormsBuilderGuardsService.isFormNumber`, `FormsBuilderGuardsService.isStringArray`, `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:329` |
-| `FormsBuilderOtherService.buildFormsForPartOfSpeech` | 4 | `FormsBuilderOtherService.buildAdjectivalFormsFromRaw`, `FormsBuilderOtherService.buildAdverbFormsFromRaw`, `FormsBuilderOtherService.buildNominalFormsFromRaw`, `FormsBuilderOtherService.buildVerbFormsFromRaw` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:482` |
+| `FormsBuilderService.buildAdjectivalNumberForms` | 4 | `FormsBuilderGuardsService.isFormCase`, `FormsBuilderGuardsService.isFormNumber`, `FormsBuilderGuardsService.isStringArray`, `FormsBuilderService.createAdjectivalForm` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:112` |
+| `FormsBuilderService.buildNominalNumberForms` | 4 | `FormsBuilderGuardsService.isFormCase`, `FormsBuilderGuardsService.isFormNumber`, `FormsBuilderGuardsService.isStringArray`, `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:330` |
+| `FormsBuilderService.buildFormsForPartOfSpeech` | 4 | `FormsBuilderService.buildAdjectivalFormsFromRaw`, `FormsBuilderService.buildAdverbFormsFromRaw`, `FormsBuilderService.buildNominalFormsFromRaw`, `FormsBuilderService.buildVerbFormsFromRaw` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:483` |
 | `PartOfSpeechFormsService.findGenericIdentifiers` | 4 | `PartOfSpeechFormsService.collectTableIdentifiers`, `PartOfSpeechFormsService.find(…)`, `PartOfSpeechFormsService.find(…)`, `PartOfSpeechFormsService.find(…)` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:58` |
 | `PartOfSpeechFormsService.findVerbIdentifiers` | 4 | `PartOfSpeechFormsService.scanVerbHeader(…)`, `PartOfSpeechFormsService.scanVerbHeader`, `PartOfSpeechFormsService.scanVerbHeader(…)`, `PartOfSpeechFormsService.map(…)` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:83` |
 | `PartOfSpeechFormsService.parseGenericForms` | 4 | `PartOfSpeechFormsService.parseFormTable`, `PartOfSpeechFormsService.map(…)`, `PartOfSpeechFormsService.findGenericIdentifiers`, `PartOfSpeechFormsService.sortIdentifiers` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:358` |
 | `PronunciationService.parse` | 4 | `PronunciationService.buildDefaultPronunciation`, `PronunciationService.getClassicalPhonemes`, `PronunciationService.getEcclesiasticalPronunciations`, `PronunciationClassifierService.applyWiktionaryPronunciations` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:181` |
 | `TranslationsService.parseTranslations` | 4 | `TranslationsService.capitalizeFirstLetter`, `TranslationsService.map(…)`, `Translation.constructor`, `TranslationsService.filter(…)` | `applications/lexico-ingestion/src/modules/translations/translations.service.ts:96` |
-| `LexemesService.parseLexemeFromElement` | 4 | `PartOfSpeechService.getPartOfSpeech`, `PartOfSpeechService.getFirstPrincipalPartName`, `LexemesService.buildLexeme`, `LexemesService.enrichLexeme` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:144` |
+| `LexemesService.parseLexemeFromElement` | 4 | `PartOfSpeechService.getPartOfSpeech`, `PartOfSpeechService.getFirstPrincipalPartName`, `LexemesService.buildLexeme`, `LexemesService.enrichLexeme` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:146` |
 | `ManualService.ingestRomanNumerals` | 4 | `NumeralsService.toRoman`, `buildRomanNumeralTemplate`, `Translation.constructor`, `ManualService.createManual` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:117` |
 | `DictionaryCommand.processTranslationMatch` | 4 | `LexemesService.findLexemesByLemmaWithTranslations`, `DictionaryCommand.normalize`, `DictionaryCommand.find(…)`, `DictionaryCommand.map(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:247` |
 | `DictionaryCommand.ingestLexeme` | 4 | `DictionaryCommand.getPageForLexeme`, `LexemesService.parseLexemes`, `LexemesService.saveParsedLexeme`, `DictionaryCommand.processTranslationReferences` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:353` |
@@ -702,22 +693,22 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `FormsBuilderVerbService.collectParticipleFormsForTense` | 3 | `FormsBuilderGuardsService.isFormNonFiniteTense`, `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isFormGender` | `applications/lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts:77` |
 | `FormsBuilderVerbService.buildFinitePersonForms` | 3 | `FormsBuilderGuardsService.isFormPerson`, `FormsBuilderGuardsService.isStringArray`, `FormsBuilderVerbService.buildFiniteVerbForm` | `applications/lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts:121` |
 | `FormsBuilderVerbService.buildParticipleFormsFromRaw` | 3 | `FormsBuilderGuardsService.isFormNonFiniteTense`, `FormsBuilderVerbService.collectParticipleFormsForTense`, `FormsBuilderVerbService.applyTenseToParticipleForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts:149` |
-| `FormsBuilderOtherService.buildAdjectivalCaseForms` | 3 | `FormsBuilderGuardsService.isFormCase`, `FormsBuilderGuardsService.isRecord`, `FormsBuilderOtherService.buildAdjectivalNumberForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:60` |
-| `FormsBuilderOtherService.buildAdjectivalFormsFromRaw` | 3 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isFormGender`, `FormsBuilderOtherService.buildAdjectivalCaseForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:89` |
-| `FormsBuilderOtherService.buildAdverbFormsFromRaw` | 3 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isStringArray`, `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:144` |
-| `FormsBuilderOtherService.buildFiniteMoodForms` | 3 | `FormsBuilderGuardsService.isFormVoice`, `FormsBuilderGuardsService.isRecord`, `FormsBuilderOtherService.buildFiniteTenseForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:160` |
-| `FormsBuilderOtherService.buildFiniteNumberForms` | 3 | `FormsBuilderGuardsService.isFormNumber`, `FormsBuilderGuardsService.isRecord`, `FormsBuilderOtherService.buildFinitePersonForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:186` |
-| `FormsBuilderOtherService.buildFiniteTenseForms` | 3 | `FormsBuilderGuardsService.isFormTense`, `FormsBuilderGuardsService.isRecord`, `FormsBuilderOtherService.buildFiniteNumberForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:237` |
-| `FormsBuilderOtherService.buildGerundForms` | 3 | `FormsBuilderGuardsService.isGerundCase`, `FormsBuilderGuardsService.isStringArray`, `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:263` |
-| `FormsBuilderOtherService.buildInfinitiveForms` | 3 | `FormsBuilderGuardsService.isFormNonFiniteTense`, `FormsBuilderGuardsService.isStringArray`, `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:284` |
-| `FormsBuilderOtherService.buildNominalFormsFromRaw` | 3 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isFormCase`, `FormsBuilderOtherService.buildNominalNumberForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:306` |
-| `FormsBuilderOtherService.buildSupineForms` | 3 | `FormsBuilderGuardsService.isSupineCase`, `FormsBuilderGuardsService.isStringArray`, `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:372` |
-| `FormsBuilderOtherService.buildVerbNonFiniteForms` | 3 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderOtherService.buildInfinitiveForms`, `FormsBuilderOtherService.buildParticipleFormsFromRaw` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:418` |
-| `FormsBuilderOtherService.buildVerbNounForms` | 3 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderOtherService.buildGerundForms`, `FormsBuilderOtherService.buildSupineForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:438` |
+| `FormsBuilderService.buildAdjectivalCaseForms` | 3 | `FormsBuilderGuardsService.isFormCase`, `FormsBuilderGuardsService.isRecord`, `FormsBuilderService.buildAdjectivalNumberForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:62` |
+| `FormsBuilderService.buildAdjectivalFormsFromRaw` | 3 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isFormGender`, `FormsBuilderService.buildAdjectivalCaseForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:91` |
+| `FormsBuilderService.buildAdverbFormsFromRaw` | 3 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isStringArray`, `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:146` |
+| `FormsBuilderService.buildFiniteNumberForms` | 3 | `FormsBuilderGuardsService.isFormNumber`, `FormsBuilderGuardsService.isRecord`, `FormsBuilderVerbService.buildFinitePersonForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:168` |
+| `FormsBuilderService.buildFiniteTenseForms` | 3 | `FormsBuilderGuardsService.isFormTense`, `FormsBuilderGuardsService.isRecord`, `FormsBuilderService.buildFiniteNumberForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:204` |
+| `FormsBuilderService.buildFiniteVoiceForms` | 3 | `FormsBuilderGuardsService.isFormVoice`, `FormsBuilderGuardsService.isRecord`, `FormsBuilderService.buildFiniteTenseForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:238` |
+| `FormsBuilderService.buildGerundForms` | 3 | `FormsBuilderGuardsService.isGerundCase`, `FormsBuilderGuardsService.isStringArray`, `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:264` |
+| `FormsBuilderService.buildInfinitiveForms` | 3 | `FormsBuilderGuardsService.isFormNonFiniteTense`, `FormsBuilderGuardsService.isStringArray`, `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:285` |
+| `FormsBuilderService.buildNominalFormsFromRaw` | 3 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isFormCase`, `FormsBuilderService.buildNominalNumberForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:307` |
+| `FormsBuilderService.buildSupineForms` | 3 | `FormsBuilderGuardsService.isSupineCase`, `FormsBuilderGuardsService.isStringArray`, `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:373` |
+| `FormsBuilderService.buildVerbNonFiniteForms` | 3 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderService.buildInfinitiveForms`, `FormsBuilderService.buildParticipleFormsFromRaw` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:419` |
+| `FormsBuilderService.buildVerbNounForms` | 3 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderService.buildGerundForms`, `FormsBuilderService.buildSupineForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:439` |
 | `PartOfSpeechFormsService.collectTableIdentifiers` | 3 | `PartOfSpeechFormsService.scanTableAxis(…)`, `PartOfSpeechFormsService.scanTableAxis`, `PartOfSpeechFormsService.scanTableAxis(…)` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:35` |
 | `PartOfSpeechFormsService.parseFormTable` | 3 | `PartOfSpeechFormsService.filter(…)`, `PartOfSpeechFormsService.map(…)`, `PartOfSpeechFormsService.map(…)` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:169` |
 | `PartOfSpeechFormsService.parseVerbForms` | 3 | `PartOfSpeechFormsService.parseFormTable`, `PartOfSpeechFormsService.processVerbFormRow`, `PartOfSpeechFormsService.sortIdentifiers` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:404` |
-| `LexemesService.saveParsedLexeme` | 3 | `LexemesService.upsertLexeme`, `LexemesService.fetchSavedLexeme`, `LexemesService.saveLexemeRelations` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:333` |
+| `LexemesService.saveParsedLexeme` | 3 | `LexemesService.upsertLexeme`, `LexemesService.fetchSavedLexeme`, `LexemesService.saveLexemeRelations` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:335` |
 | `buildHicTemplate` | 3 | `buildGenderedPrincipalParts`, `Translation.constructor`, `buildAdjectivalForms` | `applications/lexico-ingestion/src/modules/manual/manual.utilities.ts:66` |
 | `buildIlleTemplate` | 3 | `buildGenderedPrincipalParts`, `Translation.constructor`, `buildAdjectivalForms` | `applications/lexico-ingestion/src/modules/manual/manual.utilities.ts:116` |
 | `buildOmnisTemplate` | 3 | `buildGenderedPrincipalParts`, `Translation.constructor`, `buildAdjectivalForms` | `applications/lexico-ingestion/src/modules/manual/manual.utilities.ts:169` |
@@ -738,7 +729,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `WiktionaryCommand.ingestCategory` | 3 | `WiktionaryCommand.fetchCategoryPage`, `WiktionaryCommand.processWiktionaryCategoryLink`, `WiktionaryCommand.handleCategoryError` | `applications/lexico-ingestion/src/modules/wiktionary/wiktionary.command.ts:139` |
 | `WordsService.map(…)` | 2 | `WordsService.escapeCapitals`, `WordsService.normalize` | `applications/lexico-ingestion/src/modules/words/words.service.ts:136` |
 | `normalizeStringArray` | 2 | `isNormalizableStringArray`, `filter(…)` | `applications/lexico-ingestion/src/modules/forms/forms.constants.ts:21` |
-| `FormsService.findIndex(…)` | 2 | `FormsService.filter(…)`, `FormsService.every(…)` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:86` |
+| `FormsService.findIndex(…)` | 2 | `FormsService.filter(…)`, `FormsService.every(…)` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:80` |
 | `EtymologyService.parse` | 2 | `EtymologyService.filter(…)`, `Translation.constructor` | `applications/lexico-ingestion/src/modules/etymology/etymology.service.ts:31` |
 | `compactStringValues` | 2 | `isCompactStringArray`, `filter(…)` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.constants.ts:17` |
 | `PartOfSpeechFormsService.processVerbFormRow` | 2 | `PartOfSpeechFormsService.findVerbIdentifiers`, `PartOfSpeechFormsService.parseVerbWordCell` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:225` |
@@ -752,7 +743,7 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `PronunciationEcclesiasticalService.classifyEcclesiasticalX` | 2 | `PronunciationEcclesiasticalService.isBetweenVowels`, `PronunciationEcclesiasticalService.isScConsonant` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts:242` |
 | `PronunciationClassifierService.applyWiktionaryPronunciations` | 2 | `PronunciationClassifierService.filter(…)`, `PronunciationClassifierService.updateVariantPronunciation` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation-classifier.service.ts:87` |
 | `PronunciationService.getEcclesiasticalPronunciations` | 2 | `PronunciationService.buildPronunciations`, `PronunciationService.getEcclesiasticalPhonemes` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:150` |
-| `LexemesService.parseLexemes` | 2 | `LexemesService.normalize`, `LexemesService.parseLexemeFromElement` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:305` |
+| `LexemesService.parseLexemes` | 2 | `LexemesService.normalize`, `LexemesService.parseLexemeFromElement` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:307` |
 | `ManualService.ingestPraenomenAbbreviations` | 2 | `ManualService.createManual`, `ManualService.buildPraenomenLexeme` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:102` |
 | `ManualService.createManual` | 2 | `ManualService.deleteManual`, `WordsService.ingestLexemeWords` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:160` |
 | `DictionaryCommand.getLemmaChoices` | 2 | `DictionaryCommand.map(…)`, `DictionaryCommand.filter(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:75` |
@@ -801,12 +792,11 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `WordsService.escapeCapitals` | 1 | `WordsService.replaceAll(…)` | `applications/lexico-ingestion/src/modules/words/words.service.ts:67` |
 | `WordsService.getLexemeWords` | 1 | `WordsService.forEach(…)` | `applications/lexico-ingestion/src/modules/words/words.service.ts:118` |
 | `FormsBuilderVerbService.buildFiniteVerbForm` | 1 | `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts:55` |
-| `FormsBuilderOtherService.buildParticipleFormsFromRaw` | 1 | `FormsBuilderVerbService.buildParticipleFormsFromRaw` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:360` |
-| `FormsBuilderOtherService.createAdjectivalForm` | 1 | `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:458` |
-| `FormsService.preserveMatchingExistingFormIdentity` | 1 | `FormsService.findIndex(…)` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:81` |
-| `FormsService.buildFormsForPartOfSpeech` | 1 | `FormsBuilderOtherService.buildFormsForPartOfSpeech` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:127` |
-| `FormsService.map(…)` | 1 | `FormsTransientWordsService.getTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:160` |
-| `FormsService.setTransientWords` | 1 | `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:181` |
+| `FormsBuilderService.buildParticipleFormsFromRaw` | 1 | `FormsBuilderVerbService.buildParticipleFormsFromRaw` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:361` |
+| `FormsBuilderService.createAdjectivalForm` | 1 | `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:459` |
+| `FormsService.preserveMatchingExistingFormIdentity` | 1 | `FormsService.findIndex(…)` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:75` |
+| `FormsService.map(…)` | 1 | `FormsTransientWordsService.getTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:138` |
+| `FormsService.setTransientWords` | 1 | `FormsTransientWordsService.setTransientWords` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:159` |
 | `PartOfSpeechFormsService.find(…)` | 1 | `PartOfSpeechFormsService.isNumber` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:72` |
 | `PartOfSpeechFormsService.find(…)` | 1 | `PartOfSpeechFormsService.isCase` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:73` |
 | `PartOfSpeechFormsService.find(…)` | 1 | `PartOfSpeechFormsService.isGender` | `applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts:74` |
@@ -849,8 +839,8 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 | `PronunciationService.ingestLexemePronunciations` | 1 | `PronunciationService.find(…)` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:159` |
 | `TranslationsService.map(…)` | 1 | `TranslationsService.normalize` | `applications/lexico-ingestion/src/modules/translations/translations.service.ts:125` |
 | `TranslationsService.prepareTranslationsForSave` | 1 | `TranslationsService.find(…)` | `applications/lexico-ingestion/src/modules/translations/translations.service.ts:140` |
-| `LexemesService.buildLexeme` | 1 | `LexemesService.normalize` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:56` |
-| `LexemesService.saveTranslations` | 1 | `TranslationsService.prepareTranslationsForSave` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:246` |
+| `LexemesService.buildLexeme` | 1 | `LexemesService.normalize` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:58` |
+| `LexemesService.saveTranslations` | 1 | `TranslationsService.prepareTranslationsForSave` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:248` |
 | `NumeralsService.toRoman` | 1 | `NumeralsService.convertDigit` | `applications/lexico-ingestion/src/modules/numerals/numerals.service.ts:44` |
 | `buildAdjectivalForms` | 1 | `flatMap(…)` | `applications/lexico-ingestion/src/modules/manual/manual.utilities.ts:17` |
 | `flatMap(…)` | 1 | `flatMap(…)` | `applications/lexico-ingestion/src/modules/manual/manual.utilities.ts:20` |
@@ -1087,10 +1077,10 @@ graph LR
   file_src_modules_etymology_etymology_types_ts["src/modules/etymology/etymology.types.ts"]
   file_src_modules_forms_forms_builder_guards_service_ts["src/modules/forms/forms-builder-guards.service.ts"]
   file_src_modules_forms_forms_builder_guards_service_unit_test_ts["src/modules/forms/forms-builder-guards.service.unit.test.ts"]
-  file_src_modules_forms_forms_builder_other_service_ts["src/modules/forms/forms-builder-other.service.ts"]
-  file_src_modules_forms_forms_builder_other_service_unit_test_ts["src/modules/forms/forms-builder-other.service.unit.test.ts"]
   file_src_modules_forms_forms_builder_verb_service_ts["src/modules/forms/forms-builder-verb.service.ts"]
   file_src_modules_forms_forms_builder_verb_service_unit_test_ts["src/modules/forms/forms-builder-verb.service.unit.test.ts"]
+  file_src_modules_forms_forms_builder_service_ts["src/modules/forms/forms-builder.service.ts"]
+  file_src_modules_forms_forms_builder_service_unit_test_ts["src/modules/forms/forms-builder.service.unit.test.ts"]
   file_src_modules_forms_forms_transient_words_service_ts["src/modules/forms/forms-transient-words.service.ts"]
   file_src_modules_forms_forms_transient_words_service_unit_test_ts["src/modules/forms/forms-transient-words.service.unit.test.ts"]
   file_src_modules_forms_forms_constants_ts["src/modules/forms/forms.constants.ts"]
@@ -1251,32 +1241,30 @@ graph LR
   file_src_modules_forms_forms_builder_guards_service_ts --> file_src_modules_forms_forms_constants_ts
   file_src_modules_forms_forms_builder_guards_service_ts --> file_src_modules_forms_forms_types_ts
   file_src_modules_forms_forms_builder_guards_service_unit_test_ts --> file_src_modules_forms_forms_builder_guards_service_ts
-  file_src_modules_forms_forms_builder_other_service_ts --> file_src_modules_forms_forms_builder_guards_service_ts
-  file_src_modules_forms_forms_builder_other_service_ts --> file_src_modules_forms_forms_builder_verb_service_ts
-  file_src_modules_forms_forms_builder_other_service_ts --> file_src_modules_forms_forms_transient_words_service_ts
-  file_src_modules_forms_forms_builder_other_service_ts --> file_src_modules_forms_forms_constants_ts
-  file_src_modules_forms_forms_builder_other_service_ts --> file_src_modules_forms_forms_types_ts
-  file_src_modules_forms_forms_builder_other_service_unit_test_ts --> file_src_modules_forms_forms_builder_guards_service_ts
-  file_src_modules_forms_forms_builder_other_service_unit_test_ts --> file_src_modules_forms_forms_builder_other_service_ts
-  file_src_modules_forms_forms_builder_other_service_unit_test_ts --> file_src_modules_forms_forms_builder_verb_service_ts
-  file_src_modules_forms_forms_builder_other_service_unit_test_ts --> file_src_modules_forms_forms_transient_words_service_ts
   file_src_modules_forms_forms_builder_verb_service_ts --> file_src_modules_forms_forms_builder_guards_service_ts
   file_src_modules_forms_forms_builder_verb_service_ts --> file_src_modules_forms_forms_transient_words_service_ts
   file_src_modules_forms_forms_builder_verb_service_ts --> file_src_modules_forms_forms_types_ts
   file_src_modules_forms_forms_builder_verb_service_unit_test_ts --> file_src_modules_forms_forms_builder_guards_service_ts
   file_src_modules_forms_forms_builder_verb_service_unit_test_ts --> file_src_modules_forms_forms_builder_verb_service_ts
   file_src_modules_forms_forms_builder_verb_service_unit_test_ts --> file_src_modules_forms_forms_transient_words_service_ts
+  file_src_modules_forms_forms_builder_service_ts --> file_src_modules_forms_forms_builder_guards_service_ts
+  file_src_modules_forms_forms_builder_service_ts --> file_src_modules_forms_forms_builder_verb_service_ts
+  file_src_modules_forms_forms_builder_service_ts --> file_src_modules_forms_forms_transient_words_service_ts
+  file_src_modules_forms_forms_builder_service_ts --> file_src_modules_forms_forms_constants_ts
+  file_src_modules_forms_forms_builder_service_ts --> file_src_modules_forms_forms_types_ts
+  file_src_modules_forms_forms_builder_service_unit_test_ts --> file_src_modules_forms_forms_builder_guards_service_ts
+  file_src_modules_forms_forms_builder_service_unit_test_ts --> file_src_modules_forms_forms_builder_verb_service_ts
+  file_src_modules_forms_forms_builder_service_unit_test_ts --> file_src_modules_forms_forms_builder_service_ts
+  file_src_modules_forms_forms_builder_service_unit_test_ts --> file_src_modules_forms_forms_transient_words_service_ts
   file_src_modules_forms_forms_transient_words_service_unit_test_ts --> file_src_modules_forms_forms_transient_words_service_ts
   file_src_modules_forms_forms_module_ts --> file_src_modules_forms_forms_builder_guards_service_ts
-  file_src_modules_forms_forms_module_ts --> file_src_modules_forms_forms_builder_other_service_ts
   file_src_modules_forms_forms_module_ts --> file_src_modules_forms_forms_builder_verb_service_ts
+  file_src_modules_forms_forms_module_ts --> file_src_modules_forms_forms_builder_service_ts
   file_src_modules_forms_forms_module_ts --> file_src_modules_forms_forms_transient_words_service_ts
   file_src_modules_forms_forms_module_ts --> file_src_modules_forms_forms_service_ts
   file_src_modules_forms_forms_module_ts --> file_src_modules_words_words_module_ts
-  file_src_modules_forms_forms_service_ts --> file_src_modules_forms_forms_builder_other_service_ts
   file_src_modules_forms_forms_service_ts --> file_src_modules_forms_forms_transient_words_service_ts
   file_src_modules_forms_forms_service_ts --> file_src_modules_words_words_service_ts
-  file_src_modules_forms_forms_service_unit_test_ts --> file_src_modules_forms_forms_builder_other_service_ts
   file_src_modules_forms_forms_service_unit_test_ts --> file_src_modules_forms_forms_transient_words_service_ts
   file_src_modules_forms_forms_service_unit_test_ts --> file_src_modules_forms_forms_service_ts
   file_src_modules_forms_forms_service_unit_test_ts --> file_src_modules_words_words_service_ts
@@ -1293,6 +1281,7 @@ graph LR
   file_src_modules_lexemes_lexemes_module_ts --> file_src_modules_translations_translations_module_ts
   file_src_modules_lexemes_lexemes_module_ts --> file_src_modules_words_words_module_ts
   file_src_modules_lexemes_lexemes_service_ts --> file_src_modules_etymology_etymology_service_ts
+  file_src_modules_lexemes_lexemes_service_ts --> file_src_modules_forms_forms_builder_service_ts
   file_src_modules_lexemes_lexemes_service_ts --> file_src_modules_forms_forms_service_ts
   file_src_modules_lexemes_lexemes_service_ts --> file_src_modules_lexemes_lexemes_constants_ts
   file_src_modules_lexemes_lexemes_service_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_constants_ts
@@ -1303,6 +1292,7 @@ graph LR
   file_src_modules_lexemes_lexemes_service_ts --> file_src_modules_translations_translations_service_ts
   file_src_modules_lexemes_lexemes_service_ts --> file_src_modules_words_words_service_ts
   file_src_modules_lexemes_lexemes_service_unit_test_ts --> file_src_modules_etymology_etymology_service_ts
+  file_src_modules_lexemes_lexemes_service_unit_test_ts --> file_src_modules_forms_forms_builder_service_ts
   file_src_modules_lexemes_lexemes_service_unit_test_ts --> file_src_modules_forms_forms_service_ts
   file_src_modules_lexemes_lexemes_service_unit_test_ts --> file_src_modules_lexemes_lexemes_service_ts
   file_src_modules_lexemes_lexemes_service_unit_test_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_types_ts
@@ -1506,14 +1496,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-33622-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-138.17_MB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-33494-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-138.16_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-219-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-155-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-97.05_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-97.33_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -1522,7 +1512,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-7-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-107-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-357-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-355-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-3-166534?style=flat-square)
 
 ### JavaScript
@@ -1531,15 +1521,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-44-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-28-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-61-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-1235-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-515-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-1208-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-1230-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-513-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-1201-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-542-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-2466-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-2459-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-790-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-166-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-605-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1017-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-603-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1032-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-10-ca8a04?style=flat-square)
 
 ### Python

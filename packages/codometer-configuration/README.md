@@ -61,6 +61,8 @@ const codometerConfiguration: CodometerConfiguration = {
       name: "compiled",
     },
   ],
+  // How long one YAML comment block may run.
+  comments: { maximumWords: 128 },
 };
 
 export default codometerConfiguration;
@@ -265,6 +267,110 @@ written against it. Declaring a limit asserts the files are there, so an empty
 match is a glob that stopped matching or a build that never ran — while a
 target nobody limited simply measured zero, which is unremarkable.
 
+## Comment Length
+
+Two checks measure how long a comment runs, and each is opt-in: naming no block
+at all leaves that check off rather than gating every comment against a number
+nobody chose.
+
+One vocabulary serves both. `comments` is the repository-wide budget for every
+language that has comments — Python, shell, TOML, and YAML:
+
+```ts
+comments: { maximumCharacters: 900, maximumLines: 24, maximumWords: 128 },
+shell: { comments: { maximumWords: 256 } },
+```
+
+`documentation` measures a documented declaration's JSDoc comment, and adds
+`kinds` on top of the same three maxima:
+
+```ts
+documentation: {
+  kinds: { class: { maximumLines: 24 }, property: { maximumWords: 40 } },
+  maximumLines: 6,
+  severity: "warn",
+},
+```
+
+| Field | Required | Default | Meaning |
+| ----- | -------- | ------- | ------- |
+| `maximumCharacters` | no | — | How many characters a block may hold, markers and newlines and all |
+| `maximumLines` | no | — | How many lines a block may span |
+| `maximumWords` | no | — | How many words of prose a block may hold, once markers are stripped |
+| `severity` | no | `fail` | `fail` stops the run on a breach; `warn` reports it |
+
+**The three maxima are not alternatives.** A repository can hold prose to a word
+budget and still refuse a block that sprawls over forty lines, so each is its
+own field rather than one `maximum` steered by a `unit`. A field left out is
+not measured, and a block is reported **once per declared maximum** — one
+carrying both a word and a line budget yields two entries, each naming its own
+unit. Declaring none measures nothing.
+
+**Budgets are per block, not per file.** A block is the run of comment lines a
+reader takes as one thought, and that is what a comment budget is normally
+about: one explanation that got away from its author. Add a `file` block to
+measure every comment in a file together as well:
+
+```ts
+comments: { file: { maximumWords: 2000 }, maximumWords: 128 },
+```
+
+Both are reported, and they answer different questions — a file holding forty
+well-sized comments is not the same problem as one holding a single essay, and
+a file-wide number alone cannot tell them apart. `documentation` has no `file`
+scope: a JSDoc block is already one comment attached to one declaration.
+
+**One merge rule, applied twice.** A language's `comments` block is merged field
+by field over the top-level `comments`, and a `documentation` kind's entry is
+merged the same way over `documentation`'s own maxima. So naming one maximum in
+an override never silently drops the others, and `shell: { comments: {
+maximumWords: 256 } }` loosens words while keeping whatever line and character
+budgets the default set.
+
+### Which languages
+
+| Language | Read by | Knows a `#` from a string? |
+| -------- | ------- | -------------------------- |
+| Python | `tokenize`, in the analysis subprocess | **Yes** |
+| YAML | the `yaml` package's CST | **Yes** |
+| Shell, TOML | a line scanner | No |
+| TypeScript / JavaScript | the TypeScript compiler, via `documentation` | Yes, JSDoc only |
+
+The line scanner reads a `#` inside a string literal as a comment, exactly as
+those analyzers' own `comments` counters already do. Python and YAML are read
+by real tokenizers instead — Python because its analysis already runs one, and
+YAML because it puts quoted scalars beside `#` constantly. A `#!` shebang on
+the first line is never a comment in any of them.
+
+Every reader emits comments; none of them measures. That is what keeps one
+definition of a word across the tool rather than one per language.
+
+CSS, SQL, HCL, and non-JSDoc `//` runs are not measured yet — their comments
+span lines with delimiters, which needs more than a line scanner.
+
+A **block** is the run of `#` lines a reader takes as one thought. A blank line
+ends one, and a comment trailing a value is never part of the block above it —
+it is read with that value, not with the prose. Comments are read from the
+tokenizer rather than the text, so a `#` inside a quoted scalar stays a
+character in a string.
+
+The two are configured apart rather than as one number with a YAML kind. A
+JSDoc comment documents a declaration a caller will meet and a YAML comment
+explains a setting to whoever edits it next; one limit would have to be wrong
+for one of them, and enabling either check would otherwise silently enable the
+other.
+
+Both reach the report through one channel, so a breach of either renders the
+same way and `kind` says which it was:
+
+```text
+- `.github/workflows/audit-issues.yml:3` — `Issue metadata — the type…` (comment): 147/128 words
+```
+
+Neither is a `limits` entry, so neither appears in `codometer configuration
+--limits`. A breach fails the run under `--check limits` exactly as a limit
+does.
+
 ## Custom Statistics
 
 A repository that names files by convention has a vocabulary no language
@@ -408,9 +514,9 @@ Call stacks traced through `packages/codometer-configuration`, deepest first. Ea
 
 | Measure | Value |
 | --- | --- |
-| Callables | 47 |
-| Files | 16 |
-| Calls traced | 39 |
+| Callables | 52 |
+| Files | 17 |
+| Calls traced | 50 |
 | Call stacks | 4 |
 | Deepest stack | 2 |
 | Stacks through recursion | 0 |
@@ -429,15 +535,15 @@ Call stacks traced through `packages/codometer-configuration`, deepest first. Ea
 **2. `refine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 refine(…)(kinds: Record<string, number>): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:300]
-  └─> every(…)(kind: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:301]
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:324]
+  └─> every(…)(kind: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:325]
 ```
 
 **3. `superRefine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:415]
-  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:417]
+🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:438]
+  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:440]
 ```
 
 <details>
@@ -446,8 +552,8 @@ Call stacks traced through `packages/codometer-configuration`, deepest first. Ea
 **4. `refine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:442]
-  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:443]
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:465]
+  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:466]
 ```
 
 </details>
@@ -460,31 +566,34 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.resolveConfiguration` | 6 | `ConfigurationService.resolveDocumentation`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownOutput`, `ConfigurationService.resolveCustomStatistics`, `ConfigurationService.resolveTargets` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:308` |
+| `ConfigurationService.resolveConfiguration` | 7 | `ConfigurationService.resolveDocumentation`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownOutput`, `ConfigurationService.resolveLanguageComments`, `ConfigurationService.resolveCustomStatistics`, `ConfigurationService.resolveTargets` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:388` |
 | `ConfigurationLoaderService.load` | 5 | `ConfigurationLoaderService.findConfigurationFile`, `ConfigurationLoaderService.resolveConfigurationPath`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.applyRunContext`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:229` |
-| `ConfigurationService.map(…)` | 3 | `ConfigurationService.map(…)`, `ConfigurationService.filter(…)`, `ConfigurationService.filter(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:234` |
+| `ConfigurationService.map(…)` | 3 | `ConfigurationService.map(…)`, `ConfigurationService.filter(…)`, `ConfigurationService.filter(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:314` |
 
 <details>
-<summary>18 more callables</summary>
+<summary>21 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `ConfigurationLoaderService.loadConfigurationModule` | 2 | `ConfigurationLoaderService.loadJsonConfiguration`, `ConfigurationLoaderService.readDefaultExport` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:138` |
 | `ConfigurationLoaderService.resolveConfigurationPath` | 2 | `ConfigurationLoaderService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:195` |
-| `ConfigurationService.parseLimitValue` | 2 | `ConfigurationService.parseLimitValueText`, `InvalidLimitValueError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:74` |
-| `ConfigurationService.loadConfigurationFile` | 2 | `ConfigurationLoaderService.load`, `ConfigurationService.resolveConfiguration` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:285` |
+| `ConfigurationService.parseLimitValue` | 2 | `ConfigurationService.parseLimitValueText`, `InvalidLimitValueError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:80` |
+| `ConfigurationService.resolveComments` | 2 | `ConfigurationService.filter(…)`, `ConfigurationService.reduce(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:129` |
+| `ConfigurationService.resolveLanguageComments` | 2 | `ConfigurationService.resolveComments`, `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:248` |
+| `ConfigurationService.loadConfigurationFile` | 2 | `ConfigurationLoaderService.load`, `ConfigurationService.resolveConfiguration` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:365` |
 | `callbackSchema` | 1 | `custom(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:280` |
-| `refine(…)` | 1 | `every(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:300` |
-| `superRefine(…)` | 1 | `some(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:415` |
-| `refine(…)` | 1 | `map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:442` |
+| `refine(…)` | 1 | `every(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:324` |
+| `superRefine(…)` | 1 | `some(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:438` |
+| `refine(…)` | 1 | `map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:465` |
 | `ConfigurationLoaderService.applyRunContext` | 1 | `ConfigurationLoaderService.isConfigurationFactory` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:54` |
 | `ConfigurationLoaderService.findRepositoryRoot` | 1 | `ConfigurationLoaderService.some(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:102` |
-| `ConfigurationService.parseLimitValueText` | 1 | `InvalidLimitValueError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:94` |
-| `ConfigurationService.resolveCustomStatistics` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:121` |
-| `ConfigurationService.resolveLimits` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:190` |
-| `ConfigurationService.map(…)` | 1 | `ConfigurationService.parseLimitValue` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:193` |
-| `ConfigurationService.resolveTargets` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:231` |
-| `ConfigurationService.loadConfiguration` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:268` |
+| `ConfigurationService.parseLimitValueText` | 1 | `InvalidLimitValueError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:100` |
+| `ConfigurationService.resolveCustomStatistics` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:163` |
+| `ConfigurationService.resolveDocumentation` | 1 | `ConfigurationService.resolveComments` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:196` |
+| `ConfigurationService.resolveLimits` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:270` |
+| `ConfigurationService.map(…)` | 1 | `ConfigurationService.parseLimitValue` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:273` |
+| `ConfigurationService.resolveTargets` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:311` |
+| `ConfigurationService.loadConfiguration` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:348` |
 | `InputService.parseDefaultedOption` | 1 | `InputService.parseOptionalOption` | `packages/codometer-configuration/src/modules/input/input.service.ts:41` |
 | `InputService.parseDirectoryOption` | 1 | `InputService.parseDefaultedOption` | `packages/codometer-configuration/src/modules/input/input.service.ts:52` |
 
@@ -553,6 +662,7 @@ graph LR
   file_src_modules_configuration_configuration_service_unit_test_ts["src/modules/configuration/configuration.service.unit.test.ts"]
   file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
   file_src_modules_configuration_output_types_ts["src/modules/configuration/output.types.ts"]
+  file_src_modules_configuration_resolved_types_ts["src/modules/configuration/resolved.types.ts"]
   file_src_modules_configuration_statistics_types_ts["src/modules/configuration/statistics.types.ts"]
   file_src_modules_input_input_constants_ts["src/modules/input/input.constants.ts"]
   file_src_modules_input_input_module_ts["src/modules/input/input.module.ts"]
@@ -580,6 +690,7 @@ graph LR
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_output_types_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_resolved_types_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_statistics_types_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_loader_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
@@ -587,6 +698,9 @@ graph LR
   file_src_modules_configuration_configuration_types_ts --> file_src_modules_configuration_output_types_ts
   file_src_modules_configuration_configuration_types_ts --> file_src_modules_configuration_statistics_types_ts
   file_src_modules_configuration_output_types_ts --> file_src_modules_configuration_statistics_types_ts
+  file_src_modules_configuration_resolved_types_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_resolved_types_ts --> file_src_modules_configuration_output_types_ts
+  file_src_modules_configuration_resolved_types_ts --> file_src_modules_configuration_statistics_types_ts
   file_src_modules_input_input_module_ts --> file_src_modules_input_input_service_ts
   file_src_modules_input_input_service_unit_test_ts --> file_src_modules_input_input_service_ts
 ```
@@ -598,23 +712,23 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3563-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-124.61_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3926-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-138.39_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-23-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-24-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-14.03_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-15.06_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-23-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-40-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-24-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-47-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-5-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-115-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-133-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -623,15 +737,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-5-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-8-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-130-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-30-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-93-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-134-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-35-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-102-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-67-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-174-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-63-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-87-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-163-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-575-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-188-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-67-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-94-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-191-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-682-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -746,7 +860,7 @@ graph LR
 ![Service Files](https://img.shields.io/badge/Service_Files-3-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
 ![Constants Files](https://img.shields.io/badge/Constants_Files-2-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-5-db2777?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-6-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-5-ca8a04?style=flat-square)

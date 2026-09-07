@@ -1,7 +1,7 @@
 // 🏷️ Types
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
-import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
 
 /**
  * Which shape `mosaic`'s `dot` modifier's per-phase level sequence follows:
@@ -21,7 +21,7 @@ export interface GenerationParameters {
   readonly modifier?: Modifier;
   readonly repeatCount: number;
   readonly rows: number;
-  readonly subFamily?: MosaicSubFamily;
+  readonly subFamily?: MosaicBuildableSubFamily;
   readonly type: MeanderType;
 }
 
@@ -44,20 +44,35 @@ export type MeanderType =
  * member would be dead code no `COMPATIBLE_MODIFIERS` entry could point to.
  */
 export type Modifier =
+  | { readonly branches: number; readonly name: "stagger" }
+  | {
+      readonly flip?: SerpentineFlip;
+      readonly name: "serpentine";
+      readonly offset?: number;
+      readonly strands: number;
+    }
+  | { readonly isLeftward: boolean; readonly name: "rung" }
+  | { readonly isUpward: boolean; readonly name: "comb" }
+  | { readonly name: "aligned"; readonly strands: number }
   | { readonly name: "alternated"; readonly period: number }
-  | { readonly name: "brick" }
+  | { readonly name: "brick-staggered" }
+  | { readonly name: "brick-straight" }
+  | { readonly name: "brick-upright" }
   | { readonly name: "dot"; readonly shape: DotShape }
   | { readonly name: "edge" }
   | { readonly name: "edge-flip" }
   | { readonly name: "flip" }
+  | { readonly name: "grid" }
   | { readonly name: "interrupted" }
   | { readonly name: "plied"; readonly strands: number }
   | { readonly name: "ruled" }
-  | { readonly name: "rung" }
+  | { readonly name: "ruled-closed" }
+  | { readonly name: "ruled-raised" }
+  | { readonly name: "ruled-spaced" }
+  | { readonly name: "ruled-tall" }
   | { readonly name: "spin" }
   | { readonly name: "spin-flip" }
-  | { readonly name: "split" }
-  | { readonly name: "stagger" };
+  | { readonly name: "split" };
 
 /**
  * The per-type contract `MeanderGenerationService` dispatches through:
@@ -89,12 +104,36 @@ export interface MotifUnit {
   readonly unitIndex: number;
 }
 
+/**
+ * The name of a modifier that carries a `strands` count.
+ *
+ * Derived from {@link Modifier} rather than written out, so a ply-carrying
+ * member added to that union is a member of this the same day. The three it
+ * names today all belong to `parallel` — see `PLY_MODIFIER_NAMES`, which is
+ * this type's runtime half.
+ */
+export type PlyModifierName = Extract<
+  Modifier,
+  { readonly strands: number }
+>["name"];
+
 /** The row count, repeat count, and optional modifier a whole pattern's shared geometry (right edge, border) is computed from. */
 export interface RepeatPatternOptions {
   readonly modifier?: Modifier;
   readonly repeatCount: number;
   readonly rows: number;
 }
+
+/**
+ * Which ribbons a `serpentine` drawing turns upside down.
+ *
+ * `"alternating"` flips every other ribbon, so the stack interlocks;
+ * `"one"` flips only the deepest ribbon however many there are. The two
+ * agree at one and two strands and part company at three, which is why both
+ * are swept rather than one standing in for the other. A drawing with no
+ * `flip` at all leaves every ribbon waving in phase.
+ */
+export type SerpentineFlip = "alternating" | "one";
 
 /**
  * The row count, optional modifier, and horizontal offset one repeat unit's

@@ -7,19 +7,27 @@ import { LoggerService } from "@codebase/logger";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "../mosaic-motif/mosaic-tile-motif.service";
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 import { MosaicTilesService } from "../mosaic-motif/mosaic-tiles.service";
+import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+import { NegativeMotifService } from "../negative-motif/negative-motif.service";
+import { NegativeSourceService } from "../negative-motif/negative-source.service";
+import { NegativeTileGenerationService } from "../negative-motif/negative-tile-generation.service";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawIndexService } from "./draw-index.service";
+import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
 import { DrawCommand } from "./draw.command";
+import { COLUMN_SPAN_PATTERN } from "./draw.constants";
 
 const { mockMkdir, mockWriteFile } = vi.hoisted(() => ({
   mockMkdir: vi
@@ -36,6 +44,16 @@ vi.mock("node:fs/promises", () => ({
   mkdir: mockMkdir,
   writeFile: mockWriteFile,
 }));
+
+/**
+ * How long the assertions that drive a whole sweep are given.
+ *
+ * `mosaic`'s enumerated half is 8,551 tiles and `negative`'s a further 208,
+ * each of them really rendered, so this is real work rather than a hang —
+ * declared rather than left to the default five seconds, the same way the
+ * charter measurement declares its own.
+ */
+const FULL_SWEEP_TIMEOUT_MILLISECONDS = 60_000;
 
 describe(DrawCommand, () => {
   let command: DrawCommand;
@@ -55,14 +73,20 @@ describe(DrawCommand, () => {
         },
         OutputPathService,
         GridGeometryService,
-        MosaicSubFamilyService,
+        MosaicNamingService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
+        MosaicTileService,
         MosaicSymmetryService,
         MosaicTilesService,
+        NegativeMotifService,
+        NegativeSourceService,
+        NegativeTileGenerationService,
         DrawCombinationsService,
+        ParallelSerpentineService,
         DrawIndexService,
         DrawParametersService,
+        DrawNegativePermutationsService,
         DrawPermutationsService,
         SvgRenderingService,
       ],
@@ -98,14 +122,20 @@ describe(DrawCommand, () => {
         },
         OutputPathService,
         GridGeometryService,
-        MosaicSubFamilyService,
+        MosaicNamingService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
+        MosaicTileService,
         MosaicSymmetryService,
         MosaicTilesService,
+        NegativeMotifService,
+        NegativeSourceService,
+        NegativeTileGenerationService,
         DrawCombinationsService,
+        ParallelSerpentineService,
         DrawIndexService,
         DrawParametersService,
+        DrawNegativePermutationsService,
         DrawPermutationsService,
         SvgRenderingService,
       ],
@@ -117,64 +147,115 @@ describe(DrawCommand, () => {
   });
 
   describe("run", () => {
-    it("writes the expected number of files across all ten types, with no path collisions", async () => {
+    it(
+      "writes the expected number of files across all ten types, with no path collisions",
+      async () => {
+        await command.run([], { outputDirectory: "output", repeatCount: 6 });
+
+        expect(mockMkdir).toHaveBeenCalledWith("output/boxes/3-rows", {
+          recursive: true,
+        });
+
+        // 🎯 rows sweep runs from each type's own structural minimum to its
+        // own `FAMILY_MAXIMUM_ROWS`: 2..12 (branch, parallel), 3..12 (boxes,
+        // negative), 4..12 (chain, snake, swirl, whirl), 6..12 (cross), or
+        // 3..6 (mosaic, the one family with a ceiling of its own), crossed
+        // with "no modifier" plus every compatible modifier (alternated, dot,
+        // and rung each expand to 2 representative values, stagger to 4, and
+        // comb to 1 — its other direction is what "no modifier" already
+        // draws):
+        // mosaic: 4 rows * (1 + 2 + 2 + 1) modifiers = 24
+        // boxes: 10 rows * (1 + 1 + 1) modifiers = 30
+        // chain: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
+        // snake: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
+        // swirl: 9 rows * (1 + 1) modifiers = 18
+        // whirl: 9 rows * (1 + 1) modifiers = 18
+        // cross: 7 rows * (1 + 1) modifiers = 14
+        // negative: 10 rows * (1 + 9) modifiers = 100
+        // branch: 11 rows * (1 + 1 + 2 + 4) modifiers = 88
+        //
+        // `parallel` is the one family whose modifiers do not expand to a
+        // fixed number of values, so it is the one row here that is neither a
+        // multiplication nor a single literal. It has no unmodified entry —
+        // `plied` names that drawing — and `plied` and `aligned` each sweep
+        // 1..rows, which is the `2 * rows` term. `serpentine` sweeps every
+        // *distinct* rotation and flip of each of those plies, and distinct
+        // is the operative word: rotating a partition whose strips are all the
+        // same depth changes nothing, `alternating` and `one` name the same
+        // ribbon below three strands, and flipping a strip with no depth is a
+        // no-op. So its per-row counts are written out rather than derived —
+        // they are what `ParallelSerpentineService.variants` deduplicates down
+        // to, and a change in that deduplication should fail here rather than
+        // quietly committing the same drawing twice.
+        const serpentinePerRow: Record<number, number> = {
+          2: 5,
+          3: 9,
+          4: 19,
+          5: 19,
+          6: 44,
+          7: 45,
+          8: 65,
+          9: 66,
+          10: 126,
+          11: 85,
+          12: 182,
+        };
+        const expectedParallelCount = [
+          2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+        ].reduce(
+          (total, rows) => total + 2 * rows + (serpentinePerRow[rows] ?? 0),
+          0,
+        );
+        const expectedNamedTypeCount =
+          24 + 30 + 36 + 36 + 18 + 18 + 14 + 100 + 88 + expectedParallelCount;
+        const writtenFileNames = vi
+          .mocked(mockWriteFile)
+          .mock.calls.map(([filePath]) => filePath);
+        const namedTypeFiles = writtenFileNames.filter(
+          (filePath) =>
+            filePath.endsWith(".svg") && !COLUMN_SPAN_PATTERN.test(filePath),
+        );
+
+        expect(namedTypeFiles).toHaveLength(expectedNamedTypeCount);
+        expect(new Set(writtenFileNames).size).toBe(writtenFileNames.length);
+      },
+      FULL_SWEEP_TIMEOUT_MILLISECONDS,
+    );
+
+    it("nests each permutation half under the row count and column span that produced it", async () => {
       await command.run([], { outputDirectory: "output", repeatCount: 6 });
 
-      expect(mockMkdir).toHaveBeenCalledWith("output/boxes/3-rows", {
+      const writtenFileNames = vi
+        .mocked(mockWriteFile)
+        .mock.calls.map(([filePath]) => filePath);
+      // 🎯 An enumerated tile is one filed under a column span, whichever
+      // family wrote it. Only `negative` still nests its enumerated half
+      // under a `permutations/` level; `mosaic` files its directly beside
+      // the named drawings, since every tile it draws is a member of one
+      // space.
+      const permutations = writtenFileNames.filter((filePath) =>
+        COLUMN_SPAN_PATTERN.test(filePath),
+      );
+
+      expect(mockMkdir).toHaveBeenCalledWith("output/mosaic/4-rows/1-columns", {
         recursive: true,
       });
-
-      // 🎯 rows sweep runs from each type's own structural minimum to
-      // `MAXIMUM_VALUE`: 2..12 (branch), 3..12 (mosaic, boxes, negative),
-      // 4..12 (chain, snake, swirl, whirl, parallel), or 6..12 (cross),
-      // crossed with "no modifier" plus every compatible modifier
-      // (alternated, dot, and plied each expand to 2 representative
-      // values):
-      // mosaic: 10 rows * (1 + 2 + 2 + 1) modifiers = 60
-      // boxes: 10 rows * (1 + 1 + 1) modifiers = 30
-      // chain: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
-      // snake: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
-      // swirl: 9 rows * (1 + 1) modifiers = 18
-      // whirl: 9 rows * (1 + 1) modifiers = 18
-      // cross: 7 rows * (1 + 1) modifiers = 14
-      // negative: 10 rows * (1 + 1 + 1) modifiers = 30
-      // branch: 11 rows * (1 + 1 + 1) modifiers = 33
-      // parallel: 9 rows * (1 + 2) modifiers = 27
-      const expectedNamedTypeCount =
-        60 + 30 + 36 + 36 + 18 + 18 + 14 + 30 + 33 + 27;
-      const writtenFileNames = vi
-        .mocked(mockWriteFile)
-        .mock.calls.map(([filePath]) => filePath);
-      const namedTypeFiles = writtenFileNames.filter(
-        (filePath) =>
-          filePath.endsWith(".svg") && !filePath.includes("permutations"),
-      );
-
-      expect(namedTypeFiles).toHaveLength(expectedNamedTypeCount);
-      expect(new Set(writtenFileNames).size).toBe(writtenFileNames.length);
-    });
-
-    it("nests the mosaic half under the row count and column span that produced it", async () => {
-      await command.run([], { outputDirectory: "output", repeatCount: 6 });
-
-      const writtenFileNames = vi
-        .mocked(mockWriteFile)
-        .mock.calls.map(([filePath]) => filePath);
-      const permutations = writtenFileNames.filter((filePath) =>
-        filePath.includes("permutations"),
-      );
-
       expect(mockMkdir).toHaveBeenCalledWith(
-        "output/mosaic/4-rows/permutations/1-columns",
+        "output/negative/3-rows/permutations/1-columns",
         { recursive: true },
       );
-      // Every distinct tile at 4 through 8 rows, and nothing else: this
-      // half keeps a cap of its own where the named-type half runs to
-      // `MAXIMUM_VALUE`, because it enumerates exhaustively — see
-      // `PERMUTATION_ROWS_SWEEP_MAXIMUM`.
-      expect(permutations).toHaveLength(3179);
+      // Every distinct `mosaic` tile at 4 through 6 rows and every distinct
+      // one-column `negative` source at 3 through 6, and nothing else. Both
+      // halves stop at `MOSAIC_TILE_MAXIMUM_ROWS` where the
+      // named-type half runs on to `MAXIMUM_VALUE` for nine of its ten
+      // families, because both of these enumerate their space exhaustively
+      // rather than sampling it.
+      expect(permutations).toHaveLength(8551 + 208);
       expect(permutations).toContain(
-        "output/mosaic/6-rows/permutations/1-columns/ddddd-dots.svg",
+        "output/mosaic/6-rows/1-columns/00000-dots.svg",
+      );
+      expect(permutations).toContain(
+        "output/negative/6-rows/permutations/1-columns/030303-ruled.svg",
       );
     });
 
@@ -187,9 +268,9 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("3481 drawings");
+      expect(index?.[1]).toContain("9942 drawings");
       expect(index?.[1]).toContain(
-        'src="mosaic/6-rows/permutations/1-columns/ddddd-dots.svg"',
+        'src="mosaic/6-rows/1-columns/00000-dots.svg"',
       );
       expect(index?.[1]).toContain('src="boxes/3-rows/spin-8-repeats.svg"');
     });
@@ -275,10 +356,16 @@ describe(DrawCommand, () => {
             }),
           },
           DrawCombinationsService,
+          GridGeometryService,
+          ParallelSerpentineService,
           DrawParametersService,
           {
             provide: DrawIndexService,
             useValue: createMock<DrawIndexService>(),
+          },
+          {
+            provide: DrawNegativePermutationsService,
+            useValue: createMock<DrawNegativePermutationsService>(),
           },
           {
             provide: DrawPermutationsService,
@@ -515,12 +602,35 @@ describe(DrawCommand, () => {
     });
 
     it.each([
+      { method: "parseBranches" as const, value: "2" },
       { method: "parsePeriod" as const, value: "2" },
       { method: "parseRepeatCount" as const, value: "2" },
       { method: "parseRows" as const, value: "2" },
       { method: "parseStrands" as const, value: "2" },
     ])("parses $method's numeric string as an integer", ({ method, value }) => {
       expect(command[method](value)).toBe(2);
+    });
+
+    // 🎯 The two boolean flags the command takes. Bare is the ordinary way
+    // to pass either, and the two spellings that turn one off are there so
+    // `--leftward false` means what a reader would expect rather than
+    // silently meaning `true` — which is what a bare presence check would
+    // have made it mean.
+    it.each([
+      { expected: true, given: "bare", value: undefined },
+      { expected: true, given: '"true"', value: "true" },
+      { expected: false, given: '"false"', value: "false" },
+      { expected: false, given: '"0"', value: "0" },
+    ])("parses --leftward $given as $expected", ({ expected, value }) => {
+      expect(command.parseLeftward(value)).toBe(expected);
+    });
+
+    it.each([
+      { expected: true, given: "bare", value: undefined },
+      { expected: false, given: '"false"', value: "false" },
+      { expected: false, given: '"0"', value: "0" },
+    ])("parses --upward $given as $expected", ({ expected, value }) => {
+      expect(command.parseUpward(value)).toBe(expected);
     });
 
     it("passes the output directory through unchanged", () => {
@@ -531,37 +641,45 @@ describe(DrawCommand, () => {
   });
 
   describe("real generation integration", () => {
-    it("generates every enumerated combination through the real generation service without throwing", async () => {
-      const module = await Test.createTestingModule({
-        imports: [MeanderGenerationModule],
-        providers: [
-          DrawCombinationsService,
-          DrawCommand,
-          DrawIndexService,
-          DrawParametersService,
-          DrawPermutationsService,
-          {
-            provide: LoggerService,
-            useValue: createMock<LoggerService>(),
-          },
-        ],
-      }).compile();
-      const realCommand = await module.resolve(DrawCommand);
+    it(
+      "generates every enumerated combination through the real generation service without throwing",
+      async () => {
+        const module = await Test.createTestingModule({
+          imports: [MeanderGenerationModule, MosaicNamingModule],
+          providers: [
+            DrawCombinationsService,
+            GridGeometryService,
+            ParallelSerpentineService,
+            DrawCommand,
+            DrawIndexService,
+            DrawParametersService,
+            DrawNegativePermutationsService,
+            DrawPermutationsService,
+            {
+              provide: LoggerService,
+              useValue: createMock<LoggerService>(),
+            },
+          ],
+        }).compile();
+        const realCommand = await module.resolve(DrawCommand);
 
-      mockMkdir.mockClear();
-      mockWriteFile.mockClear();
+        mockMkdir.mockClear();
+        mockWriteFile.mockClear();
 
-      await expect(
-        realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
-      ).resolves.toBeUndefined();
+        await expect(
+          realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
+        ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 302 enumerated named-type combinations, and
-      // every one of the 3,179 mosaic tiles, reached its real generation
-      // service and real validators without throwing — this is the
-      // regression guard the mocked tests above can't provide, since they
-      // replace the generation services entirely. The extra file is the
-      // single index page listing all of them.
-      expect(mockWriteFile).toHaveBeenCalledTimes(302 + 3179 + 1);
-    });
+        // 🎯 every one of the 1,183 enumerated named-type combinations, every
+        // one of the 8,551 mosaic tiles, and every one of the 208 one-column
+        // negative sources, reached its real generation
+        // service and real validators without throwing — this is the
+        // regression guard the mocked tests above can't provide, since they
+        // replace the generation services entirely. The extra file is the
+        // single index page listing all of them.
+        expect(mockWriteFile).toHaveBeenCalledTimes(1183 + 8551 + 208 + 1);
+      },
+      FULL_SWEEP_TIMEOUT_MILLISECONDS,
+    );
   });
 });

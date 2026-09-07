@@ -26,13 +26,19 @@ import { MotifRegistryService } from "./motif-registry.service";
  * and every caller reaches the families through
  * {@link MeanderGenerationService.generate}.
  *
- * Re-exports what the command modules resolve — the mosaic tile services
- * among them — so `generate` and `start` depend on this one module rather
- * than reaching past it into each motif's own.
+ * Re-exports what the command modules resolve — the tile services of the two
+ * families with a permutation half among them — so `generate` and `start`
+ * depend on this one module rather than reaching past it into each motif's
+ * own.
  */
 @Module({
   controllers: [],
-  exports: [MeanderGenerationService, MosaicMotifModule, SvgRenderingModule],
+  exports: [
+    MeanderGenerationService,
+    MosaicMotifModule,
+    NegativeMotifModule,
+    SvgRenderingModule,
+  ],
   imports: [
     BoxesMotifModule,
     BranchMotifModule,

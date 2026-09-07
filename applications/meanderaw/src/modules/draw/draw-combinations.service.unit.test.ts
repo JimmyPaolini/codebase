@@ -1,15 +1,22 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import {
+  FAMILY_MAXIMUM_ROWS,
   MAXIMUM_VALUE,
   STRUCTURAL_MINIMUM_ROWS,
+  SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
+import { DEFAULT_PARALLEL_STRANDS } from "../parallel-motif/parallel-motif.constants";
+import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
-import { PLIED_SWEEP_STRAND_COUNTS } from "./draw.constants";
 
-import type { GenerationParameters } from "../meander-generation/meander-generation.types";
+import type {
+  GenerationParameters,
+  MeanderType,
+} from "../meander-generation/meander-generation.types";
 
 // 🔧 Configuration
 
@@ -36,7 +43,11 @@ describe(DrawCombinationsService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [DrawCombinationsService],
+      providers: [
+        DrawCombinationsService,
+        GridGeometryService,
+        ParallelSerpentineService,
+      ],
     }).compile();
 
     service = await module.resolve(DrawCombinationsService);
@@ -55,8 +66,12 @@ describe(DrawCombinationsService, () => {
     // matching — would leave both quietly covering less, so it is pinned
     // here rather than inferred at either call site.
     it.each([
-      // rows 3..12 × (none + alternated ×2 + dot ×2 + split)
-      { expected: 60, type: "mosaic" },
+      // rows 3..6 × (none + alternated ×2 + dot ×2 + split). Four row
+      // counts where every other family gets nine or ten, because this is
+      // the family `FAMILY_MAXIMUM_ROWS` stops early — see
+      // `MOSAIC_TILE_MAXIMUM_ROWS` for why an exhaustively enumerated
+      // family cannot follow the sampled ones to 12.
+      { expected: 24, type: "mosaic" },
       // rows 3..12 × (none + spin + spin-flip)
       { expected: 30, type: "boxes" },
       // rows 4..12 × (none + edge + flip + edge-flip)
@@ -67,12 +82,17 @@ describe(DrawCombinationsService, () => {
       { expected: 18, type: "whirl" },
       // rows 6..12 × (none + interrupted)
       { expected: 14, type: "cross" },
-      // rows 3..12 × (none + brick + ruled)
-      { expected: 30, type: "negative" },
-      // rows 2..12 × (none + rung + stagger)
-      { expected: 33, type: "branch" },
-      // rows 4..12 × (none + plied ×2)
-      { expected: 27, type: "parallel" },
+      // rows 3..12 × (none + the nine sources the family names)
+      { expected: 100, type: "negative" },
+      // rows 2..12 × (none + comb up + rung ×2 + stagger ×4)
+      { expected: 88, type: "branch" },
+      // rows 2..12 × (plied over every ply 1..rows + aligned over the same
+      // + serpentine over every distinct rotation and flip of each). The
+      // family has no unmodified entry — `plied` names that drawing — and
+      // serpentine's variant count is not a multiplication, since rotations
+      // of an even partition, flips that name the same ribbon, and flips
+      // that land on a strip with no depth all collapse.
+      { expected: 819, type: "parallel" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
       expect(
         combinations.filter((parameters) => parameters.type === type),
@@ -80,7 +100,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(302);
+      expect(combinations).toHaveLength(1183);
     });
 
     it("names every combination distinctly", () => {
@@ -89,18 +109,83 @@ describe(DrawCombinationsService, () => {
       expect(new Set(keys).size).toBe(combinations.length);
     });
 
-    // 🎯 Two numbers written in two files, made to agree here rather than
-    // by anybody remembering. A `parallel` bundle of N strands needs N rows,
-    // so the deepest ply the sweep draws is exactly the row count the family
-    // may start at. Equality rather than an upper bound is deliberate and it
-    // is what the name says: a shallower deepest ply would leave the minimum
-    // stricter than any drawing needs, and a deeper one would enumerate a
-    // combination `MeanderGenerationService.generate` refuses. This fails
-    // before either does.
-    it("pins the deepest swept ply to the row count the parallel family starts at", () => {
-      expect(Math.max(...PLIED_SWEEP_STRAND_COUNTS)).toBe(
-        STRUCTURAL_MINIMUM_ROWS.parallel,
+    // 🎯 The sweep's `plied` range is the row count's, so this asserts the
+    // property the old pinned-constants test stood in for, and asserts it of
+    // every combination rather than of one number. A bundle of N strands
+    // needs N rows, and `MeanderGenerationService.generate` refuses one that
+    // does not have them — so a sweep that enumerated such a combination
+    // would fail the charter sweep downstream with a thrown error rather
+    // than a measurement. This fails first, and says why.
+    it("never sweeps a ply deeper than the row count it is drawn at", () => {
+      const plied = combinations.filter(
+        (parameters) => parameters.modifier?.name === "plied",
       );
+
+      expect(plied.length).toBeGreaterThan(0);
+
+      for (const parameters of plied) {
+        const { modifier, rows } = parameters;
+
+        if (modifier?.name !== "plied") {
+          continue;
+        }
+
+        expect(modifier.strands).toBeLessThanOrEqual(rows);
+        expect(modifier.strands).toBeGreaterThanOrEqual(1);
+      }
+    });
+
+    // 🎯 The range has no hole in it, and the family has no unmodified
+    // entry — the two facts are one change. `parallel` drawn with no
+    // modifier is a two-strand `plied` bundle, so the sweep used to commit
+    // it as `plain-…svg` and skip the ply that would have duplicated it.
+    // Dropping the unmodified entry instead lets `plied` carry that drawing
+    // under a name its siblings share, which is what makes every parallel
+    // filename readable as a ply.
+    it("names every parallel drawing for its ply rather than committing an unmodified one", () => {
+      const parallel = combinations.filter(({ type }) => type === "parallel");
+      const strandCounts = parallel.flatMap((parameters) =>
+        parameters.modifier?.name === "plied"
+          ? [parameters.modifier.strands]
+          : [],
+      );
+
+      expect(parallel).not.toHaveLength(0);
+      expect(parallel.every(({ modifier }) => modifier !== undefined)).toBe(
+        true,
+      );
+      expect(strandCounts).toContain(DEFAULT_PARALLEL_STRANDS);
+    });
+
+    // 🎯 Every other family keeps its unmodified entry, so dropping one is
+    // a decision about `parallel` rather than a change to the sweep.
+    it("still sweeps an unmodified drawing for every other family", () => {
+      const unmodified = new Set(
+        combinations
+          .filter(({ modifier }) => modifier === undefined)
+          .map(({ type }) => type),
+      );
+
+      expect([...unmodified].toSorted()).toStrictEqual(
+        SUPPORTED_TYPES.filter((type) => type !== "parallel").toSorted(),
+      );
+    });
+
+    // 🎯 The deepest ply the sweep reaches is the deepest the command line
+    // accepts, which is what "every drawing the command line can be asked
+    // for is a drawing this repository commits" means for this family's
+    // second axis. A flat list could not say this.
+    it("sweeps the family's whole ply range, up to the deepest row count", () => {
+      const strandCounts = new Set(
+        combinations.flatMap((parameters) =>
+          parameters.modifier?.name === "plied"
+            ? [parameters.modifier.strands]
+            : [],
+        ),
+      );
+
+      expect(Math.max(...strandCounts)).toBe(MAXIMUM_VALUE);
+      expect(Math.min(...strandCounts)).toBe(1);
     });
 
     // 🎯 The two figures README.md's discarded-density argument rests on,
@@ -113,7 +198,8 @@ describe(DrawCombinationsService, () => {
     // family's own ply of two every pair is asked for at `rows × 2`, and
     // `beyondMaximum` is the pairs whose doubled row count no longer fits
     // inside the shared `MAXIMUM_VALUE` — 36 of them, every pair from 7
-    // rows up in every family.
+    // rows up in every family that reaches them — which `mosaic` no longer
+    // does, its own ceiling being 6.
     //
     // That count was 8 until issue #507 was fixed, on a stricter criterion
     // that no longer applies: four of those eight sat *inside* the maximum,
@@ -135,36 +221,41 @@ describe(DrawCombinationsService, () => {
         ({ rows }) => rows * DISCARDED_DENSITY_PLY > MAXIMUM_VALUE,
       );
 
-      expect(sweptPairs).toHaveLength(56);
-      expect(beyondMaximum).toHaveLength(36);
+      expect(sweptPairs).toHaveLength(50);
+      expect(beyondMaximum).toHaveLength(30);
     });
 
-    // 🎯 The two ends of the row range, on two types with different
-    // structural minima: each starts at its own, and both stop at the one
-    // number the command line stops at. The upper bound is read from
-    // `MAXIMUM_VALUE` rather than written out, because the whole point of
-    // the range is that it is not a figure of the sweep's own choosing —
-    // issue #507 was reachable precisely because it once was.
-    it("sweeps each type from its own structural minimum through the row count the command line stops at", () => {
-      const rowsFor = (type: string): number[] => [
+    // 🎯 Both ends of the row range, on two types that share neither: each
+    // starts at its own `STRUCTURAL_MINIMUM_ROWS` and stops at its own
+    // `FAMILY_MAXIMUM_ROWS`. Both bounds are read from the constants rather
+    // than written out, because the whole point of the range is that it is
+    // not a figure of the sweep's own choosing — issue #507 was reachable
+    // precisely because it once was, and the command line validates against
+    // these same two records.
+    //
+    // `mosaic` is the one family whose ceiling is not the shared
+    // `MAXIMUM_VALUE`, and `swirl` stands for the nine whose is, so the two
+    // together say that the exception is an exception.
+    it("sweeps each type from its own structural minimum through its own family maximum", () => {
+      const rowsFor = (type: MeanderType): number[] => [
         ...new Set(
           combinations
             .filter((parameters) => parameters.type === type)
             .map((parameters) => parameters.rows),
         ),
       ];
-      const throughMaximum = (minimum: number): number[] =>
-        Array.from(
-          { length: MAXIMUM_VALUE - minimum + 1 },
+      const declaredRange = (type: MeanderType): number[] => {
+        const minimum = STRUCTURAL_MINIMUM_ROWS[type];
+
+        return Array.from(
+          { length: FAMILY_MAXIMUM_ROWS[type] - minimum + 1 },
           (_value, index) => minimum + index,
         );
+      };
 
-      expect(rowsFor("mosaic")).toStrictEqual(
-        throughMaximum(STRUCTURAL_MINIMUM_ROWS.mosaic),
-      );
-      expect(rowsFor("swirl")).toStrictEqual(
-        throughMaximum(STRUCTURAL_MINIMUM_ROWS.swirl),
-      );
+      expect(rowsFor("mosaic")).toStrictEqual(declaredRange("mosaic"));
+      expect(rowsFor("swirl")).toStrictEqual(declaredRange("swirl"));
+      expect(rowsFor("mosaic").at(-1)).toBeLessThan(MAXIMUM_VALUE);
       expect(rowsFor("swirl").at(-1)).toBe(MAXIMUM_VALUE);
     });
 

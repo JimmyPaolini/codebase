@@ -1,5 +1,15 @@
 // 📤 Exports
 
+export { CommentsModule } from "./modules/comments/comments.module";
+export { CommentsService } from "./modules/comments/comments.service";
+export type {
+  CommentBlock,
+  CommentMeasurement,
+  CommentToken,
+} from "./modules/comments/comments.types";
+export { HashCommentsService } from "./modules/comments/hash-comments.service";
+export { LanguageCommentsService } from "./modules/comments/language-comments.service";
+export { YamlCommentsService } from "./modules/comments/yaml-comments.service";
 export { CssModule } from "./modules/css/css.module";
 export { CssService } from "./modules/css/css.service";
 export type { CssInput, CssResult } from "./modules/css/css.types";
@@ -53,7 +63,6 @@ export { TypescriptModule } from "./modules/typescript/typescript.module";
 export { TypescriptService } from "./modules/typescript/typescript.service";
 export type {
   AnalyzeTypescriptFileArguments,
-  TypescriptDocumentationMeasurement,
   TypescriptInput,
   TypescriptResult,
   TypescriptSymbolCounter,

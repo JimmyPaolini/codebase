@@ -1,10 +1,10 @@
-// cspell:ignore dvvxxd dvvxxvvxxvvxxd hxxhhx hxxhhxxhhxxhhx dldldld — mosaic
-// tile identifiers, one letter per cell of the tile, from
-// MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 
 import {
   DEFAULT_NEGATIVE_SOURCE,
+  NEGATIVE_COLUMN_MOTIFS,
   NEGATIVE_SOURCE_ROW_OFFSET,
   NEGATIVE_SOURCES_BY_MODIFIER_NAME,
   UnknownNegativeSourceError,
@@ -12,36 +12,48 @@ import {
 
 import type { Modifier } from "../meander-generation/meander-generation.types";
 import type {
-  MosaicPiece,
+  MosaicEdgesDraft,
   MosaicTile,
 } from "../mosaic-motif/mosaic-motif.types";
 import type {
+  NegativeColumnMark,
+  NegativeColumnSource,
   NegativeModifierName,
   NegativeSource,
+  NegativeTileSource,
 } from "./negative-motif.types";
 
 /**
  * Builds the `mosaic` tile whose negative the `negative` family draws.
  *
- * The three it builds are the negative-space survey's shortlist, and nothing
- * else — `dvvxxd` → `dvvxxvvxxvvxxd`, `hxxhhx` → `hxxhhxxhhxxhhx`, and
- * `dld` → `dldldld`. Each is built from a rule rather than looked up by
- * identifier, so it keeps working at row counts nobody has enumerated, the
- * same choice {@link MosaicSubFamilyService} made for its sub-families.
+ * Ten of them, and they arrive two ways. Seven are one-column repeating
+ * motifs read off {@link NEGATIVE_COLUMN_MOTIFS} and walked by
+ * {@link columnEdges}; three are two-column tiles with a rule apiece — the
+ * staircase, the running bond, and that same bond laid straight. Neither
+ * kind is looked up by identifier, so every one keeps working at row counts
+ * nobody has enumerated, the same choice {@link MosaicNamingService} made
+ * for its rules.
  *
- * That the rule really produces the shortlisted tile is not a comment: at
+ * That the rules really produce the tiles they claim to is not a comment. At
  * every row count the survey covered, `negative-source.service.unit.test.ts`
  * asserts {@link MosaicSymmetryService.identify} of the built tile against
  * the identifier `README.md` publishes, and asserts that identifier is the
- * tile's canonical one — so the tile built here is the very tile the
+ * tile's canonical one — so a tile built here is the very tile the
  * permutation sweep committed under `output/mosaic/<rows>-rows/permutations/`
- * and the survey measured, not a mirror or a re-phasing of it.
+ * and the survey measured, not a mirror or a re-phasing of it. The four
+ * sources that invert a `MosaicSubFamily` are asserted against
+ * {@link MosaicSubFamilyService.tile} directly, which is a stronger check
+ * than an identifier: it is the sub-family's own builder, not a name for its
+ * output.
  */
 @Injectable()
 export class NegativeSourceService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(MosaicTileService)
+    private readonly mosaicTileService: MosaicTileService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -50,18 +62,79 @@ export class NegativeSourceService {
   // 🔏 Private Methods
 
   /**
-   * `hxxhhx`'s marks: one horizontal dash per interior level, alternating
-   * which of the tile's two columns anchors it. A dash covers its own cell
-   * and the one to its right, wrapping into the next repeat tile from the
-   * last column, so a single dash covers a whole level either way round and
-   * the alternation is what staggers the joints into running bond.
+   * A `brick` source's edges: one eastward edge per interior level, each
+   * reaching the point to its right and wrapping into the next repeat tile
+   * from the last column — so a single edge spans a whole level either way
+   * round, and only the column it is *anchored* on is walled.
+   *
+   * That is the whole difference between the two bonds. `staggered`
+   * alternates the anchor by level, so the open column alternates with it
+   * and no two corridors ever stack — running bond, which branches without
+   * crossing. Straight anchors every course in the same column, so the open
+   * column is the same one at every level and the corridors stack into an
+   * unbroken vertical line — stack bond, whose mortar is a grid and
+   * therefore crosses.
    */
-  private brickPieces(rows: number): MosaicPiece[] {
-    return Array.from({ length: rows - 1 }, (_value, level) => ({
-      column: level % 2,
-      kind: "horizontal" as const,
-      level,
-    }));
+  private brickEdges(rows: number, staggered: boolean): MosaicEdgesDraft {
+    const edges = this.mosaicTileService.blankEdges({ columns: 2, rows });
+
+    for (let level = 0; level < rows - 1; level += 1) {
+      this.mosaicTileService.mark(
+        edges.horizontal,
+        level,
+        staggered ? level % 2 : 0,
+      );
+    }
+
+    return edges;
+  }
+
+  /**
+   * A one-column source's edges: its motif repeated down the interior and
+   * truncated wherever it runs out of room.
+   *
+   * A `vertical` opening spans two levels, so the last level of an interior
+   * that cannot fit one closes with a `dot` instead — the same one-level
+   * opening, and the same rule {@link stairEdges} uses to cap its stair.
+   * Without it a motif carrying a `vertical` would simply be undefined at
+   * half the row counts, which is what makes `diamond` unavailable at an odd
+   * interior in the `mosaic` family and is not a limitation worth inheriting
+   * here.
+   *
+   * The motif is a non-empty tuple, which is what makes the outer loop
+   * terminate: every pass of the inner loop advances `level` by at least
+   * one.
+   */
+  private columnEdges(
+    motif: readonly [NegativeColumnMark, ...NegativeColumnMark[]],
+    rows: number,
+  ): MosaicEdgesDraft {
+    const levels = rows - 1;
+    const edges = this.mosaicTileService.blankEdges({ columns: 1, rows });
+    let level = 0;
+
+    while (level < levels) {
+      for (const mark of motif) {
+        if (level >= levels) {
+          break;
+        }
+
+        const fits = level + 1 < levels;
+        const drawn = mark === "vertical" && !fits ? "dot" : mark;
+
+        this.markColumn(edges, drawn, level);
+        level += drawn === "vertical" ? 2 : 1;
+      }
+    }
+
+    return edges;
+  }
+
+  /** Narrows a source to one built from a one-column motif, without an unchecked assertion. */
+  private isColumnSource(
+    source: NegativeSource,
+  ): source is NegativeColumnSource {
+    return Object.hasOwn(NEGATIVE_COLUMN_MOTIFS, source);
   }
 
   /** Narrows a modifier name to one this family draws a source for, without an unchecked assertion. */
@@ -71,52 +144,63 @@ export class NegativeSourceService {
     return Object.hasOwn(NEGATIVE_SOURCES_BY_MODIFIER_NAME, name);
   }
 
-  /**
-   * `dld`'s marks: a single column alternating dot levels with the
-   * continuous rule, starting from a dot. A `line` is the single-column
-   * tile's degenerate horizontal dash, which chains with its own copy in
-   * every following tile into one rule running the length of the band.
-   */
-  private ruledPieces(rows: number): MosaicPiece[] {
-    return Array.from({ length: rows - 1 }, (_value, level) => ({
-      column: 0,
-      kind: level % 2 === 0 ? ("dot" as const) : ("line" as const),
-      level,
-    }));
+  /** Marks the edge one {@link NegativeColumnMark} leaves at `level` of a one-column source; a `dot` leaves none. */
+  private markColumn(
+    edges: MosaicEdgesDraft,
+    mark: NegativeColumnMark,
+    level: number,
+  ): void {
+    if (mark === "line") {
+      this.mosaicTileService.mark(edges.horizontal, level, 0);
+    }
+
+    if (mark === "vertical") {
+      this.mosaicTileService.mark(edges.vertical, level, 0);
+    }
   }
 
   /**
-   * One column of `dvvxxd`'s marks: vertical dashes stacked two levels at a
-   * time, offset by one level between the two columns so the pair reads as a
-   * staircase. Column `0` opens with a dot to create that offset, and
-   * whichever column runs out of room for a last full dash closes with a dot
-   * of its own — which is why the tile is capped by exactly two dots at every
-   * row count, one at each end of the stair.
+   * The staircase's edges: southward edges stacked two levels at a time, offset
+   * by one level between the two columns so the pair reads as a staircase.
+   * Column `0` starts one level down to create that offset, and whichever
+   * column runs out of room for a last full edge simply stops — leaving that
+   * point bare, which draws a dot. That is why the tile is capped by exactly
+   * two dots at every row count, one at each end of the stair.
    */
-  private stairPieces(column: number, rows: number): MosaicPiece[] {
+  private stairEdges(rows: number): MosaicEdgesDraft {
     const levels = rows - 1;
-    const pieces: MosaicPiece[] = [];
-    let level = 0;
+    const edges = this.mosaicTileService.blankEdges({ columns: 2, rows });
 
-    if (column === 0) {
-      pieces.push({ column, kind: "dot", level });
-      level = 1;
+    for (const column of [0, 1]) {
+      let level = column === 0 ? 1 : 0;
+
+      while (level + 1 < levels) {
+        this.mosaicTileService.mark(edges.vertical, level, column);
+        level += 2;
+      }
     }
 
-    while (level < levels) {
-      const fits = level + 1 < levels;
+    return edges;
+  }
 
-      pieces.push({ column, kind: fits ? "vertical" : "dot", level });
-      level += fits ? 2 : 1;
-    }
+  /** The two-column tile a source names, built at the source's own row count. */
+  private tileSource(source: NegativeTileSource, rows: number): MosaicTile {
+    const edgesBySource: Record<NegativeTileSource, MosaicEdgesDraft> = {
+      "brick-staggered": this.brickEdges(rows, true),
+      "brick-straight": this.brickEdges(rows, false),
+      stair: this.stairEdges(rows),
+    };
 
-    return pieces;
+    return this.mosaicTileService.build(
+      { columns: 2, rows },
+      edgesBySource[source],
+    );
   }
 
   // 🌎 Public Methods
 
   /**
-   * Which shortlisted source a drawing's modifier selects; no modifier draws
+   * Which source a drawing's modifier selects; no modifier draws
    * {@link DEFAULT_NEGATIVE_SOURCE}, the shortlist's first entry.
    *
    * The dispatch is total rather than defaulted: every name this family
@@ -147,27 +231,14 @@ export class NegativeSourceService {
    */
   tile(source: NegativeSource, rows: number): MosaicTile {
     const sourceRows = rows + NEGATIVE_SOURCE_ROW_OFFSET;
-    const tilesBySource: Record<NegativeSource, MosaicTile> = {
-      brick: {
-        columns: 2,
-        pieces: this.brickPieces(sourceRows),
-        rows: sourceRows,
-      },
-      ruled: {
-        columns: 1,
-        pieces: this.ruledPieces(sourceRows),
-        rows: sourceRows,
-      },
-      stair: {
-        columns: 2,
-        pieces: [
-          ...this.stairPieces(0, sourceRows),
-          ...this.stairPieces(1, sourceRows),
-        ],
-        rows: sourceRows,
-      },
-    };
 
-    return tilesBySource[source];
+    if (this.isColumnSource(source)) {
+      return this.mosaicTileService.build(
+        { columns: 1, rows: sourceRows },
+        this.columnEdges(NEGATIVE_COLUMN_MOTIFS[source], sourceRows),
+      );
+    }
+
+    return this.tileSource(source, sourceRows);
   }
 }

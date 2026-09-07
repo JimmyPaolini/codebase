@@ -15,10 +15,12 @@ import {
 } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { SUPPORTED_SUB_FAMILIES } from "../mosaic-motif/mosaic-motif.constants";
+import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
 import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawIndexService } from "./draw-index.service";
+import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
 import { CollidingPathsError, INDEX_FILE_NAME } from "./draw.constants";
@@ -28,6 +30,7 @@ import type {
   GenerationParameters,
   MeanderType,
   Modifier,
+  SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
 import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type {
@@ -46,10 +49,11 @@ import type {
  *   named families' parameter space, enumerated by
  *   {@link DrawCombinationsService} — which the meander charter's property
  *   test also sweeps, so the corpus this writes and the corpus that is gated
- *   are the same space by construction rather than by coincidence — beside an
- *   exhaustive enumeration of the `mosaic` family, which runs to thousands of
- *   files and so is written one row count at a time. An index page listing
- *   every drawing is written at the root of the output directory.
+ *   are the same space by construction rather than by coincidence — beside
+ *   two exhaustive enumerations, of the `mosaic` family's tiles and of the
+ *   `negative` family's one-column sources. Those run to thousands of files
+ *   and so are written one row count at a time. An index page listing every
+ *   drawing is written at the root of the output directory.
  * - **`draw --type <family> --rows <n>`** draws that one, to the same path
  *   the sweep would have written it to.
  *
@@ -58,6 +62,12 @@ import type {
  * says where drawings go, and a sub-command boundary between them only
  * decided which half of that set was legal.
  *
+ * Six of those flags belong to one modifier each — `--period`, `--shape`,
+ * `--strands`, `--branches`, `--leftward`, and `--upward` — and are
+ * recombined with `--modifier` by {@link DrawParametersService.modifier},
+ * since nest-commander parses each one through a method that cannot see the
+ * others.
+ *
  * Both halves are written through the same {@link writeDocuments}, so
  * "somewhere under the output directory" is the only thing this command knows
  * about either one's layout. Where each document actually lands is decided by
@@ -65,7 +75,7 @@ import type {
  */
 @Command({
   description:
-    "Draw meanders: with no drawing named, sweep every one the application can draw (the named families at structural-minimum-through-8 rows with every compatible modifier, plus an exhaustive enumeration of the mosaic family) beneath an index page listing them all; with --type and --rows, draw that one",
+    "Draw meanders: with no drawing named, sweep every one the application can draw (each named family from its own structural minimum through its own maximum rows, with every compatible modifier, plus exhaustive enumerations of the mosaic family's tiles and the negative family's one-column sources) beneath an index page listing them all; with --type and --rows, draw that one",
   name: "draw",
   options: { isDefault: true },
 })
@@ -81,6 +91,8 @@ export class DrawCommand extends CommandRunner {
     private readonly drawIndexService: DrawIndexService,
     @Inject(DrawParametersService)
     private readonly drawParametersService: DrawParametersService,
+    @Inject(DrawNegativePermutationsService)
+    private readonly drawNegativePermutationsService: DrawNegativePermutationsService,
     @Inject(DrawPermutationsService)
     private readonly drawPermutationsService: DrawPermutationsService,
     @Inject(MeanderGenerationService)
@@ -149,6 +161,15 @@ export class DrawCommand extends CommandRunner {
       );
     }
 
+    for (const rows of this.drawNegativePermutationsService.rowsSweep()) {
+      documents.push(
+        ...(await this.writeDocuments(
+          outputDirectory,
+          this.drawNegativePermutationsService.render(rows),
+        )),
+      );
+    }
+
     const indexPath = path.join(outputDirectory, INDEX_FILE_NAME);
 
     await writeFile(indexPath, this.drawIndexService.render(documents));
@@ -192,6 +213,39 @@ export class DrawCommand extends CommandRunner {
 
   // 🌎 Public Methods
 
+  /** Parses `--branches` as an integer, used only with `--modifier stagger`. */
+  @Option({
+    description:
+      "Branches one crenel's rail joins before it changes side, for --modifier stagger",
+    flags: "-b, --branches <branches>",
+  })
+  parseBranches(value: string): number {
+    return Number.parseInt(value, 10);
+  }
+
+  /** Parses `--flip`, rejecting any value outside the supported set. Used only with `--modifier serpentine`. */
+  @Option({
+    description: `Which ribbons are turned upside down, for --modifier serpentine (${SUPPORTED_SERPENTINE_FLIPS.join(", ")})`,
+    flags: "--flip <flip>",
+  })
+  parseFlip(value: string): SerpentineFlip {
+    return this.drawParametersService.serpentineFlip(value);
+  }
+
+  /**
+   * Parses `--leftward` as a boolean toggle, used only with
+   * `--modifier rung`. Bare, or with any value but `false` or `0`, it points
+   * the rungs left; absent, `rung` keeps the rightward direction it drew
+   * before the flag existed.
+   */
+  @Option({
+    description: "Point the rungs left instead of right, for --modifier rung",
+    flags: "-l, --leftward [leftward]",
+  })
+  parseLeftward(value: string | undefined): boolean {
+    return value !== "false" && value !== "0";
+  }
+
   /** Parses `--modifier`, rejecting any name outside the supported set. Omitted entirely when no modifier is requested. */
   @Option({
     description: `Modifier applied to the motif (${SUPPORTED_MODIFIER_NAMES.join(", ")})`,
@@ -199,6 +253,16 @@ export class DrawCommand extends CommandRunner {
   })
   parseModifier(value: string): Modifier["name"] {
     return this.drawParametersService.modifierName(value);
+  }
+
+  /** Parses `--offset` as an integer, used only with `--modifier serpentine`. */
+  @Option({
+    description:
+      "How far the strip depths are rotated, for --modifier serpentine",
+    flags: "--offset <offset>",
+  })
+  parseOffset(value: string): number {
+    return Number.parseInt(value, 10);
   }
 
   /** Registers `--output-directory`; nest-commander requires a parser method per option even when no transformation is needed. */
@@ -274,6 +338,21 @@ export class DrawCommand extends CommandRunner {
   })
   parseType(value: string): MeanderType {
     return this.drawParametersService.type(value);
+  }
+
+  /**
+   * Parses `--upward` as a boolean toggle, used only with
+   * `--modifier comb`. Bare, or with any value but `false` or `0`, it
+   * stands the teeth up from a rail along the band's bottom row; absent,
+   * `comb` hangs them from the top the way every unmodified drawing does.
+   */
+  @Option({
+    description:
+      "Stand the teeth up from the bottom instead of hanging them from the top, for --modifier comb",
+    flags: "-u, --upward [upward]",
+  })
+  parseUpward(value: string | undefined): boolean {
+    return value !== "false" && value !== "0";
   }
 
   /** Sweeps every meander, or draws the one `--type` and `--rows` name. */

@@ -9,7 +9,10 @@ import {
 } from "../meander-generation/meander-generation.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
-import { MOSAIC_TILE_MINIMUM_ROWS } from "./mosaic-motif.constants";
+import {
+  MOSAIC_TILE_MAXIMUM_ROWS,
+  MOSAIC_TILE_MINIMUM_ROWS,
+} from "./mosaic-motif.constants";
 import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
 
 import type { MosaicTile } from "./mosaic-motif.types";
@@ -42,17 +45,27 @@ export class MosaicTileGenerationService {
 
   // 🌎 Public Methods
 
-  /** Validates the tile's row count and the repeat count, then renders the finished SVG document. */
+  /**
+   * Validates the tile's row count and the repeat count, then renders the
+   * finished SVG document.
+   *
+   * The row bounds are the family's own at both ends — a tile below
+   * {@link MOSAIC_TILE_MINIMUM_ROWS} has nothing to permute, and one above
+   * {@link MOSAIC_TILE_MAXIMUM_ROWS} is outside the band this family is
+   * drawn in at all. The repeat count keeps the shared
+   * {@link MAXIMUM_VALUE}, which is a property of the canvas rather than of
+   * the family.
+   */
   generate(tile: MosaicTile, repeatCount: number): string {
     if (
       !Number.isInteger(tile.rows) ||
       tile.rows < MOSAIC_TILE_MINIMUM_ROWS ||
-      tile.rows > MAXIMUM_VALUE
+      tile.rows > MOSAIC_TILE_MAXIMUM_ROWS
     ) {
       throw new InvalidRowsError(
         tile.rows,
         MOSAIC_TILE_MINIMUM_ROWS,
-        MAXIMUM_VALUE,
+        MOSAIC_TILE_MAXIMUM_ROWS,
       );
     }
 

@@ -15,6 +15,22 @@ import type { DotShape } from "../meander-generation/meander-generation.types";
 export const ALTERNATED_SWEEP_PERIODS: readonly number[] = [1, 3];
 
 /**
+ * `isUpward` values swept for the `comb` modifier's batch combinations.
+ *
+ * One value rather than two, and deliberately not the mode's own default:
+ * the unmodified sweep already draws the downward comb, and
+ * `--modifier comb` naming it produces a byte-identical document under a
+ * second filename — `branch-motif.service.unit.test.ts` asserts that
+ * identity, exactly as `parallel`'s does for a two-strand `plied`. Sweeping
+ * the upward one alone is what puts the direction the corpus did not have
+ * into it without putting the one it already had into it twice.
+ *
+ * `rung` sweeps both of its directions because neither is what the
+ * unmodified drawing is — that one is a `comb`.
+ */
+export const COMB_SWEEP_UPWARD_VALUES: readonly boolean[] = [true];
+
+/**
  * Every shape swept for the `dot` modifier's batch combinations. `DotShape`
  * only has two members, so this sweeps the type's full domain rather than a
  * sample of it.
@@ -22,22 +38,42 @@ export const ALTERNATED_SWEEP_PERIODS: readonly number[] = [1, 3];
 export const DOT_SWEEP_SHAPES: readonly DotShape[] = ["bounce", "up"];
 
 /**
- * `strands` values swept for the `plied` modifier's batch combinations.
+ * `isLeftward` values swept for the `rung` modifier's batch combinations.
  *
- * Deliberately two points rather than a range, and deliberately not the
- * `parallel` family's own default of two: the unmodified sweep already
- * draws that ply, and `plied` naming it produces a byte-identical document
- * under a second filename — `parallel-motif.service.unit.test.ts` asserts
- * that identity. Three and four are one odd ply and one even one, which is
- * what shows the innermost strand's turn moving with the count. Nothing
- * deeper is swept because every further ply widens each repeat unit by two
- * more lattice columns and introduces no new kind of junction; the highest
- * value here is also `parallel`'s `STRUCTURAL_MINIMUM_ROWS`, since a bundle
- * of N strands needs N rows.
+ * Both of them, which is the modifier's whole domain rather than a sample of
+ * it — the same reason {@link DOT_SWEEP_SHAPES} sweeps two. `false` leads,
+ * so the rightward drawing the sweep committed under the bare name before
+ * the flag existed is still the first one enumerated at each row count.
+ *
+ * The two are mirror images and every topology count is identical across
+ * them, so this pair adds no new measurement to the charter. It is swept
+ * anyway because the corpus is what the index page shows, and a direction
+ * nobody can see drawn is a direction nobody will use.
  */
-export const PLIED_SWEEP_STRAND_COUNTS: readonly number[] = [3, 4];
+export const RUNG_SWEEP_LEFTWARD_VALUES: readonly boolean[] = [false, true];
 
 /**
+ * `branches` values swept for the `stagger` modifier's batch combinations.
+ *
+ * A contiguous run rather than the sampled pairs `alternated` and `plied`
+ * take, because this parameter has a floor they do not and every value
+ * above it draws a visibly different crenel. The first is
+ * `MINIMUM_STAGGER_BRANCHES` itself, which is both the tightest crenel the
+ * mode admits and the only one any `stagger` was drawn at before the flag
+ * existed; each one after it widens the crenel by a single lattice column,
+ * so no value in the run repeats the one before it at another scale.
+ *
+ * It stops at six because a crenel keeps its shape and only its wavelength
+ * grows: past six branches one rail run spans most of a six-repeat band and
+ * the figure reads as a `comb` with a couple of changes of side rather than
+ * as a crenellation. Nothing structural stops a wider one — the command
+ * line accepts up to `MAXIMUM_VALUE` — so this is where the sweep stops
+ * rather than where the mode does.
+ */
+export const STAGGER_SWEEP_BRANCH_COUNTS: readonly number[] = [3, 4, 5, 6];
+
+/**
+
  * The gallery page `DrawCommand` writes at the root of the output directory,
  * listing every document the sweep produced under the directory it landed
  * in. One page rather than one per row count: the tiles are now separated by
@@ -53,43 +89,46 @@ export const PLIED_SWEEP_STRAND_COUNTS: readonly number[] = [3, 4];
 export const INDEX_FILE_NAME = "index.html";
 
 /**
- * Subdirectory of a row count's own directory that the mosaic permutations
- * are written under, one column-span directory deep. They are nested rather
- * than left beside the named-type sweep because the enumeration runs to
- * thousands of files — the named-type sweep beside them is a reviewable
- * hundred.
+ * How many columns the `negative` permutation half's source tiles span.
+ *
+ * One, and it is a definition rather than a budget. A one-column source has
+ * no vertical mark for a second column to stagger against, so its negative
+ * is rules broken only where the source opens a window — which is what the
+ * `ruled` name means, and what makes this half that domain enumerated rather
+ * than sampled. The two-column space is a different shape of pattern, not a
+ * deeper cut of this one, and the three members of it this repository draws
+ * are named in the sweep's other half.
+ */
+export const NEGATIVE_PERMUTATION_COLUMNS = 1;
+
+/**
+ * Subdirectory of a row count's own directory that the `negative`
+ * permutations are written under, one column-span directory deep. They are
+ * nested rather than left beside that family's named sweep because the two
+ * halves are different things: the named half draws ten sources built by
+ * rule, and this half inverts every `mosaic` tile it can.
+ *
+ * `mosaic` used to nest its own enumerated half here too and no longer does.
+ * The level separated an enumerated half from a named one, and for that
+ * family the separation stopped meaning anything: its named drawings are
+ * tiles as well, at column spans the edge budget refuses rather than at some
+ * other kind of thing.
  */
 export const PERMUTATIONS_SUBDIRECTORY = "permutations";
 
+/**
+ * Matches the directory segment an enumerated tile is filed under, which is
+ * the column span of its shape.
+ *
+ * It is how a committed document is told to be an enumerated one rather than
+ * a named one, now that only `negative` puts its enumerated half under a
+ * `permutations/` level. Every enumerated document of either family is
+ * filed under a column span, and no named one is.
+ */
+export const COLUMN_SPAN_PATTERN = /\/\d+-columns\//u;
+
 /** `repeatCount` every swept mosaic is drawn at, wide enough to read the tile's rhythm without dominating the index page. */
 export const PERMUTATION_REPEAT_COUNT = 6;
-
-/**
- * Highest `rows` value the `mosaic` permutation half of the sweep enumerates,
- * starting from `MOSAIC_TILE_MINIMUM_ROWS`.
- *
- * The named-type half has no such cap — it runs to the shared
- * `MAXIMUM_VALUE`, so every drawing the command line can be asked for is
- * also a drawing this repository commits. This half cannot follow it,
- * because it enumerates its space exhaustively rather than sampling it, and
- * the count grows about 3.4× per row. Counted off
- * `MosaicTilesService.enumerate` across both column spans:
- *
- * | rows  |  4 |  5 |   6 |   7 |    8 |    9 |    10 |     11 |      12 |
- * | ----- | -- | -- | --- | --- | ---- | ---- | ----- | ------ | ------- |
- * | tiles | 23 | 68 | 199 | 660 | 2229 | 7977 | 29002 | 108089 |  406934 |
- *
- * Rows 4 through 8 are the 3,179 tiles committed today. Carrying this half
- * to 12 would add 552,002 more, for a corpus of over half a million SVGs.
- *
- * The row counts it therefore leaves uncovered are not a charter blind spot,
- * which is the one thing that would make this cap a liability rather than a
- * budget: the charter property test never swept these tiles at all — they
- * are reachable only through a motif service, and are gated from disk
- * instead — while `mosaic` as a named family, with its modifiers, sits in
- * the half that does run to `MAXIMUM_VALUE`.
- */
-export const PERMUTATION_ROWS_SWEEP_MAXIMUM = 8;
 
 // 🚨 Errors
 

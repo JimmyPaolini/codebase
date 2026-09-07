@@ -1,31 +1,22 @@
-// cspell:ignore vxdld hxdd — mosaic tile identifiers, one letter per cell
-// of the tile, from MOSAIC_MARK_LETTERS.
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { MosaicSymmetryService } from "./mosaic-symmetry.service";
+import { mosaicTile } from "../../../testing/mosaic-tiles";
 
-import type { MosaicTile } from "./mosaic-motif.types";
+import { MosaicSymmetryService } from "./mosaic-symmetry.service";
+import { MosaicTileService } from "./mosaic-tile.service";
 
 describe(MosaicSymmetryService, () => {
   let service: MosaicSymmetryService;
 
-  // Six rows, one column: five interior levels carrying a vertical dash
-  // across the top two, then a dot, then a line, then a dot.
-  const singleColumn: MosaicTile = {
-    columns: 1,
-    pieces: [
-      { column: 0, kind: "vertical", level: 0 },
-      { column: 0, kind: "dot", level: 2 },
-      { column: 0, kind: "line", level: 3 },
-      { column: 0, kind: "dot", level: 4 },
-    ],
-    rows: 6,
-  };
+  // Six rows, one column: five interior levels whose top point sends a
+  // southward edge, then a bare point, then the wrapped east-west rule,
+  // then another bare point.
+  const singleColumn = mosaicTile(["s", ".", ".", "e", "."]);
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [MosaicSymmetryService],
+      providers: [MosaicSymmetryService, MosaicTileService],
     }).compile();
 
     service = await module.resolve(MosaicSymmetryService);
@@ -36,36 +27,36 @@ describe(MosaicSymmetryService, () => {
   });
 
   describe("identify", () => {
-    it("names every cell, writing x where a dash's other half lands", () => {
-      expect(service.identify(singleColumn)).toBe("vxdld");
+    it("writes one hexadecimal character per point, worth 8 north, 4 south, 2 east and 1 west", () => {
+      // A point sending a southward edge, the point below it receiving one,
+      // two bare points, and one carrying the wrapped east-west rule.
+      expect(service.identify(singleColumn)).toBe("48030");
     });
 
     it("reads row-major, so a two-column tile interleaves its columns", () => {
-      const tile: MosaicTile = {
-        columns: 2,
-        pieces: [
-          { column: 0, kind: "horizontal", level: 0 },
-          { column: 0, kind: "dot", level: 1 },
-          { column: 1, kind: "dot", level: 1 },
-        ],
-        rows: 3,
-      };
+      expect(service.identify(mosaicTile(["e.", ".."]))).toBe("2100");
+      expect(service.identify(mosaicTile([".e", ".."]))).toBe("1200");
+    });
 
-      expect(service.identify(tile)).toBe("hxdd");
+    it("writes a single column's wrapped edge as both east and west, which is what its ink does", () => {
+      expect(service.identify(mosaicTile(["e"]))).toBe("3");
+      expect(service.identify(mosaicTile(["e."]))).toBe("21");
+    });
+
+    it("writes a point owning both its edges as one character, which a per-mark letter had none for", () => {
+      expect(service.identify(mosaicTile(["b.", "..", ".."]))).toBe("618000");
+    });
+
+    it("names a tile completely, so two tiles of one shape share it only when they are the same tile", () => {
+      expect(service.identify(mosaicTile(["e.", "e.", ".."]))).not.toBe(
+        service.identify(mosaicTile(["e.", ".e", ".."])),
+      );
     });
   });
 
   describe("canonicalIdentifier", () => {
     it("gives a tile and its own top-to-bottom mirror the same name", () => {
-      const flipped: MosaicTile = {
-        ...singleColumn,
-        pieces: [
-          { column: 0, kind: "dot", level: 0 },
-          { column: 0, kind: "line", level: 1 },
-          { column: 0, kind: "dot", level: 2 },
-          { column: 0, kind: "vertical", level: 3 },
-        ],
-      };
+      const flipped = mosaicTile([".", "e", ".", "s", "."]);
 
       expect(service.canonicalIdentifier(flipped)).toBe(
         service.canonicalIdentifier(singleColumn),
@@ -73,82 +64,69 @@ describe(MosaicSymmetryService, () => {
     });
 
     it("gives a tile and its own column shift the same name, since shifting only re-phases the pattern", () => {
-      const tile: MosaicTile = {
-        columns: 2,
-        pieces: [
-          { column: 0, kind: "dot", level: 0 },
-          { column: 1, kind: "line", level: 0 },
-        ],
-        rows: 3,
-      };
-      const shifted: MosaicTile = {
-        ...tile,
-        pieces: [
-          { column: 1, kind: "dot", level: 0 },
-          { column: 0, kind: "line", level: 0 },
-        ],
-      };
-
-      expect(service.canonicalIdentifier(shifted)).toBe(
-        service.canonicalIdentifier(tile),
+      expect(service.canonicalIdentifier(mosaicTile([".e", ".."]))).toBe(
+        service.canonicalIdentifier(mosaicTile(["e.", ".."])),
       );
     });
 
-    it("prefers the name that anchors its dashes earliest, since x sorts after every mark letter", () => {
-      // One interior level, both of whose cells the single dash claims.
-      const dashes: MosaicTile = {
-        columns: 2,
-        pieces: [{ column: 0, kind: "horizontal", level: 0 }],
-        rows: 2,
-      };
-
-      expect(service.canonicalIdentifier(dashes)).toBe("hx");
+    it("is the representative's own bit string, so a filename describes the tile that drew it", () => {
+      expect(service.canonicalIdentifier(singleColumn)).toBe(
+        service.identify(service.canonicalTile(singleColumn)),
+      );
+      expect(service.canonicalIdentifier(singleColumn)).toBe("03048");
     });
 
     it("keeps two genuinely different tiles apart", () => {
-      const aligned: MosaicTile = {
-        columns: 2,
-        pieces: [
-          { column: 0, kind: "horizontal", level: 0 },
-          { column: 0, kind: "horizontal", level: 1 },
-        ],
-        rows: 4,
-      };
-      const offset: MosaicTile = {
-        columns: 2,
-        pieces: [
-          { column: 0, kind: "horizontal", level: 0 },
-          { column: 1, kind: "horizontal", level: 1 },
-        ],
-        rows: 4,
-      };
-
-      expect(service.canonicalIdentifier(aligned)).not.toBe(
-        service.canonicalIdentifier(offset),
-      );
+      expect(
+        service.canonicalIdentifier(mosaicTile(["e.", "e.", ".."])),
+      ).not.toBe(service.canonicalIdentifier(mosaicTile(["e.", ".e", ".."])));
     });
   });
 
-  describe("coveredCells", () => {
-    it("claims one cell for a dot and for a single column's line", () => {
-      expect(
-        service.coveredCells({ column: 0, kind: "dot", level: 2 }, 1),
-      ).toStrictEqual([2]);
-      expect(
-        service.coveredCells({ column: 0, kind: "line", level: 1 }, 1),
-      ).toStrictEqual([1]);
+  describe("canonicalTile", () => {
+    it("hands every member of a symmetry class the same tile", () => {
+      const flipped = mosaicTile([".", "e", ".", "s", "."]);
+
+      expect(service.canonicalTile(flipped)).toStrictEqual(
+        service.canonicalTile(singleColumn),
+      );
     });
 
-    it("claims the cell below for a vertical dash", () => {
-      expect(
-        service.coveredCells({ column: 1, kind: "vertical", level: 0 }, 2),
-      ).toStrictEqual([1, 3]);
+    it("is idempotent, so the representative of a class represents itself", () => {
+      const representative = service.canonicalTile(singleColumn);
+
+      expect(service.canonicalTile(representative)).toStrictEqual(
+        representative,
+      );
     });
 
-    it("wraps a horizontal dash from the last column into the first", () => {
+    it("picks the member that anchors its edges earliest, which is not always the one written down", () => {
+      // A bare point followed by a southward edge is reached earlier than
+      // the wrapped rule, so the mirror of this tile is what the corpus
+      // draws — the same order the old exact-cover search found covers in.
+      const tile = mosaicTile(["e", "s", "."]);
+
+      expect(service.identify(tile)).toBe("348");
+      expect(service.identify(service.canonicalTile(tile))).toBe("483");
+    });
+  });
+
+  describe("variants", () => {
+    it("holds every distinct tile that draws the same pattern, itself included", () => {
+      const variants = service.variants(singleColumn);
+
+      expect(variants).toContainEqual(singleColumn);
+      expect(new Set(variants.map((tile) => service.identify(tile))).size).toBe(
+        variants.length,
+      );
+    });
+
+    it("is smaller than the group where a tile is symmetric under one of its elements", () => {
+      // Every point bare is fixed by every element of the group.
+      expect(service.variants(mosaicTile([".", ".", "."]))).toHaveLength(1);
       expect(
-        service.coveredCells({ column: 1, kind: "horizontal", level: 1 }, 2),
-      ).toStrictEqual([3, 2]);
+        service.variants(mosaicTile(["e.", ".e", ".."])).length,
+      ).toBeGreaterThan(1);
     });
   });
 });

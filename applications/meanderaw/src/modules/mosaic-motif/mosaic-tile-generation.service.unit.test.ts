@@ -1,19 +1,21 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { mosaicTile } from "../../../testing/mosaic-tiles";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import {
   InvalidRepeatCountError,
   InvalidRowsError,
+  MAXIMUM_VALUE,
 } from "../meander-generation/meander-generation.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
+import { MOSAIC_TILE_MAXIMUM_ROWS } from "./mosaic-motif.constants";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "./mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
+import { MosaicTileService } from "./mosaic-tile.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
-
-import type { MosaicTile } from "./mosaic-motif.types";
 
 /** The longest unfilled stretch any column of a rendered mosaic leaves, in pixels. */
 const longestBlank = (svg: string, strokeWidth: number): number => {
@@ -90,23 +92,16 @@ describe(MosaicTileGenerationService, () => {
   let mosaicTilesService: MosaicTilesService;
   let gridGeometryService: GridGeometryService;
 
-  const dots: MosaicTile = {
-    columns: 1,
-    pieces: Array.from({ length: 5 }, (_value, level) => ({
-      column: 0,
-      kind: "dot" as const,
-      level,
-    })),
-    rows: 6,
-  };
+  const dots = mosaicTile([".", ".", ".", ".", "."]);
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         GridGeometryService,
+        MosaicSymmetryService,
         MosaicTileGenerationService,
         MosaicTileMotifService,
-        MosaicSymmetryService,
+        MosaicTileService,
         MosaicTilesService,
         SvgRenderingService,
       ],
@@ -134,23 +129,37 @@ describe(MosaicTileGenerationService, () => {
       );
     });
 
-    it("declares a canvas wide enough for the last column's own marks", () => {
+    it("declares a canvas wide enough for the last column's own ink", () => {
       expect(service.generate(dots, 6)).toContain('width="55"');
     });
 
-    it("widens the canvas by a unit when the last column's mark reaches right, the way 6 rows lines.svg does", () => {
-      const lines: MosaicTile = {
-        ...dots,
-        pieces: dots.pieces.map((piece) => ({ ...piece, kind: "line" })),
-      };
+    it("widens the canvas by a unit when the last column carries an eastward edge, the way 6 rows lines.svg does", () => {
+      const lines = mosaicTile(["e", "e", "e", "e", "e"]);
 
       expect(service.generate(lines, 6)).toContain('width="65"');
     });
 
     it("throws below the mosaic's own minimum rows", () => {
-      expect(() => service.generate({ ...dots, rows: 3 }, 6)).toThrow(
+      expect(() => service.generate(mosaicTile(["."]), 6)).toThrow(
         InvalidRowsError,
       );
+    });
+
+    // 🎯 Both row bounds are the family's own rather than the command
+    // line's. The ceiling is `MOSAIC_TILE_MAXIMUM_ROWS` — six, where the
+    // shared `MAXIMUM_VALUE` is twelve — so a tile one row past the deepest
+    // band this family is drawn in is refused here rather than drawn
+    // outside the corpus the charter gates.
+    it("throws above the mosaic's own maximum rows, well inside the shared maximum", () => {
+      expect(MOSAIC_TILE_MAXIMUM_ROWS).toBeLessThan(MAXIMUM_VALUE);
+      expect(() =>
+        service.generate(
+          mosaicTile(
+            Array.from({ length: MOSAIC_TILE_MAXIMUM_ROWS }, () => "."),
+          ),
+          6,
+        ),
+      ).toThrow(InvalidRowsError);
     });
 
     it("throws when the repeat count falls outside the shared bounds", () => {
@@ -158,12 +167,16 @@ describe(MosaicTileGenerationService, () => {
       expect(() => service.generate(dots, 13)).toThrow(InvalidRepeatCountError);
     });
 
-    it.each([4, 5, 6, 7])(
+    it.each([3, 4, 5, 6])(
       "renders every enumerated tile space-filling at %i rows",
       (rows) => {
         const geometry = gridGeometryService.compute(rows);
+        const spans = Array.from(
+          { length: mosaicTilesService.maximumColumns(rows) },
+          (_column, index) => index + 1,
+        );
 
-        for (const columns of [1, 2]) {
+        for (const columns of spans) {
           for (const tile of mosaicTilesService.enumerate(rows, columns)) {
             expect(
               longestBlank(service.generate(tile, 3), geometry.strokeWidth),

@@ -738,6 +738,72 @@ Hard ESLint errors on source files. Test files (`*.test.ts`, `testing/**`) and `
 
 When a file nears 512 lines, split it along the module file suffixes (`*.types.ts`, `*.constants.ts`, another `*.service.ts`) instead of raising the limit. Never add a disable comment or edit the threshold to make a file fit.
 
+**Comment blocks are capped at 128 words**, declared as
+`comments: { maximumWords: 128 }` in
+[`configuration/codometer.config.ts`](configuration/codometer.config.ts) and
+enforced by codometer rather than by ESLint. It reaches **Python, shell, TOML,
+and YAML** — every language whose comments start with `#`. A block is the run
+of comment lines a reader takes as one thought: a blank line ends one, a
+comment trailing a value is never part of the block above it, and a `#!`
+shebang is never a comment at all. A breach names its file and line.
+
+It budgets **what a comment says, not how wide it is** — every linter here
+already holds a line to 80 columns, so a character budget would only restate
+it. When a block breaches, condense it or move the detail into documentation.
+
+`maximumCharacters`, `maximumLines`, and `maximumWords` are separate fields
+rather than one `maximum` steered by a `unit`, because they are not
+alternatives: a block can sit inside a line budget and outside a word one. A
+field left out is not measured, and a block is reported once per declared
+maximum. Nothing is defaulted to a number — a budget nobody wrote is one nobody
+chose.
+
+**Shell is deliberately looser at 256.** `scripts/shell/` holds command
+references — grep, netstat — whose whole body is one comment block documenting
+flags. That is a manual page, not a sprawling explanation, and condensing it
+would delete the thing the file exists for. A language's `comments` block is
+merged field by field over the top-level default, which is the same rule a
+`documentation` kind's entry follows over `documentation`'s own maxima.
+
+**JSDoc rides the same vocabulary.** `documentation` is the three maxima plus
+`kinds`, and its measurements reach the report through the same channel, so a
+JSDoc breach and a YAML one render identically and `kind` says which was
+measured. This repository sets `comments` and leaves `documentation` unset:
+gating this prose is not a reason to start gating every JSDoc comment against
+the same budget.
+
+**The budget is per block, never file-wide.** A block is one thought; a file
+holding forty well-sized comments is not the same problem as one holding a
+single essay, and a file-wide number cannot tell them apart. A `file` block can
+be added beside the block maxima to measure a whole file's comments as well —
+both are then reported — but this repository declares only the block ones.
+
+Python and YAML read their comments from real tokenizers: `tokenize` inside the
+Python analysis subprocess, and the `yaml` package's CST. Neither mistakes a
+`#` inside a string literal for a comment. Shell and TOML use a line scanner
+that does, exactly as those analyzers' own `comments` counters already do. CSS,
+SQL, HCL, and non-JSDoc `//` runs are not measured yet — see
+[#636](https://github.com/JimmyPaolini/codebase/issues/636).
+
+Python's comments therefore depend on `uv` being present, the same way every
+other Python metric already does: an unreachable interpreter leaves them
+unmeasured rather than miscounted.
+
+**The gate is `codebase:codometer`**, whose `check` runs `--check limits` over
+the whole repository — the same shape as `codebase:callidescope` and
+`codebase:codependix`. It reads no output destination and writes nothing, which
+is what makes it safe on a branch; `write` still publishes the README badges on
+main. Report staleness is deliberately not checked, because every branch would
+fail it for being behind rather than for anything it did.
+
+It runs through the root project's `make-projects`, so 👷 Make Projects gates it
+alongside every project's own `codometer`. It is **not** named in 🧑‍💻 Lint
+Codebase the way `callidescope` and `codependix` are: those two exist only on
+the root project, while all fifty projects declare `codometer`, so naming it
+there would fan out over every one and wait on each build. The root run is also
+the only one that reaches the workflows under `.github/`, which belong to no
+project.
+
 ### Formatting and Ordering
 
 Formatting is not a judgement call — `lint-codebase --configuration=write` produces the canonical result. Write code in the shape below so the first pass is a no-op.

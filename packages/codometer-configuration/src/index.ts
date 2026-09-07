@@ -31,6 +31,8 @@ export { ConfigurationModule } from "./modules/configuration/configuration.modul
 export { ConfigurationService } from "./modules/configuration/configuration.service";
 export type {
   CodometerAnalysis,
+  CodometerCommentMeasurement,
+  CodometerCommentsConfiguration,
   CodometerCompression,
   CodometerConfiguration,
   CodometerConfigurationContext,
@@ -38,6 +40,8 @@ export type {
   CodometerCustomStatistic,
   CodometerDocumentationConfiguration,
   CodometerDocumentationUnit,
+  CodometerLanguageCommentsConfiguration,
+  CodometerLanguageConfiguration,
   CodometerLimit,
   CodometerPythonConfiguration,
   CodometerSeverity,
@@ -46,13 +50,6 @@ export type {
   CodometerSymbolModifier,
   CodometerTarget,
   LoadConfigurationArguments,
-  LoadedConfiguration,
-  ResolvedCodometerConfiguration,
-  ResolvedCodometerCustomStatistic,
-  ResolvedCodometerDocumentationConfiguration,
-  ResolvedCodometerLimit,
-  ResolvedCodometerPythonConfiguration,
-  ResolvedCodometerTarget,
 } from "./modules/configuration/configuration.types";
 export type {
   CodometerJsonOutputConfiguration,
@@ -67,6 +64,19 @@ export type {
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/output.types";
+
+export type {
+  LoadedConfiguration,
+  ResolvedCodometerCommentsConfiguration,
+  ResolvedCodometerConfiguration,
+  ResolvedCodometerCustomStatistic,
+  ResolvedCodometerDocumentationConfiguration,
+  ResolvedCodometerLanguageCommentsConfiguration,
+  ResolvedCodometerLanguageConfiguration,
+  ResolvedCodometerLimit,
+  ResolvedCodometerPythonConfiguration,
+  ResolvedCodometerTarget,
+} from "./modules/configuration/resolved.types";
 export type {
   CodeStatisticsResult,
   CodometerStatisticGroup,

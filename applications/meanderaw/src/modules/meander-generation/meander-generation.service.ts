@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { MINIMUM_STAGGER_BRANCHES } from "../branch-motif/branch-motif.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicTileGenerationService } from "../mosaic-motif/mosaic-tile-generation.service";
@@ -8,17 +9,21 @@ import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import {
   COMPATIBLE_MODIFIERS,
   ConflictingSubFamilyError,
+  FAMILY_MAXIMUM_ROWS,
   InvalidModifierError,
+  InvalidOffsetError,
   InvalidPeriodError,
   InvalidRepeatCountCycleError,
   InvalidRepeatCountError,
   InvalidRowsError,
+  InvalidStaggerBranchCountError,
   InvalidStrandCountError,
   InvalidSubFamilyError,
   MAXIMUM_VALUE,
   MINIMUM_PERIOD,
   MINIMUM_REPEAT_COUNT,
   MINIMUM_STRANDS,
+  PLY_MODIFIER_NAMES,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
@@ -28,7 +33,7 @@ import {
 import { MotifRegistryService } from "./motif-registry.service";
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
-import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type {
   GenerationParameters,
   MeanderType,
@@ -111,7 +116,7 @@ export class MeanderGenerationService {
    */
   private generateSubFamily(
     parameters: GenerationParameters,
-    subFamily: MosaicSubFamily,
+    subFamily: MosaicBuildableSubFamily,
   ): string {
     const subFamilyNames = SUB_FAMILIES[parameters.type];
 
@@ -190,6 +195,28 @@ export class MeanderGenerationService {
     }
   }
 
+  /**
+   * Throws {@link InvalidOffsetError} when `serpentine`'s `offset` isn't a
+   * whole number inside its own strand count.
+   *
+   * The bound is `strands` because the offset rotates a cyclic sequence of
+   * that length: rotating it `strands` places is rotating it none, so every
+   * value outside `0 … strands - 1` names a drawing already reachable by a
+   * value inside it. Refused rather than folded, so a caller that meant
+   * something else finds out.
+   */
+  private validateOffset(modifier: Modifier | undefined): void {
+    if (modifier?.name !== "serpentine" || modifier.offset === undefined) {
+      return;
+    }
+
+    const { offset, strands } = modifier;
+
+    if (!Number.isInteger(offset) || offset < 0 || offset >= strands) {
+      throw new InvalidOffsetError(offset, strands);
+    }
+  }
+
   /** Throws {@link InvalidPeriodError} when `alternated`'s `period` isn't a whole number within the shared bounds. */
   private validatePeriod(modifier: Modifier | undefined): void {
     if (modifier?.name !== "alternated") {
@@ -222,19 +249,63 @@ export class MeanderGenerationService {
     }
   }
 
-  /** Throws {@link InvalidRowsError} when not a whole number within the type's structural minimum and the shared maximum. */
+  /**
+   * Throws {@link InvalidRowsError} when not a whole number within the
+   * type's own row range.
+   *
+   * Both ends are the family's rather than the command line's.
+   * {@link STRUCTURAL_MINIMUM_ROWS} sets the floor, below which the
+   * family's characteristic figure degenerates; {@link FAMILY_MAXIMUM_ROWS}
+   * sets the ceiling, which is the shared {@link MAXIMUM_VALUE} for every
+   * family but `mosaic`. Reading the ceiling here rather than in the sweep
+   * alone is what keeps a drawing the command line accepts and a drawing
+   * the corpus commits the same set.
+   */
   private validateRows(type: MeanderType, rows: number): void {
     const minimum = STRUCTURAL_MINIMUM_ROWS[type];
+    const maximum = FAMILY_MAXIMUM_ROWS[type];
 
-    if (!Number.isInteger(rows) || rows < minimum || rows > MAXIMUM_VALUE) {
-      throw new InvalidRowsError(rows, minimum, MAXIMUM_VALUE);
+    if (!Number.isInteger(rows) || rows < minimum || rows > maximum) {
+      throw new InvalidRowsError(rows, minimum, maximum);
     }
   }
 
   /**
-   * Throws {@link InvalidStrandCountError} when `plied`'s `strands` isn't a
-   * whole number between {@link MINIMUM_STRANDS} and the drawing's own row
-   * count.
+   * Throws {@link InvalidStaggerBranchCountError} when `stagger`'s
+   * `branches` isn't a whole number between
+   * {@link MINIMUM_STAGGER_BRANCHES} and {@link MAXIMUM_VALUE}.
+   *
+   * The lower bound is the family's own rather than the command line's: a
+   * two-branch run has no tooth strictly inside it, so the mode stops
+   * forking and the drawing degenerates from a spanning tree into a simple
+   * path — which would fail the charter relaxation `branch` declares. The
+   * upper bound is the shared one, the same as `alternated`'s `period`,
+   * because nothing structural fails above it.
+   */
+  private validateStaggerBranches(modifier: Modifier | undefined): void {
+    if (modifier?.name !== "stagger") {
+      return;
+    }
+
+    const { branches } = modifier;
+
+    if (
+      !Number.isInteger(branches) ||
+      branches < MINIMUM_STAGGER_BRANCHES ||
+      branches > MAXIMUM_VALUE
+    ) {
+      throw new InvalidStaggerBranchCountError(
+        branches,
+        MINIMUM_STAGGER_BRANCHES,
+        MAXIMUM_VALUE,
+      );
+    }
+  }
+
+  /**
+   * Throws {@link InvalidStrandCountError} when a ply-carrying modifier's
+   * `strands` isn't a whole number between {@link MINIMUM_STRANDS} and the
+   * drawing's own row count.
    *
    * The upper bound is `rows` rather than {@link MAXIMUM_VALUE} because it
    * is the geometry's bound rather than the CLI's: a `parallel` bundle's
@@ -244,7 +315,11 @@ export class MeanderGenerationService {
    * number per family and this one moves with the modifier.
    */
   private validateStrands(modifier: Modifier | undefined, rows: number): void {
-    if (modifier?.name !== "plied") {
+    if (!modifier || !PLY_MODIFIER_NAMES.includes(modifier.name)) {
+      return;
+    }
+
+    if (!("strands" in modifier)) {
       return;
     }
 
@@ -277,7 +352,9 @@ export class MeanderGenerationService {
     this.validateModifier(parameters.type, parameters.modifier);
     this.validatePeriod(parameters.modifier);
     this.validateModifierCycle(parameters.modifier, parameters.repeatCount);
+    this.validateStaggerBranches(parameters.modifier);
     this.validateStrands(parameters.modifier, parameters.rows);
+    this.validateOffset(parameters.modifier);
 
     const geometry = this.gridGeometryService.compute(parameters.rows);
     const paths = this.buildPaths(geometry, parameters);

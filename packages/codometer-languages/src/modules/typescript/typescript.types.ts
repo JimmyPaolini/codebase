@@ -1,8 +1,7 @@
 // 🏷️ Types
 
+import type { CommentMeasurement } from "../comments/comments.types";
 import type {
-  CodometerDocumentationUnit,
-  CodometerSeverity,
   CodometerSymbolKind,
   CodometerSymbolModifier,
   ResolvedCodometerDocumentationConfiguration,
@@ -16,26 +15,6 @@ export interface AnalyzeTypescriptFileArguments {
   filePath: string;
   stats: TypescriptResult;
   workingDirectory: string;
-}
-
-/**
- * One documented declaration's JSDoc comment, measured against its kind's limit.
- *
- * Every declaration carrying a `/**` comment is reported, breached or not, so
- * the length is visible before it ever becomes a problem.
- */
-export interface TypescriptDocumentationMeasurement {
-  breached: boolean;
-  /** The declaration's own name, or `"(anonymous)"` when it has none. */
-  declaration: string;
-  file: string;
-  kind: CodometerSymbolKind;
-  limit: number;
-  /** 1-indexed line the declaration itself starts on. */
-  line: number;
-  measured: number;
-  severity: CodometerSeverity;
-  unit: CodometerDocumentationUnit;
 }
 
 /** Input to the TypeScript/JavaScript AST analysis step. */
@@ -66,7 +45,7 @@ export interface TypescriptResult {
   docComments: number;
   docTags: Record<string, number>;
   /** Every documented declaration, breached or not, in measurement order. */
-  documentation: TypescriptDocumentationMeasurement[];
+  documentation: CommentMeasurement[];
   enums: number;
   exported: number;
   externalPackages: Set<string>;

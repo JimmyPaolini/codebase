@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { CommentsModule } from "../comments/comments.module";
+
 import { DocumentationMeasurementService } from "./documentation-measurement.service";
 import { TypescriptService } from "./typescript.service";
 
@@ -9,7 +11,7 @@ import { TypescriptService } from "./typescript.service";
 @Module({
   controllers: [],
   exports: [TypescriptService],
-  imports: [],
+  imports: [CommentsModule],
   providers: [DocumentationMeasurementService, TypescriptService],
 })
 export class TypescriptModule {}

@@ -2,6 +2,8 @@ import { Test } from "@nestjs/testing";
 import tsCompiler from "typescript";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CommentsService } from "../comments/comments.service";
+
 import { DocumentationMeasurementService } from "./documentation-measurement.service";
 
 import type { TypescriptWalkContext } from "./typescript.types";
@@ -65,18 +67,33 @@ function buildContext(
 }
 
 const documentation: ResolvedCodometerDocumentationConfiguration = {
-  default: 6,
-  kinds: { class: 6 },
+  kinds: {
+    class: {
+      maximumCharacters: undefined,
+      maximumLines: 6,
+      maximumWords: undefined,
+      severity: "fail",
+    },
+  },
+  maximumCharacters: undefined,
+  maximumLines: 6,
+  maximumWords: undefined,
   severity: "fail",
-  unit: "lines",
 };
+
+/** The block above, judged in one unit rather than lines. */
+function inUnit(
+  overrides: Partial<ResolvedCodometerDocumentationConfiguration>,
+): ResolvedCodometerDocumentationConfiguration {
+  return { ...documentation, kinds: {}, maximumLines: undefined, ...overrides };
+}
 
 describe(DocumentationMeasurementService, () => {
   let service: DocumentationMeasurementService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [DocumentationMeasurementService],
+      providers: [CommentsService, DocumentationMeasurementService],
     }).compile();
 
     service = await module.resolve(DocumentationMeasurementService);
@@ -95,7 +112,7 @@ describe(DocumentationMeasurementService, () => {
       undefined,
     );
 
-    expect(service.measure(node, context)).toBeUndefined();
+    expect(service.measure(node, context)).toStrictEqual([]);
   });
 
   it("returns undefined for a declaration with no JSDoc comment", () => {
@@ -104,7 +121,7 @@ describe(DocumentationMeasurementService, () => {
       documentation,
     );
 
-    expect(service.measure(node, context)).toBeUndefined();
+    expect(service.measure(node, context)).toStrictEqual([]);
   });
 
   it("returns undefined for a plain block comment, not a JSDoc one", () => {
@@ -114,7 +131,7 @@ describe(DocumentationMeasurementService, () => {
       documentation,
     );
 
-    expect(service.measure(node, context)).toBeUndefined();
+    expect(service.measure(node, context)).toStrictEqual([]);
   });
 
   it("measures lines, the raw comment block's line count", () => {
@@ -127,7 +144,7 @@ describe(DocumentationMeasurementService, () => {
       documentation,
     );
 
-    expect(service.measure(node, context)).toMatchObject({
+    expect(service.measure(node, context)[0]).toMatchObject({
       breached: false,
       kind: "class",
       measured: 4,
@@ -139,10 +156,10 @@ describe(DocumentationMeasurementService, () => {
     const text = "/** Short. */";
     const { context, node } = buildContext(
       `${text}\n       export class Foo {}`,
-      { ...documentation, unit: "characters" },
+      inUnit({ maximumCharacters: 1 }),
     );
 
-    expect(service.measure(node, context)).toMatchObject({
+    expect(service.measure(node, context)[0]).toMatchObject({
       measured: text.length,
       unit: "characters",
     });
@@ -154,10 +171,10 @@ describe(DocumentationMeasurementService, () => {
         * This comment has exactly seven words total.
         */
        export class Foo {}`,
-      { ...documentation, unit: "words" },
+      inUnit({ maximumWords: 1 }),
     );
 
-    expect(service.measure(node, context)).toMatchObject({
+    expect(service.measure(node, context)[0]).toMatchObject({
       measured: 7,
       unit: "words",
     });
@@ -167,10 +184,10 @@ describe(DocumentationMeasurementService, () => {
     const { context, node } = buildContext(
       `/** Four words right here. */
        export class Foo {}`,
-      { ...documentation, unit: "words" },
+      inUnit({ maximumWords: 1 }),
     );
 
-    expect(service.measure(node, context)).toMatchObject({ measured: 4 });
+    expect(service.measure(node, context)[0]).toMatchObject({ measured: 4 });
   });
 
   it("marks a declaration whose measured length exceeds its kind's limit as breached", () => {
@@ -181,10 +198,20 @@ describe(DocumentationMeasurementService, () => {
         * Three.
         */
        export class Foo {}`,
-      { ...documentation, kinds: { class: 2 } },
+      {
+        ...documentation,
+        kinds: {
+          class: {
+            maximumCharacters: undefined,
+            maximumLines: 2,
+            maximumWords: undefined,
+            severity: "fail",
+          },
+        },
+      },
     );
 
-    expect(service.measure(node, context)).toMatchObject({
+    expect(service.measure(node, context)[0]).toMatchObject({
       breached: true,
       limit: 2,
     });
@@ -199,7 +226,7 @@ describe(DocumentationMeasurementService, () => {
       { ...documentation, kinds: {} },
     );
 
-    expect(service.measure(node, context)).toMatchObject({ limit: 6 });
+    expect(service.measure(node, context)[0]).toMatchObject({ limit: 6 });
   });
 
   it("names the declaration by its own identifier", () => {
@@ -211,7 +238,7 @@ describe(DocumentationMeasurementService, () => {
       documentation,
     );
 
-    expect(service.measure(node, context)).toMatchObject({
+    expect(service.measure(node, context)[0]).toMatchObject({
       declaration: "greet",
       kind: "function",
     });
@@ -226,7 +253,7 @@ describe(DocumentationMeasurementService, () => {
       documentation,
     );
 
-    expect(service.measure(node, context)).toMatchObject({
+    expect(service.measure(node, context)[0]).toMatchObject({
       declaration: "(anonymous)",
     });
   });
@@ -242,7 +269,7 @@ describe(DocumentationMeasurementService, () => {
       documentation,
     );
 
-    expect(service.measure(node, context)).toMatchObject({ line: 6 });
+    expect(service.measure(node, context)[0]).toMatchObject({ line: 6 });
   });
 
   it("returns undefined for a node kind no documentation limit can name", () => {
@@ -254,6 +281,6 @@ describe(DocumentationMeasurementService, () => {
       documentation,
     );
 
-    expect(service.measure(node, context)).toBeUndefined();
+    expect(service.measure(node, context)).toStrictEqual([]);
   });
 });

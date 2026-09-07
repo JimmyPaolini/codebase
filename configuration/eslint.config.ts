@@ -76,6 +76,11 @@ export default [
       "**/build",
       "**/tmp",
       "**/*.min.js",
+      // Python tool caches — generated, gitignored, and never source. .pytest_cache
+      // writes a README.md, which the root eslint target's `**/*.md` glob reaches
+      "**/.pytest_cache/**",
+      "**/.mypy_cache/**",
+      "**/.ruff_cache/**",
       "**/vite.config.*.timestamp*",
       "**/vitest.config.*.timestamp*",
       "CHANGELOG.md",

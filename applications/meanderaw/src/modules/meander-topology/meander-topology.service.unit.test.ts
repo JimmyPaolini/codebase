@@ -1,7 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { MeanderLatticeService } from "./meander-lattice.service";
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
+
 import { MeanderTopologyService } from "./meander-topology.service";
 
 import type { MeanderTopology } from "./meander-topology.types";

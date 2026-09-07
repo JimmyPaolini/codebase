@@ -2,6 +2,7 @@
 import ast
 import io
 import json
+import re
 import sys
 import tokenize
 from pathlib import Path
@@ -16,6 +17,39 @@ def read_paths() -> list[Path]:
     so the totals depended on whatever sat in the directory.
     """
     return [Path(line.strip()) for line in sys.stdin if line.strip()]
+
+
+COMMENT_MARKER = re.compile(r"^\s*#+\s?")
+
+
+def is_shebang(token: tokenize.TokenInfo) -> bool:
+    """Whether this is the interpreter line rather than a comment.
+
+    `#!` on the first line is an instruction to the kernel, not prose. Left in,
+    it would be grouped with whatever comment follows it, and every script
+    opening with a shebang would measure a block whose first word is
+    `!/usr/bin/env`.
+    """
+    return token.start == (1, 0) and token.string.startswith("#!")
+
+
+def read_comment(token: tokenize.TokenInfo) -> dict[str, object]:
+    """Describe one comment the tokenizer found, for measurement upstream.
+
+    Emitted rather than measured here: how long a comment may run is one
+    definition shared by every language codometer reads, and it lives in
+    `CommentsService`. This side only says what a comment *is*, which is the
+    one part `tokenize` knows and a line scanner cannot -- a `#` inside a
+    string literal is a STRING token here, never a COMMENT.
+    """
+    row, column = token.start
+
+    return {
+        "line": row,
+        "ownLine": token.line[:column].strip() == "",
+        "prose": COMMENT_MARKER.sub("", token.string),
+        "source": token.string,
+    }
 
 
 def count_docstring(node: ast.AST, stats: dict[str, int]) -> None:
@@ -41,6 +75,8 @@ stats = {
     "docstrings": 0,
     "docstringLines": 0,
 }
+
+comments: list[dict[str, object]] = []
 
 for path in read_paths():
     try:
@@ -73,7 +109,10 @@ for path in read_paths():
             if token.type == tokenize.COMMENT:
                 stats["comments"] += 1
                 stats["commentLines"] += 1
+
+                if not is_shebang(token):
+                    comments.append({**read_comment(token), "file": str(path)})
     except SyntaxError:
         pass
 
-print(json.dumps(stats))
+print(json.dumps({**stats, "commentTokens": comments}))
