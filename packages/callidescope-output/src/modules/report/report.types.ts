@@ -34,6 +34,17 @@ export interface MermaidDiagram {
   readonly nodes: string[];
 }
 
+/**
+ * Arguments for rendering only the findings a gate weighs.
+ *
+ * No `rendering`, unlike `RenderRunArguments`: a gate's product is the list of
+ * things to go and fix, and a diagram of them is not that list.
+ */
+export interface RenderFindingsArguments {
+  readonly previewCount: number;
+  readonly result: CallGraphResult;
+}
+
 /** Arguments for rendering one project's section. */
 export interface RenderProjectSectionArguments {
   readonly heading: string;

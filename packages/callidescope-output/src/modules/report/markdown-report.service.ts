@@ -2,15 +2,18 @@ import { Injectable } from "@nestjs/common";
 
 import { MermaidReportService } from "./mermaid-report.service";
 import {
+  MARKDOWN_DEEP_STACKS_HEADING,
   MARKDOWN_MISPLACED_HEADER,
   MARKDOWN_SPREAD_HEADER,
   MARKDOWN_SUMMARY_HEADER,
   MARKDOWN_WIDE_CALLABLES_HEADER,
+  MARKDOWN_WIDE_CALLABLES_HEADING,
   RUN_HEADING,
 } from "./report.constants";
 import { ReportService } from "./report.service";
 
 import type {
+  RenderFindingsArguments,
   RenderProjectSectionArguments,
   RenderRunArguments,
   RenderStacksArguments,
@@ -22,6 +25,7 @@ import type {
   CallStack,
   MisplacedCallableFinding,
   ModuleSpreadFinding,
+  WideCallableFinding,
 } from "@callidescope/configuration";
 
 /**
@@ -170,7 +174,59 @@ export class MarkdownReportService {
       : `${args.header}\n${args.rows.join("\n")}`;
   }
 
+  /**
+   * Names each callable that broke its breadth limit, a line each.
+   *
+   * A line rather than `renderCallableBreadths`' table, and deliberately not
+   * that method reused: the table's columns say what a callable calls, and a
+   * finding's product is the number it broke. `limit` is per project now, so a
+   * reader cannot infer it from the run the way a single workspace-wide number
+   * could be inferred — it has to be printed beside the breadth it failed.
+   */
+  private renderWideCallableLines(
+    findings: readonly WideCallableFinding[],
+  ): string {
+    if (findings.length === 0) {
+      return "None.";
+    }
+
+    return findings
+      .map(
+        (finding) =>
+          `- \`${finding.displayName}\` — ${String(finding.breadth)} direct callees, limit ${String(finding.limit)} (${finding.location.filePath})`,
+      )
+      .join("\n");
+  }
+
   // 🌎 Public Methods
+
+  /**
+   * Renders the two findings a gate weighs, and nothing else.
+   *
+   * A gate prints why it decided rather than what it read: the full report is
+   * what a trace is for, and burying two deep stacks in a listing of every
+   * stack in the project is how a failed pipeline stops being read.
+   *
+   * Here rather than in the caller because rendering is this package's job,
+   * and because the headings are `renderRun`'s headings — written once, so a
+   * reader who greps a pipeline log for one rendering finds the other.
+   */
+  public renderFindings(args: RenderFindingsArguments): string {
+    const { deepStacks, wideCallables } = args.result;
+
+    return [
+      `## ${MARKDOWN_DEEP_STACKS_HEADING} (${String(deepStacks.length)})`,
+      "",
+      this.renderStacks({
+        previewCount: args.previewCount,
+        stacks: deepStacks,
+      }),
+      "",
+      `## ${MARKDOWN_WIDE_CALLABLES_HEADING} (${String(wideCallables.length)})`,
+      "",
+      this.renderWideCallableLines(wideCallables),
+    ].join("\n");
+  }
 
   /** Renders one project's section, for splicing into its own README. */
   public renderProjectSection(args: RenderProjectSectionArguments): string {
@@ -217,7 +273,7 @@ export class MarkdownReportService {
       "",
       this.renderSummaryTable(result.summary),
       "",
-      `## Call stacks over the depth limit (${String(result.deepStacks.length)})`,
+      `## ${MARKDOWN_DEEP_STACKS_HEADING} (${String(result.deepStacks.length)})`,
       "",
       this.renderStacksAs({
         previewCount: args.previewCount,
@@ -229,7 +285,7 @@ export class MarkdownReportService {
       "",
       this.renderSpreads(result.moduleSpreads),
       "",
-      `## Callables over the breadth limit (${String(result.wideCallables.length)})`,
+      `## ${MARKDOWN_WIDE_CALLABLES_HEADING} (${String(result.wideCallables.length)})`,
       "",
       this.renderCallableBreadths({
         previewCount: args.previewCount,

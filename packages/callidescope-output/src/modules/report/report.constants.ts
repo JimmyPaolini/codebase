@@ -90,3 +90,16 @@ export const MARKDOWN_MISPLACED_HEADER =
 /** Header of the breadth table. */
 export const MARKDOWN_WIDE_CALLABLES_HEADER =
   "| Callable | Breadth | Calls directly | Location |\n| --- | --- | --- | --- |";
+
+/**
+ * Heading over the call stacks that ran deeper than their project allows.
+ *
+ * A constant rather than a literal because two renderings write it — the
+ * whole-run report, and the findings-only rendering a gate prints — and a
+ * reader who greps a failed pipeline for one of them must find the other.
+ */
+export const MARKDOWN_DEEP_STACKS_HEADING = "Call stacks over the depth limit";
+
+/** Heading over the callables that called more directly than allowed. */
+export const MARKDOWN_WIDE_CALLABLES_HEADING =
+  "Callables over the breadth limit";

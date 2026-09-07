@@ -9,6 +9,10 @@ import {
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { MarkdownReportService } from "./markdown-report.service";
+import {
+  MARKDOWN_DEEP_STACKS_HEADING,
+  MARKDOWN_WIDE_CALLABLES_HEADING,
+} from "./report.constants";
 
 import type {
   CallableBreadthReport,
@@ -267,6 +271,82 @@ describe(MarkdownReportService, () => {
         result: buildCallGraphResult(),
       }),
     ).toContain("None.");
+  });
+
+  // 🚦 Gate findings
+
+  it("renders the two findings a gate weighs and nothing else", () => {
+    const rendered = service.renderFindings({
+      previewCount: 3,
+      result: buildCallGraphResult(),
+    });
+
+    expect(rendered).toBe(
+      [
+        "## Call stacks over the depth limit (0)",
+        "",
+        "None.",
+        "",
+        "## Callables over the breadth limit (0)",
+        "",
+        "None.",
+      ].join("\n"),
+    );
+  });
+
+  it("heads a gate's sections with the same headings a whole run uses", () => {
+    const result = buildCallGraphResult({
+      deepStacks: [{ ...stack({ entry: "Resolver.read" }), limit: 1 }],
+    });
+    const run = service.renderRun({
+      previewCount: 3,
+      rendering: "tree",
+      result,
+    });
+
+    // The headings live in one constant each, so a reader grepping a failed
+    // pipeline for a run's heading finds a gate's, and vice versa.
+    expect(run).toContain(`## ${MARKDOWN_DEEP_STACKS_HEADING} (1)`);
+    expect(service.renderFindings({ previewCount: 3, result })).toContain(
+      `## ${MARKDOWN_DEEP_STACKS_HEADING} (1)`,
+    );
+  });
+
+  it("names a wide callable with the limit it broke and where it lives", () => {
+    const rendered = service.renderFindings({
+      previewCount: 3,
+      result: buildCallGraphResult({
+        wideCallables: [
+          {
+            breadth: 12,
+            callees: [],
+            displayName: "AlphaService.orchestrate",
+            id: "orchestrate",
+            limit: 8,
+            location: buildSourceLocation({ filePath: "alpha.service.ts" }),
+            signature: undefined,
+          },
+        ],
+      }),
+    });
+
+    // The limit is per project, so it cannot be inferred from the run and has
+    // to be printed beside the breadth that broke it.
+    expect(rendered).toContain(`## ${MARKDOWN_WIDE_CALLABLES_HEADING} (1)`);
+    expect(rendered).toContain(
+      "- `AlphaService.orchestrate` — 12 direct callees, limit 8 (alpha.service.ts)",
+    );
+  });
+
+  it("prints a gate's deep stacks as trees rather than as a table", () => {
+    const rendered = service.renderFindings({
+      previewCount: 3,
+      result: buildCallGraphResult({
+        deepStacks: [{ ...stack({ entry: "Resolver.read" }), limit: 1 }],
+      }),
+    });
+
+    expect(rendered).toContain("**1. `Resolver.read`** — depth 2");
   });
 
   // 📊 Finding tables
