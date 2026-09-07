@@ -99,6 +99,39 @@ Relationships (shortcut `B R`), but it is exposed through **no public API** —
 not REST, not GraphQL. Sub-issues and dependencies are the only relationships
 that can be created programmatically.
 
+## Marking work in progress
+
+**Applying `status:in-progress` is the first write of an implementation
+session** — before the first failing test, and before any code. It goes on
+every layer the work is about to move, not only the one being typed into: the
+spec issue, the parent issue whose pull request is being built, and the
+sub-issue for the commit being written. `gh issue edit` takes all three
+together:
+
+```bash
+gh issue edit <spec> <parent> <child> --add-label "status:in-progress"
+```
+
+- **A layer takes the label when work under it starts**, so the spec goes
+  in-progress with its first parent issue and a parent goes in-progress with
+  its first sub-issue. Sub-issues that are planned but not yet started stay as
+  they are — the label marks what is moving, not what is scoped.
+- **Drop `status:ready-for-agent` and `status:ready-for-human` in the same
+  edit.** Those say the ticket is waiting to be picked up, which stops being
+  true the moment it is — `/triage`'s frontier query and anyone scanning the
+  board both read them that way.
+- **The label comes off when the issue closes.** There is no `status:done`
+  label; a closed issue is the done signal. Remove it as the ticket closes, so
+  nothing sits closed and still reading as in-progress:
+
+  ```bash
+  gh issue edit <child> --remove-label "status:in-progress"
+  gh issue close <child> --comment "..."
+  ```
+
+The 👮 Audit Issues workflow reads only the `type:*`, `scope:*`, and `source:*`
+families, so a `status:*` label neither satisfies nor fails it.
+
 ## Conventions
 
 - **Create an issue**: `gh issue create --title "..." --body "..."`. Use a heredoc for multi-line bodies.

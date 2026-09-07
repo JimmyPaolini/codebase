@@ -57,7 +57,11 @@ fix.
    single ticket. The document it writes is the next agent's entire brief, so
    it is held to this repository's rules rather than the skill's defaults — see
    [Handoffs](#handoffs).
-4. Build with [implement](.agents/skills/implement/SKILL.md), which drives
+4. Move every ticket the work covers — the spec, the parent issue for the pull
+   request, and the sub-issue for the commit — to `status:in-progress` before
+   the first test, the way
+   [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) describes.
+   Then build with [implement](.agents/skills/implement/SKILL.md), which drives
    red-green-refactor through two TDD skills used in tandem, both read before
    the first test.
    [test-driven-development](.agents/skills/test-driven-development/SKILL.md)
