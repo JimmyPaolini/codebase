@@ -398,21 +398,7 @@ export default [
       perfectionist: perfectionistPlugin,
     },
     rules: {
-      "@nx/dependency-checks": [
-        "error",
-        {
-          // The language packages are named as strings in a registry and
-          // imported on demand, so no static import proves they are used.
-          ignoredDependencies: [
-            "@conformetry/json",
-            "@conformetry/jupyter",
-            "@conformetry/markdown",
-            "@conformetry/python",
-            "@conformetry/text",
-            "@conformetry/typescript",
-          ],
-        },
-      ],
+      "@nx/dependency-checks": "error",
       "@nx/enforce-module-boundaries": [
         "error",
         {
@@ -1447,21 +1433,7 @@ export default [
     ignores: ["projectStructure.cache.json"],
     rules: {
       // Keep Nx dependency checks enabled
-      "@nx/dependency-checks": [
-        "error",
-        {
-          // The language packages are named as strings in a registry and
-          // imported on demand, so no static import proves they are used.
-          ignoredDependencies: [
-            "@conformetry/json",
-            "@conformetry/jupyter",
-            "@conformetry/markdown",
-            "@conformetry/python",
-            "@conformetry/text",
-            "@conformetry/typescript",
-          ],
-        },
-      ],
+      "@nx/dependency-checks": "error",
       // JSONC style rules
       "jsonc/comma-dangle": ["error", "never"],
       "jsonc/indent": ["error", 2],
