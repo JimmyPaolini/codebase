@@ -625,7 +625,7 @@ What this project is judged against. `declared` is the number in this project's 
 ```text
 🚀 ValidateCommand.run(_passedParameters: string[], options: ValidateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/validate/validate.command.ts:372]
    ↳ Runs validation and reports every difference found.
-  └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:132]
+  └─> ValidationService.validate(args: RunValidationArguments): RunValidationResult [packages/conformetry-validation/src/modules/validation/validation.service.ts:136]
      ↳ Validates every instance and returns the differences found.
     └─> InstanceDiscoveryService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:95]
        ↳ Resolves every instance to the template, or templates, that explain it.
@@ -890,14 +890,21 @@ flowchart LR
   InstanceDiscoveryModule
   InstancesModule
   InventoryModule
+  JsonModule
+  JupyterModule
+  LanguagesModule
   LoggerModule([LoggerModule])
   MainModule
+  MarkdownModule
+  PythonModule
   RenderingModule
   ReportingModule
   RunnerModule
   ScoringModule
   TemplateDiscoveryModule
   TemplatesModule
+  TextModule
+  TypescriptModule
   ValidateModule
   ValidationModule
   FilesModule --> DifferencesModule
@@ -913,17 +920,31 @@ flowchart LR
   InstancesModule --> InputModule
   InstancesModule --> InstanceDiscoveryModule
   InstancesModule --> InventoryModule
+  JsonModule --> ScoringModule
+  JupyterModule --> JsonModule
+  JupyterModule --> MarkdownModule
+  JupyterModule --> PythonModule
+  LanguagesModule --> JsonModule
+  LanguagesModule --> JupyterModule
+  LanguagesModule --> MarkdownModule
+  LanguagesModule --> PythonModule
+  LanguagesModule --> TextModule
+  LanguagesModule --> TypescriptModule
   MainModule --> DiscoveryModule
   MainModule --> GenerateModule
   MainModule --> InstancesModule
   MainModule --> TemplatesModule
   MainModule --> ValidateModule
+  MarkdownModule --> ScoringModule
+  PythonModule --> DifferencesModule
+  PythonModule --> ScoringModule
   ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   TemplatesModule --> ConfigurationModule
   TemplatesModule --> InputModule
   TemplatesModule --> InstanceDiscoveryModule
   TemplatesModule --> InventoryModule
+  TypescriptModule --> ScoringModule
   ValidateModule --> ConfigurationModule
   ValidateModule --> InputModule
   ValidateModule --> InstanceDiscoveryModule
@@ -932,6 +953,7 @@ flowchart LR
   ValidateModule --> ValidationModule
   ValidationModule --> FilesModule
   ValidationModule --> InstanceDiscoveryModule
+  ValidationModule --> LanguagesModule
   ValidationModule --> ReportingModule
   ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule

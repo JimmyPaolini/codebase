@@ -399,7 +399,7 @@ export class ValidateCommand extends CommandRunner {
       return;
     }
 
-    const result = await this.validationService.validate({
+    const result = this.validationService.validate({
       instances,
       ...(options.threshold === undefined
         ? {}

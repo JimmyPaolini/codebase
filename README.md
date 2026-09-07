@@ -299,12 +299,6 @@ graph LR
   conformetry_nx --> conformetry_configuration
   conformetry_nx --> conformetry_core
   conformetry_nx --> conformetry_generation
-  conformetry_nx --> conformetry_json
-  conformetry_nx --> conformetry_jupyter
-  conformetry_nx --> conformetry_markdown
-  conformetry_nx --> conformetry_python
-  conformetry_nx --> conformetry_text
-  conformetry_nx --> conformetry_typescript
   conformetry_nx --> conformetry_validation
   conformetry_nx --> logger
   conformetry_python --> conformetry_core
@@ -313,12 +307,7 @@ graph LR
   conformetry_validation --> conformetry_configuration
   conformetry_validation --> conformetry_core
   conformetry_validation --> conformetry_files
-  conformetry_validation --> conformetry_json
-  conformetry_validation --> conformetry_jupyter
-  conformetry_validation --> conformetry_markdown
-  conformetry_validation --> conformetry_python
-  conformetry_validation --> conformetry_text
-  conformetry_validation --> conformetry_typescript
+  conformetry_validation --> conformetry_languages
   lexico --> lexico_components
   lexico_ingestion --> lexico_entities
   lexico_ingestion --> logger
@@ -339,36 +328,36 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-268337-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-14.80_MB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-267713-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-14.78_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-641-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-2147-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-2143-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-2086-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-820-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-2082-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-819-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-34-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-1112-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-5874-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-1111-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-5857-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-16-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-14-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-520-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-123-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-729-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-11158-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-4097-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-12892-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-2363-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-14051-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-8916-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2798-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-12098-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-28215-475569?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-518-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-121-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-725-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-11132-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-4085-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-12875-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-2342-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-14018-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-8892-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2790-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-12066-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-28131-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-34-ca8a04?style=flat-square)
 
 ### Python
@@ -389,16 +378,16 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-240-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-23928-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-4351-7c3aed?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-23894-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-4344-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1623-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-14034-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-9030-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-14010-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-9018-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1281-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1731-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1726-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-3749-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-18016-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-17992-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
@@ -480,13 +469,13 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### Conventions
 
 ![Module Files](https://img.shields.io/badge/Module_Files-234-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-330-0284c7?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-329-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-38-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-205-ea580c?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-204-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-214-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-13-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-33-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-482-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-480-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-28-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-9-0284c7?style=flat-square)
 
@@ -516,23 +505,23 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-277-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-77132-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-77122-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-261-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-1845-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-2327-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-98-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-11340-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-11339-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-1233-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-5647-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-672-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-6996-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-2005-059669?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-671-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-6985-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-2006-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-7907-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-2162-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-30684-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-2161-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-30651-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-34-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
@@ -545,13 +534,13 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5135 |
-| Files | 1419 |
-| Calls traced | 5846 |
-| Call stacks | 1318 |
+| Callables | 5121 |
+| Files | 1417 |
+| Calls traced | 5834 |
+| Call stacks | 1313 |
 | Deepest stack | 17 |
 | Stacks through recursion | 18 |
-| Unfollowable calls | 363 |
+| Unfollowable calls | 359 |
 
 ### Projects
 
@@ -629,14 +618,13 @@ None.
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
 | `MeasureService.measureTarget` | 18 | `packages/codometer-discovery:modules/discovery`, `packages/codometer-discovery:modules/targets`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/measure/measure.service.ts:302` |
-| `PluginService.runGate` | 17 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-nx:modules/run-configuration`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:427` |
-| `PluginService.runTrace` | 17 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-nx:modules/run-configuration`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:471` |
+| `PluginService.runValidation` | 17 | `packages/conformetry-core:modules/reporting`, `packages/conformetry-nx:modules/instances`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:395` |
+| `PluginService.runTrace` | 16 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-configuration:modules/configuration`, `packages/callidescope-nx:modules/options`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:221` |
 | `MeasureService.analyzeFiles` | 16 | `packages/codometer-customization:modules/customization`, `packages/codometer-languages:modules/languages`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/measure/measure.service.ts:75` |
-| `PluginService.runValidation` | 16 | `packages/conformetry-core:modules/reporting`, `packages/conformetry-nx:modules/instances`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:396` |
 | `LanguagesService.analyze` | 13 | `packages/codometer-languages:modules/comments`, `packages/codometer-languages:modules/css`, `packages/codometer-languages:modules/hcl`, `packages/codometer-languages:modules/json`, `packages/codometer-languages:modules/jupyter`, `packages/codometer-languages:modules/markdown`, `packages/codometer-languages:modules/python`, `packages/codometer-languages:modules/shell`, `packages/codometer-languages:modules/sql`, `packages/codometer-languages:modules/toml`, `packages/codometer-languages:modules/typescript`, `packages/codometer-languages:modules/yaml` | `packages/codometer-languages/src/modules/languages/languages.service.ts:56` |
-| `CallidescopeService.analyze` | 12 | `packages/callidescope-graph:modules/cohesion`, `packages/callidescope-graph:modules/entries`, `packages/callidescope-graph:modules/graph`, `packages/callidescope-output:modules/project-reports` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:291` |
-| `main` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-configuration:modules/template-discovery`, `packages/conformetry-core:modules/reporting`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-examples/examples/embedding/embed.ts:44` |
-| `PluginService.runGenerator` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-nx:modules/adapter`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:335` |
+| `main` | 13 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-configuration:modules/template-discovery`, `packages/conformetry-core:modules/reporting`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-examples/examples/embedding/embed.ts:44` |
+| `CallidescopeService.analyze` | 12 | `packages/callidescope-graph:modules/cohesion`, `packages/callidescope-graph:modules/entries`, `packages/callidescope-graph:modules/graph`, `packages/callidescope-output:modules/project-reports` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:284` |
+| `PluginService.runGenerator` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-nx:modules/adapter`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:334` |
 | `AspectsService.detectSimpleAspects` | 10 | `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/major-aspects`, `applications/caelundas:modules/minor-aspects`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/specialty-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:90` |
 | `PerfectiveService.detectOrbitalEvents` | 10 | `applications/caelundas:modules/annual-solar-cycle`, `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/monthly-lunar-cycle`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades` | `applications/caelundas/src/modules/perfective/perfective.service.ts:149` |
 | `ProgressiveService.detect` | 10 | `applications/caelundas:modules/annual-solar-cycle`, `applications/caelundas:modules/aspects`, `applications/caelundas:modules/eclipses`, `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/monthly-lunar-cycle`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/twilights` | `applications/caelundas/src/modules/progressive/progressive.service.ts:47` |

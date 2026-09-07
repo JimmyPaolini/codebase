@@ -140,8 +140,8 @@ Call stacks traced through `packages/conformetry-nx`, deepest first. Each frame 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 114 |
-| Files | 45 |
+| Callables | 113 |
+| Files | 43 |
 | Calls traced | 136 |
 | Call stacks | 8 |
 | Deepest stack | 14 |
@@ -164,9 +164,9 @@ What this project is judged against. `declared` is the number in this project's 
 ```text
 🚀 validateExecutor(…): Promise<{ success: boolean; }> [packages/conformetry-nx/src/executors/validate/executor.ts:16]
    ↳ Validates one project's instances against their conformetry templates.
-  └─> PluginService.runValidation(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:396]
+  └─> PluginService.runValidation(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:395]
      ↳ Validates one project's instances and renders the report.
-    └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:132]
+    └─> ValidationService.validate(args: RunValidationArguments): RunValidationResult [packages/conformetry-validation/src/modules/validation/validation.service.ts:136]
        ↳ Validates every instance and returns the differences found.
       └─> InstanceDiscoveryService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:95]
          ↳ Resolves every instance to the template, or templates, that explain it.
@@ -194,11 +194,11 @@ What this project is judged against. `declared` is the number in this project's 
 ```text
 🚀 runConformetryGenerator(…): Promise<string[]> [packages/conformetry-nx/src/index.ts:93]
    ↳ Runs one configured generator against an Nx tree.
-  └─> PluginService.runGenerator(args: RunGeneratorArguments): Promise<string[]> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:335]
+  └─> PluginService.runGenerator(args: RunGeneratorArguments): Promise<string[]> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:334]
      ↳ Runs one configured generator against an Nx tree.
-    └─> PluginService.assertPluginInSync(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:123]
+    └─> PluginService.assertPluginInSync(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:122]
        ↳ Fails fast when the plugin would run against a stale or broken setup.
-      └─> PluginService.assertEmittedPluginCurrent(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:89]
+      └─> PluginService.assertEmittedPluginCurrent(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:88]
          ↳ Fails when the emitted Nx plugin no longer matches the configuration. `generators.json` and its schemas are derived…
         └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:212]
            ↳ Returns every file the consumer's generator plugin consists of.
@@ -270,7 +270,7 @@ What this project is judged against. `declared` is the number in this project's 
 
 ```text
 🚀 anonymous(…): Promise<CreateNodesResultArray> [packages/conformetry-nx/src/index.ts:49]
-  └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:270]
+  └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:269]
      ↳ Infers a validation target onto every project that holds at least one instance.
     └─> InstancesService.findProjectInstances(args: FindProjectInstancesArguments): Promise<Instance[]> [packages/conformetry-nx/src/modules/instances/instances.service.ts:72]
        ↳ Expands every instance group that applies to a project, keeping only the instances that live inside it.
@@ -318,8 +318,8 @@ What this project is judged against. `declared` is the number in this project's 
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runValidation` | 16 | `packages/conformetry-core:modules/reporting`, `packages/conformetry-nx:modules/instances`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:396` |
-| `PluginService.runGenerator` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-nx:modules/adapter`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:335` |
+| `PluginService.runValidation` | 17 | `packages/conformetry-core:modules/reporting`, `packages/conformetry-nx:modules/instances`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:395` |
+| `PluginService.runGenerator` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-nx:modules/adapter`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:334` |
 | `syncGenerator` | 7 | `packages/conformetry-nx:modules/generator`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
 | `bootstrapPlugin` | 6 | `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:39` |
 
@@ -327,7 +327,7 @@ What this project is judged against. `declared` is the number in this project's 
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runGenerator` | 9 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ConfigurationService.loadConformetryConfiguration`, `PluginService.find(…)`, `PluginService.map(…)`, `AdapterService.createAdapters`, `OptionsService.resolveGeneratorInputs`, `GenerationService.runGenerator`, `PathsService.resolveGenerationPath` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:335` |
+| `PluginService.runGenerator` | 9 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ConfigurationService.loadConformetryConfiguration`, `PluginService.find(…)`, `PluginService.map(…)`, `AdapterService.createAdapters`, `OptionsService.resolveGeneratorInputs`, `GenerationService.runGenerator`, `PathsService.resolveGenerationPath` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:334` |
 | `bootstrapPlugin` | 9 | `resolveGeneratorService`, `resolveOptionsService`, `resolveProjectsService`, `GeneratorService.emitPlugin`, `OptionsService.resolveConfigurationPath`, `readNxConfiguration`, `ProjectsService.listWorkspaceProjects`, `writePlugin`, `linkPlugin` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:39` |
 | `syncGenerator` | 7 | `resolveGeneratorService`, `resolveOptionsService`, `resolveProjectsService`, `GeneratorService.emitPlugin`, `OptionsService.resolveConfigurationPath`, `readNxConfiguration`, `ProjectsService.listWorkspaceProjects` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
 
@@ -337,18 +337,18 @@ What this project is judged against. `declared` is the number in this project's 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `GeneratorService.emitPlugin` | 6 | `ConfigurationService.loadConformetryConfiguration`, `GeneratorService.toSorted(…)`, `GeneratorService.buildGeneratorsManifest`, `GeneratorService.map(…)`, `GeneratorService.map(…)`, `GeneratorService.stringify` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:212` |
-| `PluginService.runValidation` | 6 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ValidationService.validate`, `InstancesService.findProjectInstances`, `PluginService.resolveTemplates`, `ReportingService.formatReport` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:396` |
+| `PluginService.runValidation` | 6 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ValidationService.validate`, `InstancesService.findProjectInstances`, `PluginService.resolveTemplates`, `ReportingService.formatReport` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:395` |
 | `InstancesService.findProjectInstances` | 5 | `ConfigurationService.loadConformetryConfiguration`, `InstancesService.filter(…)`, `InstancesService.flatMap(…)`, `InstancesService.flatMap(…)`, `InstancesService.flatMap(…)` | `packages/conformetry-nx/src/modules/instances/instances.service.ts:72` |
 | `PathsService.resolveGenerationPath` | 5 | `PathsService.resolveNewProjectPath`, `InstancesService.findProjectInstances`, `PathsService.requireModulePath`, `PathsService.resolveScopedDirectory`, `PathsService.resolveModuleParentPath` | `packages/conformetry-nx/src/modules/paths/paths.service.ts:209` |
-| `PluginService.inferTargets` | 5 | `PluginService.resolveOptions`, `PluginService.resolveTemplateInputs`, `PluginService.filter(…)`, `ProjectsService.readProjectScope`, `InstancesService.findProjectInstances` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:270` |
+| `PluginService.inferTargets` | 5 | `PluginService.resolveOptions`, `PluginService.resolveTemplateInputs`, `PluginService.filter(…)`, `ProjectsService.readProjectScope`, `InstancesService.findProjectInstances` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:269` |
 | `ScopeService.resolveScopedProjectNames` | 4 | `ScopeService.filter(…)`, `ScopeService.toSorted(…)`, `ScopeService.map(…)`, `ScopeService.filter(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:134` |
 | `ProjectsService.listWorkspaceProjects` | 4 | `ProjectsService.toSorted(…)`, `ProjectsService.map(…)`, `ProjectsService.listProjectConfigurationFiles`, `ProjectsService.readIgnoredPaths` | `packages/conformetry-nx/src/modules/projects/projects.service.ts:118` |
 | `anonymous` | 4 | `resolvePluginService`, `PluginService.inferTargets`, `filter(…)`, `map(…)` | `packages/conformetry-nx/src/index.ts:49` |
 | `ScopeService.resolveGroup` | 3 | `ScopeService.matchesProject`, `ScopeService.isProjectGroup`, `ScopeService.map(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:74` |
 | `AdapterService.listDirectory` | 3 | `AdapterService.resolveTreePath`, `AdapterService.map(…)`, `AdapterService.map(…)` | `packages/conformetry-nx/src/modules/adapter/adapter.service.ts:42` |
 | `PathsService.resolveScopedDirectory` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PathsService.find(…)`, `ScopeService.resolveScopedDirectory` | `packages/conformetry-nx/src/modules/paths/paths.service.ts:156` |
-| `PluginService.resolveOptions` | 3 | `OptionsService.resolveConfigurationPath`, `PluginService.readNxConfiguration`, `OptionsService.resolvePluginOptions` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:194` |
-| `PluginService.resolveTemplateInputs` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)`, `PluginService.map(…)` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:224` |
+| `PluginService.resolveOptions` | 3 | `OptionsService.resolveConfigurationPath`, `PluginService.readNxConfiguration`, `OptionsService.resolvePluginOptions` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:193` |
+| `PluginService.resolveTemplateInputs` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)`, `PluginService.map(…)` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:223` |
 | `ScopeService.matchesProject` | 2 | `ScopeService.isProjectGroup`, `ScopeService.some(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:52` |
 | `ScopeService.resolveScopedDirectory` | 2 | `ScopeService.find(…)`, `ScopeService.findIndex(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:108` |
 | `GeneratorService.buildSchema` | 2 | `GeneratorService.stringify`, `GeneratorService.buildSchemaProperties` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:122` |
@@ -357,9 +357,9 @@ What this project is judged against. `declared` is the number in this project's 
 | `OptionsService.resolveConfigurationPath` | 2 | `OptionsService.readRegisteredConfigurationPath`, `OptionsService.find(…)` | `packages/conformetry-nx/src/modules/options/options.service.ts:98` |
 | `ProjectsService.readIgnoredPaths` | 2 | `ProjectsService.filter(…)`, `ProjectsService.map(…)` | `packages/conformetry-nx/src/modules/projects/projects.service.ts:97` |
 | `ProjectsService.readProjectScope` | 2 | `ProjectsService.isUnknownArray`, `ProjectsService.filter(…)` | `packages/conformetry-nx/src/modules/projects/projects.service.ts:134` |
-| `PluginService.assertEmittedPluginCurrent` | 2 | `GeneratorService.emitPlugin`, `ProjectsService.listWorkspaceProjects` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:89` |
-| `PluginService.assertPluginInSync` | 2 | `PluginService.assertTemplatesExist`, `PluginService.assertEmittedPluginCurrent` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:123` |
-| `PluginService.resolveTemplates` | 2 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:241` |
+| `PluginService.assertEmittedPluginCurrent` | 2 | `GeneratorService.emitPlugin`, `ProjectsService.listWorkspaceProjects` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:88` |
+| `PluginService.assertPluginInSync` | 2 | `PluginService.assertTemplatesExist`, `PluginService.assertEmittedPluginCurrent` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:122` |
+| `PluginService.resolveTemplates` | 2 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:240` |
 | `runConformetryGenerator` | 2 | `resolvePluginService`, `PluginService.runGenerator` | `packages/conformetry-nx/src/index.ts:93` |
 | `validateExecutor` | 2 | `resolvePluginService`, `PluginService.runValidation` | `packages/conformetry-nx/src/executors/validate/executor.ts:16` |
 | `ScopeService.isProjectGroup` | 1 | `InstanceGroupService.isProjectScoped` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:39` |
@@ -383,8 +383,8 @@ What this project is judged against. `declared` is the number in this project's 
 | `PathsService.resolveModulePath` | 1 | `PathsService.find(…)` | `packages/conformetry-nx/src/modules/paths/paths.service.ts:115` |
 | `PathsService.resolveNewProjectPath` | 1 | `PathsService.resolveTypeDirectoryPath` | `packages/conformetry-nx/src/modules/paths/paths.service.ts:133` |
 | `ProjectsService.map(…)` | 1 | `ProjectsService.readProjectScope` | `packages/conformetry-nx/src/modules/projects/projects.service.ts:124` |
-| `PluginService.assertTemplatesExist` | 1 | `ConfigurationService.loadConformetryConfiguration` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:139` |
-| `PluginService.map(…)` | 1 | `TemplateDiscoveryService.collectTemplate` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:250` |
+| `PluginService.assertTemplatesExist` | 1 | `ConfigurationService.loadConformetryConfiguration` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:138` |
+| `PluginService.map(…)` | 1 | `TemplateDiscoveryService.collectTemplate` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:249` |
 | `resolveGeneratorService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/modules/plugin/plugin-context.utilities.ts:18` |
 | `resolveOptionsService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/modules/plugin/plugin-context.utilities.ts:25` |
 | `resolvePluginService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/modules/plugin/plugin-context.utilities.ts:32` |
@@ -412,25 +412,13 @@ graph LR
   conformetry_core["conformetry-core"]
   conformetry_examples["conformetry-examples"]
   conformetry_generation["conformetry-generation"]
-  conformetry_json["conformetry-json"]
-  conformetry_jupyter["conformetry-jupyter"]
-  conformetry_markdown["conformetry-markdown"]
   conformetry_nx["conformetry-nx"]
-  conformetry_python["conformetry-python"]
-  conformetry_text["conformetry-text"]
-  conformetry_typescript["conformetry-typescript"]
   conformetry_validation["conformetry-validation"]
   logger["logger"]
   conformetry_examples --> conformetry_nx
   conformetry_nx --> conformetry_configuration
   conformetry_nx --> conformetry_core
   conformetry_nx --> conformetry_generation
-  conformetry_nx --> conformetry_json
-  conformetry_nx --> conformetry_jupyter
-  conformetry_nx --> conformetry_markdown
-  conformetry_nx --> conformetry_python
-  conformetry_nx --> conformetry_text
-  conformetry_nx --> conformetry_typescript
   conformetry_nx --> conformetry_validation
   conformetry_nx --> logger
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
@@ -451,18 +439,25 @@ flowchart LR
   GeneratorModule
   InstanceDiscoveryModule
   InstancesModule
+  JsonModule
+  JupyterModule
+  LanguagesModule
   LoggerModule([LoggerModule])
   MainModule
+  MarkdownModule
   OptionsModule
   PathsModule
   PluginModule
   ProjectsModule
+  PythonModule
   RenderingModule
   ReportingModule
   RunnerModule
   ScopeModule
   ScoringModule
   TemplateDiscoveryModule
+  TextModule
+  TypescriptModule
   ValidationModule
   FilesModule --> DifferencesModule
   FilesModule --> InstanceDiscoveryModule
@@ -475,8 +470,19 @@ flowchart LR
   InstancesModule --> ConfigurationModule
   InstancesModule --> InstanceDiscoveryModule
   InstancesModule --> ScopeModule
+  JsonModule --> ScoringModule
+  JupyterModule --> JsonModule
+  JupyterModule --> MarkdownModule
+  JupyterModule --> PythonModule
+  LanguagesModule --> JsonModule
+  LanguagesModule --> JupyterModule
+  LanguagesModule --> MarkdownModule
+  LanguagesModule --> PythonModule
+  LanguagesModule --> TextModule
+  LanguagesModule --> TypescriptModule
   MainModule --> GeneratorModule
   MainModule --> PluginModule
+  MarkdownModule --> ScoringModule
   PathsModule --> ConfigurationModule
   PathsModule --> InstancesModule
   PathsModule --> ScopeModule
@@ -493,11 +499,15 @@ flowchart LR
   PluginModule --> ScopeModule
   PluginModule --> TemplateDiscoveryModule
   PluginModule --> ValidationModule
+  PythonModule --> DifferencesModule
+  PythonModule --> ScoringModule
   ReportingModule --> ScoringModule
   ScopeModule --> ConfigurationModule
   TemplateDiscoveryModule --> RenderingModule
+  TypescriptModule --> ScoringModule
   ValidationModule --> FilesModule
   ValidationModule --> InstanceDiscoveryModule
+  ValidationModule --> LanguagesModule
   ValidationModule --> ReportingModule
   ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule
@@ -550,8 +560,6 @@ graph LR
   file_src_modules_paths_paths_service_ts["src/modules/paths/paths.service.ts"]
   file_src_modules_paths_paths_service_unit_test_ts["src/modules/paths/paths.service.unit.test.ts"]
   file_src_modules_paths_paths_types_ts["src/modules/paths/paths.types.ts"]
-  file_src_modules_plugin_languages_constants_ts["src/modules/plugin/languages.constants.ts"]
-  file_src_modules_plugin_languages_constants_unit_test_ts["src/modules/plugin/languages.constants.unit.test.ts"]
   file_src_modules_plugin_plugin_context_utilities_ts["src/modules/plugin/plugin-context.utilities.ts"]
   file_src_modules_plugin_plugin_context_utilities_unit_test_ts["src/modules/plugin/plugin-context.utilities.unit.test.ts"]
   file_src_modules_plugin_plugin_constants_ts["src/modules/plugin/plugin.constants.ts"]
@@ -633,7 +641,6 @@ graph LR
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_paths_paths_module_ts
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_paths_paths_service_ts
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_scope_scope_service_ts
-  file_src_modules_plugin_languages_constants_unit_test_ts --> file_src_modules_plugin_languages_constants_ts
   file_src_modules_plugin_plugin_context_utilities_ts --> file_src_main_module_ts
   file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_generator_generator_service_ts
   file_src_modules_plugin_plugin_context_utilities_ts --> file_src_modules_options_options_service_ts
@@ -663,7 +670,6 @@ graph LR
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_options_options_service_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_options_options_types_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_paths_paths_service_ts
-  file_src_modules_plugin_plugin_service_ts --> file_src_modules_plugin_languages_constants_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_plugin_plugin_constants_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_plugin_plugin_types_ts
   file_src_modules_plugin_plugin_service_ts --> file_src_modules_projects_projects_service_ts

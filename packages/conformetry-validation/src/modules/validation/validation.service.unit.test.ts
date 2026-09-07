@@ -100,7 +100,7 @@ describe(ValidationService, () => {
         withNotes: true,
       });
 
-      const result = await service.validate({
+      const result = service.validate({
         instances: [{ nameStem: "my-widget", path: instancePath }],
         templates,
       });
@@ -116,7 +116,7 @@ describe(ValidationService, () => {
         withNotes: true,
       });
 
-      const result = await service.validate({
+      const result = service.validate({
         instances: [{ nameStem: "my-widget", path: instancePath }],
         templates,
       });
@@ -131,7 +131,7 @@ describe(ValidationService, () => {
         withNotes: false,
       });
 
-      const result = await service.validate({
+      const result = service.validate({
         instances: [{ nameStem: "my-widget", path: instancePath }],
         templates,
       });
@@ -148,7 +148,7 @@ describe(ValidationService, () => {
         withNotes: true,
       });
 
-      const result = await service.validate({
+      const result = service.validate({
         instances: [{ nameStem: "my-widget", path: instancePath }],
         languageNames: ["markdown"],
         templates,
@@ -163,7 +163,7 @@ describe(ValidationService, () => {
         path.join(tmpdir(), "conformetry-validate-empty-"),
       );
 
-      const result = await service.validate({
+      const result = service.validate({
         instances: [{ nameStem: "nothing", path: instancePath }],
         templates,
       });
@@ -180,7 +180,7 @@ describe(ValidationService, () => {
         configuration: "{}\n",
         withNotes: true,
       });
-      const result = await service.validate({
+      const result = service.validate({
         instances: [{ nameStem: "my-widget", path: instancePath }],
         languageNames: ["markdown"],
         templates,
@@ -195,37 +195,16 @@ describe(ValidationService, () => {
         withNotes: true,
       });
       const instances = [{ nameStem: "my-widget", path: instancePath }];
-      const filtered = await service.validate({
+      const filtered = service.validate({
         instances,
         languageNames: [],
         templates,
       });
-      const unfiltered = await service.validate({ instances, templates });
+      const unfiltered = service.validate({ instances, templates });
 
       // An empty filter means "everything", not "nothing" — the two calls
       // must reach the same verdict.
       expect(filtered.fileResults).toStrictEqual(unfiltered.fileResults);
-    });
-
-    it("imports language packages through a loader the caller supplies", async () => {
-      const instancePath = await createInstance({
-        configuration: "{}\n",
-        withNotes: true,
-      });
-      const loaded: string[] = [];
-      const result = await service.validate({
-        instances: [{ nameStem: "my-widget", path: instancePath }],
-        loadLanguageModule: async (specifier) => {
-          loaded.push(specifier);
-          const moduleNamespace: unknown = await import(specifier);
-
-          return moduleNamespace;
-        },
-        templates,
-      });
-
-      expect(loaded.length).toBeGreaterThan(0);
-      expect(result.checkedPaths.length).toBeGreaterThan(0);
     });
   });
 
@@ -266,7 +245,7 @@ describe(ValidationService, () => {
       const serviceUnderTest =
         await overriddenModule.resolve(ValidationService);
 
-      const result = await serviceUnderTest.validate({
+      const result = serviceUnderTest.validate({
         instances: [{ nameStem: "my-widget", path: instancePath }],
         templates,
       });

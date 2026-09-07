@@ -27,7 +27,6 @@ import { OptionsService } from "../options/options.service";
 import { PathsService } from "../paths/paths.service";
 import { ProjectsService } from "../projects/projects.service";
 
-import { LANGUAGE_MODULE_LOADER } from "./languages.constants";
 import {
   PROJECT_CONFIGURATION_FILENAME,
   WORKSPACE_PROJECT_ROOT,
@@ -405,7 +404,7 @@ export class PluginService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    const result = await this.validationService.validate({
+    const result = this.validationService.validate({
       instances: await this.instancesService.findProjectInstances({
         configurationPath: pluginOptions.configurationPath,
         project: args.project,
@@ -414,7 +413,6 @@ export class PluginService {
       ...(args.languageNames === undefined
         ? {}
         : { languageNames: args.languageNames }),
-      loadLanguageModule: LANGUAGE_MODULE_LOADER,
       templates: await this.resolveTemplates({
         configurationPath: pluginOptions.configurationPath,
         workspaceRoot: args.workspaceRoot,

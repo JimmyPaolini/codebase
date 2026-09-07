@@ -158,12 +158,8 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 ```mermaid
 graph LR
   conformetry_core["conformetry-core"]
-  conformetry_nx["conformetry-nx"]
   conformetry_typescript["conformetry-typescript"]
-  conformetry_validation["conformetry-validation"]
-  conformetry_nx --> conformetry_typescript
   conformetry_typescript --> conformetry_core
-  conformetry_validation --> conformetry_typescript
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_typescript subject
 ```
