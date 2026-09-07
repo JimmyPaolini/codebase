@@ -40,10 +40,13 @@ export interface InkAdjacency<Node> {
  *   is one: their ink is a disjoint union of simple arcs, so they hold at
  *   many components.
  * - **A tree** — one connected figure with no loops — is exactly
- *   `components === 1 && edges === nodes - 1`. No family claims it: the
- *   corpus's only trees are `parallel`'s one-strand serpentine drawings,
- *   which are paths that happen never to end before the band does. The only
- *   thing separating a tree from a forest is the component count.
+ *   `components === 1 && edges === nodes - 1`. No family claims it and no
+ *   committed document is one. Both of the corpus's routes to a tree have
+ *   closed: `branch` drew a spanning tree while one of its borders was open,
+ *   and `parallel`'s one-strand serpentine was a path that never ended
+ *   before the band did. Ruling both borders of both families closes a loop
+ *   in each, and a connected figure with a loop is neither. The only thing
+ *   separating a tree from a forest is the component count.
  *
  * A lattice point painted by a zero-length stroke and joined to nothing is
  * a component of its own, which is why `edges` can be zero while `nodes`

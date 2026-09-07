@@ -52,6 +52,24 @@ interface CharterCase {
 }
 
 /**
+ * A structural property of a drawing that a relaxation can be narrowed by,
+ * where no set of modifier names can say the same thing.
+ *
+ * There is one, and `parallel` is the only family that needs it. A border
+ * rule forks against ink that rises out of the border row, and a `serpentine`
+ * whose first and last strips are each one lattice row deep has none: the
+ * flat ribbon on such a strip *is* the rule, so nothing rises to meet it.
+ * Every other drawing in the family has an arm or a run reaching a border.
+ * `serpentine` drawings therefore both do and do not fork, at the same
+ * modifier name, decided by the rotation and the ply — which is exactly what
+ * `modifierNames` and `exceptModifierNames` cannot express.
+ *
+ * {@link CHARTER_CONDITIONS} resolves it, from the same
+ * `ParallelSerpentineService.strips` the drawing is cut by.
+ */
+type CharterCondition = "border-strip-has-depth";
+
+/**
  * The three charter invariants {@link MeanderTopologyService} can measure
  * from a drawing alone. The other four are properties of how a meander is
  * built rather than of the document it produces, so no measurement can
@@ -70,6 +88,9 @@ type CharterInvariant = "no-branching" | "no-crossing" | "space-filling";
  * `modifierNames` alone has no way to say. `cross` needs the second: it
  * crosses by default and stops crossing under `interrupted`.
  *
+ * `condition` narrows it by structure rather than by name, for the family
+ * whose own parameters decide the answer — see {@link CharterCondition}.
+ *
  * `permutations` says the permission is about the family's **enumerated**
  * half rather than its named one. `mosaic` needs it: a name reaches a
  * handful of points in its unit space and none of them branch, while the
@@ -80,6 +101,7 @@ type CharterInvariant = "no-branching" | "no-crossing" | "space-filling";
  * sweep asserts the rest.
  */
 interface CharterRelaxation {
+  readonly condition?: CharterCondition;
   readonly exceptModifierNames?: readonly Modifier["name"][];
   readonly invariant: CharterInvariant;
   readonly modifierNames?: readonly Modifier["name"][];
@@ -157,15 +179,22 @@ interface CharterRelaxation {
  * with 0 to 65 cycles among them. Both are measured below, not asserted
  * here, and no charter invariant is about a loop.
  *
- * `parallel` declares nothing at all, and that empty row is the whole point
- * of the family rather than an omission. Its ink is `N` strands running
- * alongside one another at the same `unit / 2` stroke every other family
- * draws at, nested so that the strands and the channels between them tile
- * the band at one thickness: space-filling holds strictly, no lattice point
- * carries three arms, and none carries four. #340's candidate table and
- * #413 both said `parallel` would relax nothing; unlike most such
- * predictions this one is asserted here rather than restated, in both
- * directions, so a drawing that started branching would fail this sweep.
+ * `parallel` relaxes no-branching, and it is the one row here narrowed by a
+ * structural condition rather than by a modifier name. Both of its borders
+ * are ruled end to end now, and a rule meets a strand's rising end with
+ * west, east, and south ink at one lattice point — so 675 of its 819
+ * drawings fork. The other 144 are the `serpentine` drawings whose first and
+ * last strips are each one lattice row deep: the flat ribbon on such a strip
+ * is the rule, so nothing rises to meet it. That is a fact about the ply and
+ * the rotation rather than about the modifier, which is why an unconditional
+ * row would be asserted in both directions and fail on those 144. #340's
+ * candidate table and #413 both predicted this family would relax nothing;
+ * closing its borders is what reversed that, and no prose here is trusted
+ * over the sweep.
+ *
+ * Nothing else is declared for it. A border row has no ink above it, so no
+ * lattice point gains a fourth arm and invariant 4 holds; every lattice
+ * point still carries ink, so space-filling holds strictly.
  *
  * Only the ink is declared here. Invariants 3 and 4 constrain positive space
  * — a family's negative may branch and cross freely, and no family is failed
@@ -187,7 +216,9 @@ const RELAXED_INVARIANTS: Record<MeanderType, readonly CharterRelaxation[]> = {
       modifierNames: ["brick-straight", "brick-upright", "grid"],
     },
   ],
-  parallel: [],
+  parallel: [
+    { condition: "border-strip-has-depth", invariant: "no-branching" },
+  ],
   snake: [{ invariant: "no-branching", modifierNames: ["edge", "edge-flip"] }],
   swirl: [],
   whirl: [],
@@ -215,6 +246,59 @@ const modifierLabel = (modifier: Modifier): string => {
 };
 
 /**
+ * The geometry both the sweep and {@link CHARTER_CONDITIONS} ask, constructed
+ * by hand for the same reason {@link NEGATIVE_SOURCE_DOCUMENTS}'s services
+ * are: `it.each` needs its table at collection time, before any `beforeAll`
+ * has run.
+ *
+ * One instance rather than two, because the two callers ask it the same
+ * question from opposite ends — which rotations of a ply are distinct
+ * drawings, and how deep the strips of one of them are.
+ */
+const parallelSerpentineService = new ParallelSerpentineService(
+  new GridGeometryService(),
+);
+
+/**
+ * How each {@link CharterCondition} is decided, from the drawing's own swept
+ * parameters.
+ *
+ * A total record rather than a chain of tests, for the same reason
+ * {@link RELAXED_INVARIANTS} is one: a condition added to the union without
+ * an answer here is a type error rather than a silent `undefined`.
+ *
+ * It reads `strips` rather than measuring the drawing. Measuring would make
+ * the assertion circular — the sweep would compare a drawing against itself
+ * and pass whatever it did — so what is declared here stays a claim about
+ * the parameters, and the ink is what has to agree with it.
+ */
+const CHARTER_CONDITIONS: Record<
+  CharterCondition,
+  (parameters: GenerationParameters) => boolean
+> = {
+  "border-strip-has-depth": ({ modifier, rows }) => {
+    if (modifier?.name !== "serpentine") {
+      return true;
+    }
+
+    const strips = parallelSerpentineService.strips(
+      rows,
+      modifier.strands,
+      modifier.offset,
+    );
+    const first = strips.at(0);
+    const last = strips.at(-1);
+
+    return (
+      first === undefined ||
+      last === undefined ||
+      first.bottomRow > first.topRow ||
+      last.bottomRow > last.topRow
+    );
+  },
+};
+
+/**
  * The swept space, read from the same {@link DrawCombinationsService} that
  * `DrawCommand` writes `output/` from. Sweeping the shared enumeration
  * rather than a second copy of it is what makes "the charter gates the
@@ -223,8 +307,8 @@ const modifierLabel = (modifier: Modifier): string => {
  *
  * It is instantiated directly rather than resolved from a testing module
  * because `it.each` needs the table at collection time, before any
- * `beforeAll` has run — so its two dependencies are constructed by hand
- * here. It needs `ParallelSerpentineService` because `serpentine`'s variant
+ * `beforeAll` has run — see {@link parallelSerpentineService}, the one
+ * dependency it takes. It needs that service because `serpentine`'s variant
  * space is not a cross product: which rotations and flips are distinct at a
  * given ply is a fact about the geometry, and asking the geometry is what
  * keeps the sweep from committing the same drawing twice.
@@ -244,7 +328,7 @@ const modifierLabel = (modifier: Modifier): string => {
  * maximum of its own.
  */
 const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
-  new ParallelSerpentineService(new GridGeometryService()),
+  parallelSerpentineService,
 )
   .enumerate()
   .map((parameters) => {
@@ -561,6 +645,10 @@ const familyOf = (name: string): string => name.split("/")[0] ?? name;
  * family enumerates, which no set of named parameters reaches, so applying
  * it here would excuse a named drawing for something only an enumerated one
  * does. Those are asserted against committed output instead.
+ *
+ * A relaxation carrying a `condition` is resolved beside the modifier names,
+ * through {@link CHARTER_CONDITIONS}, so all three ways of narrowing a
+ * permission compose the same way and a family may use any of them.
  */
 const relaxes = (
   parameters: GenerationParameters,
@@ -570,6 +658,8 @@ const relaxes = (
     (relaxation) =>
       relaxation.invariant === invariant &&
       relaxation.permutations !== true &&
+      (relaxation.condition === undefined ||
+        CHARTER_CONDITIONS[relaxation.condition](parameters)) &&
       (relaxation.modifierNames === undefined ||
         (parameters.modifier !== undefined &&
           relaxation.modifierNames.includes(parameters.modifier.name))) &&
@@ -747,46 +837,38 @@ describe(MeanderTopologyService, () => {
     // loops, or one that stopped, fails here rather than in its own test.
 
     // The two conditions are separated on purpose. Being a forest throughout
-    // is what five of the ten families are — the five absent from the looped
+    // is what four of the ten families are — the four absent from the looped
     // set below; being one connected piece is what `negative` already is.
 
-    // **`branch` used to be the only family that was both**, and it is no
-    // longer either: it drew a spanning tree only while one of its two
-    // border rows was left unruled, and ruling both closes a loop in every
-    // column pair. All 88 of its documents move out of the tree set and into
-    // the looped one in the same change, which is what the two counts below
-    // record. No charter invariant is about a loop, and it still forks and
-    // still fills space, so this is the family's shape as a graph changing
-    // rather than its compliance.
+    // **The corpus holds no tree at all**, and it held two kinds until this
+    // change. `branch` drew a spanning tree while one of its two border rows
+    // was left unruled; `parallel`'s one-strand serpentine was a single
+    // ribbon that ran the whole band without stopping, which is the
+    // degenerate tree. Ruling both borders of both families closes a loop in
+    // each, so all 88 `branch` documents and all 22 of those ribbons move
+    // into the looped set instead. No charter invariant is about a loop, and
+    // both families still fill space, so this is their shape as a graph
+    // changing rather than their compliance.
 
-    // What is left in the tree set is `parallel`, and it arrived from the
-    // opposite direction. A `serpentine` ply of one is a single ribbon that
-    // never stops: it runs down a column, along the bottom of the only strip
-    // there is, up the next column, and on across the whole band — one
-    // component, every lattice point on it, and not a step repeated. `branch`
-    // was a tree because it forked at most of its columns; a one-ply
-    // serpentine is a tree because it forks at none and simply does not end
-    // until the band does. A path is the degenerate tree, and it is now the
-    // corpus's only one.
-
-    // So the family set below is asserted, not the count alone, and the
-    // parallel half is pinned to the one ply that can do it: a two-ply
-    // serpentine is two ribbons and two components, which is a forest and
-    // not a tree. Were `plied` or `aligned` ever to connect their brackets
-    // into one figure, they would land here and fail rather than pass
-    // quietly.
+    // An empty tree set says nothing on its own, so the 22 are followed where
+    // they went: each is still one connected piece and now closes 11 loops,
+    // which is a figure that gained edges rather than one that fell apart.
+    // That is also the difference between the two routes out of the tree set
+    // — a `plied` bundle joins into one piece and a deeper serpentine stays
+    // `strands` pieces, and neither is a tree either way.
     it(
-      "draws a tree in exactly the one-strand serpentine documents",
+      "draws a tree nowhere, having closed the two figures that were one",
       async () => {
         const documents = await readCommittedCorpus();
         const trees: string[] = [];
         const looped: string[] = [];
         const negativeCycles: number[] = [];
         const negativeComponents: number[] = [];
+        const loneRibbons: string[] = [];
 
         for (const { document, name } of documents) {
-          const { components, edges, nodes } =
-            topologyService.connectivity(document);
+          const connectivity = topologyService.connectivity(document);
+          const { components, edges, nodes } = connectivity;
 
           if (edges !== nodes - components) {
             looped.push(name);
@@ -799,6 +881,12 @@ describe(MeanderTopologyService, () => {
           if (familyOf(name) === "negative") {
             negativeCycles.push(edges - nodes + components);
             negativeComponents.push(components);
+          }
+
+          if (path.basename(name).startsWith("serpentine-strands-1-")) {
+            loneRibbons.push(
+              `${components} component(s), ${edges - nodes + components} loop(s)`,
+            );
           }
         }
 
@@ -814,44 +902,40 @@ describe(MeanderTopologyService, () => {
         expect(Math.min(...negativeComponents)).toBe(1);
         expect(Math.max(...negativeComponents)).toBe(13);
 
-        expect(trees).toHaveLength(22);
-        expect(
-          [...new Set(trees.map((name) => familyOf(name)))].toSorted(),
-        ).toStrictEqual(["parallel"]);
+        expect(trees).toStrictEqual([]);
 
-        // 🎯 Every parallel tree is a single-strand serpentine — two of them
-        // at each of the eleven row counts the family draws at, since a lone
-        // ribbon can be flipped as well as left in phase and the two are
-        // different drawings. A deeper ply is that many ribbons and so a
-        // forest, whatever it is rotated or flipped to.
-        const parallelTrees = trees.filter(
-          (name) => familyOf(name) === "parallel",
-        );
-
-        expect(parallelTrees).toHaveLength(22);
-        expect(
-          parallelTrees.every((name) =>
-            path.basename(name).startsWith("serpentine-strands-1-"),
-          ),
-        ).toBe(true);
+        // 🎯 The 22 lone ribbons, followed out of the tree set: two at each
+        // of the eleven row counts the family draws at, since a single ribbon
+        // can be flipped as well as left in phase and the two are different
+        // drawings. Every one is one component still — nothing came apart —
+        // and every one closes 11 loops, which is one per pair of adjacent
+        // lattice columns across its twelve, exactly as `branch` closes one
+        // per column pair. A drawing that lost a piece, or one that stopped
+        // closing, fails here.
+        expect(loneRibbons).toHaveLength(22);
+        expect([...new Set(loneRibbons)]).toStrictEqual([
+          "1 component(s), 11 loop(s)",
+        ]);
 
         // 🎯 Where the loops are: 294 of `negative`'s 308 corridor networks,
         // 3,099 `mosaic` drawings, `cross`'s seven solid crossings, the
         // eighteen `snake` drawings whose `edge` pitch closes a loop against
-        // the band border, and all 88 of `branch`'s. `parallel` appears
-        // nowhere in this list, which is the half of the claim a tree test
-        // alone would not make: its three shapes are acyclic at every ply.
+        // the band border, all 88 of `branch`'s, and 675 of `parallel`'s 819.
 
-        // `branch` is the newest arrival and the one that moved: it is here
-        // because both of its border rows are ruled end to end now, so every
-        // pair of adjacent lattice columns is closed by the two rules and the
-        // ink between them. `mosaic` arrived earlier, and it is what removing
-        // the degree ceiling bought: a figure of dash ends cannot close, and
-        // 3,099 of the family's 8,575 documents now do. No charter invariant
-        // is about a loop — the ink stays orthogonal and every point stays
-        // inked — so both are a family's shape as a graph changing rather
-        // than its compliance. What `mosaic` does now break is declared:
-        // invariants 3 and 4, for the enumerated half only.
+        // `parallel` is the newest arrival, and its 675 are exactly the
+        // drawings a border rule added ink to — so the count is the same 675
+        // the branching test below reports, from a different measurement.
+        // The 144 it leaves out are the `serpentine` drawings whose first and
+        // last strips are each one lattice row deep: those two flat ribbons
+        // already were the two rules, so ruling them adds no step and closes
+        // nothing.
+
+        // `branch` arrived the same way one commit earlier, and `mosaic`
+        // earlier still, from removing the degree ceiling: a figure of dash
+        // ends cannot close, and 3,099 of that family's 8,575 documents now
+        // do. No charter invariant is about a loop — the ink stays orthogonal
+        // and every point stays inked — so all three are a family's shape as
+        // a graph changing rather than its compliance.
 
         // The fourteen `negative` documents missing from it are the `lines`
         // sub-family's negative — `ruled-closed` at each of the family's ten
@@ -861,10 +945,17 @@ describe(MeanderTopologyService, () => {
         // band's own rules and nothing joining them, so it is one component
         // per lattice row with no loop anywhere, and the one corner of this
         // family that is a forest like the six oldest.
-        expect(looped).toHaveLength(3506);
+        expect(looped).toHaveLength(4181);
         expect(
           [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
-        ).toStrictEqual(["branch", "cross", "mosaic", "negative", "snake"]);
+        ).toStrictEqual([
+          "branch",
+          "cross",
+          "mosaic",
+          "negative",
+          "parallel",
+          "snake",
+        ]);
       },
       CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
     );
@@ -875,12 +966,18 @@ describe(MeanderTopologyService, () => {
     // them agree, so the count is taken here rather than restated there.
 
     // The junction total moved from 5,152 to 6,538 when `branch` gained a
-    // rule along its second border: every interior column of that rule meets
-    // a tooth, so its 88 documents carry 3,124 of these where they carried
-    // 1,738. The document count did not move at all — `branch` already
-    // forked in every one of the 88, and the other three families are
-    // untouched — so the total and the set say different things here, which
-    // is why both are asserted.
+    // rule along its second border, and to 24,572 when `parallel` gained
+    // both of its own: those 819 documents carry 18,034 of these where they
+    // carried none. The document count moved with it this time — 214 to 889,
+    // and `parallel` is a fifth family in the set — where `branch` moved the
+    // total alone, having already forked in every one of its 88. That is why
+    // the total, the count, and the set are three assertions rather than one.
+
+    // 144 `parallel` documents are still absent, and they are the same 144
+    // the looped test above leaves out — the `serpentine` drawings whose two
+    // border strips are flat. So this is not "the family branches now" but
+    // the structural condition `RELAXED_INVARIANTS` declares, counted from
+    // disk instead of from the sweep.
     it("branches in exactly the families the charter names, measured from disk", async () => {
       const corpus = await readCommittedCorpus();
       const documents = corpus.filter(
@@ -901,11 +998,14 @@ describe(MeanderTopologyService, () => {
 
       expect(documents).toHaveLength(1159);
 
-      expect(tJunctions).toBe(6538);
-      expect(branching).toHaveLength(214);
+      expect(tJunctions).toBe(24572);
+      expect(branching).toHaveLength(889);
       expect(
         [...new Set(branching.map((name) => familyOf(name)))].toSorted(),
-      ).toStrictEqual(["branch", "chain", "negative", "snake"]);
+      ).toStrictEqual(["branch", "chain", "negative", "parallel", "snake"]);
+      expect(
+        branching.filter((name) => familyOf(name) === "parallel"),
+      ).toHaveLength(675);
     });
 
     it(

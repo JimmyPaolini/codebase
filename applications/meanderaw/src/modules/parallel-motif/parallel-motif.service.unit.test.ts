@@ -28,6 +28,7 @@ import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
 import {
+  COLUMNS_PER_SERPENTINE_UNIT,
   COLUMNS_PER_STRAND,
   DEFAULT_PARALLEL_STRANDS,
   PARALLEL_MODIFIER_NAMES,
@@ -50,16 +51,99 @@ const SWEPT_ROWS: readonly number[] = [4, 5, 6, 7, 8];
  * Representative plies of the bracket-bundle shapes, and how many strands
  * each one puts in a repeat unit. One at the floor the family now admits,
  * one at its own default, and two above it.
+ *
+ * `cycles` and `tJunctions` are one number per ply rather than one per row
+ * count, because both are properties of the band's width: the border rules
+ * run the whole repeat, and a rule's length does not depend on how tall the
+ * band is. Neither is simply the column count, though — an inner strand's
+ * arms reach only the border its own bundle opens onto, so a deeper ply adds
+ * columns faster than it adds forks.
  */
 const PLIES: readonly {
+  readonly cycles: number;
   readonly label: string;
   readonly modifier?: Modifier;
   readonly strands: number;
+  readonly tJunctions: number;
 }[] = [
-  { label: "unmodified", strands: DEFAULT_PARALLEL_STRANDS },
-  { label: "plied 1", modifier: { name: "plied", strands: 1 }, strands: 1 },
-  { label: "plied 3", modifier: { name: "plied", strands: 3 }, strands: 3 },
-  { label: "plied 4", modifier: { name: "plied", strands: 4 }, strands: 4 },
+  {
+    cycles: 17,
+    label: "unmodified",
+    strands: DEFAULT_PARALLEL_STRANDS,
+    tJunctions: 32,
+  },
+  {
+    cycles: 11,
+    label: "plied 1",
+    modifier: { name: "plied", strands: 1 },
+    strands: 1,
+    tJunctions: 20,
+  },
+  {
+    cycles: 23,
+    label: "plied 3",
+    modifier: { name: "plied", strands: 3 },
+    strands: 3,
+    tJunctions: 44,
+  },
+  {
+    cycles: 29,
+    label: "plied 4",
+    modifier: { name: "plied", strands: 4 },
+    strands: 4,
+    tJunctions: 56,
+  },
+];
+
+/**
+ * One drawing of each of the family's three shapes at each swept row count,
+ * beside how many lattice columns its own pitch gives it.
+ *
+ * The two pitches are the point of the table: a bracket bundle's grows with
+ * its ply and a serpentine's does not, so a border rule that measured the
+ * band with one of them would fall short on the other. Every ply here is
+ * within the validator's bound of the shallowest row count swept.
+ */
+const SHAPES: readonly {
+  readonly label: string;
+  readonly latticeColumns: number;
+  readonly modifier?: Modifier;
+}[] = [
+  {
+    label: "unmodified",
+    latticeColumns:
+      COLUMNS_PER_STRAND * DEFAULT_PARALLEL_STRANDS * REPEAT_COUNT,
+  },
+  {
+    label: "plied 1",
+    latticeColumns: COLUMNS_PER_STRAND * REPEAT_COUNT,
+    modifier: { name: "plied", strands: 1 },
+  },
+  {
+    label: "plied 4",
+    latticeColumns: COLUMNS_PER_STRAND * 4 * REPEAT_COUNT,
+    modifier: { name: "plied", strands: 4 },
+  },
+  {
+    label: "aligned 3",
+    latticeColumns: COLUMNS_PER_STRAND * 3 * REPEAT_COUNT,
+    modifier: { name: "aligned", strands: 3 },
+  },
+  {
+    label: "serpentine 1",
+    latticeColumns: COLUMNS_PER_SERPENTINE_UNIT * REPEAT_COUNT,
+    modifier: { name: "serpentine", strands: 1 },
+  },
+  {
+    label: "serpentine 4",
+    latticeColumns: COLUMNS_PER_SERPENTINE_UNIT * REPEAT_COUNT,
+    modifier: { name: "serpentine", strands: 4 },
+  },
+  {
+    label: "serpentine 3 turned over and rotated",
+    latticeColumns: COLUMNS_PER_SERPENTINE_UNIT * REPEAT_COUNT,
+    modifier: { flip: "one", name: "serpentine", offset: 1, strands: 3 },
+  },
 ];
 
 // 🧪 Tests
@@ -69,6 +153,7 @@ describe(ParallelMotifService, () => {
   let geometryService: GridGeometryService;
   let latticeService: MeanderLatticeService;
   let renderingService: SvgRenderingService;
+  let serpentineService: ParallelSerpentineService;
   let service: ParallelMotifService;
   let topologyService: MeanderTopologyService;
 
@@ -105,12 +190,57 @@ describe(ParallelMotifService, () => {
     geometryService = await module.resolve(GridGeometryService);
     latticeService = await module.resolve(MeanderLatticeService);
     renderingService = await module.resolve(SvgRenderingService);
+    serpentineService = await module.resolve(ParallelSerpentineService);
     service = await module.resolve(ParallelMotifService);
     topologyService = await module.resolve(MeanderTopologyService);
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  describe("the closed borders", () => {
+    // 🎯 The one thing all three shapes now share, read off the lattice
+    // rather than off the path data: an unbroken rule along both border rows,
+    // covering every lattice step of the repeat. Before this a bracket
+    // bundle's arms ended in mid-air at whichever border it opened onto, and
+    // a serpentine ruled a border only where a flat strip happened to land
+    // there — so which border was ruled read as the shape's signature rather
+    // than as the band's, and the family's four one-strand variants were
+    // indistinguishable by their interiors.
+    it.each(
+      SWEPT_ROWS.flatMap((rows) =>
+        SHAPES.map((shape) => ({
+          ...shape,
+          label: `${shape.label} at ${rows} rows`,
+          rows,
+        })),
+      ),
+    )("rules both borders end to end at $label", (testCase) => {
+      const graph = latticeService.build(
+        generationService.generate({
+          repeatCount: REPEAT_COUNT,
+          rows: testCase.rows,
+          type: "parallel",
+          ...(testCase.modifier ? { modifier: testCase.modifier } : {}),
+        }),
+      );
+      const bareSteps = (row: number): string[] =>
+        Array.from(
+          { length: graph.columns },
+          (_value, column) => `${column},${row}`,
+        ).filter((step) => !graph.horizontalEdges.has(step));
+
+      expect({
+        bottom: bareSteps(graph.rows),
+        columns: graph.columns,
+        top: bareSteps(0),
+      }).toStrictEqual({
+        bottom: [],
+        columns: testCase.latticeColumns - 1,
+        top: [],
+      });
+    });
   });
 
   describe("strandCount", () => {
@@ -269,19 +399,30 @@ describe(ParallelMotifService, () => {
       );
     });
 
-    // 🎯 The corpus's first tree that is not a `branch` drawing, and the
-    // reason it is one: a one-ply serpentine is a single ribbon that runs
-    // the whole band without stopping or repeating a step. A deeper ply is
-    // that many ribbons, so it is a forest and not a tree — which is what
-    // separates the two assertions here.
+    // 🎯 What a serpentine keeps that a bracket bundle gives up: the ply is
+    // still the component count. Ruling both borders joins every bracket of
+    // a bundle into one figure, because both of a bracket's arms end on the
+    // border it opens onto — but only the top and bottom of a ribbon stack
+    // reach a border at all, so the ribbons between them are untouched.
+
+    // The third case is the family's one non-forking corner, and it is here
+    // because it is what the other two are being distinguished from: at six
+    // rows and a ply of six, one rotation puts a flat strip at each end of
+    // the stack, those two flat ribbons are the two rules, and the drawing
+    // closes nothing.
     it.each([
-      { expected: 1, strands: 1 },
-      { expected: 3, strands: 3 },
+      { components: 1, loops: 11, strands: 1 },
+      { components: 3, loops: 11, strands: 3 },
+      { components: 6, loops: 0, offset: 1, strands: 6 },
     ])(
-      "leaves $expected connected ribbon(s) at a serpentine ply of $strands",
-      ({ expected, strands }) => {
+      "leaves $components connected ribbon(s) closing $loops loop(s) at a serpentine ply of $strands",
+      ({ components: expected, loops, offset, strands }) => {
         const document = generationService.generate({
-          modifier: { name: "serpentine", strands },
+          modifier: {
+            name: "serpentine",
+            strands,
+            ...(offset ? { offset } : {}),
+          },
           repeatCount: REPEAT_COUNT,
           rows: 6,
           type: "parallel",
@@ -289,8 +430,83 @@ describe(ParallelMotifService, () => {
         const { components, edges, nodes } =
           topologyService.connectivity(document);
 
-        expect(components).toBe(expected);
-        expect(edges).toBe(nodes - components);
+        expect({ components, loops: edges - nodes + components }).toStrictEqual(
+          { components: expected, loops },
+        );
+      },
+    );
+  });
+
+  // 🎯 The structural condition the family's charter relaxation is declared
+  // by, swept over every `(rows, strands, offset)` a serpentine admits at
+  // four row counts rather than sampled: a drawing forks unless its first
+  // and last strips are each one lattice row deep.
+  describe("the border strips", () => {
+    // 🎯 The two sides are read by two independent routes — the fork count
+    // off the rendered ink, the strip depths off `strips` — and nothing in
+    // either consults the other, so this is a cross-check rather than a
+    // tautology. `strips` is a partition of the band's lattice rows; whether
+    // the ink forks is a fact about lattice degree.
+
+    // A flat strip at one end and depth at the other is not enough, which is
+    // why the condition names both: the rule along the deep end still meets
+    // an arm rising out of it. Each row count is swept over its whole ply and
+    // rotation range, because an integer partition and its rotation are what
+    // put the flat strips where they are.
+
+    // The two pinned counts are the guard against a sweep that agrees by
+    // being empty on both sides. A two-row band has no rotation that puts a
+    // flat strip at each end, so all three of its drawings fork; the three
+    // deeper row counts each have some that do not, and `deep` below `total`
+    // is what says so.
+    it.each([
+      { deep: 3, rows: 2, total: 3 },
+      { deep: 8, rows: 4, total: 10 },
+      { deep: 16, rows: 6, total: 21 },
+      { deep: 27, rows: 8, total: 36 },
+    ])(
+      "forks in exactly $deep of $total serpentine drawings at $rows rows",
+      ({ deep, rows, total }) => {
+        const forking: string[] = [];
+        const deepBordered: string[] = [];
+        const swept: string[] = [];
+
+        for (let strands = 1; strands <= rows; strands += 1) {
+          for (let offset = 0; offset < strands; offset += 1) {
+            const label = `${strands} strands rotated ${offset}`;
+            const strips = serpentineService.strips(rows, strands, offset);
+            const first = strips.at(0);
+            const last = strips.at(-1);
+
+            swept.push(label);
+
+            if (
+              first?.bottomRow !== first?.topRow ||
+              last?.bottomRow !== last?.topRow
+            ) {
+              deepBordered.push(label);
+            }
+
+            if (
+              topologyService.measure(
+                generationService.generate({
+                  modifier: { name: "serpentine", offset, strands },
+                  repeatCount: REPEAT_COUNT,
+                  rows,
+                  type: "parallel",
+                }),
+              ).inkTJunctions > 0
+            ) {
+              forking.push(label);
+            }
+          }
+        }
+
+        expect(forking).toStrictEqual(deepBordered);
+        expect({
+          deep: deepBordered.length,
+          total: swept.length,
+        }).toStrictEqual({ deep, total });
       },
     );
   });
@@ -394,15 +610,21 @@ describe(ParallelMotifService, () => {
   describe("the charter", () => {
     // 🎯 The family's whole claim, measured through the single seam rather
     // than described: every lattice point of the band carries ink at every
-    // ply, and no lattice point carries three arms or four. A ply of N puts
-    // N strands in every repeat unit — that is the component count — and
-    // every one of them is an open arc, which is the free-end count.
-    //
+    // ply, the ink forks against the border rules, and no lattice point
+    // carries four arms. A border row has no ink above it, so there is
+    // nowhere a fourth arm could come from.
+
     // `nodes` is invariant 2 as a count rather than as a boolean, and it is
     // the stronger of the two: `channelWidthCompliant` exempts the first
-    // and last lattice column, where 2,120 documents in the corpus do leave
+    // and last lattice column, where 6,005 documents in the corpus do leave
     // a gap, and this number counts them. Every lattice column of this
     // family's band is inked, so it has no band-termination gap at all.
+
+    // This is where the border rules show. A bundle's every bracket ends on
+    // the border it opens onto, so ruling both leaves one component with no
+    // free end anywhere — where a ply of `N` used to leave `N` open arcs per
+    // repeat unit and close no loop at all. It still fills space and still
+    // crosses nowhere; what it gave up was never a charter invariant.
     it.each(
       SWEPT_ROWS.flatMap((rows) =>
         PLIES.map((ply) => ({
@@ -411,19 +633,20 @@ describe(ParallelMotifService, () => {
           rows,
         })),
       ),
-    )("holds at $label", ({ modifier, rows, strands }) => {
+    )("holds at $label", ({ cycles, modifier, rows, strands, tJunctions }) => {
       const document = generationService.generate({
         repeatCount: REPEAT_COUNT,
         rows,
         type: "parallel",
         ...(modifier ? { modifier } : {}),
       });
-      const { components, edges, freeEnds, nodes } =
-        topologyService.connectivity(document);
+      const connectivity = topologyService.connectivity(document);
+      const { components, edges, freeEnds, nodes } = connectivity;
       const { channelWidthCompliant, inkTJunctions, inkXJunctions } =
         topologyService.measure(document);
 
       expect({
+        acyclic: topologyService.isAcyclic(connectivity),
         channelWidthCompliant,
         components,
         freeEnds,
@@ -432,12 +655,13 @@ describe(ParallelMotifService, () => {
         loops: edges - nodes + components,
         nodes,
       }).toStrictEqual({
+        acyclic: false,
         channelWidthCompliant: true,
-        components: strands * REPEAT_COUNT,
-        freeEnds: 2 * strands * REPEAT_COUNT,
-        inkTJunctions: 0,
+        components: 1,
+        freeEnds: 0,
+        inkTJunctions: tJunctions,
         inkXJunctions: 0,
-        loops: 0,
+        loops: cycles,
         nodes: COLUMNS_PER_STRAND * strands * REPEAT_COUNT * (rows + 1),
       });
     });
@@ -447,9 +671,15 @@ describe(ParallelMotifService, () => {
      * `MeanderGenerationService.generate` refuses. The bounds live on that
      * service rather than here, which is what lets the reason for the
      * minimum be measured at the row counts it excludes.
+     *
+     * The border rules are appended exactly as
+     * `MeanderGenerationService.buildPaths` appends them, so what is measured
+     * is the drawing the family would make at that row count rather than its
+     * units alone.
      */
     const belowMinimum = (rows: number): string => {
       const geometry = geometryService.compute(rows);
+      const pattern = { repeatCount: REPEAT_COUNT, rows };
       const format = (value: number): string =>
         geometryService.formatCoordinate(value);
 
@@ -457,33 +687,41 @@ describe(ParallelMotifService, () => {
         height: format(
           geometry.offset + geometry.height + geometry.strokeWidth / 2,
         ),
-        paths: Array.from({ length: REPEAT_COUNT }, (_value, unitIndex) =>
-          service.path(geometry, {
-            isLastUnit: unitIndex === REPEAT_COUNT - 1,
-            rows,
-            unitIndex,
-          }),
-        ),
+        paths: [
+          ...Array.from({ length: REPEAT_COUNT }, (_value, unitIndex) =>
+            service.path(geometry, {
+              isLastUnit: unitIndex === REPEAT_COUNT - 1,
+              rows,
+              unitIndex,
+            }),
+          ),
+          service.border(geometry, pattern),
+        ],
         strokeWidth: format(geometry.strokeWidth),
         width: format(
-          service.rightEdge(geometry, { repeatCount: REPEAT_COUNT, rows }) +
-            geometry.strokeWidth / 2,
+          service.rightEdge(geometry, pattern) + geometry.strokeWidth / 2,
         ),
       });
     };
 
     // 🎯 Why the family's minimum of 2 is a floor on the *family* rather
-    // than on any one drawing. A one-row band holds every charter invariant
-    // — measured here, through the motif service, at the one row count
+    // than on any one drawing. A one-row band holds every invariant this
+    // family holds anywhere, and breaks the one it breaks everywhere —
+    // measured here, through the motif service, at the one row count
     // `MeanderGenerationService.generate` refuses. What it cannot hold is
     // the family's own axis: `strands` is bounded above by `rows`, so a
     // one-row band admits a single ply and there is no second strand to run
     // alongside the first. The number and its reason are pinned together
     // here the same way `branch` pins its own.
-    it("still holds every invariant at 1 row, below the family's structural minimum", () => {
+
+    // The forks are the two rules meeting the twenty arms a one-row bundle
+    // still stands up, and they are fewer than the 32 the same ply leaves at
+    // any deeper row count: at one row the inner strand's arms have no
+    // length, so only the outer strand rises out of a border.
+    it("holds and breaks the same invariants at 1 row, below the family's structural minimum", () => {
       expect(topologyService.measure(belowMinimum(1))).toStrictEqual({
         channelWidthCompliant: true,
-        inkTJunctions: 0,
+        inkTJunctions: 20,
         inkXJunctions: 0,
         negativeTJunctions: 0,
         negativeXJunctions: 0,
