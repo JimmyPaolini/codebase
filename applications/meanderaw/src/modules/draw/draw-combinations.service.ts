@@ -3,7 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import {
   COMPATIBLE_MODIFIERS,
   DEFAULT_REPEAT_COUNT,
-  MAXIMUM_VALUE,
+  FAMILY_MAXIMUM_ROWS,
   MINIMUM_STRANDS,
   PLY_MODIFIER_NAMES,
   SPIN_CYCLE_LENGTH,
@@ -34,7 +34,7 @@ import type {
  * Enumerates the named-type half of the sweep: every implemented type,
  * crossed with every modifier `COMPATIBLE_MODIFIERS` lists for it plus "no
  * modifier", crossed with every row count from that type's own
- * `STRUCTURAL_MINIMUM_ROWS` through the shared `MAXIMUM_VALUE`.
+ * `STRUCTURAL_MINIMUM_ROWS` through its own `FAMILY_MAXIMUM_ROWS`.
  * `alternated`, `comb`, `dot`, `plied`, `rung`, and `stagger` each expand
  * to the representative values `draw.constants.ts` names rather than their
  * full range, and `repeatCount` is
@@ -52,7 +52,8 @@ import type {
  *
  * Adding a family therefore widens both at once, and adds nothing here: the
  * enumeration is driven entirely by `SUPPORTED_TYPES`,
- * `COMPATIBLE_MODIFIERS`, and `STRUCTURAL_MINIMUM_ROWS`.
+ * `COMPATIBLE_MODIFIERS`, `STRUCTURAL_MINIMUM_ROWS`, and
+ * `FAMILY_MAXIMUM_ROWS`.
  */
 @Injectable()
 export class DrawCombinationsService {
@@ -182,10 +183,10 @@ export class DrawCombinationsService {
     return DEFAULT_REPEAT_COUNT;
   }
 
-  /** Every `rows` value the sweep covers for `type`: its own structural minimum through `MAXIMUM_VALUE`. */
+  /** Every `rows` value the sweep covers for `type`: its own `STRUCTURAL_MINIMUM_ROWS` through its own `FAMILY_MAXIMUM_ROWS`. */
   private rowsSweep(type: MeanderType): number[] {
     const minimum = STRUCTURAL_MINIMUM_ROWS[type];
-    const length = MAXIMUM_VALUE - minimum + 1;
+    const length = FAMILY_MAXIMUM_ROWS[type] - minimum + 1;
 
     return Array.from({ length }, (_value, index) => minimum + index);
   }
@@ -229,21 +230,24 @@ export class DrawCombinationsService {
   /**
    * Enumerates every `(type, modifier-or-none, rows, repeatCount)`
    * combination the named-type sweep covers, from each type's own
-   * `STRUCTURAL_MINIMUM_ROWS` through the shared `MAXIMUM_VALUE`.
+   * `STRUCTURAL_MINIMUM_ROWS` through its own `FAMILY_MAXIMUM_ROWS`.
    *
-   * Running to `MAXIMUM_VALUE` rather than to a sweep maximum of its own is
-   * what makes "every drawing the command line can be asked for is a
-   * drawing this repository commits, and a drawing the charter gates" true
-   * by construction. It was not always: the sweep stopped at 8 while the
+   * Reading the same per-family ceiling `MeanderGenerationService.generate`
+   * validates against — rather than a sweep maximum of its own — is what
+   * makes "every drawing the command line can be asked for is a drawing
+   * this repository commits, and a drawing the charter gates" true by
+   * construction. It was not always: the sweep stopped at 8 while the
    * command line accepted 12, and issue #507 lived in the four row counts
    * between them — `chain` and `snake` drew self-retracing ink at every one
    * of them, reachable by any user and covered by nothing. Closing the gap
-   * here closes it for both callers at once, which is why neither of them
-   * passes a range of its own.
+   * in the constant closes it for both callers at once, which is why
+   * neither of them passes a range of its own.
    *
-   * The `mosaic` permutation half of the sweep does keep a cap, for a reason
-   * that does not apply to this half — see
-   * `PERMUTATION_ROWS_SWEEP_MAXIMUM`.
+   * That is also why `mosaic`'s lower ceiling costs nothing here. It is a
+   * budget on an exhaustively enumerated family rather than a sampled
+   * range — see `MOSAIC_TILE_MAXIMUM_ROWS` — and because the command line
+   * refuses a `mosaic` above it, the row counts it leaves out are not
+   * reachable rather than merely absent from the corpus.
    */
   enumerate(): GenerationParameters[] {
     const types = SUPPORTED_TYPES.filter((value): value is MeanderType =>

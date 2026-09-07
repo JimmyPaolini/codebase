@@ -16,30 +16,59 @@ nx run meanderaw:start
 ## 🏛️ Before You Change a Meander
 
 Meander geometry is governed by a charter of seven invariants, five of which are fixed.
-They are measured against all 4,773 committed SVGs, not read off the code, so
+They are measured against all 1,632 committed SVGs, not read off the code, so
 they are facts about the output rather than intentions in the source. The full charter,
 with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
-**The named half of the sweep runs to `MAXIMUM_VALUE`,** so every drawing the command line
-can be asked for is one this repository commits and the charter gates — 427 named patterns,
-each family from its own structural minimum through 12 rows. It stopped at 8 until
+**The named half of the sweep runs to `FAMILY_MAXIMUM_ROWS`,** the same record
+`MeanderGenerationService.generate` validates `rows` against — so every drawing the command
+line can be asked for is one this repository commits and the charter gates, 1,183 named
+patterns, each family from its own structural minimum through its own ceiling. It stopped
+at 8 for every family alike until
 [#507](https://github.com/JimmyPaolini/codebase/issues/507), which lived in the four row
-counts between, so do not give that half a sweep maximum of its own again. The `mosaic`
-permutation half does keep one, at 8, because it enumerates exhaustively — following the
-named half would commit 552,002 more tiles. See `PERMUTATION_ROWS_SWEEP_MAXIMUM`.
+counts between, so do not give that half a sweep maximum of its own again.
+
+**Nine of the ten ceilings are the shared `MAXIMUM_VALUE` of 12. `mosaic`'s is 6,** because
+it is the family whose space is enumerated exhaustively rather than sampled — 8,551 tiles
+across 3 through 6 rows. The cap is on the whole family rather than on the enumeration
+alone, so `--type mosaic --rows 7` is refused: a budget that stopped at the sweep would
+leave those row counts reachable and uncommitted, which is the shape #507 had. See
+`MOSAIC_TILE_MAXIMUM_ROWS`.
+
+**What bounds `mosaic` is one edge budget, not a column cap.** A tile is a `columns` by
+`rows - 1` grid of lattice points, each carrying four direction bits, and its edges are its
+only degrees of freedom — so a shape holds `2 ** (columns * (2 * rows - 3))` tiles and rows
+and columns are not independent knobs. `MOSAIC_TILE_EDGE_BUDGET` caps that edge count at
+16, which admits eleven shapes: 3×1 through 3×5, 4×1 through 4×3, 5×1, 5×2, and 6×1. A
+shape past it is refused rather than enumerated slowly. Raising it is a one-line change
+with a visible effect on counts `mosaic-tiles.service.unit.test.ts` asserts — which is the
+point of it being one number. See "Families, Sub-families, and Tiles" in
+[README.md](./README.md).
+
+**`mosaic` has no `permutations/` level,** and removing it was deliberate: that level
+separated an enumerated half from a named one, and every tile the family draws is now a
+member of one space. Its named drawings sit beside the `<columns>-columns/` directories
+because they are tiles at column spans the edge budget refuses — `alternated period-3` is
+six columns wide at six rows, which is 54 edges against a budget of 16 — rather than a
+different kind of thing. Do not put the level back for that family.
 
 **`negative` has a permutation half too,** and it enumerates its one-column source space —
-the `ruled` domain — at 375 sources across 3 through 7 rows. Its range is derived from
-`PERMUTATION_ROWS_SWEEP_MAXIMUM` minus `NEGATIVE_SOURCE_ROW_OFFSET` rather than chosen, so
-every drawing in it inverts a `mosaic` tile this repository has already committed. Do not
-give it a maximum of its own: that condition is what lets the corridor-identity gate cover
-the half completely, and it is the only thing standing between 375 files and 28,876.
+the `ruled` domain — at 208 sources across 3 through 6 rows. Those are the `mosaic` tiles
+it can invert rather than all of them: a source point carrying more than
+`NEGATIVE_SOURCE_MAXIMUM_DEGREE` bits can wall a cell on every side, and a cell with no
+corridor leaves the negative with a lattice point nothing paints — charter invariant 2
+broken, measured over the corpus at 599 drawings. Do not widen it without giving this
+family a rule for what to draw there. It stops at the same
+`MOSAIC_TILE_MAXIMUM_ROWS` the `mosaic` half does, so its deepest row count inverts a
+seven-row source that is enumerable but no longer committed: the corridor-identity gate
+covers rows 3 through 5 of the half and the charter sweep covers the rest. `negative` as a
+named family keeps its ceiling of 12.
 
-Adding four row counts per family moved most of the published counts, and so did giving
-every `branch` mode a parameter of its own — `rung` a direction, `stagger` a branch count
-the sweep draws at four values, and `comb` a direction whose downward half the unmodified
-drawing already was — and `negative` growing from three sources to ten. So a figure below
-that disagrees with a measurement is more likely stale than wrong.
+Every change to a family's row range or mode set moves most of the published counts —
+widening the sweep to the command line's own range, giving every `branch` mode a parameter,
+growing `negative` from three sources to ten, capping `mosaic` at 6 rows, and replacing
+that family's matching rule with an edge budget over a lattice have each done it in turn. So a figure below that disagrees with a measurement is more likely stale than
+wrong.
 
 The three that most often catch a change:
 
@@ -53,7 +82,7 @@ The three that most often catch a change:
 - **No branching and no crossing.** Ink has zero T-junctions everywhere except `negative`
   and `branch`, the two families added to branch, and `chain`/`snake` under
   `edge`/`edge-flip`, which branch where their zigzag lands mid-border — 5,152 junctions
-  across 214 of the 427 named patterns, 3,054 of them `negative`'s and 1,738 `branch`'s.
+  across 214 of the 1,183 named patterns, 3,054 of them `negative`'s and 1,738 `branch`'s.
   It has zero X-junctions everywhere except `cross` drawn solid — 12 per document at every
   one of its seven row counts, and none under its `interrupted` modifier, where the break
   takes the junction out of the ink graph — and `negative` under `brick-straight`,
@@ -80,6 +109,17 @@ Three things that look like defects and are not:
   sub-family. `split` is a modifier that constructs a shape; `diamond` is the sub-family
   that recognizes the same shape however it arose. Do not collapse either pair — see
   "Naming a Mosaic Sub-family" in [README.md](./README.md).
+- **A `mosaic` name is a rule, not a label.** `mosaic-naming` holds one predicate per
+  name, read off a tile's direction bits; a tile matching none keeps its identifier and
+  stays unnamed, and one matching two is a defect the unit test catches over the whole
+  space. Adding a name to the family means adding a rule there, never a motif service.
+  **Unbroken or broken is a question about edges, not points** — `lines` and `dashes`
+  differ on it, and so do `bars` and `diamond` — which is what an earlier rule set got
+  wrong when it called a solid vertical bar a `diamond`.
+- **A `mosaic` tile branching or crossing** is declared, not a regression. Its named modes
+  do neither; its enumerated half does both, which the charter test's `RELAXED_INVARIANTS`
+  records with a `permutations` flag and then asserts is really present in committed
+  output. Editing that declaration is how the permission moves — never the assertions.
 - **`parallel` being a family rather than a modifier** is a correction, not an oversight.
   [#340](https://github.com/JimmyPaolini/codebase/issues/340) models it as the one modifier
   compatible with every family; `N` strands cannot trace the path one strand traces, so
@@ -104,8 +144,8 @@ Three things that look like defects and are not:
   stacked in one lattice column is an X-junction, so a source whose openings sit side by
   side cannot avoid crossing — `brick-straight` is stack bond, `grid` inverts the `dots`
   sub-family, and `brick-upright` inverts `diamond`. The survey found 3,070 of the 3,179
-  `mosaic` tiles have a crossing negative, so these three are the norm of that space rather
-  than an escape from the charter. See "The Negative Space Family" in
+  `mosaic` tiles it measured have a crossing negative, so these three are the norm of that
+  space rather than an escape from the charter. See "The Negative Space Family" in
   [README.md](./README.md).
 - **`brick-staggered` and `brick-straight`** are two bonds of one wall, not a rename and a
   stray. Running bond alternates the anchor column by course and branches; stack bond
@@ -201,7 +241,7 @@ nx run meanderaw:oxfmt           # Formatting
 
 This application has **one command, `draw`**, and it is the default — so `start` runs it.
 With no arguments it writes every drawing under `output/<family>/<rows>-rows/`, nests the
-enumerated `mosaic` tiles a `permutations/<columns>-columns/` deeper, and writes one
+enumerated `mosaic` tiles a `<columns>-columns/` deeper, and writes one
 `output/index.html` listing them all. With `--type` and `--rows` it draws that
 one into the same tree:
 

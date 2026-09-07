@@ -1,10 +1,9 @@
 // ♟️ Constants
 
 import {
-  MOSAIC_TILE_MINIMUM_ROWS,
+  MOSAIC_TILE_MAXIMUM_ROWS,
   SUPPORTED_SUB_FAMILIES,
 } from "../mosaic-motif/mosaic-motif.constants";
-import { NEGATIVE_SOURCE_ROW_OFFSET } from "../negative-motif/negative-motif.constants";
 
 import type {
   DotShape,
@@ -62,6 +61,27 @@ export const DEFAULT_REPEAT_COUNT = 6;
 
 /** Highest `rows` or `repeatCount` value the CLI accepts for any type. */
 export const MAXIMUM_VALUE = 12;
+
+/**
+ * Highest `rows` value each family is drawn at, read by both
+ * `MeanderGenerationService.generate` and `DrawCombinationsService` — which
+ * keeps every drawing the command line accepts one this repository commits
+ * and the charter gates, the property issue #507 lived in the absence of.
+ * Nine families sit at the shared {@link MAXIMUM_VALUE}; only `mosaic` is
+ * lower, and {@link MOSAIC_TILE_MAXIMUM_ROWS} carries the counts and why.
+ */
+export const FAMILY_MAXIMUM_ROWS: Record<MeanderType, number> = {
+  boxes: MAXIMUM_VALUE,
+  branch: MAXIMUM_VALUE,
+  chain: MAXIMUM_VALUE,
+  cross: MAXIMUM_VALUE,
+  mosaic: MOSAIC_TILE_MAXIMUM_ROWS,
+  negative: MAXIMUM_VALUE,
+  parallel: MAXIMUM_VALUE,
+  snake: MAXIMUM_VALUE,
+  swirl: MAXIMUM_VALUE,
+  whirl: MAXIMUM_VALUE,
+};
 
 /** Lowest `period` value `alternated` accepts: a run must span at least one grid level. */
 export const MINIMUM_PERIOD = 1;
@@ -253,14 +273,14 @@ export const SUB_FAMILIES: Record<MeanderType, readonly string[]> = {
  * family is the model here, so the family takes the stricter of its two
  * modes.
  *
- * `negative`'s minimum is its source's minimum moved down one, and it is
- * written as that subtraction rather than as the 3 it evaluates to, so the
- * two cannot drift. It inks the corridors a `mosaic` tile leaves and puts a
- * lattice point on each of that tile's cells, so its own band is one row
- * shorter than the tile it inverts (see `NEGATIVE_SOURCE_ROW_OFFSET`).
- * `MOSAIC_TILE_MINIMUM_ROWS` is 4 for its own reason — below it a tile's
- * interior is a single level and there is nothing to permute — so 3 rows is
- * the shallowest negative the shallowest enumerable tile can yield.
+ * `negative`'s minimum is **3**, and the link to
+ * `MOSAIC_TILE_MINIMUM_ROWS - NEGATIVE_SOURCE_ROW_OFFSET` is cut
+ * deliberately. That subtraction meant "the shallowest negative the
+ * shallowest enumerable tile can yield", which held while `mosaic`'s minimum
+ * moved for reasons about what a tile is. It now moves for reasons about how
+ * large a space is worth enumerating, which says nothing about how shallow a
+ * band this family can ink the corridors of — so following it down would
+ * widen `negative` as a side effect of a decision about another family.
  *
  * `branch`'s minimum of 2 is its `rung` mode's, and the family takes the
  * stricter of its modes the same way `cross` does. `comb` and `stagger` do
@@ -306,7 +326,7 @@ export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   chain: 4,
   cross: 6,
   mosaic: 3,
-  negative: MOSAIC_TILE_MINIMUM_ROWS - NEGATIVE_SOURCE_ROW_OFFSET,
+  negative: 3,
   parallel: 2,
   snake: 4,
   swirl: 4,

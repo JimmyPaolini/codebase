@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import {
+  FAMILY_MAXIMUM_ROWS,
   MAXIMUM_VALUE,
   STRUCTURAL_MINIMUM_ROWS,
   SUPPORTED_TYPES,
@@ -12,7 +13,10 @@ import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine
 
 import { DrawCombinationsService } from "./draw-combinations.service";
 
-import type { GenerationParameters } from "../meander-generation/meander-generation.types";
+import type {
+  GenerationParameters,
+  MeanderType,
+} from "../meander-generation/meander-generation.types";
 
 // 🔧 Configuration
 
@@ -62,8 +66,12 @@ describe(DrawCombinationsService, () => {
     // matching — would leave both quietly covering less, so it is pinned
     // here rather than inferred at either call site.
     it.each([
-      // rows 3..12 × (none + alternated ×2 + dot ×2 + split)
-      { expected: 60, type: "mosaic" },
+      // rows 3..6 × (none + alternated ×2 + dot ×2 + split). Four row
+      // counts where every other family gets nine or ten, because this is
+      // the family `FAMILY_MAXIMUM_ROWS` stops early — see
+      // `MOSAIC_TILE_MAXIMUM_ROWS` for why an exhaustively enumerated
+      // family cannot follow the sampled ones to 12.
+      { expected: 24, type: "mosaic" },
       // rows 3..12 × (none + spin + spin-flip)
       { expected: 30, type: "boxes" },
       // rows 4..12 × (none + edge + flip + edge-flip)
@@ -92,7 +100,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(1219);
+      expect(combinations).toHaveLength(1183);
     });
 
     it("names every combination distinctly", () => {
@@ -190,7 +198,8 @@ describe(DrawCombinationsService, () => {
     // family's own ply of two every pair is asked for at `rows × 2`, and
     // `beyondMaximum` is the pairs whose doubled row count no longer fits
     // inside the shared `MAXIMUM_VALUE` — 36 of them, every pair from 7
-    // rows up in every family.
+    // rows up in every family that reaches them — which `mosaic` no longer
+    // does, its own ceiling being 6.
     //
     // That count was 8 until issue #507 was fixed, on a stricter criterion
     // that no longer applies: four of those eight sat *inside* the maximum,
@@ -212,36 +221,41 @@ describe(DrawCombinationsService, () => {
         ({ rows }) => rows * DISCARDED_DENSITY_PLY > MAXIMUM_VALUE,
       );
 
-      expect(sweptPairs).toHaveLength(56);
-      expect(beyondMaximum).toHaveLength(36);
+      expect(sweptPairs).toHaveLength(50);
+      expect(beyondMaximum).toHaveLength(30);
     });
 
-    // 🎯 The two ends of the row range, on two types with different
-    // structural minima: each starts at its own, and both stop at the one
-    // number the command line stops at. The upper bound is read from
-    // `MAXIMUM_VALUE` rather than written out, because the whole point of
-    // the range is that it is not a figure of the sweep's own choosing —
-    // issue #507 was reachable precisely because it once was.
-    it("sweeps each type from its own structural minimum through the row count the command line stops at", () => {
-      const rowsFor = (type: string): number[] => [
+    // 🎯 Both ends of the row range, on two types that share neither: each
+    // starts at its own `STRUCTURAL_MINIMUM_ROWS` and stops at its own
+    // `FAMILY_MAXIMUM_ROWS`. Both bounds are read from the constants rather
+    // than written out, because the whole point of the range is that it is
+    // not a figure of the sweep's own choosing — issue #507 was reachable
+    // precisely because it once was, and the command line validates against
+    // these same two records.
+    //
+    // `mosaic` is the one family whose ceiling is not the shared
+    // `MAXIMUM_VALUE`, and `swirl` stands for the nine whose is, so the two
+    // together say that the exception is an exception.
+    it("sweeps each type from its own structural minimum through its own family maximum", () => {
+      const rowsFor = (type: MeanderType): number[] => [
         ...new Set(
           combinations
             .filter((parameters) => parameters.type === type)
             .map((parameters) => parameters.rows),
         ),
       ];
-      const throughMaximum = (minimum: number): number[] =>
-        Array.from(
-          { length: MAXIMUM_VALUE - minimum + 1 },
+      const declaredRange = (type: MeanderType): number[] => {
+        const minimum = STRUCTURAL_MINIMUM_ROWS[type];
+
+        return Array.from(
+          { length: FAMILY_MAXIMUM_ROWS[type] - minimum + 1 },
           (_value, index) => minimum + index,
         );
+      };
 
-      expect(rowsFor("mosaic")).toStrictEqual(
-        throughMaximum(STRUCTURAL_MINIMUM_ROWS.mosaic),
-      );
-      expect(rowsFor("swirl")).toStrictEqual(
-        throughMaximum(STRUCTURAL_MINIMUM_ROWS.swirl),
-      );
+      expect(rowsFor("mosaic")).toStrictEqual(declaredRange("mosaic"));
+      expect(rowsFor("swirl")).toStrictEqual(declaredRange("swirl"));
+      expect(rowsFor("mosaic").at(-1)).toBeLessThan(MAXIMUM_VALUE);
       expect(rowsFor("swirl").at(-1)).toBe(MAXIMUM_VALUE);
     });
 

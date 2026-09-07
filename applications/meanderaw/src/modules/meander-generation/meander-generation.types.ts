@@ -1,7 +1,7 @@
 // 🏷️ Types
 
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
-import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
 
 /**
  * Which shape `mosaic`'s `dot` modifier's per-phase level sequence follows:
@@ -21,7 +21,7 @@ export interface GenerationParameters {
   readonly modifier?: Modifier;
   readonly repeatCount: number;
   readonly rows: number;
-  readonly subFamily?: MosaicSubFamily;
+  readonly subFamily?: MosaicBuildableSubFamily;
   readonly type: MeanderType;
 }
 

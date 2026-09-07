@@ -1,35 +1,43 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import {
-  MOSAIC_SUB_FAMILIES_BY_MARK_KIND,
-  MOSAIC_TILE_MAXIMUM_COLUMNS,
-  SUPPORTED_SUB_FAMILIES,
-} from "./mosaic-motif.constants";
+import { SUPPORTED_SUB_FAMILIES } from "./mosaic-motif.constants";
 import { MosaicSubFamilyService } from "./mosaic-sub-family.service";
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
+import { MosaicTileService } from "./mosaic-tile.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
 
-import type {
-  MosaicMarkKind,
-  MosaicSubFamily,
-  MosaicTile,
-} from "./mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "./mosaic-motif.types";
 
 // 🔧 Configuration
 
 /**
- * The row counts `DrawPermutationsService.rowsSweep` enumerates, which is
- * the whole of the unit space this repository has materialized. Every
- * classification claim below is checked against all of it rather than
- * against a sample.
+ * The row counts the aligned tiles below are checked against, which is every
+ * one the sweep enumerates at. A sub-family's tile has to be a real member of
+ * the space it names a region of, and the space is exactly what the edge
+ * budget admits — so the assertion is bounded by the enumeration rather than
+ * by a sample of it.
  */
-const SWEPT_ROWS: readonly number[] = [4, 5, 6, 7, 8];
+const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6];
 
-/** Every sub-family a mark kind names, typed rather than widened for the command line. */
-const NAMED_SUB_FAMILIES: readonly MosaicSubFamily[] = Object.values(
-  MOSAIC_SUB_FAMILIES_BY_MARK_KIND,
-);
+/**
+ * How long the assertion that walks every admitted shape is given.
+ *
+ * The edge budget admits eleven of them and the widest is 2 ** 15 edge
+ * assignments, which is real work rather than a hang — so it is declared
+ * rather than left to the default five seconds, the same way the charter
+ * measurement declares its own.
+ */
+const SPACE_WALK_TIMEOUT_MILLISECONDS = 60_000;
+
+/** Every named sub-family, typed rather than widened for the command line. */
+const NAMED_SUB_FAMILIES: readonly MosaicBuildableSubFamily[] = [
+  "bars",
+  "dashes",
+  "diamond",
+  "dots",
+  "lines",
+];
 
 // 🧪 Tests
 
@@ -43,6 +51,7 @@ describe(MosaicSubFamilyService, () => {
       providers: [
         MosaicSubFamilyService,
         MosaicSymmetryService,
+        MosaicTileService,
         MosaicTilesService,
       ],
     }).compile();
@@ -56,75 +65,22 @@ describe(MosaicSubFamilyService, () => {
     expect(service).toBeDefined();
   });
 
-  describe("classify", () => {
-    it.each`
-      kind            | subFamily
-      ${"dot"}        | ${"dots"}
-      ${"horizontal"} | ${"dashes"}
-      ${"line"}       | ${"lines"}
-      ${"vertical"}   | ${"diamond"}
-    `(
-      "names a tile built only of $kind marks $subFamily",
-      ({
-        kind,
-        subFamily,
-      }: {
-        kind: MosaicMarkKind;
-        subFamily: MosaicSubFamily;
-      }) => {
-        const tile: MosaicTile = {
-          columns: 1,
-          pieces: [0, 1].map((level) => ({ column: 0, kind, level })),
-          rows: 4,
-        };
-
-        expect(service.classify(tile)).toBe(subFamily);
-      },
-    );
-
-    it("leaves a tile that mixes mark kinds unnamed rather than naming it the nearest one", () => {
-      const tile: MosaicTile = {
-        columns: 1,
-        pieces: [
-          { column: 0, kind: "dot", level: 0 },
-          { column: 0, kind: "vertical", level: 1 },
-        ],
-        rows: 4,
-      };
-
-      expect(service.classify(tile)).toBeUndefined();
-    });
-
-    it("leaves a tile carrying no marks at all unnamed, since it draws nothing to recognize", () => {
-      expect(
-        service.classify({ columns: 1, pieces: [], rows: 4 }),
-      ).toBeUndefined();
-    });
-  });
-
   describe("tile", () => {
-    it.each(NAMED_SUB_FAMILIES)(
-      "builds a %s tile that classifies back as itself at every row count it exists at",
-      (subFamily) => {
-        const built = [4, 5, 6, 7, 8, 9, 10, 11, 12]
-          .map((rows) => service.tile(subFamily, rows))
-          .filter((tile) => tile !== undefined);
-
-        expect(built.length).toBeGreaterThan(0);
-
-        for (const tile of built) {
-          expect(service.classify(tile)).toBe(subFamily);
-        }
-      },
-    );
-
     it("can build every sub-family the command line offers, and offers every one it can build", () => {
       expect([...SUPPORTED_SUB_FAMILIES].toSorted()).toStrictEqual(
         [...NAMED_SUB_FAMILIES].toSorted(),
       );
     });
 
-    it("has no diamond tile where the interior has an odd number of levels, since vertical dashes cover levels in pairs", () => {
+    it("builds an unbroken bar where diamond builds a dashed one, which is the whole difference between the two names", () => {
+      const bars = service.tile("bars", 5);
+      const diamond = service.tile("diamond", 5);
+
+      expect(bars && mosaicSymmetryService.identify(bars)).toBe("4cc8");
+      expect(diamond && mosaicSymmetryService.identify(diamond)).toBe("4848");
+    });
+
+    it("has no diamond tile where the interior has an odd number of levels, since southward edges cover levels in pairs", () => {
       expect(service.tile("diamond", 6)).toBeUndefined();
       expect(service.tile("diamond", 8)).toBeUndefined();
       expect(service.tile("diamond", 5)).toBeDefined();
@@ -135,80 +91,62 @@ describe(MosaicSubFamilyService, () => {
       expect(service.tile("dots", 1)).toBeUndefined();
     });
 
-    it("spans two columns for dashes, whose mark reaches into the column beside it, and one for the rest", () => {
+    it("spans two columns for dashes, whose edge reaches into the column beside it, and one for the rest", () => {
+      expect(service.tile("bars", 6)?.columns).toBe(1);
       expect(service.tile("dashes", 6)?.columns).toBe(2);
       expect(service.tile("diamond", 5)?.columns).toBe(1);
       expect(service.tile("dots", 6)?.columns).toBe(1);
       expect(service.tile("lines", 6)?.columns).toBe(1);
     });
 
-    it("builds tiles the enumeration itself finds, so a named tile is a real member of the unit space", () => {
-      for (const rows of SWEPT_ROWS) {
-        for (const subFamily of NAMED_SUB_FAMILIES) {
-          const built = service.tile(subFamily, rows);
+    it("anchors every edge in the tile's first column, which is the representative the region is named after", () => {
+      const dashes = service.tile("dashes", 4);
 
-          if (!built) {
-            continue;
-          }
-
-          const enumerated: string[] = [];
-
-          for (const tile of mosaicTilesService.enumerate(
-            rows,
-            built.columns,
-          )) {
-            enumerated.push(mosaicSymmetryService.canonicalIdentifier(tile));
-          }
-
-          expect(enumerated).toContain(
-            mosaicSymmetryService.canonicalIdentifier(built),
-          );
-        }
-      }
-    });
-  });
-
-  describe("over the enumerated unit space", () => {
-    it("names a tile exactly when every one of its marks is the same kind, and leaves every other tile unnamed", () => {
-      for (const rows of SWEPT_ROWS) {
-        for (
-          let columns = 1;
-          columns <= MOSAIC_TILE_MAXIMUM_COLUMNS;
-          columns += 1
-        ) {
-          for (const tile of mosaicTilesService.enumerate(rows, columns)) {
-            const kinds = new Set(tile.pieces.map((piece) => piece.kind));
-
-            expect(service.classify(tile) === undefined).toBe(kinds.size > 1);
-          }
-        }
-      }
+      expect(dashes && mosaicSymmetryService.identify(dashes)).toBe("212121");
     });
 
-    it("counts every named region of the space, leaving the rest unnamed", () => {
-      const counts = new Map<string, number>();
+    /**
+     * A named tile has to be a real member of the space, which every one of
+     * them now is: nothing bounds a point any more, so the only thing that
+     * can put a buildable tile outside the enumeration is a shape the edge
+     * budget refuses.
+     */
+    it(
+      "builds tiles the enumeration itself finds, so a named tile is a real member of the unit space",
+      () => {
+        let checked = 0;
 
-      for (const rows of SWEPT_ROWS) {
-        for (
-          let columns = 1;
-          columns <= MOSAIC_TILE_MAXIMUM_COLUMNS;
-          columns += 1
-        ) {
-          for (const tile of mosaicTilesService.enumerate(rows, columns)) {
-            const name = service.classify(tile) ?? "unnamed";
+        for (const rows of SWEPT_ROWS) {
+          for (const subFamily of NAMED_SUB_FAMILIES) {
+            const built = service.tile(subFamily, rows);
 
-            counts.set(name, (counts.get(name) ?? 0) + 1);
+            if (
+              !built ||
+              built.columns > mosaicTilesService.maximumColumns(rows)
+            ) {
+              continue;
+            }
+
+            checked += 1;
+
+            const enumerated: string[] = [];
+
+            for (const tile of mosaicTilesService.enumerate(
+              rows,
+              built.columns,
+            )) {
+              enumerated.push(mosaicSymmetryService.canonicalIdentifier(tile));
+            }
+
+            expect(enumerated).toContain(
+              mosaicSymmetryService.canonicalIdentifier(built),
+            );
           }
         }
-      }
 
-      expect(Object.fromEntries(counts)).toStrictEqual({
-        dashes: 75,
-        diamond: 4,
-        dots: 10,
-        lines: 5,
-        unnamed: 3085,
-      });
-    });
+        expect(checked).toBeGreaterThan(0);
+      },
+      SPACE_WALK_TIMEOUT_MILLISECONDS,
+    );
   });
 });

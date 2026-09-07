@@ -1,14 +1,10 @@
-// cspell:ignore dvvxxd dvvxxvdx dvvxxvvxxd dvvxxvvxxvdx dvvxxvvxxvvxxd
-// cspell:ignore hxxhhx hxxhhxxh hxxhhxxhhx hxxhhxxhhxxh hxxhhxxhhxxhhx
-// cspell:ignore dld dldl dldld dldldl dldldld
-// — mosaic tile identifiers, one letter per cell of the tile, from
-// MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { COMPATIBLE_MODIFIERS } from "../meander-generation/meander-generation.constants";
 import { MosaicSubFamilyService } from "../mosaic-motif/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-motif/mosaic-symmetry.service";
+import { MosaicTileService } from "../mosaic-motif/mosaic-tile.service";
 
 import {
   NEGATIVE_COLUMN_MOTIFS,
@@ -18,7 +14,7 @@ import {
 } from "./negative-motif.constants";
 import { NegativeSourceService } from "./negative-source.service";
 
-import type { MosaicSubFamily } from "../mosaic-motif/mosaic-motif.types";
+import type { MosaicBuildableSubFamily } from "../mosaic-motif/mosaic-motif.types";
 import type {
   NegativeModifierName,
   NegativeSource,
@@ -37,7 +33,7 @@ interface ShortlistCase {
 /** One source that inverts a named `mosaic` sub-family, and the sub-family it inverts. */
 interface SubFamilyCase {
   readonly source: NegativeSource;
-  readonly subFamily: MosaicSubFamily;
+  readonly subFamily: MosaicBuildableSubFamily;
 }
 
 /**
@@ -59,31 +55,56 @@ interface SubFamilyCase {
  * identifier, and one that needs no dictionary entry to read.
  */
 const SHORTLIST_CASES: readonly ShortlistCase[] = [
-  { columns: 2, identifier: "dvvxxd", rows: 3, source: "stair" },
-  { columns: 2, identifier: "dvvxxvdx", rows: 4, source: "stair" },
-  { columns: 2, identifier: "dvvxxvvxxd", rows: 5, source: "stair" },
-  { columns: 2, identifier: "dvvxxvvxxvdx", rows: 6, source: "stair" },
-  { columns: 2, identifier: "dvvxxvvxxvvxxd", rows: 7, source: "stair" },
-  { columns: 2, identifier: "hxxhhx", rows: 3, source: "brick-staggered" },
-  { columns: 2, identifier: "hxxhhxxh", rows: 4, source: "brick-staggered" },
-  { columns: 2, identifier: "hxxhhxxhhx", rows: 5, source: "brick-staggered" },
+  { columns: 2, identifier: "044880", rows: 3, source: "stair" },
+  { columns: 2, identifier: "04488408", rows: 4, source: "stair" },
+  { columns: 2, identifier: "0448844880", rows: 5, source: "stair" },
   {
     columns: 2,
-    identifier: "hxxhhxxhhxxh",
+    identifier: "044884488408",
+    rows: 6,
+    source: "stair",
+  },
+  {
+    columns: 2,
+    identifier: "04488448844880",
+    rows: 7,
+    source: "stair",
+  },
+  {
+    columns: 2,
+    identifier: "211221",
+    rows: 3,
+    source: "brick-staggered",
+  },
+  {
+    columns: 2,
+    identifier: "21122112",
+    rows: 4,
+    source: "brick-staggered",
+  },
+  {
+    columns: 2,
+    identifier: "2112211221",
+    rows: 5,
+    source: "brick-staggered",
+  },
+  {
+    columns: 2,
+    identifier: "211221122112",
     rows: 6,
     source: "brick-staggered",
   },
   {
     columns: 2,
-    identifier: "hxxhhxxhhxxhhx",
+    identifier: "21122112211221",
     rows: 7,
     source: "brick-staggered",
   },
-  { columns: 1, identifier: "dld", rows: 3, source: "ruled" },
-  { columns: 1, identifier: "dldl", rows: 4, source: "ruled" },
-  { columns: 1, identifier: "dldld", rows: 5, source: "ruled" },
-  { columns: 1, identifier: "dldldl", rows: 6, source: "ruled" },
-  { columns: 1, identifier: "dldldld", rows: 7, source: "ruled" },
+  { columns: 1, identifier: "030", rows: 3, source: "ruled" },
+  { columns: 1, identifier: "0303", rows: 4, source: "ruled" },
+  { columns: 1, identifier: "03030", rows: 5, source: "ruled" },
+  { columns: 1, identifier: "030303", rows: 6, source: "ruled" },
+  { columns: 1, identifier: "0303030", rows: 7, source: "ruled" },
 ];
 
 /**
@@ -147,16 +168,16 @@ const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
  * Split here rather than branched inside the assertion, because the two
  * halves are different claims: one is that the two builders agree, the other
  * that this family draws where the `mosaic` family does not. It is built
- * from a directly instantiated service because `it.each` needs its table at
+ * from directly instantiated services because `it.each` needs its table at
  * collection time, before any `beforeAll` has run — the same reason the
- * charter sweep instantiates `DrawCombinationsService` — and the service
- * takes no dependencies, so there is nothing for a container to supply.
+ * charter sweep instantiates `DrawCombinationsService` — and neither service
+ * takes a dependency a container has to resolve.
  */
 const [NAMED_SUB_FAMILY_CASES, UNNAMED_SUB_FAMILY_CASES] = ((): readonly [
   readonly (SubFamilyCase & { rows: number })[],
   readonly (SubFamilyCase & { rows: number })[],
 ] => {
-  const subFamilies = new MosaicSubFamilyService();
+  const subFamilies = new MosaicSubFamilyService(new MosaicTileService());
   const cases = SUB_FAMILY_CASES.flatMap((subFamilyCase) =>
     SWEPT_ROWS.map((rows) => ({ ...subFamilyCase, rows })),
   );
@@ -177,6 +198,7 @@ const [NAMED_SUB_FAMILY_CASES, UNNAMED_SUB_FAMILY_CASES] = ((): readonly [
 describe(NegativeSourceService, () => {
   let subFamilyService: MosaicSubFamilyService;
   let symmetryService: MosaicSymmetryService;
+  let tileService: MosaicTileService;
   let service: NegativeSourceService;
 
   beforeAll(async () => {
@@ -184,12 +206,14 @@ describe(NegativeSourceService, () => {
       providers: [
         MosaicSubFamilyService,
         MosaicSymmetryService,
+        MosaicTileService,
         NegativeSourceService,
       ],
     }).compile();
 
     subFamilyService = await module.resolve(MosaicSubFamilyService);
     symmetryService = await module.resolve(MosaicSymmetryService);
+    tileService = await module.resolve(MosaicTileService);
     service = await module.resolve(NegativeSourceService);
   });
 
@@ -229,24 +253,17 @@ describe(NegativeSourceService, () => {
     it.each(
       SOURCES.flatMap((source) => SWEPT_ROWS.map((rows) => ({ rows, source }))),
     )(
-      "covers every cell of the $source tile exactly once at $rows rows",
+      "touches every point of the $source tile with at most one edge at $rows rows",
       ({ rows, source }) => {
         const tile = service.tile(source, rows);
-        const claims = Array.from(
-          { length: tile.columns * (tile.rows - 1) },
-          () => 0,
+        const touched = tile.points.flatMap((row, level) =>
+          row.map((_directions, column) =>
+            tileService.incidentEdges(tile, level, column),
+          ),
         );
 
-        for (const piece of tile.pieces) {
-          for (const cell of symmetryService.coveredCells(
-            piece,
-            tile.columns,
-          )) {
-            claims[cell] = (claims[cell] ?? 0) + 1;
-          }
-        }
-
-        expect(claims.filter((count) => count !== 1)).toStrictEqual([]);
+        expect(touched.filter((count) => count > 1)).toStrictEqual([]);
+        expect(() => tileService.assertWellFormed(tile)).not.toThrow();
       },
     );
 

@@ -1,10 +1,4 @@
-// cspell:ignore dvvxxd dvvxxvvxxvvxxd hxxhhx hxxhhxxhhxxhhx dldldld — mosaic
-// tile identifiers, one letter per cell of the tile, from
-// MOSAIC_MARK_LETTERS in src/modules/mosaic-motif/mosaic-motif.constants.ts.
-
 // 🏷️ Types
-
-import type { MosaicMarkKind } from "../mosaic-motif/mosaic-motif.types";
 
 /** One cell of the source pattern, by the lattice column it sits in and the interior level it sits on. */
 export interface NegativeCell {
@@ -13,16 +7,22 @@ export interface NegativeCell {
 }
 
 /**
- * One mark of a {@link NegativeColumnSource}'s repeating motif.
+ * One mark of a {@link NegativeColumnSource}'s repeating motif: how one
+ * point of a one-column source tile is reached.
  *
- * It is every {@link MosaicMarkKind} but the horizontal dash, and that
- * exclusion is structural rather than a choice: a horizontal dash covers its
- * own cell and the one to its right, so a one-column tile has no second cell
- * for it to reach into. The `line` in its place is the degenerate horizontal
- * dash a one-column tile does admit — it chains with its own copy in every
- * following tile into one rule running the length of the band.
+ * Three of them, and the three are what a single column admits. A `dot`
+ * leaves its point on no edge; a `vertical` sends a southward edge to the
+ * point below, so it accounts for two levels; a `line` sends an eastward
+ * edge that, at one column, wraps onto its own point and chains with its
+ * own copy in every following tile into one rule running the length of the
+ * band.
+ *
+ * This is the `negative` family's own vocabulary rather than a slice of
+ * `mosaic`'s. A `mosaic` tile is four direction bits per point and has no
+ * mark kinds to borrow; these three name the *motifs this family repeats*,
+ * which is a smaller and more particular thing.
  */
-export type NegativeColumnMark = Exclude<MosaicMarkKind, "horizontal">;
+export type NegativeColumnMark = "dot" | "line" | "vertical";
 
 /**
  * The sources built from a one-column repeating motif, as opposed to the
@@ -93,14 +93,14 @@ export interface NegativeRowSpan {
  * `README.md` and are _branches only_: their negatives branch at every swept
  * row count and cross at none.
  *
- * - `stair` is `dvvxxd` → `dvvxxvvxxvvxxd`: two dots capping a staircase of
- *   vertical dashes. The shortlist's first entry and the highest-branching
- *   non-crossing pattern it found, so it is what `negative` draws with no
- *   modifier.
- * - `brick-staggered` is `hxxhhx` → `hxxhhxxhhxxhhx`: horizontal dashes in
- *   running bond, the shortlist's structurally simplest entry.
- * - `ruled` is `dld` → `dldldld`: one column alternating dot levels with the
- *   continuous rule, the shortlist's columns-1 entry.
+ * - `stair` is two columns of southward edges offset by one level, capped by
+ *   a bare point at each end of the staircase. The shortlist's first entry
+ *   and the highest-branching non-crossing pattern it found, so it is what
+ *   `negative` draws with no modifier.
+ * - `brick-staggered` is one eastward edge per level, its anchor column
+ *   alternating — running bond, the shortlist's structurally simplest entry.
+ * - `ruled` is one column alternating bare levels with the wrapped rule, the
+ *   shortlist's columns-1 entry.
  *
  * Four more invert a `MosaicSubFamily`'s own aligned tile, so the names the
  * `mosaic` family already recognizes are drawable as negatives rather than
@@ -121,9 +121,9 @@ export interface NegativeSpan {
  * The sources built from a two-column tile rather than from a one-column
  * repeating motif.
  *
- * Two columns is where a horizontal dash becomes expressible, and the bond
+ * Two columns is where an eastward edge reaches a different point, and the bond
  * it is laid in is the whole difference between the two `brick` sources: a
- * dash walls the lattice column it is anchored on and leaves the one it
+ * edge walls the lattice column it is anchored on and leaves the one it
  * reaches into open, so the anchors decide which columns carry corridors.
  * Alternating them by level puts a corridor either side of every course and
  * never two in a line — running bond, which branches without crossing.

@@ -75,7 +75,7 @@ import type {
  */
 @Command({
   description:
-    "Draw meanders: with no drawing named, sweep every one the application can draw (the named families at structural-minimum-through-8 rows with every compatible modifier, plus an exhaustive enumeration of the mosaic family) beneath an index page listing them all; with --type and --rows, draw that one",
+    "Draw meanders: with no drawing named, sweep every one the application can draw (each named family from its own structural minimum through its own maximum rows, with every compatible modifier, plus exhaustive enumerations of the mosaic family's tiles and the negative family's one-column sources) beneath an index page listing them all; with --type and --rows, draw that one",
   name: "draw",
   options: { isDefault: true },
 })

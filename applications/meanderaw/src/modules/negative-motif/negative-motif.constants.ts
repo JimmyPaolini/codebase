@@ -1,5 +1,24 @@
 // ♟️ Constants
 
+/**
+ * The most direction bits a point of a source tile may carry for this family
+ * to be able to invert it.
+ *
+ * Two, which is a corner or a straight run through. The `mosaic` family
+ * itself has no such ceiling — its points carry any of the sixteen patterns,
+ * junctions included — but this family inks the *corridors* a source leaves,
+ * and a source dense enough to wall a cell on every side leaves it with no
+ * corridor at all. The negative then has a lattice point nothing paints,
+ * which is charter invariant 2 broken: measured over the committed corpus,
+ * 599 of the one-column sources with a junction produce exactly that.
+ *
+ * So this is a statement about what a negative *is* rather than a budget.
+ * Widening it means giving this family a rule for what to draw where a
+ * source leaves no corridor, which is a change to this family and not to the
+ * one it inverts.
+ */
+export const NEGATIVE_SOURCE_MAXIMUM_DEGREE = 2;
+
 import type {
   NegativeColumnMark,
   NegativeColumnSource,
