@@ -336,19 +336,19 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-252626-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-13.77_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-622-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-2035-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-254301-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-14.03_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-623-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-2036-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1982-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-779-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1983-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-780-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-33-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-1073-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-5477-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-1074-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-5501-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-15-166534?style=flat-square)
 
 ### JavaScript
@@ -356,16 +356,16 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-14-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-484-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-123-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-686-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-10530-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-3823-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-12116-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-2237-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-13449-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-8451-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2640-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-11289-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-25803-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-687-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-10600-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-3835-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-12183-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-2252-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-13538-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-8458-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2646-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-11357-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-26042-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-29-ca8a04?style=flat-square)
 
 ### Python
@@ -386,16 +386,16 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-234-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-17321-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-3160-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1165-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-9618-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-6979-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-600-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1004-0ea5e9?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-21434-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-3901-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1438-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-12366-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-8247-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1030-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1466-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-3063-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-12908-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-3489-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-16082-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
@@ -512,24 +512,24 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-270-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-73585-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-254-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-1794-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-2277-a78bfa?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-271-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-74133-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-255-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-1800-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-2280-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-98-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-10980-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-1218-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-5592-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-11050-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-1222-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-5602-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-643-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-6669-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-1878-059669?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-647-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-6694-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-1903-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-7907-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-2072-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-29150-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-2080-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-29328-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-34-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
@@ -542,13 +542,13 @@ Call stacks traced through ``, deepest first. Each frame shows what it takes, wh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 69 |
-| Files | 17 |
-| Calls traced | 66 |
-| Call stacks | 7 |
+| Callables | 49 |
+| Files | 5 |
+| Calls traced | 60 |
+| Call stacks | 4 |
 | Deepest stack | 9 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 4 |
+| Unfollowable calls | 3 |
 
 ### Call stacks (depth)
 
@@ -597,7 +597,7 @@ Call stacks traced through ``, deepest first. Each frame shows what it takes, wh
 ```
 
 <details>
-<summary>4 more call stacks</summary>
+<summary>1 more call stacks</summary>
 
 **4. `main`** — depth 3 · orphan-root
 
@@ -605,31 +605,6 @@ Call stacks traced through ``, deepest first. Each frame shows what it takes, wh
 🚀 main(): void [.devcontainer/scripts/sync-vscode-settings.ts:96]
   └─> checkSync(workspace: Settings, machine: Settings): boolean [.devcontainer/scripts/sync-vscode-settings.ts:48]
     └─> forEach(…)(key: string): void [.devcontainer/scripts/sync-vscode-settings.ts:66]
-```
-
-**5. `anonymous`** — depth 3 · orphan-root
-
-```text
-🚀 anonymous(files: string[]): string[] [configuration/lint-staged.config.ts:113]
-  └─> getStagedFilesFlags(files: string[]): string [configuration/lint-staged.config.ts:45]
-     ↳ Renders staged paths as one workspace-relative `--files=` flag each. `--files` also accepts a single comma-separated…
-    └─> map(…)(file: string): string [configuration/lint-staged.config.ts:47]
-```
-
-**6. `bodyCoAuthoredOnly`** — depth 2 · orphan-root
-
-```text
-🚀 bodyCoAuthoredOnly(parsed: Commit): RuleOutcome [configuration/commitlint.config.ts:28]
-   ↳ Every non-empty body line must be a `Co-authored-by:` trailer.
-  └─> filter(…)(line: string): boolean [configuration/commitlint.config.ts:31]
-```
-
-**7. `footerCoAuthoredOnly`** — depth 2 · orphan-root
-
-```text
-🚀 footerCoAuthoredOnly(parsed: Commit): RuleOutcome [configuration/commitlint.config.ts:46]
-   ↳ Every non-empty footer line must be a `Co-authored-by:` trailer.
-  └─> filter(…)(line: string): boolean [configuration/commitlint.config.ts:49]
 ```
 
 </details>
@@ -647,7 +622,7 @@ None.
 | `main` | 4 | `loadWorkspaceSettings`, `loadMachineSettings`, `checkSync`, `writeSync` | `.devcontainer/scripts/sync-vscode-settings.ts:96` |
 
 <details>
-<summary>28 more callables</summary>
+<summary>24 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -657,8 +632,6 @@ None.
 | `showDifference` | 2 | `forEach(…)`, `forEach(…)` | `.devcontainer/scripts/sync-vscode-extensions.ts:56` |
 | `main` | 2 | `checkSync`, `writeSync` | `.devcontainer/scripts/sync-vscode-extensions.ts:154` |
 | `checkSync` | 2 | `forEach(…)`, `forEach(…)` | `.devcontainer/scripts/sync-vscode-settings.ts:48` |
-| `bodyCoAuthoredOnly` | 2 | `filter(…)`, `every(…)` | `configuration/commitlint.config.ts:28` |
-| `footerCoAuthoredOnly` | 2 | `filter(…)`, `every(…)` | `configuration/commitlint.config.ts:46` |
 | `loadPlan` | 2 | `catch(…)`, `then(…)` | `scripts/orchestrate-agents.ts:187` |
 | `logScriptCompletion` | 2 | `formatTimestamp`, `formatDuration` | `scripts/orchestrate-agents.ts:203` |
 | `runSessions` | 2 | `map(…)`, `runCopilotCommand` | `scripts/orchestrate-agents.ts:321` |
@@ -666,8 +639,6 @@ None.
 | `main` | 2 | `handleCheckMode`, `handleWriteMode` | `scripts/sync-vscode-extensions.ts:153` |
 | `showDifference` | 2 | `forEach(…)`, `forEach(…)` | `scripts/sync-vscode-extensions.ts:214` |
 | `checkSync` | 1 | `showDifference` | `.devcontainer/scripts/sync-vscode-extensions.ts:70` |
-| `getStagedFilesFlags` | 1 | `map(…)` | `configuration/lint-staged.config.ts:45` |
-| `anonymous` | 1 | `getStagedFilesFlags` | `configuration/lint-staged.config.ts:113` |
 | `buildProcessStartFailureMessage` | 1 | `formatLabeledMessage` | `scripts/orchestrate-agents.ts:106` |
 | `formatLabeledMessage` | 1 | `map(…)` | `scripts/orchestrate-agents.ts:154` |
 | `resolveCopilotArguments` | 1 | `map(…)` | `scripts/orchestrate-agents.ts:251` |
