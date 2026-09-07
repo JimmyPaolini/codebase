@@ -70,17 +70,26 @@ jobs:
           restore-keys: |
             eslint-cache-${{ runner.os }}-
 
-      # `callidescope`, `codependix`, and each derivation synchronization are
-      # named alongside `lint-codebase` rather than hanging off its
-      # `dependsOn`, because callidescope also publishes a report on the
-      # default branch and Nx forwards an explicit configuration down
-      # `dependsOn`: reachable from `lint-codebase --configuration=write`, it
-      # would publish its report from a branch. Naming them here keeps their
-      # gates on every pull request — depth, a broken boundary rule, derivation
-      # drift — none of which writes a file. `codependix --check boundaries`
-      # reads no export destination, so it never fails a branch for stale
-      # exports; it stays out of lint-staged because a `ts.Program` per project
-      # takes twenty seconds.
+      # `codependix` and each derivation synchronization are named alongside
+      # `lint-codebase` rather than hanging off its `dependsOn`, because each
+      # also publishes on the default branch and Nx forwards an explicit
+      # configuration down `dependsOn`: reachable from `lint-codebase
+      # --configuration=write`, one would publish from a branch. Naming them
+      # here keeps their gates on every pull request — a broken boundary rule,
+      # derivation drift — without writing a file. `codependix --check
+      # boundaries` reads no export destination, so it never fails a branch
+      # for stale exports; it stays out of lint-staged because a `ts.Program`
+      # per project takes twenty seconds.
+
+      # `gate` carries no configuration of its own — the callidescope Nx
+      # plugin infers it with none — so the forwarding hazard above never
+      # reaches it; there is nothing for `dependsOn` to forward in the first
+      # place. It is still named here rather than wired that way because
+      # `nx affected` scopes it exactly the way it scopes `lint-codebase`
+      # itself: to the projects a change actually touched, so the task that
+      # fails is named after the project that regressed — what the single
+      # workspace-wide `callidescope --check depth` run this replaced never
+      # could do.
 
       # `codometer` is absent on purpose: all fifty projects declare that
       # target, so naming it here would fan out over every one and wait on each
@@ -95,7 +104,7 @@ jobs:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
         run: |
           pnpm exec nx affected --target=lint-codebase \
-            --target=callidescope --target=codependix \
+            --target=gate --target=codependix \
             --target=conformetry-generators --target=conventional-config \
             --target=devcontainer-configuration \
             --target=pull-request-template --target=skill-exclusions \
