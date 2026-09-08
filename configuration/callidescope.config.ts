@@ -1,6 +1,9 @@
 import {
   type CallidescopeConfiguration,
   type CallidescopeLimits,
+  type CallidescopeProjectConfiguration,
+  DEFAULT_ENTRY_POINT_DECORATORS,
+  DEFAULT_PROJECT_README_HEADING,
 } from "@callidescope/configuration";
 
 /**
@@ -149,6 +152,91 @@ export const workspaceLimits = {
    */
   maximumDepth: 17,
 } satisfies CallidescopeLimits;
+
+/**
+ * What a project's own `callidescope.config.ts` spreads, and then overrides.
+ *
+ * The second of this file's two exports, and the second of its two roles. The
+ * default export below is the *workspace run's* own configuration — the
+ * directories it traces, the ignore file it reads, and the destinations it
+ * writes — and is what a run loads. This object is what one *project* is held
+ * to, and nothing here belongs to the run: a project spreading it cannot
+ * accidentally adopt the workspace's own output destinations, because none of
+ * them is in here to adopt.
+ *
+ * ```ts
+ * import { projectDefaults } from "../../configuration/callidescope.config.js";
+ *
+ * export default {
+ *   ...projectDefaults,
+ *   limits: { maximumBreadth: undefined, maximumDepth: 4 },
+ * };
+ * ```
+ *
+ * A relative import resolved by the configuration loader when it reads the
+ * file, rather than a package dependency, so spreading this adds no edge to a
+ * project's dependency graph — the same arrangement forty-nine
+ * `codometer.config.ts` files in this repository already run on.
+ *
+ * **Every value here is the value a project already gets today.** The
+ * decorators are the tool's own list, the entry-point switches are its own
+ * defaults, `maximumDepth` is the workspace number a project that declares
+ * nothing already falls back to, and the markdown destination is where the
+ * README fan-out already puts that project's section. Spreading this is
+ * therefore a no-op that makes the inheritance visible, which is the whole
+ * point of the shape: what a project is held to becomes something a reader can
+ * see in the project's own file rather than resolve across two.
+ *
+ * Nothing spreads it yet. The capability lands first so that the thirty-eight
+ * project files can migrate in reviewable batches while the branch stays
+ * green, and until one of them does, every project loads exactly as before.
+ */
+export const projectDefaults = {
+  entryPoints: {
+    addresses: [],
+    decorators: [...DEFAULT_ENTRY_POINT_DECORATORS],
+    includeExportedFunctions: true,
+    includeOrphans: true,
+    includeTests: false,
+  },
+  exclude: [],
+  limits: {
+    /**
+     * Left unset, and required to be written either way.
+     *
+     * Breadth is gated only where every callable at a project's widest number
+     * is a closed enumeration, so a project declaring nothing here is making
+     * the same statement the twenty projects without a breadth limit make
+     * today — the difference being that it is now written down rather than
+     * inferred from an absence.
+     */
+    maximumBreadth: undefined,
+    maximumDepth: workspaceLimits.maximumDepth,
+  },
+  write: {
+    /**
+     * The block the README fan-out writes today, said by the project itself.
+     *
+     * The path is read relative to the project's own root, so this is the same
+     * `<project>/README.md` the workspace declaration reaches — and a project
+     * moving its section somewhere else, or writing `undefined` to publish
+     * nothing at all, is now a one-line edit in the file that owns the
+     * document.
+     */
+    markdown: {
+      heading: DEFAULT_PROJECT_README_HEADING,
+      path: "README.md",
+    },
+    /**
+     * No diagram by default.
+     *
+     * A project's README carries the table today and nothing else, and turning
+     * a diagram on for every project at once is a decision about thirty-eight
+     * documents rather than a default. A project that wants one writes it here.
+     */
+    mermaid: undefined,
+  },
+} satisfies CallidescopeProjectConfiguration;
 
 /**
  * The report is published on main, and only the depth gate runs on a branch.
