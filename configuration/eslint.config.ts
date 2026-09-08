@@ -85,6 +85,16 @@ export default [
       "**/vitest.config.*.timestamp*",
       "CHANGELOG.md",
       "lint-staged.config.ts",
+      // meanderaw's generated lattice address table: 9,863 rows and 733 KB of
+      // markdown, which the root eslint target's `**/*.md` glob reaches and
+      // takes about ninety seconds to parse out of a twelve-minute lint
+      // budget. Disabling rules over it recovers almost nothing — the cost is
+      // the parse, not the rules — and `markdownlint`, `cspell`, `prettier`,
+      // and `oxfmt` all already exclude the directory it sits in. The pattern
+      // names the one generated file rather than that whole directory, and is
+      // relative-safe so it matches from the workspace root and from the
+      // project root, where `meanderaw`'s own eslint target runs
+      "**/output/lattice-addresses.md",
       // Shadcn generated components
       "**/packages/lexico-components/src/components/**",
       "**/packages/lexico-components/src/lib/**",
