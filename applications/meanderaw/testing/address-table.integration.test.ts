@@ -31,9 +31,9 @@ const drawing = (
 ): AddressedDrawing => ({
   address: "3r2c-56a9",
   canonicalIdentifier: "56a9",
-  columns: 2,
   family: "parallel",
   rows: 3,
+  span: 2,
   variant: "plain",
   ...overrides,
 });
@@ -80,8 +80,7 @@ describe("the lattice address table", () => {
 
     it("gives every drawing a repeat unit that is a whole number of columns", () => {
       const malformed = corpus.filter(
-        ({ columns, rows }) =>
-          !Number.isInteger(columns) || !Number.isInteger(rows),
+        ({ rows, span }) => !Number.isInteger(rows) || !Number.isInteger(span),
       );
 
       expect(malformed).toStrictEqual([]);
@@ -117,6 +116,7 @@ describe("the lattice address table", () => {
   describe("the duplicate check", () => {
     it("passes over the committed corpus", () => {
       expect(reconcileCollisions(corpus)).toStrictEqual({
+        miscounted: [],
         undeclared: [],
         vanished: [],
       });
@@ -154,7 +154,9 @@ describe("the lattice address table", () => {
     });
 
     it("splits negative's declared collisions the way its doc comment says", () => {
-      const declared = EXPECTED_ADDRESS_COLLISIONS["negative"] ?? [];
+      const declared = Object.keys(
+        EXPECTED_ADDRESS_COLLISIONS["negative"] ?? {},
+      );
       const named = corpus.filter(
         (drawing) => drawing.family === "negative" && !isEnumerated(drawing),
       );
@@ -169,7 +171,7 @@ describe("the lattice address table", () => {
         ),
       ).toHaveLength(24);
       expect(collidingNamed).toStrictEqual(
-        named.filter(({ columns, rows }) => columns === 1 && rows <= 6),
+        named.filter(({ rows, span }) => span === 1 && rows <= 6),
       );
       expect(collidingNamed).toHaveLength(28);
     });
@@ -177,10 +179,145 @@ describe("the lattice address table", () => {
     it("declares a collision only where the corpus carries one", () => {
       const declared = Object.entries(EXPECTED_ADDRESS_COLLISIONS).flatMap(
         ([family, addresses]) =>
-          addresses.map((address) => `${family} ${address}`),
+          Object.keys(addresses).map((address) => `${family} ${address}`),
       );
 
       expect(declared).toStrictEqual([...new Set(declared)]);
+    });
+
+    it("counts every declared collision, and fires when one drawing more lands on it", () => {
+      const census = Object.values(EXPECTED_ADDRESS_COLLISIONS).flatMap(
+        (addresses) => Object.values(addresses),
+      );
+
+      expect(census).toHaveLength(48);
+      expect(census.filter((count) => count < 2)).toStrictEqual([]);
+      expect(census.reduce((total, count) => total + count, 0)).toBe(150);
+
+      const { miscounted } = reconcileCollisions([
+        ...corpus,
+        drawing({
+          address: "2r2c-21",
+          family: "branch",
+          path: "branch/2-rows/third.svg",
+        }),
+      ]);
+
+      expect(miscounted).toStrictEqual([
+        "branch 2r2c-21: 3 drawings share it, not the declared 2 — branch/2-rows/rung-leftward-6-repeats.svg, branch/2-rows/rung-rightward-6-repeats.svg, branch/2-rows/third.svg",
+      ]);
+    });
+
+    it("fires when a declared collision loses a drawing without losing the collision", () => {
+      const [first, second, third] = corpus.filter(
+        ({ address, family }) => family === "negative" && address === "3r1c-33",
+      );
+
+      expect([first, second, third].filter(Boolean)).toHaveLength(3);
+
+      const { miscounted, undeclared, vanished } = reconcileCollisions(
+        [first, second, third].filter(
+          (candidate): candidate is AddressedDrawing => candidate !== undefined,
+        ),
+      );
+
+      expect(undeclared).toStrictEqual([]);
+      expect(vanished).not.toStrictEqual([]);
+      expect(miscounted.join("\n")).toContain(
+        "negative 3r1c-33: 3 drawings share it, not the declared 6",
+      );
+    });
+  });
+
+  /**
+   * The figures `docs/adr/0007-address-every-meander-by-its-lattice.md`
+   * states about the corpus as a whole.
+   *
+   * They are pinned here rather than only derived in prose, because a number
+   * an ADR states and nothing measures rots silently: every one below is
+   * read off the same addressed corpus the committed table is rendered from,
+   * so a drawing that changes shape moves the number and fails here.
+   */
+  describe("the figures ADR 0007 states", () => {
+    it("addresses the whole committed corpus", () => {
+      expect(corpus).toHaveLength(9863);
+    });
+
+    it("counts the classes more than one family draws", () => {
+      const drawnBy = new Map<string, Set<string>>();
+
+      for (const { canonicalIdentifier, family, rows, span } of corpus) {
+        const key = `${rows}r${span}c-${canonicalIdentifier}`;
+        const families = drawnBy.get(key) ?? new Set<string>();
+
+        drawnBy.set(key, families);
+        families.add(family);
+      }
+
+      const shared = [...drawnBy.values()].filter(
+        (families) => families.size > 1,
+      );
+      const byPair: Record<string, number> = {};
+
+      for (const families of shared) {
+        const pair = [...families].toSorted().join("+");
+
+        byPair[pair] = (byPair[pair] ?? 0) + 1;
+      }
+
+      expect(shared).toHaveLength(155);
+      expect(byPair).toMatchObject({
+        "mosaic+negative": 92,
+        "mosaic+parallel": 22,
+        "snake+whirl": 18,
+      });
+    });
+
+    it("counts the classes covering more than one address inside one family", () => {
+      const addresses = new Map<string, Set<string>>();
+      const drawings = new Map<string, number>();
+
+      for (const drawing of corpus) {
+        const key = `${drawing.family}|${drawing.rows}|${drawing.canonicalIdentifier}`;
+
+        addresses.set(
+          key,
+          (addresses.get(key) ?? new Set<string>()).add(drawing.address),
+        );
+        drawings.set(key, (drawings.get(key) ?? 0) + 1);
+      }
+
+      const groups = [...addresses].filter(([, spelled]) => spelled.size > 1);
+      const byFamily: Record<string, number> = {};
+
+      for (const [key] of groups) {
+        const family = key.split("|")[0] ?? "";
+
+        byFamily[family] = (byFamily[family] ?? 0) + 1;
+      }
+
+      expect({
+        drawings: groups.reduce(
+          (total, [key]) => total + (drawings.get(key) ?? 0),
+          0,
+        ),
+        groups: groups.length,
+      }).toStrictEqual({ drawings: 669, groups: 283 });
+      expect(byFamily).toStrictEqual({
+        boxes: 10,
+        branch: 10,
+        negative: 55,
+        parallel: 208,
+      });
+    });
+
+    it("counts the drawings whose literal address is already the canonical member", () => {
+      const canonical = corpus.filter(
+        ({ address, canonicalIdentifier }) =>
+          address.split("-")[1] === canonicalIdentifier,
+      );
+
+      expect(canonical).toHaveLength(9167);
     });
   });
 

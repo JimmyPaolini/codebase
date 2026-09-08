@@ -199,8 +199,8 @@ export class LatticeIdentificationService {
 
     this.assertAddressable(graph, unit);
 
-    const columns = unit.span;
-    const shape: MosaicTileShape = { columns, rows: graph.rows };
+    const span = unit.span;
+    const shape: MosaicTileShape = { columns: span, rows: graph.rows };
     const tile = this.readTile(
       graph,
       shape,
@@ -210,11 +210,11 @@ export class LatticeIdentificationService {
     const earned = this.mosaicNamingService.name(tile);
 
     return {
-      address: `${graph.rows}r${columns}c-${identifier}`,
+      address: `${graph.rows}r${span}c-${identifier}`,
       canonicalIdentifier: this.canonicalIdentifier(tile),
-      columns,
       identifier,
       rows: graph.rows,
+      span,
       ...(earned ? { subFamily: earned } : {}),
     };
   }

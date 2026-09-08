@@ -1113,7 +1113,7 @@ then could the contract phase delete the per-family path emission.
 
 > **What has since been implemented, and what has not.** The fourth bullet is done, and
 > only the fourth. Every drawing in every family now carries a **lattice address** —
-> `<rows>r<columns>c-` and one hexadecimal character per interior lattice point — with its
+> `<rows>r<span>c-` and one hexadecimal character per interior lattice point — with its
 > canonical symmetry class beside it, spelled and folded by
 > `LatticeIdentificationService` in `src/modules/lattice-identification/` and tabulated
 > for all 9,863 committed drawings in this README's `🗺️ Lattice Addresses` block. The
@@ -1125,7 +1125,7 @@ then could the contract phase delete the per-family path emission.
 > tiles at five rows and 3.36 × 10²² at eight, and addressing one point of a space
 > requires no materialization: identification reads a finished document and names the one
 > tile it found there. Nothing about the verdict is reopened. One leg of it reads
-> differently now — finding 3 below says a predicate over one tile names nothing, and a
+> differently now — finding 3 above says a predicate over one tile names nothing, and a
 > predicate over one tile does name that tile: 121 of the 1,104 swept combinations earn a
 > structural sub-family name, `branch`, `negative`, and `parallel` between them. What the
 > five families here lack is not the naming but a space whose regions a name would
@@ -2015,8 +2015,9 @@ likeness. Every figure in this section is the expected value of an assertion.
 Every one of the 9,863 committed drawings, addressed on the lattice
 every family is drawn on. **Family** is the directory it is filed under and **Modifier**
 the variant within it — the modifier's slug for a family drawn from a motif, and the
-tile's own name for the two drawn from an enumerated space, which have no modifier at
-all. **Rows** is the band's depth and **Span** the column span of the true repeat the
+tile's own name in the two enumerated halves, all of `mosaic` and `negative`'s
+`permutations/` subtree, whose drawings have no modifier at all. **Rows** is the
+band's depth and **Span** the column span of the true repeat the
 address is read over. **Address** is the name; **Canonical class** is the one string a
 whole symmetry class shares, and is never substituted for it; **Sub-family** is the name
 the ink earns where it earns one.

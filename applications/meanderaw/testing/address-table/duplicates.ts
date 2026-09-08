@@ -38,27 +38,38 @@ export const collisionsByFamily = (
 
 /**
  * What the corpus's collisions and `EXPECTED_ADDRESS_COLLISIONS` disagree
- * about, read in both directions.
+ * about, read in every direction the census can be wrong in.
  *
  * An **undeclared** collision is duplicate art, or an address too coarse to
  * tell two drawings apart — either way a decision somebody has to make rather
  * than something a rewrite can fix. A **vanished** one is a declaration that
- * has stopped being true, which is what stops the list from silently widening
- * into a blanket permission as the corpus moves.
+ * has stopped being true, which is what stops the census from silently
+ * widening into a blanket permission as the corpus moves. A **miscounted** one
+ * is an address that still collides at a multiplicity nobody declared: one
+ * more drawing landing on a declared address is the same duplicate art as one
+ * landing on an undeclared address, and one fewer is a declaration that has
+ * half stopped being true.
  */
 export const reconcileCollisions = (
   drawings: readonly AddressedDrawing[],
-): { undeclared: string[]; vanished: string[] } => {
+): { miscounted: string[]; undeclared: string[]; vanished: string[] } => {
   const found = collisionsByFamily(drawings);
+  const miscounted: string[] = [];
   const undeclared: string[] = [];
   const vanished: string[] = [];
 
   for (const [family, addresses] of found) {
-    const declared = EXPECTED_ADDRESS_COLLISIONS[family] ?? [];
+    const declared = EXPECTED_ADDRESS_COLLISIONS[family] ?? {};
 
     for (const [address, paths] of addresses) {
-      if (!declared.includes(address)) {
+      const expected = declared[address];
+
+      if (expected === undefined) {
         undeclared.push(`${family} ${address}: ${paths.join(", ")}`);
+      } else if (expected !== paths.length) {
+        miscounted.push(
+          `${family} ${address}: ${paths.length} drawings share it, not the declared ${expected} — ${paths.join(", ")}`,
+        );
       }
     }
   }
@@ -66,12 +77,12 @@ export const reconcileCollisions = (
   for (const [family, declared] of Object.entries(
     EXPECTED_ADDRESS_COLLISIONS,
   )) {
-    for (const address of declared) {
+    for (const address of Object.keys(declared)) {
       if (!found.get(family)?.has(address)) {
         vanished.push(`${family} ${address}`);
       }
     }
   }
 
-  return { undeclared, vanished };
+  return { miscounted, undeclared, vanished };
 };

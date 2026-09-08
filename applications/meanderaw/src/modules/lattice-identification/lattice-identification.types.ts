@@ -14,6 +14,10 @@ import type { MosaicSubFamily } from "../mosaic-tile/mosaic-tile.types";
  * it: that is the one string a whole symmetry class shares, and so the one
  * that can state two families drawing the same pattern.
  *
+ * {@link span} is the true repeat's own span, the same quantity
+ * {@link LatticeUnit.span} was handed in — one name for it rather than two,
+ * so the column the README's table heads `Span` is the field that fills it.
+ *
  * {@link subFamily} is absent rather than approximated when a tile's
  * structure earns no name, which is nearly always. A name that everything
  * has says nothing, and the family a drawing belongs to is not it — the
@@ -23,9 +27,9 @@ import type { MosaicSubFamily } from "../mosaic-tile/mosaic-tile.types";
 export interface LatticeAddress {
   readonly address: string;
   readonly canonicalIdentifier: string;
-  readonly columns: number;
   readonly identifier: string;
   readonly rows: number;
+  readonly span: number;
   readonly subFamily?: MosaicSubFamily;
 }
 

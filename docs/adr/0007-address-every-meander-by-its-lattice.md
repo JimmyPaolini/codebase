@@ -2,7 +2,7 @@
 
 `meanderaw` named a `mosaic` tile by its ink and every other family by the
 arguments that asked for it. Every drawing in every family now carries a
-**lattice address** — `<rows>r<columns>c-` followed by one hexadecimal character
+**lattice address** — `<rows>r<span>c-` followed by one hexadecimal character
 per interior lattice point, worth `8` north, `4` south, `2` east and `1` west,
 spanning one true repeat — read off the rendered document rather than off the
 generator, with its canonical symmetry class reported beside it. The encoding
@@ -19,10 +19,15 @@ and `mosaic` filenames already carried addresses. What was missing was only the
 step from a lattice reading to a name.
 
 Every number below was measured by `LatticeIdentificationService` reading the
-committed corpus off disk, and each one is the expected value of an assertion in
-`testing/address-table.integration.test.ts`,
-`lattice-identification.service.integration.test.ts`, or the `🗺️ Lattice
-Addresses` table the project README commits.
+committed corpus off disk. Every corpus-wide one — the 9,863 drawings, the 155
+classes two families both draw, the 283 within-family class groups and the 669
+drawings in them, the 9,167 literal addresses that are already canonical, and
+the 48 declared collisions — is the expected value of an assertion in
+`testing/address-table.integration.test.ts`, and the sub-family counts are
+asserted in `lattice-identification.service.integration.test.ts`. The four
+minimal-period counts are the exception: they are measured, and written down in
+`MODIFIER_REPEAT_PITCHES`'s own doc comment beside the spans they justify,
+rather than asserted anywhere.
 
 ## Considered options
 
@@ -89,9 +94,13 @@ Addresses` table the project README commits.
   single row of horizontal bits. `EXPECTED_ADDRESS_COLLISIONS` is where that is
   written down: **48** addresses, one in `branch`, one in `parallel`, and 46 in
   `negative`, whose enumerated half files a drawing under the identifier of a
-  source with one level more than the address spells out. It is declared in
-  **both** directions, so an entry that stops colliding fails exactly as an
-  undeclared collision does and the list cannot rot into a blanket permission.
+  source with one level more than the address spells out. It is a **census**
+  rather than a set of permitted addresses — each one carries how many drawings
+  share it, 150 across the 48 — and both the membership and the count are
+  asserted in both directions, so an entry that stops colliding, and an
+  already-declared address that gains one drawing more, each fail exactly as an
+  undeclared collision does. A set would have let that second case through,
+  which is the duplicate art the check exists to catch.
 - **The true repeat exceeds the pitch for four modifiers, not the two the spec
   named.** `spin` and `spin-flip` take `SPIN_CYCLE_LENGTH` pitches, as the spec
   said, and `edge-flip` and `plied` take two — 18 `edge-flip` drawings and 65

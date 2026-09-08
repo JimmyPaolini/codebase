@@ -56,18 +56,19 @@ export const run = async (
 
   const readmePath = overrides.readmePath ?? README_PATH;
   const drawings = overrides.drawings ?? (await sweepCorpus());
-  const { undeclared, vanished } = reconcileCollisions(drawings);
+  const { miscounted, undeclared, vanished } = reconcileCollisions(drawings);
 
-  if (undeclared.length > 0 || vanished.length > 0) {
+  if (miscounted.length + undeclared.length + vanished.length > 0) {
     return {
       exitCode: 1,
       lines: [
         "🗺️ The lattice addresses disagree with `EXPECTED_ADDRESS_COLLISIONS`:",
         ...undeclared.map((line) => `   undeclared collision — ${line}`),
+        ...miscounted.map((line) => `   undeclared multiplicity — ${line}`),
         ...vanished.map(
           (line) => `   declared but no longer colliding — ${line}`,
         ),
-        "💡 Two drawings of one family sharing an address is duplicate art or an address too coarse to separate them. Resolve it, or declare it with the reason.",
+        "💡 A drawing of one family sharing an address with another, beyond the count `EXPECTED_ADDRESS_COLLISIONS` declares, is duplicate art or an address too coarse to separate them. Resolve it, or declare the count with the reason.",
       ],
     };
   }

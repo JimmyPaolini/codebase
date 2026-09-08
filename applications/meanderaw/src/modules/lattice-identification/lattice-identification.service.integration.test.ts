@@ -17,11 +17,14 @@ import { MotifPitchService } from "../meander-generation/motif-pitch.service";
 import { MeanderLatticeModule } from "../meander-lattice/meander-lattice.module";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
 import {
   MOSAIC_TILE_EDGE_BUDGET,
   MOSAIC_TILE_MAXIMUM_ROWS,
   MOSAIC_TILE_MINIMUM_ROWS,
 } from "../mosaic-tile/mosaic-tile.constants";
+import { MosaicTileModule } from "../mosaic-tile/mosaic-tile.module";
+import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
 import { COLUMNS_PER_SERPENTINE_UNIT } from "../parallel-motif/parallel-motif.constants";
 import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 
@@ -156,6 +159,17 @@ const SWEPT_FAMILIES: readonly {
 const SWEPT_COMBINATION_COUNT = 1104;
 
 /**
+ * How many repeat units each tile is rendered at for the round trip. Three
+ * is the smallest count with an interior unit — one that neither carries the
+ * leading overhang nor has its cap ticks clipped — and {@link READ_UNIT} is
+ * that unit.
+ */
+const REPEAT_COUNT = 3;
+
+/** The repeat unit a round-tripped tile is read back out of, which its own width turns into the lattice column `readTile` starts at. */
+const READ_UNIT = 1;
+
+/**
  * How wide a drawing has to be rendered for two consecutive spans to sit
  * clear of both band terminations, in repeat units.
  *
@@ -236,7 +250,7 @@ describe("a rendered meander is addressed by its lattice", () => {
           expect({
             canonicalIdentifier: address.canonicalIdentifier,
             fileName: `${address.identifier}${earned}.svg`,
-            shape: `${address.rows}r${address.columns}c`,
+            shape: `${address.rows}r${address.span}c`,
           }).toStrictEqual({
             canonicalIdentifier: address.identifier,
             fileName,
@@ -531,5 +545,79 @@ describe("a rendered meander is addressed by its lattice", () => {
         parallel: { bars: 10, dashes: 37, dots: 1, zigzag: 2 },
       });
     });
+  });
+
+  /**
+   * The round trip that makes the tile counts trustworthy.
+   *
+   * `MosaicTilesService` says which tiles exist and `MosaicTileMotifService`
+   * says what each one draws, and nothing else holds the second to the first:
+   * an enumeration test passes on a renderer that draws the wrong thing, and a
+   * path-data test passes on a renderer that draws one tile's string correctly
+   * and every other tile's wrongly.
+   *
+   * This closes that gap over the whole enumerated space at once — the same
+   * eleven shapes {@link MOSAIC_SHAPES} derives, and the 2,406 tiles they
+   * admit. Every tile the sweep commits is rendered to a real document, read
+   * back by `MeanderLatticeService` — the same reader the charter measurement
+   * uses, which knows nothing about tiles — and the lattice it produces is
+   * turned back into the tile it must have come from by
+   * {@link LatticeIdentificationService.readTile}. A rendering bug cannot hide
+   * behind a passing enumeration, and a renderer and a reader that were both
+   * wrong the same way would have to agree through a representation neither of
+   * them shares.
+   *
+   * It lives beside the rest of identification because that is the service
+   * that owns the behavior: `readTile` is the assertion's subject, and the
+   * lattice is the representation it crosses rather than the thing under test.
+   */
+  describe("mosaic tiles round-trip through the lattice", () => {
+    let latticeIdentificationService: LatticeIdentificationService;
+    let meanderLatticeService: MeanderLatticeService;
+    let mosaicTileGenerationService: MosaicTileGenerationService;
+    let mosaicTilesService: MosaicTilesService;
+
+    beforeAll(async () => {
+      const module = await Test.createTestingModule({
+        imports: [
+          LatticeIdentificationModule,
+          MeanderLatticeModule,
+          MosaicTileModule,
+        ],
+      }).compile();
+
+      latticeIdentificationService = await module.resolve(
+        LatticeIdentificationService,
+      );
+      meanderLatticeService = await module.resolve(MeanderLatticeService);
+      mosaicTileGenerationService = await module.resolve(
+        MosaicTileGenerationService,
+      );
+      mosaicTilesService = await module.resolve(MosaicTilesService);
+    });
+
+    it.each(MOSAIC_SHAPES)(
+      "renders and reads back every tile at $rows rows and $columns columns as the tile enumerated",
+      (shape) => {
+        const tiles = mosaicTilesService.enumerate(shape.rows, shape.columns);
+
+        expect(tiles.length).toBeGreaterThan(0);
+
+        for (const tile of tiles) {
+          const document = mosaicTileGenerationService.generate(
+            tile,
+            REPEAT_COUNT,
+          );
+
+          expect(
+            latticeIdentificationService.readTile(
+              meanderLatticeService.build(document),
+              shape,
+              READ_UNIT * shape.columns,
+            ),
+          ).toStrictEqual(tile);
+        }
+      },
+    );
   });
 });

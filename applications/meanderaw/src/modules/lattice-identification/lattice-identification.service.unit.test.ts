@@ -161,9 +161,9 @@ describe(LatticeIdentificationService, () => {
       ).toStrictEqual({
         address: "3r1c-48",
         canonicalIdentifier: "48",
-        columns: 1,
         identifier: "48",
         rows: 3,
+        span: 1,
         subFamily: "bars",
       });
     });
@@ -326,7 +326,7 @@ describe(LatticeIdentificationService, () => {
         service.identifyDocument(document, { pitch: 1, span: 4 }),
       ).toMatchObject({
         address: "2r4c-3333",
-        columns: 4,
+        span: 4,
       });
     });
 

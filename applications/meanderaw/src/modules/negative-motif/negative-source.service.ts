@@ -36,7 +36,7 @@ import type {
  *
  * That the rules really produce the tiles they claim to is not a comment. At
  * every row count the survey covered, `negative-source.service.unit.test.ts`
- * asserts {@link LatticeIdentificationService.identify} of the built tile against
+ * asserts `LatticeIdentificationService.identify` of the built tile against
  * the identifier `README.md` publishes, and asserts that identifier is the
  * tile's canonical one — so a tile built here is the very tile the
  * permutation sweep committed under `output/mosaic/<rows>-rows/permutations/`

@@ -206,7 +206,7 @@ export class MosaicSymmetryService {
    * is, and it writes points rather than edges — and the two are kept apart
    * deliberately. This one is the tile's own degrees of freedom with nothing
    * counted twice, which is what a tie-break wants, and what
-   * {@link MosaicTilesService.enumerate} folds its walk on; how a filename is
+   * `MosaicTilesService.enumerate` folds its walk on; how a filename is
    * spelled is a separate question, and changing the spelling must not move
    * which member of a symmetry class the corpus draws.
    */

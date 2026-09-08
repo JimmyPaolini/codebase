@@ -25,13 +25,18 @@ export const USAGE_MESSAGE =
 export const WRITE_COMMAND = "nx run meanderaw:address-table:write";
 
 /**
- * Which addresses more than one drawing of a family already carries, and so
- * the only collisions the duplicate check permits.
+ * Which addresses more than one drawing of a family already carries, and how
+ * many drawings carry each — so the only collisions the duplicate check
+ * permits are these addresses at exactly these multiplicities.
  *
- * It is asserted in both directions: an address here that no longer collides
- * fails exactly as an undeclared collision does, so the list cannot rot into
- * a blanket permission. Adding a row to it is a decision about the corpus
- * rather than a way past a red check.
+ * It is a census rather than a set of permitted addresses, and that is the
+ * whole point of the number: a set would let one *more* drawing land on an
+ * already-declared address and still pass, which is exactly the duplicate art
+ * the check exists to catch. The count is asserted in both directions, as the
+ * membership already is — an address here that no longer collides fails as an
+ * undeclared collision does, and so does a count that has moved either way.
+ * Changing a number is a decision about the corpus rather than a way past a
+ * red check.
  *
  * Two things put an entry here, and neither is duplicate art:
  *
@@ -62,61 +67,61 @@ export const WRITE_COMMAND = "nx run meanderaw:address-table:write";
  * tile each of those sources is.
  */
 export const EXPECTED_ADDRESS_COLLISIONS: Readonly<
-  Record<string, readonly string[]>
+  Record<string, Readonly<Record<string, number>>>
 > = {
   // 🎯 Hexadecimal lattice addresses rather than words, so the dictionaries
   // are turned off across them the way they are across the generated table
   // in the README.
   /* cspell:disable */
-  branch: ["2r2c-21"],
-  negative: [
-    "3r1c-33",
-    "3r1c-4b",
-    "3r1c-78",
-    "3r1c-7b",
-    "4r1c-333",
-    "4r1c-37b",
-    "4r1c-4f8",
-    "4r1c-7b3",
-    "4r1c-7cb",
-    "4r1c-7fb",
-    "5r1c-3333",
-    "5r1c-337b",
-    "5r1c-37b3",
-    "5r1c-4fcb",
-    "5r1c-7b33",
-    "5r1c-7b7b",
-    "5r1c-7cb3",
-    "5r1c-7ccb",
-    "5r1c-7fb3",
-    "5r1c-7fcb",
-    "5r1c-7ffb",
-    "6r1c-33333",
-    "6r1c-337b3",
-    "6r1c-37b33",
-    "6r1c-37b7b",
-    "6r1c-37cb3",
-    "6r1c-37fb3",
-    "6r1c-4fcf8",
-    "6r1c-7b333",
-    "6r1c-7b37b",
-    "6r1c-7b7b3",
-    "6r1c-7b7cb",
-    "6r1c-7cb33",
-    "6r1c-7cb78",
-    "6r1c-7ccb3",
-    "6r1c-7cccb",
-    "6r1c-7cfb3",
-    "6r1c-7cfcb",
-    "6r1c-7fb33",
-    "6r1c-7fb7b",
-    "6r1c-7fccb",
-    "6r1c-7fcb3",
-    "6r1c-7fcfb",
-    "6r1c-7ffb3",
-    "6r1c-7ffcb",
-    "6r1c-7fffb",
-  ],
-  parallel: ["2r2c-21"],
+  branch: { "2r2c-21": 2 },
+  negative: {
+    "3r1c-4b": 2,
+    "3r1c-7b": 5,
+    "3r1c-33": 6,
+    "3r1c-78": 2,
+    "4r1c-4f8": 2,
+    "4r1c-7b3": 4,
+    "4r1c-7cb": 4,
+    "4r1c-7fb": 4,
+    "4r1c-37b": 2,
+    "4r1c-333": 5,
+    "5r1c-4fcb": 2,
+    "5r1c-7b7b": 4,
+    "5r1c-7b33": 3,
+    "5r1c-7cb3": 4,
+    "5r1c-7ccb": 3,
+    "5r1c-7fb3": 3,
+    "5r1c-7fcb": 3,
+    "5r1c-7ffb": 4,
+    "5r1c-37b3": 4,
+    "5r1c-337b": 2,
+    "5r1c-3333": 4,
+    "6r1c-4fcf8": 2,
+    "6r1c-7b7b3": 4,
+    "6r1c-7b7cb": 3,
+    "6r1c-7b37b": 3,
+    "6r1c-7b333": 3,
+    "6r1c-7cb33": 3,
+    "6r1c-7cb78": 2,
+    "6r1c-7ccb3": 3,
+    "6r1c-7cccb": 3,
+    "6r1c-7cfb3": 3,
+    "6r1c-7cfcb": 3,
+    "6r1c-7fb7b": 3,
+    "6r1c-7fb33": 3,
+    "6r1c-7fcb3": 3,
+    "6r1c-7fccb": 3,
+    "6r1c-7fcfb": 3,
+    "6r1c-7ffb3": 3,
+    "6r1c-7ffcb": 3,
+    "6r1c-7fffb": 4,
+    "6r1c-37b7b": 2,
+    "6r1c-37b33": 3,
+    "6r1c-37cb3": 3,
+    "6r1c-37fb3": 3,
+    "6r1c-337b3": 2,
+    "6r1c-33333": 4,
+  },
+  parallel: { "2r2c-21": 2 },
   /* cspell:enable */
 };

@@ -12,16 +12,18 @@ import type { MosaicSubFamily } from "../../src/modules/mosaic-tile/mosaic-tile.
  *
  * {@link variant} is what the drawing is filed under within its family and
  * row count: the modifier's slug for a family drawn from a motif, and the
- * tile's own name for the two drawn from an enumerated space, which have no
- * modifier at all.
+ * tile's own name in the two enumerated halves — all of `mosaic` and
+ * `negative`'s `permutations/` subtree — whose drawings have no modifier at
+ * all. Two *halves* rather than two families: `negative`'s other hundred
+ * drawings carry a real modifier slug.
  */
 export interface AddressedDrawing {
   readonly address: string;
   readonly canonicalIdentifier: string;
-  readonly columns: number;
   readonly family: string;
   readonly path: string;
   readonly rows: number;
+  readonly span: number;
   readonly subFamily?: MosaicSubFamily;
   readonly variant: string;
 }
