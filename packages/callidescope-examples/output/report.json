@@ -1612,7 +1612,7 @@
             },
             {
               "displayName": "UnknownConfigurationFileTypeError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6918"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6111"
             },
             {
               "displayName": "ConfigurationService.loadConfigurationModule",
@@ -1728,19 +1728,19 @@
             },
             {
               "displayName": "ProjectConfigurationService.loadProjectConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#6306"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#5927"
             },
             {
               "displayName": "ProjectConfigurationService.assertNoForbiddenFields",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1362"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1315"
             }
           ],
           "displayName": "ProjectConfigurationService.loadProjectConfigurations",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9537",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9158",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 273
+            "line": 261
           },
           "signature": {
             "parameters": [
@@ -1760,23 +1760,23 @@
           "callees": [
             {
               "displayName": "ProjectConfigurationService.buildWorkspaceLimits",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#3517"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#3470"
             },
             {
               "displayName": "ProjectConfigurationService.map(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11413"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11034"
             },
             {
               "displayName": "ProjectConfigurationService.map(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11592"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11213"
             }
           ],
           "displayName": "ProjectConfigurationService.resolveLimits",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11186",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#10807",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 320
+            "line": 308
           },
           "signature": {
             "parameters": [
@@ -1800,7 +1800,7 @@
             },
             {
               "displayName": "ConfigurationFileNotFoundError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10038"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9231"
             }
           ],
           "displayName": "ConfigurationService.resolveConfigurationPath",
@@ -1828,19 +1828,19 @@
           "callees": [
             {
               "displayName": "ProjectConfigurationService.findForbiddenField",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#5098"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#5051"
             },
             {
               "displayName": "ProjectConfigurationFieldNotPermittedError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#11321"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10514"
             }
           ],
           "displayName": "ProjectConfigurationService.assertNoForbiddenFields",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1362",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1315",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 48
+            "line": 47
           },
           "signature": {
             "parameters": [
@@ -1864,15 +1864,15 @@
             },
             {
               "displayName": "ProjectConfigurationError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10562"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9755"
             }
           ],
           "displayName": "ProjectConfigurationService.loadProjectConfiguration",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#6306",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#5927",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 193
+            "line": 181
           },
           "signature": {
             "parameters": [
@@ -1988,15 +1988,15 @@
           "callees": [
             {
               "displayName": "custom(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#7443"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6636"
             }
           ],
           "displayName": "callbackSchema",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#7382",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6575",
           "location": {
             "column": 24,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 227
+            "line": 202
           },
           "signature": {
             "parameters": [],
@@ -2114,15 +2114,15 @@
           "callees": [
             {
               "displayName": "ProjectConfigurationService.readDeclaredLimit",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7639"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7260"
             }
           ],
           "displayName": "ProjectConfigurationService.buildProjectLimits",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1946",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1899",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 69
+            "line": 68
           },
           "signature": {
             "parameters": [
@@ -2142,15 +2142,15 @@
           "callees": [
             {
               "displayName": "ProjectConfigurationService.readDeclaringPath",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#8053"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7674"
             }
           ],
           "displayName": "ProjectConfigurationService.buildWorkspaceLimits",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#3517",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#3470",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 111
+            "line": 110
           },
           "signature": {
             "parameters": [
@@ -2170,15 +2170,15 @@
           "callees": [
             {
               "displayName": "ProjectConfigurationService.buildProjectLimits",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1946"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1899"
             }
           ],
           "displayName": "ProjectConfigurationService.map(…)",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11592",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11213",
           "location": {
             "column": 27,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 333
+            "line": 321
           },
           "signature": {
             "parameters": [
@@ -2319,12 +2319,12 @@
                 "summary": "Resolves the configuration file sitting at each project's own root — the directory holding the `tsconfig.json` that makes it a project. A project with no file of its own is absent from the result rather than present with an empty one: it is configured entirely by the workspace file, which is the behavior every project has today. Nothing is merged at the file level, and a project must **never** spread the workspace configuration into its own: such an object carries fields only the workspace may set, and `findForbiddenField` below refuses the file for the first one it finds. A project writes the overrides it wants and nothing else. Inheritance happens one limit at a time, in `resolveLimits`, so a project that declares `limits.maximumDepth` still takes every other limit from the run. The file a run was pointed at is skipped, because it is already serving as that run's workspace configuration. One file, one role per run — a package whose task names its own configuration and then traces itself would otherwise have that file read a second time and judged as a project's, which is a refusal for the workspace-only fields it legitimately sets.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9537",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9158",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 273
+                "line": 261
               },
               "signature": {
                 "parameters": [
@@ -2346,12 +2346,12 @@
                 "summary": "Reads one project's configuration file. Every failure the read can produce — a file nothing can parse, a shape the schema rejects — is rethrown naming the project, because a run resolves a file per project and a bare parse error says nothing about which one to go and fix.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#6306",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#5927",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 193
+                "line": 181
               },
               "signature": {
                 "parameters": [
@@ -2743,12 +2743,12 @@
                 "summary": "Resolves the depth and breadth limits every traced project is judged against, each carrying the file its number was written in. The workspace value is a default rather than a ceiling: a project declaring a higher limit than the workspace keeps its own, because a workspace number pinned by the single worst stack anywhere in it gates nothing for the projects that are nowhere near it. One resolver rather than one per reader. A gate and a listing that each worked the inheritance out for themselves could disagree about the same number, and a limit two answers can be given for is worse than no limit.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11186",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#10807",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 320
+                "line": 308
               },
               "signature": {
                 "parameters": [
@@ -2765,12 +2765,12 @@
             },
             {
               "displayName": "ProjectConfigurationService.map(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11592",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11213",
               "isCycle": false,
               "location": {
                 "column": 27,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 333
+                "line": 321
               },
               "signature": {
                 "parameters": [
@@ -2792,12 +2792,12 @@
                 "summary": "Reads one project's own limits, falling back to what it inherits. A project declaring neither is handed the inherited object itself rather than a copy of it, so the two can never come to disagree.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1946",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1899",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 69
+                "line": 68
               },
               "signature": {
                 "parameters": [
@@ -2819,12 +2819,12 @@
                 "summary": "Reads one limit a project set for itself, or nothing when it set none. Presence is asked of the file as authored and the value is taken from the resolved configuration, which is the split every other reader here makes: resolution manufactures a default for every project, so only `authored` can say whether this project chose the number, and only the resolved configuration is guaranteed to have been through the schema.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7639",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7260",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 229
+                "line": 217
               },
               "signature": {
                 "parameters": [
@@ -3041,12 +3041,12 @@
                 "summary": "Accepts a function-valued option without inspecting its signature. Zod cannot describe a callback's parameters, and parsing one would replace the caller's function with a wrapper. Checking that it is callable is the whole of what validation can honestly assert here.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#7382",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6575",
               "isCycle": false,
               "location": {
                 "column": 24,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 227
+                "line": 202
               },
               "signature": {
                 "parameters": [],
@@ -3056,12 +3056,12 @@
             },
             {
               "displayName": "custom(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#7443",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6636",
               "isCycle": false,
               "location": {
                 "column": 23,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 228
+                "line": 203
               },
               "signature": {
                 "parameters": [
@@ -3137,7 +3137,7 @@
         }
       ],
       "summary": {
-        "callableCount": 62,
+        "callableCount": 58,
         "cyclicComponentCount": 0,
         "edgeCount": 55,
         "entryPointCount": 8,
@@ -4558,7 +4558,7 @@
             }
           ],
           "displayName": "StructuralInterfaceService.ingestDocument",
-          "id": "packages/callidescope-examples/examples/structural-interface/structural-interface.ts#555",
+          "id": "packages/callidescope-examples/examples/structural-interface/structural-interface.ts#554",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-examples/examples/structural-interface/structural-interface.ts",
@@ -6674,7 +6674,7 @@
                 "summary": "Ingests one document through whatever satisfies the interface.",
                 "tags": []
               },
-              "id": "packages/callidescope-examples/examples/structural-interface/structural-interface.ts#555",
+              "id": "packages/callidescope-examples/examples/structural-interface/structural-interface.ts#554",
               "isCycle": false,
               "location": {
                 "column": 3,
@@ -9840,10 +9840,10 @@
     }
   ],
   "summary": {
-    "callableCount": 227,
+    "callableCount": 223,
     "cyclicComponentCount": 1,
     "edgeCount": 190,
-    "entryPointCount": 81,
+    "entryPointCount": 77,
     "fileCount": 86,
     "maximumDepth": 8,
     "projectCount": 6,
