@@ -226,10 +226,16 @@ export class RunPlanService {
       this.flagResolutionService.resolveRunFlags({
         configuration: loaded,
         flags: {
+          // The mode flags are handed over with the rest rather than held
+          // back, so the resolver is given the whole command line and the
+          // rule that it changes nothing for them is exercised rather than
+          // merely written down. `selectMode` above is what reads them.
+          check: options.check,
           directories: options.directories,
           format: options.format,
           json: options.json,
           markdown: options.markdown,
+          write: options.write,
         },
       });
 

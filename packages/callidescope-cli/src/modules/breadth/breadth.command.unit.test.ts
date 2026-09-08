@@ -1,4 +1,5 @@
 import {
+  flagResolutionError,
   InputService,
   ProjectConfigurationFieldNotPermittedError,
 } from "@callidescope/configuration";
@@ -413,6 +414,29 @@ describe(BreadthCommand, () => {
     await expect(
       command.run([], { addresses: ["a.ts#Foo.bar"], format: "markdown" }),
     ).rejects.toThrow("Trace failed.");
+  });
+
+  // A lookup resolves its flags before it traces, and `prepareLookup` throws
+  // rather than returning a half-prepared lookup — so the refusal an
+  // unrecognized `--format` earns has to reach the reader as a rejected
+  // command line under the same headline the workspace run prints.
+  // cspell:ignore markdwon
+  it("reports a refused command line instead of crashing", async () => {
+    const error = flagResolutionError([
+      '--format does not accept "markdwon". It takes one of "markdown", "mermaid", "json".',
+    ]);
+
+    addressLookupService.locate.mockRejectedValue(error);
+
+    await command.run([], { addresses: ["a.ts#Foo.bar"], format: "markdwon" });
+
+    expect(logger.error).toHaveBeenCalledExactlyOnceWith(
+      "🔭 Rejected the command line",
+      undefined,
+      { reason: error.message },
+    );
+    expect(process.exitCode).toBe(1);
+    expect(process.stdout.write).not.toHaveBeenCalled();
   });
 
   // A lookup traces before it matches, so it loads the configuration of every

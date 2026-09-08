@@ -4,7 +4,7 @@ import {
 } from "@callidescope/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
@@ -16,6 +16,10 @@ import type {
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
+
+// A deliberate misspelling: the example of a `--format` value nobody
+// recognizes, which is exactly what the refusal below is about.
+// cspell:ignore markdwon
 
 /** What `--check` says it accepts, quoted the way every message quotes it. */
 const ACCEPTED =
@@ -441,7 +445,77 @@ describe(RunPlanService, () => {
 
   // 🔍 Lookup preparation
 
+  describe("prepareRun", () => {
+    // The whole command line reaches the one resolver, mode flags included:
+    // the rule that `--check` and `--write` change nothing it resolves is only
+    // a rule if the resolver is actually given them.
+    it("hands the mode flags to the resolver and resolves the same configuration", async () => {
+      const configurationService = createMock<ConfigurationService>();
+
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration({ directories: ["packages/one"] }),
+        path: undefined,
+      });
+
+      const flagResolutionService = new FlagResolutionService();
+      const resolveRunFlags = vi.spyOn(
+        flagResolutionService,
+        "resolveRunFlags",
+      );
+      const subject = new RunPlanService(
+        configurationService,
+        flagResolutionService,
+        createMock<LoggerService>(),
+      );
+
+      const prepared = await subject.prepareRun({
+        check: "depth,reports",
+        write: false,
+      });
+
+      // Read off the call rather than matched with `objectContaining`, which
+      // returns `any` and would cost the project its type coverage.
+      expect(resolveRunFlags.mock.calls[0]?.[0].flags).toStrictEqual({
+        check: "depth,reports",
+        directories: undefined,
+        format: undefined,
+        json: undefined,
+        markdown: undefined,
+        write: false,
+      });
+      expect(prepared?.configuration).toStrictEqual(
+        buildConfiguration({ directories: ["packages/one"] }),
+      );
+    });
+  });
+
   describe("prepareLookup", () => {
+    // The refusal path `depth` and `breadth` reach: a lookup has no
+    // half-prepared state to hand back, so an unusable flag is thrown rather
+    // than logged and returned the way a run's is.
+    it("refuses a format nobody recognizes rather than tracing anyway", async () => {
+      const configurationService = createMock<ConfigurationService>();
+
+      configurationService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration(),
+        path: undefined,
+      });
+
+      const subject = new RunPlanService(
+        configurationService,
+        new FlagResolutionService(),
+        createMock<LoggerService>(),
+      );
+
+      await expect(
+        subject.prepareLookup({ format: "markdwon" }),
+      ).rejects.toThrow(
+        '--format does not accept "markdwon". It takes one of "markdown", "mermaid", "json".',
+      );
+    });
+
     it("resolves the workspace root to the working directory", async () => {
       const configurationService = createMock<ConfigurationService>();
 

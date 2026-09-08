@@ -75,8 +75,12 @@ describe(FlagResolutionService, () => {
     {
       expectation: (resolved): void => {
         expect(resolved.errors).toStrictEqual([]);
-        // Mode only. It changes nothing the configuration declares.
+        // Mode only. It changes nothing the configuration declares, and it
+        // selects no presentation either. `RunPlanService.prepareRun` really
+        // passes it, so this is the rule being kept rather than a field
+        // nothing populates.
         expect(resolved.configuration).toStrictEqual(fullyConfigured());
+        expect(resolved.format).toBe("markdown");
       },
       flag: "--check, the check selector",
       flags: { check: "depth,reports" },
@@ -85,6 +89,7 @@ describe(FlagResolutionService, () => {
       expectation: (resolved): void => {
         expect(resolved.errors).toStrictEqual([]);
         expect(resolved.configuration).toStrictEqual(fullyConfigured());
+        expect(resolved.format).toBe("markdown");
       },
       flag: "--write, the write switch",
       flags: { write: true },
