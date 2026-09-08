@@ -25,45 +25,46 @@ import type {
 } from "./branch-motif.types";
 
 /**
- * Draws the `branch` motif: ink that forks, fills the band, and closes
- * loops.
+ * Draws the `branch` motif: ink that forks and fills the band, inset from
+ * the rules that close it.
  *
- * Every other family's ink is a **forest** — a disjoint union of simple
- * arcs, `edges = nodes − components` with the component count in the
- * dozens. `negative`'s is one to thirteen pieces, and nearly every one of
- * them is full of loops: 0 to 65 of them across the 308 drawings it commits,
- * because a corridor network closes a loop through each of its own repeats.
- * The floor is zero rather than one because `ruled-closed` inverts a source
- * whose negative is the band's own two rules and nothing joining them. This
- * family was the corpus's first **tree**, and it is one no longer: it was a
- * tree only while one of its two borders was left open, and a rule now runs
- * the full width of the repeat along both. Closing the second rule closes a
- * loop in every column pair.
+ * Every family's ink here is a **forest** — a disjoint union of pieces
+ * carrying no loop, `edges = nodes − components`. `negative`'s is the
+ * exception, one to thirteen pieces and nearly every one of them full of
+ * loops: 0 to 65 of them across the 308 drawings it commits, because a
+ * corridor network closes a loop through each of its own repeats. This
+ * family was briefly the corpus's one **connected, looped** figure, while a
+ * rule ran along both of its borders and closed a loop in every column
+ * pair. It is a forest again, because closing both borders
+ * unconditionally went too far: a rule drawn along a row the figure already
+ * occupies is invisible, and it took the crenellation `stagger` exists for
+ * with it. Each mode's figure is now **inset** by one lattice row from
+ * every rule beside it — see {@link figureRows} — so no rule touches the
+ * ink it closes the band around, and each is a piece of its own.
  *
- * What `branch` adds is therefore the forking rather than the absence of
- * loops, and both are measurements rather than descriptions —
- * `MeanderTopologyService.connectivity` reports the numbers, and
- * `branch-motif.service.unit.test.ts` pins the loop count, the fork count,
- * and the free-end count per mode at every row count. Nothing in the
- * charter is about a loop, so this is the family's shape as a graph
- * changing and not its compliance: the drawings that were trees are now
- * counted among the corpus's looped documents instead.
+ * What `branch` adds is therefore the forking, and it is a measurement
+ * rather than a description: `MeanderTopologyService.connectivity` reports
+ * the numbers, and `branch-motif.service.unit.test.ts` pins the piece
+ * count, the fork count, and the free-end count per mode at every row
+ * count. Nothing in the charter is about a loop or about connectivity, so
+ * this is the family's shape as a graph rather than its compliance.
  *
  * The construction is one idea in three dresses. Every lattice point of the
  * band carries ink, which is invariant 2; the ink joining them is a **spine
- * and teeth** run between the two border rules. See {@link BranchMode} for
- * what the three modes keep and {@link border} for the rules. A mode's own
- * rail along a border row is a subset of the rule beside it — redundant ink
- * rather than a second edge, since the lattice records each step once.
+ * and teeth** run inside the rules. See {@link BranchMode} for what the
+ * three modes keep and {@link border} for how many rules each takes.
  *
  * Three further consequences, all measured rather than assumed:
  *
  * - **It forks, and never crosses.** No lattice point in any mode has four
- *   arms: a border rule meets a tooth at its end, never through its middle,
- *   so the most that ever meets is three. Invariant 3 is relaxed on purpose
- *   and declared as such in the charter property test; invariant 4 holds.
- *   The fewest forks any mode leaves is sixteen, at `rung`'s own minimum row
- *   count, so the relaxation is genuinely exercised everywhere.
+ *   arms: a rail meets a tooth at the tooth's end, never through its
+ *   middle, so the most that ever meets is three. Invariant 3 is relaxed on
+ *   purpose and declared as such in the charter property test; invariant 4
+ *   holds. At the corpus's own repeat count the fewest forks any mode
+ *   leaves is `comb`'s ten, at every row count, so the relaxation is
+ *   genuinely exercised everywhere — and the row count where it stopped
+ *   being is exactly what sets the family's structural minimum, see
+ *   `STRUCTURAL_MINIMUM_ROWS`.
  * - **It stays orthogonal and stays a band.** Every stroke is a run along a
  *   lattice line, so only `M`, `H`, and `V` are emitted (invariant 1), and
  *   the canvas height comes from the shared geometry like every other
@@ -71,8 +72,10 @@ import type {
  *   first and last, so unlike 6,005 documents in the corpus this family
  *   leaves no gap even at the band's own termination.
  * - **Its interior identifies it.** Which border a mode left bare used to be
- *   the only thing separating some of its drawings from each other. With
- *   both ruled, whatever a reader can tell apart is in the ink between them.
+ *   the only thing separating some of its drawings from each other. Now
+ *   what a reader tells apart is the ink between the rules, and the
+ *   integration suite asserts no two of the family's combinations reduce to
+ *   one lattice.
  *
  * The geometry is **derived**, not attested. There is no hand-drawn
  * reference for a branching meander — the six older families have
@@ -100,6 +103,24 @@ export class BranchMotifService implements MotifService {
     return this.gridGeometryService.formatCoordinate(
       geometry.offset + level * geometry.unit,
     );
+  }
+
+  /**
+   * The lattice rows a mode's own vertical runs span — its teeth under
+   * `comb` and `stagger`, its stile under `rung`.
+   *
+   * Every mode stops one row short of the band's bottom border row, and
+   * `stagger` starts one row past its top one. That inset is the whole
+   * point: a rule drawn along a row the figure already occupies is
+   * invisible, so a mode whose rail can reach a border row leaves that row
+   * to the rule and keeps its own ink off it. `comb` and `rung` keep their
+   * rail on row 0, which is where a reader already sees the top border, so
+   * only the bottom needs clearing; `stagger` moves its rail between the
+   * two rows this span ends at, so both borders are cleared and both are
+   * ruled. See {@link border} and {@link spineRow}.
+   */
+  private figureRows(rows: number, mode: BranchMode): BranchSpan {
+    return { from: mode === "stagger" ? 1 : 0, to: rows - 1 };
   }
 
   /** One horizontal run's path data, along `row` across the given lattice column span. */
@@ -171,17 +192,23 @@ export class BranchMotifService implements MotifService {
 
   /**
    * One `rung` repeat unit: a stile down one of the unit's two lattice
-   * columns, a rung reaching across to the other at every lattice row, and
-   * the rail carrying on to the next unit's stile along the top row.
+   * columns, a rung reaching across to the other at every row the stile
+   * spans, and the rail carrying on to the next unit's stile along row 0.
    *
-   * The rail and the top rung are drawn as one run rather than two, so the
-   * unit emits one path per lattice row and one for the stile. Only the
-   * stile's interior points fork: a rung meets it from the side while it
-   * runs on above and below, which is `rows - 1` forks per unit, plus
-   * `repeatCount - 1` where the rail arrives at a stile's head — the stile
-   * at the drawing's own end has no rail beyond it, so it is one fewer than
-   * the number of stiles rather than one per stile. That first term is what
-   * sets this family's minimum row count — see `STRUCTURAL_MINIMUM_ROWS`.
+   * The stile and its rungs stop one row short of the band's bottom border
+   * row, which {@link border} rules — see {@link figureRows} — so the unit
+   * emits one path per row of that span and one for the stile itself.
+   *
+   * Only the stile's interior points fork: a rung meets it from the side
+   * while it runs on above and below, which is `rows - 2` forks per unit,
+   * plus `repeatCount - 1` where the rail arrives at a stile's head — the
+   * stile at the drawing's own end has no rail beyond it, so it is one
+   * fewer than the number of stiles rather than one per stile. That first
+   * term is zero at two rows, where the stile spans one step and has no
+   * interior point, so the mode draws a bracket per unit and the junction
+   * it is named for is absent. It is nevertheless not what sets this
+   * family's minimum row count: `stagger` needs a row more than that — see
+   * `STRUCTURAL_MINIMUM_ROWS`.
    *
    * `isLeftward` mirrors all of that and changes none of its counts. Which
    * column the stile sits in, which way the rungs reach, and which end of
@@ -196,7 +223,7 @@ export class BranchMotifService implements MotifService {
   ): string {
     const { firstColumn, rows } = placement;
     const rail = this.rungRail(placement, isLeftward);
-    const runs = Array.from({ length: rows + 1 }, (_value, row) =>
+    const runs = Array.from({ length: rows }, (_value, row) =>
       this.horizontalRun(
         geometry,
         row,
@@ -205,34 +232,40 @@ export class BranchMotifService implements MotifService {
     );
 
     return [
-      this.verticalRun(geometry, this.stileColumn(placement, isLeftward), {
-        from: 0,
-        to: rows,
-      }),
+      this.verticalRun(
+        geometry,
+        this.stileColumn(placement, isLeftward),
+        this.figureRows(rows, "rung"),
+      ),
       ...runs,
     ].join("");
   }
 
   /**
-   * Which of the band's two border rows a unit's rail runs along.
+   * Which lattice row a unit's rail runs along: an end of the span its own
+   * teeth cover, which for `stagger` alternates and for `comb` is always
+   * the top.
    *
-   * `stagger` decides it per unit — every second one runs along the bottom,
-   * which is the crenellation. Every other spine drawing (`comb`, the
-   * family's default) puts every unit's rail on the top row.
+   * `stagger` decides it per unit — every second one runs along the bottom
+   * of its teeth, which is the crenellation. `comb`, the family's default,
+   * puts every unit's rail on row 0.
    *
-   * Moving the rail costs the figure nothing structurally — the number of
-   * rail steps is the same wherever it runs, and both of the rows it can run
-   * along are ruled end to end anyway, so a rail is redundant ink either
-   * way. What it still decides is the reading: under `stagger` the rail
-   * changes side once per unit, which is the crenellation.
+   * Neither row a `stagger` rail can reach is a ruled one: its teeth are
+   * inset from both borders, so a rail sitting at either end of them is ink
+   * no rule covers, and the alternation a reader is meant to see is what
+   * the drawing shows. That was the defect this row fixes — while a rail
+   * could only name a border row, and both borders were ruled, every
+   * `stagger` drawing rendered as the plain comb.
    */
   private spineRow(
     placement: BranchUnitPlacement,
     modifier: Modifier | undefined,
   ): number {
+    const teeth = this.figureRows(placement.rows, this.mode(modifier));
+
     return modifier?.name === "stagger" && placement.unitIndex % 2 === 1
-      ? placement.rows
-      : 0;
+      ? teeth.to
+      : teeth.from;
   }
 
   /**
@@ -247,12 +280,14 @@ export class BranchMotifService implements MotifService {
    * Under `stagger` the unit is as wide as its own crenel, so a rail run
    * covers `unitColumns + 1` teeth — the `branches` its modifier names.
    * Under `comb` the rail never changes side, so the unit width is only a
-   * tiling step. Either way the rail runs along a border row, so
-   * {@link border} already covers it and the forks belong to the rules:
-   * every interior column of either border carries one.
+   * tiling step. Either way the forks belong to the rail: every column it
+   * passes over between its two ends carries one, where a tooth meets it
+   * from below or above.
    *
-   * The teeth span the whole band in both modes; see {@link spineRow} for
-   * which border row the rail runs along.
+   * The teeth stop one row short of the rules {@link border} draws — both
+   * of them under `stagger`, the bottom one alone under `comb`. See
+   * {@link figureRows} for the span and {@link spineRow} for which of its
+   * two ends the rail runs along.
    */
   private spineUnit(
     geometry: GridGeometry,
@@ -261,8 +296,9 @@ export class BranchMotifService implements MotifService {
   ): string {
     const { firstColumn, isLastUnit, rows, unitColumns } = placement;
     const lastColumn = firstColumn + unitColumns - 1;
+    const span = this.figureRows(rows, this.mode(modifier));
     const teeth = Array.from({ length: unitColumns }, (_value, index) =>
-      this.verticalRun(geometry, firstColumn + index, { from: 0, to: rows }),
+      this.verticalRun(geometry, firstColumn + index, span),
     );
 
     return [
@@ -324,27 +360,42 @@ export class BranchMotifService implements MotifService {
   // 🌎 Public Methods
 
   /**
-   * The rule along both border rows, drawn once across the whole repeat
-   * rather than per unit.
+   * The rules closing the band, drawn once across the whole repeat rather
+   * than per unit — and how many of them there are is the mode's, not the
+   * family's.
    *
    * Every mode used to leave one border to whatever its own rails reached:
    * `comb` ruled the top and left twelve tooth ends at the bottom, `stagger`
    * alternated, `rung` left every second step of its bottom row bare. So the
-   * border read as the mode's signature rather than the band's, and two modes
-   * could draw the same interior. Ruling both closes a loop in every column
-   * pair — see the class comment. A unit rail that runs along a border row is
-   * now a subset of this rule and harmless: the lattice records each step
-   * once.
+   * border read as the mode's signature rather than the band's, and two
+   * modes could draw the same interior.
    *
-   * The two runs themselves are `GridGeometryService.borderPath`, which is
-   * where every family closing its band this way draws them from; all this
-   * adds is where the band's right edge falls.
+   * Ruling *both* borders unconditionally went too far. `comb` and `rung`
+   * already run a rail the full width of row 0, which is the top border a
+   * reader sees, so a second run along that row draws nothing new; and
+   * `stagger`'s rail could only ever name a border row, so a rule along both
+   * of them swallowed the crenellation whole and every `stagger` drawing
+   * rendered as the plain comb. See {@link figureRows}.
+   *
+   * So each mode is ruled where its own ink is not. `comb` and `rung` take
+   * one rule, along the row below their free ends; `stagger`, whose figure
+   * is inset from both borders, takes both. The pair is
+   * `GridGeometryService.borderPath`, which is where every family closing
+   * its band that way draws them from, and the single rule is one
+   * {@link horizontalRun} along the bottom row of the same width.
    */
   border(geometry: GridGeometry, pattern: RepeatPatternOptions): string {
-    return this.gridGeometryService.borderPath(
-      geometry,
-      this.rightEdge(geometry, pattern),
-    );
+    if (this.mode(pattern.modifier) === "stagger") {
+      return this.gridGeometryService.borderPath(
+        geometry,
+        this.rightEdge(geometry, pattern),
+      );
+    }
+
+    return this.horizontalRun(geometry, pattern.rows, {
+      from: 0,
+      to: this.lastColumn(pattern),
+    });
   }
 
   /**

@@ -5,23 +5,30 @@
  * inks.
  *
  * Every mode paints the same lattice points — that is invariant 2 — and
- * every mode runs its spine between rules along both of the band's borders,
- * so every mode forks and every mode closes loops. They differ only in
- * *which* steps they keep between those rules.
+ * every mode forks. None closes a loop: each mode's figure is inset by a
+ * lattice row from every rule beside it, so the rules are pieces of their
+ * own and the whole drawing is a forest. They differ in *which* steps they
+ * keep, and in how many rules that leaves to draw — see
+ * `BranchMotifService.figureRows` and `BranchMotifService.border`.
  *
- * - `comb` runs a rail along the band's top border row and reaches a full
- *   tooth from it into every lattice column, hanging down. It has no
- *   modifier of its own — it is what a bare `--type branch` inks.
- * - `stagger` keeps the same teeth and moves the rail: it runs along the
- *   top for one repeat unit and along the bottom for the next, so the
- *   figure reads as a crenellation rather than a fringe. Its modifier
- *   carries the run's own width — how many branches one rail joins before
- *   it changes side — so the crenel is a parameter rather than a constant.
+ * - `comb` runs a rail along the band's top border row and reaches a tooth
+ *   from it down into every lattice column, stopping one row short of the
+ *   single rule along the bottom. It has no modifier of its own — it is
+ *   what a bare `--type branch` inks.
+ * - `stagger` keeps the same teeth, insets them from the top border as
+ *   well, and moves the rail between their two ends: along the upper for
+ *   one repeat unit and along the lower for the next, so the figure reads
+ *   as a crenellation rather than a fringe. Both borders are ruled, one row
+ *   clear of it either way, which is what keeps that crenellation visible.
+ *   Its modifier carries the run's own width — how many branches one rail
+ *   joins before it changes side — so the crenel is a parameter rather than
+ *   a constant. Needing two free rows between the rules is also what sets
+ *   the family's structural minimum.
  * - `rung` turns the construction on its side: one vertical stile per
- *   repeat unit, a horizontal rung off it at every lattice row, and a rail
- *   along the top joining each unit to the next. Its modifier carries which
- *   way the rungs point, which mirrors the whole figure rather than
- *   changing it.
+ *   repeat unit, a horizontal rung off it at every row the stile spans, and
+ *   a rail along the top joining each unit to the next. Its modifier
+ *   carries which way the rungs point, which mirrors the whole figure
+ *   rather than changing it.
  */
 export type BranchMode = "comb" | "rung" | "stagger";
 

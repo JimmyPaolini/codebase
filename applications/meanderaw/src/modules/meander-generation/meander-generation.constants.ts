@@ -251,21 +251,24 @@ export const SUPPORTED_TYPES: readonly string[] = [
  * band this family can ink the corridors of — so following it down would
  * widen `negative` as a side effect of a decision about another family.
  *
- * `branch`'s minimum of 2 is its `rung` mode's, and the family takes the
- * stricter of its modes the same way `cross` does. `comb` and `stagger` do
- * draw at one row — a rail with a one-step tooth under every column still
- * forks at every interior column of both rules, 20 times and 32 times
- * respectively at six repeats and the narrowest crenel, which is what they
- * fork at every other row count too. `rung` forks there as well, 10 times,
- * and every one of those is a rule running past a stile's end rather than
- * the junction the mode is named for. That one is a rung meeting the middle
- * of a stile, so it needs the stile to have a middle — at least one lattice
- * point strictly between the band's two border rows — and a one-row band
- * has none, leaving each unit a plain bracket with the mode's characteristic
- * junction absent entirely. The `rows - 1` stile forks per unit appear first
- * at 2 rows. `branch-motif.service.unit.test.ts` renders all three modes
- * below the minimum and measures every claim in this paragraph there, so
- * the number and its reason cannot drift apart.
+ * `branch`'s minimum of 3 is its `stagger` mode's, and the family takes the
+ * stricter of its modes the same way `cross` does. Every mode's figure is
+ * inset by one lattice row from the rules beside it, so that a rule never
+ * lands on the ink it closes the band around — see
+ * `BranchMotifService.figureRows`. `comb` and `rung` are inset at one end
+ * only, keeping their rail on row 0 where a reader already sees the top
+ * border, so both still draw at 2 rows: 10 forks and 5 respectively at six
+ * repeats, which is what `comb` forks at every row count and one step of
+ * `rung`'s own climb. `stagger` is inset at both, because its rail moves
+ * between the two rows its teeth end at and neither of those may be a ruled
+ * one. That leaves it needing two free rows between the rules, so a 2-row
+ * band gives it a single free row, its teeth collapse to zero length, and
+ * the drawing is three parallel rules with no vertical ink and not one fork
+ * anywhere — the crenellation the mode exists for absent entirely, exactly
+ * as {@link MINIMUM_STAGGER_BRANCHES} guards against in the other axis.
+ * `branch-motif.service.unit.test.ts` renders all three modes below the
+ * minimum and measures every claim in this paragraph there, so the number
+ * and its reason cannot drift apart.
  *
  * `parallel`'s minimum is **2**, and it is the shallowest band that admits
  * more than one strand rather than anything about a ply's arms.
@@ -293,7 +296,7 @@ export const SUPPORTED_TYPES: readonly string[] = [
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
-  branch: 2,
+  branch: 3,
   chain: 4,
   cross: 6,
   mosaic: MOSAIC_TILE_MINIMUM_ROWS,

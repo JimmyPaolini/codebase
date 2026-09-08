@@ -1,9 +1,9 @@
 <svg width="590" height="70" viewBox="0 0 590 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M5 5V65M25 5V65M45 5V65M65 5V65M85 5V65M5 5H105" stroke="black" stroke-width="10" stroke-linecap="square"/>
-<path d="M105 5V65M125 5V65M145 5V65M165 5V65M185 5V65M105 65H205" stroke="black" stroke-width="10" stroke-linecap="square"/>
-<path d="M205 5V65M225 5V65M245 5V65M265 5V65M285 5V65M205 5H305" stroke="black" stroke-width="10" stroke-linecap="square"/>
-<path d="M305 5V65M325 5V65M345 5V65M365 5V65M385 5V65M305 65H405" stroke="black" stroke-width="10" stroke-linecap="square"/>
-<path d="M405 5V65M425 5V65M445 5V65M465 5V65M485 5V65M405 5H505" stroke="black" stroke-width="10" stroke-linecap="square"/>
-<path d="M505 5V65M525 5V65M545 5V65M565 5V65M585 5V65M505 65H585" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M5 25V45M25 25V45M45 25V45M65 25V45M85 25V45M5 25H105" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M105 25V45M125 25V45M145 25V45M165 25V45M185 25V45M105 45H205" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M205 25V45M225 25V45M245 25V45M265 25V45M285 25V45M205 25H305" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M305 25V45M325 25V45M345 25V45M365 25V45M385 25V45M305 45H405" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M405 25V45M425 25V45M445 25V45M465 25V45M485 25V45M405 25H505" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M505 25V45M525 25V45M545 25V45M565 25V45M585 25V45M505 45H585" stroke="black" stroke-width="10" stroke-linecap="square"/>
 <path d="M585 65H5M585 5H5" stroke="black" stroke-width="10" stroke-linecap="square"/>
 </svg>

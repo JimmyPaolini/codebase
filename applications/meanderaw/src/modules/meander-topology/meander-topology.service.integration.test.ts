@@ -165,19 +165,25 @@ interface CharterRelaxation {
  *
  * `branch` relaxes no-branching in every one of its modes, which is why its
  * entry names no modifier either. It inks a spine and teeth over the band's
- * lattice — every lattice point painted — run between rules along both of
- * the band's borders, so it forks at most of its columns. The fewest forks
- * any of its 66 documents leaves is 16, so the relaxation is exercised
- * rather than merely permitted. Nothing else is declared for it: no lattice
- * point in any of its modes carries four arms, so invariant 4 holds, and
- * every lattice point carries ink, so space-filling holds.
+ * lattice — every lattice point painted — inset by one lattice row from the
+ * rules that close the band, so it forks wherever a rail meets a tooth. The
+ * fewest forks any of its 60 documents leaves is 10, so the relaxation is
+ * exercised rather than merely permitted, and the row count at which one of
+ * its modes stopped forking is what sets `STRUCTURAL_MINIMUM_ROWS.branch`.
+ * Nothing else is declared for it: no lattice point in any of its modes
+ * carries four arms, so invariant 4 holds, and every lattice point carries
+ * ink, so space-filling holds.
  *
- * It closed a loop nowhere while one of those two borders was left open, and
- * that was the only thing separating it from `negative`, whose relaxation is
- * the same one. Both borders being ruled closes a loop in every column pair,
- * so it now closes 5 to 29 of them — against `negative`'s one to thirteen
- * pieces with 0 to 65 cycles among them. Both are measured below, not
- * asserted here, and no charter invariant is about a loop.
+ * It closes a loop nowhere, and that is the only thing separating it from
+ * `negative`, whose relaxation is the same one. It briefly closed 5 to 29 of
+ * them, while a rule ran along both of its borders and touched the figure —
+ * which is exactly what made every `stagger` drawing render as the plain
+ * comb. Insetting the figure from its rules leaves each rule a piece of its
+ * own, so the family is a forest of two or three pieces with no loop
+ * again —
+ * against `negative`'s one to thirteen pieces with 0 to 65 cycles among
+ * them. Both are measured below, not asserted here, and no charter
+ * invariant is about a loop.
  *
  * `parallel` relaxes no-branching, and it is the one row here narrowed by a
  * structural condition rather than by a modifier name. Both of its borders
@@ -351,7 +357,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
 
 /**
- * How many documents `DrawCommand` commits: 1,104 named patterns beside two
+ * How many documents `DrawCommand` commits: 1,098 named patterns beside two
  * exhaustive halves — 8,551 enumerated `mosaic` tiles and 208 enumerated
  * one-column `negative` sources.
  *
@@ -382,7 +388,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
  * but not committed, which is why the corridor-identity gate below covers
  * rows 3 through 5 of it rather than all of it.
  */
-const COMMITTED_CORPUS_SIZE = 1104 + 8551 + 208;
+const COMMITTED_CORPUS_SIZE = 1098 + 8551 + 208;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -754,7 +760,7 @@ describe(MeanderTopologyService, () => {
     // corpus does not commit is the same blind spot #507 was, one modifier
     // over.
     it("sweeps every named-type combination DrawCommand writes, out to the deepest row count the command line accepts", () => {
-      expect(charterSweep).toHaveLength(1104);
+      expect(charterSweep).toHaveLength(1098);
 
       expect(
         Math.max(...charterSweep.map(({ parameters }) => parameters.rows)),
@@ -815,6 +821,13 @@ describe(MeanderTopologyService, () => {
     // to `unitColumns` that gave two modes one lattice again would fail here
     // rather than commit two names for one drawing. The count guards against
     // the sweep quietly narrowing to nothing.
+
+    // Insetting the figure from its rules removed the collapse that deleted
+    // those two names, so both would now be distinct drawings — an upward
+    // comb puts its rail on the bottom row and its teeth one row clear of
+    // the top, and a three-branch crenel is a rail nothing swallows.
+    // Restoring either is a decision about which drawings the corpus
+    // commits, and this gate neither asks for it nor stands in its way.
     it("draws no two branch combinations onto the same lattice", () => {
       const branchCases = charterSweep.filter(
         ({ parameters }) => parameters.type === "branch",
@@ -825,7 +838,7 @@ describe(MeanderTopologyService, () => {
         ),
       );
 
-      expect(branchCases).toHaveLength(66);
+      expect(branchCases).toHaveLength(60);
       expect(new Set(addresses).size).toBe(addresses.length);
     });
 
@@ -907,18 +920,19 @@ describe(MeanderTopologyService, () => {
     // change. `branch` drew a spanning tree while one of its two border rows
     // was left unruled; `parallel`'s one-strand serpentine was a single
     // ribbon that ran the whole band without stopping, which is the
-    // degenerate tree. Ruling both borders of both families closes a loop in
-    // each, so all 66 `branch` documents and all 22 of those ribbons move
-    // into the looped set instead. No charter invariant is about a loop, and
-    // both families still fill space, so this is their shape as a graph
-    // changing rather than their compliance.
+    // degenerate tree. Ruling both borders took each out of the tree set,
+    // and neither has come back. No charter invariant is about a loop or
+    // about connectivity, and both families still fill space, so this is
+    // their shape as a graph changing rather than their compliance.
 
-    // An empty tree set says nothing on its own, so the 22 are followed where
-    // they went: each is still one connected piece and now closes 11 loops,
-    // which is a figure that gained edges rather than one that fell apart.
-    // That is also the difference between the two routes out of the tree set
-    // — a `plied` bundle joins into one piece and a deeper serpentine stays
-    // `strands` pieces, and neither is a tree either way.
+    // That an empty tree set can be reached two ways is why the conditions
+    // are separated. `branch` leaves it by falling into pieces: its figure
+    // is inset by a lattice row from every rule beside it, so each rule is a
+    // piece of its own and the drawing is a forest of two or three, with
+    // no loop in any of them.
+    // `parallel`'s `plied` bundle leaves it the other way, joining into one
+    // piece and closing a loop, and a deeper serpentine stays `strands`
+    // pieces. The looped set below is what says which route each took.
     it(
       "draws a tree nowhere, having closed the two figures that were one",
       async () => {
@@ -981,7 +995,8 @@ describe(MeanderTopologyService, () => {
         // 🎯 Where the loops are: 294 of `negative`'s 308 corridor networks,
         // 3,099 `mosaic` drawings, `cross`'s seven solid crossings, the
         // eighteen `snake` drawings whose `edge` pitch closes a loop against
-        // the band border, all 66 of `branch`'s, and 642 of `parallel`'s 786.
+        // the band border, and 642 of `parallel`'s 786. `branch` is absent,
+        // having been in it for exactly one commit.
 
         // `parallel` is the newest arrival, and its 642 are exactly the
         // drawings a border rule added ink to — so the count is the same 642
@@ -993,12 +1008,14 @@ describe(MeanderTopologyService, () => {
         // one-strand `plied` and `serpentine` entries — before this count was
         // taken, so none of them are in either figure.
 
-        // `branch` arrived the same way one commit earlier, and `mosaic`
-        // earlier still, from removing the degree ceiling: a figure of dash
-        // ends cannot close, and 3,099 of that family's 8,575 documents now
-        // do. No charter invariant is about a loop — the ink stays orthogonal
-        // and every point stays inked — so all three are a family's shape as
-        // a graph changing rather than its compliance.
+        // `branch` arrived the same way one commit earlier and left again
+        // one commit later, when its figure was inset from its rules so that
+        // no rule would land on the ink it closes the band around. `mosaic`
+        // arrived earlier still, from removing the degree ceiling: a figure
+        // of dash ends cannot close, and 3,099 of that family's 8,575
+        // documents now do. No charter invariant is about a loop — the ink
+        // stays orthogonal and every point stays inked — so each is a
+        // family's shape as a graph changing rather than its compliance.
 
         // The fourteen `negative` documents missing from it are the `lines`
         // sub-family's negative — `ruled-closed` at each of the family's ten
@@ -1008,17 +1025,10 @@ describe(MeanderTopologyService, () => {
         // band's own rules and nothing joining them, so it is one component
         // per lattice row with no loop anywhere, and the one corner of this
         // family that is a forest like the six oldest.
-        expect(looped).toHaveLength(4126);
+        expect(looped).toHaveLength(4060);
         expect(
           [...new Set(looped.map((name) => familyOf(name)))].toSorted(),
-        ).toStrictEqual([
-          "branch",
-          "cross",
-          "mosaic",
-          "negative",
-          "parallel",
-          "snake",
-        ]);
+        ).toStrictEqual(["cross", "mosaic", "negative", "parallel", "snake"]);
       },
       CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS,
     );
@@ -1033,10 +1043,18 @@ describe(MeanderTopologyService, () => {
     // both of its own: those 819 documents carry 18,034 of these where they
     // carried none. The document count moved with it — 214 to 889 — where
     // `branch` moved the total alone, having already forked in all of its
-    // 66. Both fell three times more: to 24,352 and 878 when the eleven
+    // 66. Both fell four times more: to 24,352 and 878 when the eleven
     // `comb` duplicates of `plain` were deleted; to 24,132 and 867 when the
-    // eleven `stagger-branches-3` duplicates were; and to 23,472 and 834
-    // when issue #669 dropped `parallel`'s 33 one-strand duplicates.
+    // eleven `stagger-branches-3` duplicates were; to 23,472 and 834 when
+    // issue #669 dropped `parallel`'s 33 one-strand duplicates; and to
+    // 22,158 and 828 when `branch`'s figure was inset from its rules.
+
+    // That last fall took forks away rather than documents. A rule no longer
+    // running along the row a rail sits on stops forking against every tooth
+    // in it, which is most of what `branch` used to contribute. The six
+    // drawings it also cost were the family's 2-row ones, which its new
+    // structural minimum excludes — `stagger` has no room for a tooth in a
+    // band that shallow once both of its rules are clear of the figure.
 
     // 144 `parallel` documents are still absent, and they are the same 144
     // the looped test above leaves out — the `serpentine` drawings whose two
@@ -1061,10 +1079,10 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(documents).toHaveLength(1104);
+      expect(documents).toHaveLength(1098);
 
-      expect(tJunctions).toBe(23472);
-      expect(branching).toHaveLength(834);
+      expect(tJunctions).toBe(22158);
+      expect(branching).toHaveLength(828);
       expect(
         [...new Set(branching.map((name) => familyOf(name)))].toSorted(),
       ).toStrictEqual(["branch", "chain", "negative", "parallel", "snake"]);

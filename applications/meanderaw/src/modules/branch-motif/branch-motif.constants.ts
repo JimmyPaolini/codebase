@@ -36,10 +36,10 @@ export const BRANCH_MODES_BY_MODIFIER_NAME: Record<
  * unit width is `branches - 1` and is read off the modifier by
  * {@link BranchMotifService.unitColumns}. At **three** branches that
  * expression evaluates to this number — the width the mode drew for as long
- * as it could not be asked for anything else — which is why
- * {@link MINIMUM_STAGGER_BRANCHES} excludes three rather than merely
- * preferring against it. Its floor of four draws a three-column unit, one
- * wider than this and the narrowest the mode still commits.
+ * as it could not be asked for anything else — and that coincidence is what
+ * {@link MINIMUM_STAGGER_BRANCHES} was set from. Its floor of four draws a
+ * three-column unit, one wider than this and the narrowest the mode
+ * commits.
  */
 export const BRANCH_UNIT_COLUMNS = 2;
 
@@ -71,24 +71,27 @@ export const DEFAULT_RUNG_IS_LEFTWARD = false;
 /**
  * The fewest branches one `stagger` rail run may join before changing side.
  *
- * Four, and it is a structural floor rather than a taste one.
- * `BranchMotifService.unitColumns` answers `branches - 1`, which at three
- * branches is exactly `BRANCH_UNIT_COLUMNS` — the width `comb` already
- * draws — and `spineRow` only ever names a border row, both of which are
- * now ruled end to end regardless of which one a rail reinforces. So a
- * three-branch rail run sits wholly inside a rule already there and
- * contributes nothing the rule did not already draw: the crenellation the
- * parameter names is absent from the ink, and what is left is a plain comb.
+ * Four, and it is now a **retained** bound rather than a derived one. It was
+ * set while every rail ran along a border row and both borders were ruled
+ * end to end: `BranchMotifService.unitColumns` answers `branches - 1`, which
+ * at three branches is exactly `BRANCH_UNIT_COLUMNS` — the width `comb`
+ * already draws — and a three-branch rail run then sat wholly inside a rule
+ * already there, contributing nothing the rule did not draw. The
+ * crenellation the parameter names was absent from the ink and what was
+ * left was a plain comb: another mode's drawing under this mode's name, a
+ * parameter advertising a choice it could not make.
  *
- * That is not a stricter drawing, it is another mode's drawing under this
- * mode's name — a parameter advertising a choice it cannot make. Being
- * swallowed by a rule is not what isolates three: a rail of any width is
- * swallowed the same way now, a six-branch one included. What isolates it is
- * the unit width, which at three branches is exactly the unmodified
- * drawing's and at every count above it is not.
+ * A `stagger` rail now runs one lattice row clear of both rules — see
+ * `BranchMotifService.figureRows` — so no rule swallows it and the
+ * three-branch figure is a drawing of its own, differing from the comb of
+ * the same width in components, edges, free ends, and forks alike. What
+ * survives of the original argument is only the unit-width coincidence,
+ * which is a fact about widths rather than a degeneracy.
  * `branch-motif.service.unit.test.ts` renders the three-branch figure this
- * constant excludes and measures it against that comb, so the number and
- * its reason cannot drift apart.
+ * constant excludes and measures it as distinct, so the number and what is
+ * left of its reason cannot drift apart. Lowering it to three is a decision
+ * about which drawings the corpus commits, and nothing here forces it
+ * either way.
  */
 export const MINIMUM_STAGGER_BRANCHES = 4;
 
