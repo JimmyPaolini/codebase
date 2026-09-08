@@ -166,7 +166,20 @@ export class RunPlanService {
     const { configuration, errors, format } =
       this.flagResolutionService.resolveRunFlags({
         configuration: loaded,
-        flags: { directories: options.directories, format: options.format },
+        // Every graph-shaping override a lookup accepts, and nothing else:
+        // `depth` and `breadth` gate nothing and write nothing, so a limit or
+        // a destination has no value here to override.
+        flags: {
+          directories: options.directories,
+          entryPointAddresses: options.entryPointAddresses,
+          entryPointDecorators: options.entryPointDecorators,
+          exclude: options.exclude,
+          excludeCallees: options.excludeCallees,
+          format: options.format,
+          includeExportedFunctions: options.includeExportedFunctions,
+          includeOrphans: options.includeOrphans,
+          includeTests: options.includeTests,
+        },
       });
 
     if (errors.length > 0) {
@@ -222,7 +235,7 @@ export class RunPlanService {
     });
     // Every combination of a flag with a configured value happens here and
     // nowhere else, under one precedence rule this service does not restate.
-    const { configuration, errors, format } =
+    const { configuration, errors, format, limitOverrides } =
       this.flagResolutionService.resolveRunFlags({
         configuration: loaded,
         flags: {
@@ -232,9 +245,19 @@ export class RunPlanService {
           // merely written down. `selectMode` above is what reads them.
           check: options.check,
           directories: options.directories,
+          entryPointAddresses: options.entryPointAddresses,
+          entryPointDecorators: options.entryPointDecorators,
+          exclude: options.exclude,
+          excludeCallees: options.excludeCallees,
           format: options.format,
+          includeExportedFunctions: options.includeExportedFunctions,
+          includeOrphans: options.includeOrphans,
+          includeTests: options.includeTests,
           json: options.json,
           markdown: options.markdown,
+          maximumBreadth: options.maximumBreadth,
+          maximumDepth: options.maximumDepth,
+          mermaid: options.mermaid,
           write: options.write,
         },
       });
@@ -249,6 +272,7 @@ export class RunPlanService {
       configuration,
       configurationPath,
       format,
+      limitOverrides,
       mode,
       workspaceRoot,
     };

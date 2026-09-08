@@ -27,6 +27,7 @@ import type {
 import type {
   CallableId,
   CallGraphSummary,
+  CallidescopeLimitOverrides,
   CallidescopeLimits,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
@@ -93,6 +94,7 @@ export class CallidescopeService {
       authoredLimits: args.authoredLimits,
       configuration: args.configuration,
       configurationPath: args.configurationPath,
+      limitOverrides: args.limitOverrides,
       projectNames,
       workspaceRoot: args.workspaceRoot,
     });
@@ -224,6 +226,7 @@ export class CallidescopeService {
     authoredLimits: CallidescopeLimits | undefined;
     configuration: ResolvedCallidescopeConfiguration;
     configurationPath: string | undefined;
+    limitOverrides: CallidescopeLimitOverrides | undefined;
     projectNames: readonly string[];
     workspaceRoot: string;
   }): Promise<ProjectDeclarations> {
@@ -253,6 +256,7 @@ export class CallidescopeService {
           ]),
       ),
       projectLimits: this.projectConfigurationService.resolveLimits({
+        limitOverrides: args.limitOverrides,
         projectConfigurations: loaded,
         projects: args.projectNames,
         workspaceAuthoredLimits: args.authoredLimits,

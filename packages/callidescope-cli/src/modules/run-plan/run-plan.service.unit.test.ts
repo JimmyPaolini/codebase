@@ -442,12 +442,25 @@ describe(RunPlanService, () => {
 
       // Read off the call rather than matched with `objectContaining`, which
       // returns `any` and would cost the project its type coverage.
+      // Every flag the command accepts is handed over, absent ones included:
+      // the resolver is the one place a flag meets the field it overrides, so
+      // a flag withheld here is a flag that silently does nothing.
       expect(resolveRunFlags.mock.calls[0]?.[0].flags).toStrictEqual({
         check: "depth,reports",
         directories: undefined,
+        entryPointAddresses: undefined,
+        entryPointDecorators: undefined,
+        exclude: undefined,
+        excludeCallees: undefined,
         format: undefined,
+        includeExportedFunctions: undefined,
+        includeOrphans: undefined,
+        includeTests: undefined,
         json: undefined,
         markdown: undefined,
+        maximumBreadth: undefined,
+        maximumDepth: undefined,
+        mermaid: undefined,
         write: false,
       });
       expect(prepared?.configuration).toStrictEqual(

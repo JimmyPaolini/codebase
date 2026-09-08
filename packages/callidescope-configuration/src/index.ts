@@ -52,6 +52,7 @@ export type {
   CallidescopeConfiguration,
   CallidescopeEntryPoints,
   CallidescopeJsonOutputConfiguration,
+  CallidescopeLimitOverrides,
   CallidescopeLimits,
   CallidescopeMarkdownOutputConfiguration,
   CallidescopeOutputFormat,

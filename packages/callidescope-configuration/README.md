@@ -191,9 +191,42 @@ package, in `FlagResolutionService`, under one rule:
 | `--write` | Mode | Command-line only, for the same reason |
 | `--format` | Presentation | Command-line only, and validated. It is returned beside the configuration rather than written into it |
 | `--directories` | Override | Replaces `directories` when it named any. An empty value is absent, not a scope |
+| `--entry-point-addresses` | Override | Replaces `entryPoints.addresses` when it named any |
+| `--entry-point-decorators` | Override | Replaces `entryPoints.decorators` when it named any |
+| `--exclude` | Override | Replaces `exclude` when it named any |
+| `--exclude-callees` | Override | Replaces `excludeCallees` when it named any |
+| `--include-exported-functions` | Override | Replaces `entryPoints.includeExportedFunctions`. Takes `true` or `false`, or the flag alone for `true` |
+| `--include-orphans` | Override | Replaces `entryPoints.includeOrphans`, the same way |
+| `--include-tests` | Override | Replaces `entryPoints.includeTests`, the same way |
+| `--maximum-depth` | Override | Replaces `limits.maximumDepth`, in the run's own configuration and in every project's. A value that is not a positive whole number is refused |
+| `--maximum-breadth` | Override | Replaces `limits.maximumBreadth` the same way — and is refused when the run's configuration declares none, there being nothing to override |
 | `--json` | Override | Replaces `write.json.path`, and no other property of that destination |
 | `--markdown` | Override | Replaces `write.markdown.path`, and no other property of that destination |
+| `--mermaid` | Override | Replaces `write.mermaid.path`, and no other property of that destination |
 | `--config` | Neither | It chooses the file everything else is resolved against, so it has already done its whole job by the time resolution runs |
+
+**Every configured field has an overriding flag, save one.** `excludeFrom`
+names the ignore files a run reads, which is what the run _is_ rather than a
+value it judges by — and it is workspace-only for that same reason, a project
+being no more able to redirect it than a command line is.
+
+**A limit override reaches the number each project is really gated by.** A
+limit is enforced per project, out of that project's own file, so an override
+left in the run's copy alone would be a flag no gate ever looks at — the
+`--format mermiad` failure in a different costume. It is applied to every
+project that declared the limit being overridden, and to no project that
+declared none: `--maximum-breadth` cannot gate a project that wrote
+`maximumBreadth: undefined`, because overriding a decision and reversing one
+are not the same act. The file each project's row names is still that project's
+own — an override changes a number for one invocation, not where it was
+written.
+
+Which flags a command accepts follows from what that command does.
+`callidescope` accepts every row above. `depth` and `breadth` accept the ones
+that shape the graph — the scope, the entry-point rules, and the two exclusion
+lists — and none of the limits or destinations, because a lookup gates nothing
+and writes nothing, so there is no number it reads and no file it touches for
+one of those to change.
 
 Four consequences are worth stating outright, because each replaced an
 ad-hoc merge that got them wrong:
@@ -207,7 +240,11 @@ ad-hoc merge that got them wrong:
 - **A path override cannot invent a destination.** `--json` against a
   configuration declaring no `write.json` is refused, because a flag that could
   conjure one would let any command line write a report the configuration never
-  asked for.
+  asked for. `--maximum-breadth` is refused the same way and for the same
+  reason: it is the one judged value resolution supplies no default for, so a
+  flag that could supply one would gate a workspace on a number no
+  configuration ever chose — which is exactly what `--check breadth` refuses to
+  do.
 - **An unrecognized `--format` is refused.** A run that quietly printed
   markdown for `--format mermiad` exited 0 having taught its reader that the
   flag does nothing.

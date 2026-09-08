@@ -463,9 +463,27 @@ describe(CallidescopeCommand, () => {
   });
 
   it.each([
+    "parseEntryPointAddresses",
+    "parseEntryPointDecorators",
+    "parseExclude",
+    "parseExcludeCallees",
+  ] as const)("splits %s on commas", (method) => {
+    expect(command[method]("alpha, beta")).toStrictEqual(["alpha", "beta"]);
+  });
+
+  // Every one of these is carried to `FlagResolutionService` as written: which
+  // values a switch, a limit, or a format accepts is that one resolver's to
+  // decide, so a value nobody recognizes has to reach it to be refused.
+  it.each([
     ["parseConfig", "callidescope.config.ts"],
+    ["parseIncludeExportedFunctions", "false"],
+    ["parseIncludeOrphans", "false"],
+    ["parseIncludeTests", "true"],
     ["parseJson", "output/report.json"],
     ["parseMarkdown", "REPORT.md"],
+    ["parseMaximumBreadth", "12"],
+    ["parseMaximumDepth", "9"],
+    ["parseMermaid", "DIAGRAM.md"],
   ] as const)("passes %s through unchanged", (method, value) => {
     expect(command[method](value)).toBe(value);
   });

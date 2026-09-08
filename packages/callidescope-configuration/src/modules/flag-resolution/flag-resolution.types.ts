@@ -1,6 +1,7 @@
 // 🏷️ Types
 
 import type {
+  CallidescopeLimitOverrides,
   CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
 } from "../configuration/configuration.types";
@@ -27,12 +28,41 @@ export interface CallidescopeRunFlags {
   readonly check?: string | true | undefined;
   /** Scope. `--directories`, already split on commas. */
   readonly directories?: readonly string[] | undefined;
+  /** Judgement. `--entry-point-addresses`, already split on commas. */
+  readonly entryPointAddresses?: readonly string[] | undefined;
+  /** Judgement. `--entry-point-decorators`, already split on commas. */
+  readonly entryPointDecorators?: readonly string[] | undefined;
+  /** Judgement. `--exclude`, already split on commas. */
+  readonly exclude?: readonly string[] | undefined;
+  /** Judgement. `--exclude-callees`, already split on commas. */
+  readonly excludeCallees?: readonly string[] | undefined;
   /** Presentation. `--format`, exactly as it was typed. */
   readonly format?: string | undefined;
+  /**
+   * Judgement. `--include-exported-functions`, exactly as it was typed.
+   *
+   * A switch arrives here as written text rather than as a boolean for the
+   * same reason `--format` does: which values a switch accepts is this
+   * package's to decide, and a `--include-tests maybe` coerced to `true` on
+   * the way here could never be refused by the one place that knows better.
+   * `true` is the one exception, and it is not a coercion: a switch written
+   * with no value at all is how commander reports the flag's own presence.
+   */
+  readonly includeExportedFunctions?: string | true | undefined;
+  /** Judgement. `--include-orphans`, exactly as it was typed. */
+  readonly includeOrphans?: string | true | undefined;
+  /** Judgement. `--include-tests`, exactly as it was typed. */
+  readonly includeTests?: string | true | undefined;
   /** Destination. `--json`, a path and nothing else. */
   readonly json?: string | undefined;
   /** Destination. `--markdown`, a path and nothing else. */
   readonly markdown?: string | undefined;
+  /** Judgement. `--maximum-breadth`, exactly as it was typed. */
+  readonly maximumBreadth?: string | undefined;
+  /** Judgement. `--maximum-depth`, exactly as it was typed. */
+  readonly maximumDepth?: string | undefined;
+  /** Destination. `--mermaid`, a path and nothing else. */
+  readonly mermaid?: string | undefined;
   /** Mode. `--write`. */
   readonly write?: boolean | undefined;
 }
@@ -55,4 +85,13 @@ export interface ResolvedRunFlags {
   readonly errors: readonly string[];
   /** What the run prints. The default whenever the flag was left off. */
   readonly format: CallidescopeOutputFormat;
+  /**
+   * The limits a flag chose, and only those.
+   *
+   * Carried beside the configuration rather than only inside it because a
+   * limit is enforced per project: each project's own file declares the number
+   * its gate reads, so an override applied only to the workspace's copy would
+   * be a flag no gate ever looks at. Empty whenever no limit flag was given.
+   */
+  readonly limitOverrides: CallidescopeLimitOverrides;
 }

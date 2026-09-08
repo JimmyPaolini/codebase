@@ -30,4 +30,4 @@ export const CHECK_SEPARATOR = ",";
  * the command line supplied, and so adding a destination flag without adding
  * it here is the only way to reintroduce a flag that writes nothing silently.
  */
-export const DESTINATION_FLAG_NAMES = ["json", "markdown"] as const;
+export const DESTINATION_FLAG_NAMES = ["json", "markdown", "mermaid"] as const;

@@ -15,6 +15,7 @@ import { ConfigurationService } from "./configuration.service";
 
 import type {
   CallidescopeConfiguration,
+  CallidescopeLimitOverrides,
   LoadedProjectConfiguration,
   LoadProjectConfigurationsArguments,
   ProjectLimits,
@@ -93,15 +94,23 @@ export class ProjectConfigurationService {
    * nothing to fall back per field: a project that declared no breadth limit
    * wrote `maximumBreadth: undefined`, which is a decision rather than a gap.
    */
-  private buildProjectLimits(
-    projectConfiguration: LoadedProjectConfiguration,
-  ): ProjectLimits {
-    const { limits } = projectConfiguration.configuration;
+  private buildProjectLimits(args: {
+    overrides: CallidescopeLimitOverrides | undefined;
+    projectConfiguration: LoadedProjectConfiguration;
+  }): ProjectLimits {
+    const { limits } = args.projectConfiguration.configuration;
 
     return {
-      maximumBreadth: limits.maximumBreadth,
-      maximumDepth: limits.maximumDepth,
-      path: projectConfiguration.path,
+      maximumBreadth: this.overrideLimit({
+        declared: limits.maximumBreadth,
+        override: args.overrides?.maximumBreadth,
+      }),
+      maximumDepth:
+        this.overrideLimit({
+          declared: limits.maximumDepth,
+          override: args.overrides?.maximumDepth,
+        }) ?? limits.maximumDepth,
+      path: args.projectConfiguration.path,
     };
   }
 
@@ -119,6 +128,9 @@ export class ProjectConfigurationService {
   private buildWorkspaceLimits(
     args: ResolveProjectLimitsArguments,
   ): ProjectLimits {
+    // Already overridden: the run's own configuration is what the flags were
+    // resolved against, so re-applying them here would be the second answer to
+    // a number this service exists to give one answer to.
     const { maximumBreadth, maximumDepth } = args.workspaceConfiguration.limits;
 
     const authored = args.workspaceAuthoredLimits;
@@ -293,6 +305,25 @@ export class ProjectConfigurationService {
     }
   }
 
+  /**
+   * Applies one command-line limit override to one project's declared limit.
+   *
+   * The precedence rule, at the level a limit is actually enforced: a project
+   * that declared the limit is judged by the flag instead, and a project that
+   * declared none keeps no limit at all. A flag may override what a project chose
+   * and may not choose for a project that chose nothing — which for breadth is
+   * the whole difference between a run `--check breadth` can gate and one it
+   * refuses.
+   */
+  private overrideLimit(args: {
+    declared: number | undefined;
+    override: number | undefined;
+  }): number | undefined {
+    return args.declared === undefined
+      ? undefined
+      : (args.override ?? args.declared);
+  }
+
   /** The name of a whole field a project may not set, or nothing when it may. */
   private readForbiddenField(field: string): string | undefined {
     return PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES.has(field)
@@ -388,7 +419,10 @@ export class ProjectConfigurationService {
     const limitsByProject = new Map(
       args.projectConfigurations.map((projectConfiguration) => [
         projectConfiguration.project,
-        this.buildProjectLimits(projectConfiguration),
+        this.buildProjectLimits({
+          overrides: args.limitOverrides,
+          projectConfiguration,
+        }),
       ]),
     );
 
