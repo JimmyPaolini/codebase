@@ -51,20 +51,26 @@ import {
  *
  * ## The projects that override nothing
  *
- * Thirty-one projects under `packages/` now declare their own measured depth,
- * and eleven declare nothing and are held to the number below. Three reasons,
- * none of them that nobody got to them. The four skill packages —
+ * Thirty-two projects under `packages/` now declare their own measured depth,
+ * and six declare nothing and are held to the number below. Two reasons,
+ * neither of them that nobody got to them. The four skill packages —
  * `callidescope-agents`, `codependix-agents`, `codometer-agents`,
  * `conformetry-agents` — and `codependix-examples` hold between zero and three
- * callables, so there is no stack of theirs to gate. The five conformetry leaf
- * analyzers hold real code that roots nothing: `conformetry-typescript` has
- * forty callables, `-json` twenty-three, `-jupyter` twenty-two, `-python`
- * eleven, and `-text` five, and every one of them is reached from
- * `conformetry-generation` above rather than entered directly, so each
- * measures zero however much it does. Gating either kind at zero would fail on
- * the first stack of any length, which is a landmine rather than a ratchet.
+ * callables, so there is no stack of theirs to gate. Gating that at zero would
+ * fail on the first stack of any length, which is a landmine rather than a
+ * ratchet.
  *
- * `codometer-examples` is the eleventh, and it is the same landmine one frame
+ * There used to be a third reason, and consolidating the conformetry Languages
+ * removed it. Five leaf analyzers — `conformetry-typescript`, `-json`,
+ * `-jupyter`, `-python`, `-text` — each held real code that rooted nothing,
+ * because every one of them was entered from above rather than directly, so
+ * each measured zero however much it did. They are now modules of
+ * `conformetry-languages`, and what was a call between packages is a call
+ * inside one, so a scoped run finally enters at a surface of its own and
+ * measures four rather than zero. That package declares four and gates like
+ * any other.
+ *
+ * `codometer-examples` is the sixth, and it is the same landmine one frame
  * along. It measures two, over two callables in a package that is a corpus and
  * a test suite rather than a library, and a limit at two breaches the moment
  * either of those callables gains a single frame — which, in a fixture corpus,
