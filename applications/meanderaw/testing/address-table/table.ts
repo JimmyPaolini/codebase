@@ -1,10 +1,6 @@
 import { SUPPORTED_TYPES } from "../../src/modules/meander-generation/meander-generation.constants";
 
-import {
-  BLOCK_END_MARKER,
-  BLOCK_START_MARKER,
-  WRITE_COMMAND,
-} from "./constants";
+import { WRITE_COMMAND } from "./constants";
 
 import type { AddressedDrawing } from "./types";
 
@@ -66,51 +62,35 @@ export const renderRow = (drawing: AddressedDrawing): string => {
 };
 
 /**
- * The whole generated block, markers included, exactly as it is committed.
+ * The whole generated file, exactly as it is committed.
  *
- * The heading and the paragraphs beneath it are generated with the table
- * rather than written above it, the way `## ⏲️ Codometer` and
- * `## 🔭 Callidescope` already are in this README: a caption that counts the
- * rows underneath it has to be rewritten when they change, and a caption
- * outside the markers could not be.
+ * It is generated end to end rather than spliced into a hand-written page, so
+ * it carries its own title and says in one line what it is and what rewrites
+ * it. Nothing here is hand-editable, which is why there are no markers to
+ * hold a boundary: a `write` replaces the file.
  *
- * `cspell` is turned off across the block. Ten thousand hexadecimal addresses
- * are unknown words to every dictionary and always will be, and a pattern
- * narrow enough to admit them and nothing else would have to spell out where
- * each column sits — a second description of the table's shape, kept in step
- * with this one by nothing.
+ * The prose explaining the seven columns is deliberately *not* here. It sits
+ * in the README's `## 🗺️ Lattice Addresses` section, where a reader meets it
+ * beside the rest of the project rather than at the top of nine thousand
+ * rows, and where a human can edit it.
+ *
+ * `cspell` needs no directive across the table. Ten thousand hexadecimal
+ * addresses are unknown words to every dictionary and always will be, and
+ * `configuration/cspell.config.yaml` already excludes `output/` wholesale,
+ * which is part of why the table is filed there — see `TABLE_PATH` for the
+ * rest.
  */
-export const renderBlock = (drawings: readonly AddressedDrawing[]): string => {
+export const renderDocument = (
+  drawings: readonly AddressedDrawing[],
+): string => {
   const ordered = orderDrawings(drawings);
 
-  return [
-    BLOCK_START_MARKER,
+  return `${[
+    "# 🗺️ Lattice Addresses",
     "",
-    "<!-- cspell:disable -->",
-    "",
-    "## 🗺️ Lattice Addresses",
-    "",
-    `Every one of the ${ordered.length.toLocaleString("en-US")} committed drawings, addressed on the lattice`,
-    "every family is drawn on. **Family** is the directory it is filed under and **Modifier**",
-    "the variant within it — the modifier's slug for a family drawn from a motif, and the",
-    "tile's own name in the two enumerated halves, all of `mosaic` and `negative`'s",
-    "`permutations/` subtree, whose drawings have no modifier at all. **Rows** is the",
-    "band's depth and **Span** the column span of the true repeat the",
-    "address is read over. **Address** is the name; **Canonical class** is the one string a",
-    "whole symmetry class shares, and is never substituted for it; **Sub-family** is the name",
-    "the ink earns where it earns one.",
-    "",
-    "A class shared across two families is the discovery rather than a collision:",
-    "`parallel`'s `serpentine-strands-3-offset-1` at three rows is the `mosaic` `zigzag` tile",
-    "`56a9`, and its four-strand, two-offset sibling is `56a933`.",
-    "",
-    `Generated — run \`${WRITE_COMMAND}\` to rewrite it, and nothing else.`,
+    `All ${ordered.length.toLocaleString("en-US")} committed drawings under \`output/\`, addressed on the lattice every family is drawn on and explained in [the project README](../README.md) — generated, so run \`${WRITE_COMMAND}\` to rewrite it and edit nothing here by hand.`,
     "",
     ...TABLE_HEADER,
     ...ordered.map((drawing) => renderRow(drawing)),
-    "",
-    "<!-- cspell:enable -->",
-    "",
-    BLOCK_END_MARKER,
-  ].join("\n");
+  ].join("\n")}\n`;
 };

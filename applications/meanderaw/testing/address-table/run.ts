@@ -1,10 +1,9 @@
 import { readFile, writeFile } from "node:fs/promises";
 
-import { README_PATH, USAGE_MESSAGE, WRITE_COMMAND } from "./constants";
+import { TABLE_PATH, USAGE_MESSAGE, WRITE_COMMAND } from "./constants";
 import { addressCorpus, createCorpusServices } from "./corpus";
-import { extractBlock, spliceBlock } from "./document";
 import { reconcileCollisions } from "./duplicates";
-import { renderBlock } from "./table";
+import { renderDocument } from "./table";
 
 import type { AddressedDrawing, AddressTableRunMode } from "./types";
 
@@ -29,17 +28,18 @@ export const selectMode = (
 };
 
 /**
- * Addresses every committed drawing and either checks the README's block
- * against it or rewrites the block.
+ * Addresses every committed drawing and either checks the committed table
+ * against it or rewrites the table.
  *
  * Two failures, and they are not the same thing. A **duplicate** is two
  * drawings of one family sharing an address, which no rewrite can fix and
- * which fails both modes alike. A **stale** block is one a rewrite fixes, so
- * it fails only the check.
+ * which fails both modes alike. A **stale** table is one a rewrite fixes, so
+ * it fails only the check — and a table that is missing altogether is stale
+ * rather than an error, because a `write` is exactly the repair.
  *
  * Returns the lines to print and the exit code to set rather than printing
  * and exiting itself, so a test drives the whole run. `drawings` and
- * `readmePath` are overridable for the same reason: the duplicate branch is
+ * `tablePath` are overridable for the same reason: the duplicate branch is
  * asserted against a constructed pair rather than against a corpus that would
  * have to be broken to reach it.
  */
@@ -47,14 +47,14 @@ export const run = async (
   args: readonly string[],
   overrides: {
     drawings?: readonly AddressedDrawing[];
-    readmePath?: string;
+    tablePath?: string;
   } = {},
 ): Promise<{ exitCode: number; lines: string[] }> => {
   const mode = selectMode(args);
 
   if (mode === undefined) return { exitCode: 1, lines: [USAGE_MESSAGE] };
 
-  const readmePath = overrides.readmePath ?? README_PATH;
+  const tablePath = overrides.tablePath ?? TABLE_PATH;
   const drawings = overrides.drawings ?? (await sweepCorpus());
   const { miscounted, undeclared, vanished } = reconcileCollisions(drawings);
 
@@ -73,14 +73,13 @@ export const run = async (
     };
   }
 
-  const block = renderBlock(drawings);
-  const readme = await readFile(readmePath, "utf8");
+  const document = renderDocument(drawings);
 
-  if (extractBlock(readme) === block) {
+  if ((await readTable(tablePath)) === document) {
     return {
       exitCode: 0,
       lines: [
-        `🗺️ ${drawings.length} lattice addresses, and the README agrees.`,
+        `🗺️ ${drawings.length} lattice addresses, and the committed table agrees.`,
       ],
     };
   }
@@ -89,18 +88,29 @@ export const run = async (
     return {
       exitCode: 1,
       lines: [
-        "🗺️ The README's lattice address table is stale.",
+        "🗺️ The committed lattice address table is stale.",
         `💡 Run \`${WRITE_COMMAND}\`.`,
       ],
     };
   }
 
-  await writeFile(readmePath, spliceBlock(readme, block), "utf8");
+  await writeFile(tablePath, document, "utf8");
 
   return {
     exitCode: 0,
-    lines: [`🗺️ Wrote ${drawings.length} lattice addresses into the README.`],
+    lines: [
+      `🗺️ Wrote ${drawings.length} lattice addresses into \`output/lattice-addresses.md\`.`,
+    ],
   };
+};
+
+/** The table as committed, or nothing where there is no file to read — which a check reports as stale and a write repairs. */
+const readTable = async (tablePath: string): Promise<string | undefined> => {
+  try {
+    return await readFile(tablePath, "utf8");
+  } catch {
+    return undefined;
+  }
 };
 
 /** Boots the application's container, addresses the corpus, and closes it again. */

@@ -5,17 +5,25 @@ import path from "node:path";
 /** Where `DrawCommand` writes the corpus, and where it is committed. */
 export const OUTPUT_DIRECTORY = path.join(import.meta.dirname, "../../output");
 
-/** The project README the table is spliced into. */
-export const README_PATH = path.join(import.meta.dirname, "../../README.md");
+/**
+ * The generated table, written whole rather than spliced into anything.
+ *
+ * It lives beside the corpus it describes rather than in `README.md`, and
+ * that placement is a lint budget rather than a filing preference. Nine
+ * thousand rows take the README to about a megabyte, and parsing a markdown
+ * file that size — not evaluating rules over it, which a
+ * `markdownlint-disable` pair barely dented — took `meanderaw:markdown-lint`
+ * from under a second to forty-two and pushed 🧑‍💻 Lint Codebase past its
+ * twelve-minute limit. `output/` is already excluded from `markdownlint`,
+ * `cspell`, `oxfmt`, and `prettier`, so the table costs those nothing here.
+ * ESLint has no such exclusion and still parses this file for its markdown
+ * rules, which is the one cost the move does not remove — it is the same cost
+ * the README paid. Moving the table back would spend the rest again.
+ */
+export const TABLE_PATH = path.join(OUTPUT_DIRECTORY, "lattice-addresses.md");
 
 /** The repeat count a swept filename ends with, dropped to leave the variant the drawing is filed under. */
 export const REPEAT_COUNT_SUFFIX_PATTERN = /-\d+-repeats$/u;
-
-/** Opens the generated block. Everything outside the two markers is hand-written, and a write never touches it. */
-export const BLOCK_START_MARKER = "<!-- LATTICE_ADDRESSES_START -->";
-
-/** Closes the generated block. */
-export const BLOCK_END_MARKER = "<!-- LATTICE_ADDRESSES_END -->";
 
 /** Printed when the command line names neither mode or both. */
 export const USAGE_MESSAGE =
@@ -70,8 +78,8 @@ export const EXPECTED_ADDRESS_COLLISIONS: Readonly<
   Record<string, Readonly<Record<string, number>>>
 > = {
   // 🎯 Hexadecimal lattice addresses rather than words, so the dictionaries
-  // are turned off across them the way they are across the generated table
-  // in the README.
+  // are turned off across them. The generated table needs no such comment:
+  // `output/` is excluded from `cspell` wholesale.
   /* cspell:disable */
   branch: { "2r2c-21": 2 },
   negative: {
