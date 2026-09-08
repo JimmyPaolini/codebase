@@ -537,7 +537,7 @@ What this project is judged against. `declared` is the number in this project's 
 ```text
 🚀 main(): Promise<void> [packages/conformetry-examples/examples/embedding/embed.ts:44]
    ↳ Generates one instance, then measures the committed ones, using nothing but the runtime packages.
-  └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:132]
+  └─> ValidationService.validate(args: RunValidationArguments): RunValidationResult [packages/conformetry-validation/src/modules/validation/validation.service.ts:136]
      ↳ Validates every instance and returns the differences found.
     └─> InstanceDiscoveryService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:95]
        ↳ Resolves every instance to the template, or templates, that explain it.
@@ -564,7 +564,7 @@ What this project is judged against. `declared` is the number in this project's 
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `main` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-configuration:modules/template-discovery`, `packages/conformetry-core:modules/reporting`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-examples/examples/embedding/embed.ts:44` |
+| `main` | 13 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-configuration:modules/template-discovery`, `packages/conformetry-core:modules/reporting`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-examples/examples/embedding/embed.ts:44` |
 
 ### Breadth
 
