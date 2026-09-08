@@ -39,33 +39,41 @@ import {
  * ## The projects that override nothing
  *
  * Thirty-one projects under `packages/` now declare their own measured depth,
- * and eleven declare nothing and are held to the number below. Three reasons,
- * none of them that nobody got to them. The four skill packages —
- * `callidescope-agents`, `codependix-agents`, `codometer-agents`,
- * `conformetry-agents` — and `codependix-examples` hold between zero and three
- * callables, so there is no stack of theirs to gate. The five conformetry leaf
- * analyzers hold real code that roots nothing: `conformetry-typescript` has
- * forty callables, `-json` twenty-three, `-jupyter` twenty-two, `-python`
- * eleven, and `-text` five, and every one of them is reached from
- * `conformetry-generation` above rather than entered directly, so each
- * measures zero however much it does. Gating either kind at zero would fail on
- * the first stack of any length, which is a landmine rather than a ratchet.
- *
- * `codometer-examples` is the eleventh, and it is the same landmine one frame
- * along. It measures two, over two callables in a package that is a corpus and
- * a test suite rather than a library, and a limit at two breaches the moment
- * either of those callables gains a single frame — which, in a fixture corpus,
- * is a thing somebody adds casually and correctly. Headroom is not the
- * alternative: a limit set above what a project measures gates nothing and
- * lies about having been measured. So this one inherits, and the honest record
- * of its two is a `breadth`/`depth` run against it rather than a number in a
- * file.
+ * and the ones that still inherit the number below are the five conformetry
+ * leaf analyzers, which hold real code that roots nothing:
+ * `conformetry-typescript` has forty callables, `-json` twenty-three,
+ * `-jupyter` twenty-two, `-python` eleven, and `-text` five, and every one of
+ * them is reached from `conformetry-generation` above rather than entered
+ * directly, so each measures zero however much it does. Gating either kind at
+ * zero would fail on the first stack of any length, which is a landmine
+ * rather than a ratchet.
  *
  * The dependency closure a scoped run traces did fix this for
  * `codometer-changes`, which measured zero before it and ten after. The ten
  * with no caller are a different phenomenon and the closure does not reach
  * them: it supplies the callees a stack descends into, and what these are
  * missing is a caller.
+ *
+ * ## The projects traced by nothing
+ *
+ * Seven projects are not measured at all, rather than inheriting the number
+ * below the way the leaf analyzers do. The four skill packages —
+ * `callidescope-agents`, `codependix-agents`, `codometer-agents`,
+ * `conformetry-agents` — hold barely a callable between them, the same
+ * landmine the leaf analyzers avoid by inheriting rather than being gated at
+ * zero, except these have no real code underneath to ever grow into. And
+ * `codependix-examples`, `codometer-examples`, and `conformetry-examples` are
+ * fixture corpora rather than libraries: a depth number over one reports on a
+ * corpus's incidental shape instead of on production code, the same reason
+ * `packages/callidescope-examples` is excluded below in favor of its own
+ * report-freshness gate.
+ *
+ * A project cannot exclude itself this way — discovery finds a project's
+ * `tsconfig.json` before that project's own `callidescope.config.ts` is ever
+ * read, so removing a project from tracing has to happen at the workspace's
+ * own file. `configuration/.callidescopeignore` is where all seven are named,
+ * beside `packages/callidescope-examples` and the other exclusions this
+ * workspace declares.
  *
  * Six projects under `applications/` and `tools/` declare their own measured
  * depth the same way, and none of them inherit — but two more things sit

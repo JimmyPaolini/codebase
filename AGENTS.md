@@ -309,16 +309,19 @@ run's, because a flag cannot be explained apart from the configuration field it
 reads — `--check breadth` is refused outright without `limits.maximumBreadth`.
 
 **Depth and breadth are per project**, enforced by the `gate` target
-`@callidescope/nx` infers onto every project holding a `tsconfig.json` — 48 of
-the 51 here. Each gate traces its project together with that project's Nx
+`@callidescope/nx` infers onto every project holding a `tsconfig.json` — 42 of
+the 52 here. Each gate traces its project together with that project's Nx
 dependencies and fails on the findings that project **owns**, so a dependency's
 breach is that dependency's own gate's business. `affirmations` has no
-TypeScript program to trace; `packages/callidescope-examples` is excluded by
-`configuration/.callidescopeignore` and is denied a gate on purpose, its
-fixtures existing to breach; the workspace root project is skipped by
-construction, its scope being the workspace itself.
+TypeScript program to trace; the workspace root project is skipped by
+construction, its scope being the workspace itself; the rest —
+`packages/callidescope-examples`, the four skill packages, and the
+codependix, codometer, and conformetry examples packages — are excluded by
+`configuration/.callidescopeignore` and denied a gate on purpose:
+`callidescope-examples`'s fixtures exist to breach, and the other six either
+hold barely a callable or are fixture corpora rather than libraries.
 
-Thirty-eight projects declare their own limits in a `callidescope.config.ts` at
+Thirty-seven projects declare their own limits in a `callidescope.config.ts` at
 their own root, and each writes only what it overrides — inheritance is per
 limit, so `configuration/callidescope.config.ts` supplies whatever a project
 does not name. Every one of those numbers was set from a boundary-tested run at
@@ -349,15 +352,20 @@ Two things are gated, and they sit on opposite sides of a pull request:
   which publishes the workspace report and every project's README block on
   `main`.
 
-**Four traced roots carry no gate of their own**, and its own `project.json`
+**One traced root carries no gate of its own**, and its own `project.json`
 target description records why. `configuration/` measures depth 3 and holds a
 `tsconfig.json`, so it is traced, but it is not an Nx project and no inference
-can reach it; three fixture roots under `packages/codependix-examples/examples/`
-are the same case at depth 0. All four keep being traced and published by
-`write` on `main`, so a regression in any of them still lands in the report —
-they only stop failing a pull request. The workspace root is a fifth gap of a
-different kind: `.callidescopeignore` drops it as a project, so the loose
-maintenance scripts it owned are traced by nothing at all.
+can reach it. It keeps being traced and published by `write` on `main`, so a
+regression there still lands in the report — it only stops failing a pull
+request. Three fixture roots under `packages/codependix-examples/examples/`
+used to be the same case, before `.callidescopeignore` stopped tracing the
+whole `codependix-examples` package they sit under — a fixture corpus rather
+than a library, per `## The projects traced by nothing` in
+`configuration/callidescope.config.ts`. They carry no gate now for the same
+reason nothing else in that package does: they are traced by nothing at all.
+The workspace root is a second gap of a different kind: `.callidescopeignore`
+drops it as a project, so the loose maintenance scripts it owned are traced by
+nothing at all.
 
 When a behavior needs to be **seen** rather than described, run it:
 [`packages/callidescope-examples`](packages/callidescope-examples) is a small

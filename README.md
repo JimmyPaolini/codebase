@@ -556,7 +556,6 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 | `packages/codependix-cli` | 15 | 15 declared | 0 | 7 | 2 | 2 |
 | `packages/codometer-cli` | 16 | 16 declared | 0 | 11 | 2 | 0 |
 | `packages/conformetry-cli` | 14 | 14 declared | 0 | 9 | 0 | 0 |
-| `packages/conformetry-examples` | 13 | 13 declared | 0 | 6 | 1 | 0 |
 | `packages/conformetry-markdown` | 3 | 3 declared | 0 | 5 | 0 | 0 |
 | `packages/conformetry-nx` | 14 | 14 declared | 0 | 9 | 4 | 0 |
 | `packages/lexico-components` | 3 | 3 declared | 0 | 7 | 0 | 1 |
@@ -588,15 +587,6 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 | `packages/conformetry-validation` | 0 | 12 declared | 12 | 10 | 0 | 0 |
 | `configuration` | 3 | 17 inherited | 14 | 2 | 0 | 0 |
 | `packages/conformetry-text` | 3 | 17 inherited | 14 | 2 | 0 | 0 |
-| `packages/codometer-examples` | 2 | 17 inherited | 15 | 1 | 0 | 0 |
-| `packages/callidescope-agents` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
-| `packages/codependix-agents` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
-| `packages/codependix-examples` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
-| `packages/codependix-examples/examples` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
-| `packages/codependix-examples/examples/graph-levels/atlas/packages/atlas-service` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
-| `packages/codependix-examples/examples/typescript-resolution/resolution` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
-| `packages/codometer-agents` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
-| `packages/conformetry-agents` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
 
 ### Depth headroom
 
@@ -622,7 +612,6 @@ None.
 | `PluginService.runTrace` | 16 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-configuration:modules/configuration`, `packages/callidescope-nx:modules/options`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:221` |
 | `MeasureService.analyzeFiles` | 16 | `packages/codometer-customization:modules/customization`, `packages/codometer-languages:modules/languages`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/measure/measure.service.ts:75` |
 | `LanguagesService.analyze` | 13 | `packages/codometer-languages:modules/comments`, `packages/codometer-languages:modules/css`, `packages/codometer-languages:modules/hcl`, `packages/codometer-languages:modules/json`, `packages/codometer-languages:modules/jupyter`, `packages/codometer-languages:modules/markdown`, `packages/codometer-languages:modules/python`, `packages/codometer-languages:modules/shell`, `packages/codometer-languages:modules/sql`, `packages/codometer-languages:modules/toml`, `packages/codometer-languages:modules/typescript`, `packages/codometer-languages:modules/yaml` | `packages/codometer-languages/src/modules/languages/languages.service.ts:56` |
-| `main` | 13 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-configuration:modules/template-discovery`, `packages/conformetry-core:modules/reporting`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-examples/examples/embedding/embed.ts:44` |
 | `CallidescopeService.analyze` | 12 | `packages/callidescope-graph:modules/cohesion`, `packages/callidescope-graph:modules/entries`, `packages/callidescope-graph:modules/graph`, `packages/callidescope-output:modules/project-reports` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:284` |
 | `PluginService.runGenerator` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-nx:modules/adapter`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:334` |
 | `AspectsService.detectSimpleAspects` | 10 | `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/major-aspects`, `applications/caelundas:modules/minor-aspects`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/specialty-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:90` |
