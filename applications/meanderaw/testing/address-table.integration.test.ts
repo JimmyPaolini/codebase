@@ -140,10 +140,10 @@ describe("the lattice address table", () => {
 
     it("fires when a declared collision has stopped happening", () => {
       const { vanished } = reconcileCollisions([
-        drawing({ address: "2r2c-21", family: "branch", path: "branch/a.svg" }),
+        drawing({ address: "2r2c-21", path: "parallel/2-rows/one.svg" }),
       ]);
 
-      expect(vanished).toContain("branch 2r2c-21");
+      expect(vanished).toContain("parallel 2r2c-21");
     });
 
     it("splits negative's declared collisions the way its doc comment says", () => {
@@ -183,21 +183,20 @@ describe("the lattice address table", () => {
         (addresses) => Object.values(addresses),
       );
 
-      expect(census).toHaveLength(48);
+      expect(census).toHaveLength(47);
       expect(census.filter((count) => count < 2)).toStrictEqual([]);
-      expect(census.reduce((total, count) => total + count, 0)).toBe(150);
+      expect(census.reduce((total, count) => total + count, 0)).toBe(148);
 
       const { miscounted } = reconcileCollisions([
         ...corpus,
         drawing({
           address: "2r2c-21",
-          family: "branch",
-          path: "branch/2-rows/third.svg",
+          path: "parallel/2-rows/third.svg",
         }),
       ]);
 
       expect(miscounted).toStrictEqual([
-        "branch 2r2c-21: 3 drawings share it, not the declared 2 — branch/2-rows/rung-leftward-6-repeats.svg, branch/2-rows/rung-rightward-6-repeats.svg, branch/2-rows/third.svg",
+        "parallel 2r2c-21: 3 drawings share it, not the declared 2 — parallel/2-rows/serpentine-strands-2-flip-alternating-6-repeats.svg, parallel/2-rows/serpentine-strands-2-offset-1-6-repeats.svg, parallel/2-rows/third.svg",
       ]);
     });
 
@@ -233,7 +232,7 @@ describe("the lattice address table", () => {
    */
   describe("the figures ADR 0007 states", () => {
     it("addresses the whole committed corpus", () => {
-      expect(corpus).toHaveLength(9863);
+      expect(corpus).toHaveLength(9857);
     });
 
     it("counts the classes more than one family draws", () => {
@@ -258,7 +257,7 @@ describe("the lattice address table", () => {
         byPair[pair] = (byPair[pair] ?? 0) + 1;
       }
 
-      expect(shared).toHaveLength(155);
+      expect(shared).toHaveLength(149);
       expect(byPair).toMatchObject({
         "mosaic+negative": 92,
         "mosaic+parallel": 22,
@@ -310,7 +309,7 @@ describe("the lattice address table", () => {
           address.split("-")[1] === canonicalIdentifier,
       );
 
-      expect(canonical).toHaveLength(9167);
+      expect(canonical).toHaveLength(9161);
     });
   });
 
@@ -339,7 +338,7 @@ describe("the lattice address table", () => {
 
       expect(title).toBe("# 🗺️ Lattice Addresses");
       expect(blank).toBe("");
-      expect(statement).toContain("9,863");
+      expect(statement).toContain("9,857");
       expect(statement).toContain("nx run meanderaw:address-table:write");
     });
 

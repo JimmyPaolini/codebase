@@ -19,12 +19,12 @@ and `mosaic` filenames already carried addresses. What was missing was only the
 step from a lattice reading to a name.
 
 Every number below was measured by `LatticeIdentificationService` reading the
-committed corpus off disk. Every corpus-wide one — the 9,863 drawings, the 155
+committed corpus off disk. Every corpus-wide one — the 9,857 drawings, the 149
 classes two families both draw, the 283 within-family class groups and the 669
-drawings in them, the 9,167 literal addresses that are already canonical, and
-the 48 declared collisions — is the expected value of an assertion in
+drawings in them, the 9,161 literal addresses that are already canonical, and
+the 47 declared collisions — is the expected value of an assertion in
 `testing/address-table.integration.test.ts`, and the sub-family counts are
-asserted in `lattice-identification.service.integration.test.ts`. The four
+asserted in `lattice-identification.service.integration.test.ts`. The five
 minimal-period counts are the exception: they are measured, and written down in
 `MODIFIER_REPEAT_PITCHES`'s own doc comment beside the spans they justify,
 rather than asserted anywhere.
@@ -32,8 +32,8 @@ rather than asserted anywhere.
 ## Considered options
 
 - **Address every family on the shared lattice, at its own true repeat.**
-  Chosen. All **9,863** committed drawings address, and the addresses are what
-  let two families be compared at all: **155** combinations of row count, span,
+  Chosen. All **9,857** committed drawings address, and the addresses are what
+  let two families be compared at all: **149** combinations of row count, span,
   and canonical class are drawn by more than one family — 92 shared by `mosaic`
   and `negative`, 22 by `mosaic` and `parallel`, 18 by `snake` and `whirl`.
   `parallel serpentine-strands-3-offset-1` at three rows carries `3r2c-56a9`,
@@ -43,7 +43,7 @@ rather than asserted anywhere.
   them.** Rejected. A name like `snake/6-rows/plain-6-repeats.svg` describes a
   request rather than a drawing, so nothing in the corpus related one drawing to
   another and no measurement could be taken over it. The 283 within-family class
-  groups and the 48 declared collisions below are all facts that could not be
+  groups and the 47 declared collisions below are all facts that could not be
   stated at all before there was an address to state them about.
 - **Move the encoding out of the mosaic module and take the symmetry group with
   it.** Rejected, though [#671](https://github.com/JimmyPaolini/codebase/issues/671)
@@ -69,7 +69,7 @@ rather than asserted anywhere.
   in `parallel`, 55 in `negative`, 10 each in `boxes` and `branch`. `boxes spin`
   and `boxes spin-flip` at three rows are one class and two different tiles, and
   so are `branch rung-leftward` and `rung-rightward`. Reporting both costs
-  almost nothing: for **9,167** of the 9,863 drawings the literal address is
+  almost nothing: for **9,161** of the 9,857 drawings the literal address is
   already the canonical member, so the two columns differ only where the
   difference is the point.
 - **Ask the generator for the name instead of reading the document.** Rejected.
@@ -92,26 +92,30 @@ rather than asserted anywhere.
   edges — `MosaicTileService.blankEdges` gives it `rows - 2` vertical levels — so
   a two-row band has no addressable vertical edge at all and its address is a
   single row of horizontal bits. `EXPECTED_ADDRESS_COLLISIONS` is where that is
-  written down: **48** addresses, one in `branch`, one in `parallel`, and 46 in
-  `negative`, whose enumerated half files a drawing under the identifier of a
-  source with one level more than the address spells out. It is a **census**
-  rather than a set of permitted addresses — each one carries how many drawings
-  share it, 150 across the 48 — and both the membership and the count are
+  written down: **47** addresses, one in `parallel` and 46 in `negative`, whose
+  enumerated half files a drawing under the identifier of a source with one
+  level more than the address spells out. It is a **census** rather than a set
+  of permitted addresses — each one carries how many drawings
+  share it, 148 across the 47 — and both the membership and the count are
   asserted in both directions, so an entry that stops colliding, and an
   already-declared address that gains one drawing more, each fail exactly as an
   undeclared collision does. A set would have let that second case through,
   which is the duplicate art the check exists to catch.
-- **The true repeat exceeds the pitch for four modifiers, not the two the spec
+- **The true repeat exceeds the pitch for five modifiers, not the two the spec
   named.** `spin` and `spin-flip` take `SPIN_CYCLE_LENGTH` pitches, as the spec
-  said, and `edge-flip` and `plied` take two — 18 `edge-flip` drawings and 65
-  `plied` ones have a minimal period wider than their own pitch, against 10 each
-  for the two rotations. The one `plied` drawing that does not is the two-strand
-  ply of a two-row band, and a declared span wider than the minimal one still
-  addresses it correctly.
+  said, and `edge-flip`, `plied`, and `stagger` take two — 18 `edge-flip`
+  drawings, 65 `plied` ones, and all 30 `stagger` ones have a minimal period
+  wider than their own pitch, against 10 each for the two rotations. The one
+  `plied` drawing that does not is the two-strand ply of a two-row band, and a
+  declared span wider than the minimal one still addresses it correctly.
+  `stagger` joined the list when the `branch` figure was inset from its border
+  rules: its rail alternates between the two ends of its teeth, and while both
+  of those were ruled border rows the alternation drew nothing an address could
+  read.
 - **A sub-family is now earned outside `mosaic`, and that is a discovery rather
   than a reclassification.** `MosaicNamingService.rules` was already pure
   structure over a tile, so it answers for a reading from any family unchanged:
-  **121** of the 1,104 swept combinations earn a name — 46 in `branch`, 25 in
+  **85** of the 1,098 swept combinations earn a name — 10 in `branch`, 25 in
   `negative`, 50 in `parallel` — and the other six swept families earn none at
   any row count or modifier. The name is reported in a column beside the family
   rather than in place of it.

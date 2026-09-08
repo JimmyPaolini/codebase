@@ -50,10 +50,12 @@ export const WRITE_COMMAND = "nx run meanderaw:address-table:write";
  *
  * A **two-row band** has one interior level and no addressable vertical edge
  * at all — `MosaicTileService.blankEdges` gives a tile `rows - 2` vertical
- * levels — so its address is a single row of horizontal bits. `branch`'s two
- * `rung` directions and `parallel`'s two two-strand `serpentine` rotations
- * differ only in ink that rises out of a border rule, which at two rows is
- * every vertical edge the drawing has.
+ * levels — so its address is a single row of horizontal bits. `parallel`'s
+ * two two-strand `serpentine` rotations differ only in ink that rises out of
+ * a border rule, which at two rows is every vertical edge the drawing has.
+ * `branch` used to collide here too, between its two `rung` directions;
+ * insetting its figure raised that family's structural minimum to three rows,
+ * so the band that could not tell them apart is no longer drawn.
  *
  * **`negative`'s enumerated half** files a drawing under the canonical
  * identifier of the tile it inverts, and inverting a source of `rows + 1`
@@ -81,7 +83,6 @@ export const EXPECTED_ADDRESS_COLLISIONS: Readonly<
   // are turned off across them. The generated table needs no such comment:
   // `output/` is excluded from `cspell` wholesale.
   /* cspell:disable */
-  branch: { "2r2c-21": 2 },
   negative: {
     "3r1c-4b": 2,
     "3r1c-7b": 5,

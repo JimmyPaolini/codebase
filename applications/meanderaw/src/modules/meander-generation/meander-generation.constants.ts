@@ -164,11 +164,18 @@ export const SPIN_FAMILY_MODIFIER_NAMES: readonly Modifier["name"][] = [
  * is the whole story for every modifier absent from this table, whose
  * consecutive units are identical — including `flip` on `chain`, `snake`,
  * `swirl`, and `whirl`, where the flip is already paid for in a doubled
- * pitch rather than in a longer cycle. The four named here draw something
+ * pitch rather than in a longer cycle. The five named here draw something
  * that comes back only after several units: `spin` and `spin-flip` rotate
  * their motif a quarter turn per unit, so a full turn takes
  * {@link SPIN_CYCLE_LENGTH} of them; `edge-flip` turns alternate units over;
- * and `plied` alternates the two orientations of its bundle.
+ * `plied` alternates the two orientations of its bundle; and `stagger` runs
+ * every second unit's rail along the far end of its teeth, which is the
+ * crenellation the mode is named for.
+ *
+ * `stagger` joined the list when its figure was inset from its border
+ * rules. Its rail could previously reach only a border row, and both borders
+ * were ruled, so the alternation drew nothing an address could read and
+ * consecutive units were identical by accident.
  *
  * It is declared rather than searched for. A span found by looking for the
  * smallest one that repeats would agree with every drawing by construction,
@@ -178,8 +185,10 @@ export const SPIN_FAMILY_MODIFIER_NAMES: readonly Modifier["name"][] = [
  * and the corpus sweep is what holds it to account.
  *
  * Every entry is measured over the whole corpus: 10 `spin`, 10 `spin-flip`,
- * 18 `edge-flip` (nine `chain` and nine `snake`), and 65 `plied` drawings
- * have a minimal period wider than their own pitch. The one `plied` drawing
+ * 18 `edge-flip` (nine `chain` and nine `snake`), 65 `plied`, and all 30
+ * `stagger` drawings have a minimal period wider than their own pitch — its
+ * teeth are inset from both borders at every row count the family draws, so
+ * the two rows its rail alternates between are never one row. The one `plied` drawing
  * that does not is the two-strand ply of a two-row band, whose single
  * interior level draws both bundle orientations the same — the same
  * degeneracy that kept one-strand plies out of the sweep. A declared span
@@ -194,6 +203,7 @@ export const MODIFIER_REPEAT_PITCHES: Partial<
   plied: 2,
   spin: SPIN_CYCLE_LENGTH,
   "spin-flip": SPIN_CYCLE_LENGTH,
+  stagger: 2,
 };
 
 /**

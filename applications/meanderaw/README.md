@@ -282,7 +282,7 @@ materialized its unit space as enumerable tiles, so its regions — `lines`, `da
 `dots`, `diamond` — became nameable at the command line. The other nine families have
 latent unit spaces and therefore only modifiers. Evaluating a predicate needs no
 enumeration, though, so a drawing from any of those nine can still **earn** a sub-family
-name from the tile it draws — 121 of the 1,104 swept combinations do, and the
+name from the tile it draws — 85 of the 1,098 swept combinations do, and the
 [lattice address table](output/lattice-addresses.md) reports which.
 
 ### The mosaic family draws no motif
@@ -1117,7 +1117,7 @@ then could the contract phase delete the per-family path emission.
 > `<rows>r<span>c-` and one hexadecimal character per interior lattice point — with its
 > canonical symmetry class beside it, spelled and folded by
 > `LatticeIdentificationService` in `src/modules/lattice-identification/` and tabulated
-> for all 9,863 committed drawings in [`output/lattice-addresses.md`](output/lattice-addresses.md). The
+> for all 9,857 committed drawings in [`output/lattice-addresses.md`](output/lattice-addresses.md). The
 > other three bullets are untouched: there is no family-agnostic lattice enumerator, the
 > motif services still emit their own path data rather than producing a lattice tile for
 > one shared renderer, and the modifiers are still per-family arithmetic rather than
@@ -1127,7 +1127,7 @@ then could the contract phase delete the per-family path emission.
 > requires no materialization: identification reads a finished document and names the one
 > tile it found there. Nothing about the verdict is reopened. One leg of it reads
 > differently now — finding 3 above says a predicate over one tile names nothing, and a
-> predicate over one tile does name that tile: 121 of the 1,104 swept combinations earn a
+> predicate over one tile does name that tile: 85 of the 1,098 swept combinations earn a
 > structural sub-family name, `branch`, `negative`, and `parallel` between them. What the
 > five families here lack is not the naming but a space whose regions a name would
 > partition, and every one of them still earns no name at any swept row count and
@@ -2009,7 +2009,7 @@ likeness. Every figure in this section is the expected value of an assertion.
 
 ## 🗺️ Lattice Addresses
 
-Every one of the 9,863 committed drawings is addressed on the lattice every family is
+Every one of the 9,857 committed drawings is addressed on the lattice every family is
 drawn on, and the whole table is generated into
 [`output/lattice-addresses.md`](output/lattice-addresses.md). It is filed beside the
 corpus it describes rather than spliced in here: nine thousand rows take a README to

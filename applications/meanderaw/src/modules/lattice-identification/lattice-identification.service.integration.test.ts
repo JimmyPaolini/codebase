@@ -156,7 +156,7 @@ const SWEPT_FAMILIES: readonly {
  * quietly stopped matching anything fails here rather than passing as a
  * sweep over nothing.
  */
-const SWEPT_COMBINATION_COUNT = 1104;
+const SWEPT_COMBINATION_COUNT = 1098;
 
 /**
  * How many repeat units each tile is rendered at for the round trip. Three
@@ -536,11 +536,11 @@ describe("a rendered meander is addressed by its lattice", () => {
       }
 
       expect({ named, total: SWEPT_COMBINATION_COUNT }).toStrictEqual({
-        named: 121,
+        named: 85,
         total: SWEPT_COMBINATION_COUNT,
       });
       expect(namedByFamily).toStrictEqual({
-        branch: { bars: 40, dashes: 2, dots: 4 },
+        branch: { bars: 10 },
         negative: { lines: 13, mesh: 11, zigzag: 1 },
         parallel: { bars: 10, dashes: 37, dots: 1, zigzag: 2 },
       });
