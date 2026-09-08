@@ -423,7 +423,7 @@ export class BranchMotifService implements MotifService {
     return BRANCH_MODES_BY_MODIFIER_NAME[modifier.name];
   }
 
-  /** Draws one repeat unit of whichever spine-and-teeth figure the modifier selects; {@link border} rules the two borders it runs between. */
+  /** Draws one repeat unit of whichever spine-and-teeth figure the modifier selects; {@link border} rules the band where that figure is not. */
   path(geometry: GridGeometry, unit: MotifUnit): string {
     const mode = this.mode(unit.modifier);
     const unitColumns = this.unitColumns(unit.modifier);

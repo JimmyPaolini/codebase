@@ -16,13 +16,13 @@ nx run meanderaw:start
 ## 🏛️ Before You Change a Meander
 
 Meander geometry is governed by a charter of seven invariants, five of which are fixed.
-They are measured against all 9,863 committed SVGs, not read off the code, so
+They are measured against all 9,857 committed SVGs, not read off the code, so
 they are facts about the output rather than intentions in the source. The full charter,
 with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
 **The named half of the sweep runs to `FAMILY_MAXIMUM_ROWS`,** the same record
 `MeanderGenerationService.generate` validates `rows` against — so every drawing the command
-line can be asked for is one this repository commits and the charter gates, 1,104 named
+line can be asked for is one this repository commits and the charter gates, 1,098 named
 
 patterns, each family from its own structural minimum through its own ceiling. It stopped
 at 8 for every family alike until
@@ -98,8 +98,8 @@ The three that most often catch a change:
 - **No branching and no crossing.** Ink has zero T-junctions everywhere except `negative`
   and `branch`, the two families added to branch; `parallel`, which started branching when
   both of its band borders were ruled; and `chain`/`snake` under `edge`/`edge-flip`, which
-  branch where their zigzag lands mid-border — 23,472 junctions across 834 of the 1,104
-  named patterns, 17,374 of them `parallel`'s, 3,054 `negative`'s, 2,684 `branch`'s, and
+  branch where their zigzag lands mid-border — 22,158 junctions across 828 of the 1,098
+  named patterns, 17,374 of them `parallel`'s, 3,054 `negative`'s, 1,370 `branch`'s, and
   360 `chain`'s and `snake`'s.
 
   It has zero X-junctions everywhere except `cross` drawn solid — 12 per document at every
@@ -155,14 +155,18 @@ Three things that look like defects and are not:
   list `parallel` in `COMPATIBLE_MODIFIERS`. See "The Parallel Family" in
   [README.md](./README.md).
 - **`negative` and `branch` both branching** is not one family under two names. Both relax
-  invariant 3 and both come off the same survey shortlist; **they used to differ in loops
-  and no longer do.** `negative` inks a whole corridor graph and carries up to 65 cycles per
-  drawing on one to thirteen components; `branch` drew a loop-free spanning tree until its
-  second band border was ruled, and now carries 5 to 29 cycles on a single component. What
-  is left to tell them apart is the crossing, which `negative` relaxes in three of its ten
-  modes and `branch` in none. **No committed document is a tree any more** — closing that
-  border took `branch`'s 88, and dropping the one-strand `parallel` duplicates took the 22
-  `serpentine` paths. Those cycle counts and the absence of any tree are asserted in
+  invariant 3 and both come off the same survey shortlist; **they differ in loops, and for
+  one commit they did not.** `negative` inks a whole corridor graph and carries up to 65
+  cycles per drawing on one to thirteen components; `branch` is acyclic in every mode at
+  every row count, a forest of two or three pieces — its figure inset by one lattice row
+  from each rule beside it, so no rule touches the ink. It carried 5 to 29 cycles for the
+  one commit in which both borders were ruled directly onto the figure, which also
+  collapsed every `stagger` drawing to the plain comb. The crossing tells them apart too,
+  and `negative` relaxes it in three of its ten modes where `branch` relaxes it in none.
+  **No committed document is a tree any more** — `branch`'s 88 stopped being trees when
+  that border was ruled and are now forests of many pieces instead, and dropping the
+  one-strand `parallel` duplicates took the 22 `serpentine` paths. Those cycle counts and
+  the absence of any tree are asserted in
   `meander-topology.service.integration.test.ts`, not merely stated here. See "The
   Branching Family" in [README.md](./README.md) and
   `docs/adr/0006-close-both-band-borders-in-branch-and-parallel.md`.
