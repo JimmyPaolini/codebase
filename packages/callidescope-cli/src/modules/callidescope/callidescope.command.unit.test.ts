@@ -498,6 +498,26 @@ describe(CallidescopeCommand, () => {
     expect(process.stdout.write).toHaveBeenCalledTimes(1);
   });
 
+  it("hands the trace the limits the command line overrode", async () => {
+    // The hop the original `--maximum-depth` defect lived in. Both ends were
+    // covered — the resolver reported the override, and `resolveLimits`
+    // applied one when handed it — and the flag was still inert against every
+    // gate, because nothing carried the one to the other. This is that carry.
+    await command.run([], { maximumDepth: "3" });
+
+    expect(callidescopeService.trace).toHaveBeenCalledWith(
+      expect.objectContaining({ limitOverrides: { maximumDepth: 3 } }),
+    );
+  });
+
+  it("hands the trace no overrides when no limit flag was written", async () => {
+    await command.run([], {});
+
+    expect(callidescopeService.trace).toHaveBeenCalledWith(
+      expect.objectContaining({ limitOverrides: {} }),
+    );
+  });
+
   it("refuses a positional argument rather than tracing anyway", async () => {
     // This is the default command, so a word commander could not match as a
     // subcommand arrives here as an operand. Tracing the whole workspace and
