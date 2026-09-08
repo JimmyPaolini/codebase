@@ -12,6 +12,31 @@
     "type:application"
   ],
   "targets": {
+    "address-table": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "node --import @swc-node/register/esm-register testing/address-table.ts --check"
+        },
+        "write": {
+          "command": "node --import @swc-node/register/esm-register testing/address-table.ts --write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Address every committed drawing under `output/` on the lattice and compare the result against the table the README commits, or rewrite that table. A `check` failure is one of two things: the table is stale, so a drawing changed shape without the table following and `write` fixes it; or two drawings of one family share an address, which is duplicate art or an address too coarse to separate them and no rewrite fixes it. It reads the committed corpus rather than redrawing it, so the whole sweep costs about two seconds. This is the one target in the workspace whose gated file and written file are the same file, so `README.md` is both an input and an output: an input because staleness is what `check` measures, and an output because `write` really does write it, which is what makes a replayed run restore the table rather than only the log that says it wrote one. `codometer` declares the same README as an output for the same reason; unlike this target it never reads it, because it checks limits rather than freshness. `output/**` and `README.md` are named beside the `default` that already globs both, so that a reader can see what this target is hashed on without resolving a named input; `^production` and the `@swc-node/register` entry are not decoration, because the sweep boots this project's own container through that loader and would otherwise replay a stale result after either one moved.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "^production",
+        "{projectRoot}/output/**",
+        "{projectRoot}/README.md",
+        "default",
+        { "externalDependencies": ["@swc-node/register"] }
+      ],
+      "options": {
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["{projectRoot}/README.md"]
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "options": {
