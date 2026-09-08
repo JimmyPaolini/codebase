@@ -214,7 +214,7 @@ describe("the lattice address table", () => {
       ]);
 
       expect(miscounted).toStrictEqual([
-        "parallel 2r2c-21: 3 drawings share it, not the declared 2 — parallel/2-rows/serpentine-strands-2-flip-alternating-6-repeats.svg, parallel/2-rows/serpentine-strands-2-offset-1-6-repeats.svg, parallel/2-rows/third.svg",
+        "parallel 2r2c-21: 3 drawings share it, not the declared 2 — parallel/2-rows/serpentine-strands-2-flip-alternating-6-repeats-2r2c.svg, parallel/2-rows/serpentine-strands-2-offset-1-6-repeats-2r2c.svg, parallel/2-rows/third.svg",
       ]);
     });
 

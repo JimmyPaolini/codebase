@@ -66,7 +66,7 @@ const WIDEST_FULL_ADDRESS_BYTES: readonly {
   readonly family: MotifDrawnType;
 }[] = [
   { bytes: 515, family: "boxes" },
-  { bytes: 94, family: "branch" },
+  { bytes: 150, family: "branch" },
   { bytes: 295, family: "chain" },
   { bytes: 54, family: "cross" },
   { bytes: 58, family: "negative" },

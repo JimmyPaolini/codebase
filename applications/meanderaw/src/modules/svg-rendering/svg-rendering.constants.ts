@@ -50,7 +50,7 @@ export const FILENAME_ADDRESS_SUFFIX_PATTERN =
  *
  * Measured against the corpus this repository commits today — not the
  * figures an earlier spike measured, which two prior pull requests moved:
- * `branch` (94 bytes), `cross` (54), and `negative` (58) hold comfortably
+ * `branch` (150 bytes), `cross` (54), and `negative` (58) hold comfortably
  * under the limit and keep `full-address`. `chain` and `snake` were
  * originally expected to fit at 246 bytes; `edge-flip` at 12 rows now widens
  * to 295 once its true multi-pitch repeat is spanned, so both moved to
