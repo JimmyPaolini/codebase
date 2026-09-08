@@ -176,6 +176,47 @@ A markdown destination may supply `render` to replace the built-in tables, or
 splice rather than reimplementing it. Returning `false` reports the destination
 as stale; anything else, `undefined` included, counts as current.
 
+## Flags and Precedence
+
+Every combination of a command-line value with a configured one happens in this
+package, in `FlagResolutionService`, under one rule:
+
+> A flag that changes **what a run judges or writes** may only override a value
+> the configuration already declares. A flag that selects **mode or
+> presentation** is command-line only, because neither can make an
+> under-configured run legal.
+
+| Flag | Role | What resolution does with it |
+| ---- | ---- | ---------------------------- |
+| `--check` | Mode | Command-line only. Nothing in the configuration corresponds to it |
+| `--write` | Mode | Command-line only, for the same reason |
+| `--format` | Presentation | Command-line only, and validated. It is returned beside the configuration rather than written into it |
+| `--directories` | Override | Replaces `directories` when it named any. An empty value is absent, not a scope |
+| `--json` | Override | Replaces `write.json.path`, and no other property of that destination |
+| `--markdown` | Override | Replaces `write.markdown.path`, and no other property of that destination |
+| `--config` | Neither | It chooses the file everything else is resolved against, so it has already done its whole job by the time resolution runs |
+
+Four consequences are worth stating outright, because each replaced an
+ad-hoc merge that got them wrong:
+
+- **An empty `--directories` is absent.** `--directories ""` and a
+  `--directories` nobody typed are the same value, and reading either as
+  "every project" silently overrode a configured scope.
+- **A path override keeps its siblings.** A destination carries a heading, a
+  description, its anchors, its indentation, and its render and write hooks;
+  re-resolving it from a path alone replaced every one of them with a default.
+- **A path override cannot invent a destination.** `--json` against a
+  configuration declaring no `write.json` is refused, because a flag that could
+  conjure one would let any command line write a report the configuration never
+  asked for.
+- **An unrecognized `--format` is refused.** A run that quietly printed
+  markdown for `--format mermiad` exited 0 having taught its reader that the
+  flag does nothing.
+
+Every complaint is collected rather than thrown at the first one, so a command
+line with two mistakes in it is two mistakes to fix rather than two runs.
+Nothing has been traced or written by the time resolution returns.
+
 ## Project Configuration
 
 Everything above describes the file a run is pointed at — the **workspace**
@@ -826,3 +867,7 @@ graph LR
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
+
+<!-- A deliberate misspelling: the example of a `--format` value nobody
+recognizes, which is exactly what this refusal is about.
+cspell:ignore mermiad -->
