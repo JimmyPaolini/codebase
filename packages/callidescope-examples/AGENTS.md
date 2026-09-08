@@ -39,14 +39,12 @@ and `packages/logger`. See
 | `🚨 [DEPTH n > limit]` and every frame's summary differs | [`deep-stack`](examples/deep-stack/README.md) | The layering is real. Question whether the stages are all needed; do not delete one layer at a time |
 | `🚨 [DEPTH n > limit]` and a run of frames all say the same thing | [`forwarding-stack`](examples/forwarding-stack/README.md) | Layers that only pass arguments along. Collapse them |
 | `depth ≥ n` rather than `depth n` | [`computed-member`](examples/computed-member/README.md) | Something on the path could not be followed. The number is a floor, not a bug |
-| `Unfollowable calls` above zero | [`computed-member`](examples/computed-member/README.md), [`implementation-fan-out`](examples/implementation-fan-out/README.md) | A computed member name, or a structural expansion dropped for exceeding `maximumImplementationCandidates` |
-| A `Module spread` row | [`module-spread`](examples/module-spread/README.md) | The callable joins unrelated concerns directly. Compare with [`spread-near-miss`](examples/spread-near-miss/README.md), which is correctly silent |
-| A `Possibly misplaced` row | [`misplaced-callable`](examples/misplaced-callable/README.md) | Move the callable to the module the report names, or fold it into its one caller |
+| `Unfollowable calls` above zero | [`computed-member`](examples/computed-member/README.md), [`implementation-fan-out`](examples/implementation-fan-out/README.md) | A computed member name, or a structural expansion dropped for exceeding the implementation-candidate cap |
 | `Stacks through recursion` above zero | [`mutual-recursion`](examples/mutual-recursion/README.md) | A cycle, collapsed before depth was measured. The depth is a floor |
 | A stack headed `· orphan-root` | [`entry-points`](examples/entry-points/README.md) | Nothing claimed the callable. Either dead code, or an entry-point rule your configuration is missing |
 | A stack headed `· declared` | [`declared-entry-points`](examples/declared-entry-points/README.md) | A project named that address in its own `callidescope.config.ts`. That is the surface it asked to be measured on |
 | `declares an entryPoints.addresses entry that resolves to nothing` | [`declared-entry-points`](examples/declared-entry-points/README.md) | A declared address names a callable that has moved or been renamed. Fix the address; the refusal exists so a rename cannot loosen a gate in silence |
-| `which only the workspace configuration may set` | [`project-depth-limit`](examples/project-depth-limit/README.md) | A project's `callidescope.config.ts` reached past `entryPoints`, `limits.maximumDepth`, `limits.maximumBreadth`, and `exclude` — most often by spreading the workspace limits, which carry a workspace-only one |
+| `which only the workspace configuration may set` | [`project-depth-limit`](examples/project-depth-limit/README.md) | A project's `callidescope.config.ts` reached past `entryPoints`, `limits.maximumDepth`, `limits.maximumBreadth`, and `exclude` |
 | Two findings in one report judged against different limits | [`project-depth-limit`](examples/project-depth-limit/README.md), [`inherited-limits`](examples/inherited-limits/README.md) | Not a bug. A limit belongs to a project, so one finding's number can be a project's own while another's is the workspace default it fell back to |
 | A project reporting depth 0 while carrying a real chain | [`gated-leaf`](examples/gated-leaf/README.md) | It roots nothing, because everything it owns is called from above. Declare its entry points before giving it a limit |
 | `--check breadth requires at least one project in scope` | [`gated-leaf`](examples/gated-leaf/README.md) | Breadth has no default anywhere. Some project in scope has to declare `limits.maximumBreadth` before the gate can run |
@@ -87,10 +85,7 @@ callidescope-examples/
     └── examples.integration.test.ts   every finding this guide documents
 ```
 
-- Every directory under `examples/` is one **module** in callidescope's sense,
-  which is what module spread and misplacement are measured against. Splitting a
-  fixture across two directories changes those findings, so do not move files
-  between them casually.
+- Every directory under `examples/` is one example, readable on its own.
 - **Two of them are also projects.** `gated-leaf` and `inherited-limits` hold a
   `tsconfig.json`, which is what makes a directory a project and therefore what
   lets a limit belong to it. They are named in the `examples` target's
@@ -142,7 +137,7 @@ the point:
   everywhere else, and these two fixtures fail it immediately.
 - `computed-member` cannot be followed on purpose, which is what makes a depth a
   floor.
-- `implementation-fan-out` exceeds `maximumImplementationCandidates` on purpose.
+- `implementation-fan-out` exceeds the implementation-candidate cap on purpose.
 - `entry-points` holds a callable nothing calls on purpose.
   `dependency-cruiser` reports `no-orphans` against it on every run — two tools
   independently noticing the same file is the example working, not a lint

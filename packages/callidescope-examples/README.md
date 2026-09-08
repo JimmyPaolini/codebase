@@ -49,9 +49,7 @@ which maps "callidescope reported X" to the example that explains X.
 ## The examples
 
 Each directory under [`examples/`](examples) is one example, carries its own
-`README.md`, and is readable on its own. Each is also one **module** in
-callidescope's sense, which is the unit module spread and misplacement are
-measured against.
+`README.md`, and is readable on its own.
 
 **The package is traced as one unit, together with its dependency closure.**
 Almost every example directory carries no `tsconfig.json` of its own, so it
@@ -85,10 +83,6 @@ worked through. Read them in the order below for a walkthrough:
 [inherited-limits](examples/inherited-limits/README.md) →
 [gated-leaf](examples/gated-leaf/README.md) →
 [shared-tail](examples/shared-tail/README.md) →
-[module-spread](examples/module-spread/README.md) →
-[spread-near-miss](examples/spread-near-miss/README.md) →
-[misplaced-callable](examples/misplaced-callable/README.md) →
-[receipt](examples/receipt/README.md) →
 [frame-annotations](examples/frame-annotations/README.md).
 
 ### The resolution table, made executable
@@ -148,9 +142,9 @@ reads and the closure deliberately refuses.
 
 ### The cap on structural matching
 
-[`implementation-fan-out`](examples/implementation-fan-out) declares three
-classes satisfying one interface, against a
-`maximumImplementationCandidates` of two. The whole expansion is dropped and
+[`implementation-fan-out`](examples/implementation-fan-out) declares nine
+classes satisfying one interface, against an implementation-candidate cap of
+eight. The whole expansion is dropped and
 recorded as unfollowable — not narrowed to a favorite, which would invent a
 call stack no execution ever takes. A member named `emit`, `run`, or `sync`
 matches dozens of unrelated classes in a real workspace, and that is the noise
@@ -366,37 +360,6 @@ The one thing not to do is raise `maximumDepth` to make it pass. This
 repository's limit is a ratchet set to today's worst stack, so raising it
 converts a gate into a record of a decision nobody made.
 
-### A module-spread finding
-
-[`module-spread`](examples/module-spread) reports
-`ModuleSpreadService.orchestrate`: its callees reach six modules, and it calls
-five of them _directly_. Both halves matter, which is what
-[`spread-near-miss`](examples/spread-near-miss) is for — it reaches
-everything the orchestrator reaches, but calls one module directly, and is
-correctly not reported. Transitive reach alone would flag every entry point in
-the repository, because an entry point legitimately reaches the whole program.
-
-The fix is to look at the five direct calls and ask which of them belong to one
-another. A method joining unrelated concerns is usually a dispatcher under a
-name that promises a domain operation, and the remedy is to give each concern
-its own caller — not to inline anything.
-
-### A misplaced-callable finding
-
-[`misplaced-callable`](examples/misplaced-callable) declares
-`formatCurrency`; both of its callers live in
-[`receipt`](examples/receipt). The report names the move:
-
-```text
-formatCurrency | declared in …:modules/misplaced-callable | called from …:modules/receipt | 2/2
-```
-
-Move the file, or fold the helper into its one caller. The finding needs at
-least `minimumCallers` callers before it will judge placement at all, and at
-least `callerMajorityRatio` of them in a single foreign module — so it stays
-quiet about a genuinely shared utility, which is the shape it would otherwise
-be wrong about most often.
-
 ### Frame annotations
 
 [`frame-annotations`](examples/frame-annotations) is seven frames, one per
@@ -472,7 +435,7 @@ whose entire content is deliberately-shaped fixture code. The answers:
 | `codometer` | No declared size limit: the package is private and never built, so there is no bundle to gate |
 | Nested projects | Two example directories hold a `tsconfig.json` and no `package.json`. The first is what makes them projects with limits of their own; the second is deliberate — Nx infers a project from a nested `package.json`, and the fixtures then fail `@nx/enforce-module-boundaries` for importing one another. They are named in the run's `--directories` instead |
 | Nx tags | `type:package`, `framework:nestjs`, `language:typescript`, `name:callidescope-examples`. The NestJS dependency is real — `injected-dependency` is the headline case |
-| Project layout | An `examples/` directory rather than `src/modules/`, matching the other `*-examples` packages. `configuration/codebase-structure.json` declares it; `workspaceStructure.rootModuleSegment` in this package's config is what keeps each directory a distinct module |
+| Project layout | An `examples/` directory rather than `src/modules/`, matching the other `*-examples` packages. `configuration/codebase-structure.json` declares it |
 | `conformetry` | Not an instance of any template, and nothing had to be suppressed to keep it that way — see below |
 
 The layout is what keeps this package out of conformance, and it is worth
@@ -533,8 +496,7 @@ nx run callidescope-examples:vitest
 
 [`testing/examples.integration.test.ts`](testing/examples.integration.test.ts)
 traces the fixtures and asserts every finding this guide documents — the stack
-depths, the floor, the spread and misplacement findings, the unfollowable
-frames, the entry-point kinds. A fixture whose meaning silently changed when the
+depths, the floor, the unfollowable frames, the entry-point kinds. A fixture whose meaning silently changed when the
 resolver changed would be worse than no fixture, and these assertions double as
 regression tests for the resolver itself.
 
@@ -550,10 +512,10 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 
 | Measure | Value |
 | --- | --- |
-| Callables | 81 |
-| Files | 37 |
-| Calls traced | 62 |
-| Call stacks | 18 |
+| Callables | 80 |
+| Files | 39 |
+| Calls traced | 54 |
+| Call stacks | 19 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 2 |
@@ -633,7 +595,7 @@ What this project is judged against. `declared` is the number in this project's 
 ```
 
 <details>
-<summary>15 more call stacks</summary>
+<summary>16 more call stacks</summary>
 
 **4. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
 
@@ -671,34 +633,20 @@ What this project is judged against. `declared` is the number in this project's 
              ↳ Reads the file the number the verdict used was written in.
 ```
 
-**6. `SpreadNearMissService.review`** — depth 5 · orphan-root
-
-```text
-🚀 SpreadNearMissService.review(label: string): string [packages/callidescope-examples/examples/spread-near-miss/spread-near-miss.ts:23]
-   ↳ Delegates the whole job to the one module it knows about.
-  └─> ModuleSpreadService.orchestrate(label: string): string [packages/callidescope-examples/examples/module-spread/module-spread.ts:32]
-     ↳ Touches five modules in one method, which is the finding.
-    └─> CallbackArgumentService.shoutAll(entries: readonly string[]): string[] [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:22]
-       ↳ Shouts every entry, through a callback `map` invokes.
-      └─> CallbackArgumentService.map(…)(entry: string): string [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:23]
-        └─> CallbackArgumentService.shout(entry: string): string [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:15]
-           ↳ Upper-cases one entry.
-```
-
-**7. `DependencyClosureService.allowsDepth`** — depth 4 · orphan-root
+**6. `DependencyClosureService.allowsDepth`** — depth 4 · orphan-root
 
 ```text
 🚀 DependencyClosureService.allowsDepth(args: { configuration: CallidescopeConfiguration; depth: number; }): boolean [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:32]
    ↳ Whether a configuration allows a stack as deep as the one asked about.
   └─> DependencyClosureService.readDepthLimit(configuration: CallidescopeConfiguration): number [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:24]
      ↳ Reads the depth limit the dependency's own defaulting settles on.
-    └─> ConfigurationService.resolveConfiguration(configuration: CallidescopeConfiguration): ResolvedCallidescopeConfiguration [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:433]
+    └─> ConfigurationService.resolveConfiguration(configuration: CallidescopeConfiguration): ResolvedCallidescopeConfiguration [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:389]
        ↳ Fills in every field a configuration file may leave out.
-      └─> ConfigurationService.resolveAllowSpreadFor(allowSpreadFor: string[] | undefined): string[] [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:171]
-         ↳ Applies the default globs exempt from the module-spread finding.
+      └─> ConfigurationService.resolveEntryPoints(…): ResolvedCallidescopeEntryPoints [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:193]
+         ↳ Applies defaults to the entry-point rules.
 ```
 
-**8. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
+**7. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
 
 ```text
 🚀 FrameAnnotationsService.legacyRender(value: string): string ⚠ deprecated [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:74]
@@ -711,7 +659,7 @@ What this project is judged against. `declared` is the number in this project's 
          ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
-**9. `MutualRecursionService.traverse`** — depth 4 · orphan-root
+**8. `MutualRecursionService.traverse`** — depth 4 · orphan-root
 
 ```text
 🚀 MutualRecursionService.traverse(remaining: number): number [packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:45]
@@ -724,7 +672,7 @@ What this project is judged against. `declared` is the number in this project's 
          ↳ First of the three, and the way into the cycle.
 ```
 
-**10. `bootstrap`** — depth 3 · module-bootstrap
+**9. `bootstrap`** — depth 3 · module-bootstrap
 
 ```text
 🚀 bootstrap(): number [packages/callidescope-examples/src/main.ts:14]
@@ -733,6 +681,16 @@ What this project is judged against. `declared` is the number in this project's 
      ↳ Places one order against the injected inventory.
     └─> InventoryService.reserve(available: number): number [packages/callidescope-examples/examples/injected-dependency/inventory.ts:9]
        ↳ Reserves one unit and reports the count left behind.
+```
+
+**10. `CallbackArgumentService.shoutAll`** — depth 3 · orphan-root
+
+```text
+🚀 CallbackArgumentService.shoutAll(entries: readonly string[]): string[] [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:22]
+   ↳ Shouts every entry, through a callback `map` invokes.
+  └─> CallbackArgumentService.map(…)(entry: string): string [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:23]
+    └─> CallbackArgumentService.shout(entry: string): string [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:15]
+       ↳ Upper-cases one entry.
 ```
 
 **11. `DeclaredEntryPointsService.publish`** — depth 3 · orphan-root
@@ -782,25 +740,33 @@ What this project is judged against. `declared` is the number in this project's 
      ↳ Renders whatever was collected, and ends both stacks.
 ```
 
-**16. `ReceiptService.renderLine`** — depth 2 · orphan-root
+**16. `BaseClassService.run`** — depth 2 · orphan-root
 
 ```text
-🚀 ReceiptService.renderLine(amount: number): string [packages/callidescope-examples/examples/receipt/receipt.ts:16]
-   ↳ Renders one line of a receipt.
-  └─> formatCurrency(amount: number): string [packages/callidescope-examples/examples/misplaced-callable/format-currency.ts:9]
-     ↳ A helper filed in the wrong module, and the report says where it belongs.
+🚀 BaseClassService.run(): string [packages/callidescope-examples/examples/base-class/base-class.ts:16]
+   ↳ Extends the base result rather than replacing it.
+  └─> BaseTaskService.run(): string [packages/callidescope-examples/examples/base-class/base-task.ts:9]
+     ↳ Reports the work the base class claims to have done.
 ```
 
-**17. `ReceiptService.renderTotal`** — depth 2 · orphan-root
+**17. `ConstructedClassService.count`** — depth 2 · orphan-root
 
 ```text
-🚀 ReceiptService.renderTotal(amount: number): string [packages/callidescope-examples/examples/receipt/receipt.ts:21]
-   ↳ Renders the total line of a receipt.
-  └─> formatCurrency(amount: number): string [packages/callidescope-examples/examples/misplaced-callable/format-currency.ts:9]
-     ↳ A helper filed in the wrong module, and the report says where it belongs.
+🚀 ConstructedClassService.count(source: string): number [packages/callidescope-examples/examples/constructed-class/constructed-class.ts:17]
+   ↳ Counts the tokens the constructed parser produced.
+  └─> ParserService.constructor(source: string): ParserService [packages/callidescope-examples/examples/constructed-class/parser.ts:9]
 ```
 
-**18. `StructuralInterfaceService.ingestDocument`** — depth 2 · orphan-root
+**18. `PlainCallService.render`** — depth 2 · orphan-root
+
+```text
+🚀 PlainCallService.render(label: string): string [packages/callidescope-examples/examples/plain-call/plain-call.ts:17]
+   ↳ Renders a label through the aliased helper.
+  └─> normalizeLabel(label: string): string [packages/callidescope-examples/examples/plain-call/normalize-label.ts:2]
+     ↳ Trims a label and collapses the whitespace inside it.
+```
+
+**19. `StructuralInterfaceService.ingestDocument`** — depth 2 · orphan-root
 
 ```text
 🚀 StructuralInterfaceService.ingestDocument(provider: StructuralProvider, document: string): number [packages/callidescope-examples/examples/structural-interface/structural-interface.ts:17]
@@ -811,26 +777,19 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `ModuleSpreadService.orchestrate` | 6 | `packages/callidescope-examples:base-class`, `packages/callidescope-examples:callback-argument`, `packages/callidescope-examples:constructed-class`, `packages/callidescope-examples:injected-dependency`, `packages/callidescope-examples:plain-call` | `packages/callidescope-examples/examples/module-spread/module-spread.ts:32` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ModuleSpreadService.orchestrate` | 5 | `PlainCallService.render`, `OrdersService.place`, `ConstructedClassService.count`, `BaseClassService.run`, `CallbackArgumentService.shoutAll` | `packages/callidescope-examples/examples/module-spread/module-spread.ts:32` |
 | `bootstrap` | 2 | `OrdersService.place`, `OrdersService.constructor` | `packages/callidescope-examples/src/main.ts:14` |
 | `BaseClassService.run` | 1 | `BaseTaskService.run` | `packages/callidescope-examples/examples/base-class/base-class.ts:16` |
+| `CallbackArgumentService.shoutAll` | 1 | `CallbackArgumentService.map(…)` | `packages/callidescope-examples/examples/callback-argument/callback-argument.ts:22` |
 
 <details>
-<summary>53 more callables</summary>
+<summary>49 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CallbackArgumentService.shoutAll` | 1 | `CallbackArgumentService.map(…)` | `packages/callidescope-examples/examples/callback-argument/callback-argument.ts:22` |
 | `CallbackArgumentService.map(…)` | 1 | `CallbackArgumentService.shout` | `packages/callidescope-examples/examples/callback-argument/callback-argument.ts:23` |
 | `ComputedMemberService.choose` | 1 | `ComputedMemberService.apply` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:28` |
 | `ComputedMemberService.normalize` | 1 | `ComputedMemberService.route` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:33` |
@@ -868,29 +827,20 @@ What this project is judged against. `declared` is the number in this project's 
 | `FrameAnnotationsService.render` | 1 | `FrameAnnotationsService.summarize` | `packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:88` |
 | `FrameAnnotationsService.trace` | 1 | `FrameAnnotationsService.render` | `packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:95` |
 | `OrdersService.place` | 1 | `InventoryService.reserve` | `packages/callidescope-examples/examples/injected-dependency/orders.ts:21` |
-| `PlainCallService.render` | 1 | `normalizeLabel` | `packages/callidescope-examples/examples/plain-call/plain-call.ts:17` |
 | `MutualRecursionService.branch` | 1 | `MutualRecursionService.leaf` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:28` |
 | `MutualRecursionService.descend` | 1 | `MutualRecursionService.branch` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:33` |
 | `MutualRecursionService.leaf` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:38` |
 | `MutualRecursionService.traverse` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:45` |
+| `PlainCallService.render` | 1 | `normalizeLabel` | `packages/callidescope-examples/examples/plain-call/plain-call.ts:17` |
 | `ProjectDepthLimitService.applyLimit` | 1 | `ProjectDepthLimitService.reportVerdict` | `packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:18` |
 | `ProjectDepthLimitService.readLimit` | 1 | `ProjectDepthLimitService.applyLimit` | `packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:28` |
 | `ProjectDepthLimitService.reportVerdict` | 1 | `ProjectDepthLimitService.readDeclaringFile` | `packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:33` |
 | `ProjectDepthLimitService.resolveConfiguration` | 1 | `ProjectDepthLimitService.readLimit` | `packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:38` |
 | `ProjectDepthLimitService.judge` | 1 | `ProjectDepthLimitService.resolveConfiguration` | `packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:45` |
-| `ReceiptService.renderLine` | 1 | `formatCurrency` | `packages/callidescope-examples/examples/receipt/receipt.ts:16` |
-| `ReceiptService.renderTotal` | 1 | `formatCurrency` | `packages/callidescope-examples/examples/receipt/receipt.ts:21` |
-| `SpreadNearMissService.review` | 1 | `ModuleSpreadService.orchestrate` | `packages/callidescope-examples/examples/spread-near-miss/spread-near-miss.ts:23` |
 | `StructuralInterfaceService.ingestDocument` | 1 | `FilesystemProviderService.ingest` | `packages/callidescope-examples/examples/structural-interface/structural-interface.ts:17` |
 | `normalizeExampleLabel` | 1 | `normalizeLabel` | `packages/callidescope-examples/src/index.ts:15` |
 
 </details>
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `formatCurrency` | `packages/callidescope-examples:misplaced-callable` | `packages/callidescope-examples:receipt` | 2/2 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
@@ -944,24 +894,26 @@ graph LR
   file_examples_gated_leaf_callidescope_config_ts["examples/gated-leaf/callidescope.config.ts"]
   file_examples_gated_leaf_gated_leaf_generated_ts["examples/gated-leaf/gated-leaf.generated.ts"]
   file_examples_gated_leaf_gated_leaf_ts["examples/gated-leaf/gated-leaf.ts"]
+  file_examples_implementation_fan_out_api_sink_ts["examples/implementation-fan-out/api-sink.ts"]
   file_examples_implementation_fan_out_console_sink_ts["examples/implementation-fan-out/console-sink.ts"]
+  file_examples_implementation_fan_out_database_sink_ts["examples/implementation-fan-out/database-sink.ts"]
   file_examples_implementation_fan_out_file_sink_ts["examples/implementation-fan-out/file-sink.ts"]
   file_examples_implementation_fan_out_line_sink_ts["examples/implementation-fan-out/line-sink.ts"]
   file_examples_implementation_fan_out_memory_sink_ts["examples/implementation-fan-out/memory-sink.ts"]
+  file_examples_implementation_fan_out_network_sink_ts["examples/implementation-fan-out/network-sink.ts"]
+  file_examples_implementation_fan_out_queue_sink_ts["examples/implementation-fan-out/queue-sink.ts"]
+  file_examples_implementation_fan_out_stream_sink_ts["examples/implementation-fan-out/stream-sink.ts"]
+  file_examples_implementation_fan_out_telemetry_sink_ts["examples/implementation-fan-out/telemetry-sink.ts"]
   file_examples_inherited_limits_inherited_limits_generated_ts["examples/inherited-limits/inherited-limits.generated.ts"]
   file_examples_inherited_limits_inherited_limits_ts["examples/inherited-limits/inherited-limits.ts"]
   file_examples_injected_dependency_injected_dependency_module_ts["examples/injected-dependency/injected-dependency.module.ts"]
   file_examples_injected_dependency_inventory_ts["examples/injected-dependency/inventory.ts"]
   file_examples_injected_dependency_orders_ts["examples/injected-dependency/orders.ts"]
-  file_examples_misplaced_callable_format_currency_ts["examples/misplaced-callable/format-currency.ts"]
-  file_examples_module_spread_module_spread_ts["examples/module-spread/module-spread.ts"]
   file_examples_mutual_recursion_mutual_recursion_ts["examples/mutual-recursion/mutual-recursion.ts"]
   file_examples_plain_call_normalize_label_ts["examples/plain-call/normalize-label.ts"]
   file_examples_plain_call_plain_call_ts["examples/plain-call/plain-call.ts"]
   file_examples_project_depth_limit_project_depth_limit_ts["examples/project-depth-limit/project-depth-limit.ts"]
-  file_examples_receipt_receipt_ts["examples/receipt/receipt.ts"]
   file_examples_shared_tail_round_to_cents_ts["examples/shared-tail/round-to-cents.ts"]
-  file_examples_spread_near_miss_spread_near_miss_ts["examples/spread-near-miss/spread-near-miss.ts"]
   file_examples_structural_interface_structural_interface_ts["examples/structural-interface/structural-interface.ts"]
   file_examples_structural_interface_structural_provider_ts["examples/structural-interface/structural-provider.ts"]
   file_src_index_ts["src/index.ts"]
@@ -977,14 +929,7 @@ graph LR
   file_examples_injected_dependency_injected_dependency_module_ts --> file_examples_injected_dependency_inventory_ts
   file_examples_injected_dependency_injected_dependency_module_ts --> file_examples_injected_dependency_orders_ts
   file_examples_injected_dependency_orders_ts --> file_examples_injected_dependency_inventory_ts
-  file_examples_module_spread_module_spread_ts --> file_examples_base_class_base_class_ts
-  file_examples_module_spread_module_spread_ts --> file_examples_callback_argument_callback_argument_ts
-  file_examples_module_spread_module_spread_ts --> file_examples_constructed_class_constructed_class_ts
-  file_examples_module_spread_module_spread_ts --> file_examples_injected_dependency_orders_ts
-  file_examples_module_spread_module_spread_ts --> file_examples_plain_call_plain_call_ts
   file_examples_plain_call_plain_call_ts --> file_examples_plain_call_normalize_label_ts
-  file_examples_receipt_receipt_ts --> file_examples_misplaced_callable_format_currency_ts
-  file_examples_spread_near_miss_spread_near_miss_ts --> file_examples_module_spread_module_spread_ts
   file_examples_structural_interface_structural_interface_ts --> file_examples_structural_interface_structural_provider_ts
   file_src_index_ts --> file_examples_plain_call_normalize_label_ts
   file_src_main_ts --> file_examples_injected_dependency_inventory_ts

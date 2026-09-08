@@ -6,8 +6,8 @@ import type { StructuralProvider } from "./structural-provider.js";
  * Calls an interface member and reaches a class that never declared itself.
  *
  * `provider.ingest(…)` names a property on an interface. Callidescope expands
- * it to every class whose instance type satisfies the declaring type, capped by
- * `maximumImplementationCandidates`.
+ * it to every class whose instance type satisfies the declaring type, capped
+ * by the implementation-candidate cap.
  */
 @Injectable()
 export class StructuralInterfaceService {

@@ -32,7 +32,7 @@ call resolves into real code instead of stopping at the package boundary:
 🚀 DependencyClosureService.allowsDepth(…): boolean [.../dependency-closure/dependency-closure.ts:32]
   └─> DependencyClosureService.readDepthLimit(…): number [.../dependency-closure/dependency-closure.ts:24]
     └─> ConfigurationService.resolveConfiguration(…) [packages/callidescope-configuration/.../configuration.service.ts:431]
-      └─> ConfigurationService.resolveAllowSpreadFor(…) [packages/callidescope-configuration/.../configuration.service.ts:170]
+      └─> ConfigurationService.resolveEntryPoints(…) [packages/callidescope-configuration/.../configuration.service.ts:181]
 ```
 
 The last two `file:line` pairs are the whole point: they are in a package this

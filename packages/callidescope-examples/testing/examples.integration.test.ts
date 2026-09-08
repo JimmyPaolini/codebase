@@ -65,14 +65,6 @@ const GUIDES_WITH_DOCUMENTED_RUNS = ["gated-leaf"];
 const INHERITED_LIMITS_DIRECTORY = `${EXAMPLES_DIRECTORY}/examples/inherited-limits`;
 
 /**
- * The module identifier prefix every example directory is reported under.
- *
- * One module per directory under `examples/`, which is what
- * `workspaceStructure.rootModuleSegment` in the configuration buys.
- */
-const MODULE_PREFIX = `${EXAMPLES_DIRECTORY}:`;
-
-/**
  * Every example directory that is a project of its own — the ones holding a
  * `tsconfig.json`.
  *
@@ -632,11 +624,11 @@ describe("callidescope examples (integration)", () => {
 
     it("measures this package's own fixtures exactly", () => {
       expect(readOwnReport(result).summary).toStrictEqual({
-        callableCount: 81,
+        callableCount: 80,
         cyclicComponentCount: 1,
-        edgeCount: 62,
-        entryPointCount: 18,
-        fileCount: 37,
+        edgeCount: 54,
+        entryPointCount: 19,
+        fileCount: 39,
         maximumDepth: 8,
         projectCount: 1,
         unresolvedCallCount: 2,
@@ -687,22 +679,13 @@ describe("callidescope examples (integration)", () => {
     });
 
     it("drops the over-cap structural expansion, and only that", () => {
-      // The cap can only be shown to do something by lifting it. Three classes
-      // satisfy `LineSink`; at a cap of two the whole expansion is dropped and
-      // recorded as unfollowable, leaving the computed member name as the only
-      // other one. Raised past three, those same three edges appear and the
-      // unfollowable count falls to the computed member alone.
-      //
-      // Without this, the cap could stop working entirely and every other
-      // assertion here would still pass.
-      const own = readOwnReport(result);
-      const lifted = readOwnReport(
-        traceFixtures({ limits: { maximumImplementationCandidates: 8 } }),
-      );
-
-      expect(own.summary.unresolvedCallCount).toBe(2);
-      expect(lifted.summary.unresolvedCallCount).toBe(1);
-      expect(lifted.summary.edgeCount).toBe(own.summary.edgeCount + 3);
+      // Nine classes satisfy `LineSink` against a cap of eight, so the whole
+      // expansion is dropped and recorded as unfollowable — leaving the
+      // computed member name as the only other one. A cap that stopped
+      // working would resolve those nine edges and drop this count to one, so
+      // the number is what pins the behavior now that the cap is a constant
+      // no run can lift.
+      expect(readOwnReport(result).summary.unresolvedCallCount).toBe(2);
     });
   });
 
@@ -729,7 +712,7 @@ describe("callidescope examples (integration)", () => {
           project: "packages/callidescope-configuration",
         },
         {
-          displayName: "ConfigurationService.resolveAllowSpreadFor",
+          displayName: "ConfigurationService.resolveEntryPoints",
           project: "packages/callidescope-configuration",
         },
       ]);
@@ -821,42 +804,6 @@ describe("callidescope examples (integration)", () => {
         ["MutualRecursionService.branch", true],
         ["MutualRecursionService.leaf", true],
         ["MutualRecursionService.descend", true],
-      ]);
-    });
-  });
-
-  describe("cohesion findings", () => {
-    it("reports the orchestrator and not its near miss", () => {
-      expect(
-        readOwnReport(result).moduleSpreads.map((finding) => ({
-          directModuleCount: finding.directModuleIds.length,
-          displayName: finding.displayName,
-        })),
-      ).toStrictEqual([
-        {
-          directModuleCount: 5,
-          displayName: "ModuleSpreadService.orchestrate",
-        },
-      ]);
-    });
-
-    it("suggests the module the misplaced helper's callers live in", () => {
-      expect(
-        readOwnReport(result).misplacedCallables.map((finding) => ({
-          callerCount: finding.callerCount,
-          displayName: finding.displayName,
-          foreignCallerCount: finding.foreignCallerCount,
-          home: finding.homeModuleId,
-          suggested: finding.suggestedModuleId,
-        })),
-      ).toStrictEqual([
-        {
-          callerCount: 2,
-          displayName: "formatCurrency",
-          foreignCallerCount: 2,
-          home: `${MODULE_PREFIX}misplaced-callable`,
-          suggested: `${MODULE_PREFIX}receipt`,
-        },
       ]);
     });
   });

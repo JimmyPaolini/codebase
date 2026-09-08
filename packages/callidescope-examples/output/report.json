@@ -1544,87 +1544,43 @@
       "limit": 3
     }
   ],
-  "misplacedCallables": [
-    {
-      "callerCount": 2,
-      "displayName": "formatCurrency",
-      "foreignCallerCount": 2,
-      "homeModuleId": "packages/callidescope-examples:misplaced-callable",
-      "id": "packages/callidescope-examples/examples/misplaced-callable/format-currency.ts#357",
-      "location": {
-        "column": 1,
-        "filePath": "packages/callidescope-examples/examples/misplaced-callable/format-currency.ts",
-        "line": 9
-      },
-      "suggestedModuleId": "packages/callidescope-examples:receipt"
-    }
-  ],
-  "moduleSpreads": [
-    {
-      "depth": 4,
-      "directModuleIds": [
-        "packages/callidescope-examples:base-class",
-        "packages/callidescope-examples:callback-argument",
-        "packages/callidescope-examples:constructed-class",
-        "packages/callidescope-examples:injected-dependency",
-        "packages/callidescope-examples:plain-call"
-      ],
-      "displayName": "ModuleSpreadService.orchestrate",
-      "id": "packages/callidescope-examples/examples/module-spread/module-spread.ts#1268",
-      "location": {
-        "column": 3,
-        "filePath": "packages/callidescope-examples/examples/module-spread/module-spread.ts",
-        "line": 32
-      },
-      "statementCount": 1,
-      "transitiveSpread": 6
-    }
-  ],
   "projects": [
     {
       "callableBreadths": [
         {
-          "breadth": 8,
+          "breadth": 6,
           "callees": [
             {
-              "displayName": "ConfigurationService.resolveAllowSpreadFor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5183"
-            },
-            {
               "displayName": "ConfigurationService.resolveEntryPoints",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#6282"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5720"
             },
             {
               "displayName": "ConfigurationService.resolveExclude",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7084"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#6522"
             },
             {
               "displayName": "ConfigurationService.resolveLimits",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7697"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7135"
             },
             {
               "displayName": "ConfigurationService.resolveJsonOutput",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7306"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#6744"
             },
             {
               "displayName": "ConfigurationService.resolveMarkdownDestination",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#8696"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#7639"
             },
             {
               "displayName": "ConfigurationService.resolveProjectReadmes",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#9546"
-            },
-            {
-              "displayName": "ConfigurationService.resolveWorkspaceStructure",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10357"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#8489"
             }
           ],
           "displayName": "ConfigurationService.resolveConfiguration",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14155",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12492",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 433
+            "line": 389
           },
           "signature": {
             "parameters": [
@@ -1644,31 +1600,31 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findConfigurationFile",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#2544"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#2212"
             },
             {
               "displayName": "ConfigurationService.resolveConfigurationPath",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5421"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4859"
             },
             {
               "displayName": "ConfigurationService.resolveConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14155"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12492"
             },
             {
               "displayName": "UnknownConfigurationFileTypeError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#8835"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#6918"
             },
             {
               "displayName": "ConfigurationService.loadConfigurationModule",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4006"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3674"
             }
           ],
           "displayName": "ConfigurationService.loadConfigurationFile",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12895",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11232",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 390
+            "line": 346
           },
           "signature": {
             "parameters": [
@@ -1768,7 +1724,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findConfigurationFileAt",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11037"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#9374"
             },
             {
               "displayName": "ProjectConfigurationService.loadProjectConfiguration",
@@ -1840,19 +1796,19 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findRepositoryRoot",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3369"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3037"
             },
             {
               "displayName": "ConfigurationFileNotFoundError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#12245"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10038"
             }
           ],
           "displayName": "ConfigurationService.resolveConfigurationPath",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5421",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4859",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 178
+            "line": 161
           },
           "signature": {
             "parameters": [
@@ -1876,7 +1832,7 @@
             },
             {
               "displayName": "ProjectConfigurationFieldNotPermittedError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#13528"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#11321"
             }
           ],
           "displayName": "ProjectConfigurationService.assertNoForbiddenFields",
@@ -1904,11 +1860,11 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12895"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11232"
             },
             {
               "displayName": "ProjectConfigurationError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#12769"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10562"
             }
           ],
           "displayName": "ProjectConfigurationService.loadProjectConfiguration",
@@ -2032,15 +1988,15 @@
           "callees": [
             {
               "displayName": "custom(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9360"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#7443"
             }
           ],
           "displayName": "callbackSchema",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9299",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#7382",
           "location": {
             "column": 24,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 287
+            "line": 227
           },
           "signature": {
             "parameters": [],
@@ -2053,15 +2009,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findConfigurationFileAt",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11037"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#9374"
             }
           ],
           "displayName": "ConfigurationService.findConfigurationFile",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#2544",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#2212",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 83
+            "line": 73
           },
           "signature": {
             "parameters": [
@@ -2081,15 +2037,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.some(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3588"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3256"
             }
           ],
           "displayName": "ConfigurationService.findRepositoryRoot",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3369",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3037",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 110
+            "line": 100
           },
           "signature": {
             "parameters": [],
@@ -2102,15 +2058,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadJsonConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4775"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4443"
             }
           ],
           "displayName": "ConfigurationService.loadConfigurationModule",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4006",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3674",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 134
+            "line": 124
           },
           "signature": {
             "parameters": [
@@ -2130,15 +2086,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12895"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11232"
             }
           ],
           "displayName": "ConfigurationService.loadConfiguration",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11673",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10010",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 362
+            "line": 318
           },
           "signature": {
             "parameters": [
@@ -2350,8 +2306,6 @@
           }
         }
       ],
-      "misplacedCallables": [],
-      "moduleSpreads": [],
       "projectName": "packages/callidescope-configuration",
       "stacks": [
         {
@@ -2419,12 +2373,12 @@
                 "summary": "Loads a configuration, and says what the file itself declared and which file answered. The same work as `loadConfiguration`, keeping two facts it throws away. The path is what tells a caller resolving a configuration beside every project which file it has already read as the run's own, so that one file is never given two roles. The authored object is what a refusal has to name fields from, since resolution manufactures the rest. Naming a path guarantees one back, which is why that case has an overload of its own: the alternative is every caller of the narrow case carrying a fallback that can never fire, and picking its own path when it does.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12895",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11232",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 390
+                "line": 346
               },
               "signature": {
                 "parameters": [
@@ -2446,12 +2400,12 @@
                 "summary": "Resolves a configuration path against the cwd, then the repository root.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5421",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4859",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 178
+                "line": 161
               },
               "signature": {
                 "parameters": [
@@ -2473,12 +2427,12 @@
                 "summary": "Walks upward from the process cwd looking for the repository root. Used to resolve a configuration path given relative to that root even when the command was invoked from a nested directory, which is what a task runner does whenever it sets the cwd to the project rather than the workspace.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3369",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3037",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 110
+                "line": 100
               },
               "signature": {
                 "parameters": [],
@@ -2488,12 +2442,12 @@
             },
             {
               "displayName": "ConfigurationService.some(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3588",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3256",
               "isCycle": false,
               "location": {
                 "column": 51,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 115
+                "line": 105
               },
               "signature": {
                 "parameters": [
@@ -2522,12 +2476,12 @@
                 "summary": "Loads and validates a callidescope configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly trace the repository with defaults it never asked for. A path that was not named is searched for, and its absence is legal.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11673",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#10010",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 362
+                "line": 318
               },
               "signature": {
                 "parameters": [
@@ -2549,12 +2503,12 @@
                 "summary": "Loads a configuration, and says what the file itself declared and which file answered. The same work as `loadConfiguration`, keeping two facts it throws away. The path is what tells a caller resolving a configuration beside every project which file it has already read as the run's own, so that one file is never given two roles. The authored object is what a refusal has to name fields from, since resolution manufactures the rest. Naming a path guarantees one back, which is why that case has an overload of its own: the alternative is every caller of the narrow case carrying a fallback that can never fire, and picking its own path when it does.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12895",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#11232",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 390
+                "line": 346
               },
               "signature": {
                 "parameters": [
@@ -2576,12 +2530,12 @@
                 "summary": "Resolves a configuration path against the cwd, then the repository root.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5421",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#4859",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 178
+                "line": 161
               },
               "signature": {
                 "parameters": [
@@ -2603,12 +2557,12 @@
                 "summary": "Walks upward from the process cwd looking for the repository root. Used to resolve a configuration path given relative to that root even when the command was invoked from a nested directory, which is what a task runner does whenever it sets the cwd to the project rather than the workspace.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3369",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3037",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 110
+                "line": 100
               },
               "signature": {
                 "parameters": [],
@@ -2618,12 +2572,12 @@
             },
             {
               "displayName": "ConfigurationService.some(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3588",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#3256",
               "isCycle": false,
               "location": {
                 "column": 51,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 115
+                "line": 105
               },
               "signature": {
                 "parameters": [
@@ -3087,12 +3041,12 @@
                 "summary": "Accepts a function-valued option without inspecting its signature. Zod cannot describe a callback's parameters, and parsing one would replace the caller's function with a wrapper. Checking that it is callable is the whole of what validation can honestly assert here.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9299",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#7382",
               "isCycle": false,
               "location": {
                 "column": 24,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 287
+                "line": 227
               },
               "signature": {
                 "parameters": [],
@@ -3102,12 +3056,12 @@
             },
             {
               "displayName": "custom(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9360",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#7443",
               "isCycle": false,
               "location": {
                 "column": 23,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 288
+                "line": 228
               },
               "signature": {
                 "parameters": [
@@ -3183,120 +3137,18 @@
         }
       ],
       "summary": {
-        "callableCount": 64,
+        "callableCount": 62,
         "cyclicComponentCount": 0,
-        "edgeCount": 57,
+        "edgeCount": 55,
         "entryPointCount": 8,
         "fileCount": 15,
         "maximumDepth": 6,
         "projectCount": 1,
         "unresolvedCallCount": 5
-      },
-      "typeDepths": [
-        {
-          "maximumDepth": 6,
-          "memberCount": 12,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-configuration:examples",
-          "typeName": "ProjectConfigurationService"
-        },
-        {
-          "maximumDepth": 5,
-          "memberCount": 19,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-configuration:examples",
-          "typeName": "ConfigurationService"
-        },
-        {
-          "maximumDepth": 5,
-          "memberCount": 18,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-configuration:examples",
-          "typeName": "InputService"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-configuration:examples",
-          "typeName": "UnknownConfigurationFileTypeError"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-configuration:examples",
-          "typeName": "ConfigurationFileNotFoundError"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-configuration:examples",
-          "typeName": "ProjectConfigurationError"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-configuration:examples",
-          "typeName": "ProjectConfigurationFieldNotPermittedError"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-configuration:examples",
-          "typeName": "InputError"
-        }
-      ]
+      }
     },
     {
       "callableBreadths": [
-        {
-          "breadth": 5,
-          "callees": [
-            {
-              "displayName": "PlainCallService.render",
-              "id": "packages/callidescope-examples/examples/plain-call/plain-call.ts#539"
-            },
-            {
-              "displayName": "OrdersService.place",
-              "id": "packages/callidescope-examples/examples/injected-dependency/orders.ts#637"
-            },
-            {
-              "displayName": "ConstructedClassService.count",
-              "id": "packages/callidescope-examples/examples/constructed-class/constructed-class.ts#489"
-            },
-            {
-              "displayName": "BaseClassService.run",
-              "id": "packages/callidescope-examples/examples/base-class/base-class.ts#455"
-            },
-            {
-              "displayName": "CallbackArgumentService.shoutAll",
-              "id": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts#628"
-            }
-          ],
-          "displayName": "ModuleSpreadService.orchestrate",
-          "id": "packages/callidescope-examples/examples/module-spread/module-spread.ts#1268",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/module-spread/module-spread.ts",
-            "line": 32
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "label",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(label: string): string"
-          }
-        },
         {
           "breadth": 2,
           "callees": [
@@ -3892,7 +3744,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.resolveConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14155"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12492"
             }
           ],
           "displayName": "DependencyClosureService.readDepthLimit",
@@ -4421,34 +4273,6 @@
           "breadth": 1,
           "callees": [
             {
-              "displayName": "normalizeLabel",
-              "id": "packages/callidescope-examples/examples/plain-call/normalize-label.ts#61"
-            }
-          ],
-          "displayName": "PlainCallService.render",
-          "id": "packages/callidescope-examples/examples/plain-call/plain-call.ts#539",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/plain-call/plain-call.ts",
-            "line": 17
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "label",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(label: string): string"
-          }
-        },
-        {
-          "breadth": 1,
-          "callees": [
-            {
               "displayName": "MutualRecursionService.leaf",
               "id": "packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts#1535"
             }
@@ -4555,6 +4379,34 @@
             ],
             "returnType": "number",
             "text": "(remaining: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "normalizeLabel",
+              "id": "packages/callidescope-examples/examples/plain-call/normalize-label.ts#61"
+            }
+          ],
+          "displayName": "PlainCallService.render",
+          "id": "packages/callidescope-examples/examples/plain-call/plain-call.ts#539",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/examples/plain-call/plain-call.ts",
+            "line": 17
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "label",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(label: string): string"
           }
         },
         {
@@ -4701,90 +4553,6 @@
           "breadth": 1,
           "callees": [
             {
-              "displayName": "formatCurrency",
-              "id": "packages/callidescope-examples/examples/misplaced-callable/format-currency.ts#357"
-            }
-          ],
-          "displayName": "ReceiptService.renderLine",
-          "id": "packages/callidescope-examples/examples/receipt/receipt.ts#451",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/receipt/receipt.ts",
-            "line": 16
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "amount",
-                "type": "number"
-              }
-            ],
-            "returnType": "string",
-            "text": "(amount: number): string"
-          }
-        },
-        {
-          "breadth": 1,
-          "callees": [
-            {
-              "displayName": "formatCurrency",
-              "id": "packages/callidescope-examples/examples/misplaced-callable/format-currency.ts#357"
-            }
-          ],
-          "displayName": "ReceiptService.renderTotal",
-          "id": "packages/callidescope-examples/examples/receipt/receipt.ts#592",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/receipt/receipt.ts",
-            "line": 21
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "amount",
-                "type": "number"
-              }
-            ],
-            "returnType": "string",
-            "text": "(amount: number): string"
-          }
-        },
-        {
-          "breadth": 1,
-          "callees": [
-            {
-              "displayName": "ModuleSpreadService.orchestrate",
-              "id": "packages/callidescope-examples/examples/module-spread/module-spread.ts#1268"
-            }
-          ],
-          "displayName": "SpreadNearMissService.review",
-          "id": "packages/callidescope-examples/examples/spread-near-miss/spread-near-miss.ts#818",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/spread-near-miss/spread-near-miss.ts",
-            "line": 23
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "label",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(label: string): string"
-          }
-        },
-        {
-          "breadth": 1,
-          "callees": [
-            {
               "displayName": "FilesystemProviderService.ingest",
               "id": "packages/callidescope-examples/examples/structural-interface/structural-provider.ts#812"
             }
@@ -4842,42 +4610,6 @@
             "returnType": "string",
             "text": "(label: string): string"
           }
-        }
-      ],
-      "misplacedCallables": [
-        {
-          "callerCount": 2,
-          "displayName": "formatCurrency",
-          "foreignCallerCount": 2,
-          "homeModuleId": "packages/callidescope-examples:misplaced-callable",
-          "id": "packages/callidescope-examples/examples/misplaced-callable/format-currency.ts#357",
-          "location": {
-            "column": 1,
-            "filePath": "packages/callidescope-examples/examples/misplaced-callable/format-currency.ts",
-            "line": 9
-          },
-          "suggestedModuleId": "packages/callidescope-examples:receipt"
-        }
-      ],
-      "moduleSpreads": [
-        {
-          "depth": 4,
-          "directModuleIds": [
-            "packages/callidescope-examples:base-class",
-            "packages/callidescope-examples:callback-argument",
-            "packages/callidescope-examples:constructed-class",
-            "packages/callidescope-examples:injected-dependency",
-            "packages/callidescope-examples:plain-call"
-          ],
-          "displayName": "ModuleSpreadService.orchestrate",
-          "id": "packages/callidescope-examples/examples/module-spread/module-spread.ts#1268",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/module-spread/module-spread.ts",
-            "line": 32
-          },
-          "statementCount": 1,
-          "transitiveSpread": 6
         }
       ],
       "projectName": "packages/callidescope-examples",
@@ -5941,143 +5673,6 @@
           "isLowerBound": false
         },
         {
-          "depth": 5,
-          "entryPointKind": "orphan-root",
-          "frames": [
-            {
-              "displayName": "SpreadNearMissService.review",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Delegates the whole job to the one module it knows about.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/spread-near-miss/spread-near-miss.ts#818",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/spread-near-miss/spread-near-miss.ts",
-                "line": 23
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "label",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(label: string): string"
-              }
-            },
-            {
-              "displayName": "ModuleSpreadService.orchestrate",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Touches five modules in one method, which is the finding.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/module-spread/module-spread.ts#1268",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/module-spread/module-spread.ts",
-                "line": 32
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "label",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(label: string): string"
-              }
-            },
-            {
-              "displayName": "CallbackArgumentService.shoutAll",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Shouts every entry, through a callback `map` invokes.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts#628",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts",
-                "line": 22
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "entries",
-                    "type": "readonly string[]"
-                  }
-                ],
-                "returnType": "string[]",
-                "text": "(entries: readonly string[]): string[]"
-              }
-            },
-            {
-              "displayName": "CallbackArgumentService.map(…)",
-              "id": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts#707",
-              "isCycle": false,
-              "location": {
-                "column": 24,
-                "filePath": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts",
-                "line": 23
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "entry",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(entry: string): string"
-              }
-            },
-            {
-              "displayName": "CallbackArgumentService.shout",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Upper-cases one entry.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts#463",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts",
-                "line": 15
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "entry",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(entry: string): string"
-              }
-            }
-          ],
-          "isLowerBound": false
-        },
-        {
           "depth": 4,
           "entryPointKind": "orphan-root",
           "frames": [
@@ -6142,12 +5737,12 @@
                 "summary": "Fills in every field a configuration file may leave out. Exposed so a host embedding callidescope can hand over a configuration object it assembled itself and get the same shape a configuration file produces.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#14155",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#12492",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 433
+                "line": 389
               },
               "signature": {
                 "parameters": [
@@ -6163,30 +5758,30 @@
               }
             },
             {
-              "displayName": "ConfigurationService.resolveAllowSpreadFor",
+              "displayName": "ConfigurationService.resolveEntryPoints",
               "documentation": {
                 "isDeprecated": false,
-                "summary": "Applies the default globs exempt from the module-spread finding.",
+                "summary": "Applies defaults to the entry-point rules. The authored object is defaulted to an empty one up front rather than optional-chained per field, which keeps this to one branch per option instead of two.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5183",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts#5720",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 171
+                "line": 193
               },
               "signature": {
                 "parameters": [
                   {
                     "isOptional": false,
                     "isRest": false,
-                    "name": "allowSpreadFor",
-                    "type": "string[] | undefined"
+                    "name": "entryPoints",
+                    "type": "CallidescopeEntryPoints | undefined"
                   }
                 ],
-                "returnType": "string[]",
-                "text": "(allowSpreadFor: string[] | undefined): string[]"
+                "returnType": "ResolvedCallidescopeEntryPoints",
+                "text": "(entryPoints: CallidescopeEntryPoints | undefined): ResolvedCallidescopeEntryPoints"
               }
             }
           ],
@@ -6522,6 +6117,89 @@
           "entryPointKind": "orphan-root",
           "frames": [
             {
+              "displayName": "CallbackArgumentService.shoutAll",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Shouts every entry, through a callback `map` invokes.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts#628",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts",
+                "line": 22
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entries",
+                    "type": "readonly string[]"
+                  }
+                ],
+                "returnType": "string[]",
+                "text": "(entries: readonly string[]): string[]"
+              }
+            },
+            {
+              "displayName": "CallbackArgumentService.map(…)",
+              "id": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts#707",
+              "isCycle": false,
+              "location": {
+                "column": 24,
+                "filePath": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts",
+                "line": 23
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entry",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entry: string): string"
+              }
+            },
+            {
+              "displayName": "CallbackArgumentService.shout",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Upper-cases one entry.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts#463",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/callback-argument/callback-argument.ts",
+                "line": 15
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entry",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entry: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 3,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
               "displayName": "DeclaredEntryPointsService.publish",
               "documentation": {
                 "isDeprecated": false,
@@ -6826,57 +6504,43 @@
           "entryPointKind": "orphan-root",
           "frames": [
             {
-              "displayName": "ReceiptService.renderLine",
+              "displayName": "BaseClassService.run",
               "documentation": {
                 "isDeprecated": false,
-                "summary": "Renders one line of a receipt.",
+                "summary": "Extends the base result rather than replacing it.",
                 "tags": []
               },
-              "id": "packages/callidescope-examples/examples/receipt/receipt.ts#451",
+              "id": "packages/callidescope-examples/examples/base-class/base-class.ts#455",
               "isCycle": false,
               "location": {
                 "column": 3,
-                "filePath": "packages/callidescope-examples/examples/receipt/receipt.ts",
+                "filePath": "packages/callidescope-examples/examples/base-class/base-class.ts",
                 "line": 16
               },
               "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "amount",
-                    "type": "number"
-                  }
-                ],
+                "parameters": [],
                 "returnType": "string",
-                "text": "(amount: number): string"
+                "text": "(): string"
               }
             },
             {
-              "displayName": "formatCurrency",
+              "displayName": "BaseTaskService.run",
               "documentation": {
                 "isDeprecated": false,
-                "summary": "A helper filed in the wrong module, and the report says where it belongs. Every caller lives in `receipt`, and none live here. That is what a misplaced-callable finding is: enough callers to judge by, nearly all of them in one other module of the same project, so the suggested move is concrete rather than a hunch about cohesion.",
+                "summary": "Reports the work the base class claims to have done.",
                 "tags": []
               },
-              "id": "packages/callidescope-examples/examples/misplaced-callable/format-currency.ts#357",
+              "id": "packages/callidescope-examples/examples/base-class/base-task.ts#241",
               "isCycle": false,
               "location": {
-                "column": 1,
-                "filePath": "packages/callidescope-examples/examples/misplaced-callable/format-currency.ts",
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/base-class/base-task.ts",
                 "line": 9
               },
               "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "amount",
-                    "type": "number"
-                  }
-                ],
+                "parameters": [],
                 "returnType": "string",
-                "text": "(amount: number): string"
+                "text": "(): string"
               }
             }
           ],
@@ -6887,44 +6551,39 @@
           "entryPointKind": "orphan-root",
           "frames": [
             {
-              "displayName": "ReceiptService.renderTotal",
+              "displayName": "ConstructedClassService.count",
               "documentation": {
                 "isDeprecated": false,
-                "summary": "Renders the total line of a receipt.",
+                "summary": "Counts the tokens the constructed parser produced.",
                 "tags": []
               },
-              "id": "packages/callidescope-examples/examples/receipt/receipt.ts#592",
+              "id": "packages/callidescope-examples/examples/constructed-class/constructed-class.ts#489",
               "isCycle": false,
               "location": {
                 "column": 3,
-                "filePath": "packages/callidescope-examples/examples/receipt/receipt.ts",
-                "line": 21
+                "filePath": "packages/callidescope-examples/examples/constructed-class/constructed-class.ts",
+                "line": 17
               },
               "signature": {
                 "parameters": [
                   {
                     "isOptional": false,
                     "isRest": false,
-                    "name": "amount",
-                    "type": "number"
+                    "name": "source",
+                    "type": "string"
                   }
                 ],
-                "returnType": "string",
-                "text": "(amount: number): string"
+                "returnType": "number",
+                "text": "(source: string): number"
               }
             },
             {
-              "displayName": "formatCurrency",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "A helper filed in the wrong module, and the report says where it belongs. Every caller lives in `receipt`, and none live here. That is what a misplaced-callable finding is: enough callers to judge by, nearly all of them in one other module of the same project, so the suggested move is concrete rather than a hunch about cohesion.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/misplaced-callable/format-currency.ts#357",
+              "displayName": "ParserService.constructor",
+              "id": "packages/callidescope-examples/examples/constructed-class/parser.ts#252",
               "isCycle": false,
               "location": {
-                "column": 1,
-                "filePath": "packages/callidescope-examples/examples/misplaced-callable/format-currency.ts",
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/constructed-class/parser.ts",
                 "line": 9
               },
               "signature": {
@@ -6932,12 +6591,73 @@
                   {
                     "isOptional": false,
                     "isRest": false,
-                    "name": "amount",
-                    "type": "number"
+                    "name": "source",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "ParserService",
+                "text": "(source: string): ParserService"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "PlainCallService.render",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Renders a label through the aliased helper.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/plain-call/plain-call.ts#539",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/examples/plain-call/plain-call.ts",
+                "line": 17
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "label",
+                    "type": "string"
                   }
                 ],
                 "returnType": "string",
-                "text": "(amount: number): string"
+                "text": "(label: string): string"
+              }
+            },
+            {
+              "displayName": "normalizeLabel",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Trims a label and collapses the whitespace inside it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/examples/plain-call/normalize-label.ts#61",
+              "isCycle": false,
+              "location": {
+                "column": 1,
+                "filePath": "packages/callidescope-examples/examples/plain-call/normalize-label.ts",
+                "line": 2
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "label",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(label: string): string"
               }
             }
           ],
@@ -7012,199 +6732,15 @@
         }
       ],
       "summary": {
-        "callableCount": 81,
+        "callableCount": 80,
         "cyclicComponentCount": 1,
-        "edgeCount": 62,
-        "entryPointCount": 18,
-        "fileCount": 37,
+        "edgeCount": 54,
+        "entryPointCount": 19,
+        "fileCount": 39,
         "maximumDepth": 8,
         "projectCount": 1,
         "unresolvedCallCount": 2
-      },
-      "typeDepths": [
-        {
-          "maximumDepth": 8,
-          "memberCount": 8,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:computed-member",
-          "typeName": "ComputedMemberService"
-        },
-        {
-          "maximumDepth": 8,
-          "memberCount": 7,
-          "minimumDepth": 2,
-          "moduleId": "packages/callidescope-examples:deep-stack",
-          "typeName": "DeepStackService"
-        },
-        {
-          "maximumDepth": 8,
-          "memberCount": 7,
-          "minimumDepth": 2,
-          "moduleId": "packages/callidescope-examples:forwarding-stack",
-          "typeName": "ForwardingStackService"
-        },
-        {
-          "maximumDepth": 7,
-          "memberCount": 8,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:frame-annotations",
-          "typeName": "FrameAnnotationsService"
-        },
-        {
-          "maximumDepth": 6,
-          "memberCount": 6,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:project-depth-limit",
-          "typeName": "ProjectDepthLimitService"
-        },
-        {
-          "maximumDepth": 5,
-          "memberCount": 2,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:spread-near-miss",
-          "typeName": "SpreadNearMissService"
-        },
-        {
-          "maximumDepth": 4,
-          "memberCount": 3,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:dependency-closure",
-          "typeName": "DependencyClosureService"
-        },
-        {
-          "maximumDepth": 4,
-          "memberCount": 2,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:module-spread",
-          "typeName": "ModuleSpreadService"
-        },
-        {
-          "maximumDepth": 3,
-          "memberCount": 3,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:callback-argument",
-          "typeName": "CallbackArgumentService"
-        },
-        {
-          "maximumDepth": 3,
-          "memberCount": 3,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:declared-entry-points",
-          "typeName": "DeclaredEntryPointsService"
-        },
-        {
-          "maximumDepth": 2,
-          "memberCount": 4,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:entry-points",
-          "typeName": "EntryPointsService"
-        },
-        {
-          "maximumDepth": 2,
-          "memberCount": 2,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:injected-dependency",
-          "typeName": "OrdersService"
-        },
-        {
-          "maximumDepth": 4,
-          "memberCount": 4,
-          "minimumDepth": 3,
-          "moduleId": "packages/callidescope-examples:mutual-recursion",
-          "typeName": "MutualRecursionService"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:base-class",
-          "typeName": "BaseTaskService"
-        },
-        {
-          "maximumDepth": 2,
-          "memberCount": 1,
-          "minimumDepth": 2,
-          "moduleId": "packages/callidescope-examples:base-class",
-          "typeName": "BaseClassService"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:constructed-class",
-          "typeName": "ParserService"
-        },
-        {
-          "maximumDepth": 2,
-          "memberCount": 1,
-          "minimumDepth": 2,
-          "moduleId": "packages/callidescope-examples:constructed-class",
-          "typeName": "ConstructedClassService"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:implementation-fan-out",
-          "typeName": "ConsoleSinkService"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:implementation-fan-out",
-          "typeName": "FileSinkService"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:implementation-fan-out",
-          "typeName": "ImplementationFanOutService"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:implementation-fan-out",
-          "typeName": "MemorySinkService"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:injected-dependency",
-          "typeName": "InventoryService"
-        },
-        {
-          "maximumDepth": 2,
-          "memberCount": 1,
-          "minimumDepth": 2,
-          "moduleId": "packages/callidescope-examples:plain-call",
-          "typeName": "PlainCallService"
-        },
-        {
-          "maximumDepth": 2,
-          "memberCount": 2,
-          "minimumDepth": 2,
-          "moduleId": "packages/callidescope-examples:receipt",
-          "typeName": "ReceiptService"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples:structural-interface",
-          "typeName": "FilesystemProviderService"
-        },
-        {
-          "maximumDepth": 2,
-          "memberCount": 1,
-          "minimumDepth": 2,
-          "moduleId": "packages/callidescope-examples:structural-interface",
-          "typeName": "StructuralInterfaceService"
-        }
-      ]
+      }
     },
     {
       "callableBreadths": [
@@ -7301,8 +6837,6 @@
           }
         }
       ],
-      "misplacedCallables": [],
-      "moduleSpreads": [],
       "projectName": "packages/callidescope-examples/examples/gated-leaf",
       "stacks": [
         {
@@ -7430,16 +6964,7 @@
         "maximumDepth": 4,
         "projectCount": 1,
         "unresolvedCallCount": 0
-      },
-      "typeDepths": [
-        {
-          "maximumDepth": 4,
-          "memberCount": 4,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples/examples/gated-leaf:examples",
-          "typeName": "GatedLeafService"
-        }
-      ]
+      }
     },
     {
       "callableBreadths": [
@@ -7528,8 +7053,6 @@
           }
         }
       ],
-      "misplacedCallables": [],
-      "moduleSpreads": [],
       "projectName": "packages/callidescope-examples/examples/inherited-limits",
       "stacks": [
         {
@@ -7738,16 +7261,7 @@
         "maximumDepth": 7,
         "projectCount": 1,
         "unresolvedCallCount": 0
-      },
-      "typeDepths": [
-        {
-          "maximumDepth": 7,
-          "memberCount": 4,
-          "minimumDepth": 1,
-          "moduleId": "packages/callidescope-examples/examples/inherited-limits:examples",
-          "typeName": "InheritedLimitsService"
-        }
-      ]
+      }
     },
     {
       "callableBreadths": [
@@ -8506,8 +8020,6 @@
           }
         }
       ],
-      "misplacedCallables": [],
-      "moduleSpreads": [],
       "projectName": "packages/codometer-configuration",
       "stacks": [
         {
@@ -9047,51 +8559,7 @@
         "maximumDepth": 8,
         "projectCount": 1,
         "unresolvedCallCount": 4
-      },
-      "typeDepths": [
-        {
-          "maximumDepth": 8,
-          "memberCount": 23,
-          "minimumDepth": 1,
-          "moduleId": "packages/codometer-configuration:examples",
-          "typeName": "ConfigurationService"
-        },
-        {
-          "maximumDepth": 4,
-          "memberCount": 11,
-          "minimumDepth": 1,
-          "moduleId": "packages/codometer-configuration:examples",
-          "typeName": "ConfigurationLoaderService"
-        },
-        {
-          "maximumDepth": 3,
-          "memberCount": 4,
-          "minimumDepth": 1,
-          "moduleId": "packages/codometer-configuration:examples",
-          "typeName": "InputService"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/codometer-configuration:examples",
-          "typeName": "UnknownConfigurationFileTypeError"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/codometer-configuration:examples",
-          "typeName": "ConfigurationFileNotFoundError"
-        },
-        {
-          "maximumDepth": 1,
-          "memberCount": 1,
-          "minimumDepth": 1,
-          "moduleId": "packages/codometer-configuration:examples",
-          "typeName": "InvalidLimitValueError"
-        }
-      ]
+      }
     },
     {
       "callableBreadths": [
@@ -9525,8 +8993,6 @@
           }
         }
       ],
-      "misplacedCallables": [],
-      "moduleSpreads": [],
       "projectName": "packages/logger",
       "stacks": [
         {
@@ -10370,331 +9836,19 @@
         "maximumDepth": 5,
         "projectCount": 1,
         "unresolvedCallCount": 1
-      },
-      "typeDepths": [
-        {
-          "maximumDepth": 5,
-          "memberCount": 17,
-          "minimumDepth": 1,
-          "moduleId": "packages/logger:examples",
-          "typeName": "LoggerService"
-        }
-      ]
+      }
     }
   ],
   "summary": {
-    "callableCount": 230,
+    "callableCount": 227,
     "cyclicComponentCount": 1,
-    "edgeCount": 200,
-    "entryPointCount": 76,
-    "fileCount": 84,
+    "edgeCount": 190,
+    "entryPointCount": 81,
+    "fileCount": 86,
     "maximumDepth": 8,
     "projectCount": 6,
     "unresolvedCallCount": 12
   },
-  "typeDepths": [
-    {
-      "maximumDepth": 8,
-      "memberCount": 8,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:computed-member",
-      "typeName": "ComputedMemberService"
-    },
-    {
-      "maximumDepth": 8,
-      "memberCount": 23,
-      "minimumDepth": 1,
-      "moduleId": "packages/codometer-configuration:examples",
-      "typeName": "ConfigurationService"
-    },
-    {
-      "maximumDepth": 8,
-      "memberCount": 7,
-      "minimumDepth": 2,
-      "moduleId": "packages/callidescope-examples:deep-stack",
-      "typeName": "DeepStackService"
-    },
-    {
-      "maximumDepth": 8,
-      "memberCount": 7,
-      "minimumDepth": 2,
-      "moduleId": "packages/callidescope-examples:forwarding-stack",
-      "typeName": "ForwardingStackService"
-    },
-    {
-      "maximumDepth": 7,
-      "memberCount": 8,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:frame-annotations",
-      "typeName": "FrameAnnotationsService"
-    },
-    {
-      "maximumDepth": 7,
-      "memberCount": 4,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples/examples/inherited-limits:examples",
-      "typeName": "InheritedLimitsService"
-    },
-    {
-      "maximumDepth": 6,
-      "memberCount": 12,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-configuration:examples",
-      "typeName": "ProjectConfigurationService"
-    },
-    {
-      "maximumDepth": 6,
-      "memberCount": 6,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:project-depth-limit",
-      "typeName": "ProjectDepthLimitService"
-    },
-    {
-      "maximumDepth": 5,
-      "memberCount": 19,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-configuration:examples",
-      "typeName": "ConfigurationService"
-    },
-    {
-      "maximumDepth": 5,
-      "memberCount": 18,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-configuration:examples",
-      "typeName": "InputService"
-    },
-    {
-      "maximumDepth": 5,
-      "memberCount": 2,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:spread-near-miss",
-      "typeName": "SpreadNearMissService"
-    },
-    {
-      "maximumDepth": 5,
-      "memberCount": 17,
-      "minimumDepth": 1,
-      "moduleId": "packages/logger:examples",
-      "typeName": "LoggerService"
-    },
-    {
-      "maximumDepth": 4,
-      "memberCount": 3,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:dependency-closure",
-      "typeName": "DependencyClosureService"
-    },
-    {
-      "maximumDepth": 4,
-      "memberCount": 2,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:module-spread",
-      "typeName": "ModuleSpreadService"
-    },
-    {
-      "maximumDepth": 4,
-      "memberCount": 4,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples/examples/gated-leaf:examples",
-      "typeName": "GatedLeafService"
-    },
-    {
-      "maximumDepth": 4,
-      "memberCount": 11,
-      "minimumDepth": 1,
-      "moduleId": "packages/codometer-configuration:examples",
-      "typeName": "ConfigurationLoaderService"
-    },
-    {
-      "maximumDepth": 3,
-      "memberCount": 3,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:callback-argument",
-      "typeName": "CallbackArgumentService"
-    },
-    {
-      "maximumDepth": 3,
-      "memberCount": 3,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:declared-entry-points",
-      "typeName": "DeclaredEntryPointsService"
-    },
-    {
-      "maximumDepth": 3,
-      "memberCount": 4,
-      "minimumDepth": 1,
-      "moduleId": "packages/codometer-configuration:examples",
-      "typeName": "InputService"
-    },
-    {
-      "maximumDepth": 2,
-      "memberCount": 4,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:entry-points",
-      "typeName": "EntryPointsService"
-    },
-    {
-      "maximumDepth": 2,
-      "memberCount": 2,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:injected-dependency",
-      "typeName": "OrdersService"
-    },
-    {
-      "maximumDepth": 4,
-      "memberCount": 4,
-      "minimumDepth": 3,
-      "moduleId": "packages/callidescope-examples:mutual-recursion",
-      "typeName": "MutualRecursionService"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-configuration:examples",
-      "typeName": "UnknownConfigurationFileTypeError"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-configuration:examples",
-      "typeName": "ConfigurationFileNotFoundError"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-configuration:examples",
-      "typeName": "ProjectConfigurationError"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-configuration:examples",
-      "typeName": "ProjectConfigurationFieldNotPermittedError"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-configuration:examples",
-      "typeName": "InputError"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:base-class",
-      "typeName": "BaseTaskService"
-    },
-    {
-      "maximumDepth": 2,
-      "memberCount": 1,
-      "minimumDepth": 2,
-      "moduleId": "packages/callidescope-examples:base-class",
-      "typeName": "BaseClassService"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:constructed-class",
-      "typeName": "ParserService"
-    },
-    {
-      "maximumDepth": 2,
-      "memberCount": 1,
-      "minimumDepth": 2,
-      "moduleId": "packages/callidescope-examples:constructed-class",
-      "typeName": "ConstructedClassService"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:implementation-fan-out",
-      "typeName": "ConsoleSinkService"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:implementation-fan-out",
-      "typeName": "FileSinkService"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:implementation-fan-out",
-      "typeName": "ImplementationFanOutService"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:implementation-fan-out",
-      "typeName": "MemorySinkService"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:injected-dependency",
-      "typeName": "InventoryService"
-    },
-    {
-      "maximumDepth": 2,
-      "memberCount": 1,
-      "minimumDepth": 2,
-      "moduleId": "packages/callidescope-examples:plain-call",
-      "typeName": "PlainCallService"
-    },
-    {
-      "maximumDepth": 2,
-      "memberCount": 2,
-      "minimumDepth": 2,
-      "moduleId": "packages/callidescope-examples:receipt",
-      "typeName": "ReceiptService"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/callidescope-examples:structural-interface",
-      "typeName": "FilesystemProviderService"
-    },
-    {
-      "maximumDepth": 2,
-      "memberCount": 1,
-      "minimumDepth": 2,
-      "moduleId": "packages/callidescope-examples:structural-interface",
-      "typeName": "StructuralInterfaceService"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/codometer-configuration:examples",
-      "typeName": "UnknownConfigurationFileTypeError"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/codometer-configuration:examples",
-      "typeName": "ConfigurationFileNotFoundError"
-    },
-    {
-      "maximumDepth": 1,
-      "memberCount": 1,
-      "minimumDepth": 1,
-      "moduleId": "packages/codometer-configuration:examples",
-      "typeName": "InvalidLimitValueError"
-    }
-  ],
   "wideCallables": [
     {
       "breadth": 3,

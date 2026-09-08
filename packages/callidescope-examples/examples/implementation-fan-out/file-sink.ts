@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-/** One of three structural `LineSink` implementations, past the cap of two. */
+/** One of nine structural `LineSink` implementations, past the cap of eight. */
 @Injectable()
 export class FileSinkService {
   // 🔑 Public Fields

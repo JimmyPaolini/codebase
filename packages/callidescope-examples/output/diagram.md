@@ -4,24 +4,24 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 230 |
-| Files | 84 |
-| Calls traced | 200 |
-| Call stacks | 76 |
+| Callables | 227 |
+| Files | 86 |
+| Calls traced | 190 |
+| Call stacks | 81 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 12 |
 
 ## Projects
 
-| Project | Deepest | Limit | Headroom | Widest | Spread | Misplaced |
-| --- | --- | --- | --- | --- | --- | --- |
-| `packages/callidescope-examples` | 8 | 5 declared | -3 | 5 | 1 | 1 |
-| `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 declared | -1 | 3 | 0 | 0 |
-| `packages/callidescope-examples/examples/inherited-limits` | 7 | 6 inherited | -1 | 1 | 0 | 0 |
-| `packages/logger` | 5 | 4 declared | -1 | 2 | 0 | 0 |
-| `packages/callidescope-configuration` | 6 | 6 declared | 0 | 8 | 0 | 0 |
-| `packages/codometer-configuration` | 8 | 8 declared | 0 | 7 | 0 | 0 |
+| Project | Deepest | Limit | Headroom | Widest |
+| --- | --- | --- | --- | --- |
+| `packages/callidescope-examples` | 8 | 5 declared | -3 | 2 |
+| `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 declared | -1 | 3 |
+| `packages/callidescope-examples/examples/inherited-limits` | 7 | 6 inherited | -1 | 1 |
+| `packages/logger` | 5 | 4 declared | -1 | 2 |
+| `packages/callidescope-configuration` | 6 | 6 declared | 0 | 6 |
+| `packages/codometer-configuration` | 8 | 8 declared | 0 | 7 |
 
 ## Depth headroom
 
@@ -130,22 +130,10 @@ flowchart LR
   n46 --> n47
 ```
 
-## Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `ModuleSpreadService.orchestrate` | 6 | `packages/callidescope-examples:base-class`, `packages/callidescope-examples:callback-argument`, `packages/callidescope-examples:constructed-class`, `packages/callidescope-examples:injected-dependency`, `packages/callidescope-examples:plain-call` | `packages/callidescope-examples/examples/module-spread/module-spread.ts:32` |
-
 ## Callables over the breadth limit (1)
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `GatedLeafService.read` | 3 | `GatedLeafService.parse`, `GatedLeafService.normalize`, `GatedLeafService.finish` | `packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40` |
-
-## Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `formatCurrency` | `packages/callidescope-examples:misplaced-callable` | `packages/callidescope-examples:receipt` | 2/2 |
 
 <!-- CALL_STACKS_END -->
