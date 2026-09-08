@@ -1,7 +1,7 @@
 # 📏 Project depth limit
 
 **Six frames: a finding under the five this package declares, and not one
-under the six it would otherwise have inherited.**
+under the six the run supplies as its default.**
 
 ## Run it
 
@@ -9,21 +9,16 @@ under the six it would otherwise have inherited.**
 nx run callidescope-examples:examples
 ```
 
-Then read `deepStacks` in [`output/report.json`](../../output/report.json). Every
-entry carries the `limit` it was judged against, and the entries do not agree:
-`ProjectDepthLimitService.judge` says `"limit": 5`, and
-`InheritedLimitsService.request` in
-[`inherited-limits`](../inherited-limits/README.md) says `"limit": 6`. One run,
-two numbers, because the depth limit is a fact about a project rather than about
-a run.
+Then read `deepStacks` in [`output/report.json`](../../output/report.json).
+`ProjectDepthLimitService.judge` carries `"limit": 5` — this package's own
+number, not the run's.
 
 `ProjectDepthLimitService.judge` heads a chain of six ordinary frames. Six is
-what this package would inherit: `limits.maximumDepth` is `6` in
+what `limits.maximumDepth` reads in
 [`callidescope.workspace.config.ts`](../../callidescope.workspace.config.ts),
-and every project in this run that declares nothing of its own is judged by it —
-which, now that the three dependency packages the closure reaches all declare
-their own, is [`inherited-limits`](../inherited-limits/README.md) and nothing
-else. Six frames pass six.
+the number every project in this run falls back to if it spreads
+`projectDefaults` and overrides nothing — which is not this package. Six frames
+would pass six.
 
 This package declares five for itself, in the
 [`callidescope.config.ts`](../../callidescope.config.ts) at its root, so the
@@ -63,4 +58,4 @@ own, found the way every project's is: by that exact name, at the project root.
 
 ## Next
 
-[inherited limits](../inherited-limits/README.md).
+[gated leaf](../gated-leaf/README.md).

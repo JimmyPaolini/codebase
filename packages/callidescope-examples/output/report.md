@@ -4,10 +4,10 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 240 |
-| Files | 91 |
-| Calls traced | 204 |
-| Call stacks | 80 |
+| Callables | 246 |
+| Files | 88 |
+| Calls traced | 220 |
+| Call stacks | 77 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 14 |
@@ -18,23 +18,22 @@
 | --- | --- | --- | --- | --- |
 | `packages/callidescope-examples` | 8 | 5 | -3 | 2 |
 | `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 | -1 | 3 |
-| `packages/callidescope-examples/examples/inherited-limits` | 7 | 6 | -1 | 1 |
 | `packages/logger` | 5 | 4 | -1 | 2 |
-| `packages/callidescope-configuration` | 6 | 6 | 0 | 5 |
+| `packages/callidescope-configuration` | 6 | 6 | 0 | 7 |
 | `packages/codometer-configuration` | 8 | 8 | 0 | 7 |
 
 ## Depth headroom
 
 | Headroom | Projects |
 | --- | --- |
-| over limit | 4 |
+| over limit | 3 |
 | 0 — at limit | 2 |
 | 1 | 0 |
 | 2–3 | 0 |
 | 4+ | 0 |
 | no stacks | 0 |
 
-## Call stacks over the depth limit (8)
+## Call stacks over the depth limit (7)
 
 **1. `ComputedMemberService.dispatch`** — depth ≥ 8 · orphan-root
 
@@ -100,7 +99,7 @@
 ```
 
 <details>
-<summary>5 more call stacks</summary>
+<summary>4 more call stacks</summary>
 
 **4. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
 
@@ -121,26 +120,7 @@
                ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
-**5. `InheritedLimitsService.request`** — depth 7 · orphan-root
-
-```text
-🚀 InheritedLimitsService.request(key: string): string [packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts:38]
-   ↳ Asks the leaf about one key, through the two frames above it.
-  └─> InheritedLimitsService.prepare(key: string): string [packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts:31]
-     ↳ Prepares the key the leaf is asked about.
-    └─> InheritedLimitsService.forward(key: string): string [packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts:26]
-       ↳ Hands the key to the leaf, which is where this project's code stops.
-      └─> GatedLeafService.read(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40]
-         ↳ The address this project declares as its entry point.
-        └─> GatedLeafService.parse(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:27]
-           ↳ First of the three, and the way into the chain.
-          └─> GatedLeafService.normalize(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:22]
-             ↳ Second of the three, one hop from the end.
-            └─> GatedLeafService.finish(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:17]
-               ↳ Ends the chain, which is where the fourth frame is.
-```
-
-**6. `ProjectDepthLimitService.judge`** — depth 6 · orphan-root
+**5. `ProjectDepthLimitService.judge`** — depth 6 · orphan-root
 
 ```text
 🚀 ProjectDepthLimitService.judge(project: string): string [packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts:45]
@@ -157,7 +137,7 @@
              ↳ Reads the file the number the verdict used was written in.
 ```
 
-**7. `LoggerService.log`** — depth 5 · orphan-root
+**6. `LoggerService.log`** — depth 5 · orphan-root
 
 ```text
 🚀 LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
@@ -172,7 +152,7 @@
            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**8. `GatedLeafService.read`** — depth 4 · declared
+**7. `GatedLeafService.read`** — depth 4 · declared
 
 ```text
 🚀 GatedLeafService.read(key: string): string [packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40]

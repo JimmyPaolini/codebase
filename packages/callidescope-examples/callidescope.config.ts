@@ -14,12 +14,11 @@ import type { CallidescopeProjectConfiguration } from "@callidescope/configurati
  *
  * ## Why five
  *
- * Six is what `callidescope.workspace.config.ts` supplies, and what
- * `examples/inherited-limits` writes into its own file unchanged. Five is one
- * tighter, and the difference is the example: every finding this package
- * produces carries `"limit": 5`, `inherited-limits`' carries `"limit": 6`, and
+ * Six is what `callidescope.workspace.config.ts` supplies as the run's own
+ * default. Five is one tighter, and the difference is the example:
  * `examples/project-depth-limit` is a six-frame chain that is a finding under
- * one number and not the other.
+ * this package's five and would pass under the run's own six — nothing about
+ * the code differs, only which file the number is written in.
  *
  * @see examples/project-depth-limit/README.md — the limit, and what it changed
  * @see examples/declared-entry-points/README.md — the address, and the kind

@@ -61,14 +61,11 @@ const GATED_LEAF_DIRECTORY = `${EXAMPLES_DIRECTORY}/examples/gated-leaf`;
  */
 const GUIDES_WITH_DOCUMENTED_RUNS = ["gated-leaf"];
 
-/** The nested project that declares nothing, and is judged all the same. */
-const INHERITED_LIMITS_DIRECTORY = `${EXAMPLES_DIRECTORY}/examples/inherited-limits`;
-
 /**
  * Every example directory that is a project of its own — the ones holding a
  * `tsconfig.json`.
  *
- * Read off disk rather than listed, because that is what makes a fourth
+ * Read off disk rather than listed, because that is what makes a second
  * nested-project example impossible to add halfway: it appears here the moment
  * its `tsconfig.json` does, and the assertion below then fails until the
  * `examples` target names it too.
@@ -277,10 +274,10 @@ function readGuide(exampleName: string): string {
  * broken chain unbroken on the strength of a mention halfway up it.
  *
  * The first `## Next` and only as far as the heading after it. `gated-leaf`
- * and `inherited-limits` both carry a generated `## 🔭 Callidescope` block
- * below their `## Next`, so a read taken to either the last marker or the end
- * of the file would answer out of that block instead of out of the
- * reading-order link this assertion exists to check.
+ * carries a generated `## 🔭 Callidescope` block below its `## Next`, so a
+ * read taken to either the last marker or the end of the file would answer
+ * out of that block instead of out of the reading-order link this assertion
+ * exists to check.
  */
 function readNextLink(exampleName: string): string {
   const [, ...rest] = readGuide(exampleName).split("## Next");
@@ -616,7 +613,6 @@ describe("callidescope examples (integration)", () => {
         "packages/callidescope-configuration",
         EXAMPLES_DIRECTORY,
         GATED_LEAF_DIRECTORY,
-        INHERITED_LIMITS_DIRECTORY,
         "packages/codometer-configuration",
         "packages/logger",
       ]);
@@ -637,30 +633,25 @@ describe("callidescope examples (integration)", () => {
 
     it("credits a nested project's files to the nested project", () => {
       // Ownership is by containment rather than by whichever program asked
-      // first, so the two example directories holding a `tsconfig.json` own
-      // their own files even though this package's program lists them too.
-      // Without that, a limit written in a nested project would be resolved
-      // against a project that owns none of the code it describes.
+      // first, so the example directory holding a `tsconfig.json` owns its
+      // own files even though this package's program lists them too. Without
+      // that, a limit written in a nested project would be resolved against a
+      // project that owns none of the code it describes.
       expect(
         result.projects
           .filter((project) =>
             project.projectName.startsWith(`${EXAMPLES_DIRECTORY}/examples/`),
           )
           .map((project) => [project.projectName, project.summary.fileCount]),
-      ).toStrictEqual([
-        [GATED_LEAF_DIRECTORY, 2],
-        [INHERITED_LIMITS_DIRECTORY, 3],
-      ]);
+      ).toStrictEqual([[GATED_LEAF_DIRECTORY, 2]]);
     });
 
-    it("leaves out the file a project excluded, and only in that project", () => {
-      // The same generated file was written into both nested projects, and
-      // only `gated-leaf` declares `exclude: ["*.generated.ts"]`. Counting
-      // what is on disk against what the run traced is what makes this an
-      // assertion about the exclusion rather than about two fixed numbers: a
-      // glob anchored to the workspace instead of to the project would match
-      // neither file and both counts would move, and one that reached across
-      // the boundary would drop both.
+    it("leaves out the file a project excluded", () => {
+      // `gated-leaf` declares `exclude: ["*.generated.ts"]`. Counting what is
+      // on disk against what the run traced is what makes this an assertion
+      // about the exclusion rather than about a fixed number: a glob anchored
+      // to the workspace instead of to the project would match nothing and
+      // the two counts would agree.
       const traced = (directory: string): Record<string, number> => ({
         onDisk: readdirSync(path.join(WORKSPACE_ROOT, directory)).filter(
           (name) => name.endsWith(".ts"),
@@ -671,10 +662,6 @@ describe("callidescope examples (integration)", () => {
       expect(traced(GATED_LEAF_DIRECTORY)).toStrictEqual({
         onDisk: 3,
         traced: 2,
-      });
-      expect(traced(INHERITED_LIMITS_DIRECTORY)).toStrictEqual({
-        onDisk: 3,
-        traced: 3,
       });
     });
 
@@ -846,11 +833,10 @@ describe("callidescope examples (integration)", () => {
 
   describe("per-project limits", () => {
     it("judges each project against the limit its own configuration settles on", () => {
-      // The whole feature in one assertion: four different depth limits in one
-      // report. Three are declared in a project's own `callidescope.config.ts`
+      // The whole feature in one assertion: three different depth limits in
+      // one report, each declared in a project's own `callidescope.config.ts`
       // — `gated-leaf`'s three, this package's five, and `@codebase/logger`'s
-      // four, which the closure reaches — and the six is the run's default,
-      // inherited by `inherited-limits`, which declares nothing.
+      // four, which the closure reaches.
       //
       // `@codebase/logger` is here because it is a real workspace package that
       // now states its own limit, and this run does not ignore calls to it the
@@ -869,18 +855,17 @@ describe("callidescope examples (integration)", () => {
         ["DeepStackService.quote", 5],
         ["ForwardingStackService.handle", 5],
         ["FrameAnnotationsService.trace", 5],
-        ["InheritedLimitsService.request", 6],
         ["ProjectDepthLimitService.judge", 5],
         ["LoggerService.log", 4],
         ["GatedLeafService.read", 3],
       ]);
     });
 
-    it("makes a six-frame chain a finding that the inherited limit would pass", () => {
+    it("makes a six-frame chain a finding that the run's own default would pass", () => {
       // `project-depth-limit`'s reason for existing. Six frames pass the six
-      // this package would inherit and fail the five it declares, so the same
-      // fixture is a finding or not depending on nothing but which file the
-      // number was written in.
+      // the run supplies as its default and fail the five this package
+      // declares, so the same fixture is a finding or not depending on nothing
+      // but which file the number was written in.
       const judged = readDeepStacksFor(result, EXAMPLES_DIRECTORY).find(
         (stack) =>
           stack.frames[0]?.displayName === "ProjectDepthLimitService.judge",
@@ -909,25 +894,6 @@ describe("callidescope examples (integration)", () => {
           finding.limit,
         ]),
       ).toStrictEqual([["GatedLeafService.read", 3, 2]]);
-    });
-
-    it("judges the project that declares nothing by the run's own default", () => {
-      // `inherited-limits`' reason for existing, and the reason breadth gates
-      // nothing here: the run declares no `maximumBreadth`, so a project
-      // inheriting from it inherits no breadth limit rather than some
-      // stand-in for one.
-      const [deep] = readDeepStacksFor(result, INHERITED_LIMITS_DIRECTORY);
-
-      expect([
-        deep?.frames[0]?.displayName,
-        deep?.depth,
-        deep?.limit,
-      ]).toStrictEqual(["InheritedLimitsService.request", 7, 6]);
-      expect(
-        result.wideCallables.filter((finding) =>
-          finding.displayName.startsWith("InheritedLimitsService."),
-        ),
-      ).toStrictEqual([]);
     });
   });
 

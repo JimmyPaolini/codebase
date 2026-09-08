@@ -4,10 +4,10 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 240 |
-| Files | 91 |
-| Calls traced | 204 |
-| Call stacks | 80 |
+| Callables | 246 |
+| Files | 88 |
+| Calls traced | 220 |
+| Call stacks | 77 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 14 |
@@ -18,23 +18,22 @@
 | --- | --- | --- | --- | --- |
 | `packages/callidescope-examples` | 8 | 5 | -3 | 2 |
 | `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 | -1 | 3 |
-| `packages/callidescope-examples/examples/inherited-limits` | 7 | 6 | -1 | 1 |
 | `packages/logger` | 5 | 4 | -1 | 2 |
-| `packages/callidescope-configuration` | 6 | 6 | 0 | 5 |
+| `packages/callidescope-configuration` | 6 | 6 | 0 | 7 |
 | `packages/codometer-configuration` | 8 | 8 | 0 | 7 |
 
 ## Depth headroom
 
 | Headroom | Projects |
 | --- | --- |
-| over limit | 4 |
+| over limit | 3 |
 | 0 — at limit | 2 |
 | 1 | 0 |
 | 2–3 | 0 |
 | 4+ | 0 |
 | no stacks | 0 |
 
-## Call stacks over the depth limit (8)
+## Call stacks over the depth limit (7)
 
 ```mermaid
 flowchart LR
@@ -68,24 +67,21 @@ flowchart LR
   n27["FrameAnnotationsService.compose"]
   n28["FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong"]
   n29["FrameAnnotationsService.finish"]
-  n30(["InheritedLimitsService.request"])
-  n31["InheritedLimitsService.prepare"]
-  n32["InheritedLimitsService.forward"]
-  n33["GatedLeafService.read"]
-  n34["GatedLeafService.parse"]
-  n35["GatedLeafService.normalize"]
-  n36["GatedLeafService.finish"]
-  n37(["ProjectDepthLimitService.judge"])
-  n38["ProjectDepthLimitService.resolveConfiguration"]
-  n39["ProjectDepthLimitService.readLimit"]
-  n40["ProjectDepthLimitService.applyLimit"]
-  n41["ProjectDepthLimitService.reportVerdict"]
-  n42["ProjectDepthLimitService.readDeclaringFile"]
-  n43(["LoggerService.log"])
-  n44["LoggerService.info"]
-  n45["LoggerService.buildBindings"]
-  n46["LoggerService.assertConventionalMessage"]
-  n47["LoggerService.isConventionalVerb"]
+  n30(["ProjectDepthLimitService.judge"])
+  n31["ProjectDepthLimitService.resolveConfiguration"]
+  n32["ProjectDepthLimitService.readLimit"]
+  n33["ProjectDepthLimitService.applyLimit"]
+  n34["ProjectDepthLimitService.reportVerdict"]
+  n35["ProjectDepthLimitService.readDeclaringFile"]
+  n36(["LoggerService.log"])
+  n37["LoggerService.info"]
+  n38["LoggerService.buildBindings"]
+  n39["LoggerService.assertConventionalMessage"]
+  n40["LoggerService.isConventionalVerb"]
+  n41(["GatedLeafService.read"])
+  n42["GatedLeafService.parse"]
+  n43["GatedLeafService.normalize"]
+  n44["GatedLeafService.finish"]
   n0 --> n1
   n1 --> n2
   n2 --> n3
@@ -118,16 +114,13 @@ flowchart LR
   n32 --> n33
   n33 --> n34
   n34 --> n35
-  n35 --> n36
+  n36 --> n37
   n37 --> n38
   n38 --> n39
   n39 --> n40
-  n40 --> n41
   n41 --> n42
+  n42 --> n43
   n43 --> n44
-  n44 --> n45
-  n45 --> n46
-  n46 --> n47
 ```
 
 ## Callables over the breadth limit (1)
