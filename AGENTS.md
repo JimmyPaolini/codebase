@@ -183,150 +183,6 @@ a single name: every `callidescope-*`, `codependix-*`, `codometer-*`, and
 and `conformetry` respectively. Deriving a scope from a directory name is how an
 invented scope fails validation.
 
-## IC-Suite
-
-Four in-house toolchains measure this workspace and gate what they measure.
-They share one shape, so learning one predicts the others: a command-line host,
-a configuration package that resolves its rules, agent skills for the three
-moments of using it — run it, tell it what to enforce, act on what it said —
-and an examples package that demonstrates its behavior.
-
-| Toolchain | Measures | Branch gate | Skills |
-| --------- | -------- | ----------- | ------ |
-| [callidescope](packages/callidescope-cli/README.md) | Call stacks through injected dependencies: depth, breadth, module spread | each project's `gate` | [trace](packages/callidescope-agents/skills/callidescope-trace/SKILL.md) · [configure](packages/callidescope-agents/skills/callidescope-configure/SKILL.md) · [triage](packages/callidescope-agents/skills/callidescope-triage/SKILL.md) |
-| [codependix](packages/codependix-cli/README.md) | Dependency graphs: Nx neighborhood, NestJS modules, file-level imports | `codebase:codependix:check` | [export](packages/codependix-agents/skills/codependix-export/SKILL.md) · [configure](packages/codependix-agents/skills/codependix-configure/SKILL.md) · [triage](packages/codependix-agents/skills/codependix-triage/SKILL.md) · [navigate](packages/codependix-agents/skills/codependix-navigate/SKILL.md) |
-| [codometer](packages/codometer-cli/README.md) | Code statistics: languages, conventions, comment blocks, compressed size | `codebase:codometer` and each project's `codometer` | [measure](packages/codometer-agents/skills/codometer-measure/SKILL.md) · [configure](packages/codometer-agents/skills/codometer-configure/SKILL.md) · [triage](packages/codometer-agents/skills/codometer-triage/SKILL.md) |
-| conformetry | Generated code against the template that describes its shape | `conformetry-validate` | [generate](.agents/skills/conformetry-generate/SKILL.md) · [configure](.agents/skills/conformetry-configure/SKILL.md) · [validate](.agents/skills/conformetry-validate/SKILL.md) |
-
-Every configuration field is documented in the toolchain's own configuration
-package README; the skills above carry the flags and the triage paths.
-
-### One rule for all four
-
-- **Skills are authored in the `*-agents` packages** and installed back from
-  `skills-lock.json` like any other vendored skill, so what this repository
-  loads is exactly what another workspace gets. Edit the package, never the
-  installed copy under `.agents/skills/` — `skills update` overwrites it.
-- **Two things are gated, and they sit on opposite sides of a pull request.** A
-  rule check (`--check limits`, `--check boundaries`, `--check breadth`) gates
-  the branch, because a rule a change broke is what that change should fix; it
-  reads no output destination and writes nothing, which is what makes it safe
-  there. **Report freshness (`--check reports`) is gated by nothing here, on
-  purpose** — a call graph or a dependency graph moves with the workspace, so
-  freshness would fail every branch for being behind `main` rather than for
-  anything it did. `write` publishes reports and README blocks on `main`.
-- **Never raise a limit, loosen a rule, or hand-edit generated output to make a
-  check pass.** Triage the finding: each toolchain's `triage` skill is the entry
-  point, and every limit in the workspace was set from a measured run rather
-  than chosen.
-- **When a behavior needs to be seen rather than described, run it.** Each
-  toolchain has an examples package whose `AGENTS.md` maps "the tool said X" to
-  the example that reproduces X in about a second. **Several examples are
-  deliberately broken — a breaching limit, a `tsconfig.json` the compiler
-  cannot parse, a
-  stack eight frames deep — and "fixing" one deletes the only place that
-  behavior is demonstrated. Do not repair them.**
-  [`docs/examples-package-standard.md`](docs/examples-package-standard.md)
-  holds the shape all four share.
-
-### Conformetry
-
-Generators scaffold projects, modules, and components from **templates**;
-conformance then measures the generated **instances** back against those
-templates. The two are one workflow: code hand-written in a shape a template
-already describes starts life failing conformance. **Generate rather than
-hand-craft**, then check conformance — reach for a generator whenever creating a
-new application, package, module, or component.
-
-```bash
-nx g conformetry:<generator> [options]
-pnpm nx run-many --targets=conformetry-validate
-```
-
-The generator namespace is emitted from `configuration/conformetry.config.ts`
-into the gitignored `.conformetry/` directory on `pnpm install`, so it is never
-committed. If Nx reports it is not installed, run `pnpm install` again. No
-project is called `conformetry` — the name means the generator namespace and
-nothing else, and the command-line host is `conformetry-cli`.
-
-This repository's generators, kept in step with the configuration by
-`nx run synchronization:conformetry-generators`. `conformetry templates` prints
-the same thing for any workspace:
-
-<!-- conformetry-generators-table start -->
-| Template | Description |
-| -------- | ----------- |
-| `jupyter-notebook-application` | A standalone Python application template with a Jupyter notebook entry point, pytest/pyright/ruff tooling, and a shared uv workspace venv |
-| `nestjs-command-project` | A standalone NestJS CLI application template built on nest-commander, for a new command-line tool in applications/, packages/, or tools/ |
-| `nestjs-graphql-application` | A standalone NestJS GraphQL API application template, for a new backend service exposing a GraphQL schema over HTTP |
-| `nestjs-service-project` | A standalone NestJS library package template for internal workspace code shared across projects, with no CLI entry point or HTTP server |
-| `nestjs-command-module` | A nest-commander command module template — command, module, constants, types, and unit test — for an existing NestJS command-line project |
-| `nestjs-dataloader-module` | A GraphQL dataloader module template — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project |
-| `nestjs-graphql-module` | A GraphQL module template — resolver, entities, args/input types, factories, constants, and unit test — for an existing NestJS project |
-| `nestjs-service-file` | A service and unit test file template for an existing NestJS module, without the surrounding module files |
-| `nestjs-service-module` | A plain service module template — module, service, constants, types, and unit test — for an existing NestJS project |
-| `react-component` | A React component and test file template for an existing React project |
-<!-- conformetry-generators-table end -->
-
-### Callidescope
-
-**Depth and breadth are gated per project**, by the `gate` target
-`@callidescope/nx` infers onto every project holding a `tsconfig.json`. Each
-gate traces its project together with that project's Nx dependencies and fails
-on the findings that project **owns**, so a dependency's breach is that
-dependency's own gate's business.
-
-Most projects declare their own limits in a `callidescope.config.ts` at their
-own root, and each writes only what it overrides — **inheritance is per limit**,
-so `configuration/callidescope.config.ts` supplies whatever a project does not
-name. Breadth is declared only where every callable at the project's widest
-number is a closed enumeration — a switch over a union, a registry, a set of
-formats — so a project whose widest callable is an ordinary sequential
-orchestrator gates depth and nothing else. Read the set as a command rather than
-a table, because no one file holds it:
-
-```bash
-nx run callidescope-cli:start -- limits --config configuration/callidescope.config.ts
-```
-
-A handful of traced roots carry no gate, and each one's `project.json` target
-description records why — `affirmations` has no TypeScript program,
-`callidescope-examples` exists to breach, `configuration/` and the fixture roots
-are traced but are not Nx projects, and the workspace root is dropped by
-`configuration/.callidescopeignore`. They are still traced and published by
-`write` on `main`, so a regression in one still lands in the report; they only
-stop failing a pull request.
-
-### Codometer
-
-Beyond the size limits in [Size Limits](#size-limits), codometer gates **comment
-block length** — `comments: { maximumWords: 128 }` in
-[`configuration/codometer.config.ts`](configuration/codometer.config.ts),
-reaching every language it measures comments in. A block is the run of comment
-lines a reader takes as one thought: a blank line ends one, a comment trailing a
-value is never part of the block above it, and a `#!` shebang is never a comment
-at all. It budgets **what a comment says, not how wide it is** — every linter
-here already holds a line to 80 columns. When a block breaches, condense it or
-move the detail into documentation. Shell is deliberately looser, because
-`scripts/shell/` holds command references whose whole body is one comment block
-documenting flags.
-
-### Codependix
-
-`--check boundaries` states the rules `@nx/enforce-module-boundaries`
-structurally cannot: an implicit Nx edge with no import to flag, a NestJS module
-edge the container resolved rather than a file declared, and a rule about the
-shape of the graph rather than about one edge. The two do not overlap and
-neither replaces the other — ESLint reports at the import site with a line
-number, which a graph-level report cannot match. See
-[Nx Boundaries](#nx-boundaries) and
-[`packages/codependix-boundaries`](packages/codependix-boundaries).
-
-It is deliberately **not** in `configuration/lint-staged.config.ts`: a
-`--check boundaries` run builds a `ts.Program` per project and takes about
-twenty seconds over the whole workspace, which is not a pre-commit hook anybody
-keeps.
-
 ## Work Scope
 
 - When coding or refactoring, focus on one project at a time, or for sufficiently large requests only one module/folder at a time.
@@ -400,27 +256,79 @@ project's `codometer-report.json` is subtracted from its own.
 
 ### Quality Tools
 
-| Tool            | Description                                           | Config                                                          | Docs                                                                 |
-| --------------- | ----------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`                                 | [docs](https://oxc.rs/docs/guide/usage/formatter.html)               |
-| `sqlfluff`      | Formats and lints SQL files                           | root `pyproject.toml`                                           | [docs](https://docs.sqlfluff.com/)                                   |
-| `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`                              | [docs](https://prettier.io/docs/)                                    |
-| `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`                                      | [docs](https://eslint.org/docs/latest/)                              |
-| `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`                                | [docs](https://oxc.rs/docs/guide/usage/linter.html)                  |
-| `ruff`          | Formats and lints Python files                        | root `pyproject.toml`                                           | [docs](https://docs.astral.sh/ruff/)                                 |
-| `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                                         | [docs](https://www.typescriptlang.org/docs/)                         |
-| `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                                            | [docs](https://github.com/plantain-00/type-coverage)                 |
-| `pyright`       | Performs static Python type checking                  | root `pyproject.toml`                                           | [docs](https://github.com/microsoft/pyright)                         |
-| `ty`            | Performs additional Python type checking              | root `pyproject.toml`                                           | [docs](https://docs.astral.sh/ty/)                                   |
-| `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`                                  | [docs](https://knip.dev/)                                            |
-| `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`                            | [docs](https://github.com/jendrikseipp/vulture)                      |
-| `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`                             | [docs](https://docs.fallow.tools/)                                   |
-| `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`                               | [docs](https://jscpd.dev/)                                           |
-| `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`, plus each project's own | [docs](packages/callidescope-cli/README.md), [skills](#callidescope) |
-| `codependix`    | Exports dependency graphs and gates rules over them   | `configuration/codependix.config.ts`                            | [docs](packages/codependix-cli/README.md), [skills](#codependix)     |
-| `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`                              | [docs](https://cspell.org/)                                          |
-| `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc`                        | [docs](https://github.com/DavidAnson/markdownlint-cli2)              |
-| `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`                                   | [docs](https://yamllint.readthedocs.io/)                             |
+| Tool            | Description                                           | Config                                                          | Docs                                                             |
+| --------------- | ----------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`                                 | [docs](https://oxc.rs/docs/guide/usage/formatter.html)           |
+| `sqlfluff`      | Formats and lints SQL files                           | root `pyproject.toml`                                           | [docs](https://docs.sqlfluff.com/)                               |
+| `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`                              | [docs](https://prettier.io/docs/)                                |
+| `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`                                      | [docs](https://eslint.org/docs/latest/)                          |
+| `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`                                | [docs](https://oxc.rs/docs/guide/usage/linter.html)              |
+| `ruff`          | Formats and lints Python files                        | root `pyproject.toml`                                           | [docs](https://docs.astral.sh/ruff/)                             |
+| `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                                         | [docs](https://www.typescriptlang.org/docs/)                     |
+| `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                                            | [docs](https://github.com/plantain-00/type-coverage)             |
+| `pyright`       | Performs static Python type checking                  | root `pyproject.toml`                                           | [docs](https://github.com/microsoft/pyright)                     |
+| `ty`            | Performs additional Python type checking              | root `pyproject.toml`                                           | [docs](https://docs.astral.sh/ty/)                               |
+| `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`                                  | [docs](https://knip.dev/)                                        |
+| `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`                            | [docs](https://github.com/jendrikseipp/vulture)                  |
+| `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`                             | [docs](https://docs.fallow.tools/)                               |
+| `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`                               | [docs](https://jscpd.dev/)                                       |
+| `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`, plus each project's own | [docs](packages/callidescope-cli/README.md), [skills](#ic-suite) |
+| `codependix`    | Exports dependency graphs and gates rules over them   | `configuration/codependix.config.ts`                            | [docs](packages/codependix-cli/README.md), [skills](#ic-suite)   |
+| `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`                              | [docs](https://cspell.org/)                                      |
+| `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc`                        | [docs](https://github.com/DavidAnson/markdownlint-cli2)          |
+| `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`                                   | [docs](https://yamllint.readthedocs.io/)                         |
+
+### IC-Suite
+
+Four in-house toolchains measure this workspace and gate what they measure.
+Each ships three or four agent skills, and **those skills are the reference** —
+flags, configuration fields, and what to do about every finding. What follows is
+only what is true of this workspace in particular.
+
+| Toolchain | Gates | Branch gate | Skills |
+| --------- | ----- | ----------- | ------ |
+| [callidescope](packages/callidescope-cli/README.md) | Call-stack depth, breadth, module spread | each project's `gate` | [trace](packages/callidescope-agents/skills/callidescope-trace/SKILL.md) · [configure](packages/callidescope-agents/skills/callidescope-configure/SKILL.md) · [triage](packages/callidescope-agents/skills/callidescope-triage/SKILL.md) |
+| [codependix](packages/codependix-cli/README.md) | Dependency-graph boundary rules | `codebase:codependix:check` | [export](packages/codependix-agents/skills/codependix-export/SKILL.md) · [configure](packages/codependix-agents/skills/codependix-configure/SKILL.md) · [triage](packages/codependix-agents/skills/codependix-triage/SKILL.md) · [navigate](packages/codependix-agents/skills/codependix-navigate/SKILL.md) |
+| [codometer](packages/codometer-cli/README.md) | Sizes, counts, comment-block length | `codebase:codometer` and each project's `codometer` | [measure](packages/codometer-agents/skills/codometer-measure/SKILL.md) · [configure](packages/codometer-agents/skills/codometer-configure/SKILL.md) · [triage](packages/codometer-agents/skills/codometer-triage/SKILL.md) |
+| conformetry | Generated code against its template | `conformetry-validate` | [generate](.agents/skills/conformetry-generate/SKILL.md) · [configure](.agents/skills/conformetry-configure/SKILL.md) · [validate](.agents/skills/conformetry-validate/SKILL.md) |
+
+- **Generate rather than hand-craft.** `nx g conformetry:<generator>` scaffolds a
+  project, module, or component; code hand-written in a shape a template already
+  describes starts life failing conformance. `conformetry templates` lists the
+  generators, and [`README.md`](README.md) carries the same table. No project is
+  called `conformetry` — the name means the generator namespace, whose plugin is
+  emitted into the gitignored `.conformetry/` on `pnpm install`; run
+  `pnpm install` again if Nx reports it missing.
+- **Callidescope limits are per project**, inherited per limit from
+  `configuration/callidescope.config.ts`, so a project's own file writes only
+  what it overrides. Read them as a set rather than looking for a table —
+  `nx run callidescope-cli:start -- limits --config configuration/callidescope.config.ts`.
+  `affirmations`, `callidescope-examples`, and the workspace root carry no gate,
+  and each `project.json` target description says why.
+- **Comment blocks are capped at 128 words**, declared in
+  [`configuration/codometer.config.ts`](configuration/codometer.config.ts) and
+  reaching every language codometer measures comments in. Shell is looser at
+  256, because `scripts/shell/` holds command references whose whole body is one
+  block documenting flags.
+- **`codependix --check boundaries` complements `@nx/enforce-module-boundaries`
+  rather than replacing it** — it states the rules an import-statement linter
+  structurally cannot, and ESLint reports at the import site with a line number,
+  which a graph-level report cannot match. It is deliberately not in
+  `configuration/lint-staged.config.ts`: it builds a `ts.Program` per project and
+  takes about twenty seconds, which is not a hook anybody keeps.
+- **Never raise a limit, loosen a rule, or hand-edit generated output to make a
+  check pass.** Each toolchain's `triage` skill is the entry point, and every
+  limit here was set from a measured run rather than chosen.
+- **The skills are authored in the `*-agents` packages** and installed back from
+  `skills-lock.json`, so what this repository loads is what another workspace
+  gets. Edit the package, never the installed copy under `.agents/skills/` —
+  `skills update` overwrites it.
+- **Each toolchain's examples package demonstrates its behavior**, and its
+  `AGENTS.md` maps "the tool said X" to the example reproducing X in about a
+  second. **Several examples are deliberately broken, and "fixing" one deletes
+  the only place that behavior is demonstrated — do not repair them.**
+  [`docs/examples-package-standard.md`](docs/examples-package-standard.md) holds
+  the shape all four share.
 
 ## Git Workflow
 
@@ -680,7 +588,7 @@ flag, a NestJS module edge the container resolved rather than a file
 declared, and a rule about the shape of the graph rather than about one edge.
 The two do not overlap and neither replaces the other: ESLint reports at the
 import site with a line number, which a graph-level report cannot match. See
-[Codependix](#codependix) and
+[IC-Suite](#ic-suite) and
 [`packages/codependix-boundaries`](packages/codependix-boundaries).
 
 `@nx/dependency-checks` additionally requires that every imported package is declared in that project's own `package.json`. Add it with `pnpm add --filter <project> <package>` rather than editing `package.json` by hand.
