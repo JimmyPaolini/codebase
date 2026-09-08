@@ -217,20 +217,24 @@ a project may say about itself and what happens when it says nothing:
 | Example | What it declares | What that changed |
 | ------- | ---------------- | ----------------- |
 | [`declared-entry-points`](examples/declared-entry-points) | `entryPoints.addresses`, in [`callidescope.config.ts`](callidescope.config.ts) at this package's root | A callable with a caller heads a stack of its own, under the `declared` kind |
-| [`project-depth-limit`](examples/project-depth-limit) | `limits.maximumDepth`, in the same file | A six-frame chain is a finding at five and would pass at the six it would inherit |
-| [`inherited-limits`](examples/inherited-limits) | Nothing — it has no configuration file | Seven frames are a finding against the six the run declares, and breadth gates it not at all |
+| [`project-depth-limit`](examples/project-depth-limit) | `limits.maximumDepth`, in the same file | A six-frame chain is a finding at five and would pass at the six the run supplies |
+| [`inherited-limits`](examples/inherited-limits) | Every field, all of them the default | Seven frames are a finding against the six written in its own file, and `maximumBreadth: undefined` gates breadth not at all |
 | [`gated-leaf`](examples/gated-leaf) | Both fields, plus `limits.maximumBreadth` and `exclude`, in its own nested project | Four frames and three direct callees become findings that no limit above them would ever have reported, and one generated file goes untraced while its twin next door does not |
 
 They sit in the reading order above in that order, and one rule does all the
-work: **the workspace number is a default, not a ceiling.** A project that names
-a limit keeps it; a project that names none inherits, one limit at a time rather
-than as an object; and a project that names one limit still inherits every
-other.
+work: **the workspace number is a default, not a ceiling, and not
+inheritance.** A project's own file is the complete statement of how it is
+traced and judged — every field present, or the run is refused naming the
+project and the field — so a project that keeps a default keeps it by writing
+it down rather than by staying silent.
 
-Which is why a project configuration is written as the override alone —
+Which is why a real package's configuration is a spread and an override —
 
 ```ts
-limits: { maximumDepth: 5 }
+export default {
+  ...projectDefaults,
+  limits: { maximumBreadth: undefined, maximumDepth: 5 },
+};
 ```
 
 — and **never** as a spread of the workspace limits. Such an object carries
@@ -256,9 +260,14 @@ committed:
 | `json` | [`output/report.json`](output/report.json) — the whole run, machine-readable |
 | `markdown` | [`output/report.md`](output/report.md) — the printed trees, between anchors |
 | `mermaid` | [`output/diagram.md`](output/diagram.md) — the same stacks, drawn |
-| `projectReadmes` | [The section at the bottom of this file](#-callidescope), and one in each of the two nested projects' guides |
 
-`projectReadmes` writes one section per **scoped** project — the projects a run
+Beside those three, each of the three projects here declares a `write.markdown`
+of its own, which is what puts
+[the section at the bottom of this file](#-callidescope) and one in each of the
+two nested projects' guides. No workspace declaration fans those out — a
+project's section is that project's own to declare, or not to.
+
+A run publishes a section only for a **scoped** project — the projects a run
 was pointed at, not the ones its closure reached. This run is scoped to this
 package and to the two nested projects under `examples/`, so it writes three
 sections and no more, even though it measures six projects. That is the rule the
@@ -428,7 +437,7 @@ whose entire content is deliberately-shaped fixture code. The answers:
 | Check | Answer |
 | ----- | ------ |
 | Workspace depth gate | The package is in [`.callidescopeignore`](../../configuration/.callidescopeignore) and traced by its own configuration instead |
-| `projectReadmes` | Yes — a section reporting the deliberately-bad fixtures is the best example in the package, not noise |
+| Published section | Yes — this package declares its own `write.markdown`, because a section reporting the deliberately-bad fixtures is the best example in the package, not noise |
 | Test coverage | Nothing is instrumented. Fixture code exists to be read by the type checker, not executed; what is verified is what callidescope makes of it |
 | `knip` and `fallow` | Every fixture is declared an entry point rather than ignored, so both keep checking dependencies while the orphan-root fixture stops being a finding |
 | `jscpd` | Scoped for this project. The resolution-table fixtures are near-identical by design |
@@ -466,7 +475,7 @@ callidescope-examples/
 │   │   ├── *.generated.ts             the file this project's own exclude drops
 │   │   ├── tsconfig.json              what makes the directory a project
 │   │   └── README.md                  the guide, holding that project's own section
-│   └── inherited-limits/              a nested project that declares nothing
+│   └── inherited-limits/              a nested project overriding nothing
 │       ├── *.generated.ts             its twin, which nothing excludes
 │       ├── tsconfig.json              what makes the directory a project
 │       └── README.md                  the guide, holding that project's own section
@@ -514,7 +523,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | --- | --- |
 | Callables | 80 |
 | Files | 39 |
-| Calls traced | 54 |
+| Calls traced | 53 |
 | Call stacks | 19 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
@@ -522,12 +531,12 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 5 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 5 |
+| `maximumBreadth` | none |
 
 ### Call stacks (depth)
 
@@ -633,20 +642,7 @@ What this project is judged against. `declared` is the number in this project's 
              ↳ Reads the file the number the verdict used was written in.
 ```
 
-**6. `DependencyClosureService.allowsDepth`** — depth 4 · orphan-root
-
-```text
-🚀 DependencyClosureService.allowsDepth(args: { configuration: CallidescopeConfiguration; depth: number; }): boolean [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:32]
-   ↳ Whether a configuration allows a stack as deep as the one asked about.
-  └─> DependencyClosureService.readDepthLimit(configuration: CallidescopeConfiguration): number [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:24]
-     ↳ Reads the depth limit the dependency's own defaulting settles on.
-    └─> ConfigurationService.resolveConfiguration(configuration: CallidescopeConfiguration): ResolvedCallidescopeConfiguration [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:389]
-       ↳ Fills in every field a configuration file may leave out.
-      └─> ConfigurationService.resolveEntryPoints(…): ResolvedCallidescopeEntryPoints [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:193]
-         ↳ Applies defaults to the entry-point rules.
-```
-
-**7. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
+**6. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
 
 ```text
 🚀 FrameAnnotationsService.legacyRender(value: string): string ⚠ deprecated [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:74]
@@ -659,7 +655,7 @@ What this project is judged against. `declared` is the number in this project's 
          ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
-**8. `MutualRecursionService.traverse`** — depth 4 · orphan-root
+**7. `MutualRecursionService.traverse`** — depth 4 · orphan-root
 
 ```text
 🚀 MutualRecursionService.traverse(remaining: number): number [packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:45]
@@ -672,7 +668,7 @@ What this project is judged against. `declared` is the number in this project's 
          ↳ First of the three, and the way into the cycle.
 ```
 
-**9. `bootstrap`** — depth 3 · module-bootstrap
+**8. `bootstrap`** — depth 3 · module-bootstrap
 
 ```text
 🚀 bootstrap(): number [packages/callidescope-examples/src/main.ts:14]
@@ -683,7 +679,7 @@ What this project is judged against. `declared` is the number in this project's 
        ↳ Reserves one unit and reports the count left behind.
 ```
 
-**10. `CallbackArgumentService.shoutAll`** — depth 3 · orphan-root
+**9. `CallbackArgumentService.shoutAll`** — depth 3 · orphan-root
 
 ```text
 🚀 CallbackArgumentService.shoutAll(entries: readonly string[]): string[] [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:22]
@@ -693,7 +689,7 @@ What this project is judged against. `declared` is the number in this project's 
        ↳ Upper-cases one entry.
 ```
 
-**11. `DeclaredEntryPointsService.publish`** — depth 3 · orphan-root
+**10. `DeclaredEntryPointsService.publish`** — depth 3 · orphan-root
 
 ```text
 🚀 DeclaredEntryPointsService.publish(entries: string): string [packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:29]
@@ -704,7 +700,7 @@ What this project is judged against. `declared` is the number in this project's 
        ↳ Renders whatever was collected, and ends both stacks.
 ```
 
-**12. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
+**11. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
 
 ```text
 🚀 EntryPointsService.onModuleInit(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:29]
@@ -713,7 +709,7 @@ What this project is judged against. `declared` is the number in this project's 
      ↳ Does the work a lifecycle hook is called to do.
 ```
 
-**13. `EntryPointsService.readReport`** — depth 2 · decorated-method
+**12. `EntryPointsService.readReport`** — depth 2 · decorated-method
 
 ```text
 🚀 EntryPointsService.readReport(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:34]
@@ -722,7 +718,7 @@ What this project is judged against. `declared` is the number in this project's 
      ↳ Builds the body a decorated request handler answers with.
 ```
 
-**14. `normalizeExampleLabel`** — depth 2 · exported-function
+**13. `normalizeExampleLabel`** — depth 2 · exported-function
 
 ```text
 🚀 normalizeExampleLabel(label: string): string [packages/callidescope-examples/src/index.ts:15]
@@ -731,7 +727,7 @@ What this project is judged against. `declared` is the number in this project's 
      ↳ Trims a label and collapses the whitespace inside it.
 ```
 
-**15. `DeclaredEntryPointsService.collect`** — depth 2 · declared
+**14. `DeclaredEntryPointsService.collect`** — depth 2 · declared
 
 ```text
 🚀 DeclaredEntryPointsService.collect(entries: string): string [packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:24]
@@ -740,7 +736,7 @@ What this project is judged against. `declared` is the number in this project's 
      ↳ Renders whatever was collected, and ends both stacks.
 ```
 
-**16. `BaseClassService.run`** — depth 2 · orphan-root
+**15. `BaseClassService.run`** — depth 2 · orphan-root
 
 ```text
 🚀 BaseClassService.run(): string [packages/callidescope-examples/examples/base-class/base-class.ts:16]
@@ -749,12 +745,21 @@ What this project is judged against. `declared` is the number in this project's 
      ↳ Reports the work the base class claims to have done.
 ```
 
-**17. `ConstructedClassService.count`** — depth 2 · orphan-root
+**16. `ConstructedClassService.count`** — depth 2 · orphan-root
 
 ```text
 🚀 ConstructedClassService.count(source: string): number [packages/callidescope-examples/examples/constructed-class/constructed-class.ts:17]
    ↳ Counts the tokens the constructed parser produced.
   └─> ParserService.constructor(source: string): ParserService [packages/callidescope-examples/examples/constructed-class/parser.ts:9]
+```
+
+**17. `DependencyClosureService.allowsDepth`** — depth 2 · orphan-root
+
+```text
+🚀 DependencyClosureService.allowsDepth(args: { configuration: CallidescopeConfiguration; depth: number; }): boolean [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:32]
+   ↳ Whether a configuration allows a stack as deep as the one asked about.
+  └─> DependencyClosureService.readDepthLimit(configuration: CallidescopeConfiguration): number [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:24]
+     ↳ Reads the depth limit the dependency's own defaulting settles on.
 ```
 
 **18. `PlainCallService.render`** — depth 2 · orphan-root
@@ -786,7 +791,7 @@ What this project is judged against. `declared` is the number in this project's 
 | `CallbackArgumentService.shoutAll` | 1 | `CallbackArgumentService.map(…)` | `packages/callidescope-examples/examples/callback-argument/callback-argument.ts:22` |
 
 <details>
-<summary>49 more callables</summary>
+<summary>48 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -808,7 +813,6 @@ What this project is judged against. `declared` is the number in this project's 
 | `DeepStackService.resolveTier` | 1 | `DeepStackService.loadRate` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:38` |
 | `DeepStackService.validate` | 1 | `DeepStackService.removeDiscount` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:43` |
 | `DeepStackService.quote` | 1 | `DeepStackService.validate` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:50` |
-| `DependencyClosureService.readDepthLimit` | 1 | `ConfigurationService.resolveConfiguration` | `packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:24` |
 | `DependencyClosureService.allowsDepth` | 1 | `DependencyClosureService.readDepthLimit` | `packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:32` |
 | `EntryPointsService.onModuleInit` | 1 | `EntryPointsService.prepareCache` | `packages/callidescope-examples/examples/entry-points/entry-points.ts:29` |
 | `EntryPointsService.readReport` | 1 | `EntryPointsService.buildReport` | `packages/callidescope-examples/examples/entry-points/entry-points.ts:34` |
