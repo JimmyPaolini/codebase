@@ -890,11 +890,11 @@ flowchart LR
   InstanceDiscoveryModule
   InstancesModule
   InventoryModule
-  LanguageModule
   LoggerModule([LoggerModule])
   MainModule
   RenderingModule
   ReportingModule
+  RunnerModule
   ScoringModule
   TemplateDiscoveryModule
   TemplatesModule
@@ -932,8 +932,8 @@ flowchart LR
   ValidateModule --> ValidationModule
   ValidationModule --> FilesModule
   ValidationModule --> InstanceDiscoveryModule
-  ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
+  ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule
 ```
 

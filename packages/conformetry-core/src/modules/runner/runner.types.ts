@@ -7,7 +7,7 @@ import type { ConformetryDifference } from "../differences/differences.types";
  *
  * Implementations supply only their descriptor and a single-document
  * comparison. Extension filtering, result grouping, and result assembly are
- * handled once by `LanguageService`, so no validator repeats that envelope.
+ * handled once by `RunnerService`, so no validator repeats that envelope.
  *
  * Not to be confused with an Nx plugin — this is the contract between
  * `conformetry-validation` and packages such as `conformetry-typescript`.

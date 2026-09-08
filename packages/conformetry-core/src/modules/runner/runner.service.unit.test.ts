@@ -1,12 +1,12 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { LanguageService } from "./language.service";
+import { RunnerService } from "./runner.service";
 
 import type {
   ConformetryLanguageValidator,
   PreparedValidationDocument,
-} from "./language.types";
+} from "./runner.types";
 
 function createDocument(filename: string): PreparedValidationDocument {
   return {
@@ -46,15 +46,15 @@ function createValidator(args: {
   };
 }
 
-describe(LanguageService, () => {
-  let service: LanguageService;
+describe(RunnerService, () => {
+  let service: RunnerService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [LanguageService],
+      providers: [RunnerService],
     }).compile();
 
-    service = await module.resolve(LanguageService);
+    service = await module.resolve(RunnerService);
   });
 
   it("is defined", () => {

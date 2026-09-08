@@ -13,8 +13,10 @@ export type {
   InventoriedPairing,
   InventoriedTemplate,
 } from "./modules/inventory/inventory.types";
-export { LanguageModule } from "./modules/language/language.module";
-export { LanguageService } from "./modules/language/language.service";
+export { ReportingModule } from "./modules/reporting/reporting.module";
+export { ReportingService } from "./modules/reporting/reporting.service";
+export { RunnerModule } from "./modules/runner/runner.module";
+export { RunnerService } from "./modules/runner/runner.service";
 export type {
   ConformetryLanguageValidator,
   DocumentValidationResult,
@@ -23,9 +25,7 @@ export type {
   PreparedValidationDocument,
   PreparedValidationPayload,
   ValidationFileResult,
-} from "./modules/language/language.types";
-export { ReportingModule } from "./modules/reporting/reporting.module";
-export { ReportingService } from "./modules/reporting/reporting.service";
+} from "./modules/runner/runner.types";
 export { ScoringModule } from "./modules/scoring/scoring.module";
 export { ScoringService } from "./modules/scoring/scoring.service";
 export type {
