@@ -182,7 +182,7 @@ codebase/
 └── .agents/skills/     # Agent skills; every other agent entrypoint symlinks here
 ```
 
-Every project lives in `applications/`, `packages/`, or `tools/` — a file directly in one of those directories is a lint error, not a style preference. The full annotated project list is in [AGENTS.md](AGENTS.md#projects), and [README.md](README.md) carries the same table, kept in step by the `check-readme-projects` target.
+Every project lives in `applications/`, `packages/`, or `tools/` — a file directly in one of those directories is a lint error, not a style preference. The full annotated project list is in [README.md](README.md), kept in step with the workspace by the `check-readme-projects` target; `nx show projects` prints the same set.
 
 Scaffold new projects, modules, and components with a conformetry generator rather than by hand; code written in a shape a template already describes starts life failing conformance.
 
