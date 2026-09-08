@@ -3,11 +3,8 @@
 import type {
   CallableId,
   DeepStackFinding,
-  MisplacedCallableFinding,
-  ModuleSpreadFinding,
   ProjectLimitsLookup,
   ProjectReport,
-  TypeDepthSummary,
   WideCallableFinding,
 } from "@callidescope/configuration";
 import type {
@@ -28,10 +25,7 @@ export interface BuildProjectReportsArguments {
   readonly fileCountByProject: ReadonlyMap<string, number>;
   readonly graph: CallGraph;
   readonly measurement: DepthMeasurement;
-  readonly misplacedCallables: readonly MisplacedCallableFinding[];
-  readonly moduleSpreads: readonly ModuleSpreadFinding[];
   readonly projectNames: readonly string[];
-  readonly typeDepths: readonly TypeDepthSummary[];
 }
 
 /** Arguments for picking the findings a named set of projects owns. */

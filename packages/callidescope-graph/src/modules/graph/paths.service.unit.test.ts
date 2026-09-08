@@ -48,7 +48,6 @@ function buildPath(args: {
   const measurement = new GraphDepthService().measure({
     condensed,
     graph,
-    moduleIdByCallable: new Map(args.ids.map((id) => [id, "example:one"])),
   });
 
   return new PathsService(new DocumentationService(), new SignaturesService())
@@ -190,7 +189,6 @@ describe(PathsService, () => {
           {
             deepestSuccessor: undefined,
             depth: 2,
-            moduleIds: new Set(["example:one"]),
             reachesUnresolved: false,
           },
         ],
@@ -220,7 +218,6 @@ describe(PathsService, () => {
           {
             deepestSuccessor: undefined,
             depth: 2,
-            moduleIds: new Set(["example:one"]),
             reachesUnresolved: false,
           },
         ],
@@ -268,7 +265,6 @@ describe(PathsService, () => {
           {
             deepestSuccessor: undefined,
             depth: 2,
-            moduleIds: new Set(["example:one"]),
             reachesUnresolved: false,
           },
         ],
@@ -305,7 +301,6 @@ describe(PathsService, () => {
           {
             deepestSuccessor: undefined,
             depth: 3,
-            moduleIds: new Set(["example:one"]),
             reachesUnresolved: false,
           },
         ],

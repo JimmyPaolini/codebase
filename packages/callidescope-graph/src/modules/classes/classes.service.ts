@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import ts from "typescript";
 
+import { MAXIMUM_IMPLEMENTATION_CANDIDATES } from "./classes.constants";
 import { ExternalService } from "./external.service";
 
 import type { ProjectProgram } from "../program/program.types";
@@ -45,8 +46,6 @@ export class ClassesService {
   private readonly derivedByBaseName = new Map<string, ts.ClassDeclaration[]>();
 
   private readonly lookupCache = new Map<string, ImplementationLookup>();
-
-  private maximumCandidates = 0;
 
   // 🔑 Public Fields
 
@@ -170,8 +169,6 @@ export class ClassesService {
 
   /** Walks every traced class once, recording members and heritage. */
   public build(args: BuildHierarchyArguments): void {
-    this.maximumCandidates = args.maximumCandidates;
-
     for (const projectProgram of args.programs) {
       this.indexProgram(projectProgram);
     }
@@ -229,7 +226,7 @@ export class ClassesService {
           });
 
     const lookup: ImplementationLookup =
-      candidates.length > this.maximumCandidates
+      candidates.length > MAXIMUM_IMPLEMENTATION_CANDIDATES
         ? { declarations: [], exceededCandidateLimit: true }
         : {
             declarations: candidates.flatMap((candidate) =>

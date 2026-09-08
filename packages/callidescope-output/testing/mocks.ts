@@ -35,7 +35,6 @@ export function buildCallableNode(
     kind: "method",
     location,
     memberName: "example",
-    moduleId: "example:modules/example",
     projectName: "example",
     statementCount: 1,
     ...overrides,
@@ -53,8 +52,6 @@ export function buildCallGraphResult(
 ): CallGraphResult {
   return {
     deepStacks: [],
-    misplacedCallables: [],
-    moduleSpreads: [],
     projects: [],
     summary: {
       callableCount: 0,
@@ -66,7 +63,6 @@ export function buildCallGraphResult(
       projectCount: 0,
       unresolvedCallCount: 0,
     },
-    typeDepths: [],
     wideCallables: [],
     ...overrides,
   };

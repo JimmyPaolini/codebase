@@ -11,7 +11,6 @@ import type {
   AssembledGraph,
   AssembleGraphArguments,
 } from "./graph-assembly.types";
-import type { CallableId, ModuleId } from "@callidescope/configuration";
 
 /**
  * Builds the call graph, its cycle condensation, and its depth measurement.
@@ -54,13 +53,6 @@ export class GraphAssemblyService {
       callableIds: args.callablesById.keys(),
       graph,
     });
-    const moduleIdByCallable = new Map<CallableId, ModuleId>(
-      [...args.callablesById].map(([callableId, callable]) => [
-        callableId,
-        callable.node.moduleId,
-      ]),
-    );
-
     return {
       breadthMeasurement: this.breadthService.measure({
         callableIds: [...args.callablesById.keys()],
@@ -68,11 +60,7 @@ export class GraphAssemblyService {
       }),
       condensed,
       graph,
-      measurement: this.depthService.measure({
-        condensed,
-        graph,
-        moduleIdByCallable,
-      }),
+      measurement: this.depthService.measure({ condensed, graph }),
     };
   }
 }

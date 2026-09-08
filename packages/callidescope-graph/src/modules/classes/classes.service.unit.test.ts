@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 import { buildFixtureProgram } from "../../../testing/programs";
 
+import { MAXIMUM_IMPLEMENTATION_CANDIDATES } from "./classes.constants";
 import { ClassesService } from "./classes.service";
 import { ExternalService } from "./external.service";
 
@@ -13,7 +14,6 @@ import type { ImplementationLookup } from "./classes.types";
 /** Resolves one interface member against an in-memory workspace. */
 function resolve(args: {
   files: Record<string, string>;
-  maximumCandidates?: number;
   memberName: string;
   ownerName: string;
 }): ImplementationLookup {
@@ -27,10 +27,7 @@ function resolve(args: {
 
   const subject = new ClassesService(external);
 
-  subject.build({
-    maximumCandidates: args.maximumCandidates ?? 8,
-    programs: [projectProgram],
-  });
+  subject.build({ programs: [projectProgram] });
 
   let ownerSymbol: ts.Symbol | undefined;
 
@@ -155,23 +152,49 @@ describe(ClassesService, () => {
 
   it("gives up rather than guess when too many classes match", () => {
     // The primary noise control: a structurally matched `run` otherwise
-    // resolves to dozens of unrelated classes and invents a call stack.
+    // resolves to dozens of unrelated classes and invents a call stack. One
+    // past MAXIMUM_IMPLEMENTATION_CANDIDATES is what the cap is for.
+    const implementations = Array.from(
+      { length: MAXIMUM_IMPLEMENTATION_CANDIDATES + 1 },
+      (_unused, index) => `export class Runner${String(index)} {
+        public run(): void {}
+      }`,
+    ).join("\n");
     const lookup = resolve({
       files: {
         "packages/example/src/modules/a/a.service.ts": `
           export interface Runner { run(): void; }
-          export class One { public run(): void {} }
-          export class Two { public run(): void {} }
-          export class Three { public run(): void {} }
+          ${implementations}
         `,
       },
-      maximumCandidates: 2,
       memberName: "run",
       ownerName: "Runner",
     });
 
     expect(lookup.exceededCandidateLimit).toBe(true);
     expect(lookup.declarations).toStrictEqual([]);
+  });
+
+  it("resolves a candidate set sitting exactly at the cap", () => {
+    const implementations = Array.from(
+      { length: MAXIMUM_IMPLEMENTATION_CANDIDATES },
+      (_unused, index) => `export class Runner${String(index)} {
+        public run(): void {}
+      }`,
+    ).join("\n");
+    const lookup = resolve({
+      files: {
+        "packages/example/src/modules/a/a.service.ts": `
+          export interface Runner { run(): void; }
+          ${implementations}
+        `,
+      },
+      memberName: "run",
+      ownerName: "Runner",
+    });
+
+    expect(lookup.exceededCandidateLimit).toBe(false);
+    expect(lookup.declarations).toHaveLength(MAXIMUM_IMPLEMENTATION_CANDIDATES);
   });
 
   it("indexes two classes extending the same base", () => {
@@ -223,7 +246,7 @@ describe(ClassesService, () => {
 
     const subject = new ClassesService(external);
 
-    subject.build({ maximumCandidates: 8, programs: [projectProgram] });
+    subject.build({ programs: [projectProgram] });
 
     let ownerSymbol: ts.Symbol | undefined;
 
@@ -273,7 +296,7 @@ describe(ClassesService, () => {
 
     const subject = new ClassesService(external);
 
-    subject.build({ maximumCandidates: 8, programs: [projectProgram] });
+    subject.build({ programs: [projectProgram] });
 
     let ownerSymbol: ts.Symbol | undefined;
 

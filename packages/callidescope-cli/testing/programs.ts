@@ -105,7 +105,6 @@ export function buildFixtureProgram(
  * harder to see.
  */
 export function buildFixtureServices(args: {
-  maximumCandidates?: number;
   projectProgram: ProjectProgram;
 }): FixtureServices {
   const workspace = new WorkspaceService(createMock<LoggerService>());
@@ -124,10 +123,7 @@ export function buildFixtureServices(args: {
     ownedFilePaths: args.projectProgram.ownedFilePaths,
     workspaceRoot: FIXTURE_ROOT,
   });
-  hierarchy.build({
-    maximumCandidates: args.maximumCandidates ?? 8,
-    programs: [args.projectProgram],
-  });
+  hierarchy.build({ programs: [args.projectProgram] });
 
   return {
     callables: new CallablesService(identity, programService, workspace),

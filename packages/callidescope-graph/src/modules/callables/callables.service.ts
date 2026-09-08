@@ -139,10 +139,6 @@ export class CallablesService {
           workspaceRelativePath,
         }),
         memberName: this.callableIdentityService.readMemberName(declaration),
-        moduleId: this.workspaceService.resolveModuleId({
-          project: projectProgram.project,
-          workspaceRelativePath,
-        }),
         projectName: projectProgram.project.name,
         statementCount:
           this.callableIdentityService.countStatements(declaration),
