@@ -130,6 +130,18 @@ export interface MotifUnit {
 }
 
 /**
+ * The family, row count, optional modifier, and repeat count one whole
+ * drawing's own column count is derived from.
+ *
+ * It is {@link MotifPitchOptions} with the repeat count put back, because
+ * how wide the finished drawing is — unlike how wide one unit is — is
+ * exactly what a repeat count changes.
+ */
+export interface MotifWidthOptions extends MotifPitchOptions {
+  readonly repeatCount: number;
+}
+
+/**
  * The name of a modifier that carries a `strands` count.
  *
  * Derived from {@link Modifier} rather than written out, so a ply-carrying

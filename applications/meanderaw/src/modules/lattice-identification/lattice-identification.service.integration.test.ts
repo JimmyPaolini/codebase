@@ -9,10 +9,10 @@ import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import {
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
-  TILE_DRAWN_TYPES,
 } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
+import { isMotifDrawnType } from "../meander-generation/meander-generation.utilities";
 import { MotifPitchService } from "../meander-generation/motif-pitch.service";
 import { MeanderLatticeModule } from "../meander-lattice/meander-lattice.module";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
@@ -33,7 +33,6 @@ import { LatticeIdentificationModule } from "./lattice-identification.module";
 import { LatticeIdentificationService } from "./lattice-identification.service";
 
 import type {
-  MeanderType,
   Modifier,
   MotifDrawnType,
   MotifPitchOptions,
@@ -131,10 +130,6 @@ const MEASURED_SPANS = 2;
  * measurement exactly would leave those families a column short of it.
  */
 const SPARE_PITCHES = 1;
-
-/** Narrows a family to one with a motif service, which is every family the sweep below reaches. */
-const isMotifDrawnType = (type: MeanderType): type is MotifDrawnType =>
-  !TILE_DRAWN_TYPES.includes(type);
 
 /**
  * Every combination the corpus is drawn from that a motif service draws,

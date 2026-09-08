@@ -6,33 +6,26 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import {
   DEFAULT_OUTPUT_DIRECTORY,
   DEFAULT_REPEAT_COUNT,
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
-  TILE_DRAWN_TYPES,
 } from "../meander-generation/meander-generation.constants";
-import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { MotifPitchService } from "../meander-generation/motif-pitch.service";
 import { SUPPORTED_SUB_FAMILIES } from "../mosaic-tile/mosaic-tile.constants";
 import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
-import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
+import { DrawRenderingService } from "./draw-rendering.service";
 import { CollidingPathsError, INDEX_FILE_NAME } from "./draw.constants";
 
-import type { LatticeAddress } from "../lattice-identification/lattice-identification.types";
 import type {
-  GenerationParameters,
   MeanderType,
   Modifier,
-  MotifDrawnType,
   SerpentineFlip,
 } from "../meander-generation/meander-generation.types";
 import type { MosaicSubFamily } from "../mosaic-tile/mosaic-tile.types";
@@ -104,14 +97,8 @@ export class DrawCommand extends CommandRunner {
     private readonly drawNegativePermutationsService: DrawNegativePermutationsService,
     @Inject(DrawPermutationsService)
     private readonly drawPermutationsService: DrawPermutationsService,
-    @Inject(LatticeIdentificationService)
-    private readonly latticeIdentificationService: LatticeIdentificationService,
-    @Inject(MeanderGenerationService)
-    private readonly meanderGenerationService: MeanderGenerationService,
-    @Inject(MotifPitchService)
-    private readonly motifPitchService: MotifPitchService,
-    @Inject(OutputPathService)
-    private readonly outputPathService: OutputPathService,
+    @Inject(DrawRenderingService)
+    private readonly drawRenderingService: DrawRenderingService,
   ) {
     super();
     this.logger.setContext(DrawCommand.name);
@@ -122,37 +109,6 @@ export class DrawCommand extends CommandRunner {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /**
-   * The lattice address `svg` earns at `parameters`, or `undefined` for a
-   * family this cannot be asked for.
-   *
-   * `mosaic` is the one family that answer excludes: it draws no motif for
-   * `MotifPitchService` to probe a pitch from, and its committed drawings
-   * already carry a full address of their own — see
-   * `FILENAME_ADDRESS_CONVENTION`. Every other family's pitch and true-repeat
-   * span come from `MotifPitchService`, over the same `options` shape
-   * {@link MotifPitchService.columnPitch} and {@link
-   * MotifPitchService.columnSpan} both take.
-   */
-  private addressFor(
-    parameters: GenerationParameters,
-    svg: string,
-  ): LatticeAddress | undefined {
-    const { modifier, rows, type } = parameters;
-
-    if (!this.isMotifDrawnType(type)) {
-      return undefined;
-    }
-
-    const options = { rows, type, ...(modifier ? { modifier } : {}) };
-    const unit = {
-      pitch: this.motifPitchService.columnPitch(options),
-      span: this.motifPitchService.columnSpan(options),
-    };
-
-    return this.latticeIdentificationService.identifyDocument(svg, unit);
-  }
 
   /** Throws when two combinations in the sweep would write the same path. */
   private assertNoPathCollisions(documents: readonly OutputDocument[]): void {
@@ -165,43 +121,18 @@ export class DrawCommand extends CommandRunner {
     }
   }
 
-  /** Narrows a family to one that draws a motif, so a pitch and a lattice address can be asked for it. */
-  private isMotifDrawnType(type: MeanderType): type is MotifDrawnType {
-    return !TILE_DRAWN_TYPES.includes(type);
-  }
-
   /** Renders the drawing `options` names, beside the path it is written to. */
   private render(options: DrawCommandOptions): RenderedDocument {
-    return this.renderParameters(this.drawParametersService.single(options));
+    return this.drawRenderingService.render(
+      this.drawParametersService.single(options),
+    );
   }
 
   /** Renders the named-family half of the sweep. */
   private renderCombinations(): RenderedDocument[] {
     return this.drawCombinationsService
       .enumerate()
-      .map((parameters) => this.renderParameters(parameters));
-  }
-
-  /**
-   * Renders one set of generation parameters, beside the path those
-   * parameters name.
-   *
-   * The document is generated first so its lattice address can be read off
-   * it — {@link addressFor} — and handed to `OutputPathService.build`
-   * alongside the parameters that name the drawing's variant. Both halves
-   * of a drawing's name therefore come from the same render, rather than
-   * the path being decided before the ink that would address it exists.
-   */
-  private renderParameters(parameters: GenerationParameters): RenderedDocument {
-    const svg = this.meanderGenerationService.generate(parameters);
-    const address = this.addressFor(parameters, svg);
-    const filePath = this.outputPathService.build(parameters, address);
-
-    return {
-      directory: path.posix.dirname(filePath),
-      fileName: path.posix.basename(filePath),
-      svg,
-    };
+      .map((parameters) => this.drawRenderingService.render(parameters));
   }
 
   /** Draws every meander the application can draw, and indexes them all in one page. */

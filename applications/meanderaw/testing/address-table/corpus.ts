@@ -6,7 +6,7 @@ import { NestFactory } from "@nestjs/core";
 import { MainModule } from "../../src/main.module";
 import { DrawCombinationsService } from "../../src/modules/draw/draw-combinations.service";
 import { LatticeIdentificationService } from "../../src/modules/lattice-identification/lattice-identification.service";
-import { TILE_DRAWN_TYPES } from "../../src/modules/meander-generation/meander-generation.constants";
+import { isMotifDrawnType } from "../../src/modules/meander-generation/meander-generation.utilities";
 import { MotifPitchService } from "../../src/modules/meander-generation/motif-pitch.service";
 import { OutputPathService } from "../../src/modules/svg-rendering/output-path.service";
 import { FILENAME_ADDRESS_SUFFIX_PATTERN } from "../../src/modules/svg-rendering/svg-rendering.constants";
@@ -14,10 +14,6 @@ import { FILENAME_ADDRESS_SUFFIX_PATTERN } from "../../src/modules/svg-rendering
 import { OUTPUT_DIRECTORY, REPEAT_COUNT_SUFFIX_PATTERN } from "./constants";
 
 import type { LatticeUnit } from "../../src/modules/lattice-identification/lattice-identification.types";
-import type {
-  MeanderType,
-  MotifDrawnType,
-} from "../../src/modules/meander-generation/meander-generation.types";
 import type { AddressedDrawing } from "./types";
 
 // 🗂️ Reading the committed corpus
@@ -73,10 +69,6 @@ export const readDrawingPaths = async (
 const unaddressed = (drawingPath: string): string =>
   drawingPath.replace(FILENAME_ADDRESS_SUFFIX_PATTERN, "");
 
-/** Narrows a family to one that draws a motif, so its pitch can be asked for. */
-const isMotifDrawn = (type: MeanderType): type is MotifDrawnType =>
-  !TILE_DRAWN_TYPES.includes(type);
-
 /**
  * The repeat unit of every drawing the named half of the sweep writes, keyed
  * by the path it is written to.
@@ -105,7 +97,7 @@ export const namedUnits = (services: {
   for (const parameters of services.combinations.enumerate()) {
     const { modifier, rows, type } = parameters;
 
-    if (!isMotifDrawn(type)) continue;
+    if (!isMotifDrawnType(type)) continue;
 
     const options = { rows, type, ...(modifier ? { modifier } : {}) };
 
