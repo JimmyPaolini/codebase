@@ -5,22 +5,8 @@ import type {
   ProjectLimitsLookup,
   ProjectReport,
   ResolvedCallidescopeConfiguration,
-  ResolvedCallidescopeProjectReadmeConfiguration,
   ResolvedCallidescopeWriteConfiguration,
 } from "@callidescope/configuration";
-
-/** Arguments for building one section per project the fan-out still reaches. */
-export interface BuildProjectSectionsArguments {
-  readonly destination: ResolvedCallidescopeProjectReadmeConfiguration;
-  readonly limits: ProjectLimitsLookup;
-  readonly result: CallGraphResult;
-  readonly startingProjectRoots: ReadonlyMap<string, string>;
-  /** The written destinations each project declared for itself, by name. */
-  readonly writeByProject: ReadonlyMap<
-    string,
-    ResolvedCallidescopeWriteConfiguration
-  >;
-}
 
 /** Arguments for writing every configured destination. */
 export interface SyncDestinationsArguments {
@@ -38,10 +24,9 @@ export interface SyncDestinationsArguments {
   /**
    * The written destinations each project declared for itself, by name.
    *
-   * A project named here publishes to what it declared and is left out of the
-   * workspace README fan-out entirely. Both would otherwise write a section
-   * for it, and a project declaring `README.md` under a heading of its own
-   * would have the two overwrite each other run after run.
+   * Every traced project declares a complete configuration, so every one of
+   * them is named here — a project publishing nothing wrote `markdown:
+   * undefined` rather than being absent.
    */
   readonly writeByProject: ReadonlyMap<
     string,
@@ -52,7 +37,6 @@ export interface SyncDestinationsArguments {
 /** Arguments for writing the destinations one project declared for itself. */
 export interface SyncProjectSectionsArguments {
   readonly check: boolean;
-  readonly configuration: ResolvedCallidescopeConfiguration;
   /** The depth and breadth limits each traced project is judged against. */
   readonly projectLimits: ProjectLimitsLookup;
   /** The findings for the one project these destinations belong to. */

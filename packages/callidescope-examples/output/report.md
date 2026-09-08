@@ -4,24 +4,24 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 223 |
-| Files | 86 |
-| Calls traced | 190 |
-| Call stacks | 77 |
+| Callables | 240 |
+| Files | 91 |
+| Calls traced | 204 |
+| Call stacks | 80 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
-| Unfollowable calls | 12 |
+| Unfollowable calls | 14 |
 
 ## Projects
 
 | Project | Deepest | Limit | Headroom | Widest |
 | --- | --- | --- | --- | --- |
-| `packages/callidescope-examples` | 8 | 5 declared | -3 | 2 |
-| `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 declared | -1 | 3 |
-| `packages/callidescope-examples/examples/inherited-limits` | 7 | 6 inherited | -1 | 1 |
-| `packages/logger` | 5 | 4 declared | -1 | 2 |
-| `packages/callidescope-configuration` | 6 | 6 declared | 0 | 6 |
-| `packages/codometer-configuration` | 8 | 8 declared | 0 | 7 |
+| `packages/callidescope-examples` | 8 | 5 | -3 | 2 |
+| `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 | -1 | 3 |
+| `packages/callidescope-examples/examples/inherited-limits` | 7 | 6 | -1 | 1 |
+| `packages/logger` | 5 | 4 | -1 | 2 |
+| `packages/callidescope-configuration` | 6 | 6 | 0 | 5 |
+| `packages/codometer-configuration` | 8 | 8 | 0 | 7 |
 
 ## Depth headroom
 

@@ -63,7 +63,6 @@ export class RenderLimitsService {
           this.renderProject(row.project),
           `\`${row.limit}\``,
           row.value === undefined ? NO_LIMIT_LABEL : String(row.value),
-          row.origin ?? ABSENT_LABEL,
           row.path === undefined ? ABSENT_LABEL : `\`${row.path}\``,
         ]),
       ),

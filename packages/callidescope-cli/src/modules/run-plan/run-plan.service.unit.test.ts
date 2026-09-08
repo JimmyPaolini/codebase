@@ -49,7 +49,6 @@ function buildConfiguration(
       json: undefined,
       markdown: undefined,
       mermaid: undefined,
-      projectReadmes: undefined,
     },
     ...overrides,
   };
@@ -66,13 +65,14 @@ function buildMode(overrides: Partial<RunMode> = {}): RunMode {
   };
 }
 
-/** A project's own limits, inheriting depth and declaring no breadth. */
+/** A project's own limits, taking the default depth and declaring no breadth. */
 function buildProjectLimits(
   overrides: Partial<ProjectLimits> = {},
 ): ProjectLimits {
   return {
     maximumBreadth: undefined,
-    maximumDepth: { origin: "inherited", path: undefined, value: 6 },
+    maximumDepth: 6,
+    path: undefined,
     ...overrides,
   };
 }
@@ -348,11 +348,8 @@ describe(RunPlanService, () => {
             [
               "packages/example",
               buildProjectLimits({
-                maximumBreadth: {
-                  origin: "declared",
-                  path: "packages/example/callidescope.config.ts",
-                  value: 3,
-                },
+                maximumBreadth: 3,
+                path: "packages/example/callidescope.config.ts",
               }),
             ],
           ]),
@@ -400,11 +397,8 @@ describe(RunPlanService, () => {
               [
                 "packages/declared",
                 buildProjectLimits({
-                  maximumBreadth: {
-                    origin: "declared",
-                    path: "packages/declared/callidescope.config.ts",
-                    value: 5,
-                  },
+                  maximumBreadth: 5,
+                  path: "packages/declared/callidescope.config.ts",
                 }),
               ],
               ["packages/undeclared", buildProjectLimits()],
@@ -414,34 +408,6 @@ describe(RunPlanService, () => {
       ).toStrictEqual([]);
     },
   );
-
-  it("does not read an inherited breadth limit as a project declaring one", () => {
-    // The workspace deliberately has no breadth default, but a workspace
-    // configuration could still set one, and every project would inherit it.
-    // That is not what makes breadth a number a project can choose for
-    // itself — so only `origin === "declared"` may pass this.
-    expect(
-      service.validateProjectLimits({
-        mode: buildMode({ checksBreadth: true }),
-        projectLimits: buildProjectLimitsLookup(
-          new Map([
-            [
-              "packages/example",
-              buildProjectLimits({
-                maximumBreadth: {
-                  origin: "inherited",
-                  path: "callidescope.config.ts",
-                  value: 3,
-                },
-              }),
-            ],
-          ]),
-        ),
-      }),
-    ).toStrictEqual([
-      "--check breadth requires at least one project in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <number> }` to that project's callidescope.config.ts before running --check breadth.",
-    ]);
-  });
 
   // 🔍 Lookup preparation
 

@@ -1,18 +1,21 @@
-import type { CallidescopeConfiguration } from "@callidescope/configuration";
+import type { CallidescopeProjectConfiguration } from "@callidescope/configuration";
 
 /**
- * What one leaf project says about itself, and nothing else.
+ * What one leaf project says about itself, completely.
  *
- * A project configuration may set `entryPoints`, `limits.maximumDepth`,
- * `limits.maximumBreadth`, and `exclude`. Everything else describes the run
- * itself, and a project file that sets one of those is refused before anything
- * is traced.
+ * A project configuration may set `entryPoints`, `exclude`, `limits`, and
+ * `write` — and must set all four. Everything else describes the run itself,
+ * and a project file that sets one of those is refused before anything is
+ * traced; a project file that leaves one of these four out is refused for
+ * exactly the opposite reason.
  *
- * Nothing is lost by writing only the overrides. Limits fall back one at a
- * time rather than as an object, so a limit this project does not name still
- * comes from the run.
+ * Nothing is resolved across two files any more. Every value this project is
+ * traced and judged by is written below, which is why the fields it has no
+ * opinion about are here too rather than absent. A real package spreads the
+ * workspace's `projectDefaults` to say the same thing in one line; this one
+ * writes it out because it is the worked example of the shape.
  */
-const callidescopeConfiguration: CallidescopeConfiguration = {
+const callidescopeConfiguration: CallidescopeProjectConfiguration = {
   /**
    * One glob, naming the generated file this project does not want measured.
    *
@@ -36,12 +39,47 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
     addresses: [
       "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#GatedLeafService.read",
     ],
+    /**
+     * The tool's own list, written out rather than imported.
+     *
+     * A value import here would be a real call-graph edge from this fixture
+     * into `@callidescope/configuration`, widening the closure this run
+     * measures. A real package spreads `projectDefaults` and never has to
+     * think about it.
+     */
+    decorators: [
+      "Command",
+      "Cron",
+      "Delete",
+      "Get",
+      "Mutation",
+      "OnEvent",
+      "Option",
+      "Patch",
+      "Post",
+      "Put",
+      "Query",
+      "ResolveField",
+      "SubscribeMessage",
+    ],
+    includeExportedFunctions: true,
+    includeOrphans: true,
+    includeTests: false,
   },
   limits: {
     /** Two, against the three callees `read` reaches directly. */
     maximumBreadth: 2,
     /** Three, against the four frames `read` heads. */
     maximumDepth: 3,
+  },
+  write: {
+    /** The `## 🔭 Callidescope` section at the bottom of this project's guide. */
+    markdown: {
+      heading: "## 🔭 Callidescope",
+      path: "README.md",
+    },
+    /** No diagram: the package around this one publishes the run's. */
+    mermaid: undefined,
   },
 };
 

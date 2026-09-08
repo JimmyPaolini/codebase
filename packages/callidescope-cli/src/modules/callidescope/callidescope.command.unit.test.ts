@@ -74,7 +74,6 @@ function buildConfiguration(
       json: undefined,
       markdown: undefined,
       mermaid: undefined,
-      projectReadmes: undefined,
     },
     ...overrides,
   };
@@ -89,6 +88,7 @@ function buildDestination(
     endMarker: "<!-- END -->",
     heading: "## 🔭 Callidescope",
     path: destinationPath,
+    previewCount: 3,
     render: undefined,
     startMarker: "<!-- START -->",
     writeBlock: undefined,
@@ -109,13 +109,14 @@ function buildEmptySummary(): CallGraphResult["summary"] {
   };
 }
 
-/** A project's own limits, inheriting depth and declaring no breadth. */
+/** A project's own limits, taking the default depth and declaring no breadth. */
 function buildProjectLimits(
   overrides: Partial<ProjectLimits> = {},
 ): ProjectLimits {
   return {
     maximumBreadth: undefined,
-    maximumDepth: { origin: "inherited", path: undefined, value: 6 },
+    maximumDepth: 6,
+    path: undefined,
     ...overrides,
   };
 }
@@ -157,7 +158,6 @@ function buildProjectWrite(
         json: undefined,
         markdown: undefined,
         mermaid: undefined,
-        projectReadmes: undefined,
         ...destinations,
       },
     ],
@@ -187,26 +187,6 @@ describe(CallidescopeCommand, () => {
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
           mermaid: undefined,
-          projectReadmes: undefined,
-        },
-      }),
-    );
-  }
-
-  /** Configures the workspace fan-out every traced project's README takes. */
-  function configureProjectReadmeFanOut(): void {
-    stubConfiguration(
-      buildConfiguration({
-        write: {
-          json: undefined,
-          markdown: undefined,
-          mermaid: undefined,
-          projectReadmes: {
-            endMarker: "<!-- END -->",
-            heading: "## 🔭 Callidescope",
-            previewCount: 3,
-            startMarker: "<!-- START -->",
-          },
         },
       }),
     );
@@ -274,11 +254,8 @@ describe(CallidescopeCommand, () => {
           [
             "example",
             buildProjectLimits({
-              maximumBreadth: {
-                origin: "declared",
-                path: "packages/example/callidescope.config.ts",
-                value: 3,
-              },
+              maximumBreadth: 3,
+              path: "packages/example/callidescope.config.ts",
             }),
           ],
         ]),
@@ -626,6 +603,7 @@ describe(CallidescopeCommand, () => {
       endMarker: "<!-- END -->",
       heading: "# 🔭 Callidescope",
       path: "DIAGRAM.md",
+      previewCount: 3,
       render: undefined,
       startMarker: "<!-- START -->",
       writeBlock: undefined,
@@ -637,7 +615,6 @@ describe(CallidescopeCommand, () => {
           json: undefined,
           markdown: { ...destination, path: "REPORT.md" },
           mermaid: destination,
-          projectReadmes: undefined,
         },
       }),
     );
@@ -658,6 +635,7 @@ describe(CallidescopeCommand, () => {
       endMarker: "<!-- END -->",
       heading: "# 🔭 Callidescope",
       path: "DIAGRAM.md",
+      previewCount: 3,
       render: undefined,
       startMarker: "<!-- START -->",
       writeBlock: undefined,
@@ -669,7 +647,6 @@ describe(CallidescopeCommand, () => {
           json: undefined,
           markdown: { ...destination, path: "REPORT.md" },
           mermaid: destination,
-          projectReadmes: undefined,
         },
       }),
     );
@@ -702,77 +679,8 @@ describe(CallidescopeCommand, () => {
     expect(diagram).toContain("```mermaid");
   });
 
-  it("writes a section into every scoped project's README", async () => {
-    stubConfiguration(
-      buildConfiguration({
-        write: {
-          json: undefined,
-          markdown: undefined,
-          mermaid: undefined,
-          projectReadmes: {
-            endMarker: "<!-- END -->",
-            heading: "## 🔭 Callidescope",
-            previewCount: 3,
-            startMarker: "<!-- START -->",
-          },
-        },
-      }),
-    );
-    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
-    // The second project is reported but not scoped — a dependency the run
-    // measured through its closure. Publishing covers what a run was pointed
-    // at, so no section is addressed to that project's README.
-    stubTrace(
-      buildCallGraphResult({
-        projects: [
-          buildProjectReport("example"),
-          buildProjectReport("dependency"),
-        ],
-      }),
-    );
-
-    await command.run([], { write: true });
-
-    const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
-
-    expect(sent?.sections.map((section) => section.path)).toStrictEqual([
-      path.join("packages/example", "README.md"),
-    ]);
-  });
-
-  it("addresses a section to the README of the project it describes", async () => {
-    stubConfiguration(
-      buildConfiguration({
-        write: {
-          json: undefined,
-          markdown: undefined,
-          mermaid: undefined,
-          projectReadmes: {
-            endMarker: "<!-- END -->",
-            heading: "## 🔭 Callidescope",
-            previewCount: 3,
-            startMarker: "<!-- START -->",
-          },
-        },
-      }),
-    );
-    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
-    stubTrace(
-      buildCallGraphResult({ projects: [buildProjectReport("example")] }),
-    );
-
-    await command.run([], { write: true });
-
-    const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
-
-    expect(sent?.sections[0]?.content).toContain("## 🔭 Callidescope");
-    expect(sent?.sections[0]?.content).toContain("`example`");
-  });
-
   it("writes a project's own declared markdown destination", async () => {
-    configureProjectReadmeFanOut();
     outputMarkdownService.sync.mockReturnValue(true);
-    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
     stubTrace(
       buildCallGraphResult({ projects: [buildProjectReport("example")] }),
       buildProjectLimitsLookup(),
@@ -790,27 +698,8 @@ describe(CallidescopeCommand, () => {
     ]);
   });
 
-  it("leaves a project that declared its own destinations out of the fan-out", async () => {
-    configureProjectReadmeFanOut();
-    outputMarkdownService.sync.mockReturnValue(true);
-    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
-    stubTrace(
-      buildCallGraphResult({ projects: [buildProjectReport("example")] }),
-      buildProjectLimitsLookup(),
-      buildProjectWrite({ markdown: buildDestination("docs/CALLS.md") }),
-    );
-
-    await command.run([], { write: true });
-
-    const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
-
-    expect(sent?.sections).toStrictEqual([]);
-  });
-
   it("draws the stacks in a project's own declared mermaid destination", async () => {
-    configureProjectReadmeFanOut();
     outputMarkdownService.sync.mockReturnValue(true);
-    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
     stubTrace(
       buildCallGraphResult({
         projects: [
@@ -848,39 +737,12 @@ describe(CallidescopeCommand, () => {
   });
 
   it("fails when a project's own declared destination is stale in check mode", async () => {
-    configureProjectReadmeFanOut();
     outputMarkdownService.sync.mockReturnValue(false);
-    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
     stubTrace(
       buildCallGraphResult({ projects: [buildProjectReport("example")] }),
       buildProjectLimitsLookup(),
       buildProjectWrite({ markdown: buildDestination("README.md") }),
     );
-
-    await command.run([], { check: "reports" });
-
-    expect(process.exitCode).toBe(1);
-  });
-
-  it("fails when a project README is stale in check mode", async () => {
-    stubConfiguration(
-      buildConfiguration({
-        write: {
-          json: undefined,
-          markdown: undefined,
-          mermaid: undefined,
-          projectReadmes: {
-            endMarker: "<!-- END -->",
-            heading: "## 🔭 Callidescope",
-            previewCount: 3,
-            startMarker: "<!-- START -->",
-          },
-        },
-      }),
-    );
-    outputMarkdownService.syncProjectReadmes.mockReturnValue([
-      "packages/example/README.md",
-    ]);
 
     await command.run([], { check: "reports" });
 
@@ -983,11 +845,8 @@ describe(CallidescopeCommand, () => {
           [
             "example",
             buildProjectLimits({
-              maximumBreadth: {
-                origin: "declared",
-                path: "packages/example/callidescope.config.ts",
-                value: 3,
-              },
+              maximumBreadth: 3,
+              path: "packages/example/callidescope.config.ts",
             }),
           ],
         ]),
@@ -1027,11 +886,8 @@ describe(CallidescopeCommand, () => {
           [
             "example",
             buildProjectLimits({
-              maximumBreadth: {
-                origin: "declared",
-                path: "packages/example/callidescope.config.ts",
-                value: 3,
-              },
+              maximumBreadth: 3,
+              path: "packages/example/callidescope.config.ts",
             }),
           ],
           ["packages/undeclared", buildProjectLimits()],
@@ -1467,7 +1323,6 @@ describe(CallidescopeCommand, () => {
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
           mermaid: undefined,
-          projectReadmes: undefined,
         },
       }),
     );
@@ -1488,7 +1343,6 @@ describe(CallidescopeCommand, () => {
           json: { indentation: 4, path: "output/report.json" },
           markdown: undefined,
           mermaid: undefined,
-          projectReadmes: undefined,
         },
       }),
     );
@@ -1514,12 +1368,12 @@ describe(CallidescopeCommand, () => {
             endMarker: "<!-- END -->",
             heading: "# 🔭 Configured",
             path: "docs/report.md",
+            previewCount: 3,
             render: undefined,
             startMarker: "<!-- START -->",
             writeBlock: undefined,
           },
           mermaid: undefined,
-          projectReadmes: undefined,
         },
       }),
     );
@@ -1534,6 +1388,7 @@ describe(CallidescopeCommand, () => {
       endMarker: "<!-- END -->",
       heading: "# 🔭 Configured",
       path: "flagged.md",
+      previewCount: 3,
       render: undefined,
       startMarker: "<!-- START -->",
       writeBlock: undefined,
@@ -1581,7 +1436,6 @@ describe(CallidescopeCommand, () => {
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
           mermaid: undefined,
-          projectReadmes: undefined,
         },
       }),
     );
@@ -1602,12 +1456,12 @@ describe(CallidescopeCommand, () => {
             endMarker: "<!-- END -->",
             heading: "# 🔭 Callidescope",
             path: "REPORT.md",
+            previewCount: 3,
             render: undefined,
             startMarker: "<!-- START -->",
             writeBlock: undefined,
           },
           mermaid: undefined,
-          projectReadmes: undefined,
         },
       }),
     );
@@ -1627,7 +1481,6 @@ describe(CallidescopeCommand, () => {
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
           mermaid: undefined,
-          projectReadmes: undefined,
         },
       }),
     );

@@ -3,14 +3,7 @@
 import type {
   CallGraphResult,
   ResolvedCallidescopeMarkdownOutputConfiguration,
-  ResolvedCallidescopeProjectReadmeConfiguration,
 } from "@callidescope/configuration";
-
-/** One project's section and the README it belongs in. */
-export interface ProjectSection {
-  readonly content: string;
-  readonly path: string;
-}
 
 /** Arguments for splicing a block between its anchors. */
 export interface SyncAnchoredBlockArguments {
@@ -31,13 +24,6 @@ export interface SyncMarkdownArguments {
   readonly content: string;
   readonly destination: ResolvedCallidescopeMarkdownOutputConfiguration;
   readonly result: CallGraphResult;
-}
-
-/** Arguments for splicing a section into every traced project's README. */
-export interface SyncProjectReadmesArguments {
-  readonly check: boolean;
-  readonly destination: ResolvedCallidescopeProjectReadmeConfiguration;
-  readonly sections: readonly ProjectSection[];
 }
 
 /** Arguments for wrapping content in the configured anchors. */

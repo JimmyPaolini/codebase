@@ -8,16 +8,15 @@ export const LIMIT_TABLE_COLUMNS = [
   "Project",
   "Limit",
   "Value",
-  "Origin",
   "Declared in",
 ] as const;
 
 /** Heading the listing is written under. */
 export const LIMITS_HEADING = "# 🔭 Callidescope Limits";
 
-/** States what the two origins mean, so the table needs no second reading. */
+/** Says what the table holds, so it needs no second reading. */
 export const LIMITS_SUMMARY =
-  "Every project in scope, what it is judged against, and where each number is written. `declared` is the project's own; `inherited` is the workspace default it falls back to.";
+  "Every project in scope, what it is judged against, and the file each number is written in — which is that project's own `callidescope.config.ts`, every traced project declaring a complete one. The `workspace` row is the starting point those files spread, and the numbers the directory holding this configuration is itself judged by.";
 
 /**
  * What a value cell says when nothing anywhere declares the limit.
@@ -37,5 +36,5 @@ export const NO_LIMIT_LABEL = "none";
  */
 export const ROOT_PROJECT_LABEL = ".";
 
-/** Names the row carrying the default every project inherits. */
+/** Names the row carrying the defaults every project's file spreads. */
 export const WORKSPACE_LABEL = "workspace";

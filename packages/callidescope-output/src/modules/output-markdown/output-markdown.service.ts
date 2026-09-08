@@ -13,7 +13,6 @@ import {
 import type {
   SyncAnchoredBlockArguments,
   SyncMarkdownArguments,
-  SyncProjectReadmesArguments,
   WrapInAnchorsArguments,
 } from "./output-markdown.types";
 import type { MarkdownAnchorHelpers } from "@callidescope/configuration";
@@ -231,42 +230,6 @@ export class OutputMarkdownService {
     this.logger.info("🔭 Wrote a report", undefined, { path: resolvedPath });
 
     return true;
-  }
-
-  /**
-   * Splices one section into each traced project's own README.
-   *
-   * Every path is visited even in check mode, so one stale README does not
-   * hide the next twenty — a caller fixing them wants the whole list.
-   */
-  public syncProjectReadmes(args: SyncProjectReadmesArguments): string[] {
-    const stale: string[] = [];
-
-    for (const section of args.sections) {
-      const current = this.syncAnchoredBlock({
-        check: args.check,
-        content: section.content,
-        destination: {
-          description: undefined,
-          endMarker: args.destination.endMarker,
-          // Carried for completeness rather than used: the section's content
-          // is already rendered by the time it reaches here, and only the
-          // markers decide where it lands.
-          heading: args.destination.heading,
-          path: section.path,
-          render: undefined,
-          startMarker: args.destination.startMarker,
-          writeBlock: undefined,
-        },
-        path: section.path,
-      });
-
-      if (!current) {
-        stale.push(section.path);
-      }
-    }
-
-    return stale;
   }
 
   /** Wraps content in the configured anchors. */

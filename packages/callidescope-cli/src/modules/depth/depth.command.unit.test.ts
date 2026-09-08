@@ -51,7 +51,6 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       json: undefined,
       markdown: undefined,
       mermaid: undefined,
-      projectReadmes: undefined,
     },
   };
 }

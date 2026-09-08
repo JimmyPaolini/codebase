@@ -11,12 +11,10 @@ import { LoggerService } from "@codebase/logger";
 
 import type {
   LimitName,
-  LimitOrigin,
   LimitsCommandOptions,
   ProjectLimitRow,
 } from "./limits.types";
 import type {
-  LimitProvenance,
   ProjectLimits,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
@@ -32,9 +30,9 @@ import type {
  * however long a trace takes.
  *
  * The numbers come from `ProjectConfigurationService.resolveLimits`, the same
- * resolver a gated run reads. A listing that worked the inheritance out for
- * itself could disagree with the gate about the same limit, and a limit two
- * answers can be given for is worse than no limit.
+ * resolver a gated run reads. A listing that read the files for itself could
+ * disagree with the gate about the same limit, and a limit two answers can be
+ * given for is worse than no limit.
  */
 @Injectable()
 export class LimitsService {
@@ -96,101 +94,48 @@ export class LimitsService {
     project: string;
     workspaceRoot: string;
   }): ProjectLimitRow[] {
-    const { maximumBreadth, maximumDepth } = args.limits;
-
     return [
-      this.toRow({
-        limit: "maximumDepth",
-        origin: maximumDepth.origin,
-        project: args.project,
-        provenance: maximumDepth,
-        workspaceRoot: args.workspaceRoot,
-      }),
-      this.toRow({
-        limit: "maximumBreadth",
-        origin: maximumBreadth?.origin,
-        project: args.project,
-        provenance: maximumBreadth,
-        workspaceRoot: args.workspaceRoot,
-      }),
+      this.toRow({ ...args, limit: "maximumDepth" }),
+      this.toRow({ ...args, limit: "maximumBreadth" }),
     ];
   }
 
-  /** Reads one resolved limit into the row that prints it. */
+  /**
+   * Reads one resolved limit into the row that prints it.
+   *
+   * The file is named whenever the row carries a number, because a project's
+   * numbers are written in that project's own file or the run refused to
+   * start. The one row that can carry a number and no file is the workspace's,
+   * whose depth is defaulted during resolution — naming a file there would
+   * send a reader to change a line nobody wrote.
+   */
   private toRow(args: {
     limit: LimitName;
-    origin: LimitOrigin | undefined;
+    limits: ProjectLimits;
     project: string | undefined;
-    provenance: LimitProvenance | undefined;
     workspaceRoot: string;
   }): ProjectLimitRow {
-    const { provenance } = args;
+    const value = args.limits[args.limit];
 
     return {
       limit: args.limit,
-      origin: args.origin,
       path:
-        provenance?.path === undefined
+        args.limits.path === undefined || value === undefined
           ? undefined
-          : path.relative(args.workspaceRoot, provenance.path),
+          : path.relative(args.workspaceRoot, args.limits.path),
       project: args.project,
-      value: provenance?.value,
+      value,
     };
   }
 
-  /**
-   * Builds the one row for a limit the workspace file is the source of.
-   *
-   * The path `resolveLimits` reports can be trusted — it names the workspace
-   * file only when that file really wrote the number — but the origin cannot.
-   * `buildWorkspaceLimits` stamps every workspace limit `inherited`, which is
-   * right for what that object is for, what a project that declared nothing is
-   * handed, and wrong on this row, which is the file's own: rendering that
-   * origin would say the workspace inherited its own default, from itself.
-   *
-   * So the origin is read back off the path, the one thing that says whether a
-   * file wrote this number at all. `ProjectLimits` has no third origin to say
-   * "defaulted" with, so an un-authored limit renders exactly like a workspace
-   * with no configuration file: no origin, no file, and the effective number
-   * kept, because that number really is what everything is judged against.
-   */
-  private toWorkspaceRow(args: {
-    limit: LimitName;
-    provenance: LimitProvenance | undefined;
-    workspaceRoot: string;
-  }): ProjectLimitRow {
-    const declaredPath = args.provenance?.path;
-
-    return {
-      limit: args.limit,
-      origin: declaredPath === undefined ? undefined : "declared",
-      path:
-        declaredPath === undefined
-          ? undefined
-          : path.relative(args.workspaceRoot, declaredPath),
-      project: undefined,
-      value: args.provenance?.value,
-    };
-  }
-
-  /** Builds the two rows for the default every project falls back to. */
+  /** Builds the two rows for the defaults every project's file spreads. */
   private toWorkspaceRows(args: {
     limits: ProjectLimits;
     workspaceRoot: string;
   }): ProjectLimitRow[] {
-    const { maximumBreadth, maximumDepth } = args.limits;
-
     return [
-      this.toWorkspaceRow({
-        limit: "maximumDepth",
-        provenance: maximumDepth,
-        workspaceRoot: args.workspaceRoot,
-      }),
-      this.toWorkspaceRow({
-        limit: "maximumBreadth",
-        provenance: maximumBreadth,
-        workspaceRoot: args.workspaceRoot,
-      }),
+      this.toRow({ ...args, limit: "maximumDepth", project: undefined }),
+      this.toRow({ ...args, limit: "maximumBreadth", project: undefined }),
     ];
   }
 

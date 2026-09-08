@@ -1,10 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-import {
-  ConfigurationService,
-  DEFAULT_PREVIEW_COUNT,
-} from "@callidescope/configuration";
+import { ConfigurationService } from "@callidescope/configuration";
 import { Injectable } from "@nestjs/common";
 
 import { OptionsService } from "../options/options.service";
@@ -15,7 +12,6 @@ import type {
   LoadedRunConfiguration,
   LoadRunConfigurationArguments,
 } from "./run-configuration.types";
-import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
 
 /**
  * Finds and reads the callidescope configuration one run is judged by.
@@ -86,14 +82,5 @@ export class RunConfigurationService {
     });
 
     return { configuration: loaded.configuration, path: loaded.path };
-  }
-
-  /** How many stacks a rendering shows before the rest are folded away. */
-  public readPreviewCount(
-    configuration: ResolvedCallidescopeConfiguration,
-  ): number {
-    return (
-      configuration.write.projectReadmes?.previewCount ?? DEFAULT_PREVIEW_COUNT
-    );
   }
 }

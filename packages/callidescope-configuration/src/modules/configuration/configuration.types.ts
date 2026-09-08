@@ -98,7 +98,7 @@ export interface CallidescopeMarkdownOutputConfiguration {
   /**
    * Heading the block is written under, `# 🔭 Callidescope` by default.
    *
-   * Configurable for the same reason `projectReadmes.heading` is, and it is
+   * Configurable because a block is spliced into somebody's document, and it is
    * the level rather than the words that usually needs changing: a block
    * spliced into a file that already has a title needs an `##` here, or the
    * file ends up with two first-level headings and every markdown linter
@@ -107,6 +107,15 @@ export interface CallidescopeMarkdownOutputConfiguration {
    */
   heading?: string | undefined;
   path: string;
+  /**
+   * Stacks shown before the rest fold into a disclosure.
+   *
+   * A member of the destination rather than of the run, because it is a fact
+   * about the document the block lands in: a project's README wants three and
+   * a report file wants all of them, and one number for both could only ever
+   * be wrong for one of them.
+   */
+  previewCount?: number | undefined;
   render?: RenderMarkdownOutput | undefined;
   startMarker?: string | undefined;
   writeBlock?: undefined | WriteMarkdownOutput;
@@ -130,10 +139,9 @@ export type CallidescopeOutputFormat = "json" | "markdown" | "mermaid";
  * destination*, so a project with nothing worth publishing writes that rather
  * than leaving the member out.
  *
- * Nothing is obliged to use this yet. The loader still accepts the partial
- * `CallidescopeConfiguration` a project file has always been able to write, and
- * this type is what a project file may be checked against once it declares
- * itself completely.
+ * This is enforced rather than advisory. Every traced project's file is checked
+ * against it as it is loaded, and a project leaving a field out is refused by
+ * name — as is a traced project with no file at all.
  */
 export interface CallidescopeProjectConfiguration {
   entryPoints: CallidescopeProjectEntryPoints;
@@ -165,27 +173,11 @@ export interface CallidescopeProjectLimits {
 }
 
 /**
- * A section spliced into every traced project's own README.
- *
- * One destination rather than a list of paths: which files these are follows
- * from which projects were traced, and restating that in configuration would
- * only give it somewhere to drift from.
- */
-export interface CallidescopeProjectReadmeConfiguration {
-  endMarker?: string | undefined;
-  /** Heading the section is written under. */
-  heading?: string | undefined;
-  /** Stacks shown before the rest fold into a disclosure. */
-  previewCount?: number | undefined;
-  startMarker?: string | undefined;
-}
-
-/**
  * Where a project's own published section and diagram land.
  *
  * Both paths are read relative to the project's own root, so a project cannot
- * write into a sibling by declaring one. The run's JSON report and the README
- * fan-out are absent by construction: neither is a project's to redirect.
+ * write into a sibling by declaring one. The run's JSON report is absent by
+ * construction: it is the run's single output, not a project's to redirect.
  *
  * A destination is the shared markdown-block shape rather than a complete one
  * of its own. What a project is *judged* by has to be written out; where the
@@ -211,26 +203,6 @@ export interface CallidescopeWriteConfiguration {
    * one is the other with a flag flipped.
    */
   mermaid?: CallidescopeMarkdownOutputConfiguration | undefined;
-  projectReadmes?: CallidescopeProjectReadmeConfiguration | undefined;
-}
-
-/**
- * One resolved limit, its value, and where that value was written.
- *
- * The provenance is carried rather than dropped once the number is known,
- * because a run judging every project against a different limit has to be able
- * to say which file each number came from — and a bare number cannot tell a
- * limit a project chose apart from one it merely inherited.
- */
-export interface LimitProvenance {
-  /**
-   * `declared` when the project's own configuration set this limit,
-   * `inherited` when it took the workspace's.
-   */
-  origin: "declared" | "inherited";
-  /** The file the value was read from, absent when no file was found. */
-  path: string | undefined;
-  value: number;
 }
 
 /** Arguments accepted by the configuration loader. */
@@ -321,24 +293,40 @@ export interface MarkdownAnchorHelpers {
 export type ProjectFieldPermission = "forbidden" | "permitted";
 
 /**
- * The two limits one project is gated by, each with the file it came from.
+ * The two limits one project is gated by, and the file both were written in.
  *
  * Only depth and breadth: every other limit shapes how the call graph itself is
  * built, which has to stay one answer for the whole workspace.
+ *
+ * One `path` for the pair rather than one apiece, because there is only one
+ * file left for either to have come from. Every traced project's configuration
+ * is complete, so both numbers are written in that project's own file or the
+ * file is refused — there is no longer a state in which a project took one
+ * limit from itself and the other from somewhere else.
  */
 export interface ProjectLimits {
-  /** Absent when neither the project nor the workspace declared one. */
-  maximumBreadth: LimitProvenance | undefined;
-  maximumDepth: LimitProvenance;
+  /** Absent when the project declared no breadth limit, which most do not. */
+  maximumBreadth: number | undefined;
+  maximumDepth: number;
+  /**
+   * The file both numbers were written in.
+   *
+   * Absent only on a workspace row a file never wrote: `maximumDepth` is
+   * defaulted during resolution, so a path stamped unconditionally would name
+   * a file for a number that file never mentions.
+   */
+  path: string | undefined;
 }
 
 /**
  * The limits every traced project is judged against.
  *
- * `byProject` holds an entry for every project a run reached, whether or not it
- * declared anything, so a caller listing the workspace's limits reads this and
- * nothing else. `workspace` is what an unlisted project falls back to, which is
- * also the object a project inheriting both limits is given.
+ * `byProject` holds an entry for every project a run reached, so a caller
+ * listing the workspace's limits reads this and nothing else. `workspace` is
+ * what the workspace file itself declares — the numbers `projectDefaults`
+ * carries into each project's file, and the ones the directory holding that
+ * very file is judged by, it being the one project that cannot write a
+ * configuration of its own.
  */
 export interface ProjectLimitsLookup {
   /** Keyed by workspace-relative project root. */
@@ -418,17 +406,10 @@ export interface ResolvedCallidescopeMarkdownOutputConfiguration {
   endMarker: string;
   heading: string;
   path: string;
+  previewCount: number;
   render: RenderMarkdownOutput | undefined;
   startMarker: string;
   writeBlock: undefined | WriteMarkdownOutput;
-}
-
-/** Project README destination with defaults applied. */
-export interface ResolvedCallidescopeProjectReadmeConfiguration {
-  endMarker: string;
-  heading: string;
-  previewCount: number;
-  startMarker: string;
 }
 
 /**
@@ -442,7 +423,6 @@ export interface ResolvedCallidescopeWriteConfiguration {
   json: ResolvedCallidescopeJsonOutputConfiguration | undefined;
   markdown: ResolvedCallidescopeMarkdownOutputConfiguration | undefined;
   mermaid: ResolvedCallidescopeMarkdownOutputConfiguration | undefined;
-  projectReadmes: ResolvedCallidescopeProjectReadmeConfiguration | undefined;
 }
 
 /** Arguments accepted by the per-project limit resolver. */
@@ -454,14 +434,13 @@ export interface ResolveProjectLimitsArguments {
   /**
    * The limits the workspace file itself wrote down, exactly as authored.
    *
-   * Presence is what decides whether an inherited limit names a file: the
+   * Presence is what decides whether the workspace row names a file: the
    * resolved configuration below manufactures `maximumDepth` for every run, so
    * a path stamped from it alone would name a file for a number that file
-   * never wrote. The same split `readDeclaredLimit` makes for a project, made for
-   * the row every project's inherits from.
+   * never wrote.
    */
   workspaceAuthoredLimits: CallidescopeLimits | undefined;
-  /** The run's own configuration, which a project inherits both limits from. */
+  /** The run's own configuration, which the workspace row reads its numbers from. */
   workspaceConfiguration: ResolvedCallidescopeConfiguration;
   /** The file that configuration was read from, when one was found. */
   workspaceConfigurationPath: string | undefined;

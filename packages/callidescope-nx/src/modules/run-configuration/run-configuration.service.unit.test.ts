@@ -1,9 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 
-import {
-  ConfigurationService,
-  DEFAULT_PREVIEW_COUNT,
-} from "@callidescope/configuration";
+import { ConfigurationService } from "@callidescope/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -106,30 +103,6 @@ describe(RunConfigurationService, () => {
         configurationPath: "callidescope.config.ts",
         searchDirectory: "/w",
       });
-    });
-  });
-
-  describe("readPreviewCount", () => {
-    it("reads the count a configuration declared", () => {
-      expect.hasAssertions();
-
-      expect(
-        service.readPreviewCount(
-          createMock<ResolvedCallidescopeConfiguration>({
-            write: { projectReadmes: { previewCount: 7 } },
-          }),
-        ),
-      ).toBe(7);
-    });
-
-    it("falls back to the shared default when none was declared", () => {
-      expect.hasAssertions();
-
-      expect(
-        service.readPreviewCount(
-          createMock<ResolvedCallidescopeConfiguration>({ write: {} }),
-        ),
-      ).toBe(DEFAULT_PREVIEW_COUNT);
     });
   });
 });

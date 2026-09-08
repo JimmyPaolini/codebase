@@ -4,6 +4,10 @@ import { z } from "zod";
 
 import type {
   CallidescopeConfiguration,
+  CallidescopeProjectConfiguration,
+  CallidescopeProjectEntryPoints,
+  CallidescopeProjectLimits,
+  CallidescopeProjectWriteConfiguration,
   CallidescopeWriteConfiguration,
   ProjectFieldPermission,
   RenderMarkdownOutput,
@@ -171,9 +175,8 @@ const readPermittedNames = (args: {
  * `write` is the one field classified a member at a time, because its members
  * split down the same line the record itself does. Where a project's own
  * published section and diagram land is that project's to say — it is the
- * document they are spliced into. The run's own JSON report and the README
- * fan-out are not: one is the run's single output, and the other is a
- * declaration about every project at once.
+ * document they are spliced into. The run's own JSON report is not: it is the
+ * run's single output.
  */
 export const PROJECT_CONFIGURATION_FIELD_PERMISSIONS = {
   directories: "forbidden",
@@ -186,7 +189,6 @@ export const PROJECT_CONFIGURATION_FIELD_PERMISSIONS = {
     json: "forbidden",
     markdown: "permitted",
     mermaid: "permitted",
-    projectReadmes: "forbidden",
   },
 } as const satisfies Record<
   keyof CallidescopeConfiguration,
@@ -237,6 +239,45 @@ export const PROJECT_CONFIGURATION_PERMITTED_FIELDS = FIELD_LIST_FORMAT.format(
   PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES,
 );
 
+/**
+ * Every name a project's own configuration must set, in the order checked.
+ *
+ * Written out rather than derived, because there is nothing at runtime to
+ * derive it from: `CallidescopeProjectConfiguration` is a type and vanishes at
+ * compile time. The `satisfies` below is what keeps the two honest — a member
+ * renamed on the interface stops being assignable here, so it fails to compile
+ * rather than quietly stopping being required.
+ *
+ * A field with an empty member list is required whole and not looked into:
+ * `exclude` is an array, and a project writing `[]` has said everything there
+ * is to say about its exclusions.
+ *
+ * Presence, never emptiness. `limits.maximumBreadth: undefined` is a project
+ * saying outright that it gates depth and not breadth, and an undefined
+ * `write.mermaid` is one saying it publishes no diagram — the two statements an
+ * absent field could never distinguish themselves from a project that forgot.
+ */
+export const PROJECT_CONFIGURATION_REQUIRED_FIELDS = {
+  entryPoints: [
+    "addresses",
+    "decorators",
+    "includeExportedFunctions",
+    "includeOrphans",
+    "includeTests",
+  ],
+  exclude: [],
+  limits: ["maximumBreadth", "maximumDepth"],
+  write: ["markdown", "mermaid"],
+} as const satisfies Record<
+  keyof CallidescopeProjectConfiguration,
+  readonly string[]
+> & {
+  entryPoints: readonly (keyof CallidescopeProjectEntryPoints)[];
+  exclude: readonly [];
+  limits: readonly (keyof CallidescopeProjectLimits)[];
+  write: readonly (keyof CallidescopeProjectWriteConfiguration)[];
+};
+
 /** Raised when a configuration file has an extension nothing can read. */
 export class UnknownConfigurationFileTypeError extends Error {
   constructor(filePath: string) {
@@ -272,21 +313,12 @@ const limitsSchema = z
   .optional();
 
 const entryPointsSchema = z
-  .object({
+  .strictObject({
     addresses: z.array(z.string()).optional(),
     decorators: z.array(z.string()).optional(),
     includeExportedFunctions: z.boolean().optional(),
     includeOrphans: z.boolean().optional(),
     includeTests: z.boolean().optional(),
-  })
-  .optional();
-
-const projectReadmesSchema = z
-  .object({
-    endMarker: z.string().optional(),
-    heading: z.string().optional(),
-    previewCount: z.number().int().nonnegative().optional(),
-    startMarker: z.string().optional(),
   })
   .optional();
 
@@ -297,11 +329,12 @@ const projectReadmesSchema = z
  * goes between the markers, not in how a block is placed or overridden.
  */
 const markdownDestinationSchema = z
-  .object({
+  .strictObject({
     description: z.string().optional(),
     endMarker: z.string().optional(),
     heading: z.string().optional(),
     path: z.string(),
+    previewCount: z.number().int().nonnegative().optional(),
     render: callbackSchema<RenderMarkdownOutput>().optional(),
     startMarker: z.string().optional(),
     writeBlock: callbackSchema<WriteMarkdownOutput>().optional(),
@@ -309,31 +342,32 @@ const markdownDestinationSchema = z
   .optional();
 
 const writeSchema = z
-  .object({
+  .strictObject({
     json: z
-      .object({
+      .strictObject({
         indentation: z.number().int().nonnegative().optional(),
         path: z.string(),
       })
       .optional(),
     markdown: markdownDestinationSchema,
     mermaid: markdownDestinationSchema,
-    projectReadmes: projectReadmesSchema,
   })
   .optional();
 
 /**
  * Validates the shape of a callidescope configuration file.
  *
- * `ignoreCallees` and `output` are named here as `z.never()` rather than left
- * out: a field this schema has never heard of is silently stripped, which is
- * the right behavior for a future option this version of the tool does not
- * know about yet — but these two are not that. They are renamed fields with a
- * real replacement, and silently stripping one would leave whoever wrote it
- * believing an exclusion or a destination is in force that nothing reads. A
- * configuration setting either is refused instead.
+ * Strict at every level, so a field nothing here names is refused rather than
+ * stripped. Stripping is the failure mode that leaves whoever wrote the field
+ * believing a limit, an exclusion, or a destination is in force that nothing
+ * reads — and every field this tool has ever retired arrives through that same
+ * door, along with every name somebody misspells.
+ *
+ * `ignoreCallees` and `output` are still named as `z.never()` rather than left
+ * to strictness, because a key the schema knows by name earns a message saying
+ * this field is gone rather than one saying it was never a field.
  */
-export const callidescopeConfigurationSchema = z.object({
+export const callidescopeConfigurationSchema = z.strictObject({
   directories: z.array(z.string()).optional(),
   entryPoints: entryPointsSchema,
   exclude: z.array(z.string()).optional(),
@@ -395,5 +429,39 @@ export class ProjectConfigurationFieldNotPermittedError extends Error {
       `${args.project} sets ${args.field}, which only the workspace configuration may set. A project configuration may set ${PROJECT_CONFIGURATION_PERMITTED_FIELDS}.`,
     );
     this.name = "ProjectConfigurationFieldNotPermittedError";
+  }
+}
+
+/**
+ * Raised when a traced project's configuration leaves a field out.
+ *
+ * Names the field as a reader has to type it to fix the file — `write.mermaid`
+ * rather than `write` — and points at the spread that supplies every field a
+ * project has no opinion about, because the fix is almost always that one line
+ * rather than a field written out by hand.
+ */
+export class ProjectConfigurationIncompleteError extends Error {
+  constructor(args: { field: string; project: string }) {
+    super(
+      `${args.project} leaves ${args.field} out of its callidescope configuration, which must be complete. Spread the workspace's projectDefaults and override what this project means to.`,
+    );
+    this.name = "ProjectConfigurationIncompleteError";
+  }
+}
+
+/**
+ * Raised when a traced project has no configuration file at all.
+ *
+ * A project that is traced is judged, and what it is judged by is written in
+ * its own file or nowhere. Inheriting everything in silence is the arrangement
+ * this replaces: it left a project's numbers resolvable only by reading two
+ * files and knowing which one won.
+ */
+export class ProjectConfigurationMissingError extends Error {
+  constructor(project: string) {
+    super(
+      `${project} is traced but has no callidescope.config.ts. Every traced project declares its own, spreading the workspace's projectDefaults and overriding what it means to.`,
+    );
+    this.name = "ProjectConfigurationMissingError";
   }
 }
