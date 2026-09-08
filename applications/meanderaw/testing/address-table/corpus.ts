@@ -9,6 +9,7 @@ import { LatticeIdentificationService } from "../../src/modules/lattice-identifi
 import { TILE_DRAWN_TYPES } from "../../src/modules/meander-generation/meander-generation.constants";
 import { MotifPitchService } from "../../src/modules/meander-generation/motif-pitch.service";
 import { OutputPathService } from "../../src/modules/svg-rendering/output-path.service";
+import { FILENAME_ADDRESS_SUFFIX_PATTERN } from "../../src/modules/svg-rendering/svg-rendering.constants";
 
 import { OUTPUT_DIRECTORY, REPEAT_COUNT_SUFFIX_PATTERN } from "./constants";
 
@@ -55,6 +56,23 @@ export const readDrawingPaths = async (
 
 // 📏 Recovering each drawing's repeat unit
 
+/**
+ * The path a drawing would be filed under with no lattice address appended,
+ * which is the path `OutputPathService.build` yields from parameters alone —
+ * and so the key {@link namedUnits} files its units by.
+ *
+ * The suffix is taken off rather than rebuilt because it cannot be rebuilt
+ * here: an address is read off the rendered ink over the family's own repeat
+ * unit, and that unit is precisely what this lookup exists to find. Taking
+ * it off is exact rather than a guess — every filename `build` writes puts
+ * the repeat count immediately before it — and a path it failed to strip
+ * simply misses the map and is reported by {@link addressCorpus} as having
+ * no repeat unit, so a strip that stopped matching fails loudly rather than
+ * resolving to the wrong drawing.
+ */
+const unaddressed = (drawingPath: string): string =>
+  drawingPath.replace(FILENAME_ADDRESS_SUFFIX_PATTERN, "");
+
 /** Narrows a family to one that draws a motif, so its pitch can be asked for. */
 const isMotifDrawn = (type: MeanderType): type is MotifDrawnType =>
   !TILE_DRAWN_TYPES.includes(type);
@@ -69,6 +87,13 @@ const isMotifDrawn = (type: MeanderType): type is MotifDrawnType =>
  * `MotifPitchService` derives the pitch and the true repeat's span from the
  * motif's own right edge. Nothing here renders a drawing — the parameters are
  * enough to say how wide one unit is, and the ink is read off disk.
+ *
+ * The key is the path with no address appended, which is all
+ * `OutputPathService.build` can give from parameters alone. Two drawings
+ * cannot share one key: an address distinguishes no two files that were not
+ * already distinct, or `CollidingPathsError` would have fired instead of the
+ * second one being written. {@link unaddressed} is what a reader turns a
+ * committed path back into to ask this map about it.
  */
 export const namedUnits = (services: {
   combinations: DrawCombinationsService;
@@ -116,10 +141,10 @@ export const enumeratedUnit = (
 
 // 🏷️ Addressing the corpus
 
-/** The name a drawing is filed under within its family and row count, with the repeat count it was drawn at dropped. */
+/** The name a drawing is filed under within its family and row count, with the lattice address and the repeat count it was drawn at both dropped. */
 const variantOf = (drawingPath: string): string =>
   path.posix
-    .basename(drawingPath, ".svg")
+    .basename(unaddressed(drawingPath), ".svg")
     .replace(REPEAT_COUNT_SUFFIX_PATTERN, "");
 
 /**
@@ -141,7 +166,8 @@ export const addressCorpus = async (services: {
   const drawings: AddressedDrawing[] = [];
 
   for (const drawingPath of await readDrawingPaths()) {
-    const unit = units.get(drawingPath) ?? enumeratedUnit(drawingPath);
+    const unit =
+      units.get(unaddressed(drawingPath)) ?? enumeratedUnit(drawingPath);
 
     if (unit === undefined) {
       throw new Error(

@@ -18,6 +18,27 @@ export const STROKE_LINECAP = "square";
 export const UNMODIFIED_VARIANT_NAME = "plain";
 
 /**
+ * The lattice address suffix {@link OutputPathService.build} appends, matched
+ * where it sits in a filename that service has already written — so a reader
+ * holding a committed path can recover the name the drawing carried before
+ * an address was appended to it.
+ *
+ * A reader needs this because the two directions are not symmetrical.
+ * Spelling an address into a filename needs the rendered document: the pitch
+ * comes from the motif and the identifier is read off the ink. Taking one
+ * back off needs nothing but the string.
+ *
+ * It matches both conventions and nothing else. The repeat count immediately
+ * precedes the suffix in every filename `build` writes and no variant slug
+ * spells `repeats`, so the lookbehind is what keeps this from biting into a
+ * name that merely happens to end in something shaped like a shape. The
+ * `mosaic` filenames `build` appends nothing to match nothing, and come back
+ * unchanged.
+ */
+export const FILENAME_ADDRESS_SUFFIX_PATTERN =
+  /(?<=-\d+-repeats)-\d+r\d+c(?:-[\da-f]+)?(?=\.svg$)/u;
+
+/**
  * Which of the two filename conventions each family measures under, decided
  * by measuring every combination `DrawCombinationsService.enumerate` draws
  * and finding the widest emitted filename it produces, in bytes.

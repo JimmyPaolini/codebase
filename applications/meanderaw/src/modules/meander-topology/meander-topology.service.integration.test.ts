@@ -30,6 +30,7 @@ import { ParallelMotifService } from "../parallel-motif/parallel-motif.service";
 import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 import { SnakeMotifService } from "../snake-motif/snake-motif.service";
 import { SnakeSequenceService } from "../snake-motif/snake-sequence.service";
+import { FILENAME_ADDRESS_SUFFIX_PATTERN } from "../svg-rendering/svg-rendering.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
@@ -667,6 +668,20 @@ const NEGATIVE_SOURCE_DOCUMENTS: readonly {
 const familyOf = (name: string): string => name.split("/")[0] ?? name;
 
 /**
+ * A committed document's path with the lattice address its filename now
+ * carries taken back off, leaving the family, row count, variant and repeat
+ * count a statement about topology is really about.
+ *
+ * An address is a statement about ink, and the address table is where every
+ * one of them is pinned. Spelling `cross`'s seven addresses into an expected
+ * list here would say the same thing a second time, in the one form nobody
+ * can read — and would restate it on every drawing whose ink moved for a
+ * reason this suite has no opinion about.
+ */
+const unaddressed = (name: string): string =>
+  name.replace(FILENAME_ADDRESS_SUFFIX_PATTERN, "");
+
+/**
  * Whether `parameters` name a drawing the charter declaration allows to
  * break `invariant`.
  *
@@ -1172,7 +1187,10 @@ describe(MeanderTopologyService, () => {
         expect(
           crossing
             .filter(({ name }) => familyOf(name) === "cross")
-            .map(({ inkXJunctions, name }) => `${name} ${inkXJunctions}`),
+            .map(
+              ({ inkXJunctions, name }) =>
+                `${unaddressed(name)} ${inkXJunctions}`,
+            ),
         ).toStrictEqual([
           "cross/10-rows/plain-6-repeats.svg 12",
           "cross/11-rows/plain-6-repeats.svg 12",
@@ -1197,7 +1215,11 @@ describe(MeanderTopologyService, () => {
 
         expect(
           [
-            ...new Set(namedCrossing.map(({ name }) => name.split("/").at(-1))),
+            ...new Set(
+              namedCrossing.map(({ name }) =>
+                unaddressed(name).split("/").at(-1),
+              ),
+            ),
           ].toSorted(),
         ).toStrictEqual([
           "brick-straight-6-repeats.svg",

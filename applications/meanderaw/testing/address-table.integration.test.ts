@@ -91,11 +91,16 @@ describe("the lattice address table", () => {
       expect(malformed).toStrictEqual([]);
     });
 
+    // 🎯 The drawing is found by the three columns that name it rather than
+    // by its path, so a change to how a filename is spelled cannot make this
+    // silently find nothing: `variant` is already the name stripped of both
+    // the repeat count and the address.
     it("reads a parallel serpentine at three rows as the mosaic zigzag tile", () => {
       const serpentine = corpus.find(
-        ({ path: drawingPath }) =>
-          drawingPath ===
-          "parallel/3-rows/serpentine-strands-3-offset-1-6-repeats.svg",
+        ({ family, rows, variant }) =>
+          family === "parallel" &&
+          rows === 3 &&
+          variant === "serpentine-strands-3-offset-1",
       );
       const zigzag = corpus.find(
         ({ path: drawingPath }) =>
@@ -109,9 +114,10 @@ describe("the lattice address table", () => {
 
     it("reads a wider parallel serpentine as the mosaic tile of twice the depth", () => {
       const serpentine = corpus.find(
-        ({ path: drawingPath }) =>
-          drawingPath ===
-          "parallel/4-rows/serpentine-strands-4-offset-2-6-repeats.svg",
+        ({ family, rows, variant }) =>
+          family === "parallel" &&
+          rows === 4 &&
+          variant === "serpentine-strands-4-offset-2",
       );
 
       expect(serpentine?.address).toBe("4r2c-56a933");

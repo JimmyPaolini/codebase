@@ -74,6 +74,11 @@ const MOSAIC_SHAPES: readonly MosaicTileShape[] = Array.from(
  * pitch is two columns whatever the ply — which is why a three-strand drawing
  * and a four-strand one are both read at a span of two, and why the `mosaic`
  * tiles they match are two columns wide.
+ *
+ * Both sides are the literal committed path, which is what lets the pair read
+ * as a pair. The `parallel` half now ends in the shape its family is filed
+ * under — `-3r2c`, the very span asserted below — and the `mosaic` half has
+ * carried its full address all along.
  */
 const CROSS_FAMILY_IDENTITIES: readonly {
   readonly modifier: Modifier;
@@ -84,13 +89,15 @@ const CROSS_FAMILY_IDENTITIES: readonly {
   {
     modifier: { name: "serpentine", offset: 1, strands: 3 },
     mosaic: "mosaic/3-rows/2-columns/56a9-zigzag.svg",
-    parallel: "parallel/3-rows/serpentine-strands-3-offset-1-6-repeats.svg",
+    parallel:
+      "parallel/3-rows/serpentine-strands-3-offset-1-6-repeats-3r2c.svg",
     rows: 3,
   },
   {
     modifier: { name: "serpentine", offset: 2, strands: 4 },
     mosaic: "mosaic/4-rows/2-columns/56a933.svg",
-    parallel: "parallel/4-rows/serpentine-strands-4-offset-2-6-repeats.svg",
+    parallel:
+      "parallel/4-rows/serpentine-strands-4-offset-2-6-repeats-4r2c.svg",
     rows: 4,
   },
 ];
@@ -99,8 +106,18 @@ const CROSS_FAMILY_IDENTITIES: readonly {
 const committed = async (name: string): Promise<string> =>
   readFile(path.join(OUTPUT_DIRECTORY, name), "utf8");
 
-/** The `boxes spin` drawing the issue measures, and the four pitch-wide readings it holds. */
-const SPIN_DRAWING = "boxes/5-rows/spin-8-repeats.svg";
+/**
+ * The `boxes spin` drawing the issue measures, and the four pitch-wide
+ * readings it holds.
+ *
+ * Named by the path it really carries rather than derived, because deriving
+ * it would need the address, and reaching an address needs this very
+ * document. `boxes` is filed shape-only, so the suffix is the reading the
+ * test goes on to assert — sixteen columns at five rows — which is what
+ * makes a stale literal a contradiction a reader can see rather than a
+ * silent mismatch.
+ */
+const SPIN_DRAWING = "boxes/5-rows/spin-8-repeats-5r16c.svg";
 
 /** How many consecutive spans the sweep addresses, which is the fewest that can disagree. */
 const MEASURED_SPANS = 2;
@@ -296,9 +313,9 @@ describe("a rendered meander is addressed by its lattice", () => {
       const addresses = await Promise.all(
         [
           "mosaic/4-rows/2-columns/56a933.svg",
-          "parallel/4-rows/serpentine-strands-4-offset-1-6-repeats.svg",
-          "parallel/4-rows/serpentine-strands-4-offset-2-6-repeats.svg",
-          "parallel/4-rows/serpentine-strands-4-flip-alternating-offset-2-6-repeats.svg",
+          "parallel/4-rows/serpentine-strands-4-offset-1-6-repeats-4r2c.svg",
+          "parallel/4-rows/serpentine-strands-4-offset-2-6-repeats-4r2c.svg",
+          "parallel/4-rows/serpentine-strands-4-flip-alternating-offset-2-6-repeats-4r2c.svg",
         ].map(async (name) =>
           service.identifyDocument(await committed(name), {
             pitch: COLUMNS_PER_SERPENTINE_UNIT,

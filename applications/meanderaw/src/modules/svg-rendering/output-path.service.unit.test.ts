@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { OutputPathService } from "./output-path.service";
+import { FILENAME_ADDRESS_SUFFIX_PATTERN } from "./svg-rendering.constants";
 
 import type { LatticeAddress } from "../lattice-identification/lattice-identification.types";
 
@@ -143,6 +144,40 @@ describe(OutputPathService, () => {
           }),
         ).toBe("mosaic/6-rows/dots-6-repeats.svg");
       });
+    });
+  });
+
+  // 🎯 The property every reader of the committed corpus depends on: taking
+  // the suffix back off a path returns the path parameters alone would have
+  // built, whichever convention wrote it. A reader holding only a path
+  // cannot rebuild the suffix — that needs the ink — so this is the one
+  // direction available to it, and it has to be exact rather than close.
+  describe("taking a filename's address back off", () => {
+    it.each([
+      { case: "the full address", type: "branch" },
+      { case: "the shape alone", type: "boxes" },
+    ] as const)("undoes $case", ({ type }) => {
+      const parameters = { repeatCount: 6, rows: 5, type } as const;
+
+      expect(
+        service
+          .build(parameters, ADDRESS)
+          .replace(FILENAME_ADDRESS_SUFFIX_PATTERN, ""),
+      ).toBe(service.build(parameters));
+    });
+
+    it("leaves a filename no address was appended to exactly as mosaic committed it", () => {
+      const committed = "mosaic/6-rows/dots-6-repeats.svg";
+
+      expect(committed.replace(FILENAME_ADDRESS_SUFFIX_PATTERN, "")).toBe(
+        committed,
+      );
+    });
+
+    it("leaves a variant that merely ends in something shaped like a shape alone", () => {
+      const named = "boxes/5-rows/plain-12r42c.svg";
+
+      expect(named.replace(FILENAME_ADDRESS_SUFFIX_PATTERN, "")).toBe(named);
     });
   });
 
