@@ -54,15 +54,14 @@ Each directory under [`examples/`](examples) is one example, carries its own
 **The package is traced as one unit, together with its dependency closure.**
 Almost every example directory carries no `tsconfig.json` of its own, so it
 cannot be traced alone — which is why every example's `## Run it` names the same
-command and then says where in the committed output to look. The two exceptions
-are deliberate: [gated-leaf](examples/gated-leaf/README.md) and
-[inherited-limits](examples/inherited-limits/README.md) _are_ projects of their
-own, because what they demonstrate is per-project configuration and a limit
+command and then says where in the committed output to look. The one exception
+is deliberate: [gated-leaf](examples/gated-leaf/README.md) _is_ a project of its
+own, because what it demonstrates is per-project configuration and a limit
 resolves per project. The run reaches beyond this package in the other
 direction, too: a project's own `tsconfig.json` never lists the packages it
 imports, so a scoped run also traces every project its imports transitively
 reach — otherwise a call leaving the package would land in code no traced
-project owned. Six projects are traced here, and
+project owned. Five projects are traced here, and
 [dependency-closure](examples/dependency-closure/README.md) is where that is
 worked through. Read them in the order below for a walkthrough:
 [plain-call](examples/plain-call/README.md) →
@@ -80,7 +79,6 @@ worked through. Read them in the order below for a walkthrough:
 [deep-stack](examples/deep-stack/README.md) →
 [forwarding-stack](examples/forwarding-stack/README.md) →
 [project-depth-limit](examples/project-depth-limit/README.md) →
-[inherited-limits](examples/inherited-limits/README.md) →
 [gated-leaf](examples/gated-leaf/README.md) →
 [shared-tail](examples/shared-tail/README.md) →
 [frame-annotations](examples/frame-annotations/README.md).
@@ -119,14 +117,13 @@ as `injected-dependency` and lands in a different package —
 traces the projects that directory's imports transitively reach, rather than the
 directory alone.
 
-Pointed at this package, the run builds a program for six projects — three it
+Pointed at this package, the run builds a program for five projects — two it
 was named at, and three its imports reached:
 
 | Project | Reached because |
 | ------- | --------------- |
 | `packages/callidescope-examples` | Named — the directory the run was pointed at |
 | `.../examples/gated-leaf` | Named — a nested project, for the reason [gated-leaf](examples/gated-leaf/README.md) gives |
-| `.../examples/inherited-limits` | Named, for the same reason |
 | `packages/callidescope-configuration` | Imported by the fixture, and by [`callidescope.workspace.config.ts`](callidescope.workspace.config.ts) |
 | `packages/codometer-configuration` | Reached through the shared configuration [`codometer.config.ts`](codometer.config.ts) spreads |
 | `packages/logger` | Reached through the shared `configuration/eslint.config.ts` |
@@ -211,15 +208,14 @@ same file is the example working, not a lint failure to chase.
 ### Per-project configuration
 
 Every limit callidescope gates on belongs to a **project** rather than to a run,
-and a project is a directory holding a `tsconfig.json`. Four examples cover what
-a project may say about itself and what happens when it says nothing:
+and a project is a directory holding a `tsconfig.json`. Three examples cover
+what a project may say about itself:
 
 | Example | What it declares | What that changed |
 | ------- | ---------------- | ----------------- |
 | [`declared-entry-points`](examples/declared-entry-points) | `entryPoints.addresses`, in [`callidescope.config.ts`](callidescope.config.ts) at this package's root | A callable with a caller heads a stack of its own, under the `declared` kind |
 | [`project-depth-limit`](examples/project-depth-limit) | `limits.maximumDepth`, in the same file | A six-frame chain is a finding at five and would pass at the six the run supplies |
-| [`inherited-limits`](examples/inherited-limits) | Every field, all of them the default | Seven frames are a finding against the six written in its own file, and `maximumBreadth: undefined` gates breadth not at all |
-| [`gated-leaf`](examples/gated-leaf) | Both fields, plus `limits.maximumBreadth` and `exclude`, in its own nested project | Four frames and three direct callees become findings that no limit above them would ever have reported, and one generated file goes untraced while its twin next door does not |
+| [`gated-leaf`](examples/gated-leaf) | Both fields, plus `limits.maximumBreadth` and `exclude`, in its own nested project | Four frames and three direct callees become findings that no limit above them would ever have reported, and one generated file goes untraced |
 
 They sit in the reading order above in that order, and one rule does all the
 work: **the workspace number is a default, not a ceiling, and not
@@ -243,7 +239,7 @@ holding one is refused before anything is traced. Nothing is lost: `maximumDepth
 and `maximumBreadth` are the only two a project may set, so a spread would supply
 the field being overridden plus the one that gets the file rejected.
 
-Two of the four are projects nested inside this one, the way
+One of the three is a project nested inside this one, the way
 [`codependix-examples`](../codependix-examples) nests the workspaces it graphs.
 That is what makes a per-project limit demonstrable at all: a limit belongs to a
 project, so a report showing three different ones takes more than one project to
@@ -261,16 +257,16 @@ committed:
 | `markdown` | [`output/report.md`](output/report.md) — the printed trees, between anchors |
 | `mermaid` | [`output/diagram.md`](output/diagram.md) — the same stacks, drawn |
 
-Beside those three, each of the three projects here declares a `write.markdown`
+Beside those three, each of the two projects here declares a `write.markdown`
 of its own, which is what puts
-[the section at the bottom of this file](#-callidescope) and one in each of the
-two nested projects' guides. No workspace declaration fans those out — a
+[the section at the bottom of this file](#-callidescope) and one in the
+nested project's guide. No workspace declaration fans those out — a
 project's section is that project's own to declare, or not to.
 
 A run publishes a section only for a **scoped** project — the projects a run
 was pointed at, not the ones its closure reached. This run is scoped to this
-package and to the two nested projects under `examples/`, so it writes three
-sections and no more, even though it measures six projects. That is the rule the
+package and to the one nested project under `examples/`, so it writes two
+sections and no more, even though it measures five projects. That is the rule the
 closure is read against: **measurement reaches into a package's dependencies,
 publishing does not.** A scoped run that also published would rewrite the
 section in three sibling packages that never asked for it, and fight
@@ -422,11 +418,11 @@ Four decisions are worth making deliberately:
 4. **Which of your projects say something for themselves.** The workspace number
    is a default rather than a ceiling, so a project low in your call graph can
    carry a limit that describes it instead of one picked for the code above it.
-   Start with none: a project with no file of its own keeps working, which is
-   what [`inherited-limits`](examples/inherited-limits) is. Add one where the
-   default is telling you nothing, which is what
-   [`gated-leaf`](examples/gated-leaf) is. Write only the limits you override,
-   and never spread the workspace limits into a project file — see
+   Every traced project needs a complete `callidescope.config.ts` of its own —
+   spread `projectDefaults` and keep the defaults you mean to keep, override
+   what you don't. Add one where the default is telling you nothing, which is
+   what [`gated-leaf`](examples/gated-leaf) is. Write only the limits you
+   override, and never spread the workspace limits into a project file — see
    [`project-depth-limit`](examples/project-depth-limit) for why that is refused.
 
 ## Why this package is shaped the way it is
@@ -442,7 +438,7 @@ whose entire content is deliberately-shaped fixture code. The answers:
 | `knip` and `fallow` | Every fixture is declared an entry point rather than ignored, so both keep checking dependencies while the orphan-root fixture stops being a finding |
 | `jscpd` | Scoped for this project. The resolution-table fixtures are near-identical by design |
 | `codometer` | No declared size limit: the package is private and never built, so there is no bundle to gate |
-| Nested projects | Two example directories hold a `tsconfig.json` and no `package.json`. The first is what makes them projects with limits of their own; the second is deliberate — Nx infers a project from a nested `package.json`, and the fixtures then fail `@nx/enforce-module-boundaries` for importing one another. They are named in the run's `--directories` instead |
+| Nested projects | One example directory, `gated-leaf`, holds a `tsconfig.json` and no `package.json`. The first is what makes it a project with limits of its own; the second is deliberate — Nx infers a project from a nested `package.json`, and a `tsconfig.json` and a `package.json` nested one directory apart would collide with `@nx/enforce-module-boundaries`. It is named in the run's `--directories` instead |
 | Nx tags | `type:package`, `framework:nestjs`, `language:typescript`, `name:callidescope-examples`. The NestJS dependency is real — `injected-dependency` is the headline case |
 | Project layout | An `examples/` directory rather than `src/modules/`, matching the other `*-examples` packages. `configuration/codebase-structure.json` declares it |
 | `conformetry` | Not an instance of any template, and nothing had to be suppressed to keep it that way — see below |
@@ -470,13 +466,9 @@ callidescope-examples/
 │   ├── <name>/
 │   │   ├── README.md                  the guide for this example
 │   │   └── *.ts                       the fixture callables
-│   ├── gated-leaf/                    a nested project, with its own limits
-│   │   ├── callidescope.config.ts     what that project declares about itself
-│   │   ├── *.generated.ts             the file this project's own exclude drops
-│   │   ├── tsconfig.json              what makes the directory a project
-│   │   └── README.md                  the guide, holding that project's own section
-│   └── inherited-limits/              a nested project overriding nothing
-│       ├── *.generated.ts             its twin, which nothing excludes
+│   └── gated-leaf/                    a nested project, with its own limits
+│       ├── callidescope.config.ts     what that project declares about itself
+│       ├── *.generated.ts             the file this project's own exclude drops
 │       ├── tsconfig.json              what makes the directory a project
 │       └── README.md                  the guide, holding that project's own section
 ├── output/

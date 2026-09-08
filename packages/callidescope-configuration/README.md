@@ -486,7 +486,7 @@ raises those four.
 
 ### Worked examples
 
-Four runnable examples in
+Three runnable examples in
 [`@callidescope/examples`](../callidescope-examples/README.md) demonstrate the
 whole of this, each against real traced code:
 
@@ -494,7 +494,6 @@ whole of this, each against real traced code:
 | ------- | ------------- |
 | [`declared-entry-points`](../callidescope-examples/examples/declared-entry-points/README.md) | `entryPoints.addresses`, what declaring adds, and the refusals |
 | [`project-depth-limit`](../callidescope-examples/examples/project-depth-limit/README.md) | One run, two depth limits, and why the two files at that package's root are separate |
-| [`inherited-limits`](../callidescope-examples/examples/inherited-limits/README.md) | A project with no file at all, and per-limit inheritance |
 | [`gated-leaf`](../callidescope-examples/examples/gated-leaf/README.md) | A leaf gated at three, and both halves of the `--check breadth` rule side by side |
 
 ## Call Graph Types
