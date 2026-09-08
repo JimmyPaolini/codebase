@@ -112,56 +112,39 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 ### Handoffs
 
-A planning session ends where an implementation session begins, and that seam
-is where the workflow above is most easily lost: the next agent starts from a
-document instead of from this conversation, and whatever the document does not
-say, it invents. The handoff is also what makes an uninterrupted implementation
-run legitimate — step 1's approval gate was passed in the planning session, and
-this document is the next session's only record of that. Five repository rules
-override the skill's generic defaults:
+A planning session ends where an implementation session begins, and whatever the
+handoff document does not say, the next agent invents. It is also the only record
+that step 1's approval gate was passed, which is what makes an uninterrupted
+implementation run legitimate. Five repository rules override
+[handoff](.agents/skills/handoff/SKILL.md)'s defaults:
 
-- **It goes on the spec ticket, not in a temporary directory.** The skill saves
-  to the operating system's temporary directory, which the next session cannot
-  be pointed at and the next reboot may empty. Post it as a comment on the spec
-  issue instead, where
-  [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) already keeps
-  the spec and its tickets — the next session is then handed one link and reads
-  the plan, the tickets, and the brief in one place.
-- **It prescribes the workflow skills rather than suggesting them.** The skill
-  asks for a "suggested skills" section, and a list of skills an agent may find
-  useful is a list an agent skips — which is how the workflow above silently
-  stops being used. Write a numbered "How to run this" section instead, naming
-  each skill in the order it is called:
-  [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md) for the
-  isolated workspace,
-  [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
-  to orchestrate the ticket set, then
-  [implement](.agents/skills/implement/SKILL.md) and
-  [tdd](.agents/skills/tdd/SKILL.md) inside each dispatched task, and steps 5
-  through 7 above to finish each one.
-- **It answers the two questions those skills otherwise stop and ask.**
-  `subagent-driven-development` keys its workspace and its ledger off a **plan
-  file path**, so a plan that lives on the issue tracker has to be exported to
-  a local scratch file first — say so, or the session halts on its first step.
-  And `tdd` will not write a test at a seam the user has not confirmed, so
-  point it at the spec's Testing Decisions and say to treat those as the
-  confirmation — otherwise a session told to run without interruption
-  interrupts before its first test.
-- **It says how the work is cut into pull requests.** One ticket per pull
-  request, stacked with [gh-stack](.agents/skills/gh-stack/SKILL.md) so each
-  one reviews as the increment it is rather than as a diff carrying its
-  predecessors. Name each branch — or at least the type and scope every branch
-  must take — rather than leaving the next session to derive them: a squashed
-  title is the only thing semantic-release ever sees, so the ticket split the
-  planning session already made is what decides
+- **Post it as a comment on the spec issue**, not in the operating system's
+  temporary directory the skill defaults to — the next session cannot be pointed
+  at that, and the next reboot may empty it. On the issue, the next session gets
+  the plan, the tickets, and the brief from one link.
+- **Prescribe the workflow skills, do not suggest them.** A list of skills an
+  agent "may find useful" is a list an agent skips. Write a numbered "How to run
+  this" section naming each skill in call order:
+  [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md),
+  [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md),
+  then [implement](.agents/skills/implement/SKILL.md) and
+  [tdd](.agents/skills/tdd/SKILL.md) inside each dispatched task, then steps 5–7
+  above.
+- **Answer the two questions those skills otherwise stop and ask.**
+  `subagent-driven-development` keys its workspace and ledger off a **plan file
+  path**, so say to export the issue's plan to a local scratch file first. And
+  `tdd` will not write a test at an unconfirmed seam, so point it at the spec's
+  Testing Decisions and say to treat those as the confirmation — otherwise a
+  session told to run uninterrupted stops before its first test.
+- **Say how the work is cut into pull requests.** One ticket per pull request,
+  stacked with [gh-stack](.agents/skills/gh-stack/SKILL.md), and name each
+  branch or at least the type and scope every branch must take — a squashed title
+  is all semantic-release ever sees, so the ticket split decides
   [Release Significance](#release-significance).
-- **It assigns a model and a thinking level per role.** Orchestrating a ticket
-  set, implementing one ticket, and reviewing a diff are different problems and
-  should not draw the same reasoning budget; the harness can set the model per
-  subagent, so say what each role gets rather than leaving one setting to serve
-  everything. No table of model names lives here on purpose — the right
-  assignment moves with whichever models exist, and names written down in this
-  file would be stale within a release or two.
+- **Assign a model and thinking level per role.** Orchestrating a ticket set,
+  implementing one ticket, and reviewing a diff are different problems and should
+  not draw the same reasoning budget. No table of model names lives here on
+  purpose — it would be stale within a release or two.
 
 ## Projects
 
@@ -332,96 +315,102 @@ only what is true of this workspace in particular.
 
 ## Git Workflow
 
+[`CONTRIBUTING.md`](CONTRIBUTING.md) is the full narrative — worktrees, hooks,
+branch naming, commits, releases, and the pull request process. What follows is
+what an agent needs at the moment of acting, plus the rules that fail a pull
+request.
+
 **Never bypass git hooks** with `--no-verify` — fix the underlying issue instead.
-
-**Do not run signing-check scripts manually in normal commit/push flows.** Husky already runs `scripts/git/check-commit-signing-configuration.sh` in pre-commit and `scripts/git/check-push-commit-signatures.sh` in pre-push.
-
-**Never suppress lint or type errors** with disable comments (`eslint-disable`, `@ts-ignore`, `@ts-expect-error`, `nocheck`) or by loosening configuration — triage and fix the code instead. Suppression is only permitted when the user explicitly requests it.
+**Do not run signing-check scripts manually**; Husky already runs
+`check-commit-signing-configuration.sh` in pre-commit and
+`check-push-commit-signatures.sh` in pre-push.
 
 ### Git Worktrees
 
-Use [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md) to create
-or verify an isolated workspace. It prefers this harness's native worktree tool
-over raw `git worktree add`, and falls back to `git worktree` when none exists.
+Use [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md), which
+prefers this harness's native worktree tool over raw `git worktree add`. Three
+repository rules override its defaults:
 
-Two repository rules override the skill's generic defaults:
-
-- **The branch name is not free-form.** Derive or reuse a name matching
-  `<type>/<scope>-<description>` from the [Conventional Naming](#conventional-naming)
-  tables, and validate it with `pnpm exec validate-branch-name -t "<branch-name>"`
-  before creating anything. See [checkout-branch](.agents/skills/checkout-branch/SKILL.md)
-  for deriving one. The pre-push hook and the Validate Conventions workflow both
-  reject a non-compliant branch, so an unvalidated worktree wastes the work.
+- **The branch name is not free-form** — derive one from the tables below and
+  validate it with `pnpm exec validate-branch-name -t "<branch-name>"` **before
+  creating anything**, or the pre-push hook wastes the work.
+  [checkout-branch](.agents/skills/checkout-branch/SKILL.md) derives one.
 - **If the branch already exists locally, attach a worktree to it** rather than
   creating a second branch.
 - **Never run `git submodule update --init` for `applications/JimmyPaolini`.**
-  `git worktree add` never checks out submodules — the git manual's own
-  `WORKTREE` documentation calls submodule support "incomplete" and advises
-  against multiple checkouts of a superproject — but this repository's
-  submodule is deliberately left uninitialized everywhere, not only in
-  worktrees: its real content is never checked out locally or in CI, and
-  `package.json`'s `sherif.ignorePackage` already exempts it from workspace
-  checks. A `git submodule status` `-` prefix here is expected, not broken.
-  If `pnpm install` or `lint-codebase --write` rewrites the
-  `applications/JimmyPaolini` entry out of `pnpm-lock.yaml`, that is the
-  known spurious diff from an inconsistently-present placeholder
-  `package.json` across checkouts — revert the lockfile rather than
-  reconciling it, the same as any other worktree-only lockfile drift.
+  That submodule is deliberately uninitialized everywhere — locally and in CI —
+  so a `-` prefix from `git submodule status` is expected, not broken. If
+  `pnpm install` or `lint-codebase --write` rewrites its `pnpm-lock.yaml` entry,
+  **revert the lockfile** rather than reconciling it: it is the known
+  worktree-only spurious diff.
 
 ### Branch Names
 
-Format: `<type>/<scope>-<description>` — all three parts required.
+`<type>/<scope>-<description>` — all three required, type and scope exact values
+from [Conventional Naming](#conventional-naming), description kebab-case
+(`[a-z0-9-]+`). An invented scope fails validation even when the name reads well.
 
-- **Type and scope** must be exact values from the [Conventional Naming](#conventional-naming) tables below. An invented scope fails validation even when the branch name reads well.
-- **Description** is kebab-case matching `[a-z0-9-]+` — no uppercase, underscores, dots, or extra slashes.
-- Validate before pushing: `pnpm exec validate-branch-name -t "<branch-name>"`. The pre-push hook and the Validate Conventions workflow both run it.
+```bash
+pnpm exec validate-branch-name -t "feat/lexico-user-auth"
+```
 
-Examples: `feat/lexico-user-auth`, `fix/caelundas-timezone-bug`, `docs/codebase-architecture`
-
-Only `main` is exempt from the convention. Automated prefixes are also accepted: `copilot/*`, `dependabot/*`, `jimmypaolini/copilot/*`, `renovate/*`.
+Only `main` is exempt. Automated prefixes are accepted: `copilot/*`,
+`dependabot/*`, `jimmypaolini/copilot/*`, `renovate/*`.
 
 ### Commit Messages
 
-Format: `<type>(<scope>): <gitmoji> <subject>` — single line only, max 128 chars.
+`<type>(<scope>): <gitmoji> <subject>` — **single line, max 128 chars.** Type and
+scope lowercase and from the tables below, gitmoji as the subject's first token,
+subject lowercase and present-imperative (`add`, not `added`), no trailing
+period.
 
-- **Type and scope** must come from the [Conventional Naming](#conventional-naming) tables, both lowercase
-- **Gitmoji required** as the first token of the subject line
-- Subject: lowercase, present-imperative mood (`add`, not `added` or `adds`), no trailing period, never empty
-- **Body and footer are forbidden**, with one exception: lines that are exactly `Co-authored-by: ...` trailers, in any casing — git and GitHub treat trailer keys case-insensitively, and the agents that write this one disagree on it. All other context goes in the subject or the PR description
-- Never list multiple changes — summarize at a higher level or split into separate commits
+**Body and footer are forbidden**, with one exception: lines that are exactly
+`Co-authored-by: ...` trailers, in any casing. Everything else goes in the
+subject or the pull request description. Never list multiple changes — summarize
+higher or split the commit.
 
-Common gitmojis: ✨ `feat` · 🐛 `fix` · 📝 `docs` · 🧪 `test` · ♻️ `refactor` · 🎨 `style` · ⚡️ `perf` · 🔧 `chore` · 👷 `ci` · 📦 `build` · ⏪ `revert`
-
-Examples:
+Common gitmojis: ✨ `feat` · 🐛 `fix` · 📝 `docs` · 🧪 `test` · ♻️ `refactor` ·
+🎨 `style` · ⚡️ `perf` · 🔧 `chore` · 👷 `ci` · 📦 `build` · ⏪ `revert`
 
 ```text
 feat(lexico): ✨ add user profile page
 fix(caelundas): 🐛 correct aspect angle calculation
-chore(dependencies): ⬆️ upgrade react to v19
-docs(codebase): 📝 update contributing guide
 ```
 
 ### Release Significance
 
-This repository squash-merges with `PR_TITLE`, so **the PR title is the only thing semantic-release ever sees** — every individual commit on the branch is discarded the moment it is squashed. `release.config.cjs`'s `releaseRules` map each type to a bump level: `feat` is `minor`; `fix`, `perf`, `refactor`, `build`, and `revert` are `patch`; `docs`, `style`, `test`, `ci`, and `chore` are `none`; a breaking change (`!` after the scope, or a `BREAKING CHANGE:` footer) is `major` regardless of type.
+This repository squash-merges with `PR_TITLE`, so **the pull request title is the
+only thing semantic-release ever sees** — every commit on the branch is discarded
+when it squashes. `release.config.cjs` maps type to bump: `feat` → minor;
+`fix`, `perf`, `refactor`, `build`, `revert` → patch; `docs`, `style`, `test`,
+`ci`, `chore` → none; a breaking change (`!` after the scope, or a
+`BREAKING CHANGE:` footer) → major regardless of type.
 
-The [pull-request-release-significance](tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts) check reads the branch's own commits and fails the pull request when the title's type is **less** release-significant than the most significant commit reachable from the branch, or when a commit uses a scope the title's scopes do not name. A title that understates its branch is not caught by anything else — `📝 Validate Pull Request Title` only checks that the title itself is well-formed.
+[pull-request-release-significance](tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts)
+fails the pull request when the title's type is **less** significant than the most
+significant commit on the branch, or when a commit uses a scope the title does
+not name. Nothing else catches a title that understates its branch — 📝 Validate
+Pull Request Title only checks that the title is well-formed.
 
-**Practical effect for an agent:** pick the type and scope for the _branch as a whole_ before committing, and keep every commit on it at or below that significance.
+**So pick the type and scope for the branch as a whole before committing**, and
+keep every commit at or below it:
 
-- Committing a `feat` while the branch (and its eventual title) is `chore` or `ci` fails this check — either retitle the pull request as `feat`, or move that commit to its own branch.
-- A branch that mixes `feat` and `fix` work is still fine — title it `feat`, since `feat` outranks `fix`. Mixing types is only a problem when a later commit is _more_ significant than the type already chosen.
-- This is also why [Work Scope](#work-scope) asks for one project or module per pull request: the fewer concerns a branch carries, the less likely it accumulates a commit that outranks the title picked at the start.
+- A `feat` commit on a branch titled `chore` fails the check — retitle the pull
+  request, or move that commit to its own branch.
+- Mixing `feat` and `fix` is fine: title it `feat`, which outranks `fix`. Only a
+  commit _more_ significant than the chosen type is a problem.
+- A commit's scope must be named by the title. A multi-scope title is allowed —
+  `feat(documentation,synchronization): …`.
+- This is why [Work Scope](#work-scope) asks for one project per pull request.
 
 ### Pull Requests
 
-PR title follows the same format as commit messages — `<type>(<scope>): <gitmoji> <subject>` — and is checked by the same commitlint configuration, so every commit-message rule above applies to it.
-
-The PR description must contain all four section headings verbatim. Validate Conventions greps for each one and fails the PR when any is missing.
-
-PR description template:
+The title follows the commit format and is checked by the same commitlint
+configuration, so every rule above applies. **The description must contain all
+four headings verbatim** — Validate Conventions greps for each one:
 
 ```markdown
+
 ## 🌰 Summary
 
 <!-- Brief description of what this PR does (1-2 sentences) -->
@@ -439,9 +428,14 @@ PR description template:
 - <!-- Link any relevant documentation or related resources like internal documentation, GitHub issues/pull requests -->
 ```
 
-Labels and assignees must also agree with the title: exactly one `type:*` label matching the title's type, exactly the `scope:*` labels named by the title's scopes with no extras, at least one assignee, and exactly one `source:*` label (`source:agent` or `source:human`) declaring who opened the pull request — this one is not derived from the title. The `do-not-merge` label blocks the pull request while it is present.
-
-The 🧑‍⚖️ Validate Conventions workflow creates any label missing from this vocabulary on `opened`/`reopened`, so a freshly opened pull request already has the labels it needs before the check runs. The vocabulary itself comes from `configuration/conventional.config.cjs`, never hard-coded elsewhere.
+**Labels and assignees must agree with the title:** exactly one `type:*` matching
+its type, exactly the `scope:*` labels its scopes name and no extras, at least
+one assignee, and exactly one `source:*` (`source:agent` or `source:human`) —
+that last one is not derived from the title. `do-not-merge` blocks the pull
+request while present. 🧑‍⚖️ Validate Conventions creates any missing label on
+`opened`/`reopened`, so a fresh pull request already has the vocabulary
+available. [create-pull-request](.agents/skills/create-pull-request/SKILL.md)
+and [submit-changes](.agents/skills/submit-changes/SKILL.md) automate all of it.
 
 ### Conventional Naming
 
@@ -540,11 +534,11 @@ Folder and file placement is a lint error, not a style preference. It is enforce
 - **Project subfolders are a fixed set**: `src/`, `testing/`, `scripts/`, `examples/`, `skills/`, `data/`, `coverage/`, `output/`, `public/`, `.vscode/`. `applications/`, `packages/`, and `tools/` themselves hold projects and nothing else — a file directly in one is a lint error.
 - **`src/` subfolders are a fixed set**: `modules/`, `components/`, `lib/`, `routes/`, `hooks/`, `styles/`, `assets/`, `executors/`, `generators/`, and `python/` — the last is allowed at any `src/` root, though only `conformetry-languages` has one, for the Python bridge it ships inside a TypeScript package.
 - **A `src/` root holds entry points and nothing else.** A file sitting directly in `src/` must be named `constants`, `index`, `main`, `repl`, or `router`, or be `main.module` or `main.utilities`, optionally with `.unit.test`, `.integration.test`, or `.end-to-end.test` before the extension. A `src/plugin.ts` entrypoint is forbidden. Anything else — a helper, a generated artifact, a `scratch.ts`, a stray `.json` — is a lint error: move it into the module that owns it under `src/modules/`, or into `src/lib/`.
-- **The Python entries are declared, not enforced.** Snake_case `*.py` and `*.ipynb` files and the `py.typed` marker are accepted at _any_ project's `src/` root, not only `affirmations`', and the same goes for the `python/` subfolder. Neither entry gates anything: ESLint lints no `.py` file in this workspace, so the rule never fires on one. They are there so the config describes the tree truthfully — and so the day a `.ts` lands beside them, it is judged rather than rejected out of hand.
+- **The Python entries are declared, not enforced.** Snake_case `*.py`/`*.ipynb` and `py.typed` are accepted at any project's `src/` root and gate nothing — ESLint lints no `.py` file here. They exist so the config describes the tree truthfully.
 - **Files inside `src/modules/<module-name>/` must be `<kebab-name>.<suffix>.<extension>`** where suffix is one of `command`, `constants`, `module`, `service`, `types`, or `utilities`, optionally with `.unit.test`, `.integration.test`, or `.end-to-end.test` before the extension. A bare `<name>.ts` inside a module folder is invalid — pick a suffix. There is deliberately no `errors` suffix: an error class lives in the `*.constants.ts` file beside the code that throws it, which the **Constant File Shape** rule permits by whitelisting `class X extends Error`.
-- **A file a framework insists on is relocated and configured, never exempted.** lexico's TanStack client entry and generated route tree both sit in `src/lib/` and are named in `vite.config.mts` as `client.entry` and `router.generatedRouteTree` — both resolved relative to `srcDirectory`, so a leading `src/` there writes to `src/src/`. The client entry is kept rather than deleted, even though TanStack supplies an identical virtual one, because it holds the workspace's only static `react-dom/client` import and without it every dependency check strips `react-dom` from the manifest and the catalog. `src/router.tsx` is the one that cannot move: TanStack resolves that entry with `required: true`. `@conformetry/nx`'s postinstall shim is `src/main.mjs` for the same reason in reverse — a `bin` has to stay a TypeScript-source entry point, so it takes an entry-point name and keeps its work in `modules/generator/`.
+- **A file a framework insists on is relocated and configured, never exempted.** lexico's TanStack entries live in `src/lib/` and are named in `vite.config.mts`; `src/router.tsx` is the one that cannot move. See [ADR 0011](docs/adr/0011-hold-one-path-law-for-every-project-type.md).
 - **A module folder is a conformance instance**, so `src/modules/<name>/` is not a dumping ground for a single relocated file: a folder holding only a `*.constants.ts` matches three module templates equally well and fails as ambiguous, and one holding only a `*.utilities.ts` fails as unmatched. Put a relocated helper in the module that already owns its concern.
-- **This file is deliberately not split by project type.** It matches paths and has no access to Nx tags, so a per-type rule would mean enumerating every project by name — a second source of truth that drifts from the tags the moment a project is added. Per-type shape is conformetry's job and is already enforced: `configuration/conformetry.config.ts` selects instances by tag (`{ patterns: ["."], tags: ["framework:nest-commander"] }`), and `conformetry-validate` gates them. The split is that **this file is the universal path and naming law** — kebab-case folders, module file suffixes, entry-point names — and **conformetry owns what a project of a given type must contain**.
+- **This file is the universal path and naming law; conformetry owns what a project of a given type must contain.** It matches paths and cannot read Nx tags, so it is deliberately not split by project type — see [ADR 0011](docs/adr/0011-hold-one-path-law-for-every-project-type.md).
 - Scaffold with a conformetry generator rather than hand-building the tree; the generators already produce this layout.
 
 Structure is judged in **one** ESLint pass, and it reaches markdown and HTML
@@ -559,7 +553,7 @@ single pass is assembled is
 
 One trap when changing any of this: **`projectStructure.cache.json` masks edits.** Delete it, and `.eslintcache/` beside it, before testing a change to `configuration/codebase-structure.json` — otherwise the edit appears to have no effect and the test proves nothing.
 
-A second trap when editing `codebase-structure.json` itself: a rule `name` is **not** a plain regex. The plugin rewrites `.` to `\.` before compiling, so dots are written unescaped — a hand-escaped `\.` becomes "literal backslash, any character" and silently stops matching — `*` is a path wildcard rather than a quantifier, and `/\{([^}]+)\}/` is read as a regex-parameter reference, so **no brace may appear in a `name`**. A literal `{{placeholder}}`, as conformetry's template folders use, has to be declared in the top-level `regexParameters` map and referenced by name.
+A second trap: a rule `name` is **not** a plain regex — dots are written unescaped, `*` is a path wildcard, and no brace may appear in one. [ADR 0011](docs/adr/0011-hold-one-path-law-for-every-project-type.md) has the details before you edit that file.
 
 ### Project Tags
 
@@ -595,27 +589,23 @@ import site with a line number, which a graph-level report cannot match. See
 
 ### TypeScript
 
-- **Strict mode enabled**: `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax`
-- **Explicit return types** required for all functions
-- **Type imports**: Use `import { type Foo } from './types'` (enforced by ESLint)
-- **File extensions in imports**: Always include `.js` extensions for relative imports (required by NodeNext resolution)
-- **No `any` types**: Use `unknown` or proper typing
-- **No non-null assertions**: Never use `!` — use optional chaining or explicit guards
-- **Readonly class properties**: Mark all never-mutated class properties as `readonly`
-- **Exhaustive switches**: All switch statements on union types must handle every member
-- **Async functions**: All functions returning `Promise` must use the `async` keyword
-- **No floating promises**: Every Promise must be awaited or explicitly `void`-annotated
-- **Consistent returns**: All code paths must uniformly return or not return a value
-- **Curly braces**: Always use `{}` for `if`/`else`/`for`/`while` — no single-line forms
-- **Early returns**: Remove `else` after a `return` — use guard clauses
-- **Object shorthand**: Use `{ name }` instead of `{ name: name }`
-- **Template literals**: Use `` `Hello ${name}` `` instead of `"Hello " + name`
-- **Max 3 function parameters**: Group extras into an options object (constructors: 12)
-- **JSDoc on public APIs**: Public functions, classes, methods, interfaces, types, and enums must have JSDoc — only when it adds non-obvious context
-- **Section comments**: Use `// 🎯 Section name` (emoji + capitalized name). Never use dash lines or ASCII art dividers. See [write-comments skill](.agents/skills/write-comments/SKILL.md).
-- **NestJS class file shape**: In `*.service.ts`, `*.command.ts`, `*.resolver.ts`, `*.dataloader.ts`, and `*.module.ts`, keep only imports and the class at top level. Move helper types/interfaces to `*.types.ts`, constants to `*.constants.ts`, and never use alias or type re-exports from class files.
+Strict everywhere: `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`,
+`verbatimModuleSyntax`. No `any` — use `unknown` or a real type. No non-null
+assertions — use optional chaining or an explicit guard. Explicit return types
+on every function. Include `.js` extensions on relative imports, which NodeNext
+resolution requires.
 
-See the [write-typescript skill](.agents/skills/write-typescript/SKILL.md) for strict mode patterns.
+**Everything else is in the [write-typescript](.agents/skills/write-typescript/SKILL.md)
+skill** and its `references/`: type imports, readonly class properties,
+exhaustive switches, floating promises, control-flow style, the 3-parameter
+limit, JSDoc on public APIs, and test typing patterns. Comment conventions —
+including the `// <emoji> <Section name>` format — are in
+[write-comments](.agents/skills/write-comments/SKILL.md).
+
+**NestJS class file shape:** in `*.service.ts`, `*.command.ts`, `*.resolver.ts`,
+`*.dataloader.ts`, and `*.module.ts`, keep only imports and the class at top
+level. Helper types go in `*.types.ts`, constants in `*.constants.ts`, and never
+use alias or type re-exports from a class file.
 
 ### Size Limits
 
@@ -635,88 +625,31 @@ Hard ESLint errors on source files. Test files (`*.test.ts`, `testing/**`) and `
 
 When a file nears 512 lines, split it along the module file suffixes (`*.types.ts`, `*.constants.ts`, another `*.service.ts`) instead of raising the limit. Never add a disable comment or edit the threshold to make a file fit.
 
-**Comment blocks are capped at 128 words**, declared as
-`comments: { maximumWords: 128 }` in
+**Comment blocks are capped at 128 words**, and shell at 256 — declared in
 [`configuration/codometer.config.ts`](configuration/codometer.config.ts) and
-enforced by codometer rather than by ESLint. It reaches **every language this
-tool measures comments in** — Python, shell, TOML, YAML, CSS, HCL, SQL, and
-TypeScript/JavaScript's non-JSDoc comments. A block is the run of comment
-lines a reader takes as one thought: a blank line ends one, a comment
-trailing a value is never part of the block above it, and a `#!` shebang is
-never a comment at all. A breach names its file and line.
+enforced by codometer rather than ESLint, so a breach names a file and line
+rather than a rule. Shell is looser because `scripts/shell/` holds command
+references whose whole body is one block documenting flags. The
+[codometer-configure](.agents/skills/codometer-configure/SKILL.md) skill covers
+how a block is delimited, which languages are measured how accurately, and the
+`documentation` budget this repository leaves unset;
+[codometer-triage](.agents/skills/codometer-triage/SKILL.md) covers a breach.
 
-It budgets **what a comment says, not how wide it is** — every linter here
-already holds a line to 80 columns, so a character budget would only restate
-it. When a block breaches, condense it or move the detail into documentation.
-
-`maximumCharacters`, `maximumLines`, and `maximumWords` are separate fields
-rather than one `maximum` steered by a `unit`, because they are not
-alternatives: a block can sit inside a line budget and outside a word one. A
-field left out is not measured, and a block is reported once per declared
-maximum. Nothing is defaulted to a number — a budget nobody wrote is one nobody
-chose.
-
-**Shell is deliberately looser at 256.** `scripts/shell/` holds command
-references — grep, netstat — whose whole body is one comment block documenting
-flags. That is a manual page, not a sprawling explanation, and condensing it
-would delete the thing the file exists for. A language's `comments` block is
-merged field by field over the top-level default, which is the same rule a
-`documentation` kind's entry follows over `documentation`'s own maxima.
-
-**JSDoc rides the same vocabulary.** `documentation` is the three maxima plus
-`kinds`, and its measurements reach the report through the same channel, so a
-JSDoc breach and a YAML one render identically and `kind` says which was
-measured. This repository sets `comments` and leaves `documentation` unset:
-gating this prose is not a reason to start gating every JSDoc comment against
-the same budget.
-
-**The budget is per block, never file-wide.** A block is one thought; a file
-holding forty well-sized comments is not the same problem as one holding a
-single essay, and a file-wide number cannot tell them apart. A `file` block can
-be added beside the block maxima to measure a whole file's comments as well —
-both are then reported — but this repository declares only the block ones.
-
-Python, YAML, CSS, and TypeScript/JavaScript's non-JSDoc comments all read from
-a real parser or tokenizer: `tokenize` inside the Python analysis subprocess,
-the `yaml` package's CST, postcss's own parse, and the TypeScript compiler's
-scanner. None of the four mistakes a comment marker inside a string literal for
-a comment. Shell, TOML, SQL, and HCL use a line scanner instead — SQL's through
-the same patterns `SqlService` already strips comments with — which cannot
-tell the two apart, exactly as those analyzers' own `comments` counters
-already cannot. CSS has only the one comment syntax; HCL is the one language
-measured with three, `#`, `//`, and `/* */` alike.
-
-Python's comments therefore depend on `uv` being present, the same way every
-other Python metric already does: an unreachable interpreter leaves them
-unmeasured rather than miscounted.
-
-**The gate is `codebase:codometer`**, whose `check` runs `--check limits` over
-the whole repository — the same shape as `codebase:codependix:check`, and the
-shape `codebase:callidescope` used to have before depth gating moved to the
-per-project `gate` target. It reads no output destination and writes nothing,
-which is what makes it safe on a branch; `write` still publishes the README
-badges on main. Report staleness is deliberately not checked, because every
-branch would fail it for being behind rather than for anything it did.
-
-It runs through the root project's `make-projects`, so 👷 Make Projects gates it
-alongside every project's own `codometer`. It is **not** named in 🧑‍💻 Lint
-Codebase the way `codependix` and callidescope's `gate` are, and the two of
-those answer the same question two ways: `codependix` exists only on the root
-project, so naming it costs one task, while `gate` fans out over every project
-and is named there regardless, because it reads source and needs no build.
-`codometer` is the one that does both — every project declares it, and each has
-to compile before it can be measured — so naming it there would wait on every
-build in the workspace. The root run is also the only one that reaches the
-workflows under `.github/`, which belong to no project.
+**Compiled size is gated per project** by each `codometer.config.ts`, and
+`codebase:codometer` gates the repository-wide limits. Both run through
+`make-projects` rather than 🧑‍💻 Lint Codebase, because a project has to compile
+before it can be measured.
 
 ### Formatting and Ordering
 
-Formatting is not a judgement call — `lint-codebase --configuration=write` produces the canonical result. Write code in the shape below so the first pass is a no-op.
+Formatting is not a judgement call — `lint-codebase --configuration=write`
+produces the canonical result, using `oxfmt` rather than prettier. Import groups
+and broad alphabetical ordering are enforced, and cross-project imports use the
+workspace package name rather than a relative path.
 
-- **`oxfmt` is the formatter** (not prettier): 80-column print width, 2-space indent, double quotes, semicolons, trailing commas everywhere, LF endings, one JSX attribute per line.
-- **Import groups** (`perfectionist/sort-imports`): builtin → external → internal (`@codebase/*`) → parent → sibling → index → type, with exactly one blank line between groups and natural alphabetical order inside each group.
-- **Alphabetical order is enforced** for named imports and exports, object literals, object types, interfaces, enums, union and intersection types, switch cases, class members, JSX props, `Map`/`Set` entries, and top-level module declarations. Object literals partition on blank lines and comments, so a blank line starts a fresh sorted run.
-- **Cross-project imports use the workspace package name.** `import/no-relative-packages` is an error and `import/no-relative-parent-imports` warns; inside a project, prefer relative paths over path aliases.
+The exact settings, the seven import groups, everything alphabetical order
+reaches, and the `exports`-map trap are in
+[write-typescript](.agents/skills/write-typescript/references/formatting-and-ordering.md).
 
 ### Testing
 
@@ -730,66 +663,58 @@ nx run <project>:vitest:integration # Database validation
 nx affected --target=vitest         # Only changed projects
 ```
 
-Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vitest lint rules also require `it` over `test`, `vi` over `vitest`, `describe.each`/`it.each` over hand-rolled loops, and no `.only`, `.skip`, or commented-out tests.
+Test files live beside the code they cover. Vitest lint rules require `it` over
+`test`, `vi` over `vitest`, `describe.each`/`it.each` over hand-rolled loops, and
+no `.only`, `.skip`, or commented-out tests.
 
 #### Coverage Gates
 
-- **Test coverage: 96%** for branches, functions, lines, and statements (`configuration/vitest.config.ts`, v8 provider). New code needs tests in the same change to keep a project above the line.
-- **Type coverage** is per project, declared as `typeCoverage.atLeast` in that project's `package.json` — most packages sit at 100 with `strict: true`. The workspace root is the exception: its 95 is a `--at-least` flag on the root `type-coverage` target in `project.json`, not a manifest field. Run `type-coverage` alongside `typecheck` for any touched project that defines the target; passing `typecheck` alone proves nothing about this gate.
-- **Duplication**: not a gate, and no longer measured by anything scheduled. `jscpd` and `fallow-duplicates` both remain as targets to run by hand — `nx run codebase:jscpd` and `nx run codebase:fallow-duplicates` — and both are advisory: the `jscpd` target ends in `|| true`, and nothing in CI invokes either one. The 6% threshold in `configuration/jscpd.config.json` and `configuration/fallow.config.jsonc` is what those manual runs report against, not a bar a pull request has to clear. It sat at 5.9% when the last scheduled caller was removed. Extract a shared helper rather than copying a block because it is the better code, not because a check will stop you.
-- **Bundle size** is per project, enforced by the `codometer` target, which builds first and measures the compiled output. Every project carries a `codometer.config.ts` that imports the shared configuration object from `configuration/codometer.config.ts` and spreads it, exactly the way its `eslint.config.ts` spreads the base config beside it. A project gating its compiled size declares that limit and its own build glob in its own file, spreading `compiledJavaScriptTarget` for everything the glob does not say; a project that emits nothing declares no target at all and is gated by nothing. `nx run codometer-cli:start -- configuration --limits` lists every limit the workspace declares and the file each is written in, which is how to read them as a set now that no one table holds them. `lexico` and `lexico-components` additionally override `targets`, because one measures four partitions of its build and the other a library bundle. Breaching one fails 👷 Make Projects, and the `## ⏲️ Codometer` section names the project. That section is rendered by `nx run codometer-cli:start -- changes` from the `codometer-report.json` each project's run leaves behind, diffed by `codometer-changes` and rendered by `codometer-output`.
-- Lowering a threshold to make a change pass is not an option — fix the code.
+Four numbers, and **passing one proves nothing about the others**:
 
-See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for patterns.
+| Gate | Threshold | Where it is declared |
+| ---- | --------- | -------------------- |
+| Test coverage | 96% branches, functions, lines, statements | `configuration/vitest.config.ts` |
+| Type coverage | Per project, most at 100 | that project's `package.json` (`typeCoverage.atLeast`) |
+| Compiled size | Per project, only where something is emitted | that project's `codometer.config.ts` |
+| Duplication | **Not a gate** — advisory, nothing in CI runs it | `configuration/jscpd.config.json` |
+
+**Lowering a threshold to make a change pass is not an option — fix the code.**
+
+Type coverage is the one most often skipped, because `typecheck` passing looks
+like the same assurance and is not. Run both for any touched project that
+defines the target. A compiled-size breach fails 👷 Make Projects and names the
+project in the `## ⏲️ Codometer` section of the pull request.
+
+The [testing-strategy](.agents/skills/testing-strategy/SKILL.md) skill covers all
+four gates and the patterns for raising coverage;
+[codometer-configure](.agents/skills/codometer-configure/SKILL.md) covers
+declaring a size limit and reading the workspace's as a set.
 
 ### Build Output and Publishing
 
-**Every build writes into its own project's `dist/`** — `packages/logger/dist`,
-`applications/caelundas/dist` — never a top-level `dist/`. That is what lets one
-path be correct in both places a manifest is read: the workspace resolves a
-package through its own directory, and a published tarball is that same
-directory. `dist` is already in `.gitignore` and in the folder-structure rule's
-`ignorePatterns`, so nothing has to be taught about it per project.
-
-**`configuration/tsconfig.json` sets `declaration: true`**, so every build emits
-`.d.ts` beside its `.js`. Nothing consumed declarations before they existed, so
-turning this off again silently removes the types a published package ships.
-
-**A package's `main`, `types`, and `exports` deliberately still point at
-TypeScript sources**, and `publishConfig` carries the emitted paths beside them.
-pnpm applies those overrides at publish time, so one manifest serves both
-readers: the workspace and the Nx plugins load source, while a published
-consumer gets `./dist/src/index.js` with declarations beside it. Verify a change
-here by packing rather than by reading — run `pnpm pack` in the package and
-inspect the tarball's `package.json`.
-
-This split is not stylistic. **`@conformetry/nx` and `@callidescope/nx` are
-registered in `nx.json`, and Nx loads them while it builds the project graph —
-before any target can run.** Between them they pull in 18 workspace packages,
-`@codebase/logger` included. Point any of those at built output and the graph
-cannot load until they are built, and they cannot be built without the graph.
-Only `publishConfig` escapes that circularity, which is why the real fields stay
-on source.
-
-Two further details worth knowing before changing this:
-
-- **pnpm applies only a known set of `publishConfig` fields** — `main`, `types`,
-  `exports`, and `bin` among them. `executors`, `generators`, and `nx` are not,
-  so the two Nx plugins keep those at the top level and list the JSON files they
-  name in `files`.
-- **`files` must name `dist`.** With no explicit `files`, packing falls back to
-  the ignore files, and `dist` is gitignored — the tarball would ship no build
-  output at all.
+- **Every build writes into its own project's `dist/`** — `packages/logger/dist`,
+  `applications/caelundas/dist` — never a top-level one. `dist` is already
+  gitignored and in the folder-structure rule's `ignorePatterns`.
+- **`configuration/tsconfig.json` sets `declaration: true`**, so every build
+  emits `.d.ts` beside its `.js`. Turning it off silently removes the types a
+  published package ships.
+- **A package's `main`, `types`, and `exports` point at TypeScript sources**, and
+  `publishConfig` carries the emitted `dist/` paths beside them — pnpm applies
+  those at publish time, so one manifest serves the workspace and a published
+  consumer. **Verify a change here by packing, not by reading:** `pnpm pack` in
+  the package, then inspect the tarball's `package.json`.
+- **`files` must name `dist`.** Without it, packing falls back to the ignore
+  files and the tarball ships no build output at all.
 - **A plugin entry's `resolvePluginService` must stay a static import.** A
   dynamic `import()` escapes the `@swc-node/register` require hook into Node's
-  own ESM resolver, which cannot load this workspace's extensionless TypeScript
-  sources, and `nx g` then fails with `Cannot find module
+  own ESM resolver, and `nx g` then fails with `Cannot find module
   './modules/plugin/plugin-context.utilities'`.
-- **Do not try to shrink that plugin closure.** Trimming the entries'
-  re-exports, or pointing `main`/`exports` at `dist/`, has been measured and
-  buys nothing — and the latter actively breaks `oxfmt` (which reorders
-  order-sensitive `exports` conditions), `fallow-dead-code`, and `vitest`. See
-  [ADR 0009](docs/adr/0009-keep-manifest-fields-on-typescript-sources.md).
+
+Why the manifest fields stay on sources, which `publishConfig` fields pnpm
+actually applies, and why shrinking the Nx plugin closure buys nothing is
+[ADR 0009](docs/adr/0009-keep-manifest-fields-on-typescript-sources.md). **Do
+not point `main` or `exports` at `dist/`** — it deadlocks the plugin graph load
+and breaks `fallow-dead-code` and `vitest`.
 
 ## Agent Context
 
@@ -805,8 +730,8 @@ Two further details worth knowing before changing this:
 ### Session Hooks
 
 Four checks run at the start of every agent session and inject their failure as
-additional context, so the agent fixes the problem before writing any code. Both
-harnesses run the same scripts under `scripts/git/`:
+additional context. **Fix what they report before writing any code** — each one
+names the problem and the command that repairs it.
 
 | Script                                  | Checks                                                                                                |
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
@@ -815,14 +740,7 @@ harnesses run the same scripts under `scripts/git/`:
 | `validate-session-gh-authentication.sh` | The active `gh` account plus Projects access                                                          |
 | `validate-session-skills.sh`            | Every skill declared in `skills-lock.json` is present; directs the agent to `codebase:install-skills` |
 
-The skills check is a backstop. Now that every skill is committed, a checkout
-holds them all and the check stays silent; it fires only when a skill folder is
-genuinely absent — deleted locally, or newly added to `skills-lock.json` by
-`skills update` and not yet materialized. It reports rather than restores,
-because harnesses register skills when a session starts, so restoring from the
-hook would still not expose them to the session already underway.
-
-Each script is registered twice — once per harness — and both registrations point
+Each script is registered twice, once per harness, and both registrations point
 at the same file:
 
 | Harness        | Registration                                      |
@@ -830,42 +748,12 @@ at the same file:
 | Claude Code    | `SessionStart` entries in `.claude/settings.json` |
 | GitHub Copilot | `sessionStart` entries in `.github/hooks/*.json`  |
 
-The two harnesses read different JSON shapes, so the scripts pipe their message
-through `scripts/git/emit-session-hook-context.sh`, which emits
-`hookSpecificOutput.additionalContext` when `CLAUDE_PROJECT_DIR` is set and a
-top-level `additionalContext` otherwise. Remediation text also branches on
-`CI`/`GITHUB_ACTIONS`: cloud agents are told to re-run
-`copilot-setup-steps.yml`, local agents are given the `git config` and
-`gh auth login` commands they can run themselves.
-
-The signing smoke test never opens a pinentry, so a hook can fail but never hang:
-CI signs through a `loopback` wrapper, and local agents sign through a `cancel`
-wrapper that uses an already-cached passphrase and errors out in milliseconds
-when there is none. A cancelled pinentry is reported as inconclusive rather than
-as broken signing, because the following real commit prompts for the passphrase
-normally.
-
-The gh check reads the token the session will really send, which is not the one
-a bare hook shell sees. A hook runs in a non-interactive shell that never sources
-a shell profile, so `GH_TOKEN` and `GITHUB_TOKEN` are absent even when every
-terminal in the session exports them, and `gh` silently falls back to its keyring
-account — whose token is scoped for the browser login flow and carries no
-`read:project`. Three things keep the check honest about which credential it is
-judging:
-
-- **It asks the login shell for the token** when neither variable is in the
-  environment, fencing the value in markers so a profile that prints a banner
-  cannot corrupt it. CI passes the token in explicitly and never asks.
-- **`gh auth status` runs with `--active`**, because it otherwise tests every
-  account in the keyring and fails when any one of them has a problem — including
-  accounts no gh command in the session would ever use.
-- **Only CI escalates to `gh auth login --with-token`.** That path deletes
-  `~/.config/gh/hosts.yml` and rewrites the git credential helper, which is fine
-  on a throwaway runner and destructive on a machine that already holds a working
-  keyring account. Locally a bad token is reported, not repaired.
-
-When adding a session check, add the script under `scripts/git/`, emit through
-the shared emitter, and register it in both places.
+When adding a check: put the script under `scripts/git/`, emit through
+`scripts/git/emit-session-hook-context.sh` so both harnesses can read it, and
+register it in both places. Why the credential checks resolve the session's own
+token and signing configuration rather than the hook shell's, and why a hook can
+fail but never hang, is
+[ADR 0010](docs/adr/0010-judge-the-credentials-a-session-really-uses.md).
 
 ### Instructions
 
@@ -993,11 +881,6 @@ Add a skill rather than reintroducing an agent file.
 - You have access to the Nx MCP server and its tools, use them to help the user
 - For Nx plugin best practices, check `node_modules/@nx/<plugin>/PLUGIN.md`. Not all plugins have this file - proceed without it if unavailable.
 - NEVER guess CLI flags - always check nx_docs or `--help` first when unsure
-- **This workspace has no `test` target.** The `nx-*` skills are installed from
-  [nrwl/nx](https://github.com/nrwl/nx) and their examples use the conventional
-  `nx run-many -t test`, which fails here. Read `test` as `vitest` — or
-  `pytest` for a `language:python` project — and see
-  [Testing](#testing) for the real target names.
 
 ## Scaffolding & Generators
 
@@ -1010,6 +893,15 @@ Add a skill rather than reintroducing an agent file.
 - The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
 
 <!-- nx configuration end-->
+
+<!-- Hand-written, and deliberately outside the Nx-managed block above:
+     anything between those markers is regenerated and would be lost. -->
+
+- **This workspace has no `test` target.** The `nx-*` skills are installed from
+  [nrwl/nx](https://github.com/nrwl/nx) and their examples use the conventional
+  `nx run-many -t test`, which fails here. Read `test` as `vitest` — or
+  `pytest` for a `language:python` project — and see
+  [Testing](#testing) for the real target names.
 
 <!-- OPENWIKI:START -->
 
