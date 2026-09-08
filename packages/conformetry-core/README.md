@@ -315,14 +315,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2368-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-86.93_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2371-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-87.11_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-8-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-37-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-12.37_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-12.45_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -348,7 +348,7 @@ graph LR
 ![Imports](https://img.shields.io/badge/Imports-86-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-53-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-169-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-383-475569?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-386-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
