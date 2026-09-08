@@ -41,13 +41,12 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       includeTests: false,
     },
     exclude: [],
+    excludeCallees: [],
     excludeFrom: [],
-    ignoreCallees: [],
     limits: {
       maximumDepth: 6,
     },
-    output: {
-      format: "markdown",
+    write: {
       json: undefined,
       markdown: undefined,
       mermaid: undefined,

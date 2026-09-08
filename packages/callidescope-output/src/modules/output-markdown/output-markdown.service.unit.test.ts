@@ -31,7 +31,7 @@ function buildDestination(
     path: filePath,
     render: undefined,
     startMarker: "<!-- CALL_STACKS_START -->",
-    write: undefined,
+    writeBlock: undefined,
     ...overrides,
   };
 }
@@ -369,16 +369,16 @@ describe(OutputMarkdownService, () => {
   // 🔌 Custom writers
 
   it("defers to a configured writer", async () => {
-    const write = vi.fn<WriteMarkdownOutput>(() => true);
+    const writeBlock = vi.fn<WriteMarkdownOutput>(() => true);
 
     subject.sync({
       check: false,
       content: "body",
-      destination: buildDestination(await temporaryPath(), { write }),
+      destination: buildDestination(await temporaryPath(), { writeBlock }),
       result,
     });
 
-    expect(write).toHaveBeenCalledTimes(1);
+    expect(writeBlock).toHaveBeenCalledTimes(1);
   });
 
   it("passes a configured writer's verdict straight through", async () => {
@@ -387,7 +387,7 @@ describe(OutputMarkdownService, () => {
         check: true,
         content: "body",
         destination: buildDestination(await temporaryPath(), {
-          write: () => false,
+          writeBlock: () => false,
         }),
         result,
       }),
@@ -401,7 +401,7 @@ describe(OutputMarkdownService, () => {
       check: false,
       content: "body",
       destination: buildDestination(filePath, {
-        write: (args) => args.helpers.syncAnchoredBlock(),
+        writeBlock: (args) => args.helpers.syncAnchoredBlock(),
       }),
       result,
     });
@@ -418,7 +418,7 @@ describe(OutputMarkdownService, () => {
       check: false,
       content: "body",
       destination: buildDestination(await temporaryPath(), {
-        write: (args) => {
+        writeBlock: (args) => {
           wrapped = args.helpers.wrapInAnchors("mine");
 
           return true;
@@ -437,7 +437,7 @@ describe(OutputMarkdownService, () => {
       check: false,
       content: "body",
       destination: buildDestination(await temporaryPath(), {
-        write: (args) => {
+        writeBlock: (args) => {
           wrapped = args.helpers.wrapInAnchors();
 
           return true;
@@ -456,7 +456,8 @@ describe(OutputMarkdownService, () => {
       check: false,
       content: "body",
       destination: buildDestination(filePath, {
-        write: (args) => args.helpers.syncAnchoredBlock({ content: "mine" }),
+        writeBlock: (args) =>
+          args.helpers.syncAnchoredBlock({ content: "mine" }),
       }),
       result,
     });
@@ -471,7 +472,7 @@ describe(OutputMarkdownService, () => {
       check: false,
       content: "body",
       destination: buildDestination(await temporaryPath(), {
-        write: (args) => {
+        writeBlock: (args) => {
           markers = `${args.helpers.startMarker}|${args.helpers.endMarker}`;
 
           return true;
@@ -490,7 +491,8 @@ describe(OutputMarkdownService, () => {
       check: false,
       content: "body",
       destination: buildDestination(await temporaryPath(), {
-        write: (args) => args.helpers.syncAnchoredBlock({ path: override }),
+        writeBlock: (args) =>
+          args.helpers.syncAnchoredBlock({ path: override }),
       }),
       result,
     });

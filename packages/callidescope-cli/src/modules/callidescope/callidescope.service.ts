@@ -296,7 +296,7 @@ export class CallidescopeService {
     const { breadthMeasurement, condensed, graph, measurement } =
       this.graphAssemblyService.assemble({
         callablesById: args.callablesById,
-        ignoreCallees: args.configuration.ignoreCallees,
+        excludeCallees: args.configuration.excludeCallees,
         includeConstructorEdges: INCLUDE_CONSTRUCTOR_EDGES,
         workspaceRoot: args.workspaceRoot,
       });
@@ -384,7 +384,7 @@ export class CallidescopeService {
       await this.discoverCallables(args);
     const { graph } = this.graphAssemblyService.assemble({
       callablesById: collection.byId,
-      ignoreCallees: args.configuration.ignoreCallees,
+      excludeCallees: args.configuration.excludeCallees,
       includeConstructorEdges: INCLUDE_CONSTRUCTOR_EDGES,
       workspaceRoot: args.workspaceRoot,
     });

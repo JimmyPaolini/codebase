@@ -16,7 +16,7 @@ export const FOREIGN_ANCHOR_PATTERN = /<!--\s*[A-Z0-9_]+_START\s*-->/;
 export class MissingMarkdownPathError extends Error {
   constructor() {
     super(
-      "No markdown path to write to. Set output.markdown.path, pass --markdown, or give syncAnchoredBlock a path of its own.",
+      "No markdown path to write to. Set write.markdown.path, pass --markdown, or give syncAnchoredBlock a path of its own.",
     );
     this.name = "MissingMarkdownPathError";
   }

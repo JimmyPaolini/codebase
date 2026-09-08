@@ -4,6 +4,7 @@ import path from "node:path";
 import { CallidescopeService } from "@callidescope/cli";
 import {
   ConfigurationService,
+  DEFAULT_OUTPUT_FORMAT,
   DEFAULT_RUN_HEADING,
 } from "@callidescope/configuration";
 import { FileFilterService } from "@callidescope/graph";
@@ -469,15 +470,12 @@ export class PluginService {
    * fails — see `judge` for why that is the one exemption.
    */
   public async runTrace(args: RunTraceArguments): Promise<RunTraceResult> {
-    const { configuration: loaded, path: loadedPath } =
+    const { configuration, path: loadedPath } =
       await this.runConfigurationService.load(args);
-    const configuration = {
-      ...loaded,
-      output: {
-        ...loaded.output,
-        format: args.format ?? loaded.output.format,
-      },
-    };
+    // Presentation rather than declared: the console format is a
+    // per-invocation choice this executor's own flag makes, never something
+    // a configuration file writes down.
+    const format = args.format ?? DEFAULT_OUTPUT_FORMAT;
 
     const outcome = await this.callidescopeService.trace({
       configuration,
@@ -499,7 +497,7 @@ export class PluginService {
       limits: outcome.projectLimits,
       previewCount:
         this.runConfigurationService.readPreviewCount(configuration),
-      rendering: configuration.output.format === "mermaid" ? "diagram" : "tree",
+      rendering: format === "mermaid" ? "diagram" : "tree",
       result: outcome.result,
     });
     const explanation = this.explainVerdict(verdict);

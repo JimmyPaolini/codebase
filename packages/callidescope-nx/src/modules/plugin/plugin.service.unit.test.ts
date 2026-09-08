@@ -23,7 +23,6 @@ import type { TraceOutcome } from "@callidescope/cli";
 import type {
   CallGraphResult,
   CallGraphSummary,
-  CallidescopeOutputFormat,
   DeepStackFinding,
   ProjectLimits,
   ProjectLimitsLookup,
@@ -487,15 +486,12 @@ describe(PluginService, () => {
       args: {
         callableCount?: number;
         deepStacks?: DeepStackFinding[];
-        format?: CallidescopeOutputFormat;
         wideCallables?: WideCallableFinding[];
       } = {},
     ): void {
       configurationService.loadConfigurationFile.mockResolvedValue({
         authored: {},
-        configuration: createMock<ResolvedCallidescopeConfiguration>({
-          output: { format: args.format ?? "markdown" },
-        }),
+        configuration: createMock<ResolvedCallidescopeConfiguration>(),
         path: undefined,
       });
       stubOutcome({
@@ -591,7 +587,7 @@ describe(PluginService, () => {
     it("draws the stacks rather than printing them for the mermaid format", async () => {
       expect.hasAssertions();
 
-      stubTrace({ format: "mermaid" });
+      stubTrace();
 
       await service.runTrace({
         directories: ["packages/alpha"],

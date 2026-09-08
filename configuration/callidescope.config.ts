@@ -185,7 +185,6 @@ export const workspaceLimits = {
  *   open this example" table, for an agent handed a failing run.
  */
 const callidescopeConfiguration: CallidescopeConfiguration = {
-  excludeFrom: ["configuration/.callidescopeignore"],
   /**
    * `LoggerService` sits behind nearly every other callable in this
    * repository. A call to it is a fact about instrumentation, not about
@@ -193,8 +192,10 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
    * every other callable's depth and breadth on a change that has nothing
    * to do with them.
    */
-  ignoreCallees: ["LoggerService.*"],
-  output: {
+  excludeCallees: ["LoggerService.*"],
+  excludeFrom: ["configuration/.callidescopeignore"],
+  limits: workspaceLimits,
+  write: {
     /**
      * The workspace-scope block in the repository's own README.
      *
@@ -233,7 +234,6 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
      */
     projectReadmes: {},
   },
-  limits: workspaceLimits,
 };
 
 export default callidescopeConfiguration;

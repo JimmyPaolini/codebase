@@ -116,7 +116,7 @@ describe(RunConfigurationService, () => {
       expect(
         service.readPreviewCount(
           createMock<ResolvedCallidescopeConfiguration>({
-            output: { projectReadmes: { previewCount: 7 } },
+            write: { projectReadmes: { previewCount: 7 } },
           }),
         ),
       ).toBe(7);
@@ -127,7 +127,7 @@ describe(RunConfigurationService, () => {
 
       expect(
         service.readPreviewCount(
-          createMock<ResolvedCallidescopeConfiguration>({ output: {} }),
+          createMock<ResolvedCallidescopeConfiguration>({ write: {} }),
         ),
       ).toBe(DEFAULT_PREVIEW_COUNT);
     });

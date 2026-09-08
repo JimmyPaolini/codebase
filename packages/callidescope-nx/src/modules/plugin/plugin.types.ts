@@ -85,7 +85,7 @@ export interface RunTraceArguments {
   /** Resolved from this plugin's `nx.json` registration when omitted. */
   readonly configurationPath?: string | undefined;
   readonly directories: readonly string[];
-  /** Overrides the configured format. The configured one when omitted. */
+  /** What the run prints. Defaults to markdown when omitted. */
   readonly format?: CallidescopeOutputFormat | undefined;
   /**
    * The projects whose findings decide the verdict.
