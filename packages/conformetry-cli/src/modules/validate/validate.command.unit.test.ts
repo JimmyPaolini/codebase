@@ -130,7 +130,7 @@ describe(ValidateCommand, () => {
     vi.mocked(templateDiscoveryService.collectTemplates).mockReturnValue([
       TEMPLATE,
     ]);
-    vi.mocked(validationService.validate).mockResolvedValue({
+    vi.mocked(validationService.validate).mockReturnValue({
       checkedPaths: [],
       fileResults: [],
       ok: true,
@@ -317,7 +317,7 @@ describe(ValidateCommand, () => {
     });
 
     it("names the unmatched instances in the failure message", async () => {
-      vi.mocked(validationService.validate).mockResolvedValue({
+      vi.mocked(validationService.validate).mockReturnValue({
         checkedPaths: [],
         fileResults: [],
         ok: false,
@@ -358,7 +358,7 @@ describe(ValidateCommand, () => {
     });
 
     it("fails the command when an instance does not conform", async () => {
-      vi.mocked(validationService.validate).mockResolvedValue({
+      vi.mocked(validationService.validate).mockReturnValue({
         checkedPaths: [],
         fileResults: [
           {

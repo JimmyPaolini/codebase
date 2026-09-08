@@ -3,11 +3,11 @@ import path from "node:path";
 import { InstanceDiscoveryService } from "@conformetry/configuration";
 import { RunnerService } from "@conformetry/core";
 import { FilesService } from "@conformetry/files";
+import { LanguagesService } from "@conformetry/languages";
 import { Injectable } from "@nestjs/common";
 
 import { ValidationDeduplicationService } from "./validation-deduplication.service";
 import { ValidationFindingsService } from "./validation-findings.service";
-import { ValidationLanguagesService } from "./validation-languages.service";
 import { ValidationScoringService } from "./validation-scoring.service";
 
 import type {
@@ -33,10 +33,10 @@ export class ValidationService {
   constructor(
     private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly filesService: FilesService,
+    private readonly languagesService: LanguagesService,
     private readonly runnerService: RunnerService,
     private readonly validationDeduplicationService: ValidationDeduplicationService,
     private readonly validationFindingsService: ValidationFindingsService,
-    private readonly validationLanguagesService: ValidationLanguagesService,
     private readonly validationScoringService: ValidationScoringService,
   ) {}
 
@@ -128,10 +128,12 @@ export class ValidationService {
    * Instances that matched no template are reported alongside the content
    * differences rather than skipped, so one report covers both "this file is
    * wrong" and "conformetry cannot tell what this path was generated from".
+   *
+   * Synchronous, because resolving the languages was the only step that ever
+   * waited on anything: they were imported on demand, and now they are
+   * injected.
    */
-  public async validate(
-    args: RunValidationArguments,
-  ): Promise<RunValidationResult> {
+  public validate(args: RunValidationArguments): RunValidationResult {
     const { matched, unmatched } = this.instanceDiscoveryService.matchInstances(
       {
         instances: args.instances,
@@ -140,11 +142,8 @@ export class ValidationService {
     );
     const validators = this.selectValidators({
       languageNames: args.languageNames,
-      validators: await this.validationLanguagesService.resolveValidators({
+      validators: this.languagesService.resolveValidators({
         extensions: this.readTemplateExtensions(matched),
-        ...(args.loadLanguageModule === undefined
-          ? {}
-          : { loadLanguageModule: args.loadLanguageModule }),
       }),
     });
     const groups: InstanceFileResults[] = matched.map((instance) => {

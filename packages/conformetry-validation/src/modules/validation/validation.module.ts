@@ -5,38 +5,39 @@ import {
   ScoringModule,
 } from "@conformetry/core";
 import { FilesModule } from "@conformetry/files";
+import { LanguagesModule } from "@conformetry/languages";
 import { Module } from "@nestjs/common";
 
 import { ValidationDeduplicationService } from "./validation-deduplication.service";
 import { ValidationFindingsService } from "./validation-findings.service";
-import { ValidationLanguagesService } from "./validation-languages.service";
 import { ValidationScoringService } from "./validation-scoring.service";
 import { ValidationService } from "./validation.service";
 
 /**
- * Orchestrates a validation run across the language validators it is given.
+ * Orchestrates a validation run across the languages it resolves.
  *
- * No language package is imported here. The caller decides which languages it
- * has installed and passes their validators to `validate`, so a consumer that
- * only checks TypeScript never pulls in the rest.
+ * `LanguagesModule` is imported rather than the languages being handed in:
+ * every run needs the Fallback, so there was never a run that carried fewer
+ * than all of them.
  */
 @Module({
   controllers: [],
   exports: [
     InstanceDiscoveryModule,
     FilesModule,
+    LanguagesModule,
     RunnerModule,
     ReportingModule,
     ScoringModule,
     ValidationDeduplicationService,
     ValidationFindingsService,
-    ValidationLanguagesService,
     ValidationScoringService,
     ValidationService,
   ],
   imports: [
     InstanceDiscoveryModule,
     FilesModule,
+    LanguagesModule,
     RunnerModule,
     ReportingModule,
     ScoringModule,
@@ -44,7 +45,6 @@ import { ValidationService } from "./validation.service";
   providers: [
     ValidationDeduplicationService,
     ValidationFindingsService,
-    ValidationLanguagesService,
     ValidationScoringService,
     ValidationService,
   ],
