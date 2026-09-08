@@ -3,6 +3,17 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { OutputPathService } from "./output-path.service";
 
+import type { LatticeAddress } from "../lattice-identification/lattice-identification.types";
+
+/** A stand-in lattice address, exactly as `LatticeIdentificationService.identifyDocument` would return one. */
+const ADDRESS: LatticeAddress = {
+  address: "6r5c-63335c635ccc69ccca399a333",
+  canonicalIdentifier: "63335c635ccc69ccca399a333",
+  identifier: "63335c635ccc69ccca399a333",
+  rows: 6,
+  span: 5,
+};
+
 describe(OutputPathService, () => {
   let service: OutputPathService;
 
@@ -98,6 +109,40 @@ describe(OutputPathService, () => {
           type: "branch",
         }),
       ).toBe("branch/5-rows/stagger-branches-4-6-repeats.svg");
+    });
+
+    describe("given a lattice address", () => {
+      // 🎯 `FILENAME_ADDRESS_CONVENTION` declares `branch` full-address:
+      // its own worst-case address holds comfortably under 255 bytes, so
+      // nothing stands between a reader and the literal address.
+      it("appends the full address for a family whose addresses fit", () => {
+        expect(
+          service.build({ repeatCount: 6, rows: 5, type: "branch" }, ADDRESS),
+        ).toBe(
+          "branch/5-rows/plain-6-repeats-6r5c-63335c635ccc69ccca399a333.svg",
+        );
+      });
+
+      // 🎯 `boxes` is declared shape-only: its `spin-flip` mode alone
+      // breaches 255 bytes at deep row counts, so every one of its
+      // filenames carries the shape rather than the literal address, with
+      // no hexadecimal identifier at all.
+      it("appends the shape alone for a family whose addresses do not fit", () => {
+        expect(
+          service.build({ repeatCount: 8, rows: 5, type: "boxes" }, ADDRESS),
+        ).toBe("boxes/5-rows/plain-8-repeats-6r5c.svg");
+      });
+
+      it("appends nothing when no address is given, so mosaic's own filenames stay exactly as committed", () => {
+        expect(
+          service.build({
+            repeatCount: 6,
+            rows: 6,
+            subFamily: "dots",
+            type: "mosaic",
+          }),
+        ).toBe("mosaic/6-rows/dots-6-repeats.svg");
+      });
     });
   });
 

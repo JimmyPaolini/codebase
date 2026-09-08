@@ -1,7 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
-import { UNMODIFIED_VARIANT_NAME } from "./svg-rendering.constants";
+import {
+  FILENAME_ADDRESS_CONVENTION,
+  UNMODIFIED_VARIANT_NAME,
+} from "./svg-rendering.constants";
 
+import type { LatticeAddress } from "../lattice-identification/lattice-identification.types";
 import type {
   GenerationParameters,
   MeanderType,
@@ -15,14 +19,25 @@ import type {
  *
  * The attributes are split across the path rather than crammed into one
  * name: the family and the row count are directories, and only what is left
- * — the variant and the repeat count — is the filename. A directory listing
- * therefore reads as the parameter space it enumerates, and no two distinct
- * parameter sets can still share a path.
+ * — the variant, the repeat count, and its lattice address where one is
+ * given — is the filename. A directory listing therefore reads as the
+ * parameter space it enumerates, and no two distinct parameter sets can
+ * still share a path.
  *
  * Both of `DrawCommand`'s modes build their paths here — the sweep and the
  * single drawing alike — so a hand-named drawing lands exactly where the
  * sweep would have put it, and `DrawPermutationsService` composes its own
  * tile directories on top of {@link familyDirectory} for the same reason.
+ *
+ * {@link build}'s `address` is a caller-supplied parameter rather than
+ * something recovered here, because reaching one needs the rendered
+ * document and the family's own repeat unit — `DrawCommand.renderParameters`
+ * is where both already sit side by side. Omitting it leaves a filename
+ * exactly as it was before this feature existed, which is what every
+ * `mosaic` caller does: that family already files its committed drawings
+ * under a full address through `DrawPermutationsService`, spelled directly
+ * into the filename rather than appended here, and `MotifPitchService` has
+ * no motif to probe for a pitch of its own.
  */
 @Injectable()
 export class OutputPathService {
@@ -35,6 +50,21 @@ export class OutputPathService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * What one family's lattice address is called in a filename: the literal
+   * address under `full-address`, or the row-and-span shape alone under
+   * `shape-only` — `-12r42c`, with no hexadecimal identifier, for a family
+   * whose worst-case address would breach the 255-byte limit on its own.
+   *
+   * `FILENAME_ADDRESS_CONVENTION` decides which, per family rather than per
+   * drawing, so nothing here chooses a convention on the fly.
+   */
+  private addressSuffix(type: MeanderType, address: LatticeAddress): string {
+    return FILENAME_ADDRESS_CONVENTION[type] === "full-address"
+      ? `-${address.address}`
+      : `-${address.rows}r${address.span}c`;
+  }
 
   /**
    * The leaf filename: the variant that was drawn, then the repeat count it
@@ -118,11 +148,28 @@ export class OutputPathService {
 
   // 🌎 Public Methods
 
-  /** The path one drawing is written to, relative to the output directory. */
-  build(parameters: GenerationParameters): string {
+  /**
+   * The path one drawing is written to, relative to the output directory.
+   *
+   * `address` is optional and appends nothing when it is left out — the
+   * shape every path had before this feature existed, which is what every
+   * `mosaic` caller keeps. Given one, it is appended to the filename ahead
+   * of the extension, in whichever of the two spellings
+   * {@link addressSuffix} reads off `FILENAME_ADDRESS_CONVENTION` for
+   * `parameters.type`.
+   */
+  build(parameters: GenerationParameters, address?: LatticeAddress): string {
     const directory = this.familyDirectory(parameters.type, parameters.rows);
+    const fileName = this.fileName(parameters);
 
-    return `${directory}/${this.fileName(parameters)}`;
+    if (!address) {
+      return `${directory}/${fileName}`;
+    }
+
+    const suffix = this.addressSuffix(parameters.type, address);
+    const addressedFileName = fileName.replace(/\.svg$/u, `${suffix}.svg`);
+
+    return `${directory}/${addressedFileName}`;
   }
 
   /**

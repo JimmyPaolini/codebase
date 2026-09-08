@@ -9,6 +9,7 @@ import { LatticeIdentificationModule } from "../lattice-identification/lattice-i
 import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
+import { MotifPitchService } from "../meander-generation/motif-pitch.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
@@ -31,6 +32,8 @@ import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
 import { DrawCommand } from "./draw.command";
 import { COLUMN_SPAN_PATTERN } from "./draw.constants";
+
+import type { LatticeAddress } from "../lattice-identification/lattice-identification.types";
 
 const { mockMkdir, mockWriteFile } = vi.hoisted(() => ({
   mockMkdir: vi
@@ -58,8 +61,33 @@ vi.mock("node:fs/promises", () => ({
  */
 const FULL_SWEEP_TIMEOUT_MILLISECONDS = 120_000;
 
+/**
+ * A fixed lattice address stood in for real identification everywhere below
+ * but "real generation integration": `meanderGenerationService.generate` is
+ * mocked to the same fixture text for every combination there, which no row
+ * count could really be read at, so `identifyDocument` is spied to return
+ * this instead of parsing it. Real identification is exercised by "real
+ * generation integration" against real, per-combination documents.
+ */
+const MOCKED_ADDRESS: LatticeAddress = {
+  address: "3r2c-56a9",
+  canonicalIdentifier: "56a9",
+  identifier: "56a9",
+  rows: 3,
+  span: 2,
+};
+
+/**
+ * The suffix `MOCKED_ADDRESS` carries in a shape-only family's filename —
+ * every named-type combination this suite asserts an exact filename for is
+ * one, so the full-address spelling is exercised only by "real generation
+ * integration" and by `output-path.service.unit.test.ts`.
+ */
+const MOCKED_SHAPE_SUFFIX = "-3r2c";
+
 describe(DrawCommand, () => {
   let command: DrawCommand;
+  let latticeIdentificationService: LatticeIdentificationService;
   let meanderGenerationService: MeanderGenerationService;
 
   beforeAll(async () => {
@@ -73,6 +101,10 @@ describe(DrawCommand, () => {
         {
           provide: MeanderGenerationService,
           useValue: createMock<MeanderGenerationService>(),
+        },
+        {
+          provide: MotifPitchService,
+          useValue: createMock<MotifPitchService>(),
         },
         OutputPathService,
         GridGeometryService,
@@ -98,6 +130,9 @@ describe(DrawCommand, () => {
     }).compile();
 
     command = await module.resolve(DrawCommand);
+    latticeIdentificationService = await module.resolve(
+      LatticeIdentificationService,
+    );
     meanderGenerationService = await module.resolve(MeanderGenerationService);
   });
 
@@ -106,6 +141,12 @@ describe(DrawCommand, () => {
     mockWriteFile.mockClear();
     vi.mocked(meanderGenerationService.generate).mockReturnValue(
       "<svg>fixture</svg>\n",
+    );
+    // 🎯 The fixture above is not a document any row count could really be
+    // read at, so identification is stood in for rather than exercised —
+    // see `MOCKED_ADDRESS`.
+    vi.spyOn(latticeIdentificationService, "identifyDocument").mockReturnValue(
+      MOCKED_ADDRESS,
     );
   });
 
@@ -124,6 +165,10 @@ describe(DrawCommand, () => {
         {
           provide: MeanderGenerationService,
           useValue: createMock<MeanderGenerationService>(),
+        },
+        {
+          provide: MotifPitchService,
+          useValue: createMock<MotifPitchService>(),
         },
         OutputPathService,
         GridGeometryService,
@@ -290,7 +335,9 @@ describe(DrawCommand, () => {
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/1-columns/00000-dots.svg"',
       );
-      expect(index?.[1]).toContain('src="boxes/3-rows/spin-8-repeats.svg"');
+      expect(index?.[1]).toContain(
+        `src="boxes/3-rows/spin-8-repeats${MOCKED_SHAPE_SUFFIX}.svg"`,
+      );
     });
 
     it("generates every combination through the shared generation service", async () => {
@@ -346,10 +393,10 @@ describe(DrawCommand, () => {
         .mock.calls.map(([filePath]) => filePath);
 
       expect(writtenFilePaths).toContainEqual(
-        "custom-batch-output/boxes/3-rows/plain-6-repeats.svg",
+        `custom-batch-output/boxes/3-rows/plain-6-repeats${MOCKED_SHAPE_SUFFIX}.svg`,
       );
       expect(writtenFilePaths).toContainEqual(
-        "custom-batch-output/boxes/3-rows/spin-8-repeats.svg",
+        `custom-batch-output/boxes/3-rows/spin-8-repeats${MOCKED_SHAPE_SUFFIX}.svg`,
       );
     });
 
@@ -371,6 +418,14 @@ describe(DrawCommand, () => {
             useValue: createMock<OutputPathService>({
               build: () => collidingPath,
             }),
+          },
+          {
+            provide: LatticeIdentificationService,
+            useValue: createMock<LatticeIdentificationService>(),
+          },
+          {
+            provide: MotifPitchService,
+            useValue: createMock<MotifPitchService>(),
           },
           DrawCombinationsService,
           GridGeometryService,
@@ -416,7 +471,7 @@ describe(DrawCommand, () => {
         recursive: true,
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
-        "output/boxes/5-rows/plain-8-repeats.svg",
+        `output/boxes/5-rows/plain-8-repeats${MOCKED_SHAPE_SUFFIX}.svg`,
         "<svg>fixture</svg>\n",
       );
     });
@@ -448,7 +503,7 @@ describe(DrawCommand, () => {
         type: "boxes",
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
-        "output/boxes/5-rows/spin-4-repeats.svg",
+        `output/boxes/5-rows/spin-4-repeats${MOCKED_SHAPE_SUFFIX}.svg`,
         "<svg>fixture</svg>\n",
       );
     });
@@ -491,7 +546,7 @@ describe(DrawCommand, () => {
         type: "parallel",
       });
       expect(mockWriteFile).toHaveBeenCalledWith(
-        "output/parallel/6-rows/plied-strands-3-6-repeats.svg",
+        `output/parallel/6-rows/plied-strands-3-6-repeats${MOCKED_SHAPE_SUFFIX}.svg`,
         "<svg>fixture</svg>\n",
       );
     });

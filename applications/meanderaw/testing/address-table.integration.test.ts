@@ -48,6 +48,18 @@ const temporaryTable = async (contents?: string): Promise<string> => {
   return tablePath;
 };
 
+/**
+ * How long booting the application context and addressing the whole
+ * committed corpus is given: the same two minutes the charter sweep's own
+ * `CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS` allows, and for the same
+ * reason. 9,863 drawings, each read off disk and really identified, sits
+ * well past vitest's ten-second default on its own, and beside this
+ * project's other full-sweep files on a cold cache it passed thirty
+ * seconds — so the headroom is what stops a green suite failing for load
+ * rather than for a wrong address.
+ */
+const CORPUS_ADDRESSING_TIMEOUT_MILLISECONDS = 120_000;
+
 // 🧪 Tests
 
 describe("the lattice address table", () => {
@@ -61,7 +73,7 @@ describe("the lattice address table", () => {
     } finally {
       await services.close();
     }
-  });
+  }, CORPUS_ADDRESSING_TIMEOUT_MILLISECONDS);
 
   describe("addressing the committed corpus", () => {
     it("addresses every committed drawing", () => {
