@@ -537,6 +537,17 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 
 ### Conventional Naming
 
+`configuration/conventional.config.cjs` is the only source of this vocabulary,
+and **both tables below are generated from it** — as are the copies in
+[`CONTRIBUTING.md`](CONTRIBUTING.md), `.vscode/settings.json`, the issue
+template, and the five naming skills. Do not hand-edit a table between its
+`types-` or `scopes-` markers; add the type or scope to the configuration and
+run the synchronizer, which `nx affected` gates:
+
+```bash
+pnpm exec nx run synchronization:conventional-config:write
+```
+
 #### Types
 
 <!-- types-start -->
