@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import {
   CALLIDESCOPE_OUTPUT_FORMATS,
+  DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_OUTPUT_FORMAT,
 } from "../configuration/configuration.constants";
 
@@ -40,8 +41,10 @@ import type {
  * format is validated and handed back beside the configuration rather than
  * written into it. Every other flag is an override, so each replaces exactly
  * the field it names and leaves every neighboring field as the configuration
- * wrote it. `--config` never reaches this call at all: it chooses the file the
- * rest are resolved against.
+ * wrote it — including whatever resolution folded into that field, which is
+ * why `--exclude` keeps the default globs rather than the six of them being
+ * neighbors it discards. `--config` never reaches this call at all: it chooses
+ * the file the rest are resolved against.
  *
  * Every configured field has such an override, save one. `excludeFrom` names
  * the ignore files a run reads, which is what the run *is* rather than a value
@@ -197,6 +200,31 @@ export class FlagResolutionService {
         flagged: flags.includeTests,
       }),
     };
+  }
+
+  /**
+   * Reads `--exclude` the way the configured field beside it is read: over the
+   * top of the globs no repository wants traced, never instead of them.
+   *
+   * `exclude` is the one list resolution does not hand back as written —
+   * `resolveExclude` folds `DEFAULT_EXCLUDE_GLOBS` into it, so the array
+   * arriving here is the authored globs plus six directories nobody chose.
+   * Replacing that array wholesale, as every other list flag rightly does with
+   * its own field, therefore threw away the defaults too: `--exclude src/**`
+   * traced `node_modules` and `dist`. So the flag overrides what the
+   * configuration *authored* and the same additive resolution is re-run over
+   * it, which is what makes `--exclude` and an authored `exclude` mean the
+   * same thing.
+   */
+  private resolveExclude(args: {
+    configured: string[];
+    flagged: readonly string[] | undefined;
+  }): string[] {
+    if (args.flagged === undefined || args.flagged.length === 0) {
+      return args.configured;
+    }
+
+    return [...new Set([...DEFAULT_EXCLUDE_GLOBS, ...args.flagged])];
   }
 
   // A deliberate misspelling: the example of a `--format` value nobody
@@ -420,7 +448,7 @@ export class FlagResolutionService {
           errors,
           flags,
         }),
-        exclude: this.resolveList({
+        exclude: this.resolveExclude({
           configured: configuration.exclude,
           flagged: flags.exclude,
         }),

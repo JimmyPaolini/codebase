@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { DEFAULT_EXCLUDE_GLOBS } from "../configuration/configuration.constants";
 import { ConfigurationService } from "../configuration/configuration.service";
 
 import { FlagResolutionService } from "./flag-resolution.service";
@@ -164,9 +165,12 @@ describe(FlagResolutionService, () => {
     {
       expectation: (resolved): void => {
         expect(resolved.errors).toStrictEqual([]);
-        expect(resolved.configuration.exclude).toStrictEqual(["src/**"]);
+        expect(resolved.configuration.exclude).toStrictEqual([
+          ...DEFAULT_EXCLUDE_GLOBS,
+          "src/**",
+        ]);
       },
-      flag: "--exclude, overriding the configured globs",
+      flag: "--exclude, overriding the authored globs and keeping the defaults",
       flags: { exclude: ["src/**"] },
     },
     {
@@ -266,6 +270,30 @@ describe(FlagResolutionService, () => {
     const resolved = resolve({ flags: { directories: [] } });
 
     expect(resolved.configuration.directories).toStrictEqual(["packages/one"]);
+  });
+
+  it("keeps the default exclusions through an exclude override", () => {
+    // The defect this exists for: `--exclude` replaced the resolved array,
+    // which is the authored globs *and* the six directories no repository
+    // wants traced, so narrowing the exclusions quietly started tracing
+    // `node_modules` and `dist`.
+    const resolved = resolve({ flags: { exclude: ["src/**"] } });
+
+    expect(resolved.configuration.exclude).toStrictEqual([
+      ...DEFAULT_EXCLUDE_GLOBS,
+      "src/**",
+    ]);
+  });
+
+  it("names a default exclusion once when the flag repeats it", () => {
+    const resolved = resolve({
+      flags: { exclude: ["**/dist/**", "src/**"] },
+    });
+
+    expect(resolved.configuration.exclude).toStrictEqual([
+      ...DEFAULT_EXCLUDE_GLOBS,
+      "src/**",
+    ]);
   });
 
   it("keeps a configured indentation through a JSON path override", () => {

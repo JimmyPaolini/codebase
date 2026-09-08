@@ -193,7 +193,7 @@ package, in `FlagResolutionService`, under one rule:
 | `--directories` | Override | Replaces `directories` when it named any. An empty value is absent, not a scope |
 | `--entry-point-addresses` | Override | Replaces `entryPoints.addresses` when it named any |
 | `--entry-point-decorators` | Override | Replaces `entryPoints.decorators` when it named any |
-| `--exclude` | Override | Replaces `exclude` when it named any |
+| `--exclude` | Override | Replaces the **authored** `exclude` when it named any, and the default globs are folded back in — resolution adds them to a configured `exclude` too, so a flag that dropped them would start tracing `node_modules` |
 | `--exclude-callees` | Override | Replaces `excludeCallees` when it named any |
 | `--include-exported-functions` | Override | Replaces `entryPoints.includeExportedFunctions`. Takes `true` or `false`, or the flag alone for `true` |
 | `--include-orphans` | Override | Replaces `entryPoints.includeOrphans`, the same way |
