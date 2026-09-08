@@ -366,6 +366,11 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
+    "packages/conformetry-languages": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      project: "src/**/*.ts",
+    },
     "packages/conformetry-markdown": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],

@@ -604,6 +604,15 @@ export default [
               ],
               sourceTag: "name:conformetry-jupyter",
             },
+            // One rule for every Language, because they are one package: the
+            // Languages sit in `conformetry-languages` and reach only the
+            // leaf. Jupyter's delegation to JSON, markdown, and Python is an
+            // intra-package import, which neither this rule nor codependix
+            // polices — accepted, and recorded as such.
+            {
+              onlyDependOnLibsWithTags: ["name:conformetry-core"],
+              sourceTag: "name:conformetry-languages",
+            },
             {
               onlyDependOnLibsWithTags: [
                 "name:conformetry-configuration",
@@ -611,6 +620,7 @@ export default [
                 "name:conformetry-files",
                 "name:conformetry-json",
                 "name:conformetry-jupyter",
+                "name:conformetry-languages",
                 "name:conformetry-markdown",
                 "name:conformetry-python",
                 "name:conformetry-text",
