@@ -81,6 +81,9 @@ export default [
       "**/.pytest_cache/**",
       "**/.mypy_cache/**",
       "**/.ruff_cache/**",
+      // Agent scratch space — gitignored (`.superpowers/sdd/.gitignore` is a
+      // bare `*`) and never source, the same reason as the Python caches above
+      "**/.superpowers/**",
       "**/vite.config.*.timestamp*",
       "**/vitest.config.*.timestamp*",
       "CHANGELOG.md",
