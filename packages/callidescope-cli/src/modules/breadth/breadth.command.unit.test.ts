@@ -200,6 +200,7 @@ describe(BreadthCommand, () => {
   it("rejects a run whose address could not be resolved", async () => {
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -217,6 +218,7 @@ describe(BreadthCommand, () => {
   it("fails when the resolved id was not among the traced callables", async () => {
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -243,6 +245,7 @@ describe(BreadthCommand, () => {
 
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located,
       workspaceRoot: "/workspace",
     });
@@ -298,6 +301,7 @@ describe(BreadthCommand, () => {
     ]);
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -331,6 +335,7 @@ describe(BreadthCommand, () => {
     vi.spyOn(inputService, "promptForAutocompleteMultiselect");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -354,6 +359,7 @@ describe(BreadthCommand, () => {
     vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -382,6 +388,7 @@ describe(BreadthCommand, () => {
     vi.spyOn(inputService, "promptForSelect");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -467,6 +474,7 @@ describe(BreadthCommand, () => {
     located.callablesById.set("a.ts#0", callable);
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located,
       workspaceRoot: "/workspace",
     });
@@ -496,6 +504,7 @@ describe(BreadthCommand, () => {
   it("explains an address that resolved to nothing without a stated problem", async () => {
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });

@@ -199,6 +199,7 @@ describe(DepthCommand, () => {
   it("rejects a run whose address could not be resolved", async () => {
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -218,6 +219,7 @@ describe(DepthCommand, () => {
 
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located,
       workspaceRoot: "/workspace",
     });
@@ -266,6 +268,7 @@ describe(DepthCommand, () => {
     ]);
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -299,6 +302,7 @@ describe(DepthCommand, () => {
     vi.spyOn(inputService, "promptForAutocompleteMultiselect");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -322,6 +326,7 @@ describe(DepthCommand, () => {
     vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -350,6 +355,7 @@ describe(DepthCommand, () => {
     vi.spyOn(inputService, "promptForSelect");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -428,6 +434,7 @@ describe(DepthCommand, () => {
 
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located,
       workspaceRoot: "/workspace",
     });
@@ -468,6 +475,7 @@ describe(DepthCommand, () => {
   it("prints nothing when any one of several addresses does not resolve", async () => {
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });
@@ -493,6 +501,7 @@ describe(DepthCommand, () => {
   it("explains an address that resolved to nothing without a stated problem", async () => {
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
+      format: "markdown",
       located: buildLocated(),
       workspaceRoot: "/workspace",
     });

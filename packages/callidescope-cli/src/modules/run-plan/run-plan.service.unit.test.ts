@@ -1,4 +1,7 @@
-import { ConfigurationService } from "@callidescope/configuration";
+import {
+  ConfigurationService,
+  FlagResolutionService,
+} from "@callidescope/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -84,6 +87,7 @@ describe(RunPlanService, () => {
     const module = await Test.createTestingModule({
       providers: [
         RunPlanService,
+        FlagResolutionService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
@@ -449,6 +453,7 @@ describe(RunPlanService, () => {
 
       const subject = new RunPlanService(
         configurationService,
+        new FlagResolutionService(),
         createMock<LoggerService>(),
       );
 
@@ -475,6 +480,7 @@ describe(RunPlanService, () => {
 
       const subject = new RunPlanService(
         configurationService,
+        new FlagResolutionService(),
         createMock<LoggerService>(),
       );
 
