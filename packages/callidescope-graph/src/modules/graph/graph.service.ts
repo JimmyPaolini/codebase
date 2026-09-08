@@ -7,8 +7,8 @@ import type { CallableId } from "@callidescope/configuration";
 /**
  * Assembles the resolved edges into a graph indexed in both directions.
  *
- * Callers are indexed as well as callees because the misplaced-callable finding
- * is entirely a question about who calls something, and answering it from an
+ * Callers are indexed as well as callees because addressing one callable asks
+ * who calls it as often as it asks what it calls, and answering that from an
  * index costs nothing once the edges exist.
  */
 @Injectable()
