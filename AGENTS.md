@@ -194,7 +194,7 @@ override the skill's generic defaults:
 - **[callidescope-cli](packages/callidescope-cli)**: Command-line host that traces call stacks through injected dependencies and flags the ones that are too deep
 - **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
 - **[callidescope-examples](packages/callidescope-examples)**: Runnable examples of the callidescope toolchain — a small codebase built to be traced, with one example per rule, finding, and output
-- **[callidescope-graph](packages/callidescope-graph)**: Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
+- **[callidescope-graph](packages/callidescope-graph)**: Builds the call graph from traced TypeScript source and measures its depth and breadth
 - **[callidescope-nx](packages/callidescope-nx)**: Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets, scoped through the Nx dependency graph — the only callidescope package that knows Nx exists
 - **[callidescope-output](packages/callidescope-output)**: Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **[codependix-boundaries](packages/codependix-boundaries)**: Builds each level's graph for a workspace, judges it against the declared rules, and reports the edges and cycles that break them
@@ -281,9 +281,8 @@ same thing for any workspace:
 
 Callidescope traces call stacks through the edges a file-at-a-time reader cannot
 see — an injected dependency, a structurally satisfied interface, a callback
-handed to `map` — and flags the stacks that are too deep, the callables that
-reach too widely, and the ones declared in the wrong module. Its behavior is
-documented in
+handed to `map` — and flags the stacks that are too deep and the callables that
+reach too widely. Its behavior is documented in
 [`packages/callidescope-cli/README.md`](packages/callidescope-cli/README.md) and
 every configuration field in
 [`packages/callidescope-configuration/README.md`](packages/callidescope-configuration/README.md).
