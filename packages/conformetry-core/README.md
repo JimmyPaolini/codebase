@@ -191,27 +191,15 @@ graph LR
   conformetry_core["conformetry-core"]
   conformetry_examples["conformetry-examples"]
   conformetry_files["conformetry-files"]
-  conformetry_json["conformetry-json"]
-  conformetry_jupyter["conformetry-jupyter"]
   conformetry_languages["conformetry-languages"]
-  conformetry_markdown["conformetry-markdown"]
   conformetry_nx["conformetry-nx"]
-  conformetry_python["conformetry-python"]
-  conformetry_text["conformetry-text"]
-  conformetry_typescript["conformetry-typescript"]
   conformetry_validation["conformetry-validation"]
   conformetry_cli --> conformetry_core
   conformetry_configuration --> conformetry_core
   conformetry_examples --> conformetry_core
   conformetry_files --> conformetry_core
-  conformetry_json --> conformetry_core
-  conformetry_jupyter --> conformetry_core
   conformetry_languages --> conformetry_core
-  conformetry_markdown --> conformetry_core
   conformetry_nx --> conformetry_core
-  conformetry_python --> conformetry_core
-  conformetry_text --> conformetry_core
-  conformetry_typescript --> conformetry_core
   conformetry_validation --> conformetry_core
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_core subject
