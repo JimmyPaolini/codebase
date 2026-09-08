@@ -16,25 +16,12 @@ import {
  * never this object directly.
  *
  * A project's own `callidescope.config.ts` writes only the limits it overrides
- * — `limits: { maximumDepth: 10 }`, and nothing beside it. **Never spread this
- * object into one.** `spreadThreshold` is a limit only a workspace may set, and
- * a project file carrying it is refused outright before anything is traced.
- *
- * Writing the override alone drops nothing. `ProjectConfigurationService`
- * resolves each limit on its own, falling back to the workspace's number per
- * limit rather than per object, so a project that names one keeps every other
- * one it inherits. And a spread has nothing left to contribute anyway:
- * `maximumDepth` and `maximumBreadth` are the only two limits a project may
- * set, so it would supply exactly the field being overridden, plus the one that
- * gets the file rejected.
- *
- * `codometer.config.ts`'s `compiledJavaScriptTarget`, beside this file in this
- * directory, is a precedent that does not transfer, and reasoning from it is
- * what once wrote this rule inverted. That object is a target: one element of a
- * list, `Omit`-typed because it is deliberately incomplete, with no per-field
- * fallback anywhere behind it. A project replacing it wholesale really does
- * lose every counter it did not restate, which is what lexico did. A limit is
- * neither a list element nor incomplete, and does have that fallback.
+ * — `limits: { maximumDepth: 10 }`, and nothing beside it. Writing the
+ * override alone drops nothing: `ProjectConfigurationService` resolves each
+ * limit on its own, falling back to the workspace's number per limit rather
+ * than per object, so a project that names one keeps the other. A spread has
+ * nothing left to contribute anyway, `maximumDepth` and `maximumBreadth` being
+ * the only two limits there are.
  *
  * A project's file also carries no type annotation, and so no import of
  * `CallidescopeConfiguration`. An `import type` is still an Nx dependency
@@ -101,12 +88,7 @@ import {
  * (`packages/callidescope-nx/src/modules/plugin/plugin.service.ts:353`).
  *
  * Still exported although nothing imports it, because a rule needs a name to
- * be about, and narrowing it to the one limit a project may override was
- * considered and rejected — that leaves an object whose only member every
- * reader of it immediately replaces.
- * `packages/callidescope-cli/testing/workspace-limits.integration.test.ts`
- * fails if the workspace-only limit ever leaves this object, so the
- * prohibition above cannot quietly stop being true.
+ * be about.
  */
 export const workspaceLimits = {
   /**
@@ -158,7 +140,6 @@ export const workspaceLimits = {
    * code, which is the trade this comment exists to refuse.
    */
   maximumDepth: 17,
-  spreadThreshold: 4,
 } satisfies CallidescopeLimits;
 
 /**
@@ -191,7 +172,7 @@ export const workspaceLimits = {
  * this run, because its fixtures exist to breach the limits set here.
  *
  * - `packages/callidescope-examples/README.md` — how to read a stack, and how
- *   to act on a depth, module-spread, or misplaced-callable finding.
+ *   to act on a depth or breadth finding.
  * - `packages/callidescope-examples/AGENTS.md` — a "callidescope reported X →
  *   open this example" table, for an agent handed a failing run.
  */

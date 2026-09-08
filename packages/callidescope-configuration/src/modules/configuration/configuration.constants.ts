@@ -4,7 +4,6 @@ import { z } from "zod";
 
 import type {
   CallidescopeConfiguration,
-  CallidescopeLimits,
   RenderMarkdownOutput,
   WriteMarkdownOutput,
 } from "./configuration.types";
@@ -47,15 +46,6 @@ export const SUPPORTED_CONFIGURATION_EXTENSIONS = new Set([
  */
 export const REPOSITORY_ROOT_MARKERS = [".git", "pnpm-workspace.yaml"] as const;
 
-/** The subdirectory a module identifier is derived from, unless configured. */
-export const DEFAULT_MODULES_DIRECTORY = "modules";
-
-/**
- * Identifier used for a file sitting directly under the source root, unless
- * configured.
- */
-export const DEFAULT_ROOT_MODULE_SEGMENT = "src";
-
 /** Directories no repository wants traced, kept out even when unmentioned. */
 export const DEFAULT_EXCLUDE_GLOBS = [
   "**/.conformetry/**",
@@ -73,52 +63,6 @@ export const DEFAULT_EXCLUDE_GLOBS = [
  * point, so a resolver calling a service calling a repository is three.
  */
 export const DEFAULT_MAXIMUM_DEPTH = 6;
-
-/**
- * Distinct modules a callable's transitive callees may touch before it is
- * reported as doing too many unrelated things.
- */
-export const DEFAULT_SPREAD_THRESHOLD = 4;
-
-/**
- * Modules a callable must call *directly* before spread is reported.
- *
- * Transitive spread alone flags every entry point, because an entry point
- * legitimately reaches the whole program. Requiring direct breadth as well is
- * what isolates the callable personally orchestrating unrelated concerns.
- */
-export const DEFAULT_DIRECT_SPREAD_THRESHOLD = 3;
-
-/**
- * Concrete implementations one interface member may resolve to before the call
- * is recorded as unresolved instead.
- *
- * This is the tool's primary noise control. A structurally matched member named
- * `run` or `sync` otherwise matches dozens of unrelated classes and manufactures
- * a call-stack depth that no execution ever takes.
- */
-export const DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES = 8;
-
-/**
- * Callers a callable needs before its placement is judged.
- *
- * One caller is not evidence of where something belongs; it is evidence that
- * only one thing needs it yet.
- */
-export const DEFAULT_MINIMUM_CALLERS = 2;
-
-/**
- * Share of a callable's callers that must sit in one foreign module before the
- * callable is reported as misplaced.
- */
-export const DEFAULT_CALLER_MAJORITY_RATIO = 0.8;
-
-/** Globs whose callables are exempt from the module-spread finding. */
-export const DEFAULT_ALLOW_SPREAD_FOR = [
-  "**/*.command.ts",
-  "**/*.module.ts",
-  "**/main.ts",
-] as const;
 
 /** Decorators whose methods a framework invokes, making them stack roots. */
 export const DEFAULT_ENTRY_POINT_DECORATORS = [
@@ -173,16 +117,18 @@ export const DEFAULT_MARKDOWN_END_MARKER = "<!-- CALL_STACKS_END -->";
 
 // 🔒 Project Configuration
 
-/** Writes a list of names as an English sentence fragment. */
-const joinFieldNames = (names: readonly string[]): string => {
-  const last = names.at(-1);
-
-  if (last === undefined || names.length === 1) {
-    return last ?? "";
-  }
-
-  return `${names.slice(0, -1).join(", ")}, and ${last}`;
-};
+/**
+ * Writes a list of names as an English sentence fragment.
+ *
+ * `Intl.ListFormat` rather than a hand-rolled join, because the empty and
+ * single-name cases a hand-rolled one has to guard are unreachable here — the
+ * list comes from a record with three permitted fields in it — so the guards
+ * would be branches no test could ever take.
+ */
+const FIELD_LIST_FORMAT = new Intl.ListFormat("en", {
+  style: "long",
+  type: "conjunction",
+});
 
 /**
  * Every run-level field, and whether a project's own configuration may set it.
@@ -196,41 +142,20 @@ const joinFieldNames = (names: readonly string[]): string => {
  *
  * Every field marked `forbidden` names where a run reads from, where it writes
  * to, or how it partitions the workspace — decisions one project cannot make
- * differently from the run tracing it. `limits` is `delegated` because it is
- * neither: its members are judged one at a time below.
+ * differently from the run tracing it. `limits` is permitted whole: both of its
+ * two members are a project's own to gate itself against, and a member that is
+ * neither of those two is refused by the schema before this check is reached.
  */
 export const PROJECT_CONFIGURATION_FIELD_PERMISSIONS = {
-  allowSpreadFor: "forbidden",
   directories: "forbidden",
   entryPoints: "permitted",
   exclude: "permitted",
   excludeFrom: "forbidden",
   ignoreCallees: "forbidden",
-  limits: "delegated",
+  limits: "permitted",
   output: "forbidden",
-  workspaceStructure: "forbidden",
 } as const satisfies Record<
   keyof CallidescopeConfiguration,
-  "delegated" | "forbidden" | "permitted"
->;
-
-/**
- * Every limit, and whether a project's own configuration may set it.
- *
- * `maximumDepth` and `maximumBreadth` are the two a project gates itself
- * against. Every other limit shapes how the call graph itself is built, which
- * has to stay one answer for the whole workspace.
- */
-export const PROJECT_CONFIGURATION_LIMIT_PERMISSIONS = {
-  callerMajorityRatio: "forbidden",
-  directSpreadThreshold: "forbidden",
-  maximumBreadth: "permitted",
-  maximumDepth: "permitted",
-  maximumImplementationCandidates: "forbidden",
-  minimumCallers: "forbidden",
-  spreadThreshold: "forbidden",
-} as const satisfies Record<
-  keyof CallidescopeLimits,
   "forbidden" | "permitted"
 >;
 
@@ -248,13 +173,6 @@ export const PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES = new Set(
     .map(([field]) => field),
 );
 
-/** The limits a project may set, looked up the same way and for the reason. */
-export const PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES = new Set(
-  Object.entries(PROJECT_CONFIGURATION_LIMIT_PERMISSIONS)
-    .filter(([, permission]) => permission === "permitted")
-    .map(([limit]) => limit),
-);
-
 /**
  * The fields named in a refusal, so an agent can fix a project configuration
  * without opening the docs.
@@ -262,12 +180,9 @@ export const PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES = new Set(
  * Derived from the permissions above rather than written out, so the sentence
  * a refusal prints cannot come to disagree with the rule that produced it.
  */
-export const PROJECT_CONFIGURATION_PERMITTED_FIELDS = joinFieldNames([
-  ...PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES,
-  ...[...PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES].map(
-    (limit) => `limits.${limit}`,
-  ),
-]);
+export const PROJECT_CONFIGURATION_PERMITTED_FIELDS = FIELD_LIST_FORMAT.format(
+  PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES,
+);
 
 /** Raised when a configuration file has an extension nothing can read. */
 export class UnknownConfigurationFileTypeError extends Error {
@@ -289,15 +204,17 @@ const callbackSchema = <TCallback>(): z.ZodType<TCallback> =>
     message: "Expected a function",
   });
 
+/**
+ * The two limits a configuration may declare.
+ *
+ * Strict rather than stripping: a limit this tool no longer has is a fact
+ * about the file that wrote it, and silently discarding the key would leave a
+ * configuration author believing a number is in force that nothing reads.
+ */
 const limitsSchema = z
-  .object({
-    callerMajorityRatio: z.number().gt(0).max(1).optional(),
-    directSpreadThreshold: z.number().int().positive().optional(),
+  .strictObject({
     maximumBreadth: z.number().int().positive().optional(),
     maximumDepth: z.number().int().positive().optional(),
-    maximumImplementationCandidates: z.number().int().positive().optional(),
-    minimumCallers: z.number().int().positive().optional(),
-    spreadThreshold: z.number().int().positive().optional(),
   })
   .optional();
 
@@ -353,16 +270,8 @@ const outputSchema = z
   })
   .optional();
 
-const workspaceStructureSchema = z
-  .object({
-    modulesDirectory: z.string().optional(),
-    rootModuleSegment: z.string().optional(),
-  })
-  .optional();
-
 /** Validates the shape of a callidescope configuration file. */
 export const callidescopeConfigurationSchema = z.object({
-  allowSpreadFor: z.array(z.string()).optional(),
   directories: z.array(z.string()).optional(),
   entryPoints: entryPointsSchema,
   exclude: z.array(z.string()).optional(),
@@ -370,7 +279,6 @@ export const callidescopeConfigurationSchema = z.object({
   ignoreCallees: z.array(z.string()).optional(),
   limits: limitsSchema,
   output: outputSchema,
-  workspaceStructure: workspaceStructureSchema,
 });
 
 // 🚨 Errors

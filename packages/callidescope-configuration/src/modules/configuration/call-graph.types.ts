@@ -62,7 +62,6 @@ export interface CallableNode {
   readonly kind: CallableKind;
   readonly location: SourceLocation;
   readonly memberName: string;
-  readonly moduleId: ModuleId;
   readonly projectName: string;
   readonly statementCount: number;
 }
@@ -103,12 +102,9 @@ export interface CallEdge {
 /** Everything one callidescope run produced. */
 export interface CallGraphResult {
   readonly deepStacks: readonly DeepStackFinding[];
-  readonly misplacedCallables: readonly MisplacedCallableFinding[];
-  readonly moduleSpreads: readonly ModuleSpreadFinding[];
   /** One report per project traced, in the order projects were discovered. */
   readonly projects: readonly ProjectReport[];
   readonly summary: CallGraphSummary;
-  readonly typeDepths: readonly TypeDepthSummary[];
   readonly wideCallables: readonly WideCallableFinding[];
 }
 
@@ -171,34 +167,6 @@ export type EntryPointKind =
   | "module-bootstrap"
   | "orphan-root";
 
-/** A callable whose callers nearly all live in one other module. */
-export interface MisplacedCallableFinding {
-  readonly callerCount: number;
-  readonly displayName: string;
-  readonly foreignCallerCount: number;
-  readonly homeModuleId: ModuleId;
-  readonly id: CallableId;
-  readonly location: SourceLocation;
-  readonly suggestedModuleId: ModuleId;
-}
-
-/**
- * The unit cohesion is measured in: `<project>:<subtree>`, for example
- * `codometer-cli:modules/typescript`.
- */
-export type ModuleId = string;
-
-/** A callable whose callees span many unrelated modules. */
-export interface ModuleSpreadFinding {
-  readonly depth: number;
-  readonly directModuleIds: readonly ModuleId[];
-  readonly displayName: string;
-  readonly id: CallableId;
-  readonly location: SourceLocation;
-  readonly statementCount: number;
-  readonly transitiveSpread: number;
-}
-
 /**
  * Everything one project contributed to a run.
  *
@@ -208,13 +176,10 @@ export interface ModuleSpreadFinding {
 export interface ProjectReport {
   /** Every callable with at least one direct callee. */
   readonly callableBreadths: readonly CallableBreadthReport[];
-  readonly misplacedCallables: readonly MisplacedCallableFinding[];
-  readonly moduleSpreads: readonly ModuleSpreadFinding[];
   readonly projectName: string;
   /** Every stack that makes at least one call, deepest first. */
   readonly stacks: readonly CallStack[];
   readonly summary: CallGraphSummary;
-  readonly typeDepths: readonly TypeDepthSummary[];
 }
 
 /** Where a declaration or a call site sits. */
@@ -236,15 +201,6 @@ export interface StackFrame {
   readonly location: SourceLocation;
   /** Absent when the checker could not resolve a signature. */
   readonly signature: CallableSignature | undefined;
-}
-
-/** Depth range across the members of one class, reported as context. */
-export interface TypeDepthSummary {
-  readonly maximumDepth: number;
-  readonly memberCount: number;
-  readonly minimumDepth: number;
-  readonly moduleId: ModuleId;
-  readonly typeName: string;
 }
 
 /**
