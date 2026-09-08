@@ -89,6 +89,15 @@ callidescope-examples/
   infers a project from a nested one, after which a `tsconfig.json` and a
   `package.json` nested one directory apart collide with
   `@nx/enforce-module-boundaries`. `gated-leaf`'s guide says so in full.
+- **No other example needed a project of its own.** A project-declared depth
+  limit and a project-declared entry point are already demonstrated by this
+  package's own root `callidescope.config.ts` — the root package itself has a
+  `tsconfig.json`, so it was already a discoverable project before this
+  package's examples were reworked as a set. `project-depth-limit` and
+  `declared-entry-points` read from that root configuration and stay plain
+  fixtures; only the exclusion criterion needed the extra isolation a nested
+  project buys (a project-scoped `exclude` glob, provable only against a
+  project boundary), which `gated-leaf` already supplied.
 - **Its guide carries a generated block.** It declares a `write.markdown` of
   its own pointing at `README.md` under a `## 🔭 Callidescope` heading, and it
   is scoped, so its `README.md` holds one between `<!-- CALL_STACKS_START -->`
