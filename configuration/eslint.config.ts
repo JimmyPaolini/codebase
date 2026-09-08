@@ -398,21 +398,7 @@ export default [
       perfectionist: perfectionistPlugin,
     },
     rules: {
-      "@nx/dependency-checks": [
-        "error",
-        {
-          // The language packages are named as strings in a registry and
-          // imported on demand, so no static import proves they are used.
-          ignoredDependencies: [
-            "@conformetry/json",
-            "@conformetry/jupyter",
-            "@conformetry/markdown",
-            "@conformetry/python",
-            "@conformetry/text",
-            "@conformetry/typescript",
-          ],
-        },
-      ],
+      "@nx/dependency-checks": "error",
       "@nx/enforce-module-boundaries": [
         "error",
         {
@@ -559,51 +545,6 @@ export default [
               ],
               sourceTag: "name:conformetry-files",
             },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:conformetry-configuration",
-                "name:conformetry-core",
-              ],
-              sourceTag: "name:conformetry-json",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:conformetry-configuration",
-                "name:conformetry-core",
-              ],
-              sourceTag: "name:conformetry-markdown",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:conformetry-configuration",
-                "name:conformetry-core",
-              ],
-              sourceTag: "name:conformetry-python",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:conformetry-configuration",
-                "name:conformetry-core",
-              ],
-              sourceTag: "name:conformetry-text",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:conformetry-configuration",
-                "name:conformetry-core",
-              ],
-              sourceTag: "name:conformetry-typescript",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:conformetry-configuration",
-                "name:conformetry-core",
-                "name:conformetry-json",
-                "name:conformetry-markdown",
-                "name:conformetry-python",
-              ],
-              sourceTag: "name:conformetry-jupyter",
-            },
             // One rule for every Language, because they are one package: the
             // Languages sit in `conformetry-languages` and reach only the
             // leaf. Jupyter's delegation to JSON, markdown, and Python is an
@@ -637,12 +578,6 @@ export default [
                 "name:conformetry-configuration",
                 "name:conformetry-core",
                 "name:conformetry-generation",
-                "name:conformetry-json",
-                "name:conformetry-jupyter",
-                "name:conformetry-markdown",
-                "name:conformetry-python",
-                "name:conformetry-text",
-                "name:conformetry-typescript",
                 "name:conformetry-validation",
                 "name:logger",
               ],
@@ -1447,21 +1382,7 @@ export default [
     ignores: ["projectStructure.cache.json"],
     rules: {
       // Keep Nx dependency checks enabled
-      "@nx/dependency-checks": [
-        "error",
-        {
-          // The language packages are named as strings in a registry and
-          // imported on demand, so no static import proves they are used.
-          ignoredDependencies: [
-            "@conformetry/json",
-            "@conformetry/jupyter",
-            "@conformetry/markdown",
-            "@conformetry/python",
-            "@conformetry/text",
-            "@conformetry/typescript",
-          ],
-        },
-      ],
+      "@nx/dependency-checks": "error",
       // JSONC style rules
       "jsonc/comma-dangle": ["error", "never"],
       "jsonc/indent": ["error", 2],

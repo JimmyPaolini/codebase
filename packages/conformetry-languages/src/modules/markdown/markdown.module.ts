@@ -8,8 +8,8 @@ import { MarkdownService } from "./markdown.service";
 /**
  * Provides the markdown language validator.
  *
- * Exported to `conformetry-validation` and to `conformetry-jupyter`, which
- * reuses it for a notebook's markdown cells.
+ * Imported by the Languages module, and by the Jupyter module, which reuses
+ * it for a notebook's markdown cells.
  */
 @Module({
   controllers: [],

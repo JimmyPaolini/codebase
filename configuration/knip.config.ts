@@ -356,22 +356,7 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/conformetry-jupyter": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      project: "src/**/*.ts",
-    },
-    "packages/conformetry-json": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      project: "src/**/*.ts",
-    },
     "packages/conformetry-languages": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      project: "src/**/*.ts",
-    },
-    "packages/conformetry-markdown": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
@@ -379,21 +364,6 @@ const config: KnipConfig = {
     "packages/conformetry-nx": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
-      project: "src/**/*.ts",
-    },
-    "packages/conformetry-python": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      project: "src/**/*.ts",
-    },
-    "packages/conformetry-text": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      project: "src/**/*.ts",
-    },
-    "packages/conformetry-typescript": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
     "packages/conformetry-validation": {
