@@ -9,14 +9,11 @@ import {
   retracesItself,
 } from "../../../testing/path-data";
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { SUPPORTED_RUNG_DIRECTIONS } from "../branch-motif/branch-motif.constants";
 import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
-import {
-  COMB_SWEEP_UPWARD_VALUES,
-  RUNG_SWEEP_LEFTWARD_VALUES,
-  STAGGER_SWEEP_BRANCH_COUNTS,
-} from "../draw/draw.constants";
+import { STAGGER_SWEEP_BRANCH_COUNTS } from "../draw/draw.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
 import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
@@ -154,12 +151,6 @@ const modifiersNamed = (name: string): Modifier[] => {
     case "brick-upright": {
       return [{ name: "brick-upright" }];
     }
-    case "comb": {
-      return COMB_SWEEP_UPWARD_VALUES.map((isUpward) => ({
-        isUpward,
-        name: "comb",
-      }));
-    }
     case "edge": {
       return [{ name: "edge" }];
     }
@@ -197,8 +188,8 @@ const modifiersNamed = (name: string): Modifier[] => {
       return [{ name: "ruled-tall" }];
     }
     case "rung": {
-      return RUNG_SWEEP_LEFTWARD_VALUES.map((isLeftward) => ({
-        isLeftward,
+      return SUPPORTED_RUNG_DIRECTIONS.map((direction) => ({
+        direction,
         name: "rung",
       }));
     }
@@ -252,7 +243,7 @@ const sweptTypes: readonly MeanderType[] = [
  * row counts each type supports, at the repeat count its modifier's own
  * cycle admits — `SPIN_CYCLE_LENGTH` for the spin family, the shared
  * default otherwise.
- * `comb`, `rung`, and `stagger` are swept over the sweep's own constants, and every
+ * `rung` and `stagger` are swept over the sweep's own constants, and every
  * ply-carrying modifier over {@link PLY_SWEEP_STRAND_COUNTS}, for the same
  * reason.
  */

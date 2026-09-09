@@ -461,17 +461,21 @@ graph — and every other package declares exactly which siblings it may import.
 | [`@conformetry/generation`](../conformetry-generation/README.md) | Mustache rendering and the generator lifecycle |
 | [`@conformetry/validation`](../conformetry-validation/README.md) | Validation orchestration, language routing, finding deduplication |
 | [`@conformetry/files`](../conformetry-files/README.md) | Existence checking for every declared file, whatever its extension |
+| [`@conformetry/languages`](../conformetry-languages/README.md) | Every Language module, plus the facade that resolves extensions to them |
 
 ### Languages
 
-| Package | Extensions |
-| ------- | ---------- |
-| [`@conformetry/typescript`](../conformetry-typescript/README.md) | `.ts`, `.tsx` |
-| [`@conformetry/markdown`](../conformetry-markdown/README.md) | `.md` |
-| [`@conformetry/python`](../conformetry-python/README.md) | `.py` |
-| [`@conformetry/json`](../conformetry-json/README.md) | `.json`, `.jsonc` |
-| [`@conformetry/jupyter`](../conformetry-jupyter/README.md) | `.ipynb` |
-| [`@conformetry/text`](../conformetry-text/README.md) | the fallback for everything else |
+`@conformetry/languages` holds one module per Language, all reached through its
+single `LanguagesModule` facade rather than as separate packages.
+
+| Module | Extensions |
+| ------ | ---------- |
+| `typescript` | `.ts`, `.tsx` |
+| `markdown` | `.md` |
+| `python` | `.py` |
+| `json` | `.json`, `.jsonc` |
+| `jupyter` | `.ipynb` |
+| `text` | the fallback for everything else |
 
 Nothing depends on `@conformetry/cli`. Embedding conformetry means depending on
 the runtime packages directly — the CLI is one host among others, and holds no
@@ -1044,13 +1048,13 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3352-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-121.85_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-121.84_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-35-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-16.05_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-16.04_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

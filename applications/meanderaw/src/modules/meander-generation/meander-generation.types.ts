@@ -1,5 +1,6 @@
 // 🏷️ Types
 
+import type { RungDirection } from "../branch-motif/branch-motif.types";
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
 import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types";
 
@@ -45,14 +46,13 @@ export type MeanderType =
  */
 export type Modifier =
   | { readonly branches: number; readonly name: "stagger" }
+  | { readonly direction: RungDirection; readonly name: "rung" }
   | {
       readonly flip?: SerpentineFlip;
       readonly name: "serpentine";
       readonly offset?: number;
       readonly strands: number;
     }
-  | { readonly isLeftward: boolean; readonly name: "rung" }
-  | { readonly isUpward: boolean; readonly name: "comb" }
   | { readonly name: "aligned"; readonly strands: number }
   | { readonly name: "brick-staggered" }
   | { readonly name: "brick-straight" }
@@ -85,12 +85,28 @@ export type Modifier =
 export type MotifDrawnType = Exclude<MeanderType, TileDrawnType>;
 
 /**
+ * The family, row count, and optional modifier one repeat unit's own column
+ * span is derived from.
+ *
+ * It is {@link RepeatPatternOptions} without the repeat count, and the
+ * omission is the point: a pitch is what a repeat count multiplies rather
+ * than something a repeat count changes. `MotifPitchService` recovers it by
+ * asking a motif service for two counts and subtracting, so a count named
+ * here would be a probe rather than a parameter.
+ */
+export interface MotifPitchOptions {
+  readonly modifier?: Modifier;
+  readonly rows: number;
+  readonly type: MotifDrawnType;
+}
+
+/**
  * The per-type contract `MeanderGenerationService` dispatches through:
  * every type draws its repeat units with `path` and reports how far right
  * the last one extends with `rightEdge`. `border` is optional because only
- * `boxes` draws a single shared border path across the whole pattern —
- * `chain` and `snake` draw their own top/bottom border segment as part of
- * each unit's own `path` instead.
+ * `boxes`, `branch`, and `parallel` draw a single shared border path across
+ * the whole pattern — `chain` and `snake` draw their own top/bottom border
+ * segment as part of each unit's own `path` instead.
  */
 export interface MotifService {
   border?(geometry: GridGeometry, pattern: RepeatPatternOptions): string;
@@ -112,6 +128,18 @@ export interface MotifUnit {
   readonly modifier?: Modifier;
   readonly rows: number;
   readonly unitIndex: number;
+}
+
+/**
+ * The family, row count, optional modifier, and repeat count one whole
+ * drawing's own column count is derived from.
+ *
+ * It is {@link MotifPitchOptions} with the repeat count put back, because
+ * how wide the finished drawing is — unlike how wide one unit is — is
+ * exactly what a repeat count changes.
+ */
+export interface MotifWidthOptions extends MotifPitchOptions {
+  readonly repeatCount: number;
 }
 
 /**

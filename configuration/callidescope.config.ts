@@ -45,20 +45,21 @@ import {
  * its two configuration files are the worked examples of this shape, and it
  * depends on the configuration package for real.
  *
- * ## The projects that override depth alone
+ * ## The projects that used to override nothing
  *
- * Every traced project holds a file, and five of them — the conformetry leaf
- * analyzers — still take this file's own depth: `conformetry-typescript` has
- * forty callables, `-json` twenty-three, `-jupyter` twenty-two, `-python`
- * eleven, and `-text` five, and every one of them is reached from
- * `conformetry-generation` above rather than entered directly, so each roots
- * nothing and measures zero depth however much it does. A depth limit set at
- * what it measures would be zero, which fails on the first stack of any
- * length, which is a landmine rather than a ratchet, so each names `limits`
- * with `maximumDepth` left at the number below and `maximumBreadth` set to
- * what a run scoped to it actually measured — breadth has no such landmine,
- * since a callable's own fan-out counts whether or not anything ever calls
- * it.
+ * Every traced project holds a complete file now — see
+ * `docs/adr/0007-complete-project-configurations.md`. There used to be a
+ * class of project that took the number below without a file of its own, and
+ * consolidating the conformetry Languages removed the last of it: six leaf
+ * analyzers — `conformetry-typescript`, `-json`, `-jupyter`, `-markdown`,
+ * `-python`, `-text` — each held real code that rooted nothing, because every
+ * one of them was entered from above rather than directly, so each measured
+ * zero however much it did. They are now modules of `conformetry-languages`,
+ * and what was a call between packages is a call inside one, so a scoped run
+ * finally enters at a surface of its own and measures four rather than zero.
+ * That package spreads `projectDefaults`, declares `limits.maximumDepth: 4`
+ * beside it, and gates like any other — breadth included, since a callable's
+ * own fan-out counts whether or not anything ever calls it.
  *
  * The dependency closure a scoped run traces did fix this for
  * `codometer-changes`, which measured zero before it and ten after. The ten
@@ -68,14 +69,13 @@ import {
  *
  * ## The projects traced by nothing
  *
- * Seven projects are not measured at all, rather than taking the number below
- * the way the leaf analyzers do — so they hold no configuration file either,
- * being no project's file to write. The four skill packages —
- * `callidescope-agents`, `codependix-agents`, `codometer-agents`,
- * `conformetry-agents` — hold barely a callable between them, the same
- * landmine the leaf analyzers avoid by taking the default rather than being
- * gated at zero, except these have no real code underneath to ever grow into.
- * And
+ * Seven projects are not measured at all, rather than taking the number
+ * below — so they hold no configuration file either, being no project's file
+ * to write. The four skill packages — `callidescope-agents`,
+ * `codependix-agents`, `codometer-agents`, `conformetry-agents` — hold barely
+ * a callable between them, the same landmine a real project would avoid by
+ * declaring its own number rather than being gated at zero, except these have
+ * no real code underneath to ever grow into. And
  * `codependix-examples`, `codometer-examples`, and `conformetry-examples` are
  * fixture corpora rather than libraries: a depth number over one reports on a
  * corpus's incidental shape instead of on production code, the same reason
@@ -149,17 +149,18 @@ export const workspaceLimits = {
    * configuration/callidescope.config.ts` prints the whole set and the file
    * each number is written in.
    *
-   * **Lowering this number is not how the ratchet descends.** It reaches only
-   * the five conformetry leaf analyzers, the projects whose files name
-   * `maximumDepth: workspaceLimits.maximumDepth` explicitly rather than a
-   * boundary-tested number of their own, and those are the ones with no
-   * stack to gate: each roots nothing, so each measures zero depth however
-   * much it does. A number lowered here fires on the first stack any of them
-   * grows rather than on a regression, and the value it stands in for is
-   * exactly the one they cannot pick for themselves. To tighten a project,
-   * write the boundary-tested number in that project's own
-   * `callidescope.config.ts`; `## The projects that override depth alone`
-   * above says which five those are and why each still takes this one.
+   * **Lowering this number is not how the ratchet descends.** Every traced
+   * project now writes its own complete file, with its own boundary-tested
+   * number beside the spread — the thirty-eight this section counts — so no
+   * traced project reads this value as the number it is judged by any more.
+   * The seven projects with no stack to gate are the ones `## The projects
+   * traced by nothing` above names, and they hold no configuration file to
+   * read a lowered number from either. What a number here still sets is the
+   * starting point `projectDefaults` hands a project that has not yet
+   * measured and declared its own — a new project, not an existing one, since
+   * every existing traced project's own file is what a gate reads. To tighten
+   * a project already declaring its own, write the boundary-tested number in
+   * that project's own `callidescope.config.ts` instead.
    *
    * The history is still worth keeping, because it is what the per-project
    * numbers were measured against. Set to the issue's suggested six, one
@@ -221,8 +222,7 @@ export const workspaceLimits = {
  * project's own README.
  *
  * Every traced project spreads it, each writing its own `limits` beside the
- * spread the way the example above shows, except the five conformetry leaf
- * analyzers, which override nothing.
+ * spread the way the example above shows.
  * `packages/callidescope-examples/callidescope.config.ts` is outside that count
  * altogether: the package is excluded from workspace tracing by
  * `.callidescopeignore`, and its own file is the annotated worked example this
