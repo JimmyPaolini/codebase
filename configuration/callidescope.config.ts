@@ -23,18 +23,13 @@ import {
  *
  * A project's own `callidescope.config.ts` spreads `projectDefaults` — the
  * second export below — and declares `limits` explicitly beside it, both
- * fields named even when only one is a real number: `limits: { maximumBreadth:
- * undefined, maximumDepth: 10 }` for a project gating depth alone,
- * `{ maximumBreadth: 8, maximumDepth: 6 }` for one gating both. Naming
- * `maximumBreadth: undefined` rather than omitting the field is what makes a
- * project's silence about breadth a decision written in its own file rather
- * than an absence a reader has to go verify — the [Callidescope](#callidescope)
- * section of this repository's `AGENTS.md` says which projects declare a real
- * number and why. The spread and the explicit `limits` object are not doing the
- * same job: the spread carries `entryPoints`, `exclude`, `write`, and whatever
- * `limits` a project does not restate forward unchanged, and `limits` is what
- * a project overrides. Leaving a field out of either is a refusal naming the
- * project and the field — see
+ * fields named and both real numbers now that every traced project gates
+ * breadth as well as depth: `{ maximumBreadth: 8, maximumDepth: 6 }` is the
+ * shape every one of them takes. The spread and the explicit `limits` object
+ * are not doing the same job: the spread carries `entryPoints`, `exclude`,
+ * `write`, and whatever `limits` a project does not restate forward
+ * unchanged, and `limits` is what a project overrides. Leaving a field out of
+ * either is a refusal naming the project and the field — see
  * `docs/adr/0007-complete-project-configurations.md`.
  *
  * A project's file also carries no type annotation, and so no import of
@@ -50,7 +45,7 @@ import {
  * its two configuration files are the worked examples of this shape, and it
  * depends on the configuration package for real.
  *
- * ## The projects that override nothing
+ * ## The projects that used to override nothing
  *
  * Every traced project holds a complete file now — see
  * `docs/adr/0007-complete-project-configurations.md`. There used to be a
@@ -63,7 +58,8 @@ import {
  * and what was a call between packages is a call inside one, so a scoped run
  * finally enters at a surface of its own and measures four rather than zero.
  * That package spreads `projectDefaults`, declares `limits.maximumDepth: 4`
- * beside it, and gates like any other.
+ * beside it, and gates like any other — breadth included, since a callable's
+ * own fan-out counts whether or not anything ever calls it.
  *
  * The dependency closure a scoped run traces did fix this for
  * `codometer-changes`, which measured zero before it and ten after. The ten
@@ -97,14 +93,17 @@ import {
  * depth the same way — but two more things sit outside what either task covers
  * and still need writing down rather than left implicit.
  *
- * `configuration/` measures depth 3 and holds its own `tsconfig.json`, so it
- * appears as a traced root — but it is not an Nx project, so no target can ever
- * be inferred onto it, and it is gated by nothing. It is also the one traced
- * project that writes no configuration of its own, this file being the file at
- * its root: a run cannot read one file as both its own workspace configuration
- * and a project's, and no second file may sit beside it under a name discovery
- * would find. So it is judged by the limits below directly, and it keeps being
- * traced and published by the workspace `write` run.
+ * `configuration/` measures depth 3 and breadth 2 and holds its own
+ * `tsconfig.json`, so it appears as a traced root — but it is not an Nx
+ * project, so no target can ever be inferred onto it, and it is gated by
+ * nothing. It is also the one traced project that writes no configuration of
+ * its own, this file being the file at its root: a run cannot read one file as
+ * both its own workspace configuration and a project's, and no second file may
+ * sit beside it under a name discovery would find. So it is judged by
+ * `workspaceLimits` directly — the one export below that carries a real
+ * `maximumBreadth` of its own, since it is the number this project itself is
+ * measured against — and it keeps being traced and published by the
+ * workspace `write` run.
  *
  * `applications/JimmyPaolini` and `applications/affirmations` have no `gate`
  * target at all — a different fact from taking the default. Taking the default
@@ -116,13 +115,28 @@ import {
  * targets only onto a project that holds one
  * (`packages/callidescope-nx/src/modules/plugin/plugin.service.ts:353`).
  *
- * Still exported although nothing imports it, because a rule needs a name to
- * be about.
+ * Imported by the five conformetry leaf analyzers above, which name
+ * `maximumDepth: workspaceLimits.maximumDepth` explicitly rather than
+ * spreading it, so a number lowered here still reaches them; every other
+ * project's own boundary-tested number would otherwise be mistaken for one
+ * still tracking this file.
  */
 export const workspaceLimits = {
   /**
-   * The number `projectDefaults` carries into a project that overrides
-   * nothing — and no longer this repository's ratchet.
+   * `configuration/` project's own breadth, and the number the five
+   * conformetry leaf analyzers took before this ticket measured their own.
+   *
+   * Two, from `bodyCoAuthoredOnly` and `footerCoAuthoredOnly` in
+   * `configuration/commitlint.config.ts`, tied at the widest — each filters
+   * trailers and checks every one of them, ordinary fan-out rather than a
+   * closed enumeration. `configuration/` is judged by this number directly,
+   * since it is the one traced project with no `callidescope.config.ts` of
+   * its own to write a boundary-tested number into.
+   */
+  maximumBreadth: 2,
+  /**
+   * The depth `projectDefaults` carries into a project that overrides nothing
+   * of its own — and no longer this repository's ratchet.
    *
    * **The ratchet is thirty-eight numbers now**, one per project that declares
    * its own, every one of them set from a boundary-tested run at its gate's own
@@ -227,13 +241,14 @@ export const projectDefaults = {
   exclude: [],
   limits: {
     /**
-     * Left unset, and required to be written either way.
-     *
-     * Breadth is gated only where every callable at a project's widest number
-     * is a closed enumeration, so a project declaring nothing here is making
-     * the same statement the twenty projects without a breadth limit make
-     * today — the difference being that it is now written down rather than
-     * inferred from an absence.
+     * Left unset here, and never actually taken by anything: every traced
+     * project's own `limits` now names a real, boundary-tested
+     * `maximumBreadth`, `workspaceLimits` included for `configuration/` and
+     * the five conformetry leaf analyzers. The field stays `undefined` rather
+     * than a number, because this object carries no gate scope of its own to
+     * measure one against — a value written here would be a guess rather
+     * than a measurement, and every project that spreads this object
+     * overrides `limits` wholesale rather than merging into it.
      */
     maximumBreadth: undefined,
     maximumDepth: workspaceLimits.maximumDepth,

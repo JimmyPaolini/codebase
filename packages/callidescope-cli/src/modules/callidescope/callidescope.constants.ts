@@ -19,16 +19,6 @@ export const INCLUDE_CONSTRUCTOR_EDGES = true;
 /** Headline a command line the input service refused is reported under. */
 export const REJECTED_COMMAND_LINE = "🔭 Rejected the command line";
 
-/**
- * Headline a resolved configuration a run cannot proceed under is reported
- * under.
- *
- * The one refusal here that is not an exception: whether any project in scope
- * declared `limits.maximumBreadth` is answered by a trace rather than thrown
- * out of one, so it names no single file and carries a list of reasons.
- */
-export const REJECTED_CONFIGURATION = "🔭 Rejected the configuration";
-
 /** Headline a project whose `tsconfig.json` could not be read is reported under. */
 export const REJECTED_PROJECT = "🔭 Rejected a project it could not read";
 

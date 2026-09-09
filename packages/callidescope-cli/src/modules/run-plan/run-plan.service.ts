@@ -24,7 +24,6 @@ import type {
   RunMode,
   RunModeSelection,
 } from "./run-plan.types";
-import type { ProjectLimitsLookup } from "@callidescope/configuration";
 
 /**
  * Reads the command line and configuration into what the run will do.
@@ -200,10 +199,7 @@ export class RunPlanService {
    *
    * Returns nothing when the command line was rejected: the rejection is
    * already logged and the exit code already set, so the caller only has to
-   * notice the absence and stop. A run's configuration can still be rejected
-   * after this — `--check breadth` needs to know which projects a run
-   * reached before it can say whether any of them declared a limit, which
-   * `validateProjectLimits` answers only once a trace has resolved that.
+   * notice the absence and stop.
    */
   public async prepareRun(
     options: CallidescopeCommandOptions,
@@ -335,43 +331,5 @@ export class RunPlanService {
    */
   public touchesFiles(mode: RunMode): boolean {
     return mode.checksReports || mode.writes;
-  }
-
-  /**
-   * Checks what a trace resolved every project in scope declared, against
-   * what the run mode requires.
-   *
-   * No default exists for `maximumBreadth`, unlike every other limit — and
-   * unlike depth, no *workspace* default exists for it either: a single
-   * breadth number was never something anybody could pick for a whole
-   * workspace, which is why breadth has no gate at all until some project
-   * picks its own. `projectLimits.byProject` is read directly rather than
-   * re-derived from the files, because that map is what the gate itself is
-   * judged against — asking a second way is how a run ends up reading two
-   * different numbers for the same project.
-   *
-   * A project that wrote `maximumBreadth: undefined` is simply not asked
-   * about: it is neither the reason this refuses nor a reason a project that
-   * did pick a number stops being gated.
-   */
-  public validateProjectLimits(args: {
-    mode: RunMode;
-    projectLimits: ProjectLimitsLookup;
-  }): string[] {
-    if (!args.mode.checksBreadth) {
-      return [];
-    }
-
-    const declaresBreadth = [...args.projectLimits.byProject.values()].some(
-      (limits) => limits.maximumBreadth !== undefined,
-    );
-
-    if (declaresBreadth) {
-      return [];
-    }
-
-    return [
-      "--check breadth requires at least one project in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <number> }` to that project's callidescope.config.ts before running --check breadth.",
-    ];
   }
 }

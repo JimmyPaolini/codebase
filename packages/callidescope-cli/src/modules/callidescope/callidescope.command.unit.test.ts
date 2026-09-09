@@ -854,27 +854,6 @@ describe(CallidescopeCommand, () => {
     expect(process.exitCode).toBeUndefined();
   });
 
-  it("refuses to check breadth when no project in scope declares a limit", async () => {
-    // The default from `stubTrace` in `beforeEach`: a trace that reached one
-    // project, and that project declared no breadth limit of its own.
-    await command.run([], { check: "breadth" });
-
-    expect(process.exitCode).toBe(1);
-    // Unlike a command-line mistake, this is only known once the trace has
-    // resolved which projects were even reached.
-    expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
-    expect(logger.error).toHaveBeenCalledWith(
-      "🔭 Rejected the configuration",
-      undefined,
-      {
-        reasons: [
-          "--check breadth requires at least one project in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <number> }` to that project's callidescope.config.ts before running --check breadth.",
-        ],
-        workspaceRoot: path.resolve("."),
-      },
-    );
-  });
-
   it("does not let a project's own breadth limit gate a run that never asked for it", async () => {
     stubTrace(
       buildCallGraphResult(),

@@ -1,20 +1,25 @@
-import { projectDefaults } from "../../configuration/callidescope.config.js";
+import {
+  projectDefaults,
+  workspaceLimits,
+} from "../../configuration/callidescope.config.js";
 
 /**
- * What conformetry-text is held to: the defaults, and nothing of its own.
+ * What conformetry-text is held to: the workspace's own depth, and a breadth
+ * measured here.
  *
  * A leaf analyzer. Its five callables are real code, but every one of them
  * is reached from `conformetry-generation` above rather than entered directly,
- * so nothing here roots a stack and this project measures zero however much it
- * does. A limit set at what it measures would be zero, which fails on the first
- * stack of any length this package ever grows — a landmine rather than a
- * ratchet — so the workspace default stands until there is a stack to measure.
+ * so nothing here roots a stack and this project measures zero depth however
+ * much it does. A depth limit set at what it measures would be zero, which
+ * fails on the first stack of any length this package ever grows — a landmine
+ * rather than a ratchet — so the workspace default stands until there is a
+ * stack to measure.
  *
- * The file exists all the same, because every traced project declares its own:
- * a project's configuration is the complete statement of how it is traced and
- * judged, and "this project overrides nothing" is a statement it has to make
- * rather than one a reader infers from a file that is not there. The spread is
- * that statement.
+ * Breadth does not have that problem: a callable counts its own direct
+ * callees whether or not anything ever calls it, so this leaf still has a
+ * real widest to gate. Two direct callees at the widest — ordinary fan-out
+ * rather than a closed enumeration, so the next helper anybody extracts here
+ * is what moves the number.
  *
  * @see configuration/callidescope.config.ts — `projectDefaults`, spread below
  * for every field this file does not override
@@ -23,4 +28,8 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
  */
 export default {
   ...projectDefaults,
+  limits: {
+    maximumBreadth: 2,
+    maximumDepth: workspaceLimits.maximumDepth,
+  },
 };
