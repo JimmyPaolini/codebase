@@ -87,18 +87,7 @@ describe(WorkspaceReportService, () => {
       projects: [report({ deepest: 7, name: "packages/thing", widest: 4 })],
     });
 
-    expect(rendered).toContain(
-      "| `packages/thing` | 7 | 10 declared | 3 | 4 |",
-    );
-  });
-
-  it("says a limit was inherited when the project declared none of its own", () => {
-    const rendered = service.renderProjectIndex({
-      limits: buildProjectLimitsLookup({ maximumDepth: 17 }),
-      projects: [report({ deepest: 4, name: "packages/quiet" })],
-    });
-
-    expect(rendered).toContain("17 inherited");
+    expect(rendered).toContain("| `packages/thing` | 7 | 10 | 3 | 4 |");
   });
 
   it("orders the tightest project first, whatever its name", () => {
@@ -225,8 +214,7 @@ describe(WorkspaceReportService, () => {
     });
 
     expect(
-      service.limitsFor({ limits, projectName: "packages/own" }).maximumDepth
-        .value,
+      service.limitsFor({ limits, projectName: "packages/own" }).maximumDepth,
     ).toBe(3);
   });
 });

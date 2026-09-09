@@ -134,7 +134,6 @@ nothing it writes can go stale.
 | `write.json` | A machine-readable report at `path`, indented by `indentation` |
 | `write.markdown` | A marker-delimited block spliced into `path` |
 | `write.mermaid` | The same block with its call stacks drawn as one mermaid flowchart |
-| `write.projectReadmes` | One section per traced project, in that project's own `README.md` |
 
 `write.mermaid` takes the same keys as `write.markdown` — they differ in what
 goes between the anchors, not in how a block is placed or overridden — and is a
@@ -154,18 +153,18 @@ first-level heading is something most markdown linters reject. The block's
 subsections follow the level down on their own, so an `##` heading writes
 `###` subsections.
 
-`write.projectReadmes` takes `heading` (`## 🔭 Callidescope` by default),
-`previewCount` (how many stacks are shown before the rest go behind a
-disclosure, three by default), and the same `startMarker`/`endMarker` pair the
-markdown destination uses. `{}` accepts all four defaults.
+Each also takes `previewCount`, how many stacks are shown before the rest go
+behind a disclosure. It belongs to the destination rather than to the run
+because it is a fact about the document the block lands in: a project's README
+wants three and a whole-workspace report file wants all of them, and one number
+for both could only ever be wrong for one of them. A run that only prints to a
+terminal uses the tool's own default of three, that being nobody's document.
 
-One thing `projectReadmes` does is worth knowing before turning it on: it
-writes a section for **every** traced project, creating a `README.md` where a
-project has none. A workspace whose root holds a `tsconfig.json` is itself such
-a project, and the section it gets describes whatever that config's `include`
-catches and no other project claims — rarely anything anybody means by "the
-workspace". Exclude the root's own `tsconfig.json` and point `write.markdown`
-at the root readme instead, which is the block that really is about the
+**There is no fan-out that writes a section into every project's readme.** Each
+project declares its own `write.markdown` in its own file, so a project decides
+where its section lands, whether it publishes one at all, and whether it wants
+a diagram beside it — see [What a project may set](#what-a-project-may-set).
+The workspace's own `write.markdown` is the block that really is about the
 workspace: it carries the summary counts, one row per project against that
 project's own depth limit, and a scoreboard of how many sit over, on, or clear
 of theirs.
@@ -225,9 +224,16 @@ project's own root, the directory holding the `tsconfig.json` that makes it a
 project. It is found by name in that directory alone, with no upward walk, and
 may use any of the same eight extensions.
 
-A project with no file of its own is configured entirely by the run. That is
-what every project did before per-project configuration existed and what most
-projects keep doing.
+**Every traced project has one, and every one of them is complete.** A traced
+project with no file at all is refused by name, and so is a file that leaves a
+field out. A project's file is meant to be readable as the whole statement of
+how that project is traced and judged, which a shape with optional fields
+cannot be: an absent field and a field set to the value it would have defaulted
+to look identical in a diff, and only one of them was a decision. Completeness
+costs one line rather than twenty, because a project spreads the workspace's
+`projectDefaults` and overrides what it means to — see
+[Spread the defaults, then override](#spread-the-defaults-then-override) and
+[ADR 0007](../../docs/adr/0007-complete-project-configurations.md).
 
 One file, one role per run: the file a run was pointed at is never also read as
 a project's. A package whose task names its own configuration and then traces
@@ -251,13 +257,12 @@ workspace-only fields it legitimately sets.
 no spelling of it that reaches a sibling. A destination left `undefined`
 publishes nothing.
 
-A project that declares either destination is left out of the workspace's
-`write.projectReadmes` fan-out entirely — the fan-out is what it spoke instead
-of. A project that declares neither is reached by the fan-out exactly as
-before.
+Nothing else writes into a project's documents. There is no workspace-level
+fan-out to be left out of or reached by: a project publishes what its own file
+says it publishes, and `undefined` is how it says nothing.
 
-`write.json` and `write.projectReadmes` stay workspace-only: one is the run's
-single report, and the other is a declaration about every project at once.
+`write.json` stays workspace-only: it is the run's single report, not a
+project's to redirect.
 
 **A project's `exclude` globs are anchored to that project's root**, never to
 the workspace: `exclude: ["src/generated/**"]` in `packages/thing`'s own file
@@ -276,33 +281,50 @@ excluded becomes an unfollowable call rather than vanishing.
 
 Every other field is refused by name before anything is traced.
 
-### Write the override, never a spread
+### Spread the defaults, then override
+
+A workspace configuration exports `projectDefaults` beside its default export.
+A project spreads it and overrides what it means to, which is what makes a
+complete file cost one line:
 
 ```ts
-import { type CallidescopeConfiguration } from "@callidescope/configuration";
+import { projectDefaults } from "../../configuration/callidescope.config.js";
 
-const projectConfiguration: CallidescopeConfiguration = {
-  limits: { maximumDepth: 10 },
+export default {
+  ...projectDefaults,
+  limits: { maximumBreadth: undefined, maximumDepth: 10 },
 };
-
-export default projectConfiguration;
 ```
 
-Nothing is lost by writing the override alone, because **a project inherits per
-limit rather than per object**. Each limit falls back to the workspace's number
-on its own, so a project naming `maximumDepth` still inherits `maximumBreadth`,
-and a project naming neither is handed the workspace's object itself.
+Both limits are named even though only one is a real number. `maximumBreadth:
+undefined` is this project saying outright that it gates depth and not breadth
+— the one statement an absent field could never distinguish from a project that
+forgot. The same holds for `write.mermaid: undefined` and publishing no
+diagram.
+
+**Spread `projectDefaults`, never the workspace's default export.** The two are
+different objects on purpose: the default export carries `directories`,
+`excludeFrom`, `write.json`, and the rest of what only a run may set, so
+spreading it earns a refusal naming the first such field. `projectDefaults`
+holds exactly the surface a project is entitled to, so a project spreading it
+cannot adopt an output destination or an ignore file by accident, because none
+of them is in there to adopt.
+
+Nothing is resolved across two files. Every number a project is judged by is
+written in that project's own file — there is no per-field fallback to the
+workspace, and no record of whether a limit was declared here or handed down,
+because the spread already put it here where a reader can see it.
 
 The workspace number is a **default rather than a ceiling**. A project declaring
 a higher limit than the workspace keeps its own — a workspace number pinned by
 the single worst stack anywhere in it gates nothing for the projects nowhere
 near it, which is the whole reason a project gets to say.
 
-`entryPoints` does not work that way: a project declaring any entry-point rule
-replaces the rule set for its own callables outright, and the fields it leaves
-out fall back to this package's defaults rather than to the workspace file's.
-A project that declares `addresses` and wants a decorator list the workspace
-customized has to restate that list too.
+`entryPoints` is replaced whole rather than merged member by member: a project
+writing an `entryPoints` object of its own replaces the spread one outright, so
+a project that declares `addresses` and wants the workspace's decorator list has
+to carry it across — `...projectDefaults.entryPoints` inside its own object is
+the one line that does it.
 
 `includeTests` is the one field in that set that decides which of a project's
 files are **collected** rather than which of its callables root a stack, so it
@@ -316,8 +338,8 @@ project that refuses them keeps them out of a run that asked for everyone's.
 once, and each project asks a different question of the same edges. Two answers
 are two opinions about one artifact, which is coherent.
 
-`excludeCallees`, `directories`, `excludeFrom`, `write.json`, and
-`write.projectReadmes` are different. They name what a run reads, where the
+`excludeCallees`, `directories`, `excludeFrom`, and `write.json` are
+different. They name what a run reads, where the
 run's own report lands, or how it partitions the workspace, and a project
 cannot answer those differently from the run tracing it — so they stay in the
 workspace file. `<field>` in the refusal above is the name as it has to be

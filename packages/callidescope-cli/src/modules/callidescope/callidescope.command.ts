@@ -1,5 +1,6 @@
 import {
   DEFAULT_JSON_INDENTATION,
+  DEFAULT_PREVIEW_COUNT,
   DEFAULT_RUN_HEADING,
   InputService,
 } from "@callidescope/configuration";
@@ -160,9 +161,9 @@ export class CallidescopeCommand extends CommandRunner {
         description: undefined,
         heading: DEFAULT_RUN_HEADING,
         limits: args.projectLimits,
-        previewCount: this.writeDestinationsService.readPreviewCount(
-          args.configuration,
-        ),
+        // The tool's own default rather than a destination's: a printed run
+        // lands in a terminal, which is nobody's document to have configured.
+        previewCount: DEFAULT_PREVIEW_COUNT,
         rendering: args.format === "mermaid" ? "diagram" : "tree",
         result: args.result,
       }),

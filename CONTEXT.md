@@ -209,6 +209,17 @@ inferred from a decorator, a file name, an export, or from nothing having called
 it.
 _Avoid_: Root, caller, top-level
 
+**Defaults**:
+What a project takes from the workspace, by spreading `projectDefaults` into
+its own `callidescope.config.ts` and overriding what it means to. A project's
+file is the complete statement of how that project is traced and judged: every
+field present, and a traced project with no file at all a refusal. Nothing is
+**inherited** — there is no per-field fallback to a second file and no record
+of whether a number was declared or handed down, because the spread put every
+number in the project's own file where a reader can see it. See
+[ADR 0007](docs/adr/0007-complete-project-configurations.md).
+_Avoid_: Inherited, fallback, cascade
+
 Callidescope has no notion of a **module** and measures no **cohesion**. It once
 derived a `<project>:<subtree>` module identifier to report module spread and
 misplaced callables against; both findings and the identifier were removed — see

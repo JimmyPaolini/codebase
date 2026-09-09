@@ -18,7 +18,6 @@ import {
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_MAXIMUM_DEPTH,
   DEFAULT_PREVIEW_COUNT,
-  DEFAULT_PROJECT_README_HEADING,
   DEFAULT_RUN_HEADING,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
@@ -39,7 +38,6 @@ import type {
   ResolvedCallidescopeJsonOutputConfiguration,
   ResolvedCallidescopeLimits,
   ResolvedCallidescopeMarkdownOutputConfiguration,
-  ResolvedCallidescopeProjectReadmeConfiguration,
 } from "./configuration.types";
 
 /**
@@ -259,29 +257,12 @@ export class ConfigurationService {
       endMarker: destination.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
       heading: destination.heading ?? DEFAULT_RUN_HEADING,
       path: destination.path,
+      previewCount: destination.previewCount ?? DEFAULT_PREVIEW_COUNT,
       // Left unset rather than defaulted: the built-in rendering and writing
       // live in the CLI that calls them, so "unset" is what selects them.
       render: destination.render,
       startMarker: destination.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
       writeBlock: destination.writeBlock,
-    };
-  }
-
-  /** Applies defaults to the project README destination, if it was asked for. */
-  private resolveProjectReadmes(
-    write: CallidescopeWriteConfiguration | undefined,
-  ): ResolvedCallidescopeProjectReadmeConfiguration | undefined {
-    if (write?.projectReadmes === undefined) {
-      return undefined;
-    }
-
-    const { projectReadmes } = write;
-
-    return {
-      endMarker: projectReadmes.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
-      heading: projectReadmes.heading ?? DEFAULT_PROJECT_README_HEADING,
-      previewCount: projectReadmes.previewCount ?? DEFAULT_PREVIEW_COUNT,
-      startMarker: projectReadmes.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
     };
   }
 
@@ -401,7 +382,6 @@ export class ConfigurationService {
           configuration.write?.markdown,
         ),
         mermaid: this.resolveMarkdownDestination(configuration.write?.mermaid),
-        projectReadmes: this.resolveProjectReadmes(configuration.write),
       },
     };
   }

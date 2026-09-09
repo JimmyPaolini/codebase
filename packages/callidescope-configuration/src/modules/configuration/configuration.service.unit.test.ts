@@ -15,7 +15,6 @@ import {
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_MAXIMUM_DEPTH,
   DEFAULT_PREVIEW_COUNT,
-  DEFAULT_PROJECT_README_HEADING,
   DEFAULT_RUN_HEADING,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
@@ -210,6 +209,7 @@ describe(ConfigurationService, () => {
       endMarker: DEFAULT_MARKDOWN_END_MARKER,
       heading: DEFAULT_RUN_HEADING,
       path: "REPORT.md",
+      previewCount: DEFAULT_PREVIEW_COUNT,
       render: undefined,
       startMarker: DEFAULT_MARKDOWN_START_MARKER,
       writeBlock: undefined,
@@ -285,6 +285,7 @@ describe(ConfigurationService, () => {
       endMarker: DEFAULT_MARKDOWN_END_MARKER,
       heading: DEFAULT_RUN_HEADING,
       path: "GRAPH.md",
+      previewCount: DEFAULT_PREVIEW_COUNT,
       render: undefined,
       startMarker: DEFAULT_MARKDOWN_START_MARKER,
       writeBlock: undefined,
@@ -307,47 +308,6 @@ describe(ConfigurationService, () => {
     );
     expect(configuration.write.mermaid?.path).toBe("GRAPH.md");
     expect(configuration.write.mermaid?.endMarker).toBe("<!-- END -->");
-  });
-
-  // 📚 Project READMEs
-
-  it("leaves the project READMEs alone until they are asked for", () => {
-    expect(
-      service.resolveConfiguration({ write: {} }).write.projectReadmes,
-    ).toBeUndefined();
-  });
-
-  it("defaults every part of an empty project README destination", () => {
-    const configuration = service.resolveConfiguration({
-      write: { projectReadmes: {} },
-    });
-
-    expect(configuration.write.projectReadmes).toStrictEqual({
-      endMarker: DEFAULT_MARKDOWN_END_MARKER,
-      heading: DEFAULT_PROJECT_README_HEADING,
-      previewCount: DEFAULT_PREVIEW_COUNT,
-      startMarker: DEFAULT_MARKDOWN_START_MARKER,
-    });
-  });
-
-  it("keeps an authored heading, preview count, and markers", () => {
-    const configuration = service.resolveConfiguration({
-      write: {
-        projectReadmes: {
-          endMarker: "<!-- END -->",
-          heading: "## Call stacks",
-          previewCount: 10,
-          startMarker: "<!-- START -->",
-        },
-      },
-    });
-
-    expect(configuration.write.projectReadmes).toStrictEqual({
-      endMarker: "<!-- END -->",
-      heading: "## Call stacks",
-      previewCount: 10,
-      startMarker: "<!-- START -->",
-    });
   });
 
   // 📂 File discovery
@@ -611,17 +571,52 @@ describe(ConfigurationService, () => {
     ).rejects.toThrow(ZodError);
   });
 
-  it("ignores a field it has no opinion about", async () => {
+  it("refuses a top-level field it has no opinion about", async () => {
+    // A field nothing here names used to be stripped in silence, which reads
+    // to whoever wrote it exactly like a field that took effect. Every field
+    // this tool has ever retired — and every one somebody misspells — arrives
+    // through this door, so the door is closed.
     const configurationPath = await writeConfiguration({
       limits: { maximumDepth: 5 },
       unknownFutureOption: true,
     });
 
-    const configuration = await service.loadConfiguration({
-      configurationPath,
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toThrow(ZodError);
+  });
+
+  it.each([
+    ["entryPoints", { entryPoints: { includeGenerated: true } }],
+    ["write", { write: { projectReadmes: {} } }],
+    ["write.json", { write: { json: { path: "r.json", spaces: 2 } } }],
+    ["write.markdown", { write: { markdown: { footer: "x", path: "R.md" } } }],
+  ])("refuses an unknown member of %s", async (_field, configuration) => {
+    const configurationPath = await writeConfiguration(configuration);
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toThrow(ZodError);
+  });
+
+  // 👀 Preview Count
+
+  it("defaults the stacks a markdown destination previews", () => {
+    const configuration = service.resolveConfiguration({
+      write: { markdown: { path: "README.md" } },
     });
 
-    expect(configuration.limits.maximumDepth).toBe(5);
+    expect(configuration.write.markdown?.previewCount).toBe(
+      DEFAULT_PREVIEW_COUNT,
+    );
+  });
+
+  it("keeps the preview count a markdown destination declared", () => {
+    const configuration = service.resolveConfiguration({
+      write: { markdown: { path: "README.md", previewCount: 7 } },
+    });
+
+    expect(configuration.write.markdown?.previewCount).toBe(7);
   });
 
   // 🗂️ Loaded Files

@@ -175,12 +175,12 @@ Call stacks traced through `packages/callidescope-examples/examples/gated-leaf`,
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 3 | declared |
-| `maximumBreadth` | 2 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 3 |
+| `maximumBreadth` | 2 |
 
 ### Call stacks (depth)
 

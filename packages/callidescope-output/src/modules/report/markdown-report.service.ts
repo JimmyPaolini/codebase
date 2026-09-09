@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 
 import { MermaidReportService } from "./mermaid-report.service";
 import {
-  LIMIT_ABSENT_LABEL,
   MARKDOWN_DEEP_STACKS_HEADING,
   MARKDOWN_PROJECT_LIMIT_NAMES,
   MARKDOWN_PROJECT_LIMITS_HEADER,
@@ -27,7 +26,6 @@ import type {
   CallableBreadthReport,
   CallGraphSummary,
   CallStack,
-  LimitProvenance,
   ProjectLimits,
   WideCallableFinding,
 } from "@callidescope/configuration";
@@ -101,24 +99,19 @@ export class MarkdownReportService {
   }
 
   /**
-   * Renders one limit's value and origin cells.
+   * Renders one limit's value cell.
    *
-   * A limit nothing anywhere declares prints `none` rather than a number,
+   * A limit the project does not declare prints `none` rather than a number,
    * which is breadth's usual case: it has no default at any level, so a
-   * project declaring none is gated on breadth by nothing at all, and printing
-   * some number there would say the opposite.
+   * project writing `maximumBreadth: undefined` is gated on breadth by nothing
+   * at all, and printing some number there would say the opposite.
    */
-  private renderLimitCells(provenance: LimitProvenance | undefined): string {
-    const cells =
-      provenance === undefined
-        ? [NO_LIMIT_LABEL, LIMIT_ABSENT_LABEL]
-        : [String(provenance.value), provenance.origin];
-
-    return cells.join(" | ");
+  private renderLimitCell(value: number | undefined): string {
+    return value === undefined ? NO_LIMIT_LABEL : String(value);
   }
 
   /**
-   * Renders the two limits one project is judged against, and their origin.
+   * Renders the two limits one project is judged against.
    *
    * A project's block already carried its deepest stack and its widest
    * callable; what it could not say is what either number is measured against.
@@ -126,17 +119,15 @@ export class MarkdownReportService {
    * inferable now — the limit is a fact about this project, and fifty projects
    * hold fifty answers.
    *
-   * The origin is a column rather than a footnote because the two are read
-   * differently: a `declared` number is a decision somebody made about this
-   * project, and an `inherited` one is the workspace default nobody has picked
-   * for it yet. `renderProjectIndex` draws the same distinction for the
-   * workspace's view of every project, in the same words.
+   * There is no origin column, because there is no second origin left: every
+   * traced project's configuration is complete, so both numbers are written in
+   * the file beside this readme or the run refused to start.
    */
   private renderProjectLimits(limits: ProjectLimits): string {
     return [
       MARKDOWN_PROJECT_LIMITS_HEADER,
       ...MARKDOWN_PROJECT_LIMIT_NAMES.map(
-        (name) => `| \`${name}\` | ${this.renderLimitCells(limits[name])} |`,
+        (name) => `| \`${name}\` | ${this.renderLimitCell(limits[name])} |`,
       ),
     ].join("\n");
   }

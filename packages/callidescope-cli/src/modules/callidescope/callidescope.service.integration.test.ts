@@ -31,11 +31,14 @@ import type {
  */
 const SCOPED_COMMAND_DEPTH = 3;
 
+/** The configuration file name a project declares itself through. */
+const PROJECT_CONFIGURATION = "callidescope.config.js";
+
 /** Where the configured fixture's own configuration file sits. */
 const LIBRARY_CONFIGURATION_PATH = path.join(
   "packages",
   "library",
-  "callidescope.config.json",
+  PROJECT_CONFIGURATION,
 );
 
 /**
@@ -63,6 +66,7 @@ async function addUnreadableProject(workspaceRoot: string): Promise<void> {
     "export function broken(): void {}\n",
     "utf8",
   );
+  await writeProjectConfiguration({ projectRoot: root });
 }
 
 /** Builds a resolved configuration for the fixture workspace. */
@@ -86,7 +90,6 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       json: undefined,
       markdown: undefined,
       mermaid: undefined,
-      projectReadmes: undefined,
     },
   };
 }
@@ -118,11 +121,10 @@ async function buildConfiguredWorkspace(
     },
     workspaceRoot,
   });
-  await writeFile(
-    path.join(workspaceRoot, LIBRARY_CONFIGURATION_PATH),
-    JSON.stringify(libraryConfiguration),
-    "utf8",
-  );
+  await writeProjectConfiguration({
+    overrides: libraryConfiguration,
+    projectRoot: path.join(workspaceRoot, "packages", "library"),
+  });
   await writeProject({
     name: "application",
     sources: {
@@ -267,6 +269,7 @@ async function buildWorkspace(): Promise<string> {
     `,
     "utf8",
   );
+  await writeProjectConfiguration({ projectRoot: root });
 
   return workspaceRoot;
 }
@@ -290,9 +293,6 @@ async function buildWorkspace(): Promise<string> {
 async function makeWorkspaceRoot(prefix: string): Promise<string> {
   return realpath(await mkdtemp(path.join(tmpdir(), prefix)));
 }
-
-/** The configuration file name a project declares itself through. */
-const PROJECT_CONFIGURATION = "callidescope.config.json";
 
 /** Reads the depth of the stack one project rooted at a named callable. */
 function readStackDepth(args: {
@@ -340,10 +340,50 @@ async function writeProject(args: {
     await writeFile(path.join(root, "package.json"), "{}", "utf8");
   }
 
+  await writeProjectConfiguration({ projectRoot: root });
+
   for (const [name, text] of Object.entries(args.sources)) {
     await mkdir(path.dirname(path.join(root, name)), { recursive: true });
     await writeFile(path.join(root, name), text, "utf8");
   }
+}
+
+/**
+ * Writes one project's own complete configuration file.
+ *
+ * Complete by construction, because an incomplete one is refused: a fixture
+ * that wants to declare one field still has to say what it does with the rest,
+ * and `undefined` is what says "nothing". Written as JavaScript rather than
+ * JSON for exactly that reason — JSON cannot spell `undefined`.
+ */
+async function writeProjectConfiguration(args: {
+  overrides?: Record<string, unknown> | undefined;
+  projectRoot: string;
+}): Promise<void> {
+  // The run's own rules restated, so a fixture's project file is complete
+  // without also being a different set of rules from the one the run uses —
+  // which is exactly what `projectDefaults` does in the real workspace.
+  const run = buildConfiguration();
+  const overrides: Readonly<Record<string, unknown>> = { ...args.overrides };
+
+  await writeFile(
+    path.join(args.projectRoot, PROJECT_CONFIGURATION),
+    `export default {
+      entryPoints: { ...${JSON.stringify(run.entryPoints)}, ...${JSON.stringify(overrides["entryPoints"] ?? {})} },
+      exclude: ${JSON.stringify(overrides["exclude"] ?? [])},
+      limits: {
+        maximumBreadth: undefined,
+        maximumDepth: ${String(run.limits.maximumDepth)},
+        ...${JSON.stringify(overrides["limits"] ?? {})},
+      },
+      write: {
+        markdown: undefined,
+        mermaid: undefined,
+        ...${JSON.stringify(overrides["write"] ?? {})},
+      },
+    };\n`,
+    "utf8",
+  );
 }
 
 /** Adds one test file to the traced workspace, inside the project's own tree. */
@@ -487,11 +527,10 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     // filter had no way to decide.
     const workspaceRoot = await buildWorkspace();
 
-    await writeFile(
-      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
-      JSON.stringify({ exclude: ["src/modules/example/example.command.ts"] }),
-      "utf8",
-    );
+    await writeProjectConfiguration({
+      overrides: { exclude: ["src/modules/example/example.command.ts"] },
+      projectRoot: path.join(workspaceRoot, "packages", "example"),
+    });
 
     const outcome = await service.trace({
       configuration: buildConfiguration(),
@@ -508,13 +547,12 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     // which is what "anchored to the project" costs and buys.
     const workspaceRoot = await buildWorkspace();
 
-    await writeFile(
-      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
-      JSON.stringify({
+    await writeProjectConfiguration({
+      overrides: {
         exclude: ["packages/example/src/modules/example/example.command.ts"],
-      }),
-      "utf8",
-    );
+      },
+      projectRoot: path.join(workspaceRoot, "packages", "example"),
+    });
 
     const outcome = await service.trace({
       configuration: buildConfiguration(),
@@ -533,16 +571,15 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     // measured against another would be describing two codebases.
     const workspaceRoot = await buildWorkspace();
 
-    await writeFile(
-      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
-      JSON.stringify({
+    await writeProjectConfiguration({
+      overrides: {
         write: {
           markdown: { heading: "## Calls", path: "docs/CALLS.md" },
           mermaid: { path: "docs/DIAGRAM.md" },
         },
-      }),
-      "utf8",
-    );
+      },
+      projectRoot: path.join(workspaceRoot, "packages", "example"),
+    });
 
     const outcome = await service.trace({
       configuration: buildConfiguration(),
@@ -561,14 +598,20 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     );
   });
 
-  it("names no project that declared nothing about its destinations", async () => {
+  it("names a project that publishes nothing rather than leaving it out", async () => {
+    // A complete configuration always names both destinations, so publishing
+    // nothing is `markdown: undefined` written in the file — not an absence.
     const outcome = await service.trace({
       configuration: buildConfiguration(),
       directories: [],
       workspaceRoot: tracedWorkspaceRoot,
     });
 
-    expect(outcome.writeByProject.size).toBe(0);
+    expect(outcome.writeByProject.get("packages/example")).toStrictEqual({
+      json: undefined,
+      markdown: undefined,
+      mermaid: undefined,
+    });
   });
 
   // 🧪 A project's own test files
@@ -580,11 +623,10 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     const workspaceRoot = await buildWorkspace();
 
     await writeTestFile(workspaceRoot);
-    await writeFile(
-      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
-      JSON.stringify({ entryPoints: { includeTests: true } }),
-      "utf8",
-    );
+    await writeProjectConfiguration({
+      overrides: { entryPoints: { includeTests: true } },
+      projectRoot: path.join(workspaceRoot, "packages", "example"),
+    });
 
     const outcome = await service.trace({
       configuration: buildConfiguration(),

@@ -45,7 +45,7 @@ and `packages/logger`. See
 | A stack headed `· declared` | [`declared-entry-points`](examples/declared-entry-points/README.md) | A project named that address in its own `callidescope.config.ts`. That is the surface it asked to be measured on |
 | `declares an entryPoints.addresses entry that resolves to nothing` | [`declared-entry-points`](examples/declared-entry-points/README.md) | A declared address names a callable that has moved or been renamed. Fix the address; the refusal exists so a rename cannot loosen a gate in silence |
 | `which only the workspace configuration may set` | [`project-depth-limit`](examples/project-depth-limit/README.md) | A project's `callidescope.config.ts` reached past `entryPoints`, `limits.maximumDepth`, `limits.maximumBreadth`, and `exclude` |
-| Two findings in one report judged against different limits | [`project-depth-limit`](examples/project-depth-limit/README.md), [`inherited-limits`](examples/inherited-limits/README.md) | Not a bug. A limit belongs to a project, so one finding's number can be a project's own while another's is the workspace default it fell back to |
+| Two findings in one report judged against different limits | [`project-depth-limit`](examples/project-depth-limit/README.md), [`inherited-limits`](examples/inherited-limits/README.md) | Not a bug. A limit belongs to a project, and every project writes its own — so two findings in one report are two projects' numbers |
 | A project reporting depth 0 while carrying a real chain | [`gated-leaf`](examples/gated-leaf/README.md) | It roots nothing, because everything it owns is called from above. Declare its entry points before giving it a limit |
 | `--check breadth requires at least one project in scope` | [`gated-leaf`](examples/gated-leaf/README.md) | Breadth has no default anywhere. Some project in scope has to declare `limits.maximumBreadth` before the gate can run |
 | A file a project's own `exclude` names, still traced | [`gated-leaf`](examples/gated-leaf/README.md) | A project's globs are anchored to that project's root. A workspace-relative glob in a project file matches nothing; drop the leading path, or move the glob to the run's own configuration |
@@ -71,7 +71,7 @@ callidescope-examples/
 │   │   ├── callidescope.config.ts     what that project declares about itself
 │   │   ├── *.generated.ts             the file this project's own exclude drops
 │   │   └── tsconfig.json              what makes the directory a project
-│   └── inherited-limits/              a nested project that declares nothing
+│   └── inherited-limits/              a nested project overriding nothing
 │       ├── *.generated.ts             its twin, which nothing excludes
 │       └── tsconfig.json              what makes the directory a project
 ├── output/
@@ -93,8 +93,9 @@ callidescope-examples/
   a `package.json`: Nx infers a project from a nested one, after which the
   relative import between the two fixtures fails
   `@nx/enforce-module-boundaries`. `gated-leaf`'s guide says so in full.
-- **Both of their guides carry a generated block.** `projectReadmes` writes one
-  `## 🔭 Callidescope` section per scoped project, and those two are scoped, so
+- **Both of their guides carry a generated block.** Each declares a
+  `write.markdown` of its own pointing at `README.md` under a
+  `## 🔭 Callidescope` heading, and both are scoped, so
   their `README.md` files each hold one between `<!-- CALL_STACKS_START -->` and
   `<!-- CALL_STACKS_END -->`. Do not hand-edit inside those anchors — regenerate.
 - **`src/` is a requirement, not a leftover.** The `module-bootstrap` and
@@ -146,16 +147,17 @@ the point:
   characters on purpose.
 - `project-depth-limit` is six frames against the five this package declares for
   itself, on purpose — it is a finding under this package's own limit and would
-  pass under the six it would otherwise inherit, which is the whole example.
+  pass under the six the run supplies, which is the whole example.
 - `gated-leaf` breaches both of the limits its own `callidescope.config.ts`
   declares, on purpose: four frames against three, and three direct callees
   against two. `maximumBreadth` has no default anywhere, so `--check breadth`
   needs some project in scope to declare one — this is the project that makes
   the refusal and the finding demonstrable side by side, and quieting it takes
   the example away with it.
-- `inherited-limits` is seven frames against the six it inherits, on purpose. It
-  declares nothing, and that is the example: it exists to be judged by a number
-  written somewhere else. Its `inherited-limits.generated.ts` is traced on
+- `inherited-limits` is seven frames against the six its own file declares, on
+  purpose. It overrides nothing, and that is the example: every value in its
+  configuration is a default, written down rather than inherited. Its
+  `inherited-limits.generated.ts` is traced on
   purpose too — it is the twin of the file `gated-leaf` excludes, and a run that
   dropped both would prove nothing about where a project's globs reach.
 

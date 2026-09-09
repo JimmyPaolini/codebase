@@ -649,7 +649,7 @@ describe("callidescope examples (integration)", () => {
           .map((project) => [project.projectName, project.summary.fileCount]),
       ).toStrictEqual([
         [GATED_LEAF_DIRECTORY, 2],
-        [INHERITED_LIMITS_DIRECTORY, 2],
+        [INHERITED_LIMITS_DIRECTORY, 3],
       ]);
     });
 
@@ -673,8 +673,8 @@ describe("callidescope examples (integration)", () => {
         traced: 2,
       });
       expect(traced(INHERITED_LIMITS_DIRECTORY)).toStrictEqual({
-        onDisk: 2,
-        traced: 2,
+        onDisk: 3,
+        traced: 3,
       });
     });
 

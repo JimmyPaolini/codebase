@@ -29,6 +29,7 @@ function buildDestination(
     endMarker: "<!-- CALL_STACKS_END -->",
     heading: "# 🔭 Callidescope",
     path: filePath,
+    previewCount: 3,
     render: undefined,
     startMarker: "<!-- CALL_STACKS_START -->",
     writeBlock: undefined,
@@ -500,66 +501,5 @@ describe(OutputMarkdownService, () => {
     await expect(readFile(override, "utf8")).resolves.toContain(
       "<!-- CALL_STACKS_START -->",
     );
-  });
-
-  // 📚 Project READMEs
-
-  /** The project-README destination, which carries its own markers. */
-  const readmeDestination = {
-    endMarker: "<!-- CALL_STACKS_END -->",
-    heading: "## 🔭 Callidescope",
-    previewCount: 3,
-    startMarker: "<!-- CALL_STACKS_START -->",
-  };
-
-  it("splices a section into every project README it is given", async () => {
-    const first = await temporaryPath();
-    const second = await temporaryPath();
-
-    subject.syncProjectReadmes({
-      check: false,
-      destination: readmeDestination,
-      sections: [
-        { content: "alpha section", path: first },
-        { content: "beta section", path: second },
-      ],
-    });
-
-    await expect(readFile(first, "utf8")).resolves.toContain("alpha section");
-    await expect(readFile(second, "utf8")).resolves.toContain("beta section");
-  });
-
-  it("reports nothing stale once every README is current", async () => {
-    const filePath = await temporaryPath();
-    const sections = [{ content: "body", path: filePath }];
-
-    subject.syncProjectReadmes({
-      check: false,
-      destination: readmeDestination,
-      sections,
-    });
-
-    expect(
-      subject.syncProjectReadmes({
-        check: true,
-        destination: readmeDestination,
-        sections,
-      }),
-    ).toStrictEqual([]);
-  });
-
-  it("names every stale README rather than stopping at the first", async () => {
-    const stale = [
-      { content: "body", path: await temporaryPath() },
-      { content: "body", path: await temporaryPath() },
-    ];
-
-    expect(
-      subject.syncProjectReadmes({
-        check: true,
-        destination: readmeDestination,
-        sections: stale,
-      }),
-    ).toStrictEqual(stale.map((section) => section.path));
   });
 });

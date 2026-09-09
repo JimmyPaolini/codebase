@@ -5,6 +5,7 @@ import {
   type CallidescopeLimits,
   ConfigurationService,
   DEFAULT_MAXIMUM_DEPTH,
+  ProjectConfigurationMissingError,
   ProjectConfigurationService,
   type ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
@@ -26,8 +27,8 @@ const WORKSPACE_CONFIGURATION_PATH = path.join(
 /** A project that declares limits of its own. */
 const DECLARING_PROJECT = "packages/alpha";
 
-/** A project with no configuration file at all. */
-const INHERITING_PROJECT = "packages/beta";
+/** A project whose own file overrides nothing the defaults gave it. */
+const QUIET_PROJECT = "packages/beta";
 
 /** The configuration file `packages/alpha` declares its limits in. */
 const DECLARING_PROJECT_CONFIGURATION_PATH = path.join(
@@ -35,6 +36,22 @@ const DECLARING_PROJECT_CONFIGURATION_PATH = path.join(
   DECLARING_PROJECT,
   "callidescope.config.ts",
 );
+
+/** The configuration file `packages/beta` spreads the defaults into. */
+const QUIET_PROJECT_CONFIGURATION_PATH = path.join(
+  process.cwd(),
+  QUIET_PROJECT,
+  "callidescope.config.ts",
+);
+
+/** Which file each project root answers with, keyed by absolute root. */
+const CONFIGURATION_PATH_BY_PROJECT_ROOT = new Map([
+  [
+    path.join(process.cwd(), DECLARING_PROJECT),
+    DECLARING_PROJECT_CONFIGURATION_PATH,
+  ],
+  [path.join(process.cwd(), QUIET_PROJECT), QUIET_PROJECT_CONFIGURATION_PATH],
+]);
 
 /** A resolved configuration with every field a run reads filled in. */
 function buildConfiguration(
@@ -59,7 +76,6 @@ function buildConfiguration(
       json: undefined,
       markdown: undefined,
       mermaid: undefined,
-      projectReadmes: undefined,
     },
     ...overrides,
   };
@@ -82,10 +98,27 @@ function buildLoadedFile(args: {
   configuration: ResolvedCallidescopeConfiguration;
   path: string | undefined;
 } {
-  const authoredLimits: CallidescopeLimits = args.authored.limits ?? {};
+  const authoredLimits: CallidescopeLimits = {
+    maximumBreadth: undefined,
+    ...args.authored.limits,
+  };
 
   return {
-    authored: args.authored,
+    authored: {
+      // Every field a project must set, so a fixture staging one project's
+      // limits is not also staging a file the loader refuses as incomplete.
+      entryPoints: {
+        addresses: [],
+        decorators: [],
+        includeExportedFunctions: true,
+        includeOrphans: true,
+        includeTests: false,
+      },
+      exclude: [],
+      write: { markdown: undefined, mermaid: undefined },
+      ...args.authored,
+      limits: authoredLimits,
+    },
     configuration: buildConfiguration({
       limits: {
         ...buildConfiguration().limits,
@@ -151,44 +184,53 @@ describe(LimitsService, () => {
     fileFilterService.buildFileFilter.mockReturnValue({
       isExcluded: () => false,
     });
-    discover([DECLARING_PROJECT, INHERITING_PROJECT]);
+    discover([DECLARING_PROJECT, QUIET_PROJECT]);
 
-    configurationService.loadConfigurationFile.mockResolvedValue(
-      buildLoadedFile({
-        authored: { limits: { maximumDepth: 17 } },
-        path: WORKSPACE_CONFIGURATION_PATH,
-      }),
-    );
     configurationService.findConfigurationFileAt.mockImplementation(
-      (directory: string) =>
-        directory === path.join(process.cwd(), DECLARING_PROJECT)
-          ? DECLARING_PROJECT_CONFIGURATION_PATH
-          : undefined,
+      (directory: string) => CONFIGURATION_PATH_BY_PROJECT_ROOT.get(directory),
     );
+    declareProjectLimits({ maximumDepth: 17 });
   });
 
-  /** Answers the declaring project's own file after the workspace's. */
+  /**
+   * Answers each traced project's own complete file, and the workspace's.
+   *
+   * Keyed on the path asked for rather than queued in call order, because
+   * every traced project declares a file now: a queue would have to be as long
+   * as the walk, and would answer the wrong file the moment a test discovered
+   * a different set.
+   */
   function declareProjectLimits(limits: CallidescopeLimits): void {
-    configurationService.loadConfigurationFile
-      .mockResolvedValueOnce(
-        buildLoadedFile({
-          authored: { limits: { maximumDepth: 17 } },
-          path: WORKSPACE_CONFIGURATION_PATH,
-        }),
-      )
-      .mockResolvedValueOnce(
-        buildLoadedFile({
-          authored: { limits },
-          path: DECLARING_PROJECT_CONFIGURATION_PATH,
-        }),
-      );
+    const byPath = new Map([
+      [DECLARING_PROJECT_CONFIGURATION_PATH, limits],
+      [QUIET_PROJECT_CONFIGURATION_PATH, { maximumDepth: 17 }],
+    ]);
+
+    configurationService.loadConfigurationFile.mockImplementation(
+      // eslint-disable-next-line @typescript-eslint/require-await
+      async (args?: { configurationPath?: string | undefined }) => {
+        const requested = args?.configurationPath;
+        const authored =
+          requested === undefined ? undefined : byPath.get(requested);
+
+        return authored === undefined
+          ? buildLoadedFile({
+              authored: { limits: { maximumDepth: 17 } },
+              path: WORKSPACE_CONFIGURATION_PATH,
+            })
+          : buildLoadedFile({
+              authored: { limits: authored },
+              path: requested,
+            });
+      },
+    );
   }
 
   it("is defined", () => {
     expect(service).toBeDefined();
   });
 
-  it("names the workspace default declared, in the file it is written in", async () => {
+  it("names the workspace's own numbers, in the file they are written in", async () => {
     discover([]);
 
     const rows = await service.list({});
@@ -196,14 +238,12 @@ describe(LimitsService, () => {
     expect(rows).toStrictEqual([
       {
         limit: "maximumDepth",
-        origin: "declared",
         path: "configuration/callidescope.config.ts",
         project: undefined,
         value: 17,
       },
       {
         limit: "maximumBreadth",
-        origin: undefined,
         path: undefined,
         project: undefined,
         value: undefined,
@@ -222,14 +262,12 @@ describe(LimitsService, () => {
     expect(rows).toStrictEqual([
       {
         limit: "maximumDepth",
-        origin: undefined,
         path: undefined,
         project: undefined,
         value: DEFAULT_MAXIMUM_DEPTH,
       },
       {
         limit: "maximumBreadth",
-        origin: undefined,
         path: undefined,
         project: undefined,
         value: undefined,
@@ -237,9 +275,9 @@ describe(LimitsService, () => {
     ]);
   });
 
-  // The row every other row inherits from, and the one case where a path alone
-  // would lie: `resolveLimits` stamps the workspace file's path on a depth that
-  // file never wrote, because resolution defaults it for everyone.
+  // The one case where a path alone would lie: resolution defaults
+  // `maximumDepth` for every run, so a path stamped unconditionally would name
+  // a file for a number that file never wrote.
   it("claims no file for a limit the workspace file never wrote itself", async () => {
     discover([]);
     configurationService.loadConfigurationFile.mockResolvedValue(
@@ -254,14 +292,12 @@ describe(LimitsService, () => {
     expect(rows).toStrictEqual([
       {
         limit: "maximumDepth",
-        origin: undefined,
         path: undefined,
         project: undefined,
         value: DEFAULT_MAXIMUM_DEPTH,
       },
       {
         limit: "maximumBreadth",
-        origin: undefined,
         path: undefined,
         project: undefined,
         value: undefined,
@@ -269,59 +305,34 @@ describe(LimitsService, () => {
     ]);
   });
 
-  // A workspace that omits a depth still hands every project one, and that row
-  // is `inherited` — the number is real, only its authorship is not, so the
-  // row keeps the number and names no file. The workspace's own row for the
-  // same limit says exactly the same thing, which is the point: two rows about
-  // one number cannot disagree about which file wrote it.
-  it("names no file on a project inheriting an un-authored limit", async () => {
-    configurationService.loadConfigurationFile.mockResolvedValue(
-      buildLoadedFile({ authored: {}, path: WORKSPACE_CONFIGURATION_PATH }),
-    );
-
+  it("names the quiet project's own file, the defaults having been spread into it", async () => {
     const rows = await service.list({});
 
-    expect(
-      rows.filter((row) => row.project === INHERITING_PROJECT),
-    ).toStrictEqual([
+    expect(rows.filter((row) => row.project === QUIET_PROJECT)).toStrictEqual([
       {
         limit: "maximumDepth",
-        origin: "inherited",
-        path: undefined,
-        project: INHERITING_PROJECT,
-        value: DEFAULT_MAXIMUM_DEPTH,
-      },
-      {
-        limit: "maximumBreadth",
-        origin: undefined,
-        path: undefined,
-        project: INHERITING_PROJECT,
-        value: undefined,
-      },
-    ]);
-  });
-
-  it("names a project with no configuration file as inheriting the workspace's", async () => {
-    const rows = await service.list({});
-
-    expect(
-      rows.filter((row) => row.project === INHERITING_PROJECT),
-    ).toStrictEqual([
-      {
-        limit: "maximumDepth",
-        origin: "inherited",
-        path: "configuration/callidescope.config.ts",
-        project: INHERITING_PROJECT,
+        path: "packages/beta/callidescope.config.ts",
+        project: QUIET_PROJECT,
         value: 17,
       },
       {
         limit: "maximumBreadth",
-        origin: undefined,
         path: undefined,
-        project: INHERITING_PROJECT,
+        project: QUIET_PROJECT,
         value: undefined,
       },
     ]);
+  });
+
+  it("refuses a listing over a project that has no configuration file", async () => {
+    // The listing is at its least trustworthy exactly when a project's
+    // configuration is missing, so it ends the run rather than printing a
+    // number that project never wrote.
+    configurationService.findConfigurationFileAt.mockReturnValue(undefined);
+
+    await expect(service.list({})).rejects.toThrow(
+      ProjectConfigurationMissingError,
+    );
   });
 
   it("names a project that declared both limits as declaring them, in its own file", async () => {
@@ -334,33 +345,16 @@ describe(LimitsService, () => {
     ).toStrictEqual([
       {
         limit: "maximumDepth",
-        origin: "declared",
         path: "packages/alpha/callidescope.config.ts",
         project: DECLARING_PROJECT,
         value: 10,
       },
       {
         limit: "maximumBreadth",
-        origin: "declared",
         path: "packages/alpha/callidescope.config.ts",
         project: DECLARING_PROJECT,
         value: 6,
       },
-    ]);
-  });
-
-  it("distinguishes the one limit a project declared from the one it inherited", async () => {
-    declareProjectLimits({ maximumBreadth: 6 });
-
-    const rows = await service.list({});
-
-    expect(
-      rows
-        .filter((row) => row.project === DECLARING_PROJECT)
-        .map((row) => [row.limit, row.origin, row.value]),
-    ).toStrictEqual([
-      ["maximumDepth", "inherited", 17],
-      ["maximumBreadth", "declared", 6],
     ]);
   });
 
@@ -372,12 +366,14 @@ describe(LimitsService, () => {
       undefined,
       DECLARING_PROJECT,
       DECLARING_PROJECT,
-      INHERITING_PROJECT,
-      INHERITING_PROJECT,
+      QUIET_PROJECT,
+      QUIET_PROJECT,
     ]);
   });
 
   it("reads the configuration file the command line named", async () => {
+    discover([]);
+
     await service.list({ config: "configuration/callidescope.config.ts" });
 
     expect(configurationService.loadConfigurationFile).toHaveBeenCalledWith({
@@ -387,6 +383,8 @@ describe(LimitsService, () => {
   });
 
   it("walks with the exclusions the configuration declares", async () => {
+    discover([]);
+    configurationService.loadConfigurationFile.mockReset();
     configurationService.loadConfigurationFile.mockResolvedValue({
       authored: {},
       configuration: buildConfiguration({
@@ -413,7 +411,7 @@ describe(LimitsService, () => {
     expect(logger.info).toHaveBeenCalledWith(
       "🔭 Listed every project's limits",
       undefined,
-      { declaringProjectCount: 1, projectCount: 2 },
+      { declaringProjectCount: 2, projectCount: 2 },
     );
   });
 });
