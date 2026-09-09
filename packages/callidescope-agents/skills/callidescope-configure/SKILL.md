@@ -271,16 +271,15 @@ entryPoints: {
 ```
 
 Declared addresses **add** roots and take none away: the rules below still run
-first and keep the kind saying _why_ something calls a callable, orphan
-promotion still catches whatever nobody named, and an already-rooted callable
-stays one root.
+first, orphan promotion still catches whatever nobody named, and an
+already-rooted callable stays one root.
 
 Reach for it when a package sits low in the graph: a stack is filed under the
 project owning its **root**, and most of what such a package publishes is
 called from above, so it roots nothing and any limit on it gates nothing.
 **An address resolving to nothing, to several declarations, or to nothing
-parseable fails the whole run**; the `callidescope-triage` skill carries each
-message and its fix.
+parseable fails the whole run** — `callidescope-triage` carries each message
+and its fix.
 
 `decorators` **replaces** the built-in list rather than adding to it, so a
 configuration naming its own framework's decorator should restate the ones it
