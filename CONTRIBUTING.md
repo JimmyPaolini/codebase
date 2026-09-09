@@ -171,7 +171,7 @@ gpg --armor --export "$(git config --get user.signingkey)"
 ```text
 codebase/
 ├── applications/       # Deployable applications (6)
-├── packages/           # Shared libraries and toolchain packages (43)
+├── packages/           # Shared libraries and toolchain packages (38)
 ├── tools/              # Repository-internal CLIs (2)
 ├── configuration/      # Every shared tool config, plus the Husky hooks
 ├── docs/               # Architecture decision records and agent configuration
@@ -183,6 +183,8 @@ codebase/
 ```
 
 Every project lives in `applications/`, `packages/`, or `tools/` — a file directly in one of those directories is a lint error, not a style preference. The full annotated project list is in [README.md](README.md), kept in step with the workspace by the `check-readme-projects` target; `nx show projects` prints the same set.
+
+**A package removed from the workspace can still look like a project on a stale checkout.** `check-readme-projects` and `nx show projects` both key off any directory holding its own `package.json`, not off what git tracks — so a checkout that had a since-removed package built or installed before the removal lands keeps that package's `node_modules/`, `coverage/`, and other untracked build output, and pnpm or Nx can keep treating the directory as a real project from those leftovers alone. `pull`ing the removal only deletes the tracked files; the untracked ones stay until something deletes them. If `check-readme-projects` names a project that was removed on `main`, or `nx show projects` lists one you know is gone, delete that directory outright rather than tracking down which file is still there — nothing in a removed package's directory is meant to survive.
 
 Scaffold new projects, modules, and components with a conformetry generator rather than by hand; code written in a shape a template already describes starts life failing conformance.
 
