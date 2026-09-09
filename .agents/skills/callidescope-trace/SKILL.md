@@ -1,6 +1,6 @@
 ---
 name: callidescope-trace
-description: Run callidescope and read what it printed — a whole-workspace trace, or the depth and breadth commands against one or more callables, each addressed as file#qualified-name. Use when running callidescope or npx callidescope, when reading a call stack, a module-spread row, a breadth row, or a possibly-misplaced row, when a depth printed as "≥ n" needs interpreting, when reading a committed markdown report, mermaid diagram, or JSON report, when a run narrowed with --directories reports a frame, a stack, or a project the run was never pointed at, when a depth moved without an edit that explains it, or when asking who calls this, what does it call, what would this rename touch, and where should this callable be split before a refactor starts.
+description: Run callidescope and read what it printed — a whole-workspace trace, one project's gate verdict, or the depth and breadth commands against one or more callables, each addressed as file#qualified-name. Use when running callidescope or npx callidescope, when reading a call stack or a breadth row, when reading what a per-project gate or trace target printed, when reading a project readme's Limits table, when a depth printed as "≥ n" needs interpreting, when reading a committed markdown report, mermaid diagram, or JSON report, when a run narrowed with --directories reports a frame, a stack, or a project the run was never pointed at, when a depth moved without an edit that explains it, or when asking who calls this, what does it call, what would this rename touch, and where should this callable be split before a refactor starts.
 license: MIT
 ---
 
@@ -20,31 +20,31 @@ npx callidescope depth --addresses src/foo.service.ts#FooService.bar    # one ca
 npx callidescope breadth --addresses src/foo.service.ts#FooService.bar  # one callable, horizontally
 ```
 
-A repository with no configuration file is traced with defaults rather than
-told to write one, so a bare run always produces something. What a run _gates_
-on and what it _writes_ are both opt-in and both live in the
-`callidescope-configure` skill; this one is about reading the result.
+A repository with no workspace configuration file is traced with defaults
+rather than told to write one, so a bare run always produces something.
+**A traced project's own `callidescope.config.ts` is a different matter**: it
+must exist and must be complete, or the run is refused before anything is
+traced — see the `callidescope-configure` skill. What a run _gates_ on and what
+it _writes_ are both opt-in and both live in that skill; this one is about
+reading the result.
 
 ## `callidescope`: the whole workspace
 
-Reports four findings.
+Reports two findings, both per project.
 
 **Deep call stacks.** The single deepest path below each entry point, when it
 exceeds `limits.maximumDepth`. Only one path per entry point is ever built, so
 a wide graph costs no more than a narrow one.
 
-**Module spread.** A callable whose transitive callees reach many unrelated
-modules **and** which calls several of them directly. Both conditions matter:
-transitive reach alone flags every entry point, because an entry point
-legitimately reaches the whole program. A spread row is therefore specifically
-a callable _personally orchestrating_ unrelated concerns.
-
 **Breadth.** How many callables one callable calls directly. Reported always;
-gated only when `limits.maximumBreadth` is set, which is the one limit with no
-default.
+gated only when a project declares `limits.maximumBreadth`, which is the one
+limit with no default anywhere.
 
-**Possibly misplaced callables.** A callable whose callers nearly all sit in
-one _other_ module of the same project. The output is a concrete move.
+**Each finding carries the limit it was weighed against**, because that limit is
+a fact about the project owning the stack's root rather than about the run. One
+report routinely holds several different numbers, and two identical stacks in
+two projects can be a finding in one and silent in the other with nothing about
+the code differing.
 
 ## Reading a stack
 
@@ -87,6 +87,69 @@ diagram is read in whichever theme the reader has. A diagram stops at 300
 callables, drops whole stacks rather than trimming so it never contains an edge
 into something it did not draw, and says how many it left out.
 
+## Reading a per-project verdict
+
+In a workspace using `@callidescope/nx`, the thing a branch actually runs is one
+project's `gate`, and what it prints is **not** a smaller report. It prints the
+two findings it weighed and nothing else:
+
+```text
+## Call stacks over the depth limit (1)
+...the stack, as a tree...
+
+## Callables over the breadth limit (1)
+- `GatedLeafService.read` — 3 direct callees, limit 2 (…/gated-leaf.ts)
+```
+
+Four things to hold on to when reading one:
+
+- **The findings are the judged project's own.** A gate traces its project
+  together with that project's Nx dependencies, and then judges only what the
+  project it is named after owns. A dependency's breach is that dependency's own
+  gate's business — so a gate that failed is telling you about one project, and
+  the fix is that project's code or that project's own `callidescope.config.ts`.
+- **A gate's exit code is the verdict and nothing else.** It reads no
+  destination, so a failing gate has changed no committed file, and a passing
+  one has published nothing.
+- **The summary's `Deepest stack` is not the number the verdict used.** A
+  scoped run's counts describe the whole trace, dependency closure included, so
+  the deepest stack it reports is routinely deeper than anything the judged
+  project owns. Take the number a verdict gives you, never the one a summary
+  line prints. The same caution applies to a `🔭 Finished an analysis` log
+  line — see the `callidescope-triage` skill.
+- **`## Read nothing of its own (0 files)` is a failure about the run, not the
+  code.** The gate judged a project whose own sources it never opened, so a
+  green verdict would mean only that it never looked. The `trace` target prints
+  the same block and passes; the gate is the one that fails on it.
+
+The sibling `trace` target prints the whole report instead — the summary, a
+`Projects` index with one row per project against **its own** limit, and a
+`Depth headroom` scoreboard. Reach for `trace` to understand a project, and
+read a `gate` to understand why a pipeline is red.
+
+## Reading a committed project block
+
+Every traced project's own readme carries a `## 🔭 Callidescope` section, and
+its `### Limits` table is what says which numbers that project is held to:
+
+```text
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 4 |
+| `maximumBreadth` | none |
+```
+
+**There is no origin column, and no second origin left to record.** Every
+traced project's own `callidescope.config.ts` is complete — it spreads the
+workspace's `projectDefaults` and overrides what it means to — so both numbers
+are written in the file beside this readme, or the run refused to start before
+anything was traced. `none` means that project's own file names no breadth
+limit — see the `callidescope-configure` skill for why that is a deliberate
+statement rather than an omission.
+
+Read the `Deepest stack` row of the summary above it against the depth limit
+here: the two together are the whole of what that project's gate decides.
+
 ## Addressing one callable
 
 `depth` and `breadth` take `<file>#<qualified-name>` — the file path and the
@@ -106,9 +169,11 @@ When it cannot tell which one was meant, the run says so and prints every
 candidate's line, so the disambiguated address is a copy away.
 
 Neither command writes anything, compares a destination, or takes `--check`,
-`--write`, `--json`, or `--markdown`. A lookup only ever prints. Both do take
-the same workspace-scoping flags as `callidescope` itself, because resolving an
-address still means tracing the workspace first.
+`--write`, `--json`, `--markdown`, `--mermaid`, `--maximum-depth`, or
+`--maximum-breadth`. A lookup only ever prints. Both do take every flag that
+shapes the graph — `--directories`, the entry-point overrides, and the two
+exclusion lists — plus `--config` and `--format`, because resolving an address
+still means tracing the workspace first.
 
 ## `breadth`: what it calls, and what calls it
 
@@ -153,20 +218,20 @@ the way one deepest path is.
   that frame participates in, which is what tells you whether collapsing a
   forwarding layer is safe or whether three other callers depend on it.
 - **Testing a "this looks misplaced" hunch.** The caller trees show where the
-  callable is really used from — the same evidence the possibly-misplaced
-  finding is built on, in full rather than summarized.
+  callable is really used from, in full rather than folded into one deepest
+  path.
 
 ## Which one to reach for
 
-| The question | The command |
-| ------------ | ----------- |
-| Is anything in this workspace too deep, too wide, or misplaced? | `callidescope` |
-| What breaks if I rename this? | `breadth` |
-| Where do I cut this callable in two? | `breadth` |
-| Can I inline this? | `breadth` |
-| Can I collapse this layer? | `depth` |
-| What is this callable actually part of? | `depth` |
-| Does this belong in this file? | `depth` |
+| The question                                        | The command    |
+| --------------------------------------------------- | -------------- |
+| Is anything in this workspace too deep or too wide? | `callidescope` |
+| What breaks if I rename this?                       | `breadth`      |
+| Where do I cut this callable in two?                | `breadth`      |
+| Can I inline this?                                  | `breadth`      |
+| Can I collapse this layer?                          | `depth`        |
+| What is this callable actually part of?             | `depth`        |
+| Does this belong in this file?                      | `depth`        |
 
 ## What a scoped run measures
 
@@ -215,15 +280,15 @@ Both refusals apply to a _destination_ only, so either kind is still traced in
 full when named directly or by a run that names no directory. What they cost is
 that a call into a refused directory resolves to no frame.
 
-**Both cross-project findings survive a downward-only scope**, which is worth
-saying because it is not obvious. Module spread folds over a callable's
-transitive _callees_, which run downward — precisely what a closure holds in
-full. Possibly-misplaced compares a callable's callers _within its own project_,
-which a run always has whole whatever its scope. Neither needs a dependent.
+**Depth and breadth both survive a downward-only scope**, which is worth saying
+because it is not obvious: both fold over a callable's transitive **callees**,
+which run downward — precisely what a closure holds in full. Neither needs a
+dependent.
 
-**Publishing does not widen with measurement.** A `## 🔭 Callidescope` section
-is written only for the projects a run was scoped to, so a scoped run never
-rewrites a section in a dependency it merely measured.
+**Publishing does not widen with measurement.** Each project's own
+`write.markdown` (and `write.mermaid`, when it declares one) is written only for
+the projects a run was scoped to, so a scoped run never rewrites a section in a
+dependency it merely measured.
 
 A worked example — the projects one real scoped run reaches, and why each — is
 `examples/dependency-closure` in the `@callidescope/examples` package.
@@ -233,22 +298,24 @@ A worked example — the projects one real scoped run reaches, and why each — 
 The same resolution rules govern all three commands, and they decide what any
 of them can tell you.
 
-| Written as | Resolved to |
-| ---------- | ----------- |
-| `helper()` | The symbol at the callee, unwrapped through import aliases |
+| Written as            | Resolved to                                                  |
+| --------------------- | ------------------------------------------------------------ |
+| `helper()`            | The symbol at the callee, unwrapped through import aliases   |
 | `this.service.load()` | The symbol at the member name — the injected-dependency case |
-| `provider.ingest()` | Every class structurally satisfying the interface, capped |
-| `super.run()` | The base declaration the checker resolves to |
-| `new Thing()` | The constructor, when it has a body |
-| `list.map(callback)` | The callback, as its own frame — `map` itself is external |
-| `target[key]()` | Nothing. Recorded as unfollowable rather than guessed |
+| `provider.ingest()`   | Every class structurally satisfying the interface, capped    |
+| `super.run()`         | The base declaration the checker resolves to                 |
+| `new Thing()`         | The constructor, when it has a body                          |
+| `list.map(callback)`  | The callback, as its own frame — `map` itself is external    |
+| `target[key]()`       | Nothing. Recorded as unfollowable rather than guessed        |
 
 Four consequences worth holding on to:
 
 - **Structural matching is not optional**, because classes routinely satisfy an
   interface without writing `implements`. It also means a caller list can
-  contain a class that never actually calls the callable at runtime — check
-  `maximumImplementationCandidates` when a result looks implausibly wide.
+  contain a class that never actually calls the callable at runtime — that cap
+  is a fixed constant in `@callidescope/graph` rather than a configured limit,
+  so a result that looks implausibly wide is a fan-out to inspect rather than a
+  number to raise.
 - **A computed member call resolves to nothing.** A caller reaching the
   callable that way will not appear, so `breadth` does not fully cover a rename
   in a codebase that dispatches through computed names.
@@ -257,8 +324,8 @@ Four consequences worth holding on to:
   layering is too deep, and counting it would move every number on an unrelated
   upgrade. A call into another project of the same workspace is not one of
   these — it resolves to a real frame, however the run was scoped.
-- **`ignoreCallees` globs are dropped from the graph entirely**, so a callable
-  the configuration ignores — typically a logger — appears in no list and
+- **`excludeCallees` globs are dropped from the graph entirely**, so a callable
+  the configuration excludes — typically a logger — appears in no list and
   counts toward nobody's depth or breadth.
 
 **Cycles are collapsed before depth is measured**, so a mutually recursive
