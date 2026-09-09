@@ -26,9 +26,9 @@
  *   the family's structural minimum.
  * - `rung` turns the construction on its side: one vertical stile per
  *   repeat unit, a horizontal rung off it at every row the stile spans, and
- *   a rail along the top joining each unit to the next. Its modifier
- *   carries which way the rungs point, which mirrors the whole figure
- *   rather than changing it.
+ *   a rail along one border joining each unit to the next. Its modifier
+ *   carries a {@link RungDirection}, which reflects the whole figure rather
+ *   than changing it.
  */
 export type BranchMode = "comb" | "rung" | "stagger";
 
@@ -65,4 +65,52 @@ export interface BranchUnitPlacement {
   readonly rows: number;
   readonly unitColumns: number;
   readonly unitIndex: number;
+}
+
+/**
+ * Which way one `rung` drawing is turned, as a compass direction naming
+ * both of the axes the figure has.
+ *
+ * The name's first half is **the border the rail runs along**, and its
+ * second is **the direction the rungs face** — where a rung's free end
+ * travels, which is the way the stile is not. So a reader who knows where
+ * the rail is knows which way the rungs point without a table, and the two
+ * halves are independent: each of the four combinations is a drawing.
+ *
+ * `northeast` and `northwest` rail along row 0 and are ruled at row `rows`;
+ * `southeast` and `southwest` are those two turned over, railed along row
+ * `rows` and ruled at row 0. `northeast` and `southeast` stand their stiles
+ * on the unit's first lattice column so the rungs reach east; `northwest`
+ * and `southwest` stand them on the unit's last so the rungs reach west.
+ * See {@link RungOrientation}, which is where those two axes are read off
+ * the name, and `BranchMotifService.rungRows`.
+ *
+ * The four measure identically — a reflection moves ink without adding or
+ * removing any — so this is one mode in four orientations rather than four
+ * modes. `branch-motif.service.unit.test.ts` asserts both halves of that:
+ * the four are pairwise distinct drawings, and every count the family is
+ * measured by comes out the same for all four.
+ */
+export type RungDirection =
+  | "northeast"
+  | "northwest"
+  | "southeast"
+  | "southwest";
+
+/**
+ * The two independent choices one {@link RungDirection} names, so the
+ * drawing methods read a border and a side rather than re-deriving them from
+ * the compass name.
+ *
+ * Both are booleans against the northern, eastward drawing `rung` inked
+ * before the other three were reachable: that one is
+ * `{ isSouthRailed: false, reachesWest: false }`, and it is what
+ * `DEFAULT_RUNG_DIRECTION` names. `RUNG_ORIENTATIONS_BY_DIRECTION` maps
+ * every direction to its pair, and being a `Record` over the union is what
+ * makes a direction added later a type error rather than a silent
+ * north-eastward drawing.
+ */
+export interface RungOrientation {
+  readonly isSouthRailed: boolean;
+  readonly reachesWest: boolean;
 }

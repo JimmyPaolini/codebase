@@ -46,16 +46,29 @@ export const WRITE_COMMAND = "nx run meanderaw:address-table:write";
  * Changing a number is a decision about the corpus rather than a way past a
  * red check.
  *
- * Two things put an entry here, and neither is duplicate art:
+ * Three things put an entry here, and none is duplicate art:
  *
  * A **two-row band** has one interior level and no addressable vertical edge
  * at all — `MosaicTileService.blankEdges` gives a tile `rows - 2` vertical
  * levels — so its address is a single row of horizontal bits. `parallel`'s
  * two two-strand `serpentine` rotations differ only in ink that rises out of
  * a border rule, which at two rows is every vertical edge the drawing has.
- * `branch` used to collide here too, between its two `rung` directions;
- * insetting its figure raised that family's structural minimum to three rows,
- * so the band that could not tell them apart is no longer drawn.
+ *
+ * **A `rung` drawing and its vertical mirror** are the same case at every row
+ * count rather than only at two. A `rung` direction rails along one border
+ * and stands its stiles on the `rows` lattice rows nearest it, so the
+ * north-railed and south-railed drawings of one reach differ in exactly two
+ * vertical edges — the one leaving the north border row and the one leaving
+ * the south — and both of those are the border-to-interior verticals a tile's
+ * `rows - 2` levels leave out. Every other edge is shared: both borders carry
+ * ink end to end either way, one from a rail and the other from a rule, and
+ * the rungs between them sit on the same steps. So the twenty entries below
+ * are ten row counts of `northeast` beside `southeast` and of `northwest`
+ * beside `southwest`, and they are four distinct drawings the address cannot
+ * spell apart rather than two drawn twice —
+ * `meander-topology.service.integration.test.ts` separates all four on the
+ * full lattice, vertical edges and all, and
+ * `branch-motif.service.unit.test.ts` separates them on the ink itself.
  *
  * **`negative`'s enumerated half** files a drawing under the canonical
  * identifier of the tile it inverts, and inverting a source of `rows + 1`
@@ -83,6 +96,28 @@ export const EXPECTED_ADDRESS_COLLISIONS: Readonly<
   // are turned off across them. The generated table needs no such comment:
   // `output/` is excluded from `cspell` wholesale.
   /* cspell:disable */
+  branch: {
+    "3r2c-61a1": 2,
+    "3r2c-2529": 2,
+    "4r2c-61e1a1": 2,
+    "4r2c-252d29": 2,
+    "5r2c-61e1e1a1": 2,
+    "5r2c-252d2d29": 2,
+    "6r2c-61e1e1e1a1": 2,
+    "6r2c-252d2d2d29": 2,
+    "7r2c-61e1e1e1e1a1": 2,
+    "7r2c-252d2d2d2d29": 2,
+    "8r2c-61e1e1e1e1e1a1": 2,
+    "8r2c-252d2d2d2d2d29": 2,
+    "9r2c-61e1e1e1e1e1e1a1": 2,
+    "9r2c-252d2d2d2d2d2d29": 2,
+    "10r2c-61e1e1e1e1e1e1e1a1": 2,
+    "10r2c-252d2d2d2d2d2d2d29": 2,
+    "11r2c-61e1e1e1e1e1e1e1e1a1": 2,
+    "11r2c-252d2d2d2d2d2d2d2d29": 2,
+    "12r2c-61e1e1e1e1e1e1e1e1e1a1": 2,
+    "12r2c-252d2d2d2d2d2d2d2d2d29": 2,
+  },
   negative: {
     "3r1c-4b": 2,
     "3r1c-7b": 5,

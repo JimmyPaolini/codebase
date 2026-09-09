@@ -201,9 +201,9 @@ describe("the lattice address table", () => {
         (addresses) => Object.values(addresses),
       );
 
-      expect(census).toHaveLength(47);
+      expect(census).toHaveLength(67);
       expect(census.filter((count) => count < 2)).toStrictEqual([]);
-      expect(census.reduce((total, count) => total + count, 0)).toBe(148);
+      expect(census.reduce((total, count) => total + count, 0)).toBe(188);
 
       const { miscounted } = reconcileCollisions([
         ...corpus,
@@ -250,7 +250,7 @@ describe("the lattice address table", () => {
    */
   describe("the figures ADR 0007 states", () => {
     it("addresses the whole committed corpus", () => {
-      expect(corpus).toHaveLength(9857);
+      expect(corpus).toHaveLength(9877);
     });
 
     it("counts the classes more than one family draws", () => {
@@ -312,7 +312,7 @@ describe("the lattice address table", () => {
           0,
         ),
         groups: groups.length,
-      }).toStrictEqual({ drawings: 669, groups: 283 });
+      }).toStrictEqual({ drawings: 689, groups: 283 });
       expect(byFamily).toStrictEqual({
         boxes: 10,
         branch: 10,
@@ -356,7 +356,7 @@ describe("the lattice address table", () => {
 
       expect(title).toBe("# 🗺️ Lattice Addresses");
       expect(blank).toBe("");
-      expect(statement).toContain("9,857");
+      expect(statement).toContain("9,877");
       expect(statement).toContain("nx run meanderaw:address-table:write");
     });
 

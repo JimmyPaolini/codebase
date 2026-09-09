@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { DEFAULT_RUNG_IS_LEFTWARD } from "../branch-motif/branch-motif.constants";
+import { DEFAULT_RUNG_DIRECTION } from "../branch-motif/branch-motif.constants";
 
 import { DrawParametersService } from "./draw-parameters.service";
 
@@ -99,8 +99,8 @@ describe(DrawParametersService, () => {
         options: { modifier: "plied" as const, strands: 3 },
       },
       {
-        expected: { isLeftward: true, name: "rung" },
-        options: { leftward: true, modifier: "rung" as const },
+        expected: { direction: "southwest", name: "rung" },
+        options: { direction: "southwest" as const, modifier: "rung" as const },
       },
       {
         expected: { branches: 4, name: "stagger" },
@@ -127,15 +127,15 @@ describe(DrawParametersService, () => {
     });
 
     // 🎯 The one modifier carrying a parameter that is not refused without
-    // it, and the reason is the parameter's type rather than a softer rule:
-    // commander reports a boolean flag left off and one passed `false`
-    // identically, so there is no "absent" for it to refuse. It takes the
-    // direction every committed `rung` drawing was made with instead.
+    // it, and it is a choice rather than a limitation: `--direction` takes a
+    // named value, so an absent one is a state this could refuse. It takes
+    // the one direction every committed `rung` drawing was made with
+    // instead.
     it("defaults rung's direction rather than refusing it", () => {
       expect(
         service.modifier({ ...baseOptions, modifier: "rung" }),
       ).toStrictEqual({
-        isLeftward: DEFAULT_RUNG_IS_LEFTWARD,
+        direction: DEFAULT_RUNG_DIRECTION,
         name: "rung",
       });
     });

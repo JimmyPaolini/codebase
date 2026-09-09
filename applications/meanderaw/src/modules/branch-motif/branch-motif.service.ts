@@ -6,7 +6,7 @@ import {
   BRANCH_MODES_BY_MODIFIER_NAME,
   BRANCH_UNIT_COLUMNS,
   DEFAULT_BRANCH_MODE,
-  DEFAULT_RUNG_IS_LEFTWARD,
+  RUNG_ORIENTATIONS_BY_DIRECTION,
   UnknownBranchModeError,
 } from "./branch-motif.constants";
 
@@ -22,6 +22,8 @@ import type {
   BranchModifierName,
   BranchSpan,
   BranchUnitPlacement,
+  RungDirection,
+  RungOrientation,
 } from "./branch-motif.types";
 
 /**
@@ -106,18 +108,20 @@ export class BranchMotifService implements MotifService {
   }
 
   /**
-   * The lattice rows a mode's own vertical runs span — its teeth under
-   * `comb` and `stagger`, its stile under `rung`.
+   * The lattice rows a `comb` or `stagger` figure's teeth span.
    *
-   * Every mode stops one row short of the band's bottom border row, and
-   * `stagger` starts one row past its top one. That inset is the whole
-   * point: a rule drawn along a row the figure already occupies is
-   * invisible, so a mode whose rail can reach a border row leaves that row
-   * to the rule and keeps its own ink off it. `comb` and `rung` keep their
-   * rail on row 0, which is where a reader already sees the top border, so
-   * only the bottom needs clearing; `stagger` moves its rail between the
-   * two rows this span ends at, so both borders are cleared and both are
-   * ruled. See {@link border} and {@link spineRow}.
+   * Both stop one row short of the band's bottom border row, and `stagger`
+   * starts one row past its top one. That inset is the whole point: a rule
+   * drawn along a row the figure already occupies is invisible, so a mode
+   * whose rail can reach a border row leaves that row to the rule and keeps
+   * its own ink off it. `comb` keeps its rail on row 0, which is where a
+   * reader already sees the top border, so only the bottom needs clearing;
+   * `stagger` moves its rail between the two rows this span ends at, so
+   * both borders are cleared and both are ruled. See {@link border} and
+   * {@link spineRow}.
+   *
+   * `rung` reads {@link rungRows} instead, because which of the two borders
+   * it clears is its direction's to say rather than the mode's.
    */
   private figureRows(rows: number, mode: BranchMode): BranchSpan {
     return { from: mode === "stagger" ? 1 : 0, to: rows - 1 };
@@ -142,47 +146,60 @@ export class BranchMotifService implements MotifService {
     return Object.hasOwn(BRANCH_MODES_BY_MODIFIER_NAME, name);
   }
 
-  /**
-   * Which way a `rung` drawing's rungs point, read off its own modifier.
-   *
-   * Every other mode answers `false` and never asks: the direction is
-   * `rung`'s alone, and `spineUnit` has no side for a tooth to be on. The
-   * fallback is {@link DEFAULT_RUNG_IS_LEFTWARD} rather than an inline
-   * literal, so the direction a bare `--modifier rung` draws is stated in
-   * one place.
-   */
-  private isLeftward(modifier: Modifier | undefined): boolean {
-    return modifier?.name === "rung"
-      ? modifier.isLeftward
-      : DEFAULT_RUNG_IS_LEFTWARD;
-  }
-
   /** The lattice column the drawing ends at: one short of the columns its repeat units span, since the units count lattice columns rather than the gaps between them. */
   private lastColumn(pattern: RepeatPatternOptions): number {
     return this.unitColumns(pattern.modifier) * pattern.repeatCount - 1;
   }
 
+  /** Which border a `rung` direction rails along and which way its rungs reach, as the pair {@link RUNG_ORIENTATIONS_BY_DIRECTION} maps it to. */
+  private orientation(direction: RungDirection): RungOrientation {
+    return RUNG_ORIENTATIONS_BY_DIRECTION[direction];
+  }
+
   /**
-   * The lattice column span one unit's row-0 run covers: its own rung, plus
-   * the rail carrying on to the next unit's stile.
+   * Which lattice row {@link border} rules when a mode takes one rule: the
+   * border row the figure's own rail does not run along.
    *
-   * The two directions are mirror images, and each draws the join between
-   * one unit and the next exactly once. Pointing right, the rail runs on
-   * past the unit's own columns into the unit after it, and the *last* unit
-   * stops short because there is no further stile to reach. Pointing left
-   * it runs back into the unit before it, and the *first* unit stops short
-   * for the same reason at the other end. Nothing else changes: the number
-   * of rail steps is identical either way, so the figure is the same one
-   * seen in a mirror.
+   * `comb` rails along row 0 and is ruled at row `rows`. A `rung` rails
+   * along whichever border its direction names, so a north-railed one is
+   * ruled at row `rows` like `comb` and a south-railed one at row 0
+   * instead. Either way the rule is the border row the figure is inset
+   * from, which is what keeps it visible — see {@link rungRows}.
+   */
+  private ruleRow(pattern: RepeatPatternOptions): number {
+    const { modifier, rows } = pattern;
+
+    return modifier?.name === "rung" &&
+      this.orientation(modifier.direction).isSouthRailed
+      ? 0
+      : rows;
+  }
+
+  /**
+   * The lattice column span one unit's railed run covers: its own rung,
+   * plus the rail carrying on to the next unit's stile.
+   *
+   * The east-facing and west-facing directions are mirror images, and each
+   * draws the join between one unit and the next exactly once. Reaching
+   * east, the rail runs on past the unit's own columns into the unit after
+   * it, and the *last* unit stops short because there is no further stile to
+   * reach. Reaching west it runs back into the unit before it, and the
+   * *first* unit stops short for the same reason at the other end. Nothing
+   * else changes: the number of rail steps is identical either way, so the
+   * figure is the same one seen in a mirror.
+   *
+   * Which border the rail runs along is no business of this span, which
+   * covers one lattice row and says nothing about which — see
+   * {@link rungUnit}.
    */
   private rungRail(
     placement: BranchUnitPlacement,
-    isLeftward: boolean,
+    direction: RungDirection,
   ): BranchSpan {
     const { firstColumn, isLastUnit, unitIndex } = placement;
-    const stile = this.stileColumn(placement, isLeftward);
+    const stile = this.stileColumn(placement, direction);
 
-    return isLeftward
+    return this.orientation(direction).reachesWest
       ? { from: firstColumn - (unitIndex === 0 ? 0 : 1), to: stile }
       : {
           from: stile,
@@ -191,13 +208,35 @@ export class BranchMotifService implements MotifService {
   }
 
   /**
+   * The lattice rows a `rung` figure's stile and rungs span, which is every
+   * row of the band but the one its rule closes.
+   *
+   * A north-railed direction rails along row 0 and spans rows 0 through
+   * `rows - 1`, leaving row `rows` to its rule; a south-railed one is that
+   * figure turned over, spanning rows 1 through `rows` and leaving row 0.
+   * Either way the span covers `rows` of the band's `rows + 1` lattice
+   * rows and the rule sits one row clear of it, which is the inset every
+   * mode of this family keeps — see {@link figureRows} for the other two
+   * modes' and {@link ruleRow} for the rule.
+   */
+  private rungRows(rows: number, direction: RungDirection): BranchSpan {
+    return this.orientation(direction).isSouthRailed
+      ? { from: 1, to: rows }
+      : { from: 0, to: rows - 1 };
+  }
+
+  /**
    * One `rung` repeat unit: a stile down one of the unit's two lattice
    * columns, a rung reaching across to the other at every row the stile
-   * spans, and the rail carrying on to the next unit's stile along row 0.
+   * spans, and the rail carrying on to the next unit's stile along the
+   * border its direction names.
    *
-   * The stile and its rungs stop one row short of the band's bottom border
-   * row, which {@link border} rules — see {@link figureRows} — so the unit
-   * emits one path per row of that span and one for the stile itself.
+   * The stile and its rungs stop one row short of the border row opposite
+   * that rail, which {@link border} rules — see {@link rungRows} — so the
+   * unit emits one path per row of that span and one for the stile itself.
+   * The rail takes the row at the span's own railed end, so it is one of
+   * those paths rather than an extra one: at that row the unit draws the
+   * rail instead of a rung.
    *
    * Only the stile's interior points fork: a rung meets it from the side
    * while it runs on above and below, which is `rows - 2` forks per unit,
@@ -210,33 +249,37 @@ export class BranchMotifService implements MotifService {
    * family's minimum row count: `stagger` needs a row more than that — see
    * `STRUCTURAL_MINIMUM_ROWS`.
    *
-   * `isLeftward` mirrors all of that and changes none of its counts. Which
+   * The direction mirrors all of that and changes none of its counts. Which
    * column the stile sits in, which way the rungs reach, and which end of
-   * the band holds the stile with no rail past it all move together, so the
-   * two directions measure identically and differ only in the drawing. See
-   * {@link rungRail}.
+   * the band holds the stile with no rail past it all move together along
+   * one axis; which border the rail runs along and which row is ruled move
+   * together along the other. So the four directions measure identically
+   * and differ only in the drawing. See {@link rungRail} and
+   * {@link RungDirection}.
    */
   private rungUnit(
     geometry: GridGeometry,
     placement: BranchUnitPlacement,
-    isLeftward: boolean,
+    direction: RungDirection,
   ): string {
     const { firstColumn, rows } = placement;
-    const rail = this.rungRail(placement, isLeftward);
-    const runs = Array.from({ length: rows }, (_value, row) =>
-      this.horizontalRun(
+    const rail = this.rungRail(placement, direction);
+    const span = this.rungRows(rows, direction);
+    const railRow = this.orientation(direction).isSouthRailed
+      ? span.to
+      : span.from;
+    const runs = Array.from({ length: rows }, (_value, index) => {
+      const row = span.from + index;
+
+      return this.horizontalRun(
         geometry,
         row,
-        row === 0 ? rail : { from: firstColumn, to: firstColumn + 1 },
-      ),
-    );
+        row === railRow ? rail : { from: firstColumn, to: firstColumn + 1 },
+      );
+    });
 
     return [
-      this.verticalRun(
-        geometry,
-        this.stileColumn(placement, isLeftward),
-        this.figureRows(rows, "rung"),
-      ),
+      this.verticalRun(geometry, this.stileColumn(placement, direction), span),
       ...runs,
     ].join("");
   }
@@ -312,7 +355,7 @@ export class BranchMotifService implements MotifService {
 
   /**
    * Which of a `rung` unit's two lattice columns carries its stile: the
-   * first when the rungs point right, the second when they point left.
+   * first when the rungs reach east, the last when they reach west.
    *
    * The rungs hang off the side the stile is not on, which is what makes
    * the free ends of one direction land where the other's stile does. It is
@@ -321,9 +364,9 @@ export class BranchMotifService implements MotifService {
    */
   private stileColumn(
     placement: BranchUnitPlacement,
-    isLeftward: boolean,
+    direction: RungDirection,
   ): number {
-    return isLeftward
+    return this.orientation(direction).reachesWest
       ? placement.firstColumn + placement.unitColumns - 1
       : placement.firstColumn;
   }
@@ -392,7 +435,7 @@ export class BranchMotifService implements MotifService {
       );
     }
 
-    return this.horizontalRun(geometry, pattern.rows, {
+    return this.horizontalRun(geometry, this.ruleRow(pattern), {
       from: 0,
       to: this.lastColumn(pattern),
     });
@@ -423,9 +466,17 @@ export class BranchMotifService implements MotifService {
     return BRANCH_MODES_BY_MODIFIER_NAME[modifier.name];
   }
 
-  /** Draws one repeat unit of whichever spine-and-teeth figure the modifier selects; {@link border} rules the band where that figure is not. */
+  /**
+   * Draws one repeat unit of whichever spine-and-teeth figure the modifier
+   * selects; {@link border} rules the band where that figure is not.
+   *
+   * The dispatch reads the modifier's own name rather than
+   * {@link mode}, because `rung` is the one mode whose drawing needs a
+   * parameter only that modifier carries and no other name maps to it. An
+   * unrecognized modifier is still refused rather than drawn as the default
+   * mode: {@link spineUnit} asks {@link mode} for the span its teeth cover.
+   */
   path(geometry: GridGeometry, unit: MotifUnit): string {
-    const mode = this.mode(unit.modifier);
     const unitColumns = this.unitColumns(unit.modifier);
     const placement: BranchUnitPlacement = {
       firstColumn: unitColumns * unit.unitIndex,
@@ -435,8 +486,8 @@ export class BranchMotifService implements MotifService {
       unitIndex: unit.unitIndex,
     };
 
-    return mode === "rung"
-      ? this.rungUnit(geometry, placement, this.isLeftward(unit.modifier))
+    return unit.modifier?.name === "rung"
+      ? this.rungUnit(geometry, placement, unit.modifier.direction)
       : this.spineUnit(geometry, placement, unit.modifier);
   }
 

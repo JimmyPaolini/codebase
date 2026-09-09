@@ -18,22 +18,6 @@ export const NAMES_WITHOUT_A_ONE_STRAND_DRAWING: ReadonlySet<Modifier["name"]> =
   new Set(["plied", "serpentine"]);
 
 /**
-
- * `isLeftward` values swept for the `rung` modifier's batch combinations.
- *
- * Both of them, which is the modifier's whole domain rather than a sample of
- * it. `false` leads,
- * so the rightward drawing the sweep committed under the bare name before
- * the flag existed is still the first one enumerated at each row count.
- *
- * The two are mirror images and every topology count is identical across
- * them, so this pair adds no new measurement to the charter. It is swept
- * anyway because the corpus is what the index page shows, and a direction
- * nobody can see drawn is a direction nobody will use.
- */
-export const RUNG_SWEEP_LEFTWARD_VALUES: readonly boolean[] = [false, true];
-
-/**
  * `branches` values swept for the `stagger` modifier's batch combinations.
  *
  * A contiguous run rather than the sampled ply counts `plied` takes, because

@@ -6,6 +6,7 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { SUPPORTED_RUNG_DIRECTIONS } from "../branch-motif/branch-motif.constants";
 import {
   DEFAULT_OUTPUT_DIRECTORY,
   DEFAULT_REPEAT_COUNT,
@@ -23,6 +24,7 @@ import { DrawPermutationsService } from "./draw-permutations.service";
 import { DrawRenderingService } from "./draw-rendering.service";
 import { CollidingPathsError, INDEX_FILE_NAME } from "./draw.constants";
 
+import type { RungDirection } from "../branch-motif/branch-motif.types";
 import type {
   MeanderType,
   Modifier,
@@ -60,7 +62,7 @@ import type {
  * decided which half of that set was legal.
  *
  * Three of those flags belong to one modifier each — `--strands`,
- * `--branches`, and `--leftward` — and are
+ * `--branches`, and `--direction` — and are
  * recombined with `--modifier` by {@link DrawParametersService.modifier},
  * since nest-commander parses each one through a method that cannot see the
  * others.
@@ -214,6 +216,20 @@ export class DrawCommand extends CommandRunner {
     return Number.parseInt(value, 10);
   }
 
+  /**
+   * Parses `--direction`, rejecting any value outside the supported set.
+   * Used only with `--modifier rung`. Absent, `rung` faces
+   * `DEFAULT_RUNG_DIRECTION`, which is the one direction it drew before the
+   * other three were reachable.
+   */
+  @Option({
+    description: `Which border the rail runs along and which way the rungs face, for --modifier rung (${SUPPORTED_RUNG_DIRECTIONS.join(", ")})`,
+    flags: "-d, --direction <direction>",
+  })
+  parseDirection(value: string): RungDirection {
+    return this.drawParametersService.rungDirection(value);
+  }
+
   /** Parses `--flip`, rejecting any value outside the supported set. Used only with `--modifier serpentine`. */
   @Option({
     description: `Which ribbons are turned upside down, for --modifier serpentine (${SUPPORTED_SERPENTINE_FLIPS.join(", ")})`,
@@ -221,20 +237,6 @@ export class DrawCommand extends CommandRunner {
   })
   parseFlip(value: string): SerpentineFlip {
     return this.drawParametersService.serpentineFlip(value);
-  }
-
-  /**
-   * Parses `--leftward` as a boolean toggle, used only with
-   * `--modifier rung`. Bare, or with any value but `false` or `0`, it points
-   * the rungs left; absent, `rung` keeps the rightward direction it drew
-   * before the flag existed.
-   */
-  @Option({
-    description: "Point the rungs left instead of right, for --modifier rung",
-    flags: "-l, --leftward [leftward]",
-  })
-  parseLeftward(value: string | undefined): boolean {
-    return value !== "false" && value !== "0";
   }
 
   /** Parses `--modifier`, rejecting any name outside the supported set. Omitted entirely when no modifier is requested. */

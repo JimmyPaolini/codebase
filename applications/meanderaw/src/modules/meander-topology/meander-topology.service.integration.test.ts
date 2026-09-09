@@ -239,7 +239,7 @@ const modifierLabel = (modifier: Modifier): string => {
   }
 
   if (modifier.name === "rung") {
-    return `rung pointing ${modifier.isLeftward ? "left" : "right"}`;
+    return `rung facing ${modifier.direction}`;
   }
 
   if (modifier.name === "stagger") {
@@ -390,7 +390,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
  * but not committed, which is why the corridor-identity gate below covers
  * rows 3 through 5 of it rather than all of it.
  */
-const COMMITTED_CORPUS_SIZE = 1098 + 8551 + 208;
+const COMMITTED_CORPUS_SIZE = 1118 + 8551 + 208;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -782,7 +782,7 @@ describe(MeanderTopologyService, () => {
     // corpus does not commit is the same blind spot #507 was, one modifier
     // over.
     it("sweeps every named-type combination DrawCommand writes, out to the deepest row count the command line accepts", () => {
-      expect(charterSweep).toHaveLength(1098);
+      expect(charterSweep).toHaveLength(1118);
 
       expect(
         Math.max(...charterSweep.map(({ parameters }) => parameters.rows)),
@@ -860,7 +860,7 @@ describe(MeanderTopologyService, () => {
         ),
       );
 
-      expect(branchCases).toHaveLength(60);
+      expect(branchCases).toHaveLength(80);
       expect(new Set(addresses).size).toBe(addresses.length);
     });
 
@@ -1101,10 +1101,10 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(documents).toHaveLength(1098);
+      expect(documents).toHaveLength(1118);
 
-      expect(tJunctions).toBe(22158);
-      expect(branching).toHaveLength(828);
+      expect(tJunctions).toBe(22918);
+      expect(branching).toHaveLength(848);
       expect(
         [...new Set(branching.map((name) => familyOf(name)))].toSorted(),
       ).toStrictEqual(["branch", "chain", "negative", "parallel", "snake"]);

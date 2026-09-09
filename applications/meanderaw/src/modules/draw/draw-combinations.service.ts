@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { SUPPORTED_RUNG_DIRECTIONS } from "../branch-motif/branch-motif.constants";
 import {
   COMPATIBLE_MODIFIERS,
   DEFAULT_REPEAT_COUNT,
@@ -18,7 +19,6 @@ import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine
 
 import {
   NAMES_WITHOUT_A_ONE_STRAND_DRAWING,
-  RUNG_SWEEP_LEFTWARD_VALUES,
   STAGGER_SWEEP_BRANCH_COUNTS,
 } from "./draw.constants";
 
@@ -117,8 +117,8 @@ export class DrawCombinationsService {
     }
 
     if (name === "rung") {
-      return RUNG_SWEEP_LEFTWARD_VALUES.map((isLeftward) => ({
-        isLeftward,
+      return SUPPORTED_RUNG_DIRECTIONS.map((direction) => ({
+        direction,
         name,
       }));
     }

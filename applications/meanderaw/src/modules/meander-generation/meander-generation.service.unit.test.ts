@@ -9,13 +9,11 @@ import {
   retracesItself,
 } from "../../../testing/path-data";
 import { BoxesMotifService } from "../boxes-motif/boxes-motif.service";
+import { SUPPORTED_RUNG_DIRECTIONS } from "../branch-motif/branch-motif.constants";
 import { BranchMotifService } from "../branch-motif/branch-motif.service";
 import { ChainMotifService } from "../chain-motif/chain-motif.service";
 import { CrossMotifService } from "../cross-motif/cross-motif.service";
-import {
-  RUNG_SWEEP_LEFTWARD_VALUES,
-  STAGGER_SWEEP_BRANCH_COUNTS,
-} from "../draw/draw.constants";
+import { STAGGER_SWEEP_BRANCH_COUNTS } from "../draw/draw.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
 import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
@@ -190,8 +188,8 @@ const modifiersNamed = (name: string): Modifier[] => {
       return [{ name: "ruled-tall" }];
     }
     case "rung": {
-      return RUNG_SWEEP_LEFTWARD_VALUES.map((isLeftward) => ({
-        isLeftward,
+      return SUPPORTED_RUNG_DIRECTIONS.map((direction) => ({
+        direction,
         name: "rung",
       }));
     }

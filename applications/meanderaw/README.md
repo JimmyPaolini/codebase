@@ -18,12 +18,12 @@ sub-command was picked:
 `--type` and `--rows` go together: one without the other is refused rather than treated
 as a sweep, since neither flag can be declared `required` when passing neither is how the
 sweep is asked for. Every other flag — `--modifier` and the parameters it carries
-(`--strands`, `--branches`, `--leftward`, and `serpentine`'s optional `--flip` and
+(`--strands`, `--branches`, `--direction`, and `serpentine`'s optional `--flip` and
 `--offset`),
 `--sub-family`, `--repeat-count`, `--output-directory` — narrows the one drawing. A modifier
-that requires a parameter is refused without it, rather than defaulted; `--leftward` is
-exempt, because a boolean flag left off and one passed `false` reach the command
-identically.
+that requires a parameter is refused without it, rather than defaulted; `--direction` is
+exempt, because the direction it names is the one every `rung` drawing carried before the
+other three were reachable, so leaving it off draws that one rather than nothing.
 
 `--sub-family` is the one flag that narrows a drawing without adjusting a repeat unit: it
 names a member of a family's own unit space. For `mosaic` it is **required**, because that
@@ -184,7 +184,7 @@ _present_ is taken from committed output rather than from a generated drawing.
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
-against the corpus as it now stands, 1,098 named patterns beside 8,759 enumerated tiles.
+against the corpus as it now stands, 1,118 named patterns beside 8,759 enumerated tiles.
 The named half was 174 until the sweep's row range was raised to the command line's own,
 and it has moved with every family that gained a mode or a parameter since — and, when
 closing both band borders left four names drawing what another name already drew, with the
@@ -195,7 +195,7 @@ family's matching rule was replaced by an edge budget over a lattice. Most of th
 have moved several times for those reasons alone — see the note under "Meander Charter"
 above:
 
-- **Every interior white channel is exactly one stroke width**, in all 9,857 files. The
+- **Every interior white channel is exactly one stroke width**, in all 9,877 files. The
   channel width equals the stroke width equals half a grid unit, and that single number
   is the same in every document the project has ever written — the stroke is `unit / 2`
   at every row count, in every family, at every ply of `parallel`. #340 and #413 both
@@ -211,12 +211,12 @@ above:
   unbroken both ways where running bond's does not, `grid` inverts the `dots` sub-family,
   and `brick-upright` inverts `diamond` — for 705 X-junctions between them. Its permutation
   half crosses in 136 of its 208 drawings, which is the same finding at the scale of a
-  whole space rather than of three named modes. Nowhere else in the 9,857-file corpus.
+  whole space rather than of three named modes. Nowhere else in the 9,877-file corpus.
   `cross` carries twelve at every one of its row counts, 6 through 12, so its count is a
   property of the repeat count rather than of `rows`. See "The Crossing Family" and "The
   Negative Space Family" below.
-- **Ink branches in four places, and only there.** 22,158 T-junctions across 828 of the
-  1,098 named patterns. 360 of them, across 36 patterns, are `chain` and `snake` under
+- **Ink branches in four places, and only there.** 22,918 T-junctions across 848 of the
+  1,118 named patterns. 360 of them, across 36 patterns, are `chain` and `snake` under
   `edge` and `edge-flip`, ten per document at every row count: the `edge` family widens the
   repeat unit past the zigzag it contains, so the zigzag's terminating vertical lands in
   the _interior_ of the band border rather than at its end, and the border runs on either
@@ -225,7 +225,7 @@ above:
   hand-verified ground truth for what these patterns should look like, so the geometry is
   right and the count was wrong. The other 21,798 are the point of three families rather
   than a side effect of anything: 3,054 across the `negative` family's 90 branching
-  documents, 1,370 across all 60 of `branch`'s, and 17,374 across 642 of `parallel`'s 786
+  documents, 2,130 across all 80 of `branch`'s, and 17,374 across 642 of `parallel`'s 786
   — see "The Negative Space Family", "The Branching Family", and "The Parallel Family"
   below.
 - **The corpus was a forest with a few trees in it, and now it has none.** Read as a
@@ -239,14 +239,14 @@ above:
   the tree set by gaining an edge. `branch` briefly left it that way too, and now leaves
   it by falling apart instead: its figure is inset by a lattice row from every rule beside
   it, so each rule is a piece of its own and the drawing is a forest of two or three. By
-  either route, **not one of the 9,857 committed documents is a tree**. 5,797 of the
-  9,857 are forests of many components and 4,060 carry a loop, where before the two halves
+  either route, **not one of the 9,877 committed documents is a tree**. 5,817 of the
+  9,877 are forests of many components and 4,060 carry a loop, where before the two halves
   stood at 6,390 and 3,418. What was measured is still the
   interesting thing — a corpus this large containing exactly two shapes of ink graph — and
   the trees turn out to have been an artifact of two families having a border left open.
   See "The Branching Family" and "The Parallel Family" below.
 - **The negative space branches and crosses freely.** It branches in every family, and it
-  genuinely crosses in 203 of the 1,098 named drawings — every one of them `parallel`
+  genuinely crosses in 203 of the 1,118 named drawings — every one of them `parallel`
   under `serpentine` — and in the `diamond` sub-family, which is the shape the `mosaic
   split` modifier drew before that family stopped drawing motifs. Crossing patterns
   are already generated here; they have only ever been white, never ink.
@@ -264,7 +264,7 @@ property.
 
 **The named half of the sweep runs to each family's own `FAMILY_MAXIMUM_ROWS`**, which is
 the same record the command line validates against — so every drawing the command line can
-be asked for is also a drawing this repository commits and the charter gates: 1,098
+be asked for is also a drawing this repository commits and the charter gates: 1,118
 combinations, each family from its own structural minimum through its own ceiling. That
 ceiling is the shared `MAXIMUM_VALUE` of 12 for nine of the ten families, and 6 for
 `mosaic`, whose reasons are below.
@@ -304,7 +304,7 @@ materialized its unit space as enumerable tiles, so its regions — `lines`, `da
 `dots`, `diamond` — became nameable at the command line. The other nine families have
 latent unit spaces and therefore only modifiers. Evaluating a predicate needs no
 enumeration, though, so a drawing from any of those nine can still **earn** a sub-family
-name from the tile it draws — 85 of the 1,098 swept combinations do, and the
+name from the tile it draws — 85 of the 1,118 swept combinations do, and the
 [lattice address table](output/lattice-addresses.md) reports which.
 
 ### The mosaic family draws no motif
@@ -346,7 +346,7 @@ is refused by `MissingSubFamilyError` rather than defaulting to the bar, and the
 names the eight sub-families to choose from. `MotifRegistryService` holds no entry for the
 family at all, which `MotifDrawnType` makes a type error rather than a lookup answering
 `undefined`, and `DrawCombinationsService` leaves it out of the named-type sweep entirely
-— so the named half is 1,098 rather than 1,122, and every one of this family's 8,551
+— so the named half is 1,118 rather than 1,142, and every one of this family's 8,551
 drawings comes from one enumeration.
 
 ### A `mosaic` tile is a lattice of four-direction points
@@ -1139,7 +1139,7 @@ then could the contract phase delete the per-family path emission.
 > `<rows>r<span>c-` and one hexadecimal character per interior lattice point — with its
 > canonical symmetry class beside it, spelled and folded by
 > `LatticeIdentificationService` in `src/modules/lattice-identification/` and tabulated
-> for all 9,857 committed drawings in [`output/lattice-addresses.md`](output/lattice-addresses.md). The
+> for all 9,877 committed drawings in [`output/lattice-addresses.md`](output/lattice-addresses.md). The
 > other three bullets are untouched: there is no family-agnostic lattice enumerator, the
 > motif services still emit their own path data rather than producing a lattice tile for
 > one shared renderer, and the modifiers are still per-family arithmetic rather than
@@ -1149,7 +1149,7 @@ then could the contract phase delete the per-family path emission.
 > requires no materialization: identification reads a finished document and names the one
 > tile it found there. Nothing about the verdict is reopened. One leg of it reads
 > differently now — finding 3 above says a predicate over one tile names nothing, and a
-> predicate over one tile does name that tile: 85 of the 1,098 swept combinations earn a
+> predicate over one tile does name that tile: 85 of the 1,118 swept combinations earn a
 > structural sub-family name, `branch`, `negative`, and `parallel` between them. What the
 > five families here lack is not the naming but a space whose regions a name would
 > partition, and every one of them still earns no name at any swept row count and
@@ -1417,7 +1417,7 @@ it already covers the named modes above 6 rows, which have never had a committed
 lattice point of every one of the 308 committed drawings carries ink — the 100 named and
 the 208 enumerated alike — including the band's first and last lattice column, which
 invariant 7 would have excused. The family needs no termination carve-out at all, where
-6,005 of the 9,857 committed documents do have a gap there. The reason is the survey's own
+6,005 of the 9,877 committed documents do have a gap there. The reason is the survey's own
 finding that no cell of any of the 3,179
 permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
 lattice point with at least one arm of ink.
@@ -1510,15 +1510,15 @@ names at each of eleven row counts, and the empty border was the only ink tellin
 apart. The corpus that resulted has no tree in it at all — `parallel`'s one-strand
 `serpentine`, the other route to one, closed against its own new rules at the same time,
 and its names were then dropped as duplicates for a separate reason. What is left is the
-two-way split the tree was the exception to: 5,797 of the 9,857 committed documents are
-forests of many components — `branch`'s 60 among them — and 4,060 carry a loop.
+two-way split the tree was the exception to: 5,817 of the 9,877 committed documents are
+forests of many components — `branch`'s 80 among them — and 4,060 carry a loop.
 `meander-topology.service.integration.test.ts` reads every committed document off disk and
 asserts that.
 
 ### What it draws
 
 Three modes over the same lattice, and two of the three carry a parameter of their own.
-`rung`'s is a direction and reflects the drawing without changing a single count;
+`rung`'s is a compass direction and reflects the drawing without changing a single count;
 `stagger`'s decides how wide the repeat unit is.
 
 - **No modifier at all** — a rail along row `0`, a tooth hanging off it in every lattice
@@ -1543,16 +1543,38 @@ Three modes over the same lattice, and two of the three carry a parameter of the
   against is gone, and a three-branch crenel now draws a figure of its own — so the floor
   is retained rather than derived. See `MINIMUM_STAGGER_BRANCHES` and
   [#682](https://github.com/JimmyPaolini/codebase/issues/682).
-- **`rung [--leftward]`** — the construction turned on its side, and the one mode whose
-  interior is a different figure rather than a different width: one vertical stile per
-  repeat unit, spanning rows `0` to `rows − 1`, a horizontal rung off it at every row of
-  that span, and a rail along row `0` carrying on to the next unit's stile. It takes one
-  rule, along row `rows`, a clear lattice row below the stiles' and rungs' free ends. Each
-  unit reads as an `E`, or as a `Ǝ` under
-  `--leftward`, which reflects the whole drawing rather than changing it: the stile moves
-  to the unit's other column, the rungs reach the other way, and the unit whose rungs run
-  the full two columns moves to the other end of the band. Every count below is identical
-  across the two directions, which is why the mirror itself is what is asserted.
+- **`rung --direction <northeast|northwest|southeast|southwest>`** — the construction
+  turned on its side, and the one mode whose interior is a different figure rather than a
+  different width: one vertical stile per repeat unit, a horizontal rung off it at every
+  row the stile spans, and a rail along one of the band's two borders carrying on to the
+  next unit's stile. It takes one rule, along the other border, a clear lattice row beyond
+  the stiles' and rungs' free ends. Each unit reads as an `E`, or as a `Ǝ` mirrored, or as
+  either of those turned upside down.
+
+  The direction names both axes at once: **the border the rail runs along**, then **the
+  way the rungs face** — where a rung's free end travels, which is the way the stile is
+  not. `northeast` is what a bare `--modifier rung` draws, and it is the one drawing the
+  mode made before the other three were reachable.
+
+  | Direction | Rail row | Stile column | Rungs reach | Figure rows | Rule row |
+  | --- | --- | --- | --- | --- | --- |
+  | `northeast` | `0` | the unit's first | east | `0` to `rows − 1` | `rows` |
+  | `northwest` | `0` | the unit's last | west | `0` to `rows − 1` | `rows` |
+  | `southeast` | `rows` | the unit's first | east | `1` to `rows` | `0` |
+  | `southwest` | `rows` | the unit's last | west | `1` to `rows` | `0` |
+
+  Each is one of the others reflected, so the stile moves to the unit's other column or the
+  whole figure turns over, and the unit whose rungs run the full two columns moves to the
+  other end of the band. Every count below is identical across all four, which is why the
+  mirrors themselves are what is asserted.
+
+  Two of the four are also the one place a filename says more than an address can. A
+  north-railed drawing and its southern mirror differ in exactly two vertical lattice
+  edges, both of them leaving a border row, and a lattice address spells out only the
+  interior levels — so `rung-northeast-6-repeats-8r2c-61e1e1e1e1e1a1.svg` and
+  `rung-southeast-…` share their address and are declared collisions in
+  `EXPECTED_ADDRESS_COLLISIONS`. They are four different drawings all the same, separated
+  on the full lattice and on the ink.
 
 At six repeats the figure has `columns × (rows + 1)` lattice points and one step fewer
 joining them than that for every piece it falls into — `edges = nodes − components`, which
@@ -1566,7 +1588,7 @@ flat across all ten row counts except where the row says otherwise:
 | `stagger`, 4 branches | 18 | 11 | 17 | 3 | 0 |
 | `stagger`, 5 branches | 24 | 17 | 23 | 3 | 0 |
 | `stagger`, 6 branches | 30 | 23 | 29 | 3 | 0 |
-| `rung`, either direction | 12 | `6 × rows − 7` | `6 × rows − 3` | 2 | 0 |
+| `rung`, any of the four directions | 12 | `6 × rows − 7` | `6 × rows − 3` | 2 | 0 |
 
 The **pieces** column is what insetting the figure from its rules shows. A rule a clear
 lattice row away from the ink touches none of it, so it is a component of its own: `comb`
@@ -1584,12 +1606,12 @@ as a count, and `branch-motif.service.unit.test.ts` measures the three-branch cr
 floor excludes against them too. `rung`'s stiles stand only every second column, and every
 one of its forks sits in a stile's own column — against the rail at the stile's head, and
 against a rung at every row strictly inside the stile's span — which is why that row is the
-only one that climbs. That suite also asserts the `rung` mirror itself, since no count here
-could tell that pair apart.
+only one that climbs. That suite also asserts the `rung` mirrors themselves, since no count
+here could tell the four directions apart.
 
 The family's minimum is **3 rows, and it is `stagger`'s** rather than the lattice's. `comb`
-and `rung` are inset at one end only, keeping their rail on row `0` where a reader already
-sees the top border, so both still draw at two rows — `comb` at the ten forks it holds at
+and `rung` are inset at one end only, keeping their rail on a border row where a reader
+already sees the band close, so both still draw at two rows — `comb` at the ten forks it holds at
 every row count, `rung` at the first step of its own climb, five. `stagger` is inset at
 both ends, because its rail moves between the two rows its teeth end at and neither of
 those may be a ruled one, so it needs two free rows between the rules. A two-row band gives
@@ -2031,7 +2053,7 @@ likeness. Every figure in this section is the expected value of an assertion.
 
 ## 🗺️ Lattice Addresses
 
-Every one of the 9,857 committed drawings is addressed on the lattice every family is
+Every one of the 9,877 committed drawings is addressed on the lattice every family is
 drawn on, and the whole table is generated into
 [`output/lattice-addresses.md`](output/lattice-addresses.md). It is filed beside the
 corpus it describes rather than spliced in here: nine thousand rows take a README to

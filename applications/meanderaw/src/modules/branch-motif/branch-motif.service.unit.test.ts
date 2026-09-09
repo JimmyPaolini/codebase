@@ -32,13 +32,15 @@ import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 import {
   BRANCH_MODES_BY_MODIFIER_NAME,
   BRANCH_UNIT_COLUMNS,
-  DEFAULT_RUNG_IS_LEFTWARD,
+  DEFAULT_RUNG_DIRECTION,
   MINIMUM_STAGGER_BRANCHES,
+  SUPPORTED_RUNG_DIRECTIONS,
   UnknownBranchModeError,
 } from "./branch-motif.constants";
 import { BranchMotifService } from "./branch-motif.service";
 
 import type { Modifier } from "../meander-generation/meander-generation.types";
+import type { RungDirection } from "./branch-motif.types";
 
 // 🔧 Configuration
 
@@ -62,7 +64,7 @@ const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6, 7, 8];
  * a loop anywhere, which the sweep below asserts through the service's own
  * `isAcyclic` rather than restating as arithmetic.
  *
- * All but the two `rung` rows are flat, because their forks live where a
+ * All but the four `rung` rows are flat, because their forks live where a
  * rail meets a tooth and a rail's length does not depend on how tall the
  * band is. `rung`'s forks sit on its stiles as well, so its row climbs by
  * one per unit per row added. Every mode leaves free ends now, because
@@ -72,10 +74,12 @@ const SWEPT_ROWS: readonly number[] = [3, 4, 5, 6, 7, 8];
  * `unitColumns` is how wide one repeat unit is, and only `stagger` varies
  * it: its crenel spans the branches one rail joins, so a run of `b`
  * branches is a unit `b - 1` lattice columns wide and the whole drawing is
- * that much wider. The two `rung` rows carry the same numbers as the
- * drawings they are reflections of, which is asserted below rather than
- * assumed here — no count in this table could tell a reflection from its
- * original.
+ * that much wider. The four `rung` rows carry identical numbers, because the
+ * four compass directions are one figure in four orientations — a
+ * reflection about either axis moves ink without adding or removing any of
+ * it. That they measure identically is asserted below rather than assumed
+ * here, and so is the fact that the four are nevertheless four different
+ * drawings, which no count in this table could tell apart.
  *
  * `README.md`'s own table under "The Branching Family" restates every number
  * here. Nothing keeps the two in step but this table being the measured one,
@@ -99,16 +103,32 @@ const MODES: readonly {
   {
     components: 2,
     freeEnds: [15, 21, 27, 33, 39, 45],
-    label: "rung pointing right",
-    modifier: { isLeftward: false, name: "rung" },
+    label: "rung facing northeast",
+    modifier: { direction: "northeast", name: "rung" },
     tJunctions: [11, 17, 23, 29, 35, 41],
     unitColumns: BRANCH_UNIT_COLUMNS,
   },
   {
     components: 2,
     freeEnds: [15, 21, 27, 33, 39, 45],
-    label: "rung pointing left",
-    modifier: { isLeftward: true, name: "rung" },
+    label: "rung facing northwest",
+    modifier: { direction: "northwest", name: "rung" },
+    tJunctions: [11, 17, 23, 29, 35, 41],
+    unitColumns: BRANCH_UNIT_COLUMNS,
+  },
+  {
+    components: 2,
+    freeEnds: [15, 21, 27, 33, 39, 45],
+    label: "rung facing southeast",
+    modifier: { direction: "southeast", name: "rung" },
+    tJunctions: [11, 17, 23, 29, 35, 41],
+    unitColumns: BRANCH_UNIT_COLUMNS,
+  },
+  {
+    components: 2,
+    freeEnds: [15, 21, 27, 33, 39, 45],
+    label: "rung facing southwest",
+    modifier: { direction: "southwest", name: "rung" },
     tJunctions: [11, 17, 23, 29, 35, 41],
     unitColumns: BRANCH_UNIT_COLUMNS,
   },
@@ -431,7 +451,7 @@ describe(BranchMotifService, () => {
     // would quietly measure fewer drawings — or none — without failing.
     it("covers every mode at every swept row count", () => {
       expect(BRANCH_CASES).toHaveLength(MODES.length * SWEPT_ROWS.length);
-      expect(BRANCH_CASES).toHaveLength(36);
+      expect(BRANCH_CASES).toHaveLength(48);
     });
 
     it("starts at the family's own structural minimum", () => {
@@ -456,9 +476,24 @@ describe(BranchMotifService, () => {
     it.each([
       { label: "comb", rules: [8] },
       {
-        label: "rung",
-        modifier: { isLeftward: false, name: "rung" as const },
+        label: "rung facing northeast",
+        modifier: { direction: "northeast" as const, name: "rung" as const },
         rules: [8],
+      },
+      {
+        label: "rung facing northwest",
+        modifier: { direction: "northwest" as const, name: "rung" as const },
+        rules: [8],
+      },
+      {
+        label: "rung facing southeast",
+        modifier: { direction: "southeast" as const, name: "rung" as const },
+        rules: [0],
+      },
+      {
+        label: "rung facing southwest",
+        modifier: { direction: "southwest" as const, name: "rung" as const },
+        rules: [0],
       },
       {
         label: "stagger",
@@ -472,16 +507,23 @@ describe(BranchMotifService, () => {
       expect(borderRows(8, modifier)).toStrictEqual(rules);
     });
 
-    // 🎯 `comb` and `rung` keep their rail on row 0, where it already reads
-    // as the band's top border, so only the row below their free ends needs
-    // a rule. `stagger` has no such row: its rail moves, so both borders are
-    // ruled and the figure sits strictly between them.
+    // 🎯 `comb` and a north-railed `rung` keep their rail on row 0, where it
+    // already reads as the band's top border, so only the row below their
+    // free ends needs a rule; a south-railed `rung` is that figure turned
+    // over, so its stile spans rows 1 through `rows` and its rule closes row
+    // 0 instead. `stagger` has no such row: its rail moves, so both borders
+    // are ruled and the figure sits strictly between them.
     it.each([
       { label: "comb", spans: ["0-7"] },
       {
-        label: "rung",
-        modifier: { isLeftward: false, name: "rung" as const },
+        label: "rung facing north",
+        modifier: { direction: "northeast" as const, name: "rung" as const },
         spans: ["0-7"],
+      },
+      {
+        label: "rung facing south",
+        modifier: { direction: "southeast" as const, name: "rung" as const },
+        spans: ["1-8"],
       },
       {
         label: "stagger",
@@ -508,16 +550,24 @@ describe(BranchMotifService, () => {
     });
 
     // 🎯 Every lattice row of a `rung` unit carries a rung, and the stile
-    // stops where they do — one row short of the rule below it.
-    it("reaches a rung across every row a stile spans", () => {
-      expect(
-        unitLatticeSegments(8, { isLeftward: false, name: "rung" })
-          .filter((segment) => segment.axis === "H")
-          .map((segment) => segment.level)
-          .toSorted((left, right) => left - right)
-          .filter((row, index, rowsSeen) => rowsSeen.indexOf(row) === index),
-      ).toStrictEqual([0, 1, 2, 3, 4, 5, 6, 7]);
-    });
+    // stops where they do — one row short of the rule beyond it, which is
+    // the row below the figure when the rail runs north and the row above it
+    // when the rail runs south.
+    it.each([
+      { direction: "northeast" as const, spanned: [0, 1, 2, 3, 4, 5, 6, 7] },
+      { direction: "southeast" as const, spanned: [1, 2, 3, 4, 5, 6, 7, 8] },
+    ])(
+      "reaches a rung across every row a $direction stile spans",
+      ({ direction, spanned }) => {
+        expect(
+          unitLatticeSegments(8, { direction, name: "rung" })
+            .filter((segment) => segment.axis === "H")
+            .map((segment) => segment.level)
+            .toSorted((left, right) => left - right)
+            .filter((row, index, rowsSeen) => rowsSeen.indexOf(row) === index),
+        ).toStrictEqual(spanned);
+      },
+    );
   });
 
   describe("the closed borders", () => {
@@ -720,37 +770,167 @@ describe(BranchMotifService, () => {
   });
 
   describe("the rung direction", () => {
-    // 🎯 The whole claim of the `--leftward` flag, and the reason its row of
-    // `MODES` repeats the rightward numbers rather than carrying its own:
-    // the two drawings are the same figure seen in a mirror. Reflecting one
-    // about the band's own width reproduces the other exactly — stiles,
-    // rungs, rails, and the one stile with no rail beyond it included — so
-    // no topology count could have told them apart, and this is what says
-    // the direction changed anything at all.
-    it.each(SWEPT_ROWS)("mirrors the rightward drawing at %i rows", (rows) => {
-      const drawing = (isLeftward: boolean): string =>
-        generationService.generate({
-          modifier: { isLeftward, name: "rung" },
-          repeatCount: REPEAT_COUNT,
-          rows,
-          type: "branch",
-        });
-      const geometry = gridGeometryService.compute(rows);
-      const axis = 2 * geometry.offset + (LATTICE_COLUMNS - 1) * geometry.unit;
+    /** The whole `rung` drawing one direction inks at a row count. */
+    const drawing = (rows: number, direction: RungDirection): string =>
+      generationService.generate({
+        modifier: { direction, name: "rung" },
+        repeatCount: REPEAT_COUNT,
+        rows,
+        type: "branch",
+      });
 
-      expect(reflectedSegments(drawing(true), axis, "x")).toStrictEqual(
-        segments(drawing(false)),
-      );
+    /**
+     * Every run of ink a whole `rung` drawing lays down, in lattice indices
+     * rather than pixels.
+     *
+     * The finished document rather than the units' own paths, which
+     * {@link unitLatticeSegments} reads: what a direction's name claims is
+     * where the rail and the stiles ended up in the drawing, so the drawing
+     * is what has to say so. A `rung` document can answer that where a
+     * `stagger` one cannot — its one rule sits on a row the figure never
+     * reaches, so no rule covers a rail here.
+     */
+    const drawnSegments = (
+      rows: number,
+      direction: RungDirection,
+    ): InkSegment[] => {
+      const geometry = gridGeometryService.compute(rows);
+      const index = (value: number): number =>
+        Math.round((value - geometry.offset) / geometry.unit);
+
+      return parseSegments(drawing(rows, direction)).map((segment) => ({
+        axis: segment.axis,
+        from: index(segment.from),
+        level: index(segment.level),
+        to: index(segment.to),
+      }));
+    };
+
+    // 🎯 The compass name read straight back off the ink. Its first half
+    // names the border the rail runs along, and the drawing's rail is the
+    // only horizontal run reaching past one lattice step — a rung spans one,
+    // and the rule spans the whole repeat. Its second half names where a
+    // rung's free end travels, which is decided by the column the stile
+    // stands on: a stile on every even column leaves the odd ones to the
+    // free ends and the rungs reach east, and a stile on every odd column
+    // reaches west. The rule closes the border the rail is not on.
+    it.each([
+      {
+        direction: "northeast" as const,
+        railRow: 0,
+        ruleRow: 8,
+        stileColumns: [0, 2, 4, 6, 8, 10],
+      },
+      {
+        direction: "northwest" as const,
+        railRow: 0,
+        ruleRow: 8,
+        stileColumns: [1, 3, 5, 7, 9, 11],
+      },
+      {
+        direction: "southeast" as const,
+        railRow: 8,
+        ruleRow: 0,
+        stileColumns: [0, 2, 4, 6, 8, 10],
+      },
+      {
+        direction: "southwest" as const,
+        railRow: 8,
+        ruleRow: 0,
+        stileColumns: [1, 3, 5, 7, 9, 11],
+      },
+    ])(
+      "rails row $railRow and stands its stiles on $stileColumns facing $direction",
+      ({ direction, railRow, ruleRow, stileColumns }) => {
+        const drawn = drawnSegments(8, direction);
+        const rows = (span: (segment: InkSegment) => boolean): number[] => [
+          ...new Set(
+            drawn
+              .filter((segment) => segment.axis === "H" && span(segment))
+              .map((segment) => segment.level),
+          ),
+        ];
+
+        expect({
+          rail: rows((segment) => segment.to - segment.from === 2),
+          rule: rows(
+            (segment) => segment.to - segment.from === LATTICE_COLUMNS - 1,
+          ),
+          stiles: [
+            ...new Set(
+              drawn
+                .filter((segment) => segment.axis === "V")
+                .map((segment) => segment.level),
+            ),
+          ].toSorted((left, right) => left - right),
+        }).toStrictEqual({
+          rail: [railRow],
+          rule: [ruleRow],
+          stiles: stileColumns,
+        });
+      },
+    );
+
+    // 🎯 Why the four `rung` rows of `MODES` carry one set of numbers: the
+    // four directions are one figure in four orientations. Reflecting
+    // `northeast` about the band's own width reproduces `northwest` exactly
+    // — stiles, rungs, rails, the one stile with no rail beyond it, and the
+    // rule included — and turning either one upside down reproduces its
+    // southern namesake. No topology count could have told any of them
+    // apart, and this is what says the direction changed anything at all.
+    it.each(SWEPT_ROWS)("mirrors one drawing into four at %i rows", (rows) => {
+      const geometry = gridGeometryService.compute(rows);
+      const width = 2 * geometry.offset + (LATTICE_COLUMNS - 1) * geometry.unit;
+      const height = 2 * geometry.offset + rows * geometry.unit;
+
+      expect({
+        northwest: reflectedSegments(drawing(rows, "northwest"), width, "x"),
+        southeast: reflectedSegments(drawing(rows, "southeast"), height, "y"),
+        southwest: reflectedSegments(drawing(rows, "southwest"), height, "y"),
+      }).toStrictEqual({
+        northwest: segments(drawing(rows, "northeast")),
+        southeast: segments(drawing(rows, "northeast")),
+        southwest: segments(drawing(rows, "northwest")),
+      });
     });
 
-    // 🎯 A boolean cannot refuse an absent flag, so the direction a bare
-    // `--modifier rung` draws is a choice rather than an error — and this
-    // is the assertion that it is still the one every committed `rung`
-    // drawing was made with.
-    it("points the rungs right by default", () => {
-      expect(DEFAULT_RUNG_IS_LEFTWARD).toBe(false);
+    // 🎯 A mirror is not a copy. The four measure identically by
+    // construction, so what keeps them four drawings rather than one drawn
+    // four times is that no two of them lay ink in the same places.
+    it.each(SWEPT_ROWS)("draws four distinct figures at %i rows", (rows) => {
+      const drawn = SUPPORTED_RUNG_DIRECTIONS.map((direction) =>
+        JSON.stringify(segments(drawing(rows, direction))),
+      );
+
+      expect(new Set(drawn).size).toBe(SUPPORTED_RUNG_DIRECTIONS.length);
+    });
+
+    // 🎯 The other half of that pair: a reflection moves ink without adding
+    // or removing any, so every count the family is measured by has to come
+    // out the same for all four. This is what makes them one mode in four
+    // orientations rather than four modes.
+    it.each(SWEPT_ROWS)("measures the four identically at %i rows", (rows) => {
+      const measured = SUPPORTED_RUNG_DIRECTIONS.map((direction) => {
+        const document = drawing(rows, direction);
+
+        return JSON.stringify({
+          ...topologyService.connectivity(document),
+          forks: topologyService.measure(document).inkTJunctions,
+        });
+      });
+
+      expect(new Set(measured).size).toBe(1);
+    });
+
+    // 🎯 A named value can be told absent, so `rung` could have refused an
+    // unstated direction the way `stagger` refuses an unstated branch count.
+    // It defaults instead, and to the one drawing every committed `rung`
+    // carried before the other three were drawable.
+    it("faces northeast by default", () => {
+      expect(DEFAULT_RUNG_DIRECTION).toBe("northeast");
+      expect(SUPPORTED_RUNG_DIRECTIONS).toContain(DEFAULT_RUNG_DIRECTION);
       expect(
-        service.mode({ isLeftward: DEFAULT_RUNG_IS_LEFTWARD, name: "rung" }),
+        service.mode({ direction: DEFAULT_RUNG_DIRECTION, name: "rung" }),
       ).toBe("rung");
     });
   });
@@ -965,7 +1145,7 @@ describe(BranchMotifService, () => {
         components: 2,
         freeEnds: 9,
         label: "rung",
-        modifier: { isLeftward: false, name: "rung" as const },
+        modifier: { direction: DEFAULT_RUNG_DIRECTION, name: "rung" as const },
         nodes: LATTICE_COLUMNS * 3,
         tJunctions: 5,
       },
@@ -998,7 +1178,10 @@ describe(BranchMotifService, () => {
       ({ railForks, rows, stileForks }) => {
         expect(
           topologyService.measure(
-            belowMinimum(rows, { isLeftward: false, name: "rung" }),
+            belowMinimum(rows, {
+              direction: DEFAULT_RUNG_DIRECTION,
+              name: "rung",
+            }),
           ).inkTJunctions,
         ).toBe(railForks + stileForks);
       },
@@ -1043,11 +1226,11 @@ describe(BranchMotifService, () => {
     it.each([
       {
         expected: "rung" as const,
-        modifier: { isLeftward: false, name: "rung" as const },
+        modifier: { direction: "northeast" as const, name: "rung" as const },
       },
       {
         expected: "rung" as const,
-        modifier: { isLeftward: true, name: "rung" as const },
+        modifier: { direction: "southwest" as const, name: "rung" as const },
       },
       {
         expected: "stagger" as const,

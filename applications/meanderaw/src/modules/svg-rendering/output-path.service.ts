@@ -102,7 +102,7 @@ export class OutputPathService {
    * sweep's own values would collide on one path and `CollidingPathsError`
    * would fire rather than a drawing being written. Two spellings, and which
    * one a modifier takes is decided by whether the value reads on its own:
-   * `rung`'s direction is a word, so it
+   * `rung`'s direction is a compass bearing, so it
    * follows the name unadorned, while a bare number would say nothing — so
    * `stagger` and the ply-carrying modifiers name their
    * parameter before it. The last of those are spelled by
@@ -111,7 +111,7 @@ export class OutputPathService {
    */
   private modifierSlug(modifier: Modifier): string {
     if (modifier.name === "rung") {
-      return `rung-${modifier.isLeftward ? "leftward" : "rightward"}`;
+      return `rung-${modifier.direction}`;
     }
 
     if (modifier.name === "stagger") {

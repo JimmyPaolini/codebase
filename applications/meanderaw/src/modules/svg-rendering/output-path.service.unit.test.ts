@@ -86,12 +86,14 @@ describe(OutputPathService, () => {
     // than one being the unmarked case, so neither direction is the one you
     // have to know the default to identify.
     it.each([
-      { isLeftward: false, variant: "rung-rightward" },
-      { isLeftward: true, variant: "rung-leftward" },
-    ])("names a rung drawing $variant", ({ isLeftward, variant }) => {
+      { direction: "northeast" as const, variant: "rung-northeast" },
+      { direction: "northwest" as const, variant: "rung-northwest" },
+      { direction: "southeast" as const, variant: "rung-southeast" },
+      { direction: "southwest" as const, variant: "rung-southwest" },
+    ])("names a rung drawing $variant", ({ direction, variant }) => {
       expect(
         service.build({
-          modifier: { isLeftward, name: "rung" },
+          modifier: { direction, name: "rung" },
           repeatCount: 6,
           rows: 5,
           type: "branch",

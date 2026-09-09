@@ -1,6 +1,11 @@
 // ♟️ Constants
 
-import type { BranchMode, BranchModifierName } from "./branch-motif.types";
+import type {
+  BranchMode,
+  BranchModifierName,
+  RungDirection,
+  RungOrientation,
+} from "./branch-motif.types";
 
 /**
  * Which mode each of this family's modifiers selects.
@@ -56,17 +61,19 @@ export const BRANCH_UNIT_COLUMNS = 2;
 export const DEFAULT_BRANCH_MODE: BranchMode = "comb";
 
 /**
- * Which direction a `rung` drawn with no `--leftward` points its rungs:
- * rightward, which is the only direction the mode had before the flag
- * existed and so the one every drawing committed under the bare name was.
+ * Which of the four directions a `rung` drawn with no `--direction` faces:
+ * `northeast`, the rail along the band's north border and the rungs
+ * reaching east, which is the only drawing the mode made before the other
+ * three were reachable and so the one every `rung` committed under the bare
+ * name was.
  *
- * It is a stated default rather than an absent one because the flag is a
- * boolean: commander cannot tell "not passed" from "passed false", so the
- * mode has no way to refuse an unstated direction the way `stagger` refuses
- * an unstated branch count. Naming the fallback here is what keeps the two
- * halves of that asymmetry visible in one place.
+ * A named value can be told absent where the boolean this replaced could
+ * not, so `rung` could refuse an unstated direction the way `stagger`
+ * refuses an unstated branch count. It defaults instead, because a
+ * direction that was never asked for used to be drawn and renaming every
+ * one of those files buys nothing.
  */
-export const DEFAULT_RUNG_IS_LEFTWARD = false;
+export const DEFAULT_RUNG_DIRECTION: RungDirection = "northeast";
 
 /**
  * The fewest branches one `stagger` rail run may join before changing side.
@@ -94,6 +101,51 @@ export const DEFAULT_RUNG_IS_LEFTWARD = false;
  * either way.
  */
 export const MINIMUM_STAGGER_BRANCHES = 4;
+
+/**
+ * Which border each {@link RungDirection} rails along and which way its
+ * rungs reach, as the pair of booleans the drawing methods actually read.
+ *
+ * A `Record` over the union rather than two comparisons per axis, for the
+ * same reason {@link BRANCH_MODES_BY_MODIFIER_NAME} is one: a direction
+ * added to the union and forgotten here is a type error, where a
+ * `direction === "southwest" || …` chain would silently draw it north-east.
+ * The compass name is the whole of the mapping — `south*` rails south,
+ * `*west` reaches west — so nothing here is a decision, only the place that
+ * reading is written down once.
+ */
+export const RUNG_ORIENTATIONS_BY_DIRECTION: Record<
+  RungDirection,
+  RungOrientation
+> = {
+  northeast: { isSouthRailed: false, reachesWest: false },
+  northwest: { isSouthRailed: false, reachesWest: true },
+  southeast: { isSouthRailed: true, reachesWest: false },
+  southwest: { isSouthRailed: true, reachesWest: true },
+};
+
+/**
+ * Every direction the `rung` modifier accepts: all four, which is the
+ * modifier's whole domain rather than a sample of it.
+ *
+ * One constant serves both halves of that. `DrawParametersService` narrows
+ * `--direction` against it and refuses anything outside, the way it already
+ * refuses a `--flip` outside `SUPPORTED_SERPENTINE_FLIPS`; and
+ * `DrawCombinationsService` enumerates it, so every direction the command
+ * line accepts is one the sweep commits and the charter gates. A direction
+ * reachable from the command line and absent from `output/` is a direction
+ * nobody can see drawn.
+ *
+ * {@link DEFAULT_RUNG_DIRECTION} leads, so the drawing the sweep committed
+ * under the bare name before the other three existed is still the first one
+ * enumerated at each row count.
+ */
+export const SUPPORTED_RUNG_DIRECTIONS: readonly RungDirection[] = [
+  "northeast",
+  "northwest",
+  "southeast",
+  "southwest",
+];
 
 // 🚨 Errors
 
