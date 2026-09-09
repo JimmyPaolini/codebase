@@ -202,9 +202,11 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
 export default callidescopeConfiguration;
 ```
 
-The whole surface is eight top-level keys: `directories`, `entryPoints`,
-`exclude`, `excludeCallees`, `excludeFrom`, `limits`, `projectDefaults`, and
-`write`.
+The whole surface is seven top-level keys: `directories`, `entryPoints`,
+`exclude`, `excludeCallees`, `excludeFrom`, `limits`, and `write`. The
+workspace file also exports `projectDefaults` alongside its default export —
+a separate binding, not a member of this type — for a project's own
+`callidescope.config.ts` to spread.
 
 ### `limits`
 
