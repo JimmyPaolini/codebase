@@ -56,7 +56,7 @@ Call stacks traced through `packages/conformetry-jupyter`, deepest first. Each f
 | Measure | Value |
 | --- | --- |
 | Callables | 22 |
-| Files | 9 |
+| Files | 10 |
 | Calls traced | 28 |
 | Call stacks | 1 |
 | Deepest stack | 13 |
@@ -65,12 +65,12 @@ Call stacks traced through `packages/conformetry-jupyter`, deepest first. Each f
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 17 | inherited |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 17 |
+| `maximumBreadth` | 11 |
 
 ### Call stacks (depth)
 
@@ -102,10 +102,6 @@ What this project is judged against. `declared` is the number in this project's 
                            ↳ Reads a node's rendered plain text.
 ```
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -128,10 +124,6 @@ None.
 | `JupyterValidatorService.map(…)` | 1 | `JupyterValidatorService.validateCell` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:187` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

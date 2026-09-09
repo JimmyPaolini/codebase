@@ -534,123 +534,79 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5121 |
-| Files | 1417 |
-| Calls traced | 5834 |
-| Call stacks | 1313 |
+| Callables | 5155 |
+| Files | 1376 |
+| Calls traced | 5884 |
+| Call stacks | 1332 |
 | Deepest stack | 17 |
 | Stacks through recursion | 18 |
-| Unfollowable calls | 359 |
+| Unfollowable calls | 361 |
 
 ### Projects
 
-| Project | Deepest | Limit | Headroom | Widest | Spread | Misplaced |
-| --- | --- | --- | --- | --- | --- | --- |
-| `applications/caelundas` | 16 | 16 declared | 0 | 12 | 5 | 4 |
-| `applications/lexico` | 9 | 9 declared | 0 | 9 | 0 | 1 |
-| `applications/lexico-ingestion` | 17 | 17 declared | 0 | 8 | 2 | 1 |
-| `applications/meanderaw` | 16 | 16 declared | 0 | 14 | 1 | 3 |
-| `packages/callidescope-cli` | 15 | 15 declared | 0 | 11 | 2 | 0 |
-| `packages/callidescope-nx` | 17 | 17 declared | 0 | 7 | 2 | 3 |
-| `packages/codependix-boundaries` | 12 | 12 declared | 0 | 5 | 0 | 1 |
-| `packages/codependix-cli` | 15 | 15 declared | 0 | 7 | 2 | 2 |
-| `packages/codometer-cli` | 16 | 16 declared | 0 | 11 | 2 | 0 |
-| `packages/conformetry-cli` | 14 | 14 declared | 0 | 9 | 0 | 0 |
-| `packages/conformetry-markdown` | 3 | 3 declared | 0 | 5 | 0 | 0 |
-| `packages/conformetry-nx` | 14 | 14 declared | 0 | 9 | 4 | 0 |
-| `packages/lexico-components` | 3 | 3 declared | 0 | 7 | 0 | 1 |
-| `packages/lexico-entities` | 3 | 3 declared | 0 | 3 | 0 | 0 |
-| `packages/logger` | 4 | 4 declared | 0 | 2 | 0 | 0 |
-| `tools/synchronization` | 10 | 10 declared | 0 | 9 | 0 | 0 |
-| `tools/validation` | 8 | 8 declared | 0 | 9 | 0 | 0 |
-| `packages/callidescope-configuration` | 5 | 6 declared | 1 | 8 | 0 | 0 |
-| `packages/codometer-size` | 0 | 3 declared | 3 | 2 | 0 | 0 |
-| `packages/conformetry-configuration` | 10 | 13 declared | 3 | 5 | 0 | 0 |
-| `packages/codependix-configuration` | 2 | 6 declared | 4 | 5 | 0 | 0 |
-| `packages/codependix-nx` | 0 | 4 declared | 4 | 8 | 0 | 0 |
-| `packages/conformetry-jupyter` | 13 | 17 inherited | 4 | 11 | 0 | 0 |
-| `packages/conformetry-languages` | 13 | 17 inherited | 4 | 11 | 0 | 0 |
-| `packages/codependix-boundaries` | 12 | 17 inherited | 5 | 5 | 0 | 1 |
-| `packages/conformetry-json` | 12 | 17 inherited | 5 | 7 | 0 | 0 |
-| `packages/conformetry-typescript` | 12 | 17 inherited | 5 | 6 | 0 | 0 |
-| `packages/callidescope-graph` | 5 | 11 declared | 6 | 9 | 0 | 0 |
-| `packages/callidescope-output` | 4 | 10 declared | 6 | 9 | 0 | 0 |
-| `packages/codometer-configuration` | 2 | 8 declared | 6 | 7 | 0 | 0 |
-| `packages/codometer-languages` | 5 | 11 declared | 6 | 12 | 1 | 0 |
-| `packages/conformetry-core` | 0 | 6 declared | 6 | 4 | 0 | 0 |
-| `packages/codometer-discovery` | 0 | 7 declared | 7 | 7 | 0 | 0 |
-| `packages/codometer-output` | 4 | 11 declared | 7 | 16 | 0 | 0 |
-| `packages/codependix-imports` | 0 | 8 declared | 8 | 8 | 0 | 0 |
-| `packages/conformetry-files` | 0 | 9 declared | 9 | 3 | 0 | 0 |
-| `packages/codometer-changes` | 0 | 10 declared | 10 | 7 | 0 | 0 |
-| `packages/conformetry-python` | 6 | 17 inherited | 11 | 6 | 0 | 0 |
-| `packages/conformetry-validation` | 0 | 12 declared | 12 | 10 | 0 | 0 |
-| `configuration` | 3 | 17 inherited | 14 | 2 | 0 | 0 |
-| `packages/conformetry-text` | 3 | 17 inherited | 14 | 2 | 0 | 0 |
+| Project | Deepest | Limit | Headroom | Widest |
+| --- | --- | --- | --- | --- |
+| `applications/caelundas` | 16 | 16 | 0 | 12 |
+| `applications/lexico` | 9 | 9 | 0 | 9 |
+| `applications/lexico-ingestion` | 17 | 17 | 0 | 8 |
+| `applications/meanderaw` | 16 | 16 | 0 | 14 |
+| `packages/callidescope-cli` | 15 | 15 | 0 | 9 |
+| `packages/callidescope-nx` | 17 | 17 | 0 | 7 |
+| `packages/codependix-boundaries` | 12 | 12 | 0 | 5 |
+| `packages/codependix-cli` | 15 | 15 | 0 | 7 |
+| `packages/codometer-cli` | 16 | 16 | 0 | 11 |
+| `packages/conformetry-cli` | 14 | 14 | 0 | 9 |
+| `packages/conformetry-languages` | 13 | 13 | 0 | 11 |
+| `packages/conformetry-markdown` | 3 | 3 | 0 | 5 |
+| `packages/conformetry-nx` | 14 | 14 | 0 | 9 |
+| `packages/lexico-components` | 3 | 3 | 0 | 7 |
+| `packages/lexico-entities` | 3 | 3 | 0 | 3 |
+| `packages/logger` | 4 | 4 | 0 | 2 |
+| `tools/synchronization` | 10 | 10 | 0 | 9 |
+| `tools/validation` | 8 | 8 | 0 | 9 |
+| `packages/callidescope-configuration` | 5 | 6 | 1 | 7 |
+| `packages/codometer-size` | 0 | 3 | 3 | 2 |
+| `packages/conformetry-configuration` | 10 | 13 | 3 | 5 |
+| `packages/codependix-configuration` | 2 | 6 | 4 | 5 |
+| `packages/codependix-nx` | 0 | 4 | 4 | 8 |
+| `packages/conformetry-jupyter` | 13 | 17 | 4 | 11 |
+| `packages/codependix-nestjs` | 0 | 5 | 5 | 5 |
+| `packages/codometer-customization` | 0 | 5 | 5 | 1 |
+| `packages/conformetry-generation` | 2 | 7 | 5 | 4 |
+| `packages/conformetry-json` | 12 | 17 | 5 | 7 |
+| `packages/conformetry-typescript` | 12 | 17 | 5 | 6 |
+| `packages/callidescope-graph` | 5 | 11 | 6 | 8 |
+| `packages/callidescope-output` | 4 | 10 | 6 | 7 |
+| `packages/codometer-configuration` | 2 | 8 | 6 | 7 |
+| `packages/codometer-languages` | 5 | 11 | 6 | 12 |
+| `packages/conformetry-core` | 0 | 6 | 6 | 4 |
+| `packages/codometer-discovery` | 0 | 7 | 7 | 7 |
+| `packages/codometer-output` | 4 | 11 | 7 | 16 |
+| `packages/codependix-imports` | 0 | 8 | 8 | 8 |
+| `packages/conformetry-files` | 0 | 9 | 9 | 3 |
+| `packages/codometer-changes` | 0 | 10 | 10 | 7 |
+| `packages/conformetry-python` | 6 | 17 | 11 | 6 |
+| `packages/conformetry-validation` | 0 | 12 | 12 | 10 |
+| `configuration` | 3 | 17 | 14 | 2 |
+| `packages/conformetry-text` | 3 | 17 | 14 | 2 |
 
 ### Depth headroom
 
 | Headroom | Projects |
 | --- | --- |
 | over limit | 0 |
-| 0 — at limit | 2 |
-| 1 | 3 |
-| 2–3 | 4 |
-| 4+ | 26 |
-| no stacks | 18 |
+| 0 — at limit | 18 |
+| 1 | 1 |
+| 2–3 | 1 |
+| 4+ | 13 |
+| no stacks | 10 |
 
 ### Call stacks over the depth limit (0)
 
 None.
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `MeasureService.measureTarget` | 18 | `packages/codometer-discovery:modules/discovery`, `packages/codometer-discovery:modules/targets`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/measure/measure.service.ts:302` |
-| `PluginService.runValidation` | 17 | `packages/conformetry-core:modules/reporting`, `packages/conformetry-nx:modules/instances`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:395` |
-| `PluginService.runTrace` | 16 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-configuration:modules/configuration`, `packages/callidescope-nx:modules/options`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:221` |
-| `MeasureService.analyzeFiles` | 16 | `packages/codometer-customization:modules/customization`, `packages/codometer-languages:modules/languages`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/measure/measure.service.ts:75` |
-| `LanguagesService.analyze` | 13 | `packages/codometer-languages:modules/comments`, `packages/codometer-languages:modules/css`, `packages/codometer-languages:modules/hcl`, `packages/codometer-languages:modules/json`, `packages/codometer-languages:modules/jupyter`, `packages/codometer-languages:modules/markdown`, `packages/codometer-languages:modules/python`, `packages/codometer-languages:modules/shell`, `packages/codometer-languages:modules/sql`, `packages/codometer-languages:modules/toml`, `packages/codometer-languages:modules/typescript`, `packages/codometer-languages:modules/yaml` | `packages/codometer-languages/src/modules/languages/languages.service.ts:56` |
-| `CallidescopeService.analyze` | 12 | `packages/callidescope-graph:modules/cohesion`, `packages/callidescope-graph:modules/entries`, `packages/callidescope-graph:modules/graph`, `packages/callidescope-output:modules/project-reports` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:284` |
-| `PluginService.runGenerator` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-nx:modules/adapter`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:334` |
-| `AspectsService.detectSimpleAspects` | 10 | `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/major-aspects`, `applications/caelundas:modules/minor-aspects`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/specialty-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:90` |
-| `PerfectiveService.detectOrbitalEvents` | 10 | `applications/caelundas:modules/annual-solar-cycle`, `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/monthly-lunar-cycle`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades` | `applications/caelundas/src/modules/perfective/perfective.service.ts:149` |
-| `ProgressiveService.detect` | 10 | `applications/caelundas:modules/annual-solar-cycle`, `applications/caelundas:modules/aspects`, `applications/caelundas:modules/eclipses`, `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/monthly-lunar-cycle`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/twilights` | `applications/caelundas/src/modules/progressive/progressive.service.ts:47` |
-| `AspectsService.detectCompositeAspects` | 8 | `applications/caelundas:modules/quadruple-aspects`, `applications/caelundas:modules/quintuple-aspects`, `applications/caelundas:modules/sextuple-aspects`, `applications/caelundas:modules/stellium`, `applications/caelundas:modules/triple-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:72` |
-| `LexemesService.enrichLexeme` | 8 | `applications/lexico-ingestion:modules/etymology`, `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/part-of-speech`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/translations` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:73` |
-| `PerfectiveService.detectObservationalEvents` | 7 | `applications/caelundas:modules/daily-cycles`, `applications/caelundas:modules/eclipses`, `applications/caelundas:modules/twilights` | `applications/caelundas/src/modules/perfective/perfective.service.ts:117` |
-| `syncGenerator` | 7 | `packages/conformetry-nx:modules/generator`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
-| `LexemesService.saveLexemeRelations` | 6 | `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/words` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:218` |
-| `DrawPermutationsService.render` | 6 | `applications/meanderaw:modules/mosaic-naming`, `applications/meanderaw:modules/mosaic-tile`, `applications/meanderaw:modules/svg-rendering` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:80` |
-| `CallidescopeService.discoverCallables` | 6 | `packages/callidescope-graph:modules/callables`, `packages/callidescope-graph:modules/classes`, `packages/callidescope-graph:modules/workspace` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:85` |
-| `MapService.runWorkspaceGraph` | 6 | `packages/codependix-cli:modules/delivery`, `packages/codependix-configuration:modules/configuration`, `packages/codependix-nx:modules/workspace-graph` | `packages/codependix-cli/src/modules/map/map.service.ts:281` |
-| `bootstrapPlugin` | 6 | `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:39` |
-| `MapService.runNestjsProject` | 5 | `packages/codependix-cli:modules/delivery`, `packages/codependix-nestjs:modules/module-graph`, `packages/codependix-nestjs:modules/nestjs-project` | `packages/codependix-cli/src/modules/map/map.service.ts:186` |
-
 ### Callables over the breadth limit (0)
 
 None.
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `cn` | `packages/lexico-components:lib` | `packages/lexico-components:components` | 219/219 |
-| `CalendarService.buildInstantEvent` | `applications/caelundas:modules/calendar` | `applications/caelundas:modules/daily-cycles` | 8/9 |
-| `typedFromEntries` | `applications/caelundas:modules/caelundas` | `applications/caelundas:modules/ephemeris` | 6/6 |
-| `MosaicSymmetryService.canonicalIdentifier` | `applications/meanderaw:modules/mosaic-tile` | `applications/meanderaw:modules/draw` | 4/5 |
-| `DeliveryService.deliverGraphOutput` | `packages/codependix-cli:modules/delivery` | `packages/codependix-cli:modules/map` | 4/5 |
-| `DeliveryService.renderJson` | `packages/codependix-cli:modules/delivery` | `packages/codependix-cli:modules/map` | 4/5 |
-| `MathService.normalizeForComparison` | `applications/caelundas:modules/math` | `applications/caelundas:modules/retrogrades` | 4/4 |
-| `objectEntries` | `applications/caelundas:modules/caelundas` | `applications/caelundas:modules/ingresses` | 2/2 |
-| `transformForms` | `applications/lexico:lib` | `applications/lexico:routes` | 2/2 |
-| `NumeralsService.toDecimal` | `applications/lexico-ingestion:modules/numerals` | `applications/lexico-ingestion:modules/literature` | 2/2 |
-| `MeanderLatticeService.build` | `applications/meanderaw:modules/meander-lattice` | `applications/meanderaw:modules/meander-topology` | 2/2 |
-| `MosaicTilesService.enumerate` | `applications/meanderaw:modules/mosaic-tile` | `applications/meanderaw:modules/draw` | 2/2 |
-| `RunConfigurationService.load` | `packages/callidescope-nx:modules/run-configuration` | `packages/callidescope-nx:modules/plugin` | 2/2 |
-| `RunConfigurationService.readPreviewCount` | `packages/callidescope-nx:modules/run-configuration` | `packages/callidescope-nx:modules/plugin` | 2/2 |
-| `runAddressExecutor` | `packages/callidescope-nx:modules/address` | `packages/callidescope-nx:executors` | 2/2 |
-| `BoundariesService.evaluate` | `packages/codependix-boundaries:modules/boundaries` | `packages/codependix-boundaries:modules/boundary-check` | 2/2 |
 
 <!-- CALL_STACKS_END -->

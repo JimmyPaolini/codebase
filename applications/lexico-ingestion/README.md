@@ -121,12 +121,12 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 17 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 17 |
+| `maximumBreadth` | 8 |
 
 ### Call stacks (depth)
 
@@ -637,13 +637,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `LexemesService.enrichLexeme` | 8 | `applications/lexico-ingestion:modules/etymology`, `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/part-of-speech`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/translations` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:73` |
-| `LexemesService.saveLexemeRelations` | 6 | `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/words` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:218` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -939,12 +932,6 @@ What this project is judged against. `declared` is the number in this project's 
 | `LexicoIngestionCommand.promptForMissingOptions` | 1 | `LexicoIngestionCommand.promptOption` | `applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.ts:96` |
 
 </details>
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `NumeralsService.toDecimal` | `applications/lexico-ingestion:modules/numerals` | `applications/lexico-ingestion:modules/literature` | 2/2 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

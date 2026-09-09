@@ -22,18 +22,14 @@ Call stacks traced through `packages/codometer-customization`, deepest first. Ea
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 5 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 5 |
+| `maximumBreadth` | 1 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -54,10 +50,6 @@ None.
 | `CustomizationService.buildSymbolCounters` | 1 | `CustomizationService.flatMap(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:72` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

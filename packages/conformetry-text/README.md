@@ -52,7 +52,7 @@ Call stacks traced through `packages/conformetry-text`, deepest first. Each fram
 | Measure | Value |
 | --- | --- |
 | Callables | 5 |
-| Files | 8 |
+| Files | 9 |
 | Calls traced | 3 |
 | Call stacks | 1 |
 | Deepest stack | 3 |
@@ -61,12 +61,12 @@ Call stacks traced through `packages/conformetry-text`, deepest first. Each fram
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 17 | inherited |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 17 |
+| `maximumBreadth` | 2 |
 
 ### Call stacks (depth)
 
@@ -81,20 +81,12 @@ What this project is judged against. `declared` is the number in this project's 
        ↳ Counts how many times each line occurs, for duplicate-aware matching.
 ```
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `TextValidatorService.validateDocument` | 2 | `TextValidatorService.map(…)`, `TextValidatorService.findMissingLines` | `packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:76` |
 | `TextValidatorService.findMissingLines` | 1 | `TextValidatorService.countLines` | `packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:46` |
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

@@ -22,18 +22,14 @@ Call stacks traced through `packages/codometer-changes`, deepest first. Each fra
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 10 | declared |
-| `maximumBreadth` | 7 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 10 |
+| `maximumBreadth` | 7 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -62,10 +58,6 @@ None.
 | `ChangesService.map(…)` | 1 | `ChangesService.collectProjectRows` | `packages/codometer-changes/src/modules/changes/changes.service.ts:290` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

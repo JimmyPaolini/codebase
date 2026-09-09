@@ -59,7 +59,7 @@ Call stacks traced through `packages/conformetry-python`, deepest first. Each fr
 | Measure | Value |
 | --- | --- |
 | Callables | 11 |
-| Files | 9 |
+| Files | 10 |
 | Calls traced | 20 |
 | Call stacks | 1 |
 | Deepest stack | 6 |
@@ -68,12 +68,12 @@ Call stacks traced through `packages/conformetry-python`, deepest first. Each fr
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 17 | inherited |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 17 |
+| `maximumBreadth` | 6 |
 
 ### Call stacks (depth)
 
@@ -93,10 +93,6 @@ What this project is judged against. `declared` is the number in this project's 
              ↳ Narrows an untrusted string field from the bridge payload.
 ```
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -115,10 +111,6 @@ None.
 | `PythonValidatorService.validateDocument` | 1 | `PythonBridgeService.validatePythonSource` | `packages/conformetry-python/src/modules/python-validator/python-validator.service.ts:38` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

@@ -51,7 +51,7 @@ Call stacks traced through `packages/conformetry-json`, deepest first. Each fram
 | Measure | Value |
 | --- | --- |
 | Callables | 23 |
-| Files | 9 |
+| Files | 10 |
 | Calls traced | 37 |
 | Call stacks | 1 |
 | Deepest stack | 12 |
@@ -60,12 +60,12 @@ Call stacks traced through `packages/conformetry-json`, deepest first. Each fram
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 17 | inherited |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 17 |
+| `maximumBreadth` | 7 |
 
 ### Call stacks (depth)
 
@@ -92,10 +92,6 @@ What this project is judged against. `declared` is the number in this project's 
                       └─> JsonComparisonService.isJsonObject(value: JsonValue): value is Record<string, JsonValue> [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:235]
                          ↳ Returns whether a value is a plain JSON object.
 ```
-
-### Module spread
-
-None.
 
 ### Breadth
 
@@ -124,10 +120,6 @@ None.
 | `JsonValidatorService.validateDocument` | 1 | `JsonComparisonService.compare` | `packages/conformetry-json/src/modules/json-validator/json-validator.service.ts:39` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

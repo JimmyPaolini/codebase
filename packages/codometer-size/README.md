@@ -22,18 +22,14 @@ Call stacks traced through `packages/codometer-size`, deepest first. Each frame 
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 3 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 3 |
+| `maximumBreadth` | 2 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -43,10 +39,6 @@ None.
 | --- | --- | --- | --- |
 | `SizeService.measureFile` | 2 | `SizeService.compress`, `UnreadableTargetFileError.constructor` | `packages/codometer-size/src/modules/size/size.service.ts:61` |
 | `SizeService.analyze` | 1 | `SizeService.measureFile` | `packages/codometer-size/src/modules/size/size.service.ts:85` |
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

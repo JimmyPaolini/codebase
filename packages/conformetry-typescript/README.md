@@ -61,7 +61,7 @@ Call stacks traced through `packages/conformetry-typescript`, deepest first. Eac
 | Measure | Value |
 | --- | --- |
 | Callables | 40 |
-| Files | 11 |
+| Files | 12 |
 | Calls traced | 49 |
 | Call stacks | 1 |
 | Deepest stack | 12 |
@@ -70,12 +70,12 @@ Call stacks traced through `packages/conformetry-typescript`, deepest first. Eac
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 17 | inherited |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 17 |
+| `maximumBreadth` | 6 |
 
 ### Call stacks (depth)
 
@@ -103,10 +103,6 @@ What this project is judged against. `declared` is the number in this project's 
                        ↳ Reads a node's direct children, skipping the end-of-file token.
                       └─> TypescriptNodesService.forEachChild(…)(childNode: Node): undefined [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:186]
 ```
-
-### Module spread
-
-None.
 
 ### Breadth
 
@@ -142,10 +138,6 @@ None.
 | `TypescriptValidatorService.map(…)` | 1 | `TypescriptValidatorService.readLocation` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:116` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

@@ -141,7 +141,7 @@ Call stacks traced through `packages/conformetry-nx`, deepest first. Each frame 
 | Measure | Value |
 | --- | --- |
 | Callables | 113 |
-| Files | 43 |
+| Files | 44 |
 | Calls traced | 136 |
 | Call stacks | 8 |
 | Deepest stack | 14 |
@@ -150,12 +150,12 @@ Call stacks traced through `packages/conformetry-nx`, deepest first. Each frame 
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 14 | declared |
-| `maximumBreadth` | 9 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 14 |
+| `maximumBreadth` | 9 |
 
 ### Call stacks (depth)
 
@@ -314,15 +314,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `PluginService.runValidation` | 17 | `packages/conformetry-core:modules/reporting`, `packages/conformetry-nx:modules/instances`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:395` |
-| `PluginService.runGenerator` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-nx:modules/adapter`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:334` |
-| `syncGenerator` | 7 | `packages/conformetry-nx:modules/generator`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
-| `bootstrapPlugin` | 6 | `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:39` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -393,10 +384,6 @@ What this project is judged against. `declared` is the number in this project's 
 | `linkPlugin` | 1 | `leadsTo` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:116` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

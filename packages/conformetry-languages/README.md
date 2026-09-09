@@ -88,12 +88,21 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
 | Measure | Value |
 | --- | --- |
 | Callables | 143 |
-| Files | 40 |
+| Files | 41 |
 | Calls traced | 190 |
 | Call stacks | 14 |
 | Deepest stack | 13 |
 | Stacks through recursion | 3 |
 | Unfollowable calls | 0 |
+
+### Limits
+
+What this project is judged against, as declared in its own `callidescope.config.ts`.
+
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 13 |
+| `maximumBreadth` | 11 |
 
 ### Call stacks (depth)
 
@@ -281,10 +290,6 @@ Call stacks traced through `packages/conformetry-languages`, deepest first. Each
 
 </details>
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -378,10 +383,6 @@ None.
 | `LanguagesService.filter(…)` | 1 | `LanguagesService.some(…)` | `packages/conformetry-languages/src/modules/languages/languages.service.ts:98` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

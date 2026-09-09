@@ -1859,12 +1859,12 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 16 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 16 |
+| `maximumBreadth` | 14 |
 
 ### Call stacks (depth)
 
@@ -2503,12 +2503,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `DrawPermutationsService.render` | 6 | `applications/meanderaw:modules/mosaic-naming`, `applications/meanderaw:modules/mosaic-tile`, `applications/meanderaw:modules/svg-rendering` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:80` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -2821,14 +2815,6 @@ What this project is judged against. `declared` is the number in this project's 
 | `DrawCommand.parseType` | 1 | `DrawParametersService.type` | `applications/meanderaw/src/modules/draw/draw.command.ts:322` |
 
 </details>
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `MosaicSymmetryService.canonicalIdentifier` | `applications/meanderaw:modules/mosaic-tile` | `applications/meanderaw:modules/draw` | 4/5 |
-| `MeanderLatticeService.build` | `applications/meanderaw:modules/meander-lattice` | `applications/meanderaw:modules/meander-topology` | 2/2 |
-| `MosaicTilesService.enumerate` | `applications/meanderaw:modules/mosaic-tile` | `applications/meanderaw:modules/draw` | 2/2 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
