@@ -326,12 +326,17 @@ their own root, and each writes only what it overrides — inheritance is per
 limit, so `configuration/callidescope.config.ts` supplies whatever a project
 does not name. Every one of those numbers was set from a boundary-tested run at
 the gate's own Nx-graph scope, passing at N and failing at N−1, so none carries
-headroom. Breadth is declared only where every callable at the project's widest
-number is a closed enumeration — a switch over a union, a registry, a set of
-formats — and a tie with an ordinary sequential orchestrator decides against
-gating it, which is why `lexico-ingestion`, `synchronization`, and
-`callidescope-output` gate depth and nothing else. Reading them as a set is a
-command rather than a table, now that no one file holds them:
+headroom. Breadth is now declared for every traced project, `lexico-ingestion`,
+`synchronization`, and `callidescope-output` included — gating it universally is
+this ticket's own change, and the closed-enumeration-versus-sequential-orchestrator
+tie that used to decide _whether_ a project's widest callable earned a gate is no
+longer a reason to skip one. It still explains why some of these numbers are
+small: a switch over a union, a registry, a set of formats, or an ordinary
+sequential orchestrator all tend to fan out over a handful of steps rather than
+many, so a project built that way measures a low ceiling either way. What
+changed is that the next step, branch, or format any of them gains is what
+moves the number now, not what a tie once excused it from. Reading them as a
+set is a command rather than a table, now that no one file holds them:
 
 ```bash
 nx run callidescope-cli:start -- limits --config configuration/callidescope.config.ts
