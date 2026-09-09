@@ -1,7 +1,10 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { COMPATIBLE_MODIFIERS } from "../meander-generation/meander-generation.constants";
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
@@ -196,14 +199,17 @@ const [NAMED_SUB_FAMILY_CASES, UNNAMED_SUB_FAMILY_CASES] = ((): readonly [
 // 🧪 Tests
 
 describe(NegativeSourceService, () => {
+  let identificationService: LatticeIdentificationService;
   let subFamilyService: MosaicSubFamilyService;
-  let symmetryService: MosaicSymmetryService;
   let tileService: MosaicTileService;
   let service: NegativeSourceService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
+        LatticeIdentificationService,
+        MeanderLatticeService,
+        MosaicNamingService,
         MosaicSubFamilyService,
         MosaicSymmetryService,
         MosaicTileService,
@@ -211,8 +217,8 @@ describe(NegativeSourceService, () => {
       ],
     }).compile();
 
+    identificationService = await module.resolve(LatticeIdentificationService);
     subFamilyService = await module.resolve(MosaicSubFamilyService);
-    symmetryService = await module.resolve(MosaicSymmetryService);
     tileService = await module.resolve(MosaicTileService);
     service = await module.resolve(NegativeSourceService);
   });
@@ -229,7 +235,7 @@ describe(NegativeSourceService, () => {
 
         expect({
           columns: tile.columns,
-          identifier: symmetryService.identify(tile),
+          identifier: identificationService.identify(tile),
           rows: tile.rows,
         }).toStrictEqual({ columns, identifier, rows: rows + 1 });
       },
@@ -246,7 +252,9 @@ describe(NegativeSourceService, () => {
       ({ identifier, rows, source }) => {
         const tile = service.tile(source, rows);
 
-        expect(symmetryService.canonicalIdentifier(tile)).toBe(identifier);
+        expect(identificationService.canonicalIdentifier(tile)).toBe(
+          identifier,
+        );
       },
     );
 
@@ -302,10 +310,10 @@ describe(NegativeSourceService, () => {
     it.each(SWEPT_ROWS)(
       "phases ruled-raised against ruled at %i rows",
       (rows) => {
-        const raised = symmetryService.canonicalIdentifier(
+        const raised = identificationService.canonicalIdentifier(
           service.tile("ruled-raised", rows),
         );
-        const ruled = symmetryService.canonicalIdentifier(
+        const ruled = identificationService.canonicalIdentifier(
           service.tile("ruled", rows),
         );
 

@@ -1,6 +1,10 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { OversizedMosaicTileError } from "./mosaic-tile.constants";
 import { MosaicTileService } from "./mosaic-tile.service";
@@ -40,15 +44,26 @@ const ADMITTED_SHAPES: readonly {
 
 describe(MosaicTilesService, () => {
   let service: MosaicTilesService;
+  let latticeIdentificationService: LatticeIdentificationService;
   let mosaicSymmetryService: MosaicSymmetryService;
   let mosaicTileService: MosaicTileService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [MosaicSymmetryService, MosaicTileService, MosaicTilesService],
+      providers: [
+        LatticeIdentificationService,
+        MeanderLatticeService,
+        MosaicNamingService,
+        MosaicSymmetryService,
+        MosaicTileService,
+        MosaicTilesService,
+      ],
     }).compile();
 
     service = await module.resolve(MosaicTilesService);
+    latticeIdentificationService = await module.resolve(
+      LatticeIdentificationService,
+    );
     mosaicSymmetryService = await module.resolve(MosaicSymmetryService);
     mosaicTileService = await module.resolve(MosaicTileService);
   });
@@ -144,18 +159,18 @@ describe(MosaicTilesService, () => {
     it("returns one tile per symmetry class, never two that draw the same pattern", () => {
       const tiles = service.enumerate(4, 2);
       const identifiers = tiles.map((tile) =>
-        mosaicSymmetryService.canonicalIdentifier(tile),
+        latticeIdentificationService.canonicalIdentifier(tile),
       );
 
       expect(new Set(identifiers).size).toBe(tiles.length);
     });
 
-    it("orders tiles by canonical identifier, so a sweep is stable across runs", () => {
-      const identifiers = service
+    it("orders tiles by the key it folds on, so a sweep is stable across runs", () => {
+      const keys = service
         .enumerate(5, 1)
-        .map((tile) => mosaicSymmetryService.canonicalIdentifier(tile));
+        .map((tile) => mosaicSymmetryService.edgeKey(tile));
 
-      expect(identifiers).toStrictEqual(identifiers.toSorted());
+      expect(keys).toStrictEqual(keys.toSorted());
     });
 
     it("returns the representative of each class rather than whichever member the walk reached first", () => {
@@ -167,10 +182,10 @@ describe(MosaicTilesService, () => {
     it("includes the three named members of the family at 6 rows", () => {
       const singleColumn = service
         .enumerate(6, 1)
-        .map((tile) => mosaicSymmetryService.canonicalIdentifier(tile));
+        .map((tile) => latticeIdentificationService.canonicalIdentifier(tile));
       const twoColumn = service
         .enumerate(5, 2)
-        .map((tile) => mosaicSymmetryService.canonicalIdentifier(tile));
+        .map((tile) => latticeIdentificationService.canonicalIdentifier(tile));
 
       // `dots` is a bare point on every level, so `0` throughout;
       // `lines` is the single column's wrapped rule on every level, so `3`
@@ -184,7 +199,7 @@ describe(MosaicTilesService, () => {
     it("finds only the dot and the line at the smallest tile there is", () => {
       const identifiers = service
         .enumerate(4, 1)
-        .map((tile) => mosaicSymmetryService.canonicalIdentifier(tile));
+        .map((tile) => latticeIdentificationService.canonicalIdentifier(tile));
 
       // Three interior levels, one column. Every point bare, every point on
       // the wrapped rule, and a southward edge over the lower two levels —

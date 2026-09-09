@@ -42,7 +42,9 @@ import type { ParallelUnitPlacement } from "./parallel-motif.types";
  * `i - 1`'s turn. Even units open upward and odd units downward, so the band
  * reads as ⊔⊓⊔⊓ at whatever ply is asked for.
  *
- * Three consequences, every one of them measured in
+ * A rule now runs the full width of the repeat along both of the band's
+ * borders — see {@link border} — so the strands terminate against a rule
+ * rather than in mid-air. Three consequences, every one of them measured in
  * `parallel-motif.service.unit.test.ts` and again in the charter sweep:
  *
  * - **It is space-filling, strictly.** Nested brackets are an exact cover of
@@ -51,15 +53,20 @@ import type { ParallelUnitPlacement } from "./parallel-motif.types";
  *   it is below, the crossbar of the strand whose turn row it is reaches it,
  *   because a point that deep is that far in from the unit's edge. Every
  *   lattice point of the band carries ink, including the first and last
- *   column, so unlike 2,120 documents in the corpus this family leaves no
+ *   column, so unlike 6,005 documents in the corpus this family leaves no
  *   gap even at the band's own termination.
- * - **It neither branches nor crosses.** The brackets of one unit are
- *   pairwise disjoint and no unit draws a run outside its own columns, so
- *   every lattice point carries two arms of ink or one. Invariants 3 and 4
- *   hold, and this family declares no relaxation of either — nor of
- *   invariant 2, which is the whole point of it.
- * - **The ply is the component count.** A ply of `N` leaves exactly `N`
- *   arcs per repeat unit, each with two free ends and no loop.
+ * - **It branches, and never crosses.** A rule meets an arm's rising end
+ *   with west, east, and south ink at one lattice point — three arms — so
+ *   `plied` and `aligned` fork at every interior column of both borders, and
+ *   the family relaxes invariant 3. Nothing gains a fourth arm: a border row
+ *   has no ink above it, so invariant 4 still holds everywhere. 642 of the
+ *   family's 786 drawings fork, and they are exactly the ones a border rule
+ *   added ink to; the fewest any of them leaves is 10.
+ * - **The ply is the component count only under `serpentine`.** A bracket's
+ *   two arms both end on the same border, so ruling it joins every strand of
+ *   every unit into one looped figure with no free end left. A stack of
+ *   ribbons keeps its `N` pieces, because only the top and bottom of the
+ *   stack reach a border at all.
  *
  * `strands` is bounded above by `rows` rather than by the shared maximum.
  * The innermost strand's arms are `rows - strands + 1` lattice steps long,
@@ -116,9 +123,8 @@ export class ParallelMotifService implements MotifService {
    * Nothing about the charter turns on this. A bundle's exact cover of its
    * own repeat unit is an argument about the unit's interior, and it holds
    * whichever way round the unit is drawn — so `aligned` is space-filling,
-   * non-branching and non-crossing for exactly the reasons `plied` is, and
-   * the family still declares no relaxation. What changes is only what the
-   * eye does with it.
+   * forks against the border rules, and crosses nowhere, for exactly the
+   * reasons `plied` does. What changes is only what the eye does with it.
    */
   private opensUp(modifier: Modifier | undefined, unitIndex: number): boolean {
     if (modifier?.name === "aligned") {
@@ -159,6 +165,32 @@ export class ParallelMotifService implements MotifService {
   }
 
   // 🌎 Public Methods
+
+  /**
+   * The rule along both border rows, drawn once across the whole repeat
+   * rather than per unit.
+   *
+   * Every shape used to leave its borders to whatever its own ink reached: a
+   * bracket bundle's arms stopped in mid-air at the border it opened onto,
+   * and a serpentine ruled a border only where a flat strip happened to land
+   * on it. So a border read as the shape's signature rather than as the
+   * band's, and the family's four one-strand variants drew the same interior.
+   * Ruling both makes the strands terminate against a rule, which is what
+   * starts this family branching — see the class comment. Ink a shape already
+   * laid on a border row is now a subset of this rule and harmless: the
+   * lattice records each step once.
+   *
+   * The two runs themselves are `GridGeometryService.borderPath`, which is
+   * where every family closing its band this way draws them from; all this
+   * adds is where the band's right edge falls — which for this family is a
+   * question its own {@link rightEdge} answers differently per shape.
+   */
+  border(geometry: GridGeometry, pattern: RepeatPatternOptions): string {
+    return this.gridGeometryService.borderPath(
+      geometry,
+      this.rightEdge(geometry, pattern),
+    );
+  }
 
   /**
    * Draws one repeat unit: a bundle of nested brackets under `plied` and

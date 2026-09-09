@@ -96,15 +96,18 @@ describe(DrawCombinationsService, () => {
       { expected: 14, type: "cross" },
       // rows 3..12 × (none + the nine sources the family names)
       { expected: 100, type: "negative" },
-      // rows 2..12 × (none + comb up + rung ×2 + stagger ×4)
-      { expected: 88, type: "branch" },
-      // rows 2..12 × (plied over every ply 1..rows + aligned over the same
-      // + serpentine over every distinct rotation and flip of each). The
-      // family has no unmodified entry — `plied` names that drawing — and
-      // serpentine's variant count is not a multiplication, since rotations
-      // of an even partition, flips that name the same ribbon, and flips
-      // that land on a strip with no depth all collapse.
-      { expected: 819, type: "parallel" },
+      // rows 3..12 × (none + rung ×4 + stagger ×3)
+      { expected: 80, type: "branch" },
+      // rows 2..12 × (plied over every ply 2..rows + aligned over 1..rows
+      // + serpentine over every distinct rotation and flip of every ply
+      // 2..rows). The family has no unmodified entry — `plied` names that
+      // drawing — and serpentine's variant count is not a multiplication,
+      // since rotations of an even partition, flips that name the same
+      // ribbon, and flips that land on a strip with no depth all collapse.
+      // `plied` and `serpentine` both skip one strand: at one strand there
+      // is nothing to ply and nothing to serpentine, so only `aligned`
+      // still draws it — see `NAMES_WITHOUT_A_ONE_STRAND_DRAWING`.
+      { expected: 786, type: "parallel" },
     ])("enumerates $expected combinations for $type", ({ expected, type }) => {
       expect(
         combinations.filter((parameters) => parameters.type === type),
@@ -112,7 +115,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(1159);
+      expect(combinations).toHaveLength(1118);
     });
 
     it("names every combination distinctly", () => {
@@ -198,7 +201,10 @@ describe(DrawCombinationsService, () => {
     // 🎯 The deepest ply the sweep reaches is the deepest the command line
     // accepts, which is what "every drawing the command line can be asked
     // for is a drawing this repository commits" means for this family's
-    // second axis. A flat list could not say this.
+    // second axis. A flat list could not say this. The floor is two rather
+    // than one: `plied` has no one-strand drawing of its own any more, since
+    // it would duplicate `aligned-strands-1` — see
+    // `NAMES_WITHOUT_A_ONE_STRAND_DRAWING`.
     it("sweeps the family's whole ply range, up to the deepest row count", () => {
       const strandCounts = new Set(
         combinations.flatMap((parameters) =>
@@ -209,7 +215,32 @@ describe(DrawCombinationsService, () => {
       );
 
       expect(Math.max(...strandCounts)).toBe(MAXIMUM_VALUE);
-      expect(Math.min(...strandCounts)).toBe(1);
+      expect(Math.min(...strandCounts)).toBe(2);
+    });
+
+    // 🎯 The exclusion issue #669 states, asserted as a property rather than
+    // reflected as a count: `aligned` still draws one strand, and no other
+    // ply-carrying modifier does. A future strand count that reintroduced
+    // `plied`'s or `serpentine`'s one-strand entry would fail here even if
+    // nobody remembered to update the numbers above. The converse — that
+    // those three entries really would draw `aligned-strands-1`'s own
+    // lattice — is measured in `parallel-motif.service.unit.test.ts`, which
+    // renders them rather than taking the exclusion on trust.
+    it("draws one strand for aligned only, never for plied or serpentine", () => {
+      const oneStrand = combinations.filter(
+        (parameters) =>
+          parameters.type === "parallel" &&
+          parameters.modifier &&
+          "strands" in parameters.modifier &&
+          parameters.modifier.strands === 1,
+      );
+
+      expect(oneStrand).not.toHaveLength(0);
+      expect(
+        [
+          ...new Set(oneStrand.map(({ modifier }) => modifier?.name)),
+        ].toSorted(),
+      ).toStrictEqual(["aligned"]);
     });
 
     // 🎯 The two figures README.md's discarded-density argument rests on,

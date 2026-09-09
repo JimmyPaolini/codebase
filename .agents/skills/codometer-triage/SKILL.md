@@ -1,6 +1,6 @@
 ---
 name: codometer-triage
-description: Act on a codometer limit breach, a stale committed report, or a run that failed outright. Use when a codometer --check exits non-zero, when a size or count limit was breached, when a committed report reads stale against a fresh measurement even though nothing changed, when a limit fails to bind or a target matches no files, or before reaching for a repository's limit value to make a failing check pass.
+description: Act on a codometer limit breach, a comment or documentation budget breach, a stale committed report, or a run that failed outright. Use when a codometer --check exits non-zero, when a size or count limit was breached, when a comment block ran past its word, line, or character budget, when a committed report reads stale against a fresh measurement even though nothing changed, when a limit fails to bind or a target matches no files, or before reaching for a repository's limit value to make a failing check pass.
 license: MIT
 ---
 
@@ -36,6 +36,14 @@ Reduce what is actually being measured instead:
 - A convention-count breach (too many of something, or too few): the count is
   usually accurate — the fix is in the code the counter is watching, not in
   the counter's `value`.
+- A **comment or documentation budget** breach reports differently: it names a
+  file and a line rather than a metric, because the thing measured is one block
+  rather than a repository-wide total. Condense that block, or move the detail
+  into documentation that has room for it. Check which reader measured it
+  before trusting the count — shell, TOML, SQL, and HCL use a line scanner that
+  reads a comment marker inside a string literal as a comment, and Python's
+  comments go unmeasured entirely when the interpreter cannot be run. The
+  `codometer-configure` skill has both caveats in full.
 
 If the limit's number was simply wrong for what this metric should hold going
 forward — not because of this change, but as a standing decision — that is a

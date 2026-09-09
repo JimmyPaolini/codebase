@@ -117,12 +117,12 @@ export interface MosaicEdgesDraft {
 /**
  * The bookkeeping `MosaicTilesService.enumerate` carries through its walk:
  * the edges decided so far, the shape being enumerated, and the distinct
- * tiles found, keyed by canonical identifier.
+ * tiles found, keyed by their class's canonical edge key.
  */
 export interface MosaicEnumeration {
   readonly edges: MosaicEdgesDraft;
   readonly shape: MosaicTileShape;
-  readonly tilesByIdentifier: Map<string, MosaicTile>;
+  readonly tilesByKey: Map<string, MosaicTile>;
 }
 
 /** One lattice point's position on the canvas, in pixels, as `MosaicTileMotifService` draws from it. */
