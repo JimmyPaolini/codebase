@@ -16,7 +16,7 @@ import { ConventionalConfigIoService } from "./conventional-config-io.service";
 import { ConventionalConfigValidatorsService } from "./conventional-config-validators.service";
 import {
   SYNC_CONVENTIONAL_CONFIG_ISSUE_TEMPLATE_FILES,
-  SYNC_CONVENTIONAL_CONFIG_SKILL_FILES,
+  SYNC_CONVENTIONAL_CONFIG_MARKDOWN_FILES,
 } from "./conventional-config.constants";
 
 import type {
@@ -61,7 +61,7 @@ export class ConventionalConfigService {
     this.workspaceRoot,
     ".vscode/settings.json",
   );
-  private readonly skillFiles = SYNC_CONVENTIONAL_CONFIG_SKILL_FILES.map(
+  private readonly skillFiles = SYNC_CONVENTIONAL_CONFIG_MARKDOWN_FILES.map(
     (file) => path.join(this.workspaceRoot, file),
   );
 

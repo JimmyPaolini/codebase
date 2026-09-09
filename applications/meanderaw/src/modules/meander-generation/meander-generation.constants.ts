@@ -25,7 +25,7 @@ import type {
 
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
-  branch: ["comb", "rung", "stagger"],
+  branch: ["rung", "stagger"],
   chain: ["edge", "flip", "edge-flip"],
   cross: ["interrupted"],
   mosaic: [],
@@ -113,6 +113,19 @@ export const MINIMUM_REPEAT_COUNT = 1;
 export const MINIMUM_STRANDS = 1;
 
 /**
+ * The lower of the two repeat counts `MotifPitchService` measures a right
+ * edge at, the higher being one more.
+ *
+ * Every family's right edge is affine in the repeat count — a fixed offset
+ * plus one unit's width per repeat — so any two consecutive counts give the
+ * same difference, and this one is a place to stand rather than a
+ * significant number. It is two rather than one so that the pair sits clear
+ * of a single-unit drawing, where a family whose last unit is clipped flush
+ * with its own motif has no following unit to be measured against.
+ */
+export const PITCH_PROBE_REPEAT_COUNT = 2;
+
+/**
  * Every modifier that carries a `strands` count, and so is bounded by
  * {@link MINIMUM_STRANDS} and the drawing's own row count.
  *
@@ -144,6 +157,56 @@ export const SPIN_FAMILY_MODIFIER_NAMES: readonly Modifier["name"][] = [
 ];
 
 /**
+ * How many pitches wide one **true** repeat is, for each modifier whose
+ * pitch alone is too narrow to be one.
+ *
+ * A pitch is how far a drawing's right edge advances per repeat unit. That
+ * is the whole story for every modifier absent from this table, whose
+ * consecutive units are identical — including `flip` on `chain`, `snake`,
+ * `swirl`, and `whirl`, where the flip is already paid for in a doubled
+ * pitch rather than in a longer cycle. The five named here draw something
+ * that comes back only after several units: `spin` and `spin-flip` rotate
+ * their motif a quarter turn per unit, so a full turn takes
+ * {@link SPIN_CYCLE_LENGTH} of them; `edge-flip` turns alternate units over;
+ * `plied` alternates the two orientations of its bundle; and `stagger` runs
+ * every second unit's rail along the far end of its teeth, which is the
+ * crenellation the mode is named for.
+ *
+ * `stagger` joined the list when its figure was inset from its border
+ * rules. Its rail could previously reach only a border row, and both borders
+ * were ruled, so the alternation drew nothing an address could read and
+ * consecutive units were identical by accident.
+ *
+ * It is declared rather than searched for. A span found by looking for the
+ * smallest one that repeats would agree with every drawing by construction,
+ * which would leave the assertion that consecutive units address identically
+ * with nothing left to catch — a family whose repeat grew would then be
+ * accommodated silently instead of failing. So the number is written down
+ * and the corpus sweep is what holds it to account.
+ *
+ * Every entry is measured over the whole corpus: 10 `spin`, 10 `spin-flip`,
+ * 18 `edge-flip` (nine `chain` and nine `snake`), 65 `plied`, and all 30
+ * `stagger` drawings have a minimal period wider than their own pitch — its
+ * teeth are inset from both borders at every row count the family draws, so
+ * the two rows its rail alternates between are never one row. The one `plied` drawing
+ * that does not is the two-strand ply of a two-row band, whose single
+ * interior level draws both bundle orientations the same — the same
+ * degeneracy that kept one-strand plies out of the sweep. A declared span
+ * wider than the minimal one still addresses that drawing correctly, so the
+ * modifier is listed unconditionally rather than carrying an exception for
+ * its shallowest member.
+ */
+export const MODIFIER_REPEAT_PITCHES: Partial<
+  Record<Modifier["name"], number>
+> = {
+  "edge-flip": 2,
+  plied: 2,
+  spin: SPIN_CYCLE_LENGTH,
+  "spin-flip": SPIN_CYCLE_LENGTH,
+  stagger: 2,
+};
+
+/**
  * Every implemented modifier `name`, mirroring `SUPPORTED_TYPES`'s widened
  * `readonly string[]` declaration for the same reason: it keeps
  * `Array.prototype.includes` usable with a plain `string` at the CLI
@@ -166,7 +229,6 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "ruled-raised",
   "ruled-spaced",
   "ruled-tall",
-  "comb",
   "rung",
   "stagger",
   "plied",
@@ -252,19 +314,24 @@ export const SUPPORTED_TYPES: readonly string[] = [
  * band this family can ink the corridors of — so following it down would
  * widen `negative` as a side effect of a decision about another family.
  *
- * `branch`'s minimum of 2 is its `rung` mode's, and the family takes the
- * stricter of its modes the same way `cross` does. `comb` and `stagger` do
- * draw at one row — a rail with a one-step tooth under every column still
- * forks at every interior column, 10 times and 5 times respectively, which
- * is what they fork at every other row count too. `rung` does not. Its fork
- * is a rung meeting the middle of a stile, so it needs the stile to have a
- * middle — at least one lattice point strictly between the band's two
- * border rows — and a one-row band has none, leaving each unit a plain
- * bracket with the mode's characteristic junction absent entirely. The
- * `rows - 1` stile forks per unit that the mode is named for appear first
- * at 2 rows. `branch-motif.service.unit.test.ts` renders all three modes
- * below the minimum and measures every claim in this paragraph there, so
- * the number and its reason cannot drift apart.
+ * `branch`'s minimum of 3 is its `stagger` mode's, and the family takes the
+ * stricter of its modes the same way `cross` does. Every mode's figure is
+ * inset by one lattice row from the rules beside it, so that a rule never
+ * lands on the ink it closes the band around — see
+ * `BranchMotifService.figureRows`. `comb` and `rung` are inset at one end
+ * only, keeping their rail on row 0 where a reader already sees the top
+ * border, so both still draw at 2 rows: 10 forks and 5 respectively at six
+ * repeats, which is what `comb` forks at every row count and one step of
+ * `rung`'s own climb. `stagger` is inset at both, because its rail moves
+ * between the two rows its teeth end at and neither of those may be a ruled
+ * one. That leaves it needing two free rows between the rules, so a 2-row
+ * band gives it a single free row, its teeth collapse to zero length, and
+ * the drawing is three parallel rules with no vertical ink and not one fork
+ * anywhere — the crenellation the mode exists for absent entirely, exactly
+ * as {@link MINIMUM_STAGGER_BRANCHES} guards against in the other axis.
+ * `branch-motif.service.unit.test.ts` renders all three modes below the
+ * minimum and measures every claim in this paragraph there, so the number
+ * and its reason cannot drift apart.
  *
  * `parallel`'s minimum is **2**, and it is the shallowest band that admits
  * more than one strand rather than anything about a ply's arms.
@@ -292,7 +359,7 @@ export const SUPPORTED_TYPES: readonly string[] = [
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
-  branch: 2,
+  branch: 3,
   chain: 4,
   cross: 6,
   mosaic: MOSAIC_TILE_MINIMUM_ROWS,
@@ -374,9 +441,10 @@ export class InvalidRowsError extends Error {
  *
  * The minimum is the family's own and the maximum is the command line's,
  * which is why the message names them rather than restating either: below
- * the minimum the mode stops forking altogether, and above the maximum
- * nothing structural fails — a crenel simply grows wider than any other
- * parameter this application accepts.
+ * the minimum the crenel is no wider than a plain comb's own unit and the
+ * drawing is one, and above the maximum nothing structural fails — a
+ * crenel simply grows wider than any other parameter this application
+ * accepts.
  */
 export class InvalidStaggerBranchCountError extends Error {
   constructor(branches: number, minimum: number, maximum: number) {
