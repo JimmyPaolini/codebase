@@ -549,100 +549,120 @@ Call stacks traced through `packages/callidescope-configuration`, deepest first.
 
 | Measure | Value |
 | --- | --- |
-| Callables | 64 |
-| Files | 15 |
-| Calls traced | 57 |
-| Call stacks | 3 |
+| Callables | 86 |
+| Files | 19 |
+| Calls traced | 88 |
+| Call stacks | 4 |
 | Deepest stack | 5 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 5 |
+| Unfollowable calls | 7 |
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 6 | declared |
-| `maximumBreadth` | 8 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 6 |
+| `maximumBreadth` | 8 |
 
 ### Call stacks (depth)
 
 **1. `ConfigurationService.loadConfiguration`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 ConfigurationService.loadConfiguration(args?: LoadConfigurationArguments): Promise<ResolvedCallidescopeConfiguration> [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:362]
+🚀 ConfigurationService.loadConfiguration(args?: LoadConfigurationArguments): Promise<ResolvedCallidescopeConfiguration> [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:298]
    ↳ Loads and validates a callidescope configuration file.
-  └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedCallidescopeConfiguration> [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:390]
+  └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedCallidescopeConfiguration> [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:326]
      ↳ Loads a configuration, and says what the file itself declared and which file answered.
-    └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): string [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:178]
+    └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): string [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:158]
        ↳ Resolves a configuration path against the cwd, then the repository root.
-      └─> ConfigurationService.findRepositoryRoot(): string | undefined [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:110]
+      └─> ConfigurationService.findRepositoryRoot(): string | undefined [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:97]
          ↳ Walks upward from the process cwd looking for the repository root.
-        └─> ConfigurationService.some(…)(marker: ".git" | "pnpm-workspace.yaml"): boolean [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:115]
+        └─> ConfigurationService.some(…)(marker: ".git" | "pnpm-workspace.yaml"): boolean [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:102]
 ```
 
-**2. `InputService.suggest`** — depth 3 · orphan-root
+**2. `flatMap(…)`** — depth 3 · orphan-root
 
 ```text
-🚀 InputService.suggest(input: string): Promise<{ title: string; value: string; }[]> [packages/callidescope-configuration/src/modules/input/input.service.ts:150]
-  └─> InputService.completeSuggestions(args: { input: string; suggestions: readonly string[]; }): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:73]
+🚀 flatMap(…)(…): string[] [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:227]
+  └─> readPermittedNames(…): string[] [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:146]
+     ↳ Reads the names one classified field contributes to the permitted set.
+    └─> map(…)([member]: [string, ProjectFieldPermission]): string [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:156]
+```
+
+**3. `InputService.suggest`** — depth 3 · orphan-root
+
+```text
+🚀 InputService.suggest(input: string): Promise<{ title: string; value: string; }[]> [packages/callidescope-configuration/src/modules/input/input.service.ts:134]
+  └─> InputService.completeSuggestions(args: { input: string; suggestions: readonly string[]; }): string[] [packages/callidescope-configuration/src/modules/input/input.service.ts:72]
      ↳ Narrows a suggestion list to what has been typed so far.
-    └─> InputService.filter(…)(suggestion: string): boolean [packages/callidescope-configuration/src/modules/input/input.service.ts:78]
+    └─> InputService.filter(…)(suggestion: string): boolean [packages/callidescope-configuration/src/modules/input/input.service.ts:77]
 ```
 
-**3. `callbackSchema`** — depth 2 · orphan-root
+<details>
+<summary>1 more call stacks</summary>
+
+**4. `callbackSchema`** — depth 2 · orphan-root
 
 ```text
-🚀 callbackSchema<TCallback>(): z.ZodType<TCallback> [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:287]
+🚀 callbackSchema<TCallback>(): z.ZodType<TCallback> [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:296]
    ↳ Accepts a function-valued option without inspecting its signature.
-  └─> custom(…)(value: unknown): value is Function [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:288]
+  └─> custom(…)(value: unknown): value is Function [packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:297]
 ```
 
-### Module spread
-
-None.
+</details>
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.resolveConfiguration` | 8 | `ConfigurationService.resolveAllowSpreadFor`, `ConfigurationService.resolveEntryPoints`, `ConfigurationService.resolveExclude`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownDestination`, `ConfigurationService.resolveProjectReadmes`, `ConfigurationService.resolveWorkspaceStructure` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:433` |
-| `ConfigurationService.loadConfigurationFile` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:390` |
-| `InputService.promptForAutocompleteMultiselect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.filter(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:139` |
+| `FlagResolutionService.resolveRunFlags` | 7 | `FlagResolutionService.resolveFormat`, `FlagResolutionService.resolveLimitOverrides`, `FlagResolutionService.resolveList`, `FlagResolutionService.resolveEntryPoints`, `FlagResolutionService.resolveExclude`, `FlagResolutionService.resolveLimits`, `FlagResolutionService.resolveWrite` | `packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts:426` |
+| `ConfigurationService.loadConfigurationFile` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:326` |
+| `ConfigurationService.resolveConfiguration` | 5 | `ConfigurationService.resolveEntryPoints`, `ConfigurationService.resolveExclude`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownDestination` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:369` |
 
 <details>
-<summary>21 more callables</summary>
+<summary>35 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `InputService.promptForSelect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.find(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:188` |
-| `ProjectConfigurationService.loadProjectConfigurations` | 3 | `ConfigurationService.findConfigurationFileAt`, `ProjectConfigurationService.loadProjectConfiguration`, `ProjectConfigurationService.assertNoForbiddenFields` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:273` |
-| `ProjectConfigurationService.resolveLimits` | 3 | `ProjectConfigurationService.buildWorkspaceLimits`, `ProjectConfigurationService.map(…)`, `ProjectConfigurationService.map(…)` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:320` |
-| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:178` |
-| `ProjectConfigurationService.assertNoForbiddenFields` | 2 | `ProjectConfigurationService.findForbiddenField`, `ProjectConfigurationFieldNotPermittedError.constructor` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:48` |
-| `ProjectConfigurationService.loadProjectConfiguration` | 2 | `ConfigurationService.loadConfigurationFile`, `ProjectConfigurationError.constructor` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:193` |
-| `InputService.assertCanPrompt` | 2 | `InputService.isAtTerminal`, `missingInputError` | `packages/callidescope-configuration/src/modules/input/input.service.ts:41` |
-| `InputService.suggest` | 2 | `InputService.map(…)`, `InputService.completeSuggestions` | `packages/callidescope-configuration/src/modules/input/input.service.ts:150` |
-| `InputService.resolveFormatOption` | 2 | `InputService.isAtTerminal`, `InputService.promptForSelect` | `packages/callidescope-configuration/src/modules/input/input.service.ts:231` |
-| `callbackSchema` | 1 | `custom(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:287` |
-| `ConfigurationService.findConfigurationFile` | 1 | `ConfigurationService.findConfigurationFileAt` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:83` |
-| `ConfigurationService.findRepositoryRoot` | 1 | `ConfigurationService.some(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:110` |
-| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:134` |
-| `ConfigurationService.loadConfiguration` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:362` |
-| `ProjectConfigurationService.buildProjectLimits` | 1 | `ProjectConfigurationService.readDeclaredLimit` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:69` |
-| `ProjectConfigurationService.buildWorkspaceLimits` | 1 | `ProjectConfigurationService.readDeclaringPath` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:111` |
-| `ProjectConfigurationService.map(…)` | 1 | `ProjectConfigurationService.buildProjectLimits` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:333` |
+| `ProjectConfigurationService.loadProjectConfigurations` | 5 | `ConfigurationService.findConfigurationFileAt`, `ProjectConfigurationMissingError.constructor`, `ProjectConfigurationService.loadProjectConfiguration`, `ProjectConfigurationService.assertNoForbiddenFields`, `ProjectConfigurationService.assertComplete` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:361` |
+| `InputService.promptForAutocompleteMultiselect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.filter(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:123` |
+| `InputService.promptForSelect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.find(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:172` |
+| `ProjectConfigurationService.resolveLimits` | 3 | `ProjectConfigurationService.buildWorkspaceLimits`, `ProjectConfigurationService.map(…)`, `ProjectConfigurationService.map(…)` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:415` |
+| `readPermittedNames` | 2 | `map(…)`, `filter(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:146` |
+| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:158` |
+| `ProjectConfigurationService.assertComplete` | 2 | `ProjectConfigurationService.findMissingField`, `ProjectConfigurationIncompleteError.constructor` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:55` |
+| `ProjectConfigurationService.assertNoForbiddenFields` | 2 | `ProjectConfigurationService.findForbiddenField`, `ProjectConfigurationFieldNotPermittedError.constructor` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:74` |
+| `ProjectConfigurationService.findForbiddenField` | 2 | `ProjectConfigurationService.findForbiddenMember`, `ProjectConfigurationService.readForbiddenField` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:163` |
+| `ProjectConfigurationService.loadProjectConfiguration` | 2 | `ConfigurationService.loadConfigurationFile`, `ProjectConfigurationError.constructor` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:281` |
+| `FlagResolutionService.resolveCount` | 2 | `buildUndeclaredValueMessage`, `buildUnreadableCountMessage` | `packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts:93` |
+| `FlagResolutionService.resolveEntryPoints` | 2 | `FlagResolutionService.resolveList`, `FlagResolutionService.resolveSwitch` | `packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts:168` |
+| `FlagResolutionService.resolveFormat` | 2 | `FlagResolutionService.find(…)`, `buildUnknownFormatMessage` | `packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts:240` |
+| `InputService.assertCanPrompt` | 2 | `InputService.isAtTerminal`, `missingInputError` | `packages/callidescope-configuration/src/modules/input/input.service.ts:40` |
+| `InputService.suggest` | 2 | `InputService.map(…)`, `InputService.completeSuggestions` | `packages/callidescope-configuration/src/modules/input/input.service.ts:134` |
+| `InputService.resolveFormatOption` | 2 | `InputService.isAtTerminal`, `InputService.promptForSelect` | `packages/callidescope-configuration/src/modules/input/input.service.ts:215` |
+| `flatMap(…)` | 1 | `readPermittedNames` | `packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:227` |
+| `callbackSchema` | 1 | `custom(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts:296` |
+| `ConfigurationService.findConfigurationFile` | 1 | `ConfigurationService.findConfigurationFileAt` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:70` |
+| `ConfigurationService.findRepositoryRoot` | 1 | `ConfigurationService.some(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:97` |
+| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:121` |
+| `ConfigurationService.loadConfiguration` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:298` |
+| `ProjectConfigurationService.buildProjectLimits` | 1 | `ProjectConfigurationService.overrideLimit` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:97` |
+| `ProjectConfigurationService.findMissingField` | 1 | `ProjectConfigurationService.find(…)` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:239` |
+| `ProjectConfigurationService.map(…)` | 1 | `ProjectConfigurationService.buildProjectLimits` | `packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts:420` |
 | `missingInputError` | 1 | `InputError.constructor` | `packages/callidescope-configuration/src/modules/input/input.constants.ts:27` |
 | `promptCancelledError` | 1 | `InputError.constructor` | `packages/callidescope-configuration/src/modules/input/input.constants.ts:39` |
-| `InputService.completeSuggestions` | 1 | `InputService.filter(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:73` |
-| `InputService.parseCommaDelimitedOption` | 1 | `InputService.map(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:96` |
+| `buildUnknownFormatMessage` | 1 | `map(…)` | `packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts:19` |
+| `flagResolutionError` | 1 | `InputError.constructor` | `packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts:87` |
+| `FlagResolutionService.resolveDestination` | 1 | `buildUndeclaredDestinationMessage` | `packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts:137` |
+| `FlagResolutionService.resolveLimitOverrides` | 1 | `FlagResolutionService.resolveCount` | `packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts:271` |
+| `FlagResolutionService.resolveSwitch` | 1 | `buildUnknownSwitchMessage` | `packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts:354` |
+| `FlagResolutionService.resolveWrite` | 1 | `FlagResolutionService.resolveDestination` | `packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts:383` |
+| `InputService.completeSuggestions` | 1 | `InputService.filter(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:72` |
+| `InputService.parseCommaDelimitedOption` | 1 | `InputService.map(…)` | `packages/callidescope-configuration/src/modules/input/input.service.ts:95` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
@@ -676,6 +696,7 @@ graph LR
 ```mermaid
 flowchart LR
   ConfigurationModule
+  FlagResolutionModule
   InputModule
 ```
 <!-- codependix:end name="codependix-nestjs" -->
@@ -699,6 +720,11 @@ graph LR
   file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
   file_src_modules_configuration_project_configuration_service_ts["src/modules/configuration/project-configuration.service.ts"]
   file_src_modules_configuration_project_configuration_service_unit_test_ts["src/modules/configuration/project-configuration.service.unit.test.ts"]
+  file_src_modules_flag_resolution_flag_resolution_constants_ts["src/modules/flag-resolution/flag-resolution.constants.ts"]
+  file_src_modules_flag_resolution_flag_resolution_module_ts["src/modules/flag-resolution/flag-resolution.module.ts"]
+  file_src_modules_flag_resolution_flag_resolution_service_ts["src/modules/flag-resolution/flag-resolution.service.ts"]
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts["src/modules/flag-resolution/flag-resolution.service.unit.test.ts"]
+  file_src_modules_flag_resolution_flag_resolution_types_ts["src/modules/flag-resolution/flag-resolution.types.ts"]
   file_src_modules_input_input_constants_ts["src/modules/input/input.constants.ts"]
   file_src_modules_input_input_module_ts["src/modules/input/input.module.ts"]
   file_src_modules_input_input_service_ts["src/modules/input/input.service.ts"]
@@ -726,14 +752,25 @@ graph LR
   file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_project_configuration_service_ts
+  file_src_modules_flag_resolution_flag_resolution_constants_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_flag_resolution_flag_resolution_constants_ts --> file_src_modules_input_input_constants_ts
+  file_src_modules_flag_resolution_flag_resolution_module_ts --> file_src_modules_flag_resolution_flag_resolution_service_ts
+  file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_flag_resolution_flag_resolution_constants_ts
+  file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_flag_resolution_flag_resolution_types_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_flag_resolution_flag_resolution_service_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_flag_resolution_flag_resolution_types_ts
+  file_src_modules_flag_resolution_flag_resolution_types_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_input_input_module_ts --> file_src_modules_input_input_service_ts
   file_src_modules_input_input_service_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_input_input_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_input_input_service_ts --> file_src_modules_input_input_constants_ts
   file_src_modules_input_input_service_ts --> file_src_modules_input_input_types_ts
   file_src_modules_input_input_service_unit_test_ts --> file_src_modules_input_input_service_ts
   file_src_modules_input_input_service_unit_test_ts --> file_src_modules_input_input_types_ts
-  file_src_modules_input_input_types_ts --> file_src_modules_configuration_configuration_types_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 

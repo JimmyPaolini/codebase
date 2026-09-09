@@ -905,8 +905,6 @@ graph LR
   file_examples_implementation_fan_out_queue_sink_ts["examples/implementation-fan-out/queue-sink.ts"]
   file_examples_implementation_fan_out_stream_sink_ts["examples/implementation-fan-out/stream-sink.ts"]
   file_examples_implementation_fan_out_telemetry_sink_ts["examples/implementation-fan-out/telemetry-sink.ts"]
-  file_examples_inherited_limits_inherited_limits_generated_ts["examples/inherited-limits/inherited-limits.generated.ts"]
-  file_examples_inherited_limits_inherited_limits_ts["examples/inherited-limits/inherited-limits.ts"]
   file_examples_injected_dependency_injected_dependency_module_ts["examples/injected-dependency/injected-dependency.module.ts"]
   file_examples_injected_dependency_inventory_ts["examples/injected-dependency/inventory.ts"]
   file_examples_injected_dependency_orders_ts["examples/injected-dependency/orders.ts"]
@@ -926,7 +924,6 @@ graph LR
   file_examples_constructed_class_constructed_class_ts --> file_examples_constructed_class_parser_ts
   file_examples_deep_stack_deep_stack_ts --> file_examples_shared_tail_round_to_cents_ts
   file_examples_forwarding_stack_forwarding_stack_ts --> file_examples_shared_tail_round_to_cents_ts
-  file_examples_inherited_limits_inherited_limits_ts --> file_examples_gated_leaf_gated_leaf_ts
   file_examples_injected_dependency_injected_dependency_module_ts --> file_examples_injected_dependency_inventory_ts
   file_examples_injected_dependency_injected_dependency_module_ts --> file_examples_injected_dependency_orders_ts
   file_examples_injected_dependency_orders_ts --> file_examples_injected_dependency_inventory_ts

@@ -1,6 +1,6 @@
 ---
 name: callidescope-triage
-description: Act on a callidescope run that failed — a depth gate that reported a stack over the limit, a breadth gate, a stale committed report, a module-spread or possibly-misplaced finding, a project whose tsconfig could not be read, a run that traced nothing, a rejected command line, a project's own callidescope.config.ts refused for a workspace-only field or an unresolved entry-point address, or a configuration refused before anything was traced. Use when callidescope exits non-zero, when a call stack got deeper in a change, when a committed report or diagram disagrees with a fresh run, when a depth is printed as a floor rather than a number, when a declared entryPoints.addresses entry resolves to nothing or to more than one declaration, when --check breadth is refused for want of a declared limit, or before reaching for maximumDepth to make a failing check pass.
+description: Act on a callidescope run that failed — a per-project gate reporting a stack over that project's limit, a breadth gate, a gate that read none of its project's own files, a stale committed report, an unreadable tsconfig, a run that traced nothing, or a rejected command line or configuration. Use when callidescope or an inferred gate target exits non-zero, when a stack got deeper in a change, when deciding whether a failing gate is a code fix or a limit fix, when picking or moving a project's own maximumDepth or maximumBreadth, when a printed maximumDepth disagrees with the number a gate judged, when a committed report disagrees with a fresh run, when a declared entry-point address resolves to nothing or to several, when a traced project has no callidescope.config.ts of its own or one that leaves a field out, or before reaching for maximumDepth to make a failing check pass.
 license: MIT
 ---
 
@@ -9,31 +9,43 @@ license: MIT
 Callidescope fails for a handful of distinct reasons, and reading which one
 occurred is most of the work. Separate them first:
 
-| The run said | It is |
-| ------------ | ----- |
-| `🚨 [DEPTH n > limit]` | A **finding** about the code. Fix the layering |
-| A breadth row over the limit | A **finding**. Split the callable |
-| `A configured destination is stale` | **Drift**. Re-run `--write` |
-| `🔭 Rejected a project it could not read` | A `tsconfig.json` **is missing or did not parse**. The trace stopped there |
-| `🔭 Traced nothing` | The run **saw no code at all**. Nothing below it means anything |
-| `🔭 Rejected the command line` | A **mistake** in the flags. Nothing was traced |
-| `🔭 Rejected a project configuration` | One project's own `callidescope.config.ts` **was refused**. Nothing was reported |
-| `🔭 Rejected the configuration` | The run **cannot do what was asked**. Nothing was reported |
+| The run said                              | It is                                                                                                                                           |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `🚨 [DEPTH n > limit]`                    | A **finding** about the code. Fix the layering                                                                                                  |
+| A breadth row over the limit              | A **finding**. Split the callable                                                                                                               |
+| `A configured destination is stale`       | **Drift**. Re-run `--write`                                                                                                                     |
+| `## Read nothing of its own (0 files)`    | A gate **judged a project whose own files it never read**. Its verdict means nothing                                                            |
+| `🔭 Rejected a project it could not read` | A `tsconfig.json` **is missing or did not parse**. The trace stopped there                                                                      |
+| `🔭 Traced nothing`                       | The run **saw no code at all**. Nothing below it means anything                                                                                 |
+| `🔭 Rejected the command line`            | A **mistake** in the flags. Nothing was traced                                                                                                  |
+| `🔭 Rejected a project configuration`     | One project's own `callidescope.config.ts` **was missing, incomplete, or refused** for a field only the workspace may set. Nothing was reported |
 
 The bottom five all mean the run never produced a verdict on the code. None of
 them writes a destination, so a checkout is unchanged by any of them — and no
 finding, or absence of one, should be believed from a run that printed one.
 
-The `limits` command prints its own refusals under `🔭 Rejected a configuration`
-— singular article, no `project` — and they are the first two in
-[A refused project configuration](#a-refused-project-configuration), fixed the
-same way.
+The `limits` command prints its own read failures under the same
+`🔭 Rejected a project configuration` headline, fixed the same way — see
+[A refused project configuration](#a-refused-project-configuration).
 
 ## A depth gate that failed
 
 A stack ran deeper than `limits.maximumDepth`. **The change that made it longer
 is the change that fixes it** — that is the whole reason depth is the gate and
 staleness is not.
+
+**A failed gate is about one project.** Limits are written per project, in
+that project's own `callidescope.config.ts`, and a project's gate judges only
+the findings that project owns — a stack is charged to the project owning its
+**root**, and a dependency's breach belongs to that dependency's own gate. So
+there are exactly two places the fix can go: that project's code, or that
+project's own `callidescope.config.ts`. Read the second option with the whole
+of the section below in mind before taking it.
+
+In an Nx workspace this arrives as a failing `gate` target rather than as a
+whole-workspace `--check depth`, and the task name says which project to open.
+Elsewhere, the finding's own `limit` says which number it was weighed against,
+and `callidescope limits` says which file that number is written in.
 
 Read the printed stack before doing anything. The frames carry each callable's
 signature and the one-line summary of its documentation, and those summaries
@@ -52,16 +64,39 @@ are how you tell the two cases apart:
 **Raising `maximumDepth` is not a fix.** The limit describes the shape the
 repository wants; moving it to fit today's worst stack means the gate stops
 gating, and every later stack gets a free pass to that new number. If the limit
-is genuinely wrong for the repository, change it as its own decision, on its
-own, with the reasoning written down — not as the thing that unblocks a pull
-request.
+is genuinely wrong for the project, change it as its own decision, on its own,
+with the reasoning written down — not as the thing that unblocks a pull request.
+Raising a **project's** number is the smaller version of the same mistake, not
+an exemption from it: it is exactly the one number that was boundary-tested to
+sit one frame above what that project measured, so raising it by one converts a
+gate into headroom for the one project the finding is about.
+
+### The summary's depth is not the project's depth
+
+The number to take is the one a **verdict** gives you, and never the one a
+summary line prints. A `🔭 Finished an analysis` log line reports
+`maximumDepthTraced`, and the name is literal: it reduces over the whole of a
+run's measurement, the entire dependency-widened trace, so it is the deepest
+stack anywhere the run reached rather than anywhere it was pointed. The
+per-project scoping that decides a gate's verdict is a different code path
+entirely.
+
+The two routinely disagree by several frames. `tools/synchronization`'s scoped
+run prints `maximumDepthTraced:13`, while its gate passes at the declared 10
+and fails at 9 — ten is the number that project owns, and thirteen belongs to a
+dependency it was traced alongside.
+
+So do not set a project's limit from that line. **Boundary-test instead**: write
+a candidate, run the gate, and let a failure name the real number. A limit worth
+having passes at the number written and fails at one below it, and the only
+thing that can tell you where that boundary is, is a gate verdict.
 
 ### `≥ n` rather than `n`
 
 A depth printed with `≥` is a **floor, not a measurement**. Something on that
 path could not be followed — a callback invoked through a parameter, a computed
 member name like `target[key]()`, or a structural expansion dropped for
-exceeding `maximumImplementationCandidates` — and the run says so rather than
+exceeding the implementation-candidate cap — and the run says so rather than
 quietly under-reporting.
 
 This is not a defect to fix and not a number to distrust. It means the real
@@ -88,7 +123,9 @@ runs — do not try to "fix" the recursion because callidescope mentioned it.
 
 A callable calls more callables directly than `limits.maximumBreadth`. Unlike
 depth, this one has no default limit at all, so a breadth failure only ever
-happens in a repository that chose a number.
+happens in a **project** whose own `callidescope.config.ts` chose a number — a
+workspace-level `maximumBreadth` alone gates nothing, since every project must
+name its own to be judged by it.
 
 The fix is to **split the callable along the responsibilities its callees
 already group into**, not to inline anything. Run the `breadth` command against
@@ -96,37 +133,35 @@ the callable's address to see the direct callees and callers side by side
 before deciding where the seam goes — the `callidescope-trace` skill covers
 reading that.
 
-## A module-spread row
+## A gate that read nothing of its own
 
-A callable whose transitive callees reach many unrelated modules **and** which
-calls several of them directly. Both conditions had to hold: transitive reach
-alone flags every entry point, because an entry point legitimately reaches the
-whole program. So a spread row is specifically a callable _personally
-orchestrating_ unrelated concerns.
+```text
+## Read nothing of its own (0 files)
 
-Three ways out, in order of preference:
+This run judged a project whose own code it never read:
 
-1. **Push the orchestration up.** If it belongs in a command or a module file,
-   move it there — those are exempt by default under `allowSpreadFor`, because
-   joining unrelated concerns is a command's job.
-2. **Introduce a facade** so the callable talks to one thing instead of five.
-3. **Add the callable's file to `allowSpreadFor`**, only when it genuinely is
-   an orchestration point the default globs did not name. This is
-   configuration, not a fix, so it needs the same justification as changing a
-   limit.
+- `packages/thing`
+```
 
-Do not raise `spreadThreshold` to silence one row.
+The run itself was not empty — the dependencies it traced were read — so this is
+narrower than `🔭 Traced nothing`: only the judged project's own sources went
+missing. A gate fails on it and a `trace` prints it and passes, because a gate
+that never looked cannot tell a clean project from an unread one, where a trace
+decides nothing and is a report for a reader to open.
 
-## A possibly-misplaced row
+Two things to check, in this order:
 
-A callable whose callers nearly all sit in one _other_ module of the same
-project. The report names the module, so the output is a concrete move: put the
-callable where its callers are, or fold it into its single caller if there is
-only one worth keeping.
+1. **An `exclude` that over-matched.** The project's own `exclude` globs are
+   anchored to its root, so one written workspace-relative matches nothing, and
+   one written too broadly matches everything. Check the run's `exclude` and
+   `excludeFrom` for a pattern covering the whole project as well.
+2. **A project that no longer holds sources its `tsconfig.json` includes.** A
+   moved or emptied source root reads exactly the same way.
 
-Two guards make this quieter than it sounds — `minimumCallers` (a callable with
-one caller is not evidence of anything) and `callerMajorityRatio` — so a row
-that appears has cleared both.
+**Do not silence it by dropping the gate.** A project the workspace
+configuration excludes is denied a gate deliberately and never reaches this
+message; a project that still has one is expected to have code, and a green
+verdict over nothing is the failure this exists to prevent.
 
 ## A stale report
 
@@ -171,6 +206,28 @@ Nothing was traced. The message lists the reasons; these are the ones to expect:
   stale in the run that just wrote it, so the combination would pass whatever
   it was meant to catch. Run them separately, on the sides of the pull request
   they belong to.
+- **A destination flag with no verb.** `--json`, `--markdown`, and `--mermaid`
+  say _where_ a report goes; `--write` and `--check reports` say _whether_ one
+  is written or compared. Given a destination and neither verb, the run is
+  refused rather than obeyed silently. Add the verb the message names.
+  `--check reports` counts as one: it compares a destination, so an override is
+  meaningful there too.
+- **A destination flag overriding a destination nobody declared.** `--json`,
+  `--markdown`, and `--mermaid` change where a **declared** report goes; they
+  cannot conjure one the configuration never asked for, or a requirement that
+  configuration be complete would be circumventable from a terminal. Add the
+  `write.json`, `write.markdown`, or `write.mermaid` the message names to the
+  configuration this run reads, then point it elsewhere with the flag.
+- **`--format` does not accept that value.** It takes `markdown`, `mermaid`, or
+  `json`, and the message lists them. An unrecognized value is refused rather
+  than rewritten to markdown, which is what it used to do — a run that printed
+  a tree for `--format mermiad` exited 0 having taught its reader that the flag
+  does nothing.
+- **`--maximum-breadth` overriding a limit nobody declared.** It is refused the
+  same way a destination flag is: against a configuration declaring no
+  `limits.maximumBreadth` anywhere in scope, there is nothing for it to
+  override, and supplying one from the command line would gate a workspace on
+  a number no configuration ever chose.
 - **`depth` or `breadth` with no address.** Those commands take
   `<file>#<qualified-name>`. At a real terminal outside CI they trace first and
   then complete the address against every callable they found, so the name can
@@ -180,13 +237,31 @@ Nothing was traced. The message lists the reasons; these are the ones to expect:
 
 ## A refused project configuration
 
-A `callidescope.config.ts` sitting at one project's own root was read and
-refused. Nothing was printed and no destination was touched, so the checkout is
-exactly as the run found it — fix the named file and re-run. Five messages, each
-with one fix. `<project>` is the workspace-relative project root; an address the
-workspace file declared is labelled `the workspace configuration` instead.
+A `callidescope.config.ts` sitting at one traced project's own root — or the
+absence of one — was refused. Nothing was printed and no destination was
+touched, so the checkout is exactly as the run found it. `<project>` is the
+workspace-relative project root; an address the workspace file declared is
+labelled `the workspace configuration` instead.
 
-**The file could not be read.**
+**The project has no configuration file at all.**
+
+Every traced project's own `callidescope.config.ts` is required, not optional.
+A project with none is refused by name before anything is traced. The fix is
+to add one, spreading the workspace's `projectDefaults` export and overriding
+what it means to:
+
+```ts
+import { projectDefaults } from "../../configuration/callidescope.config.js";
+
+export default { ...projectDefaults };
+```
+
+That import path is illustrative rather than literal — write it relative to the
+project's own location. A file that overrides nothing is still a complete
+statement: it says outright that this project takes every default, which an
+absent file could never say.
+
+**The file could not be read, or leaves a required field out.**
 
 ```text
 Failed to read the callidescope configuration for <project> at <path>: <reason>
@@ -194,33 +269,36 @@ Failed to read the callidescope configuration for <project> at <path>: <reason>
 
 The read failed, or the object did not pass the schema. `<reason>` is the
 underlying failure and is kept as the error's `cause`. A schema complaint names
-the field: a limit that is not a positive integer, `callerMajorityRatio` outside
-its range, an `addresses` entry that is not a string.
+the field: a missing `entryPoints`, `exclude`, `limits`, or `write` member, a
+limit that is not a positive integer, an `addresses` entry that is not a
+string. **Every field is required now** — `entryPoints` with all five members,
+`limits` with both, `write` with both, `exclude` — so a file that leaves one
+out is refused the same way a file with no configuration at all is, and
+spreading `projectDefaults` before overriding is what keeps that file from
+having to spell out every field itself.
 
 **A field only the workspace may set.**
 
 ```text
-<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, limits.maximumBreadth, and limits.maximumDepth.
+<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, limits, write.markdown, and write.mermaid.
 ```
 
 Move that field to the workspace file. `<field>` prints as `limits.<name>` for a
-limit and as a bare name for a top-level field, so the message says which of the
-two is wrong.
+limit, `write.<name>` for a destination, and as a bare name for any other
+top-level field, so the message says which of the three is wrong.
 
 Two ways to arrive here, and the fix differs:
 
-- **A spread of the workspace limits into the project's `limits`.** Delete the
-  spread and leave the override — `limits: { maximumDepth: 10 }`. Nothing is
-  lost: limits fall back **per limit**, so every limit the project does not name
-  still comes from the workspace. Older documentation that tells you to spread
-  is out of date; the tool refuses it, because such an object carries
-  `spreadThreshold`.
-- **A genuinely workspace-level field** — `directories`, `output`,
-  `workspaceStructure`, `excludeFrom`, `ignoreCallees`, `allowSpreadFor`, or a
-  graph-shaping limit. It belongs in the workspace file and there is no
-  per-project form of it. Those limits decide what the graph **is** rather than
-  gating it, so two projects disagreeing would describe two different graphs
-  over the same shared code — and a run measures one graph.
+- **A spread of the workspace's default export into the project's own file.**
+  Delete it and spread `projectDefaults` instead. The default export carries
+  `directories`, `excludeFrom`, `write.json`, and the rest of what only the
+  workspace may set; `projectDefaults` holds exactly the surface a project is
+  entitled to, so spreading it cannot adopt one of those fields by accident.
+- **A genuinely workspace-level field** — `directories`, `excludeFrom`,
+  `excludeCallees`, or `write.json`. It belongs in the workspace file and there
+  is no per-project form of it: each names what a run reads, where the run's
+  own report lands, or how it partitions the workspace, which a project cannot
+  answer differently from the run tracing it.
 
 **A declared address resolved to nothing.**
 
@@ -264,48 +342,25 @@ worded for that context and rendered by the same code.
 
 ### A project configuration that is refused by nothing and does nothing
 
-A misspelled key is not a refusal. The schema strips what it does not
-recognize, so `limits: { maxDepth: 10 }` loads cleanly and changes nothing. If a
-project's limit seems not to be taking effect, ask what it actually resolved to
-rather than re-reading the file:
+A misspelled key is not a refusal — the schema names every field it accepts, so
+`limits: { maxDepth: 10 }` alongside a correctly-spelled `maximumDepth` fails
+for the unrecognized key rather than silently keeping the typo around. If a
+project's limit still seems not to have taken effect after the schema passed,
+ask what it actually resolved to rather than re-reading the file:
 
 ```bash
 npx callidescope limits
 ```
 
-The row for that project says the number and the file it came from, and an
-`Origin` of `inherited` where you expected `declared` is the misspelling.
+The row for that project says the number and the file it came from.
 
-**A project's `exclude` goes quiet the same way, for a different reason.** Its
-globs are anchored to that project's own root, so a workspace-relative one —
+**A project's `exclude` goes quiet for a different reason.** Its globs are
+anchored to that project's own root, so a workspace-relative one —
 `packages/thing/src/generated/**` written in `packages/thing`'s own file —
 matches nothing and those files stay traced. Drop the project root from the
 front of it: `src/generated/**`. A glob that would reach into another project
 cannot be written here at all, and noise spanning several projects belongs in
 the run's own `exclude` instead.
-
-## A rejected configuration
-
-The command line was fine but the configuration cannot support what was asked.
-One message today:
-
-```text
---check breadth requires at least one project in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <number> }` to that project's callidescope.config.ts before running --check breadth.
-```
-
-Breadth is the one limit with no default, and a run asked to gate on it with
-none declared is refused outright rather than silently passing — which is what
-falling back to an unbounded limit would look like. Two ways out:
-
-- **Declare it in a project's own `callidescope.config.ts`.** A
-  `maximumBreadth` in the **workspace** file does not satisfy this: every
-  project inherits it rather than declaring it, so it reports breadth findings
-  and still leaves the gate with nothing to run on.
-- **Widen `--directories`** until a project that already declares one is in
-  scope. The refusal is about what this run reached, not about the repository.
-
-This one is raised after the trace rather than before it, because which projects
-were in scope is something only the trace knows.
 
 ## A project it could not read
 
@@ -354,9 +409,12 @@ say it looked, and a repository under its limits has no stacks to name.
 
 ## Whose problem a finding is
 
-A depth, breadth, spread, or misplacement row is a statement about the code,
-not about the configuration that measured it. The fix belongs in the code. Turn
-to the configuration only when the measurement itself is wrong — a module
-identifier derived from the wrong directory, an entry-point rule missing, a
-cross-cutting logger inflating everything's numbers — and the
+A depth or breadth row is a statement about the code, not about the
+configuration that measured it. The fix belongs in the code. Turn to the
+configuration only when the measurement itself is wrong — an entry-point rule
+missing, a cross-cutting logger inflating everything's numbers — and the
 `callidescope-configure` skill covers each of those.
+
+<!-- A deliberate misspelling: the example of a `--format` value nobody
+recognizes, which is exactly what this refusal is about.
+cspell:ignore mermiad -->

@@ -147,18 +147,14 @@ Call stacks traced through `packages/codependix-imports`, deepest first. Each fr
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 8 | declared |
-| `maximumBreadth` | 8 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 8 |
+| `maximumBreadth` | 8 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -219,10 +215,6 @@ None.
 | `TypescriptService.renderMermaid` | 1 | `TypescriptImportGraphService.renderMermaid` | `packages/codependix-imports/src/modules/typescript/typescript.service.ts:64` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 <!-- CODE_STATISTICS_START -->

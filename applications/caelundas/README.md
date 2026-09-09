@@ -154,12 +154,12 @@ Call stacks traced through `applications/caelundas`, deepest first. Each frame s
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 16 | declared |
-| `maximumBreadth` | 12 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 16 |
+| `maximumBreadth` | 12 |
 
 ### Call stacks (depth)
 
@@ -1308,16 +1308,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `AspectsService.detectSimpleAspects` | 10 | `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/major-aspects`, `applications/caelundas:modules/minor-aspects`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/specialty-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:90` |
-| `PerfectiveService.detectOrbitalEvents` | 10 | `applications/caelundas:modules/annual-solar-cycle`, `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/monthly-lunar-cycle`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades` | `applications/caelundas/src/modules/perfective/perfective.service.ts:149` |
-| `ProgressiveService.detect` | 10 | `applications/caelundas:modules/annual-solar-cycle`, `applications/caelundas:modules/aspects`, `applications/caelundas:modules/eclipses`, `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/monthly-lunar-cycle`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/twilights` | `applications/caelundas/src/modules/progressive/progressive.service.ts:47` |
-| `AspectsService.detectCompositeAspects` | 8 | `applications/caelundas:modules/quadruple-aspects`, `applications/caelundas:modules/quintuple-aspects`, `applications/caelundas:modules/sextuple-aspects`, `applications/caelundas:modules/stellium`, `applications/caelundas:modules/triple-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:72` |
-| `PerfectiveService.detectObservationalEvents` | 7 | `applications/caelundas:modules/daily-cycles`, `applications/caelundas:modules/eclipses`, `applications/caelundas:modules/twilights` | `applications/caelundas/src/modules/perfective/perfective.service.ts:117` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -1845,15 +1835,6 @@ What this project is judged against. `declared` is the number in this project's 
 | `SpecialtyAspectsComposerService.find(…)` | 1 | `SpecialtyAspectsComposerService.map(…)` | `applications/caelundas/src/modules/specialty-aspects/specialty-aspects-composer.service.ts:239` |
 
 </details>
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `CalendarService.buildInstantEvent` | `applications/caelundas:modules/calendar` | `applications/caelundas:modules/daily-cycles` | 8/9 |
-| `typedFromEntries` | `applications/caelundas:modules/caelundas` | `applications/caelundas:modules/ephemeris` | 6/6 |
-| `MathService.normalizeForComparison` | `applications/caelundas:modules/math` | `applications/caelundas:modules/retrogrades` | 4/4 |
-| `objectEntries` | `applications/caelundas:modules/caelundas` | `applications/caelundas:modules/ingresses` | 2/2 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

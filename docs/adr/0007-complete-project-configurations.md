@@ -53,11 +53,12 @@ file by accident, because none of them is in there to adopt.
 ## Consequences
 
 - **A traced project with no configuration file ends the run.** Five conformetry
-  leaf analyzers gained a file that spreads `projectDefaults` and overrides
-  nothing — a statement that they take the defaults, made where a reader looks
-  for it rather than inferred from a file that is not there. Adding a project to
-  this workspace now means adding its `callidescope.config.ts` in the same
-  change.
+  leaf analyzers — `conformetry-json`, `-jupyter`, `-python`, `-text`, and
+  `-typescript` — gained a file that spreads `projectDefaults`, takes the
+  workspace depth explicitly, and declares its own boundary-measured
+  `maximumBreadth`: a statement made where a reader looks for it rather than
+  inferred from a file that is not there. Adding a project to this workspace now
+  means adding its `callidescope.config.ts` in the same change.
 - **One traced project is exempt, and cannot not be.** `configuration/` holds the
   workspace configuration at its own root. A run reads one file in one role, and
   no second file may sit beside it under a name discovery would find, so that
@@ -82,8 +83,9 @@ file by accident, because none of them is in there to adopt.
   printed `17 inherited`, and `callidescope limits` prints four columns rather
   than five. The `Declared in` column stays: the listing spans every project and
   naming the file each number is written in is the whole of what it is for.
-- **`callidescope-examples/examples/inherited-limits` is a fixture without a
-  subject.** It demonstrated a project configured entirely by the run, which is
-  now a refusal. Its guide is rewritten around the replacement — a project that
-  overrides nothing and writes that down — and the directory keeps its old name
-  until the examples are reworked as a set.
+- **`callidescope-examples/examples/inherited-limits` was deleted.** It
+  demonstrated a project configured entirely by the run, which is now a refusal,
+  so it was a fixture without a subject. An earlier draft of this decision kept
+  the directory and rewrote its guide around a project that overrides nothing;
+  that is not what shipped. The example is gone, and `gated-leaf` is the one
+  that now carries a project declaring its own complete configuration.

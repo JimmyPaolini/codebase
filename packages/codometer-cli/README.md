@@ -586,12 +586,12 @@ Call stacks traced through `packages/codometer-cli`, deepest first. Each frame s
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 16 | declared |
-| `maximumBreadth` | 11 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 16 |
+| `maximumBreadth` | 11 |
 
 ### Call stacks (depth)
 
@@ -775,13 +775,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `MeasureService.measureTarget` | 18 | `packages/codometer-discovery:modules/discovery`, `packages/codometer-discovery:modules/targets`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/measure/measure.service.ts:302` |
-| `MeasureService.analyzeFiles` | 16 | `packages/codometer-customization:modules/customization`, `packages/codometer-languages:modules/languages`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/measure/measure.service.ts:75` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -864,10 +857,6 @@ What this project is judged against. `declared` is the number in this project's 
 | `main` | 1 | `withDefaultCommand` | `packages/codometer-cli/src/main.ts:26` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

@@ -37,9 +37,9 @@ Call stacks traced through `packages/callidescope-output`, deepest first. Each f
 
 | Measure | Value |
 | --- | --- |
-| Callables | 114 |
+| Callables | 104 |
 | Files | 24 |
-| Calls traced | 116 |
+| Calls traced | 101 |
 | Call stacks | 2 |
 | Deepest stack | 4 |
 | Stacks through recursion | 0 |
@@ -47,112 +47,98 @@ Call stacks traced through `packages/callidescope-output`, deepest first. Each f
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 10 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 10 |
+| `maximumBreadth` | 7 |
 
 ### Call stacks (depth)
 
 **1. `OutputMarkdownService.syncAnchoredBlock`** — depth ≥ 4 · orphan-root
 
 ```text
-🚀 OutputMarkdownService.syncAnchoredBlock(…): boolean [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:162]
-  └─> OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:207]
+🚀 OutputMarkdownService.syncAnchoredBlock(…): boolean [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:161]
+  └─> OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:206]
      ↳ Splices the anchored block into a file.
-    └─> OutputMarkdownService.buildBlockPattern(destination: SyncAnchoredBlockArguments["destination"]): RegExp [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:55]
+    └─> OutputMarkdownService.buildBlockPattern(destination: SyncAnchoredBlockArguments["destination"]): RegExp [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:54]
        ↳ Builds the pattern matching everything between the two anchors.
-      └─> OutputMarkdownService.escapePattern(value: string): string [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:64]
+      └─> OutputMarkdownService.escapePattern(value: string): string [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:63]
          ↳ Escapes a marker so it can sit inside a pattern.
 ```
 
 **2. `OutputMarkdownService.wrapInAnchors`** — depth 2 · orphan-root
 
 ```text
-🚀 OutputMarkdownService.wrapInAnchors(override: string | undefined): string [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:169]
-  └─> OutputMarkdownService.wrapInAnchors(args: WrapInAnchorsArguments): string [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:273]
+🚀 OutputMarkdownService.wrapInAnchors(override: string | undefined): string [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:168]
+  └─> OutputMarkdownService.wrapInAnchors(args: WrapInAnchorsArguments): string [packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:236]
      ↳ Wraps content in the configured anchors.
 ```
-
-### Module spread
-
-None.
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MarkdownReportService.renderRun` | 9 | `MarkdownReportService.subsectionPrefix`, `WorkspaceReportService.buildRows`, `MarkdownReportService.renderSummaryTable`, `WorkspaceReportService.renderProjectIndex`, `WorkspaceReportService.renderHeadroom`, `MarkdownReportService.renderStacksAs`, `MarkdownReportService.renderSpreads`, `MarkdownReportService.renderCallableBreadths`, `MarkdownReportService.renderMisplaced` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:350` |
-| `MarkdownReportService.renderProjectSection` | 7 | `MarkdownReportService.renderSummaryTable`, `MarkdownReportService.renderProjectLimits`, `WorkspaceReportService.limitsFor`, `MarkdownReportService.renderStacksAs`, `MarkdownReportService.renderSpreads`, `MarkdownReportService.renderCallableBreadths`, `MarkdownReportService.renderMisplaced` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:294` |
-| `ProjectReportsService.map(…)` | 6 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.toSorted(…)`, `ProjectReportsService.filter(…)`, `ProjectReportsService.filter(…)`, `ProjectReportsService.buildSummary`, `ProjectReportsService.filter(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:231` |
+| `MarkdownReportService.renderRun` | 7 | `MarkdownReportService.subsectionPrefix`, `WorkspaceReportService.buildRows`, `MarkdownReportService.renderSummaryTable`, `WorkspaceReportService.renderProjectIndex`, `WorkspaceReportService.renderHeadroom`, `MarkdownReportService.renderStacksAs`, `MarkdownReportService.renderCallableBreadths` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:305` |
+| `OutputMarkdownService.syncAnchoredBlock` | 5 | `MissingMarkdownPathError.constructor`, `OutputMarkdownService.readExisting`, `OutputMarkdownService.wrapInAnchors`, `OutputMarkdownService.buildBlockPattern`, `OutputMarkdownService.spliceBlock` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:206` |
+| `MarkdownReportService.renderProjectSection` | 5 | `MarkdownReportService.renderSummaryTable`, `MarkdownReportService.renderProjectLimits`, `WorkspaceReportService.limitsFor`, `MarkdownReportService.renderStacksAs`, `MarkdownReportService.renderCallableBreadths` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:257` |
 
 <details>
-<summary>54 more callables</summary>
+<summary>48 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `OutputMarkdownService.syncAnchoredBlock` | 5 | `MissingMarkdownPathError.constructor`, `OutputMarkdownService.readExisting`, `OutputMarkdownService.wrapInAnchors`, `OutputMarkdownService.buildBlockPattern`, `OutputMarkdownService.spliceBlock` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:207` |
 | `ProjectReportsService.buildSummary` | 4 | `ProjectReportsService.filter(…)`, `ProjectReportsService.filter(…)`, `ProjectReportsService.reduce(…)`, `ProjectReportsService.filter(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:131` |
-| `OutputMarkdownService.spliceBlock` | 3 | `OutputMarkdownService.replace(…)`, `OutputMarkdownService.appendBlock`, `OutputMarkdownService.replaceOrphanedBlock` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:124` |
+| `OutputMarkdownService.spliceBlock` | 3 | `OutputMarkdownService.replace(…)`, `OutputMarkdownService.appendBlock`, `OutputMarkdownService.replaceOrphanedBlock` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:123` |
 | `ProjectReportsService.build` | 3 | `ProjectReportsService.buildStacks`, `ProjectReportsService.buildCallableBreadths`, `ProjectReportsService.map(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:227` |
-| `ProjectReportsService.findOwnedFindings` | 3 | `ProjectReportsService.filter(…)`, `ProjectReportsService.findDeepStacks`, `ProjectReportsService.findWideCallables` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:310` |
+| `ProjectReportsService.map(…)` | 3 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.toSorted(…)`, `ProjectReportsService.buildSummary` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:231` |
+| `ProjectReportsService.findOwnedFindings` | 3 | `ProjectReportsService.filter(…)`, `ProjectReportsService.findDeepStacks`, `ProjectReportsService.findWideCallables` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:300` |
 | `MermaidReportService.renderStacks` | 3 | `MermaidReportService.countNewCallables`, `MermaidReportService.addStack`, `MermaidReportService.renderDiagram` | `packages/callidescope-output/src/modules/report/mermaid-report.service.ts:139` |
 | `ReportService.renderFrame` | 3 | `ReportService.renderSignature`, `ReportService.renderMarkers`, `ReportService.shortenSummary` | `packages/callidescope-output/src/modules/report/report.service.ts:44` |
-| `MarkdownReportService.renderCallableBreadths` | 3 | `MarkdownReportService.renderTable`, `MarkdownReportService.map(…)`, `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:75` |
+| `MarkdownReportService.renderCallableBreadths` | 3 | `MarkdownReportService.renderTable`, `MarkdownReportService.map(…)`, `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:69` |
 | `OutputJsonService.sync` | 2 | `OutputJsonService.buildReport`, `OutputJsonService.readExisting` | `packages/callidescope-output/src/modules/output-json/output-json.service.ts:63` |
-| `OutputMarkdownService.sync` | 2 | `OutputMarkdownService.syncAnchoredBlock`, `OutputMarkdownService.buildHelpers` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:178` |
+| `OutputMarkdownService.sync` | 2 | `OutputMarkdownService.syncAnchoredBlock`, `OutputMarkdownService.buildHelpers` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:177` |
 | `ProjectReportsService.buildCallableBreadths` | 2 | `ProjectReportsService.flatMap(…)`, `SignaturesService.read` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:45` |
 | `ProjectReportsService.buildStacks` | 2 | `ProjectReportsService.readDepth`, `PathsService.buildDeepestPath` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:85` |
 | `ProjectReportsService.findProjectDeepStacks` | 2 | `ProjectReportsService.map(…)`, `ProjectReportsService.filter(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:167` |
 | `ProjectReportsService.findProjectWideCallables` | 2 | `ProjectReportsService.map(…)`, `ProjectReportsService.filter(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:177` |
-| `ProjectReportsService.findDeepStacks` | 2 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.flatMap(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:279` |
-| `ProjectReportsService.flatMap(…)` | 2 | `ProjectReportsService.findProjectDeepStacks`, `ProjectReportsService.readProjectLimits` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:284` |
-| `ProjectReportsService.findWideCallables` | 2 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.flatMap(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:372` |
-| `ProjectReportsService.flatMap(…)` | 2 | `ProjectReportsService.findProjectWideCallables`, `ProjectReportsService.readProjectLimits` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:377` |
+| `ProjectReportsService.findDeepStacks` | 2 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.flatMap(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:269` |
+| `ProjectReportsService.flatMap(…)` | 2 | `ProjectReportsService.findProjectDeepStacks`, `ProjectReportsService.readProjectLimits` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:274` |
+| `ProjectReportsService.findWideCallables` | 2 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.flatMap(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:362` |
+| `ProjectReportsService.flatMap(…)` | 2 | `ProjectReportsService.findProjectWideCallables`, `ProjectReportsService.readProjectLimits` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:367` |
 | `MermaidReportService.countNewCallables` | 2 | `MermaidReportService.filter(…)`, `MermaidReportService.map(…)` | `packages/callidescope-output/src/modules/report/mermaid-report.service.ts:90` |
 | `WorkspaceReportService.buildRows` | 2 | `WorkspaceReportService.map(…)`, `WorkspaceReportService.toSorted(…)` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:105` |
 | `WorkspaceReportService.map(…)` | 2 | `WorkspaceReportService.limitsFor`, `WorkspaceReportService.widestBreadth` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:106` |
-| `WorkspaceReportService.renderHeadroom` | 2 | `WorkspaceReportService.map(…)`, `WorkspaceReportService.map(…)` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:153` |
-| `WorkspaceReportService.renderProjectIndex` | 2 | `WorkspaceReportService.buildRows`, `WorkspaceReportService.map(…)` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:181` |
-| `MarkdownReportService.renderMisplaced` | 2 | `MarkdownReportService.renderTable`, `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:125` |
-| `MarkdownReportService.renderSpreads` | 2 | `MarkdownReportService.renderTable`, `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:162` |
-| `MarkdownReportService.renderStacksAs` | 2 | `MermaidReportService.renderStacks`, `MarkdownReportService.renderStacks` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:190` |
-| `MarkdownReportService.renderFindings` | 2 | `MarkdownReportService.renderStacks`, `MarkdownReportService.renderWideCallableLines` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:276` |
-| `OutputMarkdownService.buildBlockPattern` | 1 | `OutputMarkdownService.escapePattern` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:55` |
-| `OutputMarkdownService.syncAnchoredBlock` | 1 | `OutputMarkdownService.syncAnchoredBlock` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:162` |
-| `OutputMarkdownService.wrapInAnchors` | 1 | `OutputMarkdownService.wrapInAnchors` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:169` |
-| `OutputMarkdownService.syncProjectReadmes` | 1 | `OutputMarkdownService.syncAnchoredBlock` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:242` |
+| `WorkspaceReportService.renderHeadroom` | 2 | `WorkspaceReportService.map(…)`, `WorkspaceReportService.map(…)` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:150` |
+| `WorkspaceReportService.renderProjectIndex` | 2 | `WorkspaceReportService.buildRows`, `WorkspaceReportService.map(…)` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:178` |
+| `MarkdownReportService.renderStacksAs` | 2 | `MermaidReportService.renderStacks`, `MarkdownReportService.renderStacks` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:153` |
+| `MarkdownReportService.renderFindings` | 2 | `MarkdownReportService.renderStacks`, `MarkdownReportService.renderWideCallableLines` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:239` |
+| `OutputMarkdownService.buildBlockPattern` | 1 | `OutputMarkdownService.escapePattern` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:54` |
+| `OutputMarkdownService.syncAnchoredBlock` | 1 | `OutputMarkdownService.syncAnchoredBlock` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:161` |
+| `OutputMarkdownService.wrapInAnchors` | 1 | `OutputMarkdownService.wrapInAnchors` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:168` |
 | `ProjectReportsService.filter(…)` | 1 | `ProjectReportsService.some(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:148` |
-| `ProjectReportsService.filter(…)` | 1 | `ProjectReportsService.owns` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:243` |
-| `ProjectReportsService.filter(…)` | 1 | `ProjectReportsService.owns` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:246` |
-| `ProjectReportsService.findUnreadProjects` | 1 | `ProjectReportsService.filter(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:347` |
-| `ProjectReportsService.filter(…)` | 1 | `ProjectReportsService.find(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:353` |
+| `ProjectReportsService.findUnreadProjects` | 1 | `ProjectReportsService.filter(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:337` |
+| `ProjectReportsService.filter(…)` | 1 | `ProjectReportsService.find(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:343` |
 | `MermaidReportService.addFrame` | 1 | `MermaidReportService.renderLabel` | `packages/callidescope-output/src/modules/report/mermaid-report.service.ts:39` |
 | `MermaidReportService.addStack` | 1 | `MermaidReportService.addFrame` | `packages/callidescope-output/src/modules/report/mermaid-report.service.ts:67` |
 | `ReportService.shortenSummary` | 1 | `ReportService.readFirstSentence` | `packages/callidescope-output/src/modules/report/report.service.ts:102` |
 | `ReportService.renderStackTree` | 1 | `ReportService.map(…)` | `packages/callidescope-output/src/modules/report/report.service.ts:130` |
 | `ReportService.map(…)` | 1 | `ReportService.renderFrame` | `packages/callidescope-output/src/modules/report/report.service.ts:132` |
 | `WorkspaceReportService.widestBreadth` | 1 | `WorkspaceReportService.reduce(…)` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:88` |
-| `WorkspaceReportService.map(…)` | 1 | `WorkspaceReportService.bucketFor` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:154` |
-| `WorkspaceReportService.map(…)` | 1 | `WorkspaceReportService.filter(…)` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:163` |
-| `MarkdownReportService.toRow` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:79` |
-| `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.toRow` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:85` |
-| `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.toRow` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:100` |
-| `MarkdownReportService.renderProjectLimits` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:152` |
-| `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.renderLimitCells` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:156` |
-| `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:166` |
-| `MarkdownReportService.renderStack` | 1 | `ReportService.renderStackTree` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:173` |
-| `MarkdownReportService.renderWideCallableLines` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:236` |
-| `MarkdownReportService.renderStacks` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:408` |
-| `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.renderStack` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:413` |
+| `WorkspaceReportService.map(…)` | 1 | `WorkspaceReportService.bucketFor` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:151` |
+| `WorkspaceReportService.map(…)` | 1 | `WorkspaceReportService.filter(…)` | `packages/callidescope-output/src/modules/report/workspace-report.service.ts:160` |
+| `MarkdownReportService.toRow` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:73` |
+| `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.toRow` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:79` |
+| `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.toRow` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:94` |
+| `MarkdownReportService.renderProjectLimits` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:126` |
+| `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.renderLimitCell` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:130` |
+| `MarkdownReportService.renderStack` | 1 | `ReportService.renderStackTree` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:136` |
+| `MarkdownReportService.renderWideCallableLines` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:199` |
+| `MarkdownReportService.renderStacks` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:355` |
+| `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.renderStack` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:360` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

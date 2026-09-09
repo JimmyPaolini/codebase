@@ -106,12 +106,12 @@ Call stacks traced through `packages/conformetry-generation`, deepest first. Eac
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 7 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 7 |
+| `maximumBreadth` | 4 |
 
 ### Call stacks (depth)
 
@@ -121,10 +121,6 @@ What this project is judged against. `declared` is the number in this project's 
 🚀 GenerationService.listDirectory(directoryPath: string): Promise<DirectoryEntry[]> [packages/conformetry-generation/src/modules/generation/generation.service.ts:39]
   └─> GenerationService.map(…)(entry: Dirent<string>): { isDirectory: boolean; name: string; } [packages/conformetry-generation/src/modules/generation/generation.service.ts:42]
 ```
-
-### Module spread
-
-None.
 
 ### Breadth
 
@@ -148,10 +144,6 @@ None.
 | `GenerationService.renderFile` | 1 | `RenderingService.renderContent` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:154` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

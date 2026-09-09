@@ -110,18 +110,14 @@ Call stacks traced through `packages/conformetry-validation`, deepest first. Eac
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 12 | declared |
-| `maximumBreadth` | 10 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 12 |
+| `maximumBreadth` | 10 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -154,10 +150,6 @@ None.
 | `ValidationService.map(…)` | 1 | `ValidationService.validateInstance` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:149` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

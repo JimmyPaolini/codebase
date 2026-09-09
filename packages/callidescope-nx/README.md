@@ -337,6 +337,7 @@ flowchart LR
   DocumentationModule
   EdgesModule
   EntriesModule
+  FlagResolutionModule
   GraphModule
   InputModule
   LoggerModule([LoggerModule])
@@ -354,6 +355,7 @@ flowchart LR
   RunPlanModule
   SignaturesModule
   WorkspaceModule
+  WriteDestinationsModule
   AddressLookupModule --> CallablesModule
   AddressLookupModule --> CallidescopeModule
   AddressLookupModule --> RunPlanModule
@@ -378,6 +380,7 @@ flowchart LR
   CallidescopeModule --> ReportModule
   CallidescopeModule --> RunPlanModule
   CallidescopeModule --> WorkspaceModule
+  CallidescopeModule --> WriteDestinationsModule
   EdgesModule --> CallablesModule
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
@@ -402,6 +405,10 @@ flowchart LR
   RunConfigurationModule --> ConfigurationModule
   RunConfigurationModule --> OptionsModule
   RunPlanModule --> ConfigurationModule
+  RunPlanModule --> FlagResolutionModule
+  WriteDestinationsModule --> OutputJsonModule
+  WriteDestinationsModule --> OutputMarkdownModule
+  WriteDestinationsModule --> ReportModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -774,9 +781,9 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
 
 | Measure | Value |
 | --- | --- |
-| Callables | 79 |
+| Callables | 78 |
 | Files | 36 |
-| Calls traced | 111 |
+| Calls traced | 109 |
 | Call stacks | 6 |
 | Deepest stack | 17 |
 | Stacks through recursion | 0 |
@@ -784,12 +791,12 @@ Call stacks traced through `packages/callidescope-nx`, deepest first. Each frame
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 17 | declared |
-| `maximumBreadth` | 7 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 17 |
+| `maximumBreadth` | 7 |
 
 ### Call stacks (depth)
 
@@ -800,15 +807,15 @@ What this project is judged against. `declared` is the number in this project's 
    ↳ Prints each named callable's direct callers and callees side by side — the two questions a rename or a refactor needs…
   └─> runAddressExecutor(…): Promise<{ success: boolean; }> [packages/callidescope-nx/src/modules/address/address.utilities.ts:19]
      ↳ Runs the address lookups on behalf of the `depth` or `breadth` executor.
-    └─> AddressService.runDepth(args: LookupArguments): Promise<LookupResult> [packages/callidescope-nx/src/modules/address/address.service.ts:151]
+    └─> AddressService.runDepth(args: LookupArguments): Promise<LookupResult> [packages/callidescope-nx/src/modules/address/address.service.ts:152]
        ↳ Prints every call stack above and below each callable.
-      └─> AddressService.locate(…): Promise<string | { identified: { address: string; id: string; }[]; workspace: LocatedWorkspace; }> [packages/callidescope-nx/src/modules/address/address.service.ts:71]
+      └─> AddressService.locate(…): Promise<string | { identified: { address: string; id: string; }[]; workspace: LocatedWorkspace; }> [packages/callidescope-nx/src/modules/address/address.service.ts:72]
          ↳ Traces the selection, then matches every address against it.
         └─> AddressLookupService.locate(options: AddressCommandOptions): Promise<LocatedWorkspace> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:87]
            ↳ Loads the configuration and traces the workspace, matching nothing yet.
-          └─> CallidescopeService.locate(args: TraceArguments): Promise<LocateOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:414]
+          └─> CallidescopeService.locate(args: TraceArguments): Promise<LocateOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:396]
              ↳ Collects every callable and assembles the graph over them, without running the analysis a full trace does.
-            └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
+            └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:43]
                ↳ Builds the call graph and everything derived from it.
               └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-graph/src/modules/edges/edges.service.ts:251]
                  ↳ Builds every edge in the graph, and records the calls it could not.
@@ -822,12 +829,12 @@ What this project is judged against. `declared` is the number in this project's 
                          ↳ Resolves an already-identified callee symbol to its declarations.
                         └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
                            ↳ Expands an interface or abstract member to its implementations.
-                          └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
+                          └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:204]
                              ↳ Finds the concrete declarations one interface member resolves to.
-                            └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:235]
-                              └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:149]
+                            └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:232]
+                              └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:148]
                                  ↳ Reads one member's concrete declarations off a candidate class.
-                                └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:163]
+                                └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:162]
 ```
 
 **2. `depthExecutor`** — depth ≥ 17 · orphan-root
@@ -837,15 +844,15 @@ What this project is judged against. `declared` is the number in this project's 
    ↳ Prints every call stack above and below each named callable — every caller chain up to a root, every callee chain down…
   └─> runAddressExecutor(…): Promise<{ success: boolean; }> [packages/callidescope-nx/src/modules/address/address.utilities.ts:19]
      ↳ Runs the address lookups on behalf of the `depth` or `breadth` executor.
-    └─> AddressService.runDepth(args: LookupArguments): Promise<LookupResult> [packages/callidescope-nx/src/modules/address/address.service.ts:151]
+    └─> AddressService.runDepth(args: LookupArguments): Promise<LookupResult> [packages/callidescope-nx/src/modules/address/address.service.ts:152]
        ↳ Prints every call stack above and below each callable.
-      └─> AddressService.locate(…): Promise<string | { identified: { address: string; id: string; }[]; workspace: LocatedWorkspace; }> [packages/callidescope-nx/src/modules/address/address.service.ts:71]
+      └─> AddressService.locate(…): Promise<string | { identified: { address: string; id: string; }[]; workspace: LocatedWorkspace; }> [packages/callidescope-nx/src/modules/address/address.service.ts:72]
          ↳ Traces the selection, then matches every address against it.
         └─> AddressLookupService.locate(options: AddressCommandOptions): Promise<LocatedWorkspace> [packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:87]
            ↳ Loads the configuration and traces the workspace, matching nothing yet.
-          └─> CallidescopeService.locate(args: TraceArguments): Promise<LocateOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:414]
+          └─> CallidescopeService.locate(args: TraceArguments): Promise<LocateOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:396]
              ↳ Collects every callable and assembles the graph over them, without running the analysis a full trace does.
-            └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
+            └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:43]
                ↳ Builds the call graph and everything derived from it.
               └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-graph/src/modules/edges/edges.service.ts:251]
                  ↳ Builds every edge in the graph, and records the calls it could not.
@@ -859,12 +866,12 @@ What this project is judged against. `declared` is the number in this project's 
                          ↳ Resolves an already-identified callee symbol to its declarations.
                         └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
                            ↳ Expands an interface or abstract member to its implementations.
-                          └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
+                          └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:204]
                              ↳ Finds the concrete declarations one interface member resolves to.
-                            └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:235]
-                              └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:149]
+                            └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:232]
+                              └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:148]
                                  ↳ Reads one member's concrete declarations off a candidate class.
-                                └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:163]
+                                └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:162]
 ```
 
 **3. `gateExecutor`** — depth ≥ 15 · orphan-root
@@ -872,13 +879,13 @@ What this project is judged against. `declared` is the number in this project's 
 ```text
 🚀 gateExecutor(…): Promise<{ success: boolean; }> [packages/callidescope-nx/src/executors/gate/executor.ts:28]
    ↳ Fails one project's task when its call stacks broke the limits it is held to.
-  └─> PluginService.runGate(args: RunGateArguments): Promise<RunTraceResult> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:427]
+  └─> PluginService.runGate(args: RunGateArguments): Promise<RunTraceResult> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:429]
      ↳ Traces the resolved directories and judges what it found against the limits every project in scope declared.
-    └─> CallidescopeService.trace(args: TraceArguments): Promise<TraceOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:428]
+    └─> CallidescopeService.trace(args: TraceArguments): Promise<TraceOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:410]
        ↳ Traces a workspace and returns everything the run found.
-      └─> CallidescopeService.analyze(…): AnalyzeOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:291]
+      └─> CallidescopeService.analyze(…): AnalyzeOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:297]
          ↳ Derives every finding from the collected callables.
-        └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
+        └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:43]
            ↳ Builds the call graph and everything derived from it.
           └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-graph/src/modules/edges/edges.service.ts:251]
              ↳ Builds every edge in the graph, and records the calls it could not.
@@ -892,12 +899,12 @@ What this project is judged against. `declared` is the number in this project's 
                      ↳ Resolves an already-identified callee symbol to its declarations.
                     └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
                        ↳ Expands an interface or abstract member to its implementations.
-                      └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
+                      └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:204]
                          ↳ Finds the concrete declarations one interface member resolves to.
-                        └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:235]
-                          └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:149]
+                        └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:232]
+                          └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:148]
                              ↳ Reads one member's concrete declarations off a candidate class.
-                            └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:163]
+                            └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:162]
 ```
 
 <details>
@@ -908,13 +915,13 @@ What this project is judged against. `declared` is the number in this project's 
 ```text
 🚀 traceExecutor(…): Promise<{ success: boolean; }> [packages/callidescope-nx/src/executors/trace/executor.ts:25]
    ↳ Traces one selection of Nx projects with callidescope.
-  └─> PluginService.runTrace(args: RunTraceArguments): Promise<RunTraceResult> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:471]
+  └─> PluginService.runTrace(args: RunTraceArguments): Promise<RunTraceResult> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:474]
      ↳ Traces the resolved directories and renders the report.
-    └─> CallidescopeService.trace(args: TraceArguments): Promise<TraceOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:428]
+    └─> CallidescopeService.trace(args: TraceArguments): Promise<TraceOutcome> [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:410]
        ↳ Traces a workspace and returns everything the run found.
-      └─> CallidescopeService.analyze(…): AnalyzeOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:291]
+      └─> CallidescopeService.analyze(…): AnalyzeOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:297]
          ↳ Derives every finding from the collected callables.
-        └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:44]
+        └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-graph/src/modules/graph/graph-assembly.service.ts:43]
            ↳ Builds the call graph and everything derived from it.
           └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-graph/src/modules/edges/edges.service.ts:251]
              ↳ Builds every edge in the graph, and records the calls it could not.
@@ -928,29 +935,29 @@ What this project is judged against. `declared` is the number in this project's 
                      ↳ Resolves an already-identified callee symbol to its declarations.
                     └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
                        ↳ Expands an interface or abstract member to its implementations.
-                      └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
+                      └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:204]
                          ↳ Finds the concrete declarations one interface member resolves to.
-                        └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:235]
-                          └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:149]
+                        └─> ClassesService.flatMap(…)(this: undefined, candidate: ts.ClassDeclaration): ts.Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:232]
+                          └─> ClassesService.readMemberDeclarations(…): Declaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:148]
                              ↳ Reads one member's concrete declarations off a candidate class.
-                            └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:163]
+                            └─> ClassesService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:162]
 ```
 
 **5. `anonymous`** — depth ≥ 7 · orphan-root
 
 ```text
 🚀 anonymous(…): Promise<CreateNodesResultArray> [packages/callidescope-nx/src/index.ts:59]
-  └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:333]
+  └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:335]
      ↳ Infers this plugin's targets onto every project holding a `tsconfig.json`.
-    └─> PluginService.buildExclusionFilter(…): Promise<FileFilter> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:92]
+    └─> PluginService.buildExclusionFilter(…): Promise<FileFilter> [packages/callidescope-nx/src/modules/plugin/plugin.service.ts:94]
        ↳ Builds the predicate deciding which projects the workspace configuration keeps out of every trace.
-      └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedCallidescopeConfiguration> [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:390]
+      └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedCallidescopeConfiguration> [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:326]
          ↳ Loads a configuration, and says what the file itself declared and which file answered.
-        └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): string [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:178]
+        └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): string [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:158]
            ↳ Resolves a configuration path against the cwd, then the repository root.
-          └─> ConfigurationService.findRepositoryRoot(): string | undefined [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:110]
+          └─> ConfigurationService.findRepositoryRoot(): string | undefined [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:97]
              ↳ Walks upward from the process cwd looking for the repository root.
-            └─> ConfigurationService.some(…)(marker: ".git" | "pnpm-workspace.yaml"): boolean [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:115]
+            └─> ConfigurationService.some(…)(marker: ".git" | "pnpm-workspace.yaml"): boolean [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:102]
 ```
 
 **6. `resolveProjectsService`** — depth 2 · orphan-root
@@ -964,41 +971,34 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `PluginService.runGate` | 17 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-nx:modules/run-configuration`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:427` |
-| `PluginService.runTrace` | 17 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-nx:modules/run-configuration`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:471` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `runAddressExecutor` | 7 | `filter(…)`, `resolveExecutorScope`, `resolveOptionsService`, `resolveAddressService`, `OptionsService.readFormat`, `AddressService.runDepth`, `AddressService.runBreadth` | `packages/callidescope-nx/src/modules/address/address.utilities.ts:19` |
 | `ProjectsService.resolveProjectNames` | 6 | `ProjectsService.readProjects`, `ProjectsService.map(…)`, `ProjectsService.resolveTaggedNames`, `ProjectsService.map(…)`, `ProjectsService.readTags`, `ProjectsService.toSorted(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:195` |
-| `PluginService.runGate` | 6 | `RunConfigurationService.load`, `CallidescopeService.trace`, `PluginService.judge`, `PluginService.explainVerdict`, `MarkdownReportService.renderFindings`, `RunConfigurationService.readPreviewCount` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:427` |
+| `OptionsService.readStringList` | 5 | `OptionsService.isUnknownArray`, `OptionsService.filter(…)`, `OptionsService.map(…)`, `OptionsService.flatMap(…)`, `OptionsService.filter(…)` | `packages/callidescope-nx/src/modules/options/options.service.ts:124` |
 
 <details>
 <summary>36 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runTrace` | 6 | `RunConfigurationService.load`, `CallidescopeService.trace`, `PluginService.judge`, `MarkdownReportService.renderRun`, `RunConfigurationService.readPreviewCount`, `PluginService.explainVerdict` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:471` |
-| `OptionsService.readStringList` | 5 | `OptionsService.isUnknownArray`, `OptionsService.filter(…)`, `OptionsService.map(…)`, `OptionsService.flatMap(…)`, `OptionsService.filter(…)` | `packages/callidescope-nx/src/modules/options/options.service.ts:124` |
-| `PluginService.inferTargets` | 5 | `OptionsService.resolvePluginOptions`, `PluginService.buildExclusionFilter`, `PluginService.holdsProgram`, `PluginService.buildInferredTargets`, `PluginService.isExcludedProject` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:333` |
+| `PluginService.inferTargets` | 5 | `OptionsService.resolvePluginOptions`, `PluginService.buildExclusionFilter`, `PluginService.holdsProgram`, `PluginService.buildInferredTargets`, `PluginService.isExcludedProject` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:335` |
+| `PluginService.runGate` | 5 | `RunConfigurationService.load`, `CallidescopeService.trace`, `PluginService.judge`, `PluginService.explainVerdict`, `MarkdownReportService.renderFindings` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:429` |
+| `PluginService.runTrace` | 5 | `RunConfigurationService.load`, `CallidescopeService.trace`, `PluginService.judge`, `MarkdownReportService.renderRun`, `PluginService.explainVerdict` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:474` |
 | `resolveExecutorScope` | 5 | `resolveOptionsService`, `OptionsService.readStringList`, `resolvePluginService`, `PluginService.resolveTraceScope`, `PluginService.describeRefusedScope` | `packages/callidescope-nx/src/modules/plugin/plugin.utilities.ts:24` |
 | `traceExecutor` | 5 | `resolveExecutorScope`, `resolveOptionsService`, `resolvePluginService`, `PluginService.runTrace`, `OptionsService.readFormat` | `packages/callidescope-nx/src/executors/trace/executor.ts:25` |
-| `PluginService.resolveTraceScope` | 4 | `ProjectsService.readProjectGraph`, `ProjectsService.resolveProjectNames`, `ProjectsService.resolveDependencyClosure`, `ProjectsService.resolveDirectories` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:383` |
+| `PluginService.resolveTraceScope` | 4 | `ProjectsService.readProjectGraph`, `ProjectsService.resolveProjectNames`, `ProjectsService.resolveDependencyClosure`, `ProjectsService.resolveDirectories` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:385` |
 | `anonymous` | 4 | `resolvePluginService`, `PluginService.inferTargets`, `filter(…)`, `map(…)` | `packages/callidescope-nx/src/index.ts:59` |
-| `AddressService.runBreadth` | 3 | `AddressService.locate`, `BreadthService.describeDirectCalls`, `AddressReportService.renderBreadthReports` | `packages/callidescope-nx/src/modules/address/address.service.ts:107` |
-| `AddressService.runDepth` | 3 | `AddressService.locate`, `AddressReportService.renderDepthReports`, `AddressService.map(…)` | `packages/callidescope-nx/src/modules/address/address.service.ts:151` |
+| `AddressService.runBreadth` | 3 | `AddressService.locate`, `BreadthService.describeDirectCalls`, `AddressReportService.renderBreadthReports` | `packages/callidescope-nx/src/modules/address/address.service.ts:108` |
+| `AddressService.runDepth` | 3 | `AddressService.locate`, `AddressReportService.renderDepthReports`, `AddressService.map(…)` | `packages/callidescope-nx/src/modules/address/address.service.ts:152` |
 | `ProjectsService.toDirectories` | 3 | `ProjectsService.map(…)`, `ProjectsService.readProjects`, `ProjectsService.toSorted(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:233` |
-| `RunConfigurationService.load` | 3 | `OptionsService.resolveConfigurationPath`, `RunConfigurationService.readNxConfiguration`, `ConfigurationService.loadConfigurationFile` | `packages/callidescope-nx/src/modules/run-configuration/run-configuration.service.ts:73` |
+| `RunConfigurationService.load` | 3 | `OptionsService.resolveConfigurationPath`, `RunConfigurationService.readNxConfiguration`, `ConfigurationService.loadConfigurationFile` | `packages/callidescope-nx/src/modules/run-configuration/run-configuration.service.ts:69` |
 | `gateExecutor` | 3 | `resolveExecutorScope`, `resolvePluginService`, `PluginService.runGate` | `packages/callidescope-nx/src/executors/gate/executor.ts:28` |
-| `AddressService.identify` | 2 | `AddressLookupService.resolve`, `AddressLookupService.describeProblem` | `packages/callidescope-nx/src/modules/address/address.service.ts:44` |
-| `AddressService.locate` | 2 | `AddressLookupService.locate`, `AddressService.identify` | `packages/callidescope-nx/src/modules/address/address.service.ts:71` |
-| `AddressService.map(…)` | 2 | `AddressDepthService.buildDownwardStacks`, `AddressDepthService.buildUpwardStacks` | `packages/callidescope-nx/src/modules/address/address.service.ts:164` |
+| `AddressService.identify` | 2 | `AddressLookupService.resolve`, `AddressLookupService.describeProblem` | `packages/callidescope-nx/src/modules/address/address.service.ts:45` |
+| `AddressService.locate` | 2 | `AddressLookupService.locate`, `AddressService.identify` | `packages/callidescope-nx/src/modules/address/address.service.ts:72` |
+| `AddressService.map(…)` | 2 | `AddressDepthService.buildDownwardStacks`, `AddressDepthService.buildUpwardStacks` | `packages/callidescope-nx/src/modules/address/address.service.ts:165` |
 | `OptionsService.readRegisteredConfigurationPath` | 2 | `OptionsService.isUnknownArray`, `OptionsService.readEntryConfigurationPath` | `packages/callidescope-nx/src/modules/options/options.service.ts:66` |
 | `OptionsService.resolveConfigurationPath` | 2 | `OptionsService.readRegisteredConfigurationPath`, `OptionsService.find(…)` | `packages/callidescope-nx/src/modules/options/options.service.ts:145` |
 | `ProjectsService.readTags` | 2 | `ProjectsService.toSorted(…)`, `ProjectsService.flatMap(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:37` |
@@ -1006,14 +1006,14 @@ What this project is judged against. `declared` is the number in this project's 
 | `ProjectsService.readProjects` | 2 | `ProjectsService.toSorted(…)`, `ProjectsService.map(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:92` |
 | `ProjectsService.resolveDependencyClosure` | 2 | `ProjectsService.filter(…)`, `ProjectsService.toSorted(…)` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:122` |
 | `ProjectsService.resolveDirectories` | 2 | `ProjectsService.resolveProjectNames`, `ProjectsService.toDirectories` | `packages/callidescope-nx/src/modules/projects/projects.service.ts:171` |
-| `PluginService.buildExclusionFilter` | 2 | `ConfigurationService.loadConfigurationFile`, `FileFilterService.buildFileFilter` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:92` |
-| `PluginService.judge` | 2 | `ProjectReportsService.findOwnedFindings`, `ProjectReportsService.findUnreadProjects` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:263` |
+| `PluginService.buildExclusionFilter` | 2 | `ConfigurationService.loadConfigurationFile`, `FileFilterService.buildFileFilter` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:94` |
+| `PluginService.judge` | 2 | `ProjectReportsService.findOwnedFindings`, `ProjectReportsService.findUnreadProjects` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:265` |
 | `OptionsService.readEntryConfigurationPath` | 1 | `OptionsService.readString` | `packages/callidescope-nx/src/modules/options/options.service.ts:42` |
 | `OptionsService.readFormat` | 1 | `OptionsService.find(…)` | `packages/callidescope-nx/src/modules/options/options.service.ts:109` |
 | `OptionsService.resolvePluginOptions` | 1 | `OptionsService.readString` | `packages/callidescope-nx/src/modules/options/options.service.ts:159` |
 | `reportUnreadProjects` | 1 | `map(…)` | `packages/callidescope-nx/src/modules/plugin/plugin.constants.ts:72` |
-| `PluginService.explainVerdict` | 1 | `reportUnreadProjects` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:185` |
-| `PluginService.describeRefusedScope` | 1 | `PluginService.filter(…)` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:305` |
+| `PluginService.explainVerdict` | 1 | `reportUnreadProjects` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:187` |
+| `PluginService.describeRefusedScope` | 1 | `PluginService.filter(…)` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:307` |
 | `resolveAddressService` | 1 | `resolvePluginContext` | `packages/callidescope-nx/src/modules/plugin/plugin-context.utilities.ts:18` |
 | `resolveOptionsService` | 1 | `resolvePluginContext` | `packages/callidescope-nx/src/modules/plugin/plugin-context.utilities.ts:25` |
 | `resolvePluginService` | 1 | `resolvePluginContext` | `packages/callidescope-nx/src/modules/plugin/plugin-context.utilities.ts:32` |
@@ -1022,12 +1022,4 @@ What this project is judged against. `declared` is the number in this project's 
 | `depthExecutor` | 1 | `runAddressExecutor` | `packages/callidescope-nx/src/executors/depth/executor.ts:15` |
 
 </details>
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `RunConfigurationService.load` | `packages/callidescope-nx:modules/run-configuration` | `packages/callidescope-nx:modules/plugin` | 2/2 |
-| `RunConfigurationService.readPreviewCount` | `packages/callidescope-nx:modules/run-configuration` | `packages/callidescope-nx:modules/plugin` | 2/2 |
-| `runAddressExecutor` | `packages/callidescope-nx:modules/address` | `packages/callidescope-nx:executors` | 2/2 |
 <!-- CALL_STACKS_END -->
