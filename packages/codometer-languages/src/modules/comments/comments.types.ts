@@ -2,9 +2,9 @@
 
 import type {
   CodometerCommentMeasurement,
-  ResolvedCodometerCommentsConfiguration,
+  CodometerSeverity,
+  CodometerSymbolKind,
   ResolvedCodometerConfiguration,
-  ResolvedCodometerLanguageCommentsConfiguration,
 } from "@codometer/configuration";
 import type { CommentRange } from "typescript";
 import type { LineCounter } from "yaml";
@@ -12,6 +12,22 @@ import type { LineCounter } from "yaml";
 /** A run of comment lines a reader takes as one thought. */
 export interface CommentBlock {
   tokens: CommentToken[];
+}
+
+/**
+ * How long one comment or JSDoc block may run, carried as an explicit
+ * argument rather than read off a resolved configuration object.
+ *
+ * Shaped to match the `comment` selector a later ticket adds to
+ * `@codometer/configuration` — a `language`, a `kind`, and this same set of
+ * optional maxima plus `severity` — so mapping one onto this is a direct
+ * field copy rather than a translation.
+ */
+export interface CommentBudget {
+  maximumCharacters: number | undefined;
+  maximumLines: number | undefined;
+  maximumWords: number | undefined;
+  severity: CodometerSeverity;
 }
 
 /** One comment block, measured against one declared maximum. */
@@ -27,6 +43,20 @@ export interface CommentToken {
   prose: string;
   /** The comment exactly as the file carries it, marker and all. */
   source: string;
+}
+
+/** A documentation budget, plus the narrower budget one symbol kind may declare. */
+export interface DocumentationCommentBudget extends CommentBudget {
+  kinds: Partial<Record<CodometerSymbolKind, CommentBudget>>;
+}
+
+/** One language's comment budget, plus the separate budget over a whole file. */
+export interface LanguageCommentBudget extends CommentBudget {
+  /**
+   * Budgets over every comment in one file, or `undefined` when none were
+   * written — which leaves the block budgets the only thing judged.
+   */
+  file: CommentBudget | undefined;
 }
 
 /**
@@ -57,14 +87,14 @@ export interface LocatedCommentToken extends CommentToken {
 
 /** Arguments accepted when measuring one file's comment blocks. */
 export interface MeasureCommentsArguments {
-  comments: ResolvedCodometerLanguageCommentsConfiguration;
+  comments: LanguageCommentBudget;
   filePath: string;
   tokens: CommentToken[];
 }
 
 /** Arguments accepted when measuring one comment's text directly. */
 export interface MeasureCommentTextArguments {
-  comments: ResolvedCodometerCommentsConfiguration;
+  comments: CommentBudget;
   declaration: string;
   filePath: string;
   kind: string;

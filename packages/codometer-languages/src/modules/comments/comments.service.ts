@@ -9,15 +9,13 @@ import {
 
 import type {
   CommentBlock,
+  CommentBudget,
   CommentMeasurement,
   CommentToken,
   MeasureCommentsArguments,
   MeasureCommentTextArguments,
 } from "./comments.types";
-import type {
-  CodometerDocumentationUnit,
-  ResolvedCodometerCommentsConfiguration,
-} from "@codometer/configuration";
+import type { CodometerDocumentationUnit } from "@codometer/configuration";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -57,7 +55,7 @@ export class CommentsService {
   /** Every declared maximum, paired with what this comment measured. */
   private declaredLimits(
     args: { prose: string; source: string },
-    comments: ResolvedCodometerCommentsConfiguration,
+    comments: CommentBudget,
   ): { limit: number; measured: number; unit: CodometerDocumentationUnit }[] {
     const declared: {
       limit: number | undefined;

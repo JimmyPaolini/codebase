@@ -16,10 +16,10 @@ import { YamlCommentsService } from "./yaml-comments.service";
 import type {
   CommentMeasurement,
   CommentToken,
+  LanguageCommentBudget,
   LocatedCommentToken,
   MeasureLanguageCommentsArguments,
 } from "./comments.types";
-import type { ResolvedCodometerLanguageCommentsConfiguration } from "@codometer/configuration";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -57,7 +57,7 @@ export class LanguageCommentsService {
 
   /** Measures one language's files, if a budget was declared for it. */
   private measureLanguage(args: {
-    comments: ResolvedCodometerLanguageCommentsConfiguration | undefined;
+    comments: LanguageCommentBudget | undefined;
     files: readonly string[];
     read: (content: string, filePath: string) => CommentToken[];
     workingDirectory: string;
@@ -95,7 +95,7 @@ export class LanguageCommentsService {
    * line numbers that would otherwise run together.
    */
   private measurePython(
-    comments: ResolvedCodometerLanguageCommentsConfiguration | undefined,
+    comments: LanguageCommentBudget | undefined,
     tokens: readonly LocatedCommentToken[],
   ): CommentMeasurement[] {
     if (comments === undefined) {

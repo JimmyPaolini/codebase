@@ -1,6 +1,9 @@
 // 🏷️ Types
 
-import type { CommentMeasurement } from "../comments/comments.types";
+import type {
+  CommentMeasurement,
+  DocumentationCommentBudget,
+} from "../comments/comments.types";
 import type {
   CodometerSymbolKind,
   CodometerSymbolModifier,
@@ -83,7 +86,7 @@ export interface TypescriptWalkContext {
    * depends on its path, which does not change as the walk descends.
    */
   counters: TypescriptSymbolCounter[];
-  documentation: ResolvedCodometerDocumentationConfiguration | undefined;
+  documentation: DocumentationCommentBudget | undefined;
   filePath: string;
   insideClass: boolean;
   sourceFile: SourceFile;
