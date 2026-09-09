@@ -34,8 +34,8 @@ import type {
  * not a degenerate case — it is the whole band as a single ribbon.
  *
  * **Why it reads as an S rather than a U.** A bracket turns once and stops,
- * so a `plied` band is a row of separate ⊔ and ⊓ pieces with free ends at
- * the border. A ribbon here never stops: it runs down one column, along the
+ * so a `plied` band is a row of ⊔ and ⊓ pieces each ending on the border it
+ * opens onto. A ribbon here never stops: it runs down one column, along the
  * bottom of its own strip, up the next column, along the top, and on — so
  * every two columns it completes one ⊔⊓ pair *joined at both turns*, which
  * is a square-cornered S lying on its side. The charter admits no curves
@@ -47,25 +47,38 @@ import type {
  * no row in two strips and no row in none. Inside its own strip a ribbon
  * puts a full-height vertical run in *every* column, so every lattice point
  * of that strip carries ink; taken together the strips are the whole band.
- * The strands are node-disjoint because their strips are row-disjoint, so
- * nothing here can branch or cross by construction rather than by luck:
- * a lattice point carries the two arms of a run it sits inside, or one arm
- * and one connector at a turn, and never a third. The family declares no
- * charter relaxation and this shape needs none.
+ * The strands are node-disjoint because their strips are row-disjoint, so no
+ * two ribbons can meet at a lattice point, and none of them can cross: a
+ * point carries the two arms of a run it sits inside, or one arm and one
+ * connector at a turn, and never a fourth. Invariant 4 holds by construction
+ * rather than by luck.
+ *
+ * **Where this shape does fork, and where it still does not.** A rule runs
+ * the full width of both borders now — see `ParallelMotifService.border` —
+ * and it meets a ribbon's vertical run with west, east, and south ink at one
+ * point. So a stack forks unless its **first and last strips are both one
+ * lattice row deep**: a flat ribbon *is* the rule beside it, and no arm
+ * rises to meet one. That is the whole of the family's charter relaxation,
+ * and it is the reason the relaxation is declared with a named structural
+ * condition rather than a modifier name — `serpentine` drawings both do and
+ * do not fork, and only {@link strips} can say which.
  *
  * **Why the connectors cannot collide.** A connector joins column `c` to
  * column `c + 1` at the bottom of the strip when `c` is even and at the top
  * when it is odd, so the two connectors touching any one column sit at
  * opposite ends of it. Were they to share an end, that lattice point would
- * carry two connectors and a vertical run — a three-armed junction, and the
- * one way this construction could have broken invariant 3.
+ * carry two connectors and a vertical run — a fork inside a ribbon, which is
+ * a different thing from the ones the border rules make and the one way a
+ * ribbon could fork away from a border at all.
  *
  * A one-row strip is the honest degenerate case: its vertical runs have
  * zero length and its connectors all fall on the same row, so the ribbon
  * flattens to a straight rule. It still covers its row, still carries two
  * arms at every interior point, and still tiles with the ribbons either
  * side of it — it has simply run out of room to wave, which is what a ply
- * as deep as the row count means.
+ * as deep as the row count means. At the top or bottom of the stack it is
+ * also the border rule, which is why a flat strip there is what keeps a
+ * drawing from forking.
  */
 @Injectable()
 export class ParallelSerpentineService {
@@ -113,9 +126,10 @@ export class ParallelSerpentineService {
    *
    * Flipping a ribbon inverts nothing but its phase — it still runs a
    * full-height vertical in every column of its own strip, so it covers
-   * exactly what it covered before. That is why no flip can cost the family
-   * a charter invariant: the exact cover is an argument about the strip, and
-   * the phase is an argument about the order the ribbon visits it in.
+   * exactly what it covered before. That is why no flip can change the
+   * family's charter verdict, whether the drawing forks or not: the exact
+   * cover and the strip depths are arguments about {@link strips}, and the
+   * phase is an argument about the order the ribbon visits one in.
    */
   private isFlipped(
     flip: SerpentineFlip | undefined,

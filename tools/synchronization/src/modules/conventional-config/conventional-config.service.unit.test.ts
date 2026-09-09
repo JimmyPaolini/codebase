@@ -12,7 +12,7 @@ import { ConventionalConfigIoService } from "./conventional-config-io.service";
 import { ConventionalConfigValidatorsService } from "./conventional-config-validators.service";
 import {
   SYNC_CONVENTIONAL_CONFIG_ISSUE_TEMPLATE_FILES,
-  SYNC_CONVENTIONAL_CONFIG_SKILL_FILES,
+  SYNC_CONVENTIONAL_CONFIG_MARKDOWN_FILES,
 } from "./conventional-config.constants";
 import { ConventionalConfigService } from "./conventional-config.service";
 
@@ -84,7 +84,7 @@ describe(ConventionalConfigService, () => {
   );
   const releaseConfigFile = path.join(workspaceRoot, "release.config.cjs");
   const settingsFile = path.join(workspaceRoot, ".vscode/settings.json");
-  const skillFiles = SYNC_CONVENTIONAL_CONFIG_SKILL_FILES.map((skillFile) =>
+  const skillFiles = SYNC_CONVENTIONAL_CONFIG_MARKDOWN_FILES.map((skillFile) =>
     path.join(workspaceRoot, skillFile),
   );
   const templateFiles = SYNC_CONVENTIONAL_CONFIG_ISSUE_TEMPLATE_FILES.map(

@@ -182,7 +182,7 @@ codebase/
 └── .agents/skills/     # Agent skills; every other agent entrypoint symlinks here
 ```
 
-Every project lives in `applications/`, `packages/`, or `tools/` — a file directly in one of those directories is a lint error, not a style preference. The full annotated project list is in [AGENTS.md](AGENTS.md#projects), and [README.md](README.md) carries the same table, kept in step by the `check-readme-projects` target.
+Every project lives in `applications/`, `packages/`, or `tools/` — a file directly in one of those directories is a lint error, not a style preference. The full annotated project list is in [README.md](README.md), kept in step with the workspace by the `check-readme-projects` target; `nx show projects` prints the same set.
 
 Scaffold new projects, modules, and components with a conformetry generator rather than by hand; code written in a shape a template already describes starts life failing conformance.
 
@@ -406,50 +406,58 @@ Commits are validated by commitlint through Husky. See [commit-code](.agents/ski
 
 ### Types
 
-| Type       | Description                                                                         |
-| ---------- | ----------------------------------------------------------------------------------- |
-| `feat`     | A new feature or capability that adds value for users                               |
-| `fix`      | A bug fix that addresses a specific issue or problem                                |
-| `docs`     | Documentation, AGENTS.md, SKILL.md, README, and planning files                      |
-| `test`     | Adding or correcting unit, integration, or end-to-end tests                         |
-| `refactor` | Code restructuring that neither fixes a bug nor adds a feature                      |
-| `style`    | Formatting, whitespace, or code structure changes with no semantic effect           |
-| `perf`     | A code change that improves performance (caching, query optimization, etc.)         |
-| `chore`    | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
-| `ci`       | GitHub Actions workflows, composite actions, and CI/CD scripts                      |
-| `build`    | Build system, Vite/Docker/Helm config, or external dependency integration           |
-| `revert`   | Reverts a previous commit                                                           |
+<!-- types-start -->
+
+| Type | Description |
+| ---- | ----------- |
+| `feat` | A new feature or capability that adds value for users |
+| `fix` | A bug fix that addresses a specific issue or problem |
+| `docs` | Documentation, AGENTS.md, SKILL.md, README, and planning files |
+| `test` | Adding or correcting unit, integration, or end-to-end tests |
+| `refactor` | Code restructuring that neither fixes a bug nor adds a feature |
+| `style` | Formatting, whitespace, or code structure changes with no semantic effect |
+| `perf` | A code change that improves performance (caching, query optimization, etc.) |
+| `chore` | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
+| `ci` | GitHub Actions workflows, composite actions, and CI/CD scripts |
+| `build` | Build system, Vite/Docker/Helm config, or external dependency integration |
+| `revert` | Reverts a previous commit |
+
+<!-- types-end -->
 
 ### Scopes
 
-| Scope               | Description                                                                                                                               |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `affirmations`      | Python Jupyter notebook application for LangGraph affirmation generation                                                                  |
-| `caelundas`         | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris)                                                                     |
-| `configuration`     | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.)                                                                     |
-| `conformetry`       | Code generator templates and validation tests for generated instances                                                                     |
-| `dependencies`      | Dependency version changes (upgrades, additions, removals via pnpm)                                                                       |
-| `deps`              | Dependency version changes (upgrades, additions, removals via pnpm)                                                                       |
-| `deployments`       | GitHub Actions workflows and CI/CD pipeline configuration                                                                                 |
-| `documentation`     | Markdown docs, skills, planning files, and AGENTS.md files                                                                                |
-| `infrastructure`    | Helm charts, Terraform configs, and Kubernetes resources                                                                                  |
-| `JimmyPaolini`      | Static GitHub profile README project (markdown and assets)                                                                                |
-| `lexico`            | TanStack Start SSR Latin dictionary web app with Supabase backend                                                                         |
-| `lexico-components` | Shared React/shadcn component library                                                                                                     |
-| `lexico-entities`   | Shared TypeORM entities and GraphQL types                                                                                                 |
-| `lexico-ingestion`  | Data ingestion scripts for Lexico                                                                                                         |
-| `meanderaw`         | Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads                                             |
-| `sempientor`        | Lexical gap discovery CLI that surveys English for morphological, phonotactic, and semantic gaps and coins words to fill them             |
-| `callidescope`      | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph             |
-| `codependix`        | Dependency graph export CLI, the configuration package it reads, and the package that judges the graphs against declared rules            |
-| `codometer`         | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |
-| `no-release`        | Escape hatch: suppress semantic-release for any commit type                                                                               |
-| `release`           | Version bumps and release commits generated by semantic-release                                                                           |
-| `reporting`         | Pull request change report generation and the packages that diff and render it                                                            |
-| `scripts`           | Shell and TypeScript scripts in scripts/ (sync, setup, utilities)                                                                         |
-| `testing`           | Vitest configuration, shared test utilities, and coverage setup                                                                           |
-| `synchronization`   | Synchronization application and commands for automating workflows                                                                         |
-| `validation`        | Validation CLI and the checks it runs, such as pull request metadata                                                                      |
+<!-- scopes-start -->
+
+| Scope | Description |
+| ----- | ----------- |
+| `affirmations` | Python Jupyter notebook application for LangGraph affirmation generation |
+| `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
+| `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
+| `conformetry` | Code generator templates and validation tests for generated instances |
+| `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
+| `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
+| `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
+| `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
+| `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |
+| `JimmyPaolini` | Static GitHub profile README project (markdown and assets) |
+| `lexico` | TanStack Start SSR Latin dictionary web app with Supabase backend |
+| `lexico-components` | Shared React/shadcn component library |
+| `lexico-entities` | Shared TypeORM entities and GraphQL types |
+| `lexico-ingestion` | Data ingestion scripts for Lexico |
+| `meanderaw` | Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads |
+| `sempientor` | Lexical gap discovery CLI that surveys English for morphological, phonotactic, and semantic gaps and coins words to fill them |
+| `callidescope` | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph |
+| `codependix` | Dependency graph export CLI, the configuration package it reads, and the package that judges the graphs against declared rules |
+| `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |
+| `no-release` | Escape hatch: suppress semantic-release for any commit type |
+| `release` | Version bumps and release commits generated by semantic-release |
+| `reporting` | Pull request change report generation and the packages that diff and render it |
+| `scripts` | Shell and TypeScript scripts in scripts/ (sync, setup, utilities) |
+| `testing` | Vitest configuration, shared test utilities, and coverage setup |
+| `synchronization` | Synchronization application and commands for automating workflows |
+| `validation` | Validation CLI and the checks it runs, such as pull request metadata |
+
+<!-- scopes-end -->
 
 If a change genuinely spans scopes, list them comma-separated (`feat(lexico,logger): ...`) rather than reaching for an umbrella scope. Better still, keep one project or module per pull request — see [Release Significance](#release-significance) for why.
 
