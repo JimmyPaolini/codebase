@@ -18,13 +18,20 @@ import {
  * to replace. The gate a branch runs reads a project's own resolved limit and
  * never this object directly.
  *
- * A project's own `callidescope.config.ts` writes only the limits it overrides
- * — `limits: { maximumDepth: 10 }`, and nothing beside it. Writing the
- * override alone drops nothing: `ProjectConfigurationService` resolves each
- * limit on its own, falling back to the workspace's number per limit rather
- * than per object, so a project that names one keeps the other. A spread has
- * nothing left to contribute anyway, `maximumDepth` and `maximumBreadth` being
- * the only two limits there are.
+ * A project's own `callidescope.config.ts` spreads `projectDefaults` — the
+ * second export below — and declares `limits` explicitly beside it, both
+ * fields named even when only one is a real number: `limits: { maximumBreadth:
+ * undefined, maximumDepth: 10 }` for a project gating depth alone,
+ * `{ maximumBreadth: 8, maximumDepth: 6 }` for one gating both. Naming
+ * `maximumBreadth: undefined` rather than omitting the field is what makes a
+ * project's silence about breadth a decision written in its own file rather
+ * than an absence a reader has to go verify — the [Callidescope](#callidescope)
+ * section of this repository's `AGENTS.md` says which projects declare a real
+ * number and why. `ProjectConfigurationService` still resolves each limit on
+ * its own, falling back to the workspace's number per limit rather than per
+ * object, so the spread and the explicit `limits` object are not doing the
+ * same job: the spread carries `entryPoints`, `exclude`, and `write` forward
+ * unchanged, and `limits` is what every migrated file overrides.
  *
  * A project's file also carries no type annotation, and so no import of
  * `CallidescopeConfiguration`. An `import type` is still an Nx dependency
@@ -43,9 +50,10 @@ import {
  *
  * Thirty-two projects under `packages/` now declare their own measured depth.
  * There used to be a reason more inherited the number below, and
- * consolidating the conformetry Languages removed it: five leaf analyzers —
- * `conformetry-typescript`, `-json`, `-jupyter`, `-python`, `-text` — each
- * held real code that rooted nothing, because every one of them was entered
+ * consolidating the conformetry Languages removed it: six leaf analyzers —
+ * `conformetry-typescript`, `-json`, `-jupyter`, `-markdown`, `-python`,
+ * `-text` — each held real code that rooted nothing, because every one of
+ * them was entered
  * from above rather than directly, so each measured zero however much it did.
  * They are now modules of `conformetry-languages`, and what was a call
  * between packages is a call inside one, so a scoped run finally enters at a
@@ -187,9 +195,18 @@ export const workspaceLimits = {
  * point of the shape: what a project is held to becomes something a reader can
  * see in the project's own file rather than resolve across two.
  *
- * Nothing spreads it yet. The capability lands first so that the thirty-eight
- * project files can migrate in reviewable batches while the branch stays
- * green, and until one of them does, every project loads exactly as before.
+ * Thirty-seven of the thirty-eight project files spread it now, each writing
+ * its own `limits` explicitly beside the spread the way the example above
+ * shows. `packages/callidescope-examples/callidescope.config.ts` is the
+ * thirty-eighth and deliberately does not: it is the annotated worked example
+ * this file already names above, standing alone with a full
+ * `CallidescopeConfiguration` type import and its fields spelled out inline,
+ * precisely so a reader can see every field a project may set without also
+ * having to resolve this file's export. Spreading `projectDefaults` there
+ * would trade being self-contained for terseness it does not need — the
+ * package is excluded from workspace tracing by `.callidescopeignore` in the
+ * first place, so this file is read as documentation far more often than it
+ * is read by the loader.
  */
 export const projectDefaults = {
   entryPoints: {
