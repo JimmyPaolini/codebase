@@ -894,203 +894,6 @@
       "limit": 5
     },
     {
-      "depth": 7,
-      "entryPointKind": "orphan-root",
-      "frames": [
-        {
-          "displayName": "InheritedLimitsService.request",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Asks the leaf about one key, through the two frames above it.",
-            "tags": []
-          },
-          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1297",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
-            "line": 38
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "key",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(key: string): string"
-          }
-        },
-        {
-          "displayName": "InheritedLimitsService.prepare",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Prepares the key the leaf is asked about.",
-            "tags": []
-          },
-          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1126",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
-            "line": 31
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "key",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(key: string): string"
-          }
-        },
-        {
-          "displayName": "InheritedLimitsService.forward",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Hands the key to the leaf, which is where this project's code stops.",
-            "tags": []
-          },
-          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#985",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
-            "line": 26
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "key",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(key: string): string"
-          }
-        },
-        {
-          "displayName": "GatedLeafService.read",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "The address this project declares as its entry point. Both findings are about this one method. It calls three things directly, which is the breadth finding, and the longest path below it runs four frames, which is the depth one.",
-            "tags": []
-          },
-          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#1219",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
-            "line": 40
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "key",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(key: string): string"
-          }
-        },
-        {
-          "displayName": "GatedLeafService.parse",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "First of the three, and the way into the chain.",
-            "tags": []
-          },
-          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#853",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
-            "line": 27
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "key",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(key: string): string"
-          }
-        },
-        {
-          "displayName": "GatedLeafService.normalize",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Second of the three, one hop from the end.",
-            "tags": []
-          },
-          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#719",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
-            "line": 22
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "key",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(key: string): string"
-          }
-        },
-        {
-          "displayName": "GatedLeafService.finish",
-          "documentation": {
-            "isDeprecated": false,
-            "summary": "Ends the chain, which is where the fourth frame is.",
-            "tags": []
-          },
-          "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#599",
-          "isCycle": false,
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
-            "line": 17
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "key",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(key: string): string"
-          }
-        }
-      ],
-      "isLowerBound": false,
-      "limit": 6
-    },
-    {
       "depth": 6,
       "entryPointKind": "orphan-root",
       "frames": [
@@ -1548,6 +1351,58 @@
     {
       "callableBreadths": [
         {
+          "breadth": 7,
+          "callees": [
+            {
+              "displayName": "FlagResolutionService.resolveFormat",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#8461"
+            },
+            {
+              "displayName": "FlagResolutionService.resolveLimitOverrides",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#9491"
+            },
+            {
+              "displayName": "FlagResolutionService.resolveList",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#11850"
+            },
+            {
+              "displayName": "FlagResolutionService.resolveEntryPoints",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#5819"
+            },
+            {
+              "displayName": "FlagResolutionService.resolveExclude",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#7737"
+            },
+            {
+              "displayName": "FlagResolutionService.resolveLimits",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#10833"
+            },
+            {
+              "displayName": "FlagResolutionService.resolveWrite",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#13184"
+            }
+          ],
+          "displayName": "FlagResolutionService.resolveRunFlags",
+          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#14455",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
+            "line": 426
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configuration: ResolvedCallidescopeConfiguration; flags: CallidescopeRunFlags; }"
+              }
+            ],
+            "returnType": "ResolvedRunFlags",
+            "text": "(args: { configuration: ResolvedCallidescopeConfiguration; flags: CallidescopeRunFlags; }): ResolvedRunFlags"
+          }
+        },
+        {
           "breadth": 5,
           "callees": [
             {
@@ -1564,7 +1419,7 @@
             },
             {
               "displayName": "UnknownConfigurationFileTypeError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9839"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#9847"
             },
             {
               "displayName": "ConfigurationService.loadConfigurationModule",
@@ -1644,27 +1499,27 @@
             },
             {
               "displayName": "ProjectConfigurationMissingError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#15557"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#16221"
             },
             {
               "displayName": "ProjectConfigurationService.loadProjectConfiguration",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#8780"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9342"
             },
             {
               "displayName": "ProjectConfigurationService.assertNoForbiddenFields",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1456"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2156"
             },
             {
               "displayName": "ProjectConfigurationService.assertComplete",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2144"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1705"
             }
           ],
           "displayName": "ProjectConfigurationService.loadProjectConfigurations",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11407",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#12708",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 328
+            "line": 361
           },
           "signature": {
             "parameters": [
@@ -1764,23 +1619,23 @@
           "callees": [
             {
               "displayName": "ProjectConfigurationService.buildWorkspaceLimits",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#3699"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#4044"
             },
             {
               "displayName": "ProjectConfigurationService.map(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#13614"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#14915"
             },
             {
               "displayName": "ProjectConfigurationService.map(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#13818"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#15184"
             }
           ],
           "displayName": "ProjectConfigurationService.resolveLimits",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#13395",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#14696",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 382
+            "line": 415
           },
           "signature": {
             "parameters": [
@@ -1793,42 +1648,6 @@
             ],
             "returnType": "ProjectLimitsLookup",
             "text": "(args: ResolveProjectLimitsArguments): ProjectLimitsLookup"
-          }
-        },
-        {
-          "breadth": 3,
-          "callees": [
-            {
-              "displayName": "FlagResolutionService.resolveFormat",
-              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#4278"
-            },
-            {
-              "displayName": "FlagResolutionService.resolveDirectories",
-              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#3606"
-            },
-            {
-              "displayName": "FlagResolutionService.resolveDestination",
-              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#2586"
-            }
-          ],
-          "displayName": "FlagResolutionService.resolveRunFlags",
-          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#5175",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
-            "line": 155
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "args",
-                "type": "{ configuration: ResolvedCallidescopeConfiguration; flags: CallidescopeRunFlags; }"
-              }
-            ],
-            "returnType": "ResolvedRunFlags",
-            "text": "(args: { configuration: ResolvedCallidescopeConfiguration; flags: CallidescopeRunFlags; }): ResolvedRunFlags"
           }
         },
         {
@@ -1872,7 +1691,7 @@
             },
             {
               "displayName": "ConfigurationFileNotFoundError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#13454"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#13462"
             }
           ],
           "displayName": "ConfigurationService.resolveConfigurationPath",
@@ -1899,20 +1718,20 @@
           "breadth": 2,
           "callees": [
             {
-              "displayName": "ProjectConfigurationService.findForbiddenField",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#4925"
+              "displayName": "ProjectConfigurationService.findMissingField",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#8178"
             },
             {
-              "displayName": "ProjectConfigurationFieldNotPermittedError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#16189"
+              "displayName": "ProjectConfigurationIncompleteError.constructor",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#15484"
             }
           ],
-          "displayName": "ProjectConfigurationService.assertNoForbiddenFields",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1456",
+          "displayName": "ProjectConfigurationService.assertComplete",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#1705",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 50
+            "line": 55
           },
           "signature": {
             "parameters": [
@@ -1931,20 +1750,20 @@
           "breadth": 2,
           "callees": [
             {
-              "displayName": "ProjectConfigurationService.findMissingField",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7616"
+              "displayName": "ProjectConfigurationService.findForbiddenField",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#5487"
             },
             {
-              "displayName": "ProjectConfigurationIncompleteError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#14820"
+              "displayName": "ProjectConfigurationFieldNotPermittedError.constructor",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#14745"
             }
           ],
-          "displayName": "ProjectConfigurationService.assertComplete",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2144",
+          "displayName": "ProjectConfigurationService.assertNoForbiddenFields",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2156",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 73
+            "line": 74
           },
           "signature": {
             "parameters": [
@@ -1964,19 +1783,19 @@
           "callees": [
             {
               "displayName": "ProjectConfigurationService.findForbiddenMember",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#6209"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#6771"
             },
             {
               "displayName": "ProjectConfigurationService.readForbiddenField",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9727"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11028"
             }
           ],
           "displayName": "ProjectConfigurationService.findForbiddenField",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#4925",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#5487",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 149
+            "line": 163
           },
           "signature": {
             "parameters": [
@@ -2000,15 +1819,15 @@
             },
             {
               "displayName": "ProjectConfigurationError.constructor",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#13978"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#13986"
             }
           ],
           "displayName": "ProjectConfigurationService.loadProjectConfiguration",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#8780",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9342",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 267
+            "line": 281
           },
           "signature": {
             "parameters": [
@@ -2027,8 +1846,72 @@
           "breadth": 2,
           "callees": [
             {
+              "displayName": "buildUndeclaredValueMessage",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts#2981"
+            },
+            {
+              "displayName": "buildUnreadableCountMessage",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts#2377"
+            }
+          ],
+          "displayName": "FlagResolutionService.resolveCount",
+          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#3691",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
+            "line": 93
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configured: number | undefined; errors: string[]; field: string; flag: string; flagged: string | undefined; }"
+              }
+            ],
+            "returnType": "number | undefined",
+            "text": "(args: { configured: number | undefined; errors: string[]; field: string; flag: string; flagged: string | undefined; }): number | undefined"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "FlagResolutionService.resolveList",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#11850"
+            },
+            {
+              "displayName": "FlagResolutionService.resolveSwitch",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#12360"
+            }
+          ],
+          "displayName": "FlagResolutionService.resolveEntryPoints",
+          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#5819",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
+            "line": 168
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configured: ResolvedCallidescopeEntryPoints; errors: string[]; flags: CallidescopeRunFlags; }"
+              }
+            ],
+            "returnType": "ResolvedCallidescopeEntryPoints",
+            "text": "(args: { configured: ResolvedCallidescopeEntryPoints; errors: string[]; flags: CallidescopeRunFlags; }): ResolvedCallidescopeEntryPoints"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
               "displayName": "FlagResolutionService.find(…)",
-              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#4537"
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#8720"
             },
             {
               "displayName": "buildUnknownFormatMessage",
@@ -2036,11 +1919,11 @@
             }
           ],
           "displayName": "FlagResolutionService.resolveFormat",
-          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#4278",
+          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#8461",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
-            "line": 123
+            "line": 240
           },
           "signature": {
             "parameters": [
@@ -2184,15 +2067,15 @@
           "callees": [
             {
               "displayName": "custom(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10364"
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10372"
             }
           ],
           "displayName": "callbackSchema",
-          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10303",
+          "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10311",
           "location": {
             "column": 24,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-            "line": 293
+            "line": 296
           },
           "signature": {
             "parameters": [],
@@ -2309,16 +2192,44 @@
           "breadth": 1,
           "callees": [
             {
-              "displayName": "ProjectConfigurationService.find(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#8314"
+              "displayName": "ProjectConfigurationService.overrideLimit",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#10715"
             }
           ],
-          "displayName": "ProjectConfigurationService.findMissingField",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#7616",
+          "displayName": "ProjectConfigurationService.buildProjectLimits",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2904",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 225
+            "line": 97
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ overrides: CallidescopeLimitOverrides | undefined; projectConfiguration: LoadedProjectConfiguration; }"
+              }
+            ],
+            "returnType": "ProjectLimits",
+            "text": "(args: { overrides: CallidescopeLimitOverrides | undefined; projectConfiguration: LoadedProjectConfiguration; }): ProjectLimits"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ProjectConfigurationService.find(…)",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#8876"
+            }
+          ],
+          "displayName": "ProjectConfigurationService.findMissingField",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#8178",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
+            "line": 239
           },
           "signature": {
             "parameters": [
@@ -2338,15 +2249,15 @@
           "callees": [
             {
               "displayName": "ProjectConfigurationService.buildProjectLimits",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2865"
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2904"
             }
           ],
           "displayName": "ProjectConfigurationService.map(…)",
-          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#13614",
+          "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#14915",
           "location": {
             "column": 38,
             "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-            "line": 387
+            "line": 420
           },
           "signature": {
             "parameters": [
@@ -2454,11 +2365,11 @@
             }
           ],
           "displayName": "flagResolutionError",
-          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts#1826",
+          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts#3510",
           "location": {
             "column": 36,
             "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts",
-            "line": 46
+            "line": 87
           },
           "signature": {
             "parameters": [
@@ -2482,11 +2393,11 @@
             }
           ],
           "displayName": "FlagResolutionService.resolveDestination",
-          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#2586",
+          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#4984",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
-            "line": 70
+            "line": 137
           },
           "signature": {
             "parameters": [
@@ -2499,6 +2410,90 @@
             ],
             "returnType": "Destination | undefined",
             "text": "<Destination extends { path: string; }>(args: { configured: Destination | undefined; errors: string[]; field: string; flag: string; flagged: string | undefined; }): Destination | undefined"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "FlagResolutionService.resolveCount",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#3691"
+            }
+          ],
+          "displayName": "FlagResolutionService.resolveLimitOverrides",
+          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#9491",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
+            "line": 271
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configured: ResolvedCallidescopeLimits; errors: string[]; flags: CallidescopeRunFlags; }"
+              }
+            ],
+            "returnType": "CallidescopeLimitOverrides",
+            "text": "(args: { configured: ResolvedCallidescopeLimits; errors: string[]; flags: CallidescopeRunFlags; }): CallidescopeLimitOverrides"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "buildUnknownSwitchMessage",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts#1851"
+            }
+          ],
+          "displayName": "FlagResolutionService.resolveSwitch",
+          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#12360",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
+            "line": 354
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configured: boolean; errors: string[]; flag: string; flagged: string | true | undefined; }"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(args: { configured: boolean; errors: string[]; flag: string; flagged: string | true | undefined; }): boolean"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "FlagResolutionService.resolveDestination",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#4984"
+            }
+          ],
+          "displayName": "FlagResolutionService.resolveWrite",
+          "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#13184",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
+            "line": 383
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configured: ResolvedCallidescopeWriteConfiguration; errors: string[]; flags: CallidescopeRunFlags; }"
+              }
+            ],
+            "returnType": "ResolvedCallidescopeWriteConfiguration",
+            "text": "(args: { configured: ResolvedCallidescopeWriteConfiguration; errors: string[]; flags: CallidescopeRunFlags; }): ResolvedCallidescopeWriteConfiguration"
           }
         },
         {
@@ -2571,12 +2566,12 @@
                 "summary": "Resolves the configuration file sitting at each project's own root — the directory holding the `tsconfig.json` that makes it a project. A traced project with no file of its own is refused. That is the whole point of the arrangement: what a project is judged by is written in that project's own file, so a project with no file has nothing written down and a reader has no second file to go and resolve it against. The file must also be complete — every field present, `undefined` written where a project means to publish nothing or gate nothing. A project spreads the workspace's `projectDefaults` to get there in one line, which is what makes completeness cheap enough to require. What it may **not** spread is the workspace configuration itself: that object carries fields only the workspace may set, and `findForbiddenField` below refuses the file for the first one it finds. The file a run was pointed at is skipped, and the project holding it is exempt from the two rules above, because that file is already serving as the run's workspace configuration. One file, one role per run — reading it a second time as a project's would refuse it for the workspace-only fields it legitimately sets, and no second file can sit beside it under a name discovery would find. That project is judged by the workspace's own limits, which `resolveLimits` reports for it.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#11407",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#12708",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 328
+                "line": 361
               },
               "signature": {
                 "parameters": [
@@ -2598,12 +2593,12 @@
                 "summary": "Reads one project's configuration file. Every failure the read can produce — a file nothing can parse, a shape the schema rejects — is rethrown naming the project, because a run resolves a file per project and a bare parse error says nothing about which one to go and fix.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#8780",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#9342",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 267
+                "line": 281
               },
               "signature": {
                 "parameters": [
@@ -2989,18 +2984,128 @@
           "entryPointKind": "orphan-root",
           "frames": [
             {
+              "displayName": "ProjectConfigurationService.resolveLimits",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Resolves the depth and breadth limits every traced project is judged against, each carrying the file its number was written in. Every number comes from the project's own file, because loading refuses a project whose file is absent or incomplete. Nothing is inherited and nothing is merged — the workspace's numbers reach a project by being spread into its file, where a reader can see them, rather than by being resolved behind one. The one project handed the workspace's own limits is the directory holding the workspace configuration, which cannot write a second file under a name discovery would find. One resolver rather than one per reader. A gate and a listing that each worked this out for themselves could disagree about the same number, and a limit two answers can be given for is worse than no limit.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#14696",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
+                "line": 415
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "ResolveProjectLimitsArguments"
+                  }
+                ],
+                "returnType": "ProjectLimitsLookup",
+                "text": "(args: ResolveProjectLimitsArguments): ProjectLimitsLookup"
+              }
+            },
+            {
+              "displayName": "ProjectConfigurationService.map(…)",
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#14915",
+              "isCycle": false,
+              "location": {
+                "column": 38,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
+                "line": 420
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "projectConfiguration",
+                    "type": "LoadedProjectConfiguration"
+                  }
+                ],
+                "returnType": "[string, ProjectLimits]",
+                "text": "(projectConfiguration: LoadedProjectConfiguration): [string, ProjectLimits]"
+              }
+            },
+            {
+              "displayName": "ProjectConfigurationService.buildProjectLimits",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads the limits one project's own configuration declares. The whole object comes from that one file, because completeness means both numbers were written in it. There is nothing left to fall back to and nothing to fall back per field: a project that declared no breadth limit wrote `maximumBreadth: undefined`, which is a decision rather than a gap.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2904",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
+                "line": 97
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ overrides: CallidescopeLimitOverrides | undefined; projectConfiguration: LoadedProjectConfiguration; }"
+                  }
+                ],
+                "returnType": "ProjectLimits",
+                "text": "(args: { overrides: CallidescopeLimitOverrides | undefined; projectConfiguration: LoadedProjectConfiguration; }): ProjectLimits"
+              }
+            },
+            {
+              "displayName": "ProjectConfigurationService.overrideLimit",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Applies one command-line limit override to one project's declared limit. The precedence rule, at the level a limit is actually enforced: a project that declared the limit is judged by the flag instead, and a project that declared none keeps no limit at all. A flag may override what a project chose and may not choose for a project that chose nothing — which for breadth is the whole difference between a run `--check breadth` can gate and one it refuses.",
+                "tags": []
+              },
+              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#10715",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
+                "line": 318
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ declared: number | undefined; override: number | undefined; }"
+                  }
+                ],
+                "returnType": "number | undefined",
+                "text": "(args: { declared: number | undefined; override: number | undefined; }): number | undefined"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
               "displayName": "FlagResolutionService.resolveRunFlags",
               "documentation": {
                 "isDeprecated": false,
                 "summary": "Resolves a whole command line against one configuration. Every complaint is collected rather than thrown at the first one, so a command line with two mistakes in it is two mistakes to fix rather than two runs. Nothing has been traced or written by the time this returns, so a caller that finds `errors` non-empty can refuse with the checkout untouched.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#5175",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#14455",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
-                "line": 155
+                "line": 426
               },
               "signature": {
                 "parameters": [
@@ -3022,12 +3127,12 @@
                 "summary": "Reads `--format` into one of the formats a run can print. Anything else is refused rather than rewritten. A run that quietly printed markdown for `--format mermiad` exited 0 having taught its reader that the flag does nothing.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#4278",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts#8461",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts",
-                "line": 123
+                "line": 240
               },
               "signature": {
                 "parameters": [
@@ -3287,89 +3392,6 @@
           "entryPointKind": "orphan-root",
           "frames": [
             {
-              "displayName": "ProjectConfigurationService.resolveLimits",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Resolves the depth and breadth limits every traced project is judged against, each carrying the file its number was written in. Every number comes from the project's own file, because loading refuses a project whose file is absent or incomplete. Nothing is inherited and nothing is merged — the workspace's numbers reach a project by being spread into its file, where a reader can see them, rather than by being resolved behind one. The one project handed the workspace's own limits is the directory holding the workspace configuration, which cannot write a second file under a name discovery would find. One resolver rather than one per reader. A gate and a listing that each worked this out for themselves could disagree about the same number, and a limit two answers can be given for is worse than no limit.",
-                "tags": []
-              },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#13395",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 382
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "args",
-                    "type": "ResolveProjectLimitsArguments"
-                  }
-                ],
-                "returnType": "ProjectLimitsLookup",
-                "text": "(args: ResolveProjectLimitsArguments): ProjectLimitsLookup"
-              }
-            },
-            {
-              "displayName": "ProjectConfigurationService.map(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#13614",
-              "isCycle": false,
-              "location": {
-                "column": 38,
-                "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 387
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "projectConfiguration",
-                    "type": "LoadedProjectConfiguration"
-                  }
-                ],
-                "returnType": "[string, ProjectLimits]",
-                "text": "(projectConfiguration: LoadedProjectConfiguration): [string, ProjectLimits]"
-              }
-            },
-            {
-              "displayName": "ProjectConfigurationService.buildProjectLimits",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Reads the limits one project's own configuration declares. The whole object comes from that one file, because completeness means both numbers were written in it. There is nothing left to fall back to and nothing to fall back per field: a project that declared no breadth limit wrote `maximumBreadth: undefined`, which is a decision rather than a gap.",
-                "tags": []
-              },
-              "id": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts#2865",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-configuration/src/modules/configuration/project-configuration.service.ts",
-                "line": 94
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "projectConfiguration",
-                    "type": "LoadedProjectConfiguration"
-                  }
-                ],
-                "returnType": "ProjectLimits",
-                "text": "(projectConfiguration: LoadedProjectConfiguration): ProjectLimits"
-              }
-            }
-          ],
-          "isLowerBound": false
-        },
-        {
-          "depth": 3,
-          "entryPointKind": "orphan-root",
-          "frames": [
-            {
               "displayName": "InputService.suggest",
               "id": "packages/callidescope-configuration/src/modules/input/input.service.ts#4720",
               "isCycle": false,
@@ -3454,12 +3476,12 @@
                 "summary": "Accepts a function-valued option without inspecting its signature. Zod cannot describe a callback's parameters, and parsing one would replace the caller's function with a wrapper. Checking that it is callable is the whole of what validation can honestly assert here.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10303",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10311",
               "isCycle": false,
               "location": {
                 "column": 24,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 293
+                "line": 296
               },
               "signature": {
                 "parameters": [],
@@ -3469,12 +3491,12 @@
             },
             {
               "displayName": "custom(…)",
-              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10364",
+              "id": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts#10372",
               "isCycle": false,
               "location": {
                 "column": 23,
                 "filePath": "packages/callidescope-configuration/src/modules/configuration/configuration.constants.ts",
-                "line": 294
+                "line": 297
               },
               "signature": {
                 "parameters": [
@@ -3503,12 +3525,12 @@
                 "summary": "One refusal covering every flag a command line got wrong. An `InputError` rather than a class of its own: to whoever catches it this is the same event as any other unusable command line — nothing was attempted, and the fix is to retype the flags.",
                 "tags": []
               },
-              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts#1826",
+              "id": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts#3510",
               "isCycle": false,
               "location": {
                 "column": 36,
                 "filePath": "packages/callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts",
-                "line": 46
+                "line": 87
               },
               "signature": {
                 "parameters": [
@@ -3606,9 +3628,9 @@
         }
       ],
       "summary": {
-        "callableCount": 75,
+        "callableCount": 86,
         "cyclicComponentCount": 0,
-        "edgeCount": 69,
+        "edgeCount": 88,
         "entryPointCount": 11,
         "fileCount": 19,
         "maximumDepth": 6,
@@ -7438,303 +7460,6 @@
     {
       "callableBreadths": [
         {
-          "breadth": 1,
-          "callees": [
-            {
-              "displayName": "GatedLeafService.read",
-              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#1219"
-            }
-          ],
-          "displayName": "InheritedLimitsService.forward",
-          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#985",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
-            "line": 26
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "key",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(key: string): string"
-          }
-        },
-        {
-          "breadth": 1,
-          "callees": [
-            {
-              "displayName": "InheritedLimitsService.forward",
-              "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#985"
-            }
-          ],
-          "displayName": "InheritedLimitsService.prepare",
-          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1126",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
-            "line": 31
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "key",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(key: string): string"
-          }
-        },
-        {
-          "breadth": 1,
-          "callees": [
-            {
-              "displayName": "InheritedLimitsService.prepare",
-              "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1126"
-            }
-          ],
-          "displayName": "InheritedLimitsService.request",
-          "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1297",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
-            "line": 38
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "key",
-                "type": "string"
-              }
-            ],
-            "returnType": "string",
-            "text": "(key: string): string"
-          }
-        }
-      ],
-      "projectName": "packages/callidescope-examples/examples/inherited-limits",
-      "stacks": [
-        {
-          "depth": 7,
-          "entryPointKind": "orphan-root",
-          "frames": [
-            {
-              "displayName": "InheritedLimitsService.request",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Asks the leaf about one key, through the two frames above it.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1297",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
-                "line": 38
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "key",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(key: string): string"
-              }
-            },
-            {
-              "displayName": "InheritedLimitsService.prepare",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Prepares the key the leaf is asked about.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#1126",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
-                "line": 31
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "key",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(key: string): string"
-              }
-            },
-            {
-              "displayName": "InheritedLimitsService.forward",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Hands the key to the leaf, which is where this project's code stops.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts#985",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts",
-                "line": 26
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "key",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(key: string): string"
-              }
-            },
-            {
-              "displayName": "GatedLeafService.read",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "The address this project declares as its entry point. Both findings are about this one method. It calls three things directly, which is the breadth finding, and the longest path below it runs four frames, which is the depth one.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#1219",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
-                "line": 40
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "key",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(key: string): string"
-              }
-            },
-            {
-              "displayName": "GatedLeafService.parse",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "First of the three, and the way into the chain.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#853",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
-                "line": 27
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "key",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(key: string): string"
-              }
-            },
-            {
-              "displayName": "GatedLeafService.normalize",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Second of the three, one hop from the end.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#719",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
-                "line": 22
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "key",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(key: string): string"
-              }
-            },
-            {
-              "displayName": "GatedLeafService.finish",
-              "documentation": {
-                "isDeprecated": false,
-                "summary": "Ends the chain, which is where the fourth frame is.",
-                "tags": []
-              },
-              "id": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#599",
-              "isCycle": false,
-              "location": {
-                "column": 3,
-                "filePath": "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts",
-                "line": 17
-              },
-              "signature": {
-                "parameters": [
-                  {
-                    "isOptional": false,
-                    "isRest": false,
-                    "name": "key",
-                    "type": "string"
-                  }
-                ],
-                "returnType": "string",
-                "text": "(key: string): string"
-              }
-            }
-          ],
-          "isLowerBound": false
-        }
-      ],
-      "summary": {
-        "callableCount": 5,
-        "cyclicComponentCount": 0,
-        "edgeCount": 3,
-        "entryPointCount": 1,
-        "fileCount": 3,
-        "maximumDepth": 7,
-        "projectCount": 1,
-        "unresolvedCallCount": 0
-      }
-    },
-    {
-      "callableBreadths": [
-        {
           "breadth": 7,
           "callees": [
             {
@@ -10309,13 +10034,13 @@
     }
   ],
   "summary": {
-    "callableCount": 240,
+    "callableCount": 246,
     "cyclicComponentCount": 1,
-    "edgeCount": 204,
-    "entryPointCount": 80,
-    "fileCount": 91,
+    "edgeCount": 220,
+    "entryPointCount": 77,
+    "fileCount": 88,
     "maximumDepth": 8,
-    "projectCount": 6,
+    "projectCount": 5,
     "unresolvedCallCount": 14
   },
   "wideCallables": [

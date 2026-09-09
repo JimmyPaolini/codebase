@@ -44,52 +44,48 @@ directory holding a `tsconfig.json`. This directory has one, which is what lets
 the [`callidescope.config.ts`](callidescope.config.ts) beside it be read as a
 project configuration at all.
 
-**It had to declare its entry point.** `read` is called by
-[`inherited-limits`](../inherited-limits/README.md), so no rule promotes it and
-orphan promotion never sees it — this project would root nothing and measure
-zero, however deep its code ran. A limit on a project that roots nothing gates
-nothing. Declaring the address is what turns the measurement on; see
+**It had to declare its entry point.** Nothing outside this project calls
+`read`, so without the address in
+[`callidescope.config.ts`](callidescope.config.ts) it would root under the
+`orphan-root` rule instead — measured the same, but labeled as dead code rather
+than as a surface this project asked to be measured on. Declaring the address
+is what makes the `declared` kind below say that in writing; see
 [`declared-entry-points`](../declared-entry-points/README.md) for the field and
 its refusals.
 
-## Counted in a stack is not judged by a stack
+## A stack is judged by the limit of the project its root belongs to
 
-`InheritedLimitsService.request` is seven frames, and four of them are this
-project's. It is judged against the six that project inherits, and the leaf's
-own three has no say over it — a stack is weighed against the limit of the
-project its **root** belongs to. So the same four frames are a finding here and
-part of a passing measurement one project up, which is what "downward only"
-buys: this project's gate answers for this project's code and for nothing that
-reaches into it.
+A stack rooted in this project answers only for this project's own gate, never
+for a limit any package that calls into it happens to carry — the same
+"downward only" rule
+[`project-depth-limit`](../project-depth-limit/README.md) reads from the other
+direction. This project's own four frames are judged at three, and would be
+silent under either of the two limits above it in the table above.
 
 ## Breadth can be gated at all only because some project declares a limit
 
 `maximumBreadth` has no tool default and no workspace default — a single breadth
 number was never something anybody could pick for a whole workspace — so
 `--check breadth` is refused until some project in scope declares one. This
-project is one of the several that now do, and the two halves of that rule are
-runnable side by side:
+project is one of the several that now do:
 
 ```bash
-# In scope: this project declares maximumBreadth, so the gate runs and fails.
 node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts \
   callidescope --check breadth \
   --config packages/callidescope-examples/callidescope.workspace.config.ts \
-  --directories packages/callidescope-examples,packages/callidescope-examples/examples/gated-leaf,packages/callidescope-examples/examples/inherited-limits
+  --directories packages/callidescope-examples,packages/callidescope-examples/examples/gated-leaf
 ```
 
 ```text
 🔭 Found callables calling too much directly {"callables":["GatedLeafService.read"],"count":1,"widest":3}
 ```
 
-```bash
-# Out of scope: name the fixture next door, whose closure reaches no package
-# at all, and nothing in scope declares a breadth limit.
-node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts \
-  callidescope --check breadth \
-  --config packages/callidescope-examples/callidescope.workspace.config.ts \
-  --directories packages/callidescope-examples/examples/inherited-limits
-```
+Scope the same run to a set of projects none of which declares a numeric
+`maximumBreadth` — no fixture in this package can show that, because every real
+package's `callidescope.config.ts` spreads `projectDefaults`, a value import of
+`@callidescope/configuration`, whose own file declares `maximumBreadth: 8` and
+so joins the closure of nearly everything else in this repository — and the run
+refuses outright:
 
 ```text
 🔭 Rejected the configuration {"reasons":["--check breadth requires at least one project
@@ -97,8 +93,8 @@ in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <numbe
 that project's callidescope.config.ts before running --check breadth."]}
 ```
 
-Both exit non-zero, for opposite reasons: the first found the finding it was
-asked to look for, the second had no limit to look with.
+See [`callidescope-configuration`](../../../callidescope-configuration/README.md)
+for the rule in full.
 
 ## And it excludes one file, which is the whole of what `exclude` does
 
@@ -107,20 +103,16 @@ names `*.generated.ts`. **The glob is anchored to this project's root**, never
 to the workspace: it names `gated-leaf.generated.ts` beside it and there is no
 spelling of it that could name anything outside this directory.
 
-The proof is a pair. The same file was written into this project and into
-[`inherited-limits`](../inherited-limits/README.md) next door, which declares
-no configuration at all:
-
-| Project | Files it holds | Files the run traced |
-| ------- | -------------- | -------------------- |
-| this one | `gated-leaf.ts`, `callidescope.config.ts`, `gated-leaf.generated.ts` | 2 — the generated one is gone |
-| [`inherited-limits`](../inherited-limits/README.md) | `inherited-limits.ts`, `inherited-limits.generated.ts` | 2 — both of them |
-
-Those two numbers are the `Files` rows in the two `## 🔭 Callidescope` sections,
-[this one](#-callidescope) and [that one](../inherited-limits/README.md#-callidescope),
-and `Callables` moves with them: 4 here and 5 there. The generated twin is the
-same file in both places, and only the project that named it lost it — a glob
-written in one project's file reached that project's file and stopped.
+The proof is in what is written against what is traced. Three files sit in
+this directory — [`gated-leaf.ts`](gated-leaf.ts),
+[`callidescope.config.ts`](callidescope.config.ts), and
+[`gated-leaf.generated.ts`](gated-leaf.generated.ts) — and the `Files` row in
+the `## 🔭 Callidescope` section [at the bottom of this
+guide](#-callidescope) reads 2: the generated one never joins the count,
+because its callables were never collected. Nothing in this project's own
+`callidescope.config.ts` names the workspace root or any path outside this
+directory — `*.generated.ts` alone — so there is no spelling of the glob that
+could have reached further than the file beside it.
 
 Anchoring it here rather than at the workspace root is what makes that true by
 construction instead of by a rule somebody has to enforce, and it is how every
@@ -145,9 +137,9 @@ the way [`dependency-closure`](../dependency-closure/README.md) describes. This
 one is named in the run's `--directories` instead, and the reason is a
 collision between two tools rather than anything about callidescope: a closure
 **destination** must hold a `package.json`, and a `package.json` at this root
-would make Nx infer a project of its own from it — after which the relative
-import in `inherited-limits` crosses an inferred project boundary and fails
-`@nx/enforce-module-boundaries`.
+would make Nx infer a project of its own from it — after which any relative
+import between this directory and its parent package crosses an inferred
+project boundary and fails `@nx/enforce-module-boundaries`.
 
 Naming a directory is the other way it becomes a project a run measures, and it
 costs this fixture nothing: a starting project is traced in full, and the

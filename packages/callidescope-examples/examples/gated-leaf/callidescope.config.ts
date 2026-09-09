@@ -20,10 +20,9 @@ const callidescopeConfiguration: CallidescopeProjectConfiguration = {
    * One glob, naming the generated file this project does not want measured.
    *
    * Read relative to this project's own root, which is what keeps it here:
-   * `gated-leaf.generated.ts` is named and
-   * `../inherited-limits/inherited-limits.generated.ts` — the identical file
-   * one directory over — is not, because a project-relative glob has no
-   * spelling that reaches out of the project that wrote it.
+   * `gated-leaf.generated.ts` is named, and there is no spelling of this glob
+   * that could reach a file outside the project that wrote it — see
+   * [`README.md`](README.md) for the file-count proof.
    */
   exclude: ["*.generated.ts"],
 
@@ -31,10 +30,10 @@ const callidescopeConfiguration: CallidescopeProjectConfiguration = {
     /**
      * The one address this project publishes.
      *
-     * Without it this project roots nothing at all: `read` is called by
-     * `inherited-limits`, so no rule promotes it, and a project that roots
-     * nothing measures zero however deep its code runs. Declaring the address
-     * is what makes a limit on this project mean anything.
+     * Nothing outside this project calls `read`, so declaring it is what
+     * roots it under the `declared` kind rather than under `orphan-root` —
+     * the same measurement, labeled as the surface this project asked to be
+     * judged on rather than as dead code. See [`README.md`](README.md).
      */
     addresses: [
       "packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts#GatedLeafService.read",
