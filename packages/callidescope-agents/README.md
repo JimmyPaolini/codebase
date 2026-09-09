@@ -26,11 +26,11 @@ holds, most of which are specific to this workspace.
 
 ## The skills
 
-| Skill | Reach for it when |
-| ----- | ----------------- |
-| [callidescope-trace](skills/callidescope-trace/SKILL.md) | Running `callidescope`, `depth`, or `breadth`, and reading what any of them printed — a stack, a breadth row, a caller list |
-| [callidescope-configure](skills/callidescope-configure/SKILL.md) | Telling a run what to do — the flags, and the `callidescope.config.ts` they read alongside |
-| [callidescope-triage](skills/callidescope-triage/SKILL.md) | A depth or breadth gate failed, a committed report went stale, or a run was refused |
+| Skill                                                            | Reach for it when                                                                                                           |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| [callidescope-trace](skills/callidescope-trace/SKILL.md)         | Running `callidescope`, `depth`, or `breadth`, and reading what any of them printed — a stack, a breadth row, a caller list |
+| [callidescope-configure](skills/callidescope-configure/SKILL.md) | Telling a run what to do — the flags, and the `callidescope.config.ts` they read alongside                                  |
+| [callidescope-triage](skills/callidescope-triage/SKILL.md)       | A depth or breadth gate failed, a committed report went stale, or a run was refused                                         |
 
 That is conformetry's generate / configure / validate, codometer's measure /
 configure / triage, and codependix's export / configure / triage, one more
@@ -82,13 +82,17 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 ### Nx Neighborhood
 
 <!-- codependix:start name="codependix-nx" -->
+
 _This project has no immediate Nx dependencies or dependents._
+
 <!-- codependix:end name="codependix-nx" -->
 
 ### File Imports
 
 <!-- codependix:start name="codependix-imports" -->
+
 _This project has no internal file imports._
+
 <!-- codependix:end name="codependix-imports" -->
 
 <!-- CODE_STATISTICS_START -->
@@ -293,4 +297,5 @@ _This project has no internal file imports._
 ![Inline Code](https://img.shields.io/badge/Inline_Code-482-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
+
 <!-- CODE_STATISTICS_END -->
