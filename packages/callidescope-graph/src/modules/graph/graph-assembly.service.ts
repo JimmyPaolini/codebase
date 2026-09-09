@@ -44,7 +44,7 @@ export class GraphAssemblyService {
     const graph = this.graphService.assemble(
       this.edgesService.build({
         callablesById: args.callablesById,
-        ignoreCallees: args.ignoreCallees,
+        excludeCallees: args.excludeCallees,
         includeConstructorEdges: args.includeConstructorEdges,
         workspaceRoot: args.workspaceRoot,
       }),

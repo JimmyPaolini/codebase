@@ -150,10 +150,10 @@ export const PROJECT_CONFIGURATION_FIELD_PERMISSIONS = {
   directories: "forbidden",
   entryPoints: "permitted",
   exclude: "permitted",
+  excludeCallees: "forbidden",
   excludeFrom: "forbidden",
-  ignoreCallees: "forbidden",
   limits: "permitted",
-  output: "forbidden",
+  write: "forbidden",
 } as const satisfies Record<
   keyof CallidescopeConfiguration,
   "forbidden" | "permitted"
@@ -251,13 +251,12 @@ const markdownDestinationSchema = z
     path: z.string(),
     render: callbackSchema<RenderMarkdownOutput>().optional(),
     startMarker: z.string().optional(),
-    write: callbackSchema<WriteMarkdownOutput>().optional(),
+    writeBlock: callbackSchema<WriteMarkdownOutput>().optional(),
   })
   .optional();
 
-const outputSchema = z
+const writeSchema = z
   .object({
-    format: z.enum(CALLIDESCOPE_OUTPUT_FORMATS).optional(),
     json: z
       .object({
         indentation: z.number().int().nonnegative().optional(),
@@ -270,15 +269,29 @@ const outputSchema = z
   })
   .optional();
 
-/** Validates the shape of a callidescope configuration file. */
+/**
+ * Validates the shape of a callidescope configuration file.
+ *
+ * `ignoreCallees` and `output` are named here as `z.never()` rather than left
+ * out: a field this schema has never heard of is silently stripped, which is
+ * the right behavior for a future option this version of the tool does not
+ * know about yet — but these two are not that. They are renamed fields with a
+ * real replacement, and silently stripping one would leave whoever wrote it
+ * believing an exclusion or a destination is in force that nothing reads. A
+ * configuration setting either is refused instead.
+ */
 export const callidescopeConfigurationSchema = z.object({
   directories: z.array(z.string()).optional(),
   entryPoints: entryPointsSchema,
   exclude: z.array(z.string()).optional(),
+  excludeCallees: z.array(z.string()).optional(),
   excludeFrom: z.array(z.string()).optional(),
-  ignoreCallees: z.array(z.string()).optional(),
+  /** Renamed to `excludeCallees`. */
+  ignoreCallees: z.never().optional(),
   limits: limitsSchema,
-  output: outputSchema,
+  /** Renamed to `write`. */
+  output: z.never().optional(),
+  write: writeSchema,
 });
 
 // 🚨 Errors

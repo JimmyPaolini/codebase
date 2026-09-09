@@ -33,13 +33,12 @@ function buildConfiguration(
       includeTests: false,
     },
     exclude: [],
+    excludeCallees: [],
     excludeFrom: [],
-    ignoreCallees: [],
     limits: {
       maximumDepth: 6,
     },
-    output: {
-      format: "markdown",
+    write: {
       json: undefined,
       markdown: undefined,
       mermaid: undefined,
@@ -460,52 +459,6 @@ describe(RunPlanService, () => {
         configurationPath: undefined,
         searchDirectory: process.cwd(),
       });
-    });
-
-    it("prefers the format a flag named over the configured one", async () => {
-      const configurationService = createMock<ConfigurationService>();
-
-      configurationService.loadConfigurationFile.mockResolvedValue({
-        authored: {},
-        configuration: buildConfiguration(),
-        path: undefined,
-      });
-
-      const subject = new RunPlanService(
-        configurationService,
-        createMock<LoggerService>(),
-      );
-
-      const prepared = await subject.prepareLookup({ format: "json" });
-
-      expect(prepared.configuration.output.format).toBe("json");
-    });
-
-    it("falls back to the configured format when a flag names none", async () => {
-      const configurationService = createMock<ConfigurationService>();
-
-      configurationService.loadConfigurationFile.mockResolvedValue({
-        authored: {},
-        configuration: buildConfiguration({
-          output: {
-            format: "mermaid",
-            json: undefined,
-            markdown: undefined,
-            mermaid: undefined,
-            projectReadmes: undefined,
-          },
-        }),
-        path: undefined,
-      });
-
-      const subject = new RunPlanService(
-        configurationService,
-        createMock<LoggerService>(),
-      );
-
-      const prepared = await subject.prepareLookup({});
-
-      expect(prepared.configuration.output.format).toBe("mermaid");
     });
 
     // Without the path a lookup pointed at a configuration sitting at some

@@ -1,4 +1,7 @@
-import { ConfigurationService } from "@callidescope/configuration";
+import {
+  ConfigurationService,
+  DEFAULT_OUTPUT_FORMAT,
+} from "@callidescope/configuration";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
@@ -96,15 +99,15 @@ export class RunPlanService {
     configuration: ResolvedCallidescopeConfiguration;
     markdown: string | undefined;
   }): ResolvedCallidescopeMarkdownOutputConfiguration | undefined {
-    const configured = args.configuration.output.markdown;
+    const configured = args.configuration.write.markdown;
 
     if (args.markdown === undefined) {
       return configured;
     }
 
     return this.configurationService.resolveConfiguration({
-      output: { markdown: { path: args.markdown } },
-    }).output.markdown;
+      write: { markdown: { path: args.markdown } },
+    }).write.markdown;
   }
 
   /** Keeps the names `--check` knows and complains about the rest. */
@@ -152,7 +155,7 @@ export class RunPlanService {
     // sets.
     const {
       authored,
-      configuration: loaded,
+      configuration,
       path: configurationPath,
     } = await this.configurationService.loadConfigurationFile({
       configurationPath: options.config,
@@ -161,13 +164,7 @@ export class RunPlanService {
 
     return {
       authoredLimits: authored.limits,
-      configuration: {
-        ...loaded,
-        output: {
-          ...loaded.output,
-          format: options.format ?? loaded.output.format,
-        },
-      },
+      configuration,
       configurationPath,
       workspaceRoot,
     };
@@ -216,18 +213,17 @@ export class RunPlanService {
     });
     const configuration: ResolvedCallidescopeConfiguration = {
       ...loaded,
-      output: {
-        format: options.format ?? loaded.output.format,
+      write: {
         json:
           options.json === undefined
-            ? loaded.output.json
+            ? loaded.write.json
             : { indentation: 2, path: options.json },
         markdown: this.resolveMarkdownDestination({
           configuration: loaded,
           markdown: options.markdown,
         }),
-        mermaid: loaded.output.mermaid,
-        projectReadmes: loaded.output.projectReadmes,
+        mermaid: loaded.write.mermaid,
+        projectReadmes: loaded.write.projectReadmes,
       },
     };
 
@@ -235,6 +231,10 @@ export class RunPlanService {
       authoredLimits: authored.limits,
       configuration,
       configurationPath,
+      // Presentation rather than declared: the console format is a
+      // per-invocation choice a command line makes, never something a
+      // configuration file writes down.
+      format: options.format ?? DEFAULT_OUTPUT_FORMAT,
       mode,
       workspaceRoot,
     };

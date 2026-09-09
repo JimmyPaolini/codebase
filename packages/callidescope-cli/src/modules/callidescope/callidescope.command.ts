@@ -160,7 +160,7 @@ export class CallidescopeCommand extends CommandRunner {
     configuration: ResolvedCallidescopeConfiguration,
   ): number {
     return (
-      configuration.output.projectReadmes?.previewCount ?? DEFAULT_PREVIEW_COUNT
+      configuration.write.projectReadmes?.previewCount ?? DEFAULT_PREVIEW_COUNT
     );
   }
 
@@ -189,12 +189,13 @@ export class CallidescopeCommand extends CommandRunner {
    */
   private report(args: {
     configuration: ResolvedCallidescopeConfiguration;
+    format: CallidescopeOutputFormat;
     projectLimits: ProjectLimitsLookup;
     result: CallGraphResult;
   }): void {
-    const { format, json } = args.configuration.output;
+    const { json } = args.configuration.write;
 
-    if (format === "json") {
+    if (args.format === "json") {
       process.stdout.write(
         this.outputJsonService.buildReport({
           destination: json ?? {
@@ -216,7 +217,7 @@ export class CallidescopeCommand extends CommandRunner {
         heading: DEFAULT_RUN_HEADING,
         limits: args.projectLimits,
         previewCount: this.readPreviewCount(args.configuration),
-        rendering: format === "mermaid" ? "diagram" : "tree",
+        rendering: args.format === "mermaid" ? "diagram" : "tree",
         result: args.result,
       }),
     );
@@ -225,7 +226,7 @@ export class CallidescopeCommand extends CommandRunner {
   /** Writes every configured destination, returning the stale ones. */
   private syncDestinations(args: SyncDestinationsArguments): string[] {
     const stale: string[] = [];
-    const { json, markdown, mermaid } = args.configuration.output;
+    const { json, markdown, mermaid } = args.configuration.write;
 
     if (
       json !== undefined &&
@@ -264,7 +265,7 @@ export class CallidescopeCommand extends CommandRunner {
       }
     }
 
-    const { projectReadmes } = args.configuration.output;
+    const { projectReadmes } = args.configuration.write;
 
     if (projectReadmes !== undefined) {
       stale.push(
@@ -300,6 +301,7 @@ export class CallidescopeCommand extends CommandRunner {
       authoredLimits,
       configuration,
       configurationPath,
+      format,
       mode,
       workspaceRoot,
     } = prepared;
@@ -340,6 +342,7 @@ export class CallidescopeCommand extends CommandRunner {
 
     this.report({
       configuration,
+      format,
       projectLimits: outcome.projectLimits,
       result: outcome.result,
     });

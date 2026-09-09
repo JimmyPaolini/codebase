@@ -93,7 +93,7 @@ export class RunConfigurationService {
     configuration: ResolvedCallidescopeConfiguration,
   ): number {
     return (
-      configuration.output.projectReadmes?.previewCount ?? DEFAULT_PREVIEW_COUNT
+      configuration.write.projectReadmes?.previewCount ?? DEFAULT_PREVIEW_COUNT
     );
   }
 }

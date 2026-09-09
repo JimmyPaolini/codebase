@@ -2,12 +2,12 @@
  * What logger is held to, measured rather than assumed.
  *
  * Four frames, which is this package reaching its own transport. Every other
- * project's calls into it are ignored by the run — `ignoreCallees` in
+ * project's calls into it are excluded by the run — `excludeCallees` in
  * `configuration/callidescope.config.ts` names `LoggerService.*` — so what is
  * gated here is the logger judged on its own rather than as the callee sitting
  * behind everything else.
  *
- * That ignore is also what makes it four rather than five: it cuts the edge
+ * That exclusion is also what makes it four rather than five: it cuts the edge
  * from `LoggerService.log` to the assertion beneath it. So a run configured
  * without it measures five and reports this package —
  * `packages/callidescope-examples` is the one that does, deliberately, and its

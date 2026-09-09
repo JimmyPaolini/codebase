@@ -2,6 +2,7 @@
 
 import type {
   CallidescopeLimits,
+  CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 
@@ -26,6 +27,13 @@ export interface PreparedRun {
    * workspace-only fields it is entitled to set.
    */
   readonly configurationPath: string | undefined;
+  /**
+   * What the run prints to standard output.
+   *
+   * A presentation choice a command line makes for this one invocation, never
+   * a value a configuration file writes down.
+   */
+  readonly format: CallidescopeOutputFormat;
   readonly mode: RunMode;
   readonly workspaceRoot: string;
 }

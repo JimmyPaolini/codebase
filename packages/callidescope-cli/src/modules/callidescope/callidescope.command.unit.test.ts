@@ -61,13 +61,12 @@ function buildConfiguration(
       includeTests: false,
     },
     exclude: [],
+    excludeCallees: [],
     excludeFrom: [],
-    ignoreCallees: [],
     limits: {
       maximumDepth: 6,
     },
-    output: {
-      format: "markdown",
+    write: {
       json: undefined,
       markdown: undefined,
       mermaid: undefined,
@@ -143,8 +142,7 @@ describe(CallidescopeCommand, () => {
   function configureJsonDestination(): void {
     stubConfiguration(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
           mermaid: undefined,
@@ -482,27 +480,8 @@ describe(CallidescopeCommand, () => {
     expect(printed).toContain("| Measure | Value |");
   });
 
-  it("prints json when the format asks for it", async () => {
-    stubConfiguration(
-      buildConfiguration({
-        output: {
-          format: "json",
-          json: undefined,
-          markdown: undefined,
-          mermaid: undefined,
-          projectReadmes: undefined,
-        },
-      }),
-    );
+  it("prints json when the format flag asks for it", async () => {
     outputJsonService.buildReport.mockReturnValue('{"summary":{}}\n');
-
-    await command.run([], {});
-
-    expect(outputJsonService.buildReport).toHaveBeenCalledTimes(1);
-  });
-
-  it("prefers the format a flag names over the configured one", async () => {
-    outputJsonService.buildReport.mockReturnValue("{}\n");
 
     await command.run([], { format: "json" });
 
@@ -519,18 +498,7 @@ describe(CallidescopeCommand, () => {
     expect(command.parseFormat(value)).toBe(expected);
   });
 
-  it("prints a diagram when the format asks for mermaid", async () => {
-    stubConfiguration(
-      buildConfiguration({
-        output: {
-          format: "mermaid",
-          json: undefined,
-          markdown: undefined,
-          mermaid: undefined,
-          projectReadmes: undefined,
-        },
-      }),
-    );
+  it("prints a diagram when the format flag asks for mermaid", async () => {
     stubTrace(
       buildCallGraphResult({
         deepStacks: [
@@ -550,7 +518,7 @@ describe(CallidescopeCommand, () => {
 
     const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
 
-    await command.run([], {});
+    await command.run([], { format: "mermaid" });
 
     const printed = String(write.mock.calls[0]?.[0] ?? "");
 
@@ -567,13 +535,12 @@ describe(CallidescopeCommand, () => {
       path: "DIAGRAM.md",
       render: undefined,
       startMarker: "<!-- START -->",
-      write: undefined,
+      writeBlock: undefined,
     };
 
     stubConfiguration(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: undefined,
           markdown: { ...destination, path: "REPORT.md" },
           mermaid: destination,
@@ -600,13 +567,12 @@ describe(CallidescopeCommand, () => {
       path: "DIAGRAM.md",
       render: undefined,
       startMarker: "<!-- START -->",
-      write: undefined,
+      writeBlock: undefined,
     };
 
     stubConfiguration(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: undefined,
           markdown: { ...destination, path: "REPORT.md" },
           mermaid: destination,
@@ -646,8 +612,7 @@ describe(CallidescopeCommand, () => {
   it("writes a section into every scoped project's README", async () => {
     stubConfiguration(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: undefined,
           markdown: undefined,
           mermaid: undefined,
@@ -685,8 +650,7 @@ describe(CallidescopeCommand, () => {
   it("addresses a section to the README of the project it describes", async () => {
     stubConfiguration(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: undefined,
           markdown: undefined,
           mermaid: undefined,
@@ -715,8 +679,7 @@ describe(CallidescopeCommand, () => {
   it("fails when a project README is stale in check mode", async () => {
     stubConfiguration(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: undefined,
           markdown: undefined,
           mermaid: undefined,
@@ -998,7 +961,7 @@ describe(CallidescopeCommand, () => {
   function stubDisallowedProjectConfigurationField(): void {
     callidescopeService.trace.mockImplementation(() => {
       throw new ProjectConfigurationFieldNotPermittedError({
-        field: "output",
+        field: "write",
         project: "broken",
       });
     });
@@ -1055,7 +1018,7 @@ describe(CallidescopeCommand, () => {
       undefined,
       {
         reason:
-          "broken sets output, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, and limits.",
+          "broken sets write, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, and limits.",
       },
     );
   });
@@ -1314,8 +1277,7 @@ describe(CallidescopeCommand, () => {
   it("writes a JSON report when a path is configured", async () => {
     stubConfiguration(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
           mermaid: undefined,
@@ -1346,8 +1308,7 @@ describe(CallidescopeCommand, () => {
   it("prefers the markdown path a flag names over the configured one", async () => {
     configurationService.resolveConfiguration.mockReturnValue(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: undefined,
           markdown: {
             description: undefined,
@@ -1356,7 +1317,7 @@ describe(CallidescopeCommand, () => {
             path: "flagged.md",
             render: undefined,
             startMarker: "<!-- START -->",
-            write: undefined,
+            writeBlock: undefined,
           },
           mermaid: undefined,
           projectReadmes: undefined,
@@ -1382,8 +1343,7 @@ describe(CallidescopeCommand, () => {
   it("fails when a configured report is stale in check mode", async () => {
     stubConfiguration(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
           mermaid: undefined,
@@ -1401,8 +1361,7 @@ describe(CallidescopeCommand, () => {
   it("fails when a configured markdown block is stale in check mode", async () => {
     stubConfiguration(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: undefined,
           markdown: {
             description: undefined,
@@ -1411,7 +1370,7 @@ describe(CallidescopeCommand, () => {
             path: "REPORT.md",
             render: undefined,
             startMarker: "<!-- START -->",
-            write: undefined,
+            writeBlock: undefined,
           },
           mermaid: undefined,
           projectReadmes: undefined,
@@ -1430,8 +1389,7 @@ describe(CallidescopeCommand, () => {
     // is why `run` reads the raw option instead.
     stubConfiguration(
       buildConfiguration({
-        output: {
-          format: "markdown",
+        write: {
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
           mermaid: undefined,
