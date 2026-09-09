@@ -6,6 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { SUPPORTED_RUNG_DIRECTIONS } from "../branch-motif/branch-motif.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { LatticeIdentificationModule } from "../lattice-identification/lattice-identification.module";
 import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
@@ -292,7 +293,7 @@ describe(DrawCommand, () => {
           0,
         );
         const expectedNamedTypeCount =
-          30 + 36 + 36 + 18 + 18 + 14 + 100 + 60 + expectedParallelCount;
+          30 + 36 + 36 + 18 + 18 + 14 + 100 + 80 + expectedParallelCount;
 
         const writtenFileNames = vi
           .mocked(mockWriteFile)
@@ -354,7 +355,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("9857 drawings");
+      expect(index?.[1]).toContain("9877 drawings");
 
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/1-columns/00000-dots.svg"',
@@ -680,18 +681,25 @@ describe(DrawCommand, () => {
       expect(command[method](value)).toBe(2);
     });
 
-    // 🎯 The one boolean flag the command takes. Bare is the ordinary way
-    // to pass it, and the two spellings that turn it off are there so
-    // `--leftward false` means what a reader would expect rather than
-    // silently meaning `true` — which is what a bare presence check would
-    // have made it mean.
-    it.each([
-      { expected: true, given: "bare", value: undefined },
-      { expected: true, given: '"true"', value: "true" },
-      { expected: false, given: '"false"', value: "false" },
-      { expected: false, given: '"0"', value: "0" },
-    ])("parses --leftward $given as $expected", ({ expected, value }) => {
-      expect(command.parseLeftward(value)).toBe(expected);
+    // 🎯 Every direction the `rung` mode draws, each passed through the
+    // flag that names it. A boolean carried two of them and could not carry
+    // four, and it could not tell a flag left off from one passed `false`
+    // either — so this is where the four are proved reachable from the
+    // command line rather than only from the sweep.
+    it.each(SUPPORTED_RUNG_DIRECTIONS)(
+      "passes --direction %s through unchanged",
+      (direction) => {
+        expect(command.parseDirection(direction)).toBe(direction);
+      },
+    );
+
+    // 🎯 The refusal `--flip` already makes for `serpentine`: a value
+    // outside the supported set is rejected with the whole set named, so a
+    // near miss says what was expected of it.
+    it("rejects an unsupported direction, naming the four it takes", () => {
+      expect(() => command.parseDirection("north")).toThrow(
+        /unsupported direction "north"; supported: northeast, northwest, southeast, southwest/iu,
+      );
     });
 
     it("passes the output directory through unchanged", () => {
@@ -800,14 +808,14 @@ describe(DrawCommand, () => {
           realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
         ).resolves.toBeUndefined();
 
-        // 🎯 every one of the 1,098 enumerated named-type combinations, every
+        // 🎯 every one of the 1,118 enumerated named-type combinations, every
         // one of the 8,551 mosaic tiles, and every one of the 208 one-column
         // negative sources, reached its real generation
         // service and real validators without throwing — this is the
         // regression guard the mocked tests above can't provide, since they
         // replace the generation services entirely. The extra file is the
         // single index page listing all of them.
-        expect(mockWriteFile).toHaveBeenCalledTimes(1098 + 8551 + 208 + 1);
+        expect(mockWriteFile).toHaveBeenCalledTimes(1118 + 8551 + 208 + 1);
       },
       FULL_SWEEP_TIMEOUT_MILLISECONDS,
     );

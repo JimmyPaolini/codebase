@@ -168,7 +168,7 @@ const SWEPT_FAMILIES: readonly {
  * quietly stopped matching anything fails here rather than passing as a
  * sweep over nothing.
  */
-const SWEPT_COMBINATION_COUNT = 1098;
+const SWEPT_COMBINATION_COUNT = 1118;
 
 /**
  * How many repeat units each tile is rendered at for the round trip. Three

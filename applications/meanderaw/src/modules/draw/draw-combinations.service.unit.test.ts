@@ -96,8 +96,8 @@ describe(DrawCombinationsService, () => {
       { expected: 14, type: "cross" },
       // rows 3..12 × (none + the nine sources the family names)
       { expected: 100, type: "negative" },
-      // rows 3..12 × (none + rung ×2 + stagger ×3)
-      { expected: 60, type: "branch" },
+      // rows 3..12 × (none + rung ×4 + stagger ×3)
+      { expected: 80, type: "branch" },
       // rows 2..12 × (plied over every ply 2..rows + aligned over 1..rows
       // + serpentine over every distinct rotation and flip of every ply
       // 2..rows). The family has no unmodified entry — `plied` names that
@@ -115,7 +115,7 @@ describe(DrawCombinationsService, () => {
     });
 
     it("enumerates the whole named-type space and nothing beyond it", () => {
-      expect(combinations).toHaveLength(1098);
+      expect(combinations).toHaveLength(1118);
     });
 
     it("names every combination distinctly", () => {

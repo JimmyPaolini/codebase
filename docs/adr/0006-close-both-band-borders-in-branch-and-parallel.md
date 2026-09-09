@@ -105,7 +105,7 @@ and the open border was the only thing telling them apart.
 ## Consequences
 
 - **`branch` stays acyclic and stops being one piece, and the corpus contains
-  no tree at all.** Each of its 60 documents is a forest — `edges = nodes −
+  no tree at all.** Each of its 80 documents is a forest — `edges = nodes −
   components`, no loop in any piece — of two components under `comb` and
   `rung` and three under `stagger`: the figure, and the one or two rules
   standing a lattice row clear of it. Its 5-to-29-cycle range held for exactly
@@ -119,7 +119,9 @@ and the open border was the only thing telling them apart.
   no-branching before and it relaxes no-branching now. What moved is its count —
   1,738 T-junctions across its 88 documents, 2,684 across its 66, and 1,370
   across its 60 — because a rule no longer runs along the row a rail sits on and
-  so no longer forks against every tooth in it. What it is distinguished from
+  so no longer forks against every tooth in it. It stands at 2,130 across 80
+  since `rung` took four compass directions rather than two handednesses, which
+  added twenty drawings and no new arithmetic. What it is distinguished from
   `negative` by is the loops again, with the crossing beside them.
 - **`parallel` relaxes no-branching, under a structural condition rather than a
   modifier name.** A rule meets a strand's rising end with west, east, and south
@@ -157,8 +159,8 @@ and the open border was the only thing telling them apart.
   between them and a two-row band gives it one — its teeth collapse to zero
   length and the drawing forks nowhere, which the charter's relaxation
   assertion refuses. `comb` and `rung` still draw at two rows, so 3 is
-  `stagger`'s floor rather than the lattice's. The corpus stands at 9,857 and
-  its named half at 1,098.
+  `stagger`'s floor rather than the lattice's. The corpus stands at 9,877 and
+  its named half at 1,118.
 - **`stagger` varies a shape after all, and `--branches` draws its crenel.**
   While both rules ran end to end along the border rows, the rail a `stagger`
   run reinforced was ink already on the page, so `--branches` decided only the

@@ -1,5 +1,6 @@
 // 🏷️ Types
 
+import type { RungDirection } from "../branch-motif/branch-motif.types";
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
 import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types";
 
@@ -45,13 +46,13 @@ export type MeanderType =
  */
 export type Modifier =
   | { readonly branches: number; readonly name: "stagger" }
+  | { readonly direction: RungDirection; readonly name: "rung" }
   | {
       readonly flip?: SerpentineFlip;
       readonly name: "serpentine";
       readonly offset?: number;
       readonly strands: number;
     }
-  | { readonly isLeftward: boolean; readonly name: "rung" }
   | { readonly name: "aligned"; readonly strands: number }
   | { readonly name: "brick-staggered" }
   | { readonly name: "brick-straight" }

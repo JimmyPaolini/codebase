@@ -169,7 +169,7 @@ interface CharterRelaxation {
  * entry names no modifier either. It inks a spine and teeth over the band's
  * lattice — every lattice point painted — inset by one lattice row from the
  * rules that close the band, so it forks wherever a rail meets a tooth. The
- * fewest forks any of its 60 documents leaves is 10, so the relaxation is
+ * fewest forks any of its 80 documents leaves is 10, so the relaxation is
  * exercised rather than merely permitted, and the row count at which one of
  * its modes stopped forking is what sets `STRUCTURAL_MINIMUM_ROWS.branch`.
  * Nothing else is declared for it: no lattice point in any of its modes
@@ -239,7 +239,7 @@ const modifierLabel = (modifier: Modifier): string => {
   }
 
   if (modifier.name === "rung") {
-    return `rung pointing ${modifier.isLeftward ? "left" : "right"}`;
+    return `rung facing ${modifier.direction}`;
   }
 
   if (modifier.name === "stagger") {
@@ -359,7 +359,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
 
 /**
- * How many documents `DrawCommand` commits: 1,098 named patterns beside two
+ * How many documents `DrawCommand` commits: 1,118 named patterns beside two
  * exhaustive halves — 8,551 enumerated `mosaic` tiles and 208 enumerated
  * one-column `negative` sources.
  *
@@ -390,7 +390,7 @@ const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
  * but not committed, which is why the corridor-identity gate below covers
  * rows 3 through 5 of it rather than all of it.
  */
-const COMMITTED_CORPUS_SIZE = 1098 + 8551 + 208;
+const COMMITTED_CORPUS_SIZE = 1118 + 8551 + 208;
 
 /**
  * How many committed documents leave a gap at the band's termination — the
@@ -782,7 +782,7 @@ describe(MeanderTopologyService, () => {
     // corpus does not commit is the same blind spot #507 was, one modifier
     // over.
     it("sweeps every named-type combination DrawCommand writes, out to the deepest row count the command line accepts", () => {
-      expect(charterSweep).toHaveLength(1098);
+      expect(charterSweep).toHaveLength(1118);
 
       expect(
         Math.max(...charterSweep.map(({ parameters }) => parameters.rows)),
@@ -860,7 +860,7 @@ describe(MeanderTopologyService, () => {
         ),
       );
 
-      expect(branchCases).toHaveLength(60);
+      expect(branchCases).toHaveLength(80);
       expect(new Set(addresses).size).toBe(addresses.length);
     });
 
@@ -1060,16 +1060,16 @@ describe(MeanderTopologyService, () => {
     // measurement were authored at different moments and nothing else makes
     // them agree, so the count is taken here rather than restated there.
 
-    // The junction total moved from 5,152 to 6,538 when `branch` gained a
-    // rule along its second border, and to 24,572 when `parallel` gained
-    // both of its own: those 819 documents carry 18,034 of these where they
-    // carried none. The document count moved with it — 214 to 889 — where
-    // `branch` moved the total alone, having already forked in all of its
-    // 66. Both fell four times more: to 24,352 and 878 when the eleven
-    // `comb` duplicates of `plain` were deleted; to 24,132 and 867 when the
-    // eleven `stagger-branches-3` duplicates were; to 23,472 and 834 when
-    // issue #669 dropped `parallel`'s 33 one-strand duplicates; and to
-    // 22,158 and 828 when `branch`'s figure was inset from its rules.
+    // The total has moved seven times. 5,152 to 6,538 when `branch` ruled
+    // its second border, then to 24,572 when `parallel` ruled both: its 819
+    // documents carry 18,034 where they carried none, which is why the
+    // document count moved 214 to 889 while `branch` moved the total alone,
+    // having already forked in all 66. Then five falls: 24,352 and 878, the
+    // eleven `comb` duplicates deleted; 24,132 and 867, the eleven
+    // `stagger-branches-3`; 23,472 and 834, issue #669's 33 one-strand
+    // `parallel` duplicates; 22,158 and 828, `branch`'s figure inset from
+    // its rules; and 22,918 and 848, `rung`'s two south-railed directions,
+    // 20 documents carrying 760.
 
     // That last fall took forks away rather than documents. A rule no longer
     // running along the row a rail sits on stops forking against every tooth
@@ -1101,10 +1101,10 @@ describe(MeanderTopologyService, () => {
         }
       }
 
-      expect(documents).toHaveLength(1098);
+      expect(documents).toHaveLength(1118);
 
-      expect(tJunctions).toBe(22158);
-      expect(branching).toHaveLength(828);
+      expect(tJunctions).toBe(22918);
+      expect(branching).toHaveLength(848);
       expect(
         [...new Set(branching.map((name) => familyOf(name)))].toSorted(),
       ).toStrictEqual(["branch", "chain", "negative", "parallel", "snake"]);

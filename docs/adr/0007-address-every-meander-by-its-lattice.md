@@ -19,10 +19,10 @@ and `mosaic` filenames already carried addresses. What was missing was only the
 step from a lattice reading to a name.
 
 Every number below was measured by `LatticeIdentificationService` reading the
-committed corpus off disk. Every corpus-wide one — the 9,857 drawings, the 149
-classes two families both draw, the 283 within-family class groups and the 669
+committed corpus off disk. Every corpus-wide one — the 9,877 drawings, the 149
+classes two families both draw, the 283 within-family class groups and the 689
 drawings in them, the 9,161 literal addresses that are already canonical, and
-the 47 declared collisions — is the expected value of an assertion in
+the 67 declared collisions — is the expected value of an assertion in
 `testing/address-table.integration.test.ts`, and the sub-family counts are
 asserted in `lattice-identification.service.integration.test.ts`. The five
 minimal-period counts are the exception: they are measured, and written down in
@@ -32,7 +32,7 @@ rather than asserted anywhere.
 ## Considered options
 
 - **Address every family on the shared lattice, at its own true repeat.**
-  Chosen. All **9,857** committed drawings address, and the addresses are what
+  Chosen. All **9,877** committed drawings address, and the addresses are what
   let two families be compared at all: **149** combinations of row count, span,
   and canonical class are drawn by more than one family — 92 shared by `mosaic`
   and `negative`, 22 by `mosaic` and `parallel`, 18 by `snake` and `whirl`.
@@ -43,7 +43,7 @@ rather than asserted anywhere.
   them.** Rejected. A name like `snake/6-rows/plain-6-repeats.svg` describes a
   request rather than a drawing, so nothing in the corpus related one drawing to
   another and no measurement could be taken over it. The 283 within-family class
-  groups and the 47 declared collisions below are all facts that could not be
+  groups and the 67 declared collisions below are all facts that could not be
   stated at all before there was an address to state them about.
 - **Move the encoding out of the mosaic module and take the symmetry group with
   it.** Rejected, though [#671](https://github.com/JimmyPaolini/codebase/issues/671)
@@ -64,12 +64,13 @@ rather than asserted anywhere.
   privileged after all.
 - **Report the canonical class as the name and drop the literal address.**
   Rejected. Folding the name would erase distinctions the corpus actually draws:
-  **669** committed drawings sit in a class that covers more than one address
+  **689** committed drawings sit in a class that covers more than one address
   inside a single family and row count, across **283** such classes — 208 groups
   in `parallel`, 55 in `negative`, 10 each in `boxes` and `branch`. `boxes spin`
   and `boxes spin-flip` at three rows are one class and two different tiles, and
-  so are `branch rung-leftward` and `rung-rightward`. Reporting both costs
-  almost nothing: for **9,161** of the 9,857 drawings the literal address is
+  so are the four `branch rung` compass directions, which sit in one class
+  covering two addresses. Reporting both costs
+  almost nothing: for **9,161** of the 9,877 drawings the literal address is
   already the canonical member, so the two columns differ only where the
   difference is the point.
 - **Ask the generator for the name instead of reading the document.** Rejected.
@@ -92,11 +93,13 @@ rather than asserted anywhere.
   edges — `MosaicTileService.blankEdges` gives it `rows - 2` vertical levels — so
   a two-row band has no addressable vertical edge at all and its address is a
   single row of horizontal bits. `EXPECTED_ADDRESS_COLLISIONS` is where that is
-  written down: **47** addresses, one in `parallel` and 46 in `negative`, whose
+  written down: **67** addresses — one in `parallel`, 46 in `negative`, whose
   enumerated half files a drawing under the identifier of a source with one
-  level more than the address spells out. It is a **census** rather than a set
+  level more than the address spells out, and 20 in `branch`, where a `rung`
+  drawing and its vertical mirror differ in exactly the two verticals that leave
+  a border row. It is a **census** rather than a set
   of permitted addresses — each one carries how many drawings
-  share it, 148 across the 47 — and both the membership and the count are
+  share it, 188 across the 67 — and both the membership and the count are
   asserted in both directions, so an entry that stops colliding, and an
   already-declared address that gains one drawing more, each fail exactly as an
   undeclared collision does. A set would have let that second case through,
@@ -115,7 +118,7 @@ rather than asserted anywhere.
 - **A sub-family is now earned outside `mosaic`, and that is a discovery rather
   than a reclassification.** `MosaicNamingService.rules` was already pure
   structure over a tile, so it answers for a reading from any family unchanged:
-  **85** of the 1,098 swept combinations earn a name — 10 in `branch`, 25 in
+  **85** of the 1,118 swept combinations earn a name — 10 in `branch`, 25 in
   `negative`, 50 in `parallel` — and the other six swept families earn none at
   any row count or modifier. The name is reported in a column beside the family
   rather than in place of it.

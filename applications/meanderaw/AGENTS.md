@@ -16,13 +16,13 @@ nx run meanderaw:start
 ## 🏛️ Before You Change a Meander
 
 Meander geometry is governed by a charter of seven invariants, five of which are fixed.
-They are measured against all 9,857 committed SVGs, not read off the code, so
+They are measured against all 9,877 committed SVGs, not read off the code, so
 they are facts about the output rather than intentions in the source. The full charter,
 with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
 **The named half of the sweep runs to `FAMILY_MAXIMUM_ROWS`,** the same record
 `MeanderGenerationService.generate` validates `rows` against — so every drawing the command
-line can be asked for is one this repository commits and the charter gates, 1,098 named
+line can be asked for is one this repository commits and the charter gates, 1,118 named
 
 patterns, each family from its own structural minimum through its own ceiling. It stopped
 at 8 for every family alike until
@@ -98,8 +98,8 @@ The three that most often catch a change:
 - **No branching and no crossing.** Ink has zero T-junctions everywhere except `negative`
   and `branch`, the two families added to branch; `parallel`, which started branching when
   both of its band borders were ruled; and `chain`/`snake` under `edge`/`edge-flip`, which
-  branch where their zigzag lands mid-border — 22,158 junctions across 828 of the 1,098
-  named patterns, 17,374 of them `parallel`'s, 3,054 `negative`'s, 1,370 `branch`'s, and
+  branch where their zigzag lands mid-border — 22,918 junctions across 848 of the 1,118
+  named patterns, 17,374 of them `parallel`'s, 3,054 `negative`'s, 2,130 `branch`'s, and
   360 `chain`'s and `snake`'s.
 
   It has zero X-junctions everywhere except `cross` drawn solid — 12 per document at every
