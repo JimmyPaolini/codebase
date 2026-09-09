@@ -8,7 +8,10 @@ import {
 } from "./meander-generation.constants";
 import { MotifRegistryService } from "./motif-registry.service";
 
-import type { MotifPitchOptions } from "./meander-generation.types";
+import type {
+  MotifPitchOptions,
+  MotifWidthOptions,
+} from "./meander-generation.types";
 
 /**
  * How wide one repeat unit of a family is, in lattice columns, and how wide
@@ -48,6 +51,32 @@ export class MotifPitchService {
   // 🔏 Private Methods
 
   // 🌎 Public Methods
+
+  /**
+   * The lattice columns the whole drawing spans at one repeat count — the
+   * same number `MeanderLatticeService` reads back off the finished
+   * document, derived here from the motif's own right edge so a caller can
+   * ask before anything is rendered.
+   *
+   * It measures one right edge where {@link columnPitch} subtracts two, and
+   * the difference is why that one is not written in terms of this one: a
+   * pitch is the difference of two widths, and rounding each width to a
+   * whole column before subtracting is not the same operation as rounding
+   * the difference.
+   */
+  columnCount(options: MotifWidthOptions): number {
+    const { modifier, repeatCount, rows, type } = options;
+    const geometry = this.gridGeometryService.compute(rows);
+    const motifService = this.motifRegistryService.resolve(type);
+
+    return Math.round(
+      motifService.rightEdge(geometry, {
+        repeatCount,
+        rows,
+        ...(modifier ? { modifier } : {}),
+      }) / geometry.unit,
+    );
+  }
 
   /**
    * The pitch: the lattice columns the drawing's right edge advances by when

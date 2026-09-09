@@ -56,7 +56,7 @@ output/
   lattice-addresses.md                              every drawing's lattice address
   <family>/
     <rows>-rows/
-      <variant>-<repeatCount>-repeats.svg           `plain` where there is no modifier
+      <variant>-<repeatCount>-repeats-<address>.svg `plain` where there is no modifier
       <columns>-columns/                            `mosaic`'s tiles, all it draws
 
         <identifier>[-<name>].svg
@@ -65,9 +65,29 @@ output/
           <identifier>[-<name>].svg
 ```
 
-So `output/chain/7-rows/edge-flip-6-repeats.svg`,
+So `output/chain/7-rows/edge-flip-6-repeats-7r14c.svg`,
 `output/mosaic/6-rows/1-columns/00000-dots.svg`, and
 `output/negative/6-rows/permutations/1-columns/030303-ruled.svg`.
+
+**That trailing `<address>` is where the drawing sits on the lattice**, read off the
+finished ink rather than off the parameters, so a drawing that changed shape cannot keep
+the name it had. It comes in two spellings, and which one a family uses is declared once
+per family by `FILENAME_ADDRESS_CONVENTION` rather than chosen per drawing:
+
+- **The full address** — the row-and-span shape, then one hexadecimal character per
+  addressed lattice point: `7r3c-444cccccccccccc888`. `branch`, `cross`, and `negative`
+  carry it, and so a filename alone says everything about which pattern was drawn.
+- **The shape alone** — `7r14c`, and no identifier. `boxes`, `chain`, `parallel`,
+  `snake`, `swirl`, and `whirl` carry this, because their widest repeat spans enough
+  lattice points that a full address would put the filename past the 255-byte limit
+  filesystems impose on one path component: 566 bytes for `parallel` at twelve strands,
+  515 for `boxes` at twelve rows, 295 for `chain`. Two drawings of one family at one row
+  count and one span can therefore share a filename shape, and the 🗺️ Lattice
+  Addresses table below is where the identifier that separates them is written down.
+
+`mosaic` is spelled by neither rule. Every drawing it files is one enumerated tile, so its
+filename is that tile's identifier from the start — `00000-dots.svg` — with no variant or
+repeat count in front of it to append anything to.
 
 `mosaic` has no `permutations/` level, and nothing beside those `<columns>-columns/`
 directories either. That level separated an enumerated half from a named one, and for
@@ -77,8 +97,10 @@ different: its named half draws ten sources built by rule, and its
 enumerated half inverts `mosaic` tiles. A modifier carrying a
 
 parameter puts it in the variant too, or two of its own drawings would collide on one
-path: `output/branch/7-rows/stagger-branches-4-6-repeats.svg` and
-`output/branch/7-rows/stagger-branches-5-6-repeats.svg`. A directory listing is
+path: `output/branch/7-rows/stagger-branches-4-6-repeats-7r3c-444cccccccccccc888.svg`
+and
+`output/branch/7-rows/stagger-branches-5-6-repeats-7r4c-4444cccccccccccccccc8888.svg`.
+A directory listing is
 then the parameter space it enumerates, and the 8,759 enumerated tiles — which would be
 unreadable as one flat directory — sit under the row count and column span that produced
 them, named by nothing but the hexadecimal string that distinguishes them, with the handful whose

@@ -12,20 +12,18 @@ import {
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
-import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { SUPPORTED_SUB_FAMILIES } from "../mosaic-tile/mosaic-tile.constants";
 import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
-import { OutputPathService } from "../svg-rendering/output-path.service";
 
 import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
+import { DrawRenderingService } from "./draw-rendering.service";
 import { CollidingPathsError, INDEX_FILE_NAME } from "./draw.constants";
 
 import type {
-  GenerationParameters,
   MeanderType,
   Modifier,
   SerpentineFlip,
@@ -99,10 +97,8 @@ export class DrawCommand extends CommandRunner {
     private readonly drawNegativePermutationsService: DrawNegativePermutationsService,
     @Inject(DrawPermutationsService)
     private readonly drawPermutationsService: DrawPermutationsService,
-    @Inject(MeanderGenerationService)
-    private readonly meanderGenerationService: MeanderGenerationService,
-    @Inject(OutputPathService)
-    private readonly outputPathService: OutputPathService,
+    @Inject(DrawRenderingService)
+    private readonly drawRenderingService: DrawRenderingService,
   ) {
     super();
     this.logger.setContext(DrawCommand.name);
@@ -127,25 +123,16 @@ export class DrawCommand extends CommandRunner {
 
   /** Renders the drawing `options` names, beside the path it is written to. */
   private render(options: DrawCommandOptions): RenderedDocument {
-    return this.renderParameters(this.drawParametersService.single(options));
+    return this.drawRenderingService.render(
+      this.drawParametersService.single(options),
+    );
   }
 
   /** Renders the named-family half of the sweep. */
   private renderCombinations(): RenderedDocument[] {
     return this.drawCombinationsService
       .enumerate()
-      .map((parameters) => this.renderParameters(parameters));
-  }
-
-  /** Renders one set of generation parameters, beside the path those parameters name. */
-  private renderParameters(parameters: GenerationParameters): RenderedDocument {
-    const filePath = this.outputPathService.build(parameters);
-
-    return {
-      directory: path.posix.dirname(filePath),
-      fileName: path.posix.basename(filePath),
-      svg: this.meanderGenerationService.generate(parameters),
-    };
+      .map((parameters) => this.drawRenderingService.render(parameters));
   }
 
   /** Draws every meander the application can draw, and indexes them all in one page. */

@@ -155,6 +155,33 @@ export class MissingModifierParameterError extends Error {
   }
 }
 
+/**
+ * Thrown when a drawing is asked for at a repeat count too narrow to carry
+ * a lattice address in its filename.
+ *
+ * Every file the command writes for a motif-drawn family carries an
+ * address, which is what keeps a hand-named drawing on the path the sweep
+ * would have written it to. A drawing narrower than its own span plus a
+ * termination margin at either end cannot be addressed at all — see
+ * `TERMINATION_MARGIN_PITCHES` — so the request is refused here rather than
+ * filed under a name the sweep would never produce.
+ *
+ * It names the family, the modifier where there is one, and the repeat
+ * count that would work, because the alternative a reader gets otherwise is
+ * `InvalidSpanError` talking about columns and spans they never asked
+ * about. The minimum is the family's and the modifier's together: a spin
+ * cycle rounds it up to its own multiple, since the counts between are
+ * refused for a different reason entirely.
+ */
+export class NarrowRepeatCountError extends Error {
+  constructor(repeatCount: number, minimum: number, variant: string) {
+    super(
+      `a repeat count of ${repeatCount} draws a ${variant} too narrow to carry a lattice address; draw at least ${minimum} repeats`,
+    );
+    this.name = "NarrowRepeatCountError";
+  }
+}
+
 /** Thrown when an option's value falls outside the set that option accepts. */
 export class UnsupportedOptionError extends Error {
   constructor(option: string, value: string, supported: readonly string[]) {

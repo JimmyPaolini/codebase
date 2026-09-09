@@ -24,16 +24,13 @@ import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 import { SwirlMotifService } from "../swirl-motif/swirl-motif.service";
 import { WhirlMotifService } from "../whirl-motif/whirl-motif.service";
 
-import {
-  SPIN_CYCLE_LENGTH,
-  TILE_DRAWN_TYPES,
-} from "./meander-generation.constants";
+import { SPIN_CYCLE_LENGTH } from "./meander-generation.constants";
 import { MeanderGenerationService } from "./meander-generation.service";
+import { isMotifDrawnType } from "./meander-generation.utilities";
 import { MotifPitchService } from "./motif-pitch.service";
 import { MotifRegistryService } from "./motif-registry.service";
 
 import type {
-  MeanderType,
   MotifDrawnType,
   MotifPitchOptions,
 } from "./meander-generation.types";
@@ -53,10 +50,6 @@ const NARROWER_REPEAT_COUNT = SPIN_CYCLE_LENGTH;
 
 /** The higher of the two repeat counts a drawing is measured at. */
 const WIDER_REPEAT_COUNT = 2 * SPIN_CYCLE_LENGTH;
-
-/** Narrows a family to one with a motif service, which is every family the sweep below reaches. */
-const isMotifDrawnType = (type: MeanderType): type is MotifDrawnType =>
-  !TILE_DRAWN_TYPES.includes(type);
 
 /**
  * Every drawing the corpus commits that a motif service draws, grouped by

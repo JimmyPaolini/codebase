@@ -10,14 +10,17 @@ import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
+import { DrawRenderingService } from "./draw-rendering.service";
 import { DrawCommand } from "./draw.command";
 
 /**
  * Registers the `draw` CLI command — the application's only command — the
  * service enumerating the space its sweep covers, the two services rendering
  * its permutation halves — one per family that has one — the service
- * rendering the index page all of them are looked through, and the service
- * that turns its options into generation parameters.
+ * rendering the index page all of them are looked through, the service that
+ * turns its options into generation parameters, and the service that renders
+ * one set of those parameters into a document and the addressed path it is
+ * written to.
  *
  * `DrawCombinationsService` is exported because the meander charter's
  * property test sweeps the same enumeration, so the corpus written here and
@@ -52,6 +55,7 @@ import { DrawCommand } from "./draw.command";
     DrawNegativePermutationsService,
     DrawParametersService,
     DrawPermutationsService,
+    DrawRenderingService,
   ],
 })
 export class DrawModule {}
