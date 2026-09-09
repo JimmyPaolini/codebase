@@ -8,7 +8,7 @@ import { JsonService } from "./json.service";
  * Provides the JSON language validator.
  *
  * `JsonComparisonService` is exported as well, because notebooks are JSON
- * documents and `conformetry-jupyter` reuses the same structural walk.
+ * documents and the Jupyter module reuses the same structural walk.
  */
 @Module({
   controllers: [],

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
-import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
 import {
   MOSAIC_TILE_MAXIMUM_ROWS,
@@ -51,8 +51,8 @@ export class DrawPermutationsService {
     private readonly mosaicGenerationService: MosaicTileGenerationService,
     @Inject(MosaicNamingService)
     private readonly mosaicNamingService: MosaicNamingService,
-    @Inject(MosaicSymmetryService)
-    private readonly mosaicSymmetryService: MosaicSymmetryService,
+    @Inject(LatticeIdentificationService)
+    private readonly latticeIdentificationService: LatticeIdentificationService,
     @Inject(MosaicTilesService)
     private readonly mosaicTilesService: MosaicTilesService,
     @Inject(OutputPathService)
@@ -90,7 +90,8 @@ export class DrawPermutationsService {
       columns += 1
     ) {
       for (const tile of this.mosaicTilesService.enumerate(rows, columns)) {
-        const identifier = this.mosaicSymmetryService.canonicalIdentifier(tile);
+        const identifier =
+          this.latticeIdentificationService.canonicalIdentifier(tile);
         const earned = this.mosaicNamingService.name(tile);
         const name = earned ? `${identifier}-${earned}` : identifier;
 
