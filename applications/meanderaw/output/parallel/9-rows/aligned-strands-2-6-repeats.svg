@@ -5,4 +5,5 @@
 <path d="M81.66667 1.66667V61.66667H101.66667V1.66667M88.33333 1.66667V55H95V1.66667" stroke="black" stroke-width="3.33333" stroke-linecap="square"/>
 <path d="M108.33333 1.66667V61.66667H128.33333V1.66667M115 1.66667V55H121.66667V1.66667" stroke="black" stroke-width="3.33333" stroke-linecap="square"/>
 <path d="M135 1.66667V61.66667H155V1.66667M141.66667 1.66667V55H148.33333V1.66667" stroke="black" stroke-width="3.33333" stroke-linecap="square"/>
+<path d="M155 61.66667H1.66667M155 1.66667H1.66667" stroke="black" stroke-width="3.33333" stroke-linecap="square"/>
 </svg>

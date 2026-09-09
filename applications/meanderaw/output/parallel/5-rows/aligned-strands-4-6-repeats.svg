@@ -5,4 +5,5 @@
 <path d="M291 3V63H375V3M303 3V51H363V3M315 3V39H351V3M327 3V27H339V3" stroke="black" stroke-width="6" stroke-linecap="square"/>
 <path d="M387 3V63H471V3M399 3V51H459V3M411 3V39H447V3M423 3V27H435V3" stroke="black" stroke-width="6" stroke-linecap="square"/>
 <path d="M483 3V63H567V3M495 3V51H555V3M507 3V39H543V3M519 3V27H531V3" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M567 63H3M567 3H3" stroke="black" stroke-width="6" stroke-linecap="square"/>
 </svg>

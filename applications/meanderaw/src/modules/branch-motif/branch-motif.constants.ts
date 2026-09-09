@@ -16,7 +16,6 @@ export const BRANCH_MODES_BY_MODIFIER_NAME: Record<
   BranchModifierName,
   BranchMode
 > = {
-  comb: "comb",
   rung: "rung",
   stagger: "stagger",
 };
@@ -35,38 +34,24 @@ export const BRANCH_MODES_BY_MODIFIER_NAME: Record<
  * `stagger` is the mode this number no longer decides. Its crenel is as
  * wide as the run of branches the rail joins before changing side, so its
  * unit width is `branches - 1` and is read off the modifier by
- * {@link BranchMotifService.unitColumns}. At
- * {@link MINIMUM_STAGGER_BRANCHES} that expression evaluates to this
- * number, which is why the mode drew a two-column unit for as long as it
- * could not be asked for anything else.
+ * {@link BranchMotifService.unitColumns}. At **three** branches that
+ * expression evaluates to this number — the width the mode drew for as long
+ * as it could not be asked for anything else — and that coincidence is what
+ * {@link MINIMUM_STAGGER_BRANCHES} was set from. Its floor of four draws a
+ * three-column unit, one wider than this and the narrowest the mode
+ * commits.
  */
 export const BRANCH_UNIT_COLUMNS = 2;
 
 /**
- * Which direction a `comb` drawn with no `--upward` reaches its teeth:
- * downward from a rail along the band's top row, which is the only way the
- * mode was drawn before the flag existed and so the one every `plain`
- * drawing this family committed is.
- *
- * It is a stated default rather than an absent one for the same reason as
- * {@link DEFAULT_RUNG_IS_LEFTWARD}, and it is what makes
- * `--modifier comb` with no direction byte-identical to no modifier at all
- * rather than merely similar to it.
- */
-export const DEFAULT_COMB_IS_UPWARD = false;
-
-/**
  * Which mode a `branch` drawn with no modifier inks: the plainest of the
- * three, a rail with a tooth per column. It is named here rather than
- * written inline so the default is a stated choice rather than whichever
- * branch a dispatch happened to fall through to.
+ * three, a rail with a tooth per column, hanging down from the band's top
+ * row. It is named here rather than written inline so the default is a
+ * stated choice rather than whichever branch a dispatch happened to fall
+ * through to.
  *
- * The mode now has a modifier of its own name as well, carrying the
- * direction its teeth reach. That is not a second way to spell "no
- * modifier": `--modifier comb --upward` draws something no unmodified
- * drawing can, and `--modifier comb` alone draws exactly what this default
- * does — which `branch-motif.service.unit.test.ts` asserts as a byte
- * identity rather than leaving to be assumed.
+ * No modifier selects this mode: `rung` and `stagger` are the family's only
+ * two, so a bare `--type branch` is the one way to ink it.
  */
 export const DEFAULT_BRANCH_MODE: BranchMode = "comb";
 
@@ -86,23 +71,29 @@ export const DEFAULT_RUNG_IS_LEFTWARD = false;
 /**
  * The fewest branches one `stagger` rail run may join before changing side.
  *
- * Three, and it is a structural floor rather than a taste one. A run
- * spanning `branches` teeth forks at the teeth strictly inside it, so a
- * two-branch run — a rail crossing a single lattice step from one tooth to
- * the next — has no interior tooth and forks nowhere. The whole figure
- * would then be a `nodes - 1` edge graph of maximum degree two: a simple
- * path, still a tree and still space-filling, but with zero T-junctions.
+ * Four, and it is now a **retained** bound rather than a derived one. It was
+ * set while every rail ran along a border row and both borders were ruled
+ * end to end: `BranchMotifService.unitColumns` answers `branches - 1`, which
+ * at three branches is exactly `BRANCH_UNIT_COLUMNS` — the width `comb`
+ * already draws — and a three-branch rail run then sat wholly inside a rule
+ * already there, contributing nothing the rule did not draw. The
+ * crenellation the parameter names was absent from the ink and what was
+ * left was a plain comb: another mode's drawing under this mode's name, a
+ * parameter advertising a choice it could not make.
  *
- * That is not a stricter drawing, it is a different family. `branch`
- * declares invariant 3 relaxed in *every* mode, and the charter property
- * test asserts a declared relaxation is present rather than merely
- * permitted — so a branching family that stopped branching would fail its
- * own charter rather than draw something new.
- * `branch-motif.service.unit.test.ts` renders the two-branch figure this
- * constant excludes and measures every claim in the paragraph above, so the
- * number and its reason cannot drift apart.
+ * A `stagger` rail now runs one lattice row clear of both rules — see
+ * `BranchMotifService.figureRows` — so no rule swallows it and the
+ * three-branch figure is a drawing of its own, differing from the comb of
+ * the same width in components, edges, free ends, and forks alike. What
+ * survives of the original argument is only the unit-width coincidence,
+ * which is a fact about widths rather than a degeneracy.
+ * `branch-motif.service.unit.test.ts` renders the three-branch figure this
+ * constant excludes and measures it as distinct, so the number and what is
+ * left of its reason cannot drift apart. Lowering it to three is a decision
+ * about which drawings the corpus commits, and nothing here forces it
+ * either way.
  */
-export const MINIMUM_STAGGER_BRANCHES = 3;
+export const MINIMUM_STAGGER_BRANCHES = 4;
 
 // 🚨 Errors
 
@@ -120,7 +111,7 @@ export const MINIMUM_STAGGER_BRANCHES = 3;
 export class UnknownBranchModeError extends Error {
   constructor(modifierName: string) {
     super(
-      `modifier "${modifierName}" selects no branch mode; the branch family inks "comb", "rung", "stagger", or no modifier at all`,
+      `modifier "${modifierName}" selects no branch mode; the branch family inks "rung", "stagger", or no modifier at all`,
     );
     this.name = "UnknownBranchModeError";
   }

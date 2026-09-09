@@ -45,8 +45,9 @@ describe(ParallelSerpentineService, () => {
     // the validator admits at each row count, because this is an arithmetic
     // claim and arithmetic is where an off-by-one hides. A strip that
     // overlapped its neighbor would put two ribbons on one lattice point and
-    // break invariant 3; one that fell short would leave a row unpainted and
-    // break invariant 2.
+    // fork the ink somewhere other than a border rule — the family's
+    // relaxation covers the rules and nothing else; one that fell short would
+    // leave a row unpainted and break invariant 2.
     it.each(PLIES)(
       "cuts $rows rows into $strands strips that partition the band",
       ({ rows, strands }) => {
@@ -94,7 +95,11 @@ describe(ParallelSerpentineService, () => {
     // 🎯 The honest degenerate case: a ply as deep as the band has rows
     // leaves strips with no room to wave, and a one-row strip flattens to a
     // straight rule. It still covers its row, which is why it is admitted
-    // rather than refused.
+    // rather than refused — and at the top or bottom of the stack it is also
+    // the border rule, which is what keeps such a drawing from forking. The
+    // whole-drawing consequence is swept in
+    // `parallel-motif.service.unit.test.ts`; this pins the partition it
+    // reads.
     it("flattens every strip to a single row at the deepest ply", () => {
       const strips = service.strips(4, 4);
 
@@ -219,7 +224,8 @@ describe(ParallelSerpentineService, () => {
     // 🎯 Flipping a ribbon inverts its phase and nothing else: it turns at
     // the top out of an even column where a ribbon left in phase turns at the
     // bottom. The vertical runs are the same runs, which is why no flip can
-    // cost the family a charter invariant.
+    // change the family's charter verdict — it leaves the strips alone, and
+    // the strips are what decide whether a drawing forks against a rule.
     it("inverts a flipped ribbon's phase and leaves its runs alone", () => {
       const geometry = geometryService.compute(2);
       const unit = { isLastUnit: true, rows: 2, unitIndex: 0 };
@@ -238,7 +244,9 @@ describe(ParallelSerpentineService, () => {
 
     // 🎯 The rotation, at the row and strand count where exactly one strip
     // is flat. With no rotation the flat rule sits at the top of the band; one
-    // rotation moves it down a strip. This is the axis that unpins it.
+    // rotation moves it down a strip. This is the axis that unpins it, and
+    // since a flat strip at a border is the border rule, it is also the axis
+    // the family's charter relaxation is decided on.
     it("moves the flat strip down the band as the offset turns", () => {
       expect(service.strips(4, 3)).toStrictEqual([
         { bottomRow: 0, topRow: 0 },

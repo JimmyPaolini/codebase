@@ -52,7 +52,6 @@ export type Modifier =
       readonly strands: number;
     }
   | { readonly isLeftward: boolean; readonly name: "rung" }
-  | { readonly isUpward: boolean; readonly name: "comb" }
   | { readonly name: "aligned"; readonly strands: number }
   | { readonly name: "brick-staggered" }
   | { readonly name: "brick-straight" }
@@ -88,9 +87,9 @@ export type MotifDrawnType = Exclude<MeanderType, TileDrawnType>;
  * The per-type contract `MeanderGenerationService` dispatches through:
  * every type draws its repeat units with `path` and reports how far right
  * the last one extends with `rightEdge`. `border` is optional because only
- * `boxes` draws a single shared border path across the whole pattern —
- * `chain` and `snake` draw their own top/bottom border segment as part of
- * each unit's own `path` instead.
+ * `boxes`, `branch`, and `parallel` draw a single shared border path across
+ * the whole pattern — `chain` and `snake` draw their own top/bottom border
+ * segment as part of each unit's own `path` instead.
  */
 export interface MotifService {
   border?(geometry: GridGeometry, pattern: RepeatPatternOptions): string;

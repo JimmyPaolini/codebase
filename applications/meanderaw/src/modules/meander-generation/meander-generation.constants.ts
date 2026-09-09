@@ -25,7 +25,7 @@ import type {
 
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
-  branch: ["comb", "rung", "stagger"],
+  branch: ["rung", "stagger"],
   chain: ["edge", "flip", "edge-flip"],
   cross: ["interrupted"],
   mosaic: [],
@@ -166,7 +166,6 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "ruled-raised",
   "ruled-spaced",
   "ruled-tall",
-  "comb",
   "rung",
   "stagger",
   "plied",
@@ -252,19 +251,24 @@ export const SUPPORTED_TYPES: readonly string[] = [
  * band this family can ink the corridors of — so following it down would
  * widen `negative` as a side effect of a decision about another family.
  *
- * `branch`'s minimum of 2 is its `rung` mode's, and the family takes the
- * stricter of its modes the same way `cross` does. `comb` and `stagger` do
- * draw at one row — a rail with a one-step tooth under every column still
- * forks at every interior column, 10 times and 5 times respectively, which
- * is what they fork at every other row count too. `rung` does not. Its fork
- * is a rung meeting the middle of a stile, so it needs the stile to have a
- * middle — at least one lattice point strictly between the band's two
- * border rows — and a one-row band has none, leaving each unit a plain
- * bracket with the mode's characteristic junction absent entirely. The
- * `rows - 1` stile forks per unit that the mode is named for appear first
- * at 2 rows. `branch-motif.service.unit.test.ts` renders all three modes
- * below the minimum and measures every claim in this paragraph there, so
- * the number and its reason cannot drift apart.
+ * `branch`'s minimum of 3 is its `stagger` mode's, and the family takes the
+ * stricter of its modes the same way `cross` does. Every mode's figure is
+ * inset by one lattice row from the rules beside it, so that a rule never
+ * lands on the ink it closes the band around — see
+ * `BranchMotifService.figureRows`. `comb` and `rung` are inset at one end
+ * only, keeping their rail on row 0 where a reader already sees the top
+ * border, so both still draw at 2 rows: 10 forks and 5 respectively at six
+ * repeats, which is what `comb` forks at every row count and one step of
+ * `rung`'s own climb. `stagger` is inset at both, because its rail moves
+ * between the two rows its teeth end at and neither of those may be a ruled
+ * one. That leaves it needing two free rows between the rules, so a 2-row
+ * band gives it a single free row, its teeth collapse to zero length, and
+ * the drawing is three parallel rules with no vertical ink and not one fork
+ * anywhere — the crenellation the mode exists for absent entirely, exactly
+ * as {@link MINIMUM_STAGGER_BRANCHES} guards against in the other axis.
+ * `branch-motif.service.unit.test.ts` renders all three modes below the
+ * minimum and measures every claim in this paragraph there, so the number
+ * and its reason cannot drift apart.
  *
  * `parallel`'s minimum is **2**, and it is the shallowest band that admits
  * more than one strand rather than anything about a ply's arms.
@@ -292,7 +296,7 @@ export const SUPPORTED_TYPES: readonly string[] = [
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
-  branch: 2,
+  branch: 3,
   chain: 4,
   cross: 6,
   mosaic: MOSAIC_TILE_MINIMUM_ROWS,
@@ -374,9 +378,10 @@ export class InvalidRowsError extends Error {
  *
  * The minimum is the family's own and the maximum is the command line's,
  * which is why the message names them rather than restating either: below
- * the minimum the mode stops forking altogether, and above the maximum
- * nothing structural fails — a crenel simply grows wider than any other
- * parameter this application accepts.
+ * the minimum the crenel is no wider than a plain comb's own unit and the
+ * drawing is one, and above the maximum nothing structural fails — a
+ * crenel simply grows wider than any other parameter this application
+ * accepts.
  */
 export class InvalidStaggerBranchCountError extends Error {
   constructor(branches: number, minimum: number, maximum: number) {

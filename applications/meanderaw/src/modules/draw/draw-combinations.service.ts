@@ -17,7 +17,7 @@ import {
 import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
 
 import {
-  COMB_SWEEP_UPWARD_VALUES,
+  NAMES_WITHOUT_A_ONE_STRAND_DRAWING,
   RUNG_SWEEP_LEFTWARD_VALUES,
   STAGGER_SWEEP_BRANCH_COUNTS,
 } from "./draw.constants";
@@ -34,7 +34,7 @@ import type {
  * crossed with every modifier `COMPATIBLE_MODIFIERS` lists for it plus "no
  * modifier", crossed with every row count from that type's own
  * `STRUCTURAL_MINIMUM_ROWS` through its own `FAMILY_MAXIMUM_ROWS`.
- * `comb`, `plied`, `rung`, and `stagger` each expand
+ * `plied`, `rung`, and `stagger` each expand
  * to the representative values `draw.constants.ts` names rather than their
  * full range, and `repeatCount` is
  * `DEFAULT_REPEAT_COUNT` except for the spin family, which is rounded up to
@@ -91,22 +91,18 @@ export class DrawCombinationsService {
    * Expands one modifier name into every {@link Modifier} value the sweep
    * covers at `rowCount`.
    *
-   * `comb`, `rung`, and `stagger` ignore the row count and expand to the
+   * `rung` and `stagger` ignore the row count and expand to the
    * representative values `draw.constants.ts` names. `plied` does not: its
    * range *is* the row count, so it is the one modifier whose expansion has
    * to be asked per row rather than once per family — see
-   * {@link pliedStrandCounts}.
+   * {@link strandCounts}.
    */
   private expandModifierName(
     name: Modifier["name"],
     rowCount: number,
   ): Modifier[] {
-    if (name === "comb") {
-      return COMB_SWEEP_UPWARD_VALUES.map((isUpward) => ({ isUpward, name }));
-    }
-
     if (name === "serpentine") {
-      return this.strandCounts(rowCount).flatMap((strands) =>
+      return this.strandCounts(rowCount, name).flatMap((strands) =>
         this.parallelSerpentineService
           .variants(rowCount, strands)
           .map((variant) => ({ name, strands, ...variant })),
@@ -114,7 +110,10 @@ export class DrawCombinationsService {
     }
 
     if (this.isPlyModifierName(name)) {
-      return this.strandCounts(rowCount).map((strands) => ({ name, strands }));
+      return this.strandCounts(rowCount, name).map((strands) => ({
+        name,
+        strands,
+      }));
     }
 
     if (name === "rung") {
@@ -190,36 +189,40 @@ export class DrawCombinationsService {
 
   /**
    * Every ply the sweep draws for `name` at `rowCount`: the family's whole
-   * range there, from {@link MINIMUM_STRANDS} up to the row count itself,
-   * less the one ply that would duplicate the unmodified drawing.
+   * range there, from its own floor up to the row count itself.
    *
-   * The bound is the row count because that is where the geometry's bound
-   * is — a bundle's innermost strand has `rows - strands + 1` lattice steps
-   * of arm, so one ply further leaves it a bare crossbar running alongside
-   * nothing, and `MeanderGenerationService.generate` refuses it. Asking per
-   * row is what lets the sweep draw a twelve-ply bundle at twelve rows
-   * *and* a one-ply bundle at four, which a single flat list cannot: a list
-   * is applied to every row count alike, so its deepest entry has to be
-   * shallow enough for the shallowest row count to accept — which is why
-   * the sweep used to stop at four plies and `parallel`'s
-   * `STRUCTURAL_MINIMUM_ROWS` had to be pinned to that same four.
+   * The floor is {@link MINIMUM_STRANDS} for `aligned`, and one strand
+   * deeper for the two names {@link NAMES_WITHOUT_A_ONE_STRAND_DRAWING}
+   * lists — see that declaration for why. The upper bound is the row count
+   * because that is where the geometry's bound is — a bundle's innermost
+   * strand has `rows - strands + 1` lattice steps of arm, so one ply
+   * further leaves it a bare crossbar running alongside nothing, and
+   * `MeanderGenerationService.generate` refuses it. Asking per row is what
+   * lets the sweep draw a twelve-ply bundle at twelve rows *and* a one-ply
+   * bundle at four, which a single flat list cannot: a list is applied to
+   * every row count alike, so its deepest entry has to be shallow enough
+   * for the shallowest row count to accept — which is why the sweep used
+   * to stop at four plies and `parallel`'s `STRUCTURAL_MINIMUM_ROWS` had to
+   * be pinned to that same four.
    *
    * Neither number is pinned to the other any more, and nothing is lost by
    * it: every combination this yields is valid at the row count it was
    * asked for, by construction rather than by a test noticing.
    *
-   * The range has no hole in it any more. `plied` used to skip the family's
-   * own default ply, because a `plied` drawing naming it and the unmodified
-   * drawing beside it are the same bytes under two filenames. The sweep now
-   * drops the unmodified entry for this family instead — see
-   * `TYPES_WITH_MODIFIER_NAMED_DEFAULT` — so the ply that used to be the
-   * duplicate is the one that carries the drawing, and every parallel
-   * document is named for its own ply.
+   * `plied` used to skip the family's own default ply, because a `plied`
+   * drawing naming it and the unmodified drawing beside it are the same
+   * bytes under two filenames. The sweep now drops the unmodified entry
+   * for this family instead — see `TYPES_WITH_MODIFIER_NAMED_DEFAULT` — so
+   * the ply that used to be the duplicate is the one that carries the
+   * drawing, and every parallel document is named for its own ply.
    */
-  private strandCounts(rowCount: number): number[] {
-    const length = rowCount - MINIMUM_STRANDS + 1;
+  private strandCounts(rowCount: number, name: Modifier["name"]): number[] {
+    const minimum = NAMES_WITHOUT_A_ONE_STRAND_DRAWING.has(name)
+      ? MINIMUM_STRANDS + 1
+      : MINIMUM_STRANDS;
+    const length = rowCount - minimum + 1;
 
-    return Array.from({ length }, (_value, index) => MINIMUM_STRANDS + index);
+    return Array.from({ length }, (_value, index) => minimum + index);
   }
 
   // 🌎 Public Methods

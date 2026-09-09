@@ -13,17 +13,15 @@ import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types"
  * Everything but `outputDirectory` and `repeatCount` is optional, and that is
  * the command's whole contract: `draw` with no drawing named sweeps every
  * meander the application can draw, and `draw --type <family> --rows <n>`
- * draws that one. `branches`, `leftward`, `modifier`, `strands`, and
- * `upward` arrive
+ * draws that one. `branches`, `leftward`, `modifier`, and `strands` arrive
  * separately because nest-commander derives each option's key from its own
  * long flag — {@link DrawParametersService.modifier} is what puts them back
  * together.
  *
- * `leftward` and `upward` are the two parameters whose absence is not a
- * refusal. Both are booleans, and commander cannot distinguish a flag left
- * off from one passed `false`, so `rung` and `comb` take
- * {@link DEFAULT_RUNG_IS_LEFTWARD} and {@link DEFAULT_COMB_IS_UPWARD} where
- * the others throw.
+ * `leftward` is the one parameter whose absence is not a refusal. It is a
+ * boolean, and commander cannot distinguish a flag left off from one passed
+ * `false`, so `rung` takes {@link DEFAULT_RUNG_IS_LEFTWARD} where the
+ * others throw.
  *
  * `subFamily` needs no such combining: it names a region of the family's
  * unit space on its own, and it is mutually exclusive with `modifier`, which
@@ -44,7 +42,6 @@ export interface DrawCommandOptions {
 
   subFamily?: MosaicBuildableSubFamily;
   type?: MeanderType;
-  upward?: boolean;
 }
 
 /**

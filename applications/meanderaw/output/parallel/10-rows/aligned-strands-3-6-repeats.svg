@@ -5,4 +5,5 @@
 <path d="M109.5 1.5V61.5H139.5V1.5M115.5 1.5V55.5H133.5V1.5M121.5 1.5V49.5H127.5V1.5" stroke="black" stroke-width="3" stroke-linecap="square"/>
 <path d="M145.5 1.5V61.5H175.5V1.5M151.5 1.5V55.5H169.5V1.5M157.5 1.5V49.5H163.5V1.5" stroke="black" stroke-width="3" stroke-linecap="square"/>
 <path d="M181.5 1.5V61.5H211.5V1.5M187.5 1.5V55.5H205.5V1.5M193.5 1.5V49.5H199.5V1.5" stroke="black" stroke-width="3" stroke-linecap="square"/>
+<path d="M211.5 61.5H1.5M211.5 1.5H1.5" stroke="black" stroke-width="3" stroke-linecap="square"/>
 </svg>

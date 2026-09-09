@@ -1,9 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import {
-  DEFAULT_COMB_IS_UPWARD,
-  DEFAULT_RUNG_IS_LEFTWARD,
-} from "../branch-motif/branch-motif.constants";
+import { DEFAULT_RUNG_IS_LEFTWARD } from "../branch-motif/branch-motif.constants";
 import {
   PLY_MODIFIER_NAMES,
   SUPPORTED_MODIFIER_NAMES,
@@ -35,15 +32,15 @@ import type { DrawCommandOptions } from "./draw.types";
  * It exists because `DrawCommand` has one command's worth of room and two
  * commands' worth of options: nest-commander derives each option's key from
  * its own long flag, so `--modifier` and the parameter it needs
- * (`plied`'s `--strands`, `stagger`'s `--branches`, `rung`'s `--leftward`,
- * `comb`'s `--upward`) are parsed by separate
+ * (`plied`'s `--strands`, `stagger`'s `--branches`, `rung`'s `--leftward`)
+ * are parsed by separate
  * methods that cannot see each other. Recombining them, and narrowing every
  * raw string to the union it belongs to, is the whole of this service — the
  * command keeps only the `@Option` methods nest-commander insists live on
  * it, and delegates each one here.
  *
  * One builder per parameter-carrying modifier, rather than one method that
- * knows all six: {@link modifier} is then a flat dispatch on the name, and
+ * knows all five: {@link modifier} is then a flat dispatch on the name, and
  * each builder holds only its own parameter's absence and the flag that
  * would have supplied it.
  */
@@ -58,19 +55,6 @@ export class DrawParametersService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /**
-   * The `comb` modifier
- `--upward` describes.
-   *
-   * Like {@link rungModifier} it cannot refuse an absent flag, and for the
-   * same reason: a boolean left off and a boolean passed `false` reach this
-   * identically. It takes {@link DEFAULT_COMB_IS_UPWARD}, which is what
-   * makes `--modifier comb` draw exactly what no modifier at all draws.
-   */
-  private combModifier(isUpward: boolean | undefined): Modifier {
-    return { isUpward: isUpward ?? DEFAULT_COMB_IS_UPWARD, name: "comb" };
-  }
 
   /** Narrows a raw string to a supported {@link MeanderType} without an unchecked assertion. */
   private isMeanderType(value: string): value is MeanderType {
@@ -178,7 +162,7 @@ export class DrawParametersService {
    * where no `--modifier` was given. A modifier carrying a parameter is
    * refused rather than defaulted when that parameter is absent, since
    * guessing one would silently draw something other than what was asked
-   * for — the two booleans excepted, for the reason
+   * for — the one boolean excepted, for the reason
    * {@link rungModifier} gives.
    */
   modifier(options: DrawCommandOptions): Modifier | undefined {
@@ -186,10 +170,6 @@ export class DrawParametersService {
 
     if (!modifier) {
       return undefined;
-    }
-
-    if (modifier === "comb") {
-      return this.combModifier(options.upward);
     }
 
     if (this.isPlyModifierName(modifier)) {

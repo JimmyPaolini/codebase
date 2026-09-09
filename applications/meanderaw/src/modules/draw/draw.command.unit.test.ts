@@ -161,9 +161,7 @@ describe(DrawCommand, () => {
         // own `FAMILY_MAXIMUM_ROWS`: 2..12 (branch, parallel), 3..12 (boxes,
         // negative), 4..12 (chain, snake, swirl, whirl), or 6..12 (cross),
         // crossed with "no modifier" plus every compatible modifier (rung
-        // expands to 2 representative values, stagger to 4, and
-        // comb to 1 — its other direction is what "no modifier" already
-        // draws):
+        // expands to 2 representative values, stagger to 3):
 
         // `mosaic` contributes nothing. It is drawn from its enumerated
         // space rather than from a motif — see `TILE_DRAWN_TYPES` — so
@@ -178,44 +176,47 @@ describe(DrawCommand, () => {
         // whirl: 9 rows * (1 + 1) modifiers = 18
         // cross: 7 rows * (1 + 1) modifiers = 14
         // negative: 10 rows * (1 + 9) modifiers = 100
-        // branch: 11 rows * (1 + 1 + 2 + 4) modifiers = 88
+        // branch: 11 rows * (1 + 2 + 3) modifiers = 66
 
         // `parallel` is the one family whose modifiers do not expand to a
         // fixed number of values, so it is the one row here that is neither a
         // multiplication nor a single literal. It has no unmodified entry —
-        // `plied` names that drawing — and `plied` and `aligned` each sweep
-        // 1..rows, which is the `2 * rows` term.
+        // `plied` names that drawing — and `aligned` sweeps 1..rows while
+        // `plied` sweeps 2..rows, which is the `2 * rows - 1` term: at one
+        // strand there is nothing to ply, so only `aligned` still draws it.
 
         // `serpentine` sweeps every
         // *distinct* rotation and flip of each of those plies, and distinct
         // is the operative word: rotating a partition whose strips are all the
         // same depth changes nothing, `alternating` and `one` name the same
         // ribbon below three strands, and flipping a strip with no depth is a
-        // no-op. So its per-row counts are written out rather than derived —
-        // they are what `ParallelSerpentineService.variants` deduplicates down
-        // to, and a change in that deduplication should fail here rather than
-        // quietly committing the same drawing twice.
+        // no-op. Its one-strand ply is dropped for the same reason `plied`'s
+        // is, which is why every per-row count here is two lower than it
+        // used to be. So its per-row counts are written out rather than
+        // derived — they are what `ParallelSerpentineService.variants`
+        // deduplicates down to, and a change in that deduplication should
+        // fail here rather than quietly committing the same drawing twice.
         const serpentinePerRow: Record<number, number> = {
-          2: 5,
-          3: 9,
-          4: 19,
-          5: 19,
-          6: 44,
-          7: 45,
-          8: 65,
-          9: 66,
-          10: 126,
-          11: 85,
-          12: 182,
+          2: 3,
+          3: 7,
+          4: 17,
+          5: 17,
+          6: 42,
+          7: 43,
+          8: 63,
+          9: 64,
+          10: 124,
+          11: 83,
+          12: 180,
         };
         const expectedParallelCount = [
           2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
         ].reduce(
-          (total, rows) => total + 2 * rows + (serpentinePerRow[rows] ?? 0),
+          (total, rows) => total + 2 * rows - 1 + (serpentinePerRow[rows] ?? 0),
           0,
         );
         const expectedNamedTypeCount =
-          30 + 36 + 36 + 18 + 18 + 14 + 100 + 88 + expectedParallelCount;
+          30 + 36 + 36 + 18 + 18 + 14 + 100 + 60 + expectedParallelCount;
 
         const writtenFileNames = vi
           .mocked(mockWriteFile)
@@ -277,7 +278,7 @@ describe(DrawCommand, () => {
 
       expect(index).toBeDefined();
       expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("9918 drawings");
+      expect(index?.[1]).toContain("9857 drawings");
 
       expect(index?.[1]).toContain(
         'src="mosaic/6-rows/1-columns/00000-dots.svg"',
@@ -300,9 +301,9 @@ describe(DrawCommand, () => {
         vi.mocked(meanderGenerationService.generate).mock.calls,
       ).toContainEqual([
         {
-          modifier: { branches: 3, name: "stagger" },
+          modifier: { branches: 4, name: "stagger" },
           repeatCount: 6,
-          rows: 2,
+          rows: 3,
           type: "branch",
         },
       ]);
@@ -595,8 +596,8 @@ describe(DrawCommand, () => {
       expect(command[method](value)).toBe(2);
     });
 
-    // 🎯 The two boolean flags the command takes. Bare is the ordinary way
-    // to pass either, and the two spellings that turn one off are there so
+    // 🎯 The one boolean flag the command takes. Bare is the ordinary way
+    // to pass it, and the two spellings that turn it off are there so
     // `--leftward false` means what a reader would expect rather than
     // silently meaning `true` — which is what a bare presence check would
     // have made it mean.
@@ -607,14 +608,6 @@ describe(DrawCommand, () => {
       { expected: false, given: '"0"', value: "0" },
     ])("parses --leftward $given as $expected", ({ expected, value }) => {
       expect(command.parseLeftward(value)).toBe(expected);
-    });
-
-    it.each([
-      { expected: true, given: "bare", value: undefined },
-      { expected: false, given: '"false"', value: "false" },
-      { expected: false, given: '"0"', value: "0" },
-    ])("parses --upward $given as $expected", ({ expected, value }) => {
-      expect(command.parseUpward(value)).toBe(expected);
     });
 
     it("passes the output directory through unchanged", () => {
@@ -654,14 +647,14 @@ describe(DrawCommand, () => {
           realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
         ).resolves.toBeUndefined();
 
-        // 🎯 every one of the 1,159 enumerated named-type combinations, every
+        // 🎯 every one of the 1,098 enumerated named-type combinations, every
         // one of the 8,551 mosaic tiles, and every one of the 208 one-column
         // negative sources, reached its real generation
         // service and real validators without throwing — this is the
         // regression guard the mocked tests above can't provide, since they
         // replace the generation services entirely. The extra file is the
         // single index page listing all of them.
-        expect(mockWriteFile).toHaveBeenCalledTimes(1159 + 8551 + 208 + 1);
+        expect(mockWriteFile).toHaveBeenCalledTimes(1098 + 8551 + 208 + 1);
       },
       FULL_SWEEP_TIMEOUT_MILLISECONDS,
     );

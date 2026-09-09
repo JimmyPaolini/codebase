@@ -293,12 +293,13 @@ export class MeanderGenerationService {
    * `branches` isn't a whole number between
    * {@link MINIMUM_STAGGER_BRANCHES} and {@link MAXIMUM_VALUE}.
    *
-   * The lower bound is the family's own rather than the command line's: a
-   * two-branch run has no tooth strictly inside it, so the mode stops
-   * forking and the drawing degenerates from a spanning tree into a simple
-   * path — which would fail the charter relaxation `branch` declares. The
-   * upper bound is the shared one, the same as `alternated`'s `period`,
-   * because nothing structural fails above it.
+   * The lower bound is the family's own rather than the command line's: at
+   * three branches a rail run is exactly as wide as a `comb` unit, and both
+   * of `branch`'s border rules already cover it whichever row it
+   * reinforces — so the crenellation the parameter names leaves no mark
+   * and the drawing is a plain comb. The upper bound is the shared one, the
+   * same as `alternated`'s `period`, because nothing structural fails
+   * above it.
    */
   private validateStaggerBranches(modifier: Modifier | undefined): void {
     if (modifier?.name !== "stagger") {
