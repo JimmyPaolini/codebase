@@ -904,7 +904,7 @@
             "summary": "Judges one project, through every stage a resolved limit passes.",
             "tags": []
           },
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1546",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1601",
           "isCycle": false,
           "location": {
             "column": 3,
@@ -931,7 +931,7 @@
             "summary": "Names the configuration file the project is judged by.",
             "tags": []
           },
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1349",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1404",
           "isCycle": false,
           "location": {
             "column": 3,
@@ -958,7 +958,7 @@
             "summary": "Reads the limit whichever configuration file the project settled on.",
             "tags": []
           },
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1025",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1080",
           "isCycle": false,
           "location": {
             "column": 3,
@@ -985,7 +985,7 @@
             "summary": "Applies the limit the resolved project turned out to declare.",
             "tags": []
           },
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#678",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#733",
           "isCycle": false,
           "location": {
             "column": 3,
@@ -1012,7 +1012,7 @@
             "summary": "States the verdict, and where the number behind it came from.",
             "tags": []
           },
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1185",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1240",
           "isCycle": false,
           "location": {
             "column": 3,
@@ -1039,7 +1039,7 @@
             "summary": "Reads the file the number the verdict used was written in.",
             "tags": []
           },
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#850",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#905",
           "isCycle": false,
           "location": {
             "column": 3,
@@ -4905,11 +4905,11 @@
           "callees": [
             {
               "displayName": "ProjectDepthLimitService.reportVerdict",
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1185"
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1240"
             }
           ],
           "displayName": "ProjectDepthLimitService.applyLimit",
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#678",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#733",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
@@ -4933,11 +4933,11 @@
           "callees": [
             {
               "displayName": "ProjectDepthLimitService.applyLimit",
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#678"
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#733"
             }
           ],
           "displayName": "ProjectDepthLimitService.readLimit",
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1025",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1080",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
@@ -4961,11 +4961,11 @@
           "callees": [
             {
               "displayName": "ProjectDepthLimitService.readDeclaringFile",
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#850"
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#905"
             }
           ],
           "displayName": "ProjectDepthLimitService.reportVerdict",
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1185",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1240",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
@@ -4989,11 +4989,11 @@
           "callees": [
             {
               "displayName": "ProjectDepthLimitService.readLimit",
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1025"
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1080"
             }
           ],
           "displayName": "ProjectDepthLimitService.resolveConfiguration",
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1349",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1404",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
@@ -5017,11 +5017,11 @@
           "callees": [
             {
               "displayName": "ProjectDepthLimitService.resolveConfiguration",
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1349"
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1404"
             }
           ],
           "displayName": "ProjectDepthLimitService.judge",
-          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1546",
+          "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1601",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts",
@@ -6005,7 +6005,7 @@
                 "summary": "Judges one project, through every stage a resolved limit passes.",
                 "tags": []
               },
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1546",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1601",
               "isCycle": false,
               "location": {
                 "column": 3,
@@ -6032,7 +6032,7 @@
                 "summary": "Names the configuration file the project is judged by.",
                 "tags": []
               },
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1349",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1404",
               "isCycle": false,
               "location": {
                 "column": 3,
@@ -6059,7 +6059,7 @@
                 "summary": "Reads the limit whichever configuration file the project settled on.",
                 "tags": []
               },
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1025",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1080",
               "isCycle": false,
               "location": {
                 "column": 3,
@@ -6086,7 +6086,7 @@
                 "summary": "Applies the limit the resolved project turned out to declare.",
                 "tags": []
               },
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#678",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#733",
               "isCycle": false,
               "location": {
                 "column": 3,
@@ -6113,7 +6113,7 @@
                 "summary": "States the verdict, and where the number behind it came from.",
                 "tags": []
               },
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1185",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#1240",
               "isCycle": false,
               "location": {
                 "column": 3,
@@ -6140,7 +6140,7 @@
                 "summary": "Reads the file the number the verdict used was written in.",
                 "tags": []
               },
-              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#850",
+              "id": "packages/callidescope-examples/examples/project-depth-limit/project-depth-limit.ts#905",
               "isCycle": false,
               "location": {
                 "column": 3,

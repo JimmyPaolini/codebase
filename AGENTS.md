@@ -306,7 +306,8 @@ in one of their own: they gate nothing, but reading one callable's callers and
 reading a whole workspace's stacks are the same act of reading a call graph.
 Every flag they accept sits in the configuration skill alongside the workspace
 run's, because a flag cannot be explained apart from the configuration field it
-reads — `--check breadth` is refused outright without `limits.maximumBreadth`.
+reads — `--check breadth` weighs each project against its own declared
+`limits.maximumBreadth`.
 
 **Depth and breadth are per project**, enforced by the `gate` target
 `@callidescope/nx` infers onto every project holding a `tsconfig.json` — 42 of
@@ -321,10 +322,16 @@ codependix, codometer, and conformetry examples packages — are excluded by
 `callidescope-examples`'s fixtures exist to breach, and the other six either
 hold barely a callable or are fixture corpora rather than libraries.
 
-Thirty-seven projects declare their own limits in a `callidescope.config.ts` at
-their own root, and each writes only what it overrides — inheritance is per
-limit, so `configuration/callidescope.config.ts` supplies whatever a project
-does not name. Every one of those numbers was set from a boundary-tested run at
+Forty-two projects declare their own limits in a `callidescope.config.ts` at
+their own root, and each of those files is **complete**: nothing is inherited
+per limit any more, and a file leaving a field out is refused before anything
+is traced. Completeness is reached by spreading the `projectDefaults` export
+from `configuration/callidescope.config.ts` and overriding what the project
+means to say — so a field is present because the file put it there, and
+`maximumBreadth: undefined` is a project saying it gates depth alone rather
+than a project that forgot. `configuration/` is the one traced root with no
+file of its own, and is judged by the workspace numbers. Every one of those
+numbers was set from a boundary-tested run at
 the gate's own Nx-graph scope, passing at N and failing at N−1, so none carries
 headroom. Breadth is now declared for every traced project, `lexico-ingestion`,
 `synchronization`, and `callidescope-output` included — gating it universally is

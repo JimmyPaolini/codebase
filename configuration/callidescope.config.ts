@@ -138,8 +138,10 @@ export const workspaceLimits = {
    * The depth `projectDefaults` carries into a project that overrides nothing
    * of its own — and no longer this repository's ratchet.
    *
-   * **The ratchet is thirty-eight numbers now**, one per project that declares
-   * its own, every one of them set from a boundary-tested run at its gate's own
+   * **The ratchet is thirty-seven numbers now**, one per project that declares
+   * a depth of its own — the forty-two project files less the five conformetry
+   * leaf analyzers named below, which take this one explicitly. Every one of
+   * the thirty-seven is set from a boundary-tested run at its gate's own
    * scope: it passes at the number written and fails one below it. That is what
    * a ratchet is, and it is what this single number could never be. Seventeen
    * is the deepest stack anywhere in the repository, so as one workspace-wide
@@ -221,8 +223,10 @@ export const workspaceLimits = {
  * project's own README.
  *
  * Every traced project spreads it, each writing its own `limits` beside the
- * spread the way the example above shows, except the five conformetry leaf
- * analyzers, which override nothing.
+ * spread the way the example above shows. The five conformetry leaf analyzers
+ * are the only ones that do not write a boundary-tested depth: each roots no
+ * stack, so each names `maximumDepth: workspaceLimits.maximumDepth` and
+ * declares a measured `maximumBreadth` of its own beside it.
  * `packages/callidescope-examples/callidescope.config.ts` is outside that count
  * altogether: the package is excluded from workspace tracing by
  * `.callidescopeignore`, and its own file is the annotated worked example this
