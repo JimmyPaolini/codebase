@@ -413,19 +413,24 @@ export class BranchMotifService implements MotifService {
    * border read as the mode's signature rather than the band's, and two
    * modes could draw the same interior.
    *
-   * Ruling *both* borders unconditionally went too far. `comb` and `rung`
-   * already run a rail the full width of row 0, which is the top border a
-   * reader sees, so a second run along that row draws nothing new; and
-   * `stagger`'s rail could only ever name a border row, so a rule along both
-   * of them swallowed the crenellation whole and every `stagger` drawing
-   * rendered as the plain comb. See {@link figureRows}.
+   * Ruling *both* borders unconditionally went too far. `comb` always rails
+   * the full width of row 0, and `rung` rails whichever border its
+   * direction names, so a rule along that same border draws nothing new;
+   * and `stagger`'s rail could only ever name a border row, so a rule along
+   * both of them swallowed the crenellation whole and every `stagger`
+   * drawing rendered as the plain comb. See {@link ruleRow} for how
+   * `rung`'s rule follows its rail, and {@link figureRows} for `stagger`'s
+   * inset.
    *
-   * So each mode is ruled where its own ink is not. `comb` and `rung` take
-   * one rule, along the row below their free ends; `stagger`, whose figure
-   * is inset from both borders, takes both. The pair is
+   * So each mode is ruled where its own ink is not. `comb` and `rung` each
+   * take one rule, along the border row their rail does not run — row
+   * `rows` for `comb` and for a north-railed `rung`, row 0 for a
+   * south-railed one; see {@link ruleRow}. `stagger`, whose figure is inset
+   * from both borders, takes both. The pair is
    * `GridGeometryService.borderPath`, which is where every family closing
    * its band that way draws them from, and the single rule is one
-   * {@link horizontalRun} along the bottom row of the same width.
+   * {@link horizontalRun} along the row {@link ruleRow} names, the same
+   * width either way.
    */
   border(geometry: GridGeometry, pattern: RepeatPatternOptions): string {
     if (this.mode(pattern.modifier) === "stagger") {

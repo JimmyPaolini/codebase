@@ -223,7 +223,7 @@ above:
   side of it — five such junctions along the top border, five along the bottom. An earlier
   reading of this measurement reported zero everywhere; the reference assets are
   hand-verified ground truth for what these patterns should look like, so the geometry is
-  right and the count was wrong. The other 21,798 are the point of three families rather
+  right and the count was wrong. The other 22,558 are the point of three families rather
   than a side effect of anything: 3,054 across the `negative` family's 90 branching
   documents, 2,130 across all 80 of `branch`'s, and 17,374 across 642 of `parallel`'s 786
   — see "The Negative Space Family", "The Branching Family", and "The Parallel Family"
@@ -1498,7 +1498,7 @@ took that away twice over — it closed a rectangle between every adjacent pair 
 because a rule then ran along the very row each rail sat on, it swallowed the crenellation
 whole and every `stagger` drawing rendered as the plain comb. Insetting the figure one
 lattice row from each rule beside it undid both: no rule touches the ink, so nothing is
-swallowed and nothing closes. Each of its 60 documents is a **forest** — `edges = nodes −
+swallowed and nothing closes. Each of its 80 documents is a **forest** — `edges = nodes −
 components`, no loop in any piece — of **two or three components**, the figure and the one
 or two rules standing clear of it. Nothing failed when either of those changed; the loop
 count was measured and published here, never gated by anything. See
@@ -1640,7 +1640,7 @@ a meander.
 - **Invariant 3, no branching — relaxed, in every mode.** Declared in the charter property
   test's `RELAXED_INVARIANTS`, which asserts the relaxation is _present_ rather than
   merely permitted: a mode that stopped forking would fail. The fewest forks any of the
-  family's 60 documents leaves is 10, so the permission is exercised rather than merely
+  family's 80 documents leaves is 10, so the permission is exercised rather than merely
   held — and the row count at which one of its modes stopped forking is exactly what sets
   the family's structural minimum.
 - **Invariant 4, no crossing** — held, and the inset is what makes it trivial: a rule
@@ -1675,7 +1675,7 @@ What the loop counts say is about shape rather than about permission. `negative`
 whole corridor graph, which closes a loop through each of its own repeats: ninety of its
 hundred committed drawings carry up to 65 cycles each, spread over one to thirteen
 components. `branch` inks a lattice cut down to a rail, a set of verticals, and one or two
-rules standing clear of them, so each of its 60 drawings is a forest of two or three
+rules standing clear of them, so each of its 80 drawings is a forest of two or three
 pieces with no cycle in any of them. The ten `negative` drawings that carry no cycle are
 `ruled-closed`'s, whose ink is the band's own rules and nothing joining them: a forest of
 one component per lattice row, which is the corner of that family shaped the way this one

@@ -169,7 +169,7 @@ interface CharterRelaxation {
  * entry names no modifier either. It inks a spine and teeth over the band's
  * lattice — every lattice point painted — inset by one lattice row from the
  * rules that close the band, so it forks wherever a rail meets a tooth. The
- * fewest forks any of its 60 documents leaves is 10, so the relaxation is
+ * fewest forks any of its 80 documents leaves is 10, so the relaxation is
  * exercised rather than merely permitted, and the row count at which one of
  * its modes stopped forking is what sets `STRUCTURAL_MINIMUM_ROWS.branch`.
  * Nothing else is declared for it: no lattice point in any of its modes
@@ -359,7 +359,7 @@ const charterSweep: readonly CharterCase[] = new DrawCombinationsService(
 const CORPUS_MEASUREMENT_TIMEOUT_MILLISECONDS = 120_000;
 
 /**
- * How many documents `DrawCommand` commits: 1,098 named patterns beside two
+ * How many documents `DrawCommand` commits: 1,118 named patterns beside two
  * exhaustive halves — 8,551 enumerated `mosaic` tiles and 208 enumerated
  * one-column `negative` sources.
  *
@@ -1068,8 +1068,12 @@ describe(MeanderTopologyService, () => {
     // 66. Both fell four times more: to 24,352 and 878 when the eleven
     // `comb` duplicates of `plain` were deleted; to 24,132 and 867 when the
     // eleven `stagger-branches-3` duplicates were; to 23,472 and 834 when
-    // issue #669 dropped `parallel`'s 33 one-strand duplicates; and to
-    // 22,158 and 828 when `branch`'s figure was inset from its rules.
+    // issue #669 dropped `parallel`'s 33 one-strand duplicates; to
+    // 22,158 and 828 when `branch`'s figure was inset from its rules; and to
+    // 22,918 and 848 when `rung` gained its two south-railed directions —
+    // two new drawings, `southeast` and `southwest`, at each of its ten row
+    // counts, each forking exactly as its already-committed north-railed
+    // mirror does, for 20 more documents carrying 760 more of these.
 
     // That last fall took forks away rather than documents. A rule no longer
     // running along the row a rail sits on stops forking against every tooth

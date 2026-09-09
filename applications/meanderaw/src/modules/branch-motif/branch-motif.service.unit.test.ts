@@ -34,6 +34,7 @@ import {
   BRANCH_UNIT_COLUMNS,
   DEFAULT_RUNG_DIRECTION,
   MINIMUM_STAGGER_BRANCHES,
+  RUNG_ORIENTATIONS_BY_DIRECTION,
   SUPPORTED_RUNG_DIRECTIONS,
   UnknownBranchModeError,
 } from "./branch-motif.constants";
@@ -516,12 +517,12 @@ describe(BranchMotifService, () => {
     it.each([
       { label: "comb", spans: ["0-7"] },
       {
-        label: "rung facing north",
+        label: "north-railed rung",
         modifier: { direction: "northeast" as const, name: "rung" as const },
         spans: ["0-7"],
       },
       {
-        label: "rung facing south",
+        label: "south-railed rung",
         modifier: { direction: "southeast" as const, name: "rung" as const },
         spans: ["1-8"],
       },
@@ -932,6 +933,18 @@ describe(BranchMotifService, () => {
       expect(
         service.mode({ direction: DEFAULT_RUNG_DIRECTION, name: "rung" }),
       ).toBe("rung");
+    });
+
+    // 🎯 SUPPORTED_RUNG_DIRECTIONS is a plain array, so a direction added to
+    // the RungDirection union and forgotten here is not a type error the way
+    // a missing RUNG_ORIENTATIONS_BY_DIRECTION key would be. Asserting the
+    // two match exactly is what makes the array's own doc comment true: a
+    // direction the command line accepts is one the sweep commits and the
+    // charter gates.
+    it("names exactly the directions RUNG_ORIENTATIONS_BY_DIRECTION maps", () => {
+      expect([...SUPPORTED_RUNG_DIRECTIONS].toSorted()).toStrictEqual(
+        Object.keys(RUNG_ORIENTATIONS_BY_DIRECTION).toSorted(),
+      );
     });
   });
 
