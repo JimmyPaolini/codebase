@@ -388,15 +388,16 @@ alongside a destination it is entitled to keep is told which half to move.
 A ratchet written one file per project is no longer reviewable in the single
 file it used to live in. `@callidescope/cli`'s `limits` command is where it is
 reviewable as a set instead — every project in scope, the number it is judged
-against, and the file that number is written in, with an `Origin` column saying
-`declared` for the project's own and `inherited` for the workspace default it
-fell back to. It resolves configuration and measures nothing, so it costs
-milliseconds rather than a trace.
+against, and the file that number is written in. There is nothing to say
+beyond that: every traced project's configuration is complete, so a limit has
+exactly one reachable value rather than a declared-or-inherited pair, and the
+listing names only the file it came from. It resolves configuration and
+measures nothing, so it costs milliseconds rather than a trace.
 
-It is also the answer to a limit that seems not to have taken effect. The schema
-strips keys it does not recognize rather than refusing them, so a misspelled
-`limits.maxDepth` loads cleanly and changes nothing — and an `Origin` of
-`inherited` where `declared` was expected is what says so.
+It is also the answer to a limit that seems not to have taken effect. A
+misspelled `limits.maxDepth` is refused outright — the schema is strict, so an
+unrecognized field never loads cleanly in the first place — and the listing's
+`Value` column is where a number that took hold but reads wrong shows itself.
 
 ### Refusals
 
@@ -405,8 +406,8 @@ is left exactly as the run found it. `<project>` is the workspace-relative
 project root; the workspace configuration's own declared addresses are labelled
 `the workspace configuration` instead.
 
-Six of them. Each is shown under the headline it is logged with — five of the
-six share one — and quoted as the tool writes it.
+Five of them. Each is shown under the headline it is logged with — four of the
+five share one — and quoted as the tool writes it.
 
 **`🔭 Rejected a project configuration` — the file could not be read.**
 
@@ -459,18 +460,6 @@ the advice changes to `Two declarations on one line cannot be told apart by
 <project> declares an invalid entryPoints.addresses entry. "<address>" is not a callable address. It needs a file path and a qualified name joined by "#", as in "src/foo.service.ts#FooService.bar", optionally followed by ":<line>" to disambiguate.
 ```
 
-**`🔭 Rejected the configuration` — `--check breadth` with nothing to gate on.**
-
-```text
---check breadth requires at least one project in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <number> }` to that project's callidescope.config.ts before running --check breadth.
-```
-
-A **project's own** file has to declare it. A workspace-declared
-`maximumBreadth` is inherited rather than declared, so it reports breadth
-findings without satisfying this. The check runs after the trace rather than
-before it, because which projects were in scope is something only the trace
-knows.
-
 A run collects **every** unresolved address before it refuses, so several
 mistakes are fixed from one message rather than one refusal at a time. More
 than one arrives numbered, behind
@@ -480,9 +469,8 @@ The headlines belong to the command rather than to the message. The first two
 reach the `limits` command as well, where they are printed under
 `🔭 Rejected a configuration`; a listing that quietly skipped the one project
 whose configuration is wrong would be at its least trustworthy exactly when it
-is most wanted. The three address refusals need a resolved call graph and the
-breadth refusal needs to know which projects were in scope, so only a trace
-raises those four.
+is most wanted. The three address refusals need a resolved call graph, so only
+a trace raises those.
 
 ### Worked examples
 
@@ -522,10 +510,10 @@ produces, without touching the disk.
 per-project refusal is raised: `loadProjectConfigurations` reads the file beside
 each traced project and rejects the ones setting a workspace-only field, and
 `resolveLimits` says what every project is judged against, each number carrying
-the file it was written in. One resolver rather than one per reader — a gate and
-a listing that each worked the inheritance out for themselves could disagree
-about the same number, and a limit two answers can be given for is worse than
-no limit.
+the file it was written in. One resolver rather than one per reader — a gate
+and a listing that each read a flag override its own way could disagree about
+the same number, and a limit two answers can be given for is worse than no
+limit.
 
 ## Test
 
