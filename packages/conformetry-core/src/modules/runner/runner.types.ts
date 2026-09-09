@@ -10,7 +10,8 @@ import type { ConformetryDifference } from "../differences/differences.types";
  * handled once by `RunnerService`, so no validator repeats that envelope.
  *
  * Not to be confused with an Nx plugin — this is the contract between
- * `conformetry-validation` and packages such as `conformetry-typescript`.
+ * `conformetry-validation` and the Language modules in `conformetry-languages`,
+ * such as its TypeScript module.
  */
 export interface ConformetryLanguageValidator {
   readonly descriptor: LanguageValidatorDescriptor;

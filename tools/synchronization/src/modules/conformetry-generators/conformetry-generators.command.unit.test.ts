@@ -197,24 +197,19 @@ describe(ConformetryGeneratorsCommand, () => {
 
     await command.run(["write"]);
 
-    expect(writeFileSync).toHaveBeenCalledTimes(2);
-    expect(writeFileSync).toHaveBeenCalledWith(
-      agentsFile,
-      expect.stringContaining("| `alpha` | first |"),
-      "utf8",
-    );
+    expect(writeFileSync).toHaveBeenCalledTimes(1);
     expect(writeFileSync).toHaveBeenCalledWith(
       readmeFile,
       expect.stringContaining("| `alpha` | first |"),
       "utf8",
     );
-    expect(logger.info).toHaveBeenCalledWith(
-      "🔄 Generating the conformetry generators table",
+    expect(writeFileSync).not.toHaveBeenCalledWith(
+      agentsFile,
+      expect.anything(),
+      expect.anything(),
     );
     expect(logger.info).toHaveBeenCalledWith(
-      "📇 Updated AGENTS.md",
-      undefined,
-      expect.any(Object),
+      "🔄 Generating the conformetry generators table",
     );
     expect(logger.info).toHaveBeenCalledWith(
       "📇 Updated README.md",
@@ -248,13 +243,13 @@ describe(ConformetryGeneratorsCommand, () => {
       assertLogs: (loggerService: LoggerService): void => {
         expect(loggerService.error).toHaveBeenCalledWith(
           "💥 Failed synchronizing conformetry generators",
-          expect.stringContaining("Markers not found in AGENTS.md"),
+          expect.stringContaining("Markers not found in README.md"),
         );
       },
       modeArguments: ["check"],
-      scenarioName: "exits when AGENTS markers are missing",
+      scenarioName: "exits when README markers are missing",
       setup: (): void => {
-        fileContents.set(agentsFile, "# Header without markers");
+        fileContents.set(readmeFile, "# Header without markers");
       },
     },
     {
@@ -262,27 +257,16 @@ describe(ConformetryGeneratorsCommand, () => {
         expect(loggerService.info).toHaveBeenCalledWith(
           "📇 Detected an out-of-sync conformetry generators table",
           undefined,
-          expect.objectContaining({ files: ["AGENTS.md"] }),
+          expect.objectContaining({ files: ["README.md"] }),
         );
       },
       modeArguments: ["check"],
       scenarioName:
-        "reports drift when generated table differs from AGENTS content",
+        "reports drift when generated table differs from README content",
       setup: (): void => {
         currentConformetryConfiguration = [
           { description: "first", name: "alpha" },
         ];
-        fileContents.set(
-          agentsFile,
-          [
-            "# Header",
-            "<!-- conformetry-generators-table start -->",
-            "| Template | Description |",
-            "| -------- | ----------- |",
-            "| `stale` | mismatch |",
-            "<!-- conformetry-generators-table end -->",
-          ].join("\n"),
-        );
         fileContents.set(
           readmeFile,
           [
@@ -290,7 +274,7 @@ describe(ConformetryGeneratorsCommand, () => {
             "<!-- conformetry-generators-table start -->",
             "| Template | Description |",
             "| -------- | ----------- |",
-            "| `alpha` | first |",
+            "| `stale` | mismatch |",
             "<!-- conformetry-generators-table end -->",
           ].join("\n"),
         );

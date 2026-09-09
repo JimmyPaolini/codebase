@@ -1,6 +1,6 @@
 ---
 name: write-typescript
-description: TypeScript coding conventions for this codebase. Use when writing or modifying TypeScript or TSX files, when TypeScript type errors appear, or when asked about strict mode, type imports, naming conventions, return types, the no-any rule, async functions, floating promises, exhaustive switches, readonly properties, non-null assertions, control-flow style, test typing patterns, or Node fs Dirent mock typing.
+description: TypeScript coding conventions for this codebase. Use when writing or modifying TypeScript or TSX files, when TypeScript type errors appear, or when asked about strict mode, type imports, naming conventions, return types, the no-any rule, async functions, floating promises, exhaustive switches, readonly properties, non-null assertions, control-flow style, test typing patterns, Node fs Dirent mock typing, formatting with oxfmt, import group order, enforced alphabetical ordering, the three-parameter limit, or JSDoc on public APIs.
 license: MIT
 ---
 
@@ -28,6 +28,9 @@ Use this skill when:
 : readonly properties, braces, early returns, object shorthand, template literals.
 - [Error handling and tests](./references/errors-and-tests.md)
 : catch typing, guard-first test narrowing, Node Dirent mock typing pattern.
+- [Formatting and ordering](./references/formatting-and-ordering.md)
+: `oxfmt` settings, import groups, enforced alphabetical order, the 3-parameter
+limit, JSDoc on public APIs.
 
 ## Related Skills
 

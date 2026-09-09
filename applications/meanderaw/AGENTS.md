@@ -16,13 +16,13 @@ nx run meanderaw:start
 ## 🏛️ Before You Change a Meander
 
 Meander geometry is governed by a charter of seven invariants, five of which are fixed.
-They are measured against all 1,632 committed SVGs, not read off the code, so
+They are measured against all 9,877 committed SVGs, not read off the code, so
 they are facts about the output rather than intentions in the source. The full charter,
 with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
 **The named half of the sweep runs to `FAMILY_MAXIMUM_ROWS`,** the same record
 `MeanderGenerationService.generate` validates `rows` against — so every drawing the command
-line can be asked for is one this repository commits and the charter gates, 1,159 named
+line can be asked for is one this repository commits and the charter gates, 1,118 named
 
 patterns, each family from its own structural minimum through its own ceiling. It stopped
 at 8 for every family alike until
@@ -96,9 +96,11 @@ The three that most often catch a change:
   does not draw thinner ones, and `strokeWidth = unit / (2N)` is a discarded proposal
   rather than an unimplemented one. See "The Parallel Family" in [README.md](./README.md).
 - **No branching and no crossing.** Ink has zero T-junctions everywhere except `negative`
-  and `branch`, the two families added to branch, and `chain`/`snake` under
-  `edge`/`edge-flip`, which branch where their zigzag lands mid-border — 5,152 junctions
-  across 214 of the 1,159 named patterns, 3,054 of them `negative`'s and 1,738 `branch`'s.
+  and `branch`, the two families added to branch; `parallel`, which started branching when
+  both of its band borders were ruled; and `chain`/`snake` under `edge`/`edge-flip`, which
+  branch where their zigzag lands mid-border — 22,918 junctions across 848 of the 1,118
+  named patterns, 17,374 of them `parallel`'s, 3,054 `negative`'s, 2,130 `branch`'s, and
+  360 `chain`'s and `snake`'s.
 
   It has zero X-junctions everywhere except `cross` drawn solid — 12 per document at every
   one of its seven row counts, and none under its `interrupted` modifier, where the break
@@ -144,21 +146,39 @@ Three things that look like defects and are not:
   compatible with every family; `N` strands cannot trace the path one strand traces, so
   there is no existing repeat unit for a modifier to construct, and it ships as a family
   whose ply is chosen by its own modifiers — `plied`, `aligned`, and `serpentine`, which
-  all carry the same `strands` count and differ only in what those strands trace. It is
+  all carry the same `strands` count and differ only in what those strands trace. Only
+  `aligned` sweeps a ply of one, because at one strand there is nothing left to ply or
+  serpentine and the four names drew one figure — `NAMES_WITHOUT_A_ONE_STRAND_DRAWING` is
+  where that floor lives. It is
   also the one family that commits no unmodified drawing: `plied` at two strands _is_ that
   drawing, so it carries it rather than the sweep writing the same bytes twice. Do not
   list `parallel` in `COMPATIBLE_MODIFIERS`. See "The Parallel Family" in
   [README.md](./README.md).
 - **`negative` and `branch` both branching** is not one family under two names. Both relax
-  invariant 3 and both come off the same survey shortlist; they differ in loops, and now in
-  crossing too. `negative` inks a whole corridor graph and carries up to 65 cycles per
-  drawing on one to thirteen components, and `branch` inks a loop-free spanning tree and
-  carries none. They are no longer the only trees in the corpus: a `serpentine` ply of one
-  is a single ribbon covering the whole band, which is a tree by way of being a path rather
-  than by forking — in phase or turned over, which is why there are two of them at every
-  row count. Those cycle counts and both tree families are asserted in
+  invariant 3 and both come off the same survey shortlist; **they differ in loops, and for
+  one commit they did not.** `negative` inks a whole corridor graph and carries up to 65
+  cycles per drawing on one to thirteen components; `branch` is acyclic in every mode at
+  every row count, a forest of two or three pieces — its figure inset by one lattice row
+  from each rule beside it, so no rule touches the ink. It carried 5 to 29 cycles for the
+  one commit in which both borders were ruled directly onto the figure, which also
+  collapsed every `stagger` drawing to the plain comb. The crossing tells them apart too,
+  and `negative` relaxes it in three of its ten modes where `branch` relaxes it in none.
+  **No committed document is a tree any more** — `branch`'s 88 stopped being trees when
+  that border was ruled and are now forests of many pieces instead, and dropping the
+  one-strand `parallel` duplicates took the 22 `serpentine` paths. Those cycle counts and
+  the absence of any tree are asserted in
   `meander-topology.service.integration.test.ts`, not merely stated here. See "The
-  Branching Family" in [README.md](./README.md).
+  Branching Family" in [README.md](./README.md) and
+  `docs/adr/0006-close-both-band-borders-in-branch-and-parallel.md`.
+- **`parallel` branching** is declared, not a regression, and its declaration is the one
+  narrowed by a **structural condition** rather than by modifier names. A border rule meets
+  a strand's rising end with three arms of ink, so 642 of its 786 drawings fork; the other
+  144 are the `serpentine` stacks whose first and last strips are each one lattice row
+  deep, where the flat ribbon is the rule and nothing rises to meet it. Change the
+  condition in `RELAXED_INVARIANTS` — `border-strip-has-depth`, answered from
+  `ParallelSerpentineService.strips` — never the assertions, and do not flatten it to a
+  bare row: the sweep asserts in both directions and a bare row fails on those 144. See
+  "The Parallel Family" in [README.md](./README.md).
 - **A `negative` mode that crosses** is deliberate, not a geometry bug. Two corridors
   stacked in one lattice column is an X-junction, so a source whose openings sit side by
   side cannot avoid crossing — `brick-straight` is stack bond, `grid` inverts the `dots`

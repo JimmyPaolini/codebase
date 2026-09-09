@@ -3,15 +3,17 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
 /**
  * What conformetry-languages is held to, measured rather than assumed.
  *
- * Thirteen frames: the Jupyter Language descending into a notebook's markdown
- * cells, through the markdown tree walk that matches a node against its
- * template. It is the deepest stack in the package because Jupyter is the one
- * Language that composes the others.
+ * Four frames, measured by a run scoped to this project and its dependency
+ * closure, and set **at** what it measured rather than above it: a stack at
+ * the limit passes, so this gate is green the day it arrives and the number is
+ * a starting point to ratchet down from rather than a target to grow into.
  *
- * Measured by a run scoped to this project and its dependency closure, and set
- * **at** what it measured rather than above it: a stack at the limit passes, so
- * this gate is green the day it arrives and the number is a starting point to
- * ratchet down from rather than a target to grow into.
+ * That scoped number is the one this file is for. The whole-workspace report
+ * shows thirteen for the same package, and that is a different question: it
+ * traces the Jupyter Language descending into a notebook's markdown cells from
+ * an entry point above this package, where a scoped run enters at this
+ * package's own surface. Declaring the workspace figure would leave nine
+ * frames of headroom and gate nothing.
  *
  * No `maximumBreadth`. The widest callables here are the comparison walks,
  * whose fan-out is the shape of the syntax tree they descend rather than a
@@ -27,6 +29,6 @@ export default {
   ...projectDefaults,
   limits: {
     maximumBreadth: undefined,
-    maximumDepth: 13,
+    maximumDepth: 4,
   },
 };

@@ -11,6 +11,17 @@ export default mergeConfig(
         include: ["src/**/*.ts"],
       },
       /**
+       * A minute per `beforeAll` too, for {@link testTimeout}'s reason.
+       *
+       * `testTimeout` does not reach a hook, and the address-table sweep does
+       * its work in one: a single `beforeAll` boots the container and
+       * addresses all 9,863 committed drawings so that the suite's assertions
+       * share one reading of the corpus. That takes eight to ten seconds
+       * beside seven other workers, which the shared ten-second default turns
+       * into a flake that skips the whole suite rather than failing it.
+       */
+      hookTimeout: 60_000,
+      /**
        * A minute per test, where the shared default is five seconds.
        *
        * This project's suite is not a set of fast unit tests around mocked
