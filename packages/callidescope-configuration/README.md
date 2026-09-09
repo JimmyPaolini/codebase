@@ -696,6 +696,7 @@ graph LR
 ```mermaid
 flowchart LR
   ConfigurationModule
+  FlagResolutionModule
   InputModule
 ```
 <!-- codependix:end name="codependix-nestjs" -->
@@ -719,6 +720,11 @@ graph LR
   file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
   file_src_modules_configuration_project_configuration_service_ts["src/modules/configuration/project-configuration.service.ts"]
   file_src_modules_configuration_project_configuration_service_unit_test_ts["src/modules/configuration/project-configuration.service.unit.test.ts"]
+  file_src_modules_flag_resolution_flag_resolution_constants_ts["src/modules/flag-resolution/flag-resolution.constants.ts"]
+  file_src_modules_flag_resolution_flag_resolution_module_ts["src/modules/flag-resolution/flag-resolution.module.ts"]
+  file_src_modules_flag_resolution_flag_resolution_service_ts["src/modules/flag-resolution/flag-resolution.service.ts"]
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts["src/modules/flag-resolution/flag-resolution.service.unit.test.ts"]
+  file_src_modules_flag_resolution_flag_resolution_types_ts["src/modules/flag-resolution/flag-resolution.types.ts"]
   file_src_modules_input_input_constants_ts["src/modules/input/input.constants.ts"]
   file_src_modules_input_input_module_ts["src/modules/input/input.module.ts"]
   file_src_modules_input_input_service_ts["src/modules/input/input.service.ts"]
@@ -746,14 +752,25 @@ graph LR
   file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_project_configuration_service_ts
+  file_src_modules_flag_resolution_flag_resolution_constants_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_flag_resolution_flag_resolution_constants_ts --> file_src_modules_input_input_constants_ts
+  file_src_modules_flag_resolution_flag_resolution_module_ts --> file_src_modules_flag_resolution_flag_resolution_service_ts
+  file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_flag_resolution_flag_resolution_constants_ts
+  file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_flag_resolution_flag_resolution_types_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_flag_resolution_flag_resolution_service_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_flag_resolution_flag_resolution_types_ts
+  file_src_modules_flag_resolution_flag_resolution_types_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_input_input_module_ts --> file_src_modules_input_input_service_ts
   file_src_modules_input_input_service_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_input_input_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_input_input_service_ts --> file_src_modules_input_input_constants_ts
   file_src_modules_input_input_service_ts --> file_src_modules_input_input_types_ts
   file_src_modules_input_input_service_unit_test_ts --> file_src_modules_input_input_service_ts
   file_src_modules_input_input_service_unit_test_ts --> file_src_modules_input_input_types_ts
-  file_src_modules_input_input_types_ts --> file_src_modules_configuration_configuration_types_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 

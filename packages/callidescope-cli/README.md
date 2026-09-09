@@ -1282,6 +1282,7 @@ flowchart LR
   DocumentationModule
   EdgesModule
   EntriesModule
+  FlagResolutionModule
   GraphModule
   InputModule
   LimitsModule
@@ -1296,6 +1297,7 @@ flowchart LR
   RunPlanModule
   SignaturesModule
   WorkspaceModule
+  WriteDestinationsModule
   AddressLookupModule --> CallablesModule
   AddressLookupModule --> CallidescopeModule
   AddressLookupModule --> RunPlanModule
@@ -1321,6 +1323,7 @@ flowchart LR
   CallidescopeModule --> ReportModule
   CallidescopeModule --> RunPlanModule
   CallidescopeModule --> WorkspaceModule
+  CallidescopeModule --> WriteDestinationsModule
   DepthModule --> AddressLookupModule
   DepthModule --> AddressReportModule
   DepthModule --> GraphModule
@@ -1346,6 +1349,10 @@ flowchart LR
   ProjectReportsModule --> GraphModule
   ProjectReportsModule --> SignaturesModule
   RunPlanModule --> ConfigurationModule
+  RunPlanModule --> FlagResolutionModule
+  WriteDestinationsModule --> OutputJsonModule
+  WriteDestinationsModule --> OutputMarkdownModule
+  WriteDestinationsModule --> ReportModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -1412,6 +1419,11 @@ graph LR
   file_src_modules_run_plan_run_plan_service_ts["src/modules/run-plan/run-plan.service.ts"]
   file_src_modules_run_plan_run_plan_service_unit_test_ts["src/modules/run-plan/run-plan.service.unit.test.ts"]
   file_src_modules_run_plan_run_plan_types_ts["src/modules/run-plan/run-plan.types.ts"]
+  file_src_modules_write_destinations_write_destinations_constants_ts["src/modules/write-destinations/write-destinations.constants.ts"]
+  file_src_modules_write_destinations_write_destinations_module_ts["src/modules/write-destinations/write-destinations.module.ts"]
+  file_src_modules_write_destinations_write_destinations_service_ts["src/modules/write-destinations/write-destinations.service.ts"]
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts["src/modules/write-destinations/write-destinations.service.unit.test.ts"]
+  file_src_modules_write_destinations_write_destinations_types_ts["src/modules/write-destinations/write-destinations.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
@@ -1464,17 +1476,20 @@ graph LR
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_report_findings_report_findings_service_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_write_destinations_write_destinations_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_command_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_report_findings_report_findings_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_write_destinations_write_destinations_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_callidescope_callidescope_constants_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_callidescope_callidescope_command_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_report_findings_report_findings_module_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_run_plan_run_plan_module_ts
+  file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_write_destinations_write_destinations_module_ts
   file_src_modules_callidescope_callidescope_service_integration_test_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_callidescope_callidescope_service_integration_test_ts --> file_testing_modules_ts
   file_src_modules_callidescope_callidescope_service_ts --> file_src_modules_callidescope_callidescope_constants_ts
@@ -1523,7 +1538,12 @@ graph LR
   file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
+  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_write_destinations_write_destinations_service_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_write_destinations_write_destinations_constants_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_write_destinations_write_destinations_types_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_write_destinations_write_destinations_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_write_destinations_write_destinations_types_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_testing_mocks_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
