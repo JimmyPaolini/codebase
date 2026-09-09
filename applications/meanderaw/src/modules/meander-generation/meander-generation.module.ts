@@ -14,6 +14,7 @@ import { SwirlMotifModule } from "../swirl-motif/swirl-motif.module";
 import { WhirlMotifModule } from "../whirl-motif/whirl-motif.module";
 
 import { MeanderGenerationService } from "./meander-generation.service";
+import { MotifPitchService } from "./motif-pitch.service";
 import { MotifRegistryService } from "./motif-registry.service";
 
 /**
@@ -30,12 +31,18 @@ import { MotifRegistryService } from "./motif-registry.service";
  * families with a permutation half among them — so `generate` and `start`
  * depend on this one module rather than reaching past it into each motif's
  * own.
+ *
+ * {@link MotifPitchService} is exported and the registry it reads is not,
+ * which is the same arrangement read from the other end: how wide one repeat
+ * unit is, is a question about the drawing that anyone may ask, and which
+ * family draws it stays a question only this module answers.
  */
 @Module({
   controllers: [],
   exports: [
     MeanderGenerationService,
     MosaicTileModule,
+    MotifPitchService,
     NegativeMotifModule,
     SvgRenderingModule,
   ],
@@ -53,6 +60,10 @@ import { MotifRegistryService } from "./motif-registry.service";
     SwirlMotifModule,
     WhirlMotifModule,
   ],
-  providers: [MeanderGenerationService, MotifRegistryService],
+  providers: [
+    MeanderGenerationService,
+    MotifPitchService,
+    MotifRegistryService,
+  ],
 })
 export class MeanderGenerationModule {}
