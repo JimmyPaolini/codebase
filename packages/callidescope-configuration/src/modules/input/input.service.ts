@@ -5,7 +5,6 @@ import { CALLIDESCOPE_OUTPUT_FORMATS } from "../configuration/configuration.cons
 
 import { missingInputError, promptCancelledError } from "./input.constants";
 
-import type { CallidescopeOutputFormat } from "../configuration/configuration.types";
 import type { CallidescopeFormatOptions, PromptRunner } from "./input.types";
 
 /**
@@ -100,21 +99,6 @@ export class InputService {
           .split(",")
           .map((entry) => entry.trim())
           .filter(Boolean);
-  }
-
-  /**
-   * Parses `--format`, which decides what a run prints.
-   *
-   * Anything unrecognized reads as markdown rather than failing: this decides
-   * how a result is shown, and refusing to show it over a misspelled flag
-   * helps nobody.
-   */
-  public parseFormat(value: string | undefined): CallidescopeOutputFormat {
-    if (value === "json" || value === "mermaid") {
-      return value;
-    }
-
-    return "markdown";
   }
 
   /** Trims an optional string option, treating blank as absent. */

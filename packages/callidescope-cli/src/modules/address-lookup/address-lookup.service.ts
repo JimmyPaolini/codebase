@@ -87,17 +87,25 @@ export class AddressLookupService {
   public async locate(
     options: AddressCommandOptions,
   ): Promise<LocatedWorkspace> {
-    const { authoredLimits, configuration, configurationPath, workspaceRoot } =
-      await this.runPlanService.prepareLookup(options);
+    const {
+      authoredLimits,
+      configuration,
+      configurationPath,
+      format,
+      workspaceRoot,
+    } = await this.runPlanService.prepareLookup(options);
     const located = await this.callidescopeService.locate({
       authoredLimits,
       configuration,
       configurationPath,
-      directories: options.directories ?? configuration.directories,
+      // The flag and the configured list were already merged by the one
+      // resolver that does that, so this reads the answer rather than
+      // choosing between them a second way.
+      directories: configuration.directories,
       workspaceRoot,
     });
 
-    return { configuration, located, workspaceRoot };
+    return { configuration, format, located, workspaceRoot };
   }
 
   /** Matches an address against a workspace already traced. */

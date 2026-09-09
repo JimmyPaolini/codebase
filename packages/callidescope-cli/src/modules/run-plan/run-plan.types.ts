@@ -6,6 +6,22 @@ import type {
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 
+/**
+ * What a lookup command line and its configuration resolved to.
+ *
+ * Everything a run resolves except the mode: `depth` and `breadth` never
+ * write or compare a destination, so they have no `--check` or `--write` set
+ * to select and nothing about one to reject.
+ */
+export interface PreparedLookup {
+  readonly authoredLimits: CallidescopeLimits | undefined;
+  /** The configuration, with the scope a `--directories` flag named applied. */
+  readonly configuration: ResolvedCallidescopeConfiguration;
+  readonly configurationPath: string | undefined;
+  readonly format: CallidescopeOutputFormat;
+  readonly workspaceRoot: string;
+}
+
 /** What a command line and its configuration resolved to. */
 export interface PreparedRun {
   /**
@@ -16,6 +32,13 @@ export interface PreparedRun {
    * really chose — and an inherited limit names a file only when one did.
    */
   readonly authoredLimits: CallidescopeLimits | undefined;
+  /**
+   * The configuration every flag override has already been applied to.
+   *
+   * The scope a run traces and the destinations it writes are read from here
+   * rather than from the options, so nothing downstream has to remember which
+   * of a flag and a configured value won.
+   */
   readonly configuration: ResolvedCallidescopeConfiguration;
   /**
    * The file the configuration was read from, or `undefined` when the search

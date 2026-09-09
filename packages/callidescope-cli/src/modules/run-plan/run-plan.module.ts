@@ -1,4 +1,7 @@
-import { ConfigurationModule } from "@callidescope/configuration";
+import {
+  ConfigurationModule,
+  FlagResolutionModule,
+} from "@callidescope/configuration";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
@@ -12,7 +15,7 @@ import { RunPlanService } from "./run-plan.service";
 @Module({
   controllers: [],
   exports: [RunPlanService],
-  imports: [ConfigurationModule, LoggerModule],
+  imports: [ConfigurationModule, FlagResolutionModule, LoggerModule],
   providers: [RunPlanService],
 })
 export class RunPlanModule {}

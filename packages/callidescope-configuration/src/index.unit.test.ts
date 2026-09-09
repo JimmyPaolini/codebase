@@ -8,6 +8,8 @@ import {
   DEFAULT_ENTRY_POINT_DECORATORS,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_MAXIMUM_DEPTH,
+  FlagResolutionModule,
+  FlagResolutionService,
   UnknownConfigurationFileTypeError,
 } from "./index.js";
 
@@ -21,5 +23,10 @@ describe("callidescope-configuration index", () => {
     expect(DEFAULT_EXCLUDE_GLOBS).toBeDefined();
     expect(DEFAULT_ENTRY_POINT_DECORATORS).toBeDefined();
     expect(DEFAULT_MAXIMUM_DEPTH).toBeDefined();
+  });
+
+  it("exports the flag resolution surface", () => {
+    expect(FlagResolutionModule).toBeDefined();
+    expect(FlagResolutionService).toBeDefined();
   });
 });
