@@ -47,11 +47,11 @@ looking as though it were in force.
 | `maximumDepth` | `6` | Frames a call stack may hold, entry point inclusive |
 | `maximumBreadth` | **none** | Callables one callable may call directly |
 
-`maximumBreadth` is the one limit with no default. Until something declares a
-number nothing can exceed it, so breadth is measured and reported without being
-gated — and a run given `--check breadth` is refused rather than passing over a
-limit nobody chose. It is also the one limit a workspace cannot usefully pick
-alone: see [Project Configuration](#project-configuration).
+`maximumBreadth` is the one limit with no default — a project that wants it
+gated has to declare its own measured number, since a workspace-wide guess
+would either gate nothing or fail on the first callable that happens to be
+widest. Every traced project now does: see
+[Project Configuration](#project-configuration).
 
 The **implementation-candidate cap** is deliberately not here. It decides where
 structural interface resolution stops guessing rather than what a run judges, so
