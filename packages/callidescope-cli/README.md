@@ -67,11 +67,29 @@ quietly traced.
 | ---- | ------- |
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |
 | `-d, --directories` | Comma-separated project directories to trace, each holding its own `tsconfig.json`. The projects their imports reach are traced too. Every such directory under the working directory when omitted |
+| `--entry-point-addresses` | Comma-separated `path#name` roots, overriding `entryPoints.addresses` |
+| `--entry-point-decorators` | Comma-separated decorator names, overriding `entryPoints.decorators` |
+| `--exclude` | Comma-separated globs, overriding an authored `exclude`. The tool's own default globs are kept, exactly as they are under a configured `exclude` |
+| `--exclude-callees` | Comma-separated callee patterns, overriding `excludeCallees` |
 | `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default. Anything else is refused rather than rewritten |
+| `--include-exported-functions` | `true` or `false`, overriding `entryPoints.includeExportedFunctions`. The bare flag means `true` |
+| `--include-orphans` | `true` or `false`, overriding `entryPoints.includeOrphans`. The bare flag means `true` |
+| `--include-tests` | `true` or `false`, overriding `entryPoints.includeTests`. The bare flag means `true` |
 | `--json` | Where the machine-readable report goes. Overrides the path of a declared `write.json`, and nothing else about it. Needs `--write` or `--check reports` |
 | `-m, --markdown` | Where the markdown block goes. Overrides the path of a declared `write.markdown`, and nothing else about it. Needs `--write` or `--check reports` |
+| `--maximum-breadth` | A number, overriding `limits.maximumBreadth` wherever a project declared one. Refused against a configuration declaring none, because breadth has no default to override |
+| `--maximum-depth` | A number, overriding `limits.maximumDepth` wherever a project declared one |
+| `--mermaid` | Where the diagram goes. Overrides the path of a declared `write.mermaid`, and nothing else about it. Needs `--write` or `--check reports` |
 | `--check` | Fail on a comma-separated set drawn from `breadth`, `depth`, and `reports` |
 | `--write` | Write every configured destination |
+
+Every flag but `--check`, `--write`, `--format`, and `--config` is an
+**override**: it may change a value the configuration already declares and may
+not supply one it does not, so no flag can make an under-configured run legal.
+`excludeFrom` is the one configured field with no flag — it names the ignore
+files a run _reads_, which is what the run is rather than a value it judges by.
+A list flag written empty reads as absent, so a configured list cannot be
+cleared from the command line.
 
 ### Three findings, named separately
 
@@ -299,11 +317,17 @@ flag is something to skip rather than something to look up. With no terminal
 there is nobody to ask, so the run is refused by name and exits non-zero
 rather than drawing a menu nothing can answer.
 
-Both accept the same workspace-scoping flags as `callidescope` itself —
-`--directories`, `--config`, and `--format` — since resolving an address still
-means tracing the workspace first. Neither takes `--check`,
-`--write`, `--json`, or `--markdown`: a lookup only ever prints, to whichever
-format `--format` names.
+Both accept every graph-shaping flag `callidescope` itself does, since
+resolving an address still means tracing the workspace first:
+`--directories`, `--entry-point-addresses`, `--entry-point-decorators`,
+`--exclude`, `--exclude-callees`, `--include-exported-functions`,
+`--include-orphans`, and `--include-tests`, plus `--config` and `--format`.
+Each means exactly what it means above.
+
+Neither takes `--check`, `--write`, `--json`, `--markdown`, `--mermaid`,
+`--maximum-breadth`, or `--maximum-depth`: a lookup gates nothing and writes
+nothing, so a limit or a destination has no value here to override. It only
+ever prints, to whichever format `--format` names.
 
 Under `--format json` both print **an array**, whatever the address count, so
 one run is one document `JSON.parse` accepts without first counting how many

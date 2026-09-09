@@ -178,6 +178,23 @@ describe(DepthCommand, () => {
     );
   });
 
+  it.each([
+    "parseEntryPointAddresses",
+    "parseEntryPointDecorators",
+    "parseExclude",
+    "parseExcludeCallees",
+  ] as const)("splits %s on commas", (method) => {
+    expect(command[method]("alpha, beta")).toStrictEqual(["alpha", "beta"]);
+  });
+
+  it.each([
+    ["parseIncludeExportedFunctions", "false"],
+    ["parseIncludeOrphans", "false"],
+    ["parseIncludeTests", "true"],
+  ] as const)("passes %s through unchanged", (method, value) => {
+    expect(command[method](value)).toBe(value);
+  });
+
   // 🏃 Running
 
   it("rejects a run with no addresses it could ask for", async () => {

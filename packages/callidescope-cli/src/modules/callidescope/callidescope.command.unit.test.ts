@@ -463,9 +463,27 @@ describe(CallidescopeCommand, () => {
   });
 
   it.each([
+    "parseEntryPointAddresses",
+    "parseEntryPointDecorators",
+    "parseExclude",
+    "parseExcludeCallees",
+  ] as const)("splits %s on commas", (method) => {
+    expect(command[method]("alpha, beta")).toStrictEqual(["alpha", "beta"]);
+  });
+
+  // Every one of these is carried to `FlagResolutionService` as written: which
+  // values a switch, a limit, or a format accepts is that one resolver's to
+  // decide, so a value nobody recognizes has to reach it to be refused.
+  it.each([
     ["parseConfig", "callidescope.config.ts"],
+    ["parseIncludeExportedFunctions", "false"],
+    ["parseIncludeOrphans", "false"],
+    ["parseIncludeTests", "true"],
     ["parseJson", "output/report.json"],
     ["parseMarkdown", "REPORT.md"],
+    ["parseMaximumBreadth", "12"],
+    ["parseMaximumDepth", "9"],
+    ["parseMermaid", "DIAGRAM.md"],
   ] as const)("passes %s through unchanged", (method, value) => {
     expect(command[method](value)).toBe(value);
   });
@@ -478,6 +496,26 @@ describe(CallidescopeCommand, () => {
     expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
     // One write: the report is a single rendered document now.
     expect(process.stdout.write).toHaveBeenCalledTimes(1);
+  });
+
+  it("hands the trace the limits the command line overrode", async () => {
+    // The hop the original `--maximum-depth` defect lived in. Both ends were
+    // covered — the resolver reported the override, and `resolveLimits`
+    // applied one when handed it — and the flag was still inert against every
+    // gate, because nothing carried the one to the other. This is that carry.
+    await command.run([], { maximumDepth: "3" });
+
+    expect(callidescopeService.trace).toHaveBeenCalledWith(
+      expect.objectContaining({ limitOverrides: { maximumDepth: 3 } }),
+    );
+  });
+
+  it("hands the trace no overrides when no limit flag was written", async () => {
+    await command.run([], {});
+
+    expect(callidescopeService.trace).toHaveBeenCalledWith(
+      expect.objectContaining({ limitOverrides: {} }),
+    );
   });
 
   it("refuses a positional argument rather than tracing anyway", async () => {

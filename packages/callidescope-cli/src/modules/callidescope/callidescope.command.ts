@@ -187,6 +187,7 @@ export class CallidescopeCommand extends CommandRunner {
       configuration,
       configurationPath,
       format,
+      limitOverrides,
       mode,
       workspaceRoot,
     } = prepared;
@@ -200,6 +201,10 @@ export class CallidescopeCommand extends CommandRunner {
       // that, so choosing between them again here is how they came to
       // disagree.
       directories: configuration.directories,
+      // Carried past the resolved configuration: a limit is enforced per
+      // project, so an override left in the workspace's copy alone would be a
+      // flag no gate ever reads.
+      limitOverrides,
       workspaceRoot,
     });
 
@@ -298,6 +303,42 @@ export class CallidescopeCommand extends CommandRunner {
     return this.inputService.parseCommaDelimitedOption(value);
   }
 
+  /** Parses `--entry-point-addresses`, overriding `entryPoints.addresses`. */
+  @Option({
+    description: "Comma-separated callable addresses to root stacks at",
+    flags: "--entry-point-addresses [entryPointAddresses]",
+  })
+  public parseEntryPointAddresses(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Parses `--entry-point-decorators`, overriding `entryPoints.decorators`. */
+  @Option({
+    description: "Comma-separated decorators whose methods a framework invokes",
+    flags: "--entry-point-decorators [entryPointDecorators]",
+  })
+  public parseEntryPointDecorators(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Parses `--exclude`, overriding `exclude`. */
+  @Option({
+    description: "Comma-separated globs to leave untraced",
+    flags: "--exclude [exclude]",
+  })
+  public parseExclude(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Parses `--exclude-callees`, overriding `excludeCallees`. */
+  @Option({
+    description: "Comma-separated display-name globs to drop calls landing on",
+    flags: "--exclude-callees [excludeCallees]",
+  })
+  public parseExcludeCallees(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
   /**
    * Parses `--format`, which decides what the run prints.
    *
@@ -310,6 +351,40 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "-f, --format [format]",
   })
   public parseFormat(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /**
+   * Parses `--include-exported-functions`, overriding the entry-point rule.
+   *
+   * Carried through as written, like `--format`: the resolver that knows what
+   * a switch accepts is the one that refuses a value nobody recognizes.
+   */
+  @Option({
+    description: 'Treat every src/index.ts export as a root: "true" or "false"',
+    flags: "--include-exported-functions [includeExportedFunctions]",
+  })
+  public parseIncludeExportedFunctions(
+    value: string | undefined,
+  ): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /** Parses `--include-orphans`, overriding the entry-point rule. */
+  @Option({
+    description: 'Promote callables nothing calls: "true" or "false"',
+    flags: "--include-orphans [includeOrphans]",
+  })
+  public parseIncludeOrphans(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /** Parses `--include-tests`, overriding the entry-point rule. */
+  @Option({
+    description: 'Trace test files too: "true" or "false"',
+    flags: "--include-tests [includeTests]",
+  })
+  public parseIncludeTests(value: string | undefined): string | undefined {
     return this.inputService.parseOptionalOption(value);
   }
 
@@ -330,6 +405,40 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "-m, --markdown [markdown]",
   })
   public parseMarkdown(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /**
+   * Parses `--maximum-breadth`, overriding `limits.maximumBreadth`.
+   *
+   * A required value rather than an optional one, unlike every flag above: a
+   * limit written with nothing after it is a mistake commander refuses on its
+   * own, in better words than the resolver could.
+   */
+  @Option({
+    description: "Override the configured limits.maximumBreadth",
+    flags: "--maximum-breadth <maximumBreadth>",
+  })
+  public parseMaximumBreadth(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /** Parses `--maximum-depth`, overriding `limits.maximumDepth`. */
+  @Option({
+    description: "Override the configured limits.maximumDepth",
+    flags: "--maximum-depth <maximumDepth>",
+  })
+  public parseMaximumDepth(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /** Parses `--mermaid`. */
+  @Option({
+    description:
+      "Where the mermaid block goes when --write or --check reports asks for it",
+    flags: "--mermaid [mermaid]",
+  })
+  public parseMermaid(value: string | undefined): string | undefined {
     return this.inputService.parseOptionalOption(value);
   }
 

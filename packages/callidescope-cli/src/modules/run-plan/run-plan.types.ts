@@ -1,6 +1,7 @@
 // 🏷️ Types
 
 import type {
+  CallidescopeLimitOverrides,
   CallidescopeLimits,
   CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
@@ -57,6 +58,15 @@ export interface PreparedRun {
    * a value a configuration file writes down.
    */
   readonly format: CallidescopeOutputFormat;
+  /**
+   * The limits this command line overrode, if any.
+   *
+   * Carried past the resolved configuration because a limit is enforced per
+   * project: each project's own file declares the number its gate reads, so an
+   * override left in the workspace's copy alone would be a flag no gate looks
+   * at.
+   */
+  readonly limitOverrides: CallidescopeLimitOverrides;
   readonly mode: RunMode;
   readonly workspaceRoot: string;
 }

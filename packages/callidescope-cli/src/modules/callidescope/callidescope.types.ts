@@ -3,6 +3,7 @@
 import type {
   CallableId,
   CallGraphResult,
+  CallidescopeLimitOverrides,
   CallidescopeLimits,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
@@ -50,6 +51,14 @@ export interface CallidescopeCommandOptions {
   readonly config?: string | undefined;
   /** Project directories to trace. Every project in the workspace when omitted. */
   readonly directories?: string[] | undefined;
+  /** Overrides `entryPoints.addresses` for this run. */
+  readonly entryPointAddresses?: string[] | undefined;
+  /** Overrides `entryPoints.decorators` for this run. */
+  readonly entryPointDecorators?: string[] | undefined;
+  /** Overrides `exclude` for this run. */
+  readonly exclude?: string[] | undefined;
+  /** Overrides `excludeCallees` for this run. */
+  readonly excludeCallees?: string[] | undefined;
   /**
    * `--format`, exactly as it was typed.
    *
@@ -58,8 +67,24 @@ export interface CallidescopeCommandOptions {
    * markdown before it ever gets there.
    */
   readonly format?: string | undefined;
+  /**
+   * Overrides `entryPoints.includeExportedFunctions`, exactly as it was typed.
+   *
+   * `true` is the flag written with no value at all, which is how commander
+   * reports its presence — not a value anybody typed.
+   */
+  readonly includeExportedFunctions?: string | true | undefined;
+  /** Overrides `entryPoints.includeOrphans`, exactly as it was typed. */
+  readonly includeOrphans?: string | true | undefined;
+  /** Overrides `entryPoints.includeTests`, exactly as it was typed. */
+  readonly includeTests?: string | true | undefined;
   readonly json?: string | undefined;
   readonly markdown?: string | undefined;
+  /** Overrides `limits.maximumBreadth`, exactly as it was typed. */
+  readonly maximumBreadth?: string | undefined;
+  /** Overrides `limits.maximumDepth`, exactly as it was typed. */
+  readonly maximumDepth?: string | undefined;
+  readonly mermaid?: string | undefined;
   readonly write?: boolean | undefined;
 }
 
@@ -140,6 +165,14 @@ export interface TraceArguments {
   readonly configurationPath?: string | undefined;
   /** Project directories to trace. Every project in the workspace when empty. */
   readonly directories: readonly string[];
+  /**
+   * The limits this run's command line overrode, if any.
+   *
+   * Carried into the trace because a limit is enforced per project: each
+   * project's own file declares the number its gate reads, so an override that
+   * stopped at the run's own configuration would be a flag no gate looks at.
+   */
+  readonly limitOverrides?: CallidescopeLimitOverrides | undefined;
   readonly workspaceRoot: string;
 }
 
