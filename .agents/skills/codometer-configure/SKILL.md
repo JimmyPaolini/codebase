@@ -1,6 +1,6 @@
 ---
 name: codometer-configure
-description: Write or edit a codometer.config.ts, declaring targets, limits, custom convention counters, exclusions, or output destinations. Use when a repository has no codometer configuration yet, when adding a size or count limit, when declaring a target for compiled or generated output, when counting a naming convention no built-in analyzer knows about, when a limit fails to bind or a target matches no files, or when deciding whether one configuration can describe every project in a workspace.
+description: Write or edit a codometer.config.ts, declaring targets, limits, comment and documentation budgets, custom convention counters, exclusions, or output destinations. Use when a repository has no codometer configuration yet, when adding a size or count limit, when bounding how long a comment block or a JSDoc comment may run, when declaring a target for compiled or generated output, when counting a naming convention no built-in analyzer knows about, when a limit fails to bind or a target matches no files, or when deciding whether one configuration can describe every project in a workspace.
 license: MIT
 ---
 
@@ -169,6 +169,78 @@ what this metric should hold going forward, that is also a decision worth
 making deliberately and explaining, not a number quietly bumped in the same
 change that broke it. For everything else a breach could mean, reach for the
 `codometer-triage` skill.
+
+## Comment and documentation budgets
+
+`comments` bounds how long a comment block may run, in every language
+codometer measures comments in. `documentation` does the same for a documented
+declaration's JSDoc, and adds `kinds` to vary that budget per symbol kind.
+
+```ts
+comments: { maximumWords: 128 },
+shell: { comments: { maximumWords: 256 } },
+documentation: {
+  maximumWords: 64,
+  kinds: { interface: { maximumWords: 128 } },
+},
+```
+
+| Field | Meaning |
+| ----- | ------- |
+| `maximumCharacters` | Characters a block may hold, markers and newlines and all |
+| `maximumLines` | Lines a block may span |
+| `maximumWords` | Words of prose a block may hold, once markers are stripped |
+| `severity` | `fail` (the default) stops the run on a breach; `warn` only reports it |
+| `file` | On a language's own `comments` block: measures that file's comments together as well |
+| `kinds` | On `documentation` only: the same fields again, per symbol kind |
+
+**The three maxima are separate fields rather than one `maximum` steered by a
+`unit`, because they are not alternatives.** A block can sit inside a line
+budget and outside a word one. A field left out is not measured, a block is
+reported once per declared maximum, and **nothing is defaulted to a number** —
+a budget nobody wrote is one nobody chose.
+
+**The budget is per block, never file-wide.** A block is the run of comment
+lines a reader takes as one thought: a blank line ends one, a comment trailing a
+value is never part of the block above it, and a `#!` shebang is never a comment
+at all. A file holding forty well-sized comments is not the same problem as one
+holding a single essay, and a file-wide number cannot tell them apart. Add a
+`file` block beside the block maxima to measure both.
+
+**A language's `comments` is merged field by field over the top-level default**,
+so one budget can be written once and loosened for the one language that needs
+it — naming one maximum there never silently drops the others. `kinds` follows
+the same rule over `documentation`'s own maxima.
+
+**`comments` and `documentation` are configured apart on purpose.** The two are
+written by different hands for different readers — a JSDoc comment documents a
+declaration a caller will meet, a YAML comment explains a setting to whoever
+edits it next — so one number would have to be wrong for one of them, and
+enabling either check would otherwise silently enable the other. Setting
+`comments` alone is the common case.
+
+Prefer a **word** budget over a character one where a linter already holds
+lines to a column limit: the character count would only restate what formatting
+already enforces, while words budget what the comment actually says.
+
+### What a breach means, and what it does not
+
+A breach names its file and line. Condense the block, or move the detail into
+documentation that has room for it — **never raise the budget to make the run
+pass**, for the same reason a limit's `value` is never raised.
+
+Two accuracy caveats worth knowing before trusting a count:
+
+- **Some languages read a real parser, and some a line scanner.** CSS
+  (postcss), Python (`tokenize`), YAML (its CST), and TypeScript/JavaScript (the
+  compiler's scanner) all know a comment marker inside a string literal from a
+  real comment. Shell, TOML, SQL, and HCL use a line scanner and cannot — a `#`
+  or `--` inside a string is read as a comment, exactly as those languages'
+  existing comment counters already read it. HCL is the one language measured
+  with three syntaxes: `#`, `//`, and `/* */`.
+- **Python's comments need a reachable interpreter**, the same way every other
+  Python metric does. An interpreter codometer cannot run leaves them
+  unmeasured rather than miscounted.
 
 ## Custom statistics
 
