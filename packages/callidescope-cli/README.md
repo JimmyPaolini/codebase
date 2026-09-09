@@ -108,12 +108,10 @@ codometer, and blurring the two makes the messages unreadable.
 `--check` refuses a value it does not recognize, and refuses a flag carrying no
 value at all. A set with nothing in it looks exactly like the flag having been
 left off, so it is a mistake rather than a shorthand: read as "gate nothing" it
-would be a gate that cannot fail. `--check breadth` is refused too when no
-project in scope declares `limits.maximumBreadth`: breadth is the one limit with
-no default, so falling back to an unbounded one would look exactly like passing.
-A workspace-declared number does not satisfy it — every project inherits that
-one, and inheriting is not declaring. That refusal comes after the trace, since
-which projects were in scope is something only the trace knows.
+would be a gate that cannot fail. Every traced project's own configuration is
+complete, so `limits.maximumBreadth` is always there to judge `--check
+breadth` against — there is no project left to leave it undeclared, and so
+nothing left for `--check breadth` to be refused over.
 
 `depth` and `reports` are separate because they belong on opposite sides of a
 pull request. Depth is the gate — a stack got longer in this change, and this

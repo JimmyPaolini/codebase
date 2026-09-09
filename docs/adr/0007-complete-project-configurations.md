@@ -52,13 +52,17 @@ file by accident, because none of them is in there to adopt.
 
 ## Consequences
 
-- **A traced project with no configuration file ends the run.** Five conformetry
-  leaf analyzers — `conformetry-json`, `-jupyter`, `-python`, `-text`, and
-  `-typescript` — gained a file that spreads `projectDefaults`, takes the
-  workspace depth explicitly, and declares its own boundary-measured
+- **A traced project with no configuration file ends the run.** Six conformetry
+  leaf analyzers — `conformetry-json`, `-jupyter`, `-markdown`, `-python`,
+  `-text`, and `-typescript` — gained a file that spreads `projectDefaults`,
+  takes the workspace depth explicitly, and declares its own boundary-measured
   `maximumBreadth`: a statement made where a reader looks for it rather than
   inferred from a file that is not there. Adding a project to this workspace now
-  means adding its `callidescope.config.ts` in the same change.
+  means adding its `callidescope.config.ts` in the same change. Those six were
+  themselves consolidated into `conformetry-languages` shortly after, by a
+  change independent of this one — the six files this decision describes no
+  longer exist, and `conformetry-languages` carries the one complete file that
+  replaced them.
 - **One traced project is exempt, and cannot not be.** `configuration/` holds the
   workspace configuration at its own root. A run reads one file in one role, and
   no second file may sit beside it under a name discovery would find, so that
