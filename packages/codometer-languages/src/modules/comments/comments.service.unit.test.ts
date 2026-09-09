@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CommentsService } from "./comments.service";
 import { HashCommentsService } from "./hash-comments.service";
 
-import type { ResolvedCodometerLanguageCommentsConfiguration } from "@codometer/configuration";
+import type { LanguageCommentBudget } from "./comments.types";
 
 describe(CommentsService, () => {
   let service: CommentsService;
@@ -12,8 +12,8 @@ describe(CommentsService, () => {
 
   /** The budget a measurement is judged by, with one field varied. */
   function budget(
-    overrides: Partial<ResolvedCodometerLanguageCommentsConfiguration> = {},
-  ): ResolvedCodometerLanguageCommentsConfiguration {
+    overrides: Partial<LanguageCommentBudget> = {},
+  ): LanguageCommentBudget {
     return {
       file: undefined,
       maximumCharacters: undefined,
@@ -27,7 +27,7 @@ describe(CommentsService, () => {
   /** Measures a `#`-commented document under the given budget. */
   function measure(
     content: string,
-    overrides: Partial<ResolvedCodometerLanguageCommentsConfiguration> = {},
+    overrides: Partial<LanguageCommentBudget> = {},
   ): ReturnType<CommentsService["measure"]> {
     return service.measure({
       comments: budget(overrides),

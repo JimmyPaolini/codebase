@@ -6,13 +6,13 @@ import { CommentsService } from "../comments/comments.service";
 
 import { DocumentationMeasurementService } from "./documentation-measurement.service";
 
+import type { DocumentationCommentBudget } from "../comments/comments.types";
 import type { TypescriptWalkContext } from "./typescript.types";
-import type { ResolvedCodometerDocumentationConfiguration } from "@codometer/configuration";
 
 /** Builds the walk context a measurement is taken against. */
 function buildContext(
   source: string,
-  documentation: ResolvedCodometerDocumentationConfiguration | undefined,
+  documentation: DocumentationCommentBudget | undefined,
 ): { context: TypescriptWalkContext; node: tsCompiler.Node } {
   const sourceFile = tsCompiler.createSourceFile(
     "src/foo.ts",
@@ -66,7 +66,7 @@ function buildContext(
   };
 }
 
-const documentation: ResolvedCodometerDocumentationConfiguration = {
+const documentation: DocumentationCommentBudget = {
   kinds: {
     class: {
       maximumCharacters: undefined,
@@ -83,8 +83,8 @@ const documentation: ResolvedCodometerDocumentationConfiguration = {
 
 /** The block above, judged in one unit rather than lines. */
 function inUnit(
-  overrides: Partial<ResolvedCodometerDocumentationConfiguration>,
-): ResolvedCodometerDocumentationConfiguration {
+  overrides: Partial<DocumentationCommentBudget>,
+): DocumentationCommentBudget {
   return { ...documentation, kinds: {}, maximumLines: undefined, ...overrides };
 }
 
