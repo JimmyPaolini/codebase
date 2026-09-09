@@ -88,14 +88,8 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
   - **[conformetry-examples](packages/conformetry-examples)** - Eleven runnable examples of the toolchain, each with its own configuration, template, instances, and guide, executed by CI so the guides cannot rot
   - **[conformetry-files](packages/conformetry-files)** - Checks that every file a template declares exists, whatever its extension
   - **[conformetry-generation](packages/conformetry-generation)** - Mustache template rendering and scaffold file generation
-  - **[conformetry-json](packages/conformetry-json)** - JSON and JSONC validator parsing through `jsonc-parser`
-  - **[conformetry-jupyter](packages/conformetry-jupyter)** - Notebook validator composing the JSON, markdown, and Python validators
   - **[conformetry-languages](packages/conformetry-languages)** - Every language conformetry compares files with, as modules of one package, plus the resolution that picks them and the text fallback
-  - **[conformetry-markdown](packages/conformetry-markdown)** - Markdown validator comparing mdast structure rather than text
   - **[conformetry-nx](packages/conformetry-nx)** - Nx plugin host with generators, executors, and the emitted-plugin bootstrap
-  - **[conformetry-python](packages/conformetry-python)** - Python validator comparing structure through Python's `ast` module
-  - **[conformetry-text](packages/conformetry-text)** - Plain-text validator matching the lines a template requires
-  - **[conformetry-typescript](packages/conformetry-typescript)** - TypeScript validator checking syntax tree and comment section markers
   - **[conformetry-validation](packages/conformetry-validation)** - Validation orchestration, language routing, and finding deduplication
 - **[infrastructure](infrastructure)** - Helm charts, Terraform, Kubernetes infrastructure
 - **[JimmyPaolini](applications/JimmyPaolini)** - GitHub profile site
@@ -200,14 +194,8 @@ graph LR
   conformetry_examples["conformetry-examples"]
   conformetry_files["conformetry-files"]
   conformetry_generation["conformetry-generation"]
-  conformetry_json["conformetry-json"]
-  conformetry_jupyter["conformetry-jupyter"]
   conformetry_languages["conformetry-languages"]
-  conformetry_markdown["conformetry-markdown"]
   conformetry_nx["conformetry-nx"]
-  conformetry_python["conformetry-python"]
-  conformetry_text["conformetry-text"]
-  conformetry_typescript["conformetry-typescript"]
   conformetry_validation["conformetry-validation"]
   lexico["lexico"]
   lexico_components["lexico-components"]
@@ -289,21 +277,12 @@ graph LR
   conformetry_examples --> conformetry_validation
   conformetry_files --> conformetry_configuration
   conformetry_files --> conformetry_core
-  conformetry_json --> conformetry_core
-  conformetry_jupyter --> conformetry_core
-  conformetry_jupyter --> conformetry_json
-  conformetry_jupyter --> conformetry_markdown
-  conformetry_jupyter --> conformetry_python
   conformetry_languages --> conformetry_core
-  conformetry_markdown --> conformetry_core
   conformetry_nx --> conformetry_configuration
   conformetry_nx --> conformetry_core
   conformetry_nx --> conformetry_generation
   conformetry_nx --> conformetry_validation
   conformetry_nx --> logger
-  conformetry_python --> conformetry_core
-  conformetry_text --> conformetry_core
-  conformetry_typescript --> conformetry_core
   conformetry_validation --> conformetry_configuration
   conformetry_validation --> conformetry_core
   conformetry_validation --> conformetry_files
@@ -328,66 +307,66 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-267713-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-14.78_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-641-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-2143-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-265222-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-14.59_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-612-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-2093-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-2082-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-819-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-2040-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-806-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-34-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-1111-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-5857-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-1093-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-5800-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-16-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-14-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-518-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-121-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-725-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-11132-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-4085-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-12875-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-2342-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-14018-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-8892-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2790-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-12066-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-28131-475569?style=flat-square)
-![TODO Comments](https://img.shields.io/badge/TODO_Comments-34-ca8a04?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-501-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-118-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-707-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-10924-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-3987-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-12533-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-2378-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-13847-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-8688-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2739-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-11897-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-28733-475569?style=flat-square)
+![TODO Comments](https://img.shields.io/badge/TODO_Comments-29-ca8a04?style=flat-square)
 
 ### Python
 
-![Python Files](https://img.shields.io/badge/Python_Files-47-3776ab?style=flat-square)
-![Python Lines](https://img.shields.io/badge/Python_Lines-4379-4b8bbe?style=flat-square)
-![Python Classes](https://img.shields.io/badge/Python_Classes-25-7c3aed?style=flat-square)
-![Python Functions](https://img.shields.io/badge/Python_Functions-120-16a34a?style=flat-square)
+![Python Files](https://img.shields.io/badge/Python_Files-39-3776ab?style=flat-square)
+![Python Lines](https://img.shields.io/badge/Python_Lines-3974-4b8bbe?style=flat-square)
+![Python Classes](https://img.shields.io/badge/Python_Classes-22-7c3aed?style=flat-square)
+![Python Functions](https://img.shields.io/badge/Python_Functions-101-16a34a?style=flat-square)
 ![Python Protocols](https://img.shields.io/badge/Python_Protocols-0-0ea5e9?style=flat-square)
-![Python Constants](https://img.shields.io/badge/Python_Constants-130-dc2626?style=flat-square)
-![Python Imports](https://img.shields.io/badge/Python_Imports-102-0284c7?style=flat-square)
-![Python Decorators](https://img.shields.io/badge/Python_Decorators-75-db2777?style=flat-square)
-![Docstrings](https://img.shields.io/badge/Docstrings-68-6366f1?style=flat-square)
-![Docstring Lines](https://img.shields.io/badge/Docstring_Lines-187-818cf8?style=flat-square)
-![Python Comments](https://img.shields.io/badge/Python_Comments-39-64748b?style=flat-square)
-![Python Comment Lines](https://img.shields.io/badge/Python_Comment_Lines-39-475569?style=flat-square)
+![Python Constants](https://img.shields.io/badge/Python_Constants-129-dc2626?style=flat-square)
+![Python Imports](https://img.shields.io/badge/Python_Imports-81-0284c7?style=flat-square)
+![Python Decorators](https://img.shields.io/badge/Python_Decorators-73-db2777?style=flat-square)
+![Docstrings](https://img.shields.io/badge/Docstrings-50-6366f1?style=flat-square)
+![Docstring Lines](https://img.shields.io/badge/Docstring_Lines-143-818cf8?style=flat-square)
+![Python Comments](https://img.shields.io/badge/Python_Comments-32-64748b?style=flat-square)
+![Python Comment Lines](https://img.shields.io/badge/Python_Comment_Lines-32-475569?style=flat-square)
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-240-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-23894-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-4344-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1623-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-14010-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-9018-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1281-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1726-0ea5e9?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-217-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-23031-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-4149-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1542-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-13441-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-8596-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1269-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1673-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-3749-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-17992-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-3578-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-17229-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
@@ -468,15 +447,15 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-234-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-329-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-229-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-316-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-38-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-204-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-214-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-199-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-210-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-13-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-33-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-480-ca8a04?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-28-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-462-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-29-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-9-0284c7?style=flat-square)
 
 ### Jupyter
@@ -504,24 +483,24 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-277-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-77122-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-261-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-1845-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-2327-a78bfa?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-266-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-74728-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-250-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-1763-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-2188-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-98-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-11339-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-1233-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-5647-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-11043-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-1202-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-5521-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-671-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-6985-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-2006-059669?style=flat-square)
-![Images](https://img.shields.io/badge/Images-7907-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-2161-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-30651-ef4444?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-693-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-6969-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-1933-059669?style=flat-square)
+![Images](https://img.shields.io/badge/Images-7117-10b981?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-2058-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-30353-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-34-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
@@ -534,79 +513,227 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5155 |
-| Files | 1376 |
-| Calls traced | 5884 |
-| Call stacks | 1332 |
+| Callables | 5013 |
+| Files | 1404 |
+| Calls traced | 5689 |
+| Call stacks | 1286 |
 | Deepest stack | 17 |
-| Stacks through recursion | 18 |
-| Unfollowable calls | 361 |
+| Stacks through recursion | 12 |
+| Unfollowable calls | 360 |
 
 ### Projects
 
-| Project | Deepest | Limit | Headroom | Widest |
-| --- | --- | --- | --- | --- |
-| `applications/caelundas` | 16 | 16 | 0 | 12 |
-| `applications/lexico` | 9 | 9 | 0 | 9 |
-| `applications/lexico-ingestion` | 17 | 17 | 0 | 8 |
-| `applications/meanderaw` | 16 | 16 | 0 | 14 |
-| `packages/callidescope-cli` | 15 | 15 | 0 | 9 |
-| `packages/callidescope-nx` | 17 | 17 | 0 | 7 |
-| `packages/codependix-boundaries` | 12 | 12 | 0 | 5 |
-| `packages/codependix-cli` | 15 | 15 | 0 | 7 |
-| `packages/codometer-cli` | 16 | 16 | 0 | 11 |
-| `packages/conformetry-cli` | 14 | 14 | 0 | 9 |
-| `packages/conformetry-languages` | 13 | 13 | 0 | 11 |
-| `packages/conformetry-markdown` | 3 | 3 | 0 | 5 |
-| `packages/conformetry-nx` | 14 | 14 | 0 | 9 |
-| `packages/lexico-components` | 3 | 3 | 0 | 7 |
-| `packages/lexico-entities` | 3 | 3 | 0 | 3 |
-| `packages/logger` | 4 | 4 | 0 | 2 |
-| `tools/synchronization` | 10 | 10 | 0 | 9 |
-| `tools/validation` | 8 | 8 | 0 | 9 |
-| `packages/callidescope-configuration` | 5 | 6 | 1 | 7 |
-| `packages/codometer-size` | 0 | 3 | 3 | 2 |
-| `packages/conformetry-configuration` | 10 | 13 | 3 | 5 |
-| `packages/codependix-configuration` | 2 | 6 | 4 | 5 |
-| `packages/codependix-nx` | 0 | 4 | 4 | 8 |
-| `packages/conformetry-jupyter` | 13 | 17 | 4 | 11 |
-| `packages/codependix-nestjs` | 0 | 5 | 5 | 5 |
-| `packages/codometer-customization` | 0 | 5 | 5 | 1 |
-| `packages/conformetry-generation` | 2 | 7 | 5 | 4 |
-| `packages/conformetry-json` | 12 | 17 | 5 | 7 |
-| `packages/conformetry-typescript` | 12 | 17 | 5 | 6 |
-| `packages/callidescope-graph` | 5 | 11 | 6 | 8 |
-| `packages/callidescope-output` | 4 | 10 | 6 | 7 |
-| `packages/codometer-configuration` | 2 | 8 | 6 | 7 |
-| `packages/codometer-languages` | 5 | 11 | 6 | 12 |
-| `packages/conformetry-core` | 0 | 6 | 6 | 4 |
-| `packages/codometer-discovery` | 0 | 7 | 7 | 7 |
-| `packages/codometer-output` | 4 | 11 | 7 | 16 |
-| `packages/codependix-imports` | 0 | 8 | 8 | 8 |
-| `packages/conformetry-files` | 0 | 9 | 9 | 3 |
-| `packages/codometer-changes` | 0 | 10 | 10 | 7 |
-| `packages/conformetry-python` | 6 | 17 | 11 | 6 |
-| `packages/conformetry-validation` | 0 | 12 | 12 | 10 |
-| `configuration` | 3 | 17 | 14 | 2 |
-| `packages/conformetry-text` | 3 | 17 | 14 | 2 |
+| Project | Deepest | Limit | Headroom | Widest | Spread | Misplaced |
+| --- | --- | --- | --- | --- | --- | --- |
+| `packages/conformetry-languages` | 13 | 4 declared | -9 | 11 | 0 | 0 |
+| `applications/caelundas` | 16 | 16 declared | 0 | 12 | 5 | 4 |
+| `applications/lexico` | 9 | 9 declared | 0 | 9 | 0 | 1 |
+| `applications/lexico-ingestion` | 17 | 17 declared | 0 | 8 | 2 | 1 |
+| `applications/meanderaw` | 16 | 16 declared | 0 | 14 | 1 | 3 |
+| `packages/callidescope-cli` | 15 | 15 declared | 0 | 11 | 2 | 0 |
+| `packages/callidescope-nx` | 17 | 17 declared | 0 | 7 | 2 | 3 |
+| `packages/codependix-boundaries` | 12 | 12 declared | 0 | 5 | 0 | 1 |
+| `packages/codependix-cli` | 15 | 15 declared | 0 | 7 | 2 | 2 |
+| `packages/codometer-cli` | 16 | 16 declared | 0 | 11 | 2 | 0 |
+| `packages/conformetry-cli` | 14 | 14 declared | 0 | 9 | 0 | 0 |
+| `packages/conformetry-examples` | 13 | 13 declared | 0 | 6 | 1 | 0 |
+| `packages/conformetry-nx` | 14 | 14 declared | 0 | 9 | 4 | 0 |
+| `packages/lexico-components` | 3 | 3 declared | 0 | 7 | 0 | 1 |
+| `packages/lexico-entities` | 3 | 3 declared | 0 | 3 | 0 | 0 |
+| `packages/logger` | 4 | 4 declared | 0 | 2 | 0 | 0 |
+| `tools/synchronization` | 10 | 10 declared | 0 | 9 | 0 | 0 |
+| `tools/validation` | 8 | 8 declared | 0 | 9 | 0 | 0 |
+| `packages/callidescope-configuration` | 5 | 6 declared | 1 | 8 | 0 | 0 |
+| `packages/codometer-size` | 0 | 3 declared | 3 | 2 | 0 | 0 |
+| `packages/conformetry-configuration` | 10 | 13 declared | 3 | 5 | 0 | 0 |
+| `packages/codependix-configuration` | 2 | 6 declared | 4 | 5 | 0 | 0 |
+| `packages/codependix-nx` | 0 | 4 declared | 4 | 8 | 0 | 0 |
+| `packages/codependix-nestjs` | 0 | 5 declared | 5 | 5 | 0 | 0 |
+| `packages/codometer-customization` | 0 | 5 declared | 5 | 1 | 0 | 0 |
+| `packages/conformetry-generation` | 2 | 7 declared | 5 | 4 | 0 | 0 |
+| `packages/callidescope-graph` | 5 | 11 declared | 6 | 9 | 0 | 0 |
+| `packages/callidescope-output` | 4 | 10 declared | 6 | 9 | 0 | 0 |
+| `packages/codometer-configuration` | 2 | 8 declared | 6 | 7 | 0 | 0 |
+| `packages/codometer-languages` | 5 | 11 declared | 6 | 12 | 1 | 0 |
+| `packages/conformetry-core` | 0 | 6 declared | 6 | 4 | 0 | 0 |
+| `packages/codometer-discovery` | 0 | 7 declared | 7 | 7 | 0 | 0 |
+| `packages/codometer-output` | 4 | 11 declared | 7 | 16 | 0 | 0 |
+| `packages/codependix-imports` | 0 | 8 declared | 8 | 8 | 0 | 0 |
+| `packages/conformetry-files` | 0 | 9 declared | 9 | 3 | 0 | 0 |
+| `packages/codometer-changes` | 0 | 10 declared | 10 | 7 | 0 | 0 |
+| `packages/conformetry-validation` | 0 | 12 declared | 12 | 10 | 0 | 0 |
+| `configuration` | 3 | 17 inherited | 14 | 2 | 0 | 0 |
+| `packages/codometer-examples` | 2 | 17 inherited | 15 | 1 | 0 | 0 |
+| `packages/callidescope-agents` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
+| `packages/codependix-agents` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
+| `packages/codependix-examples` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
+| `packages/codependix-examples/examples` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
+| `packages/codependix-examples/examples/graph-levels/atlas/packages/atlas-service` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
+| `packages/codependix-examples/examples/typescript-resolution/resolution` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
+| `packages/codometer-agents` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
+| `packages/conformetry-agents` | 0 | 17 inherited | 17 | 0 | 0 | 0 |
 
 ### Depth headroom
 
 | Headroom | Projects |
 | --- | --- |
-| over limit | 0 |
-| 0 — at limit | 18 |
+| over limit | 1 |
+| 0 — at limit | 17 |
 | 1 | 1 |
 | 2–3 | 1 |
-| 4+ | 13 |
-| no stacks | 10 |
+| 4+ | 9 |
+| no stacks | 18 |
 
-### Call stacks over the depth limit (0)
+### Call stacks over the depth limit (4)
 
-None.
+**1. `JupyterService.validateDocument`** — depth 13 · orphan-root
+
+```text
+🚀 JupyterService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-languages/src/modules/jupyter/jupyter.service.ts:153]
+   ↳ Reports every notebook difference: envelope, missing cells, cell contents.
+  └─> JupyterService.map(…)(…): { error: { differenceType: "code"; expected: string; fix: string; language: "python"; message: string; weight: number; }; weight: number; } [packages/conformetry-languages/src/modules/jupyter/jupyter.service.ts:173]
+    └─> JupyterService.weighMissingCell(args: { cell: PairedCells; document: PreparedValidationDocument; }): number [packages/conformetry-languages/src/modules/jupyter/jupyter.service.ts:140]
+       ↳ Weighs a cell the notebook does not have.
+      └─> JupyterService.validateCell(…): DocumentValidationResult [packages/conformetry-languages/src/modules/jupyter/jupyter.service.ts:90]
+         ↳ Validates one paired cell with the validator matching its kind.
+        └─> MarkdownService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-languages/src/modules/markdown/markdown.service.ts:48]
+           ↳ Reports every markdown structure the template requires and the file lacks.
+          └─> MarkdownTreeService.compareContainer(args: CompareNodeArguments): CompareNodeResult (cycle) [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:64]
+             ↳ Matches a container node, then descends into it.
+            └─> MarkdownTreeService.map(…)(…): { differences: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:90]
+              └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:146]
+                 ↳ Compares one level of two trees, descending into containers.
+                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:114]
+                   ↳ Matches a leaf node on its own identity, without descending.
+                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:134]
+                     ↳ Finds every instance sibling satisfying the template node.
+                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:135]
+                      └─> MarkdownNodesService.matches(args: { instanceNode: MarkdownNode; templateNode: MarkdownNode; }): boolean [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:140]
+                         ↳ Returns whether an instance node satisfies a template node.
+                        └─> MarkdownNodesService.readText(node: MarkdownNode): string [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:163]
+                           ↳ Reads a node's rendered plain text.
+```
+
+**2. `JsonService.validateDocument`** — depth 12 · orphan-root
+
+```text
+🚀 JsonService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-languages/src/modules/json/json.service.ts:39]
+   ↳ Reports every key or value the template requires and the instance lacks.
+  └─> JsonComparisonService.compareArrayItem(…): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:79]
+     ↳ Matches one required array entry against the instance array.
+    └─> JsonComparisonService.map(…)(instanceItem: JsonValue, index: number): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:122]
+      └─> JsonComparisonService.compare(args: CompareJsonArguments): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:268]
+         ↳ Compares a template value against an instance value, returning every way the instance fails to contain what the…
+        └─> JsonComparisonService.compareArrays(…): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:141]
+           ↳ Compares two arrays.
+          └─> JsonComparisonService.map(…)(templateItem: JsonValue): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:148]
+            └─> JsonComparisonService.compareObjects(…): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:155]
+               ↳ Compares two objects, requiring every template key to be present.
+              └─> JsonComparisonService.map(…)([key, templateValue]: [string, JsonValue]): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:164]
+                └─> JsonComparisonService.countNodes(value: JsonValue): number (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:207]
+                   ↳ Counts a JSON value and every value nested inside it.
+                  └─> JsonComparisonService.reduce(…)(total: number, item: JsonValue): number (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:209]
+                    └─> JsonComparisonService.reduce(…)(total: number, nested: JsonValue): number (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:215]
+                      └─> JsonComparisonService.isJsonObject(value: JsonValue): value is Record<string, JsonValue> [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:235]
+                         ↳ Returns whether a value is a plain JSON object.
+```
+
+**3. `TypescriptService.validateDocument`** — depth 12 · orphan-root
+
+```text
+🚀 TypescriptService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-languages/src/modules/typescript/typescript.service.ts:164]
+   ↳ Reports every declaration and comment the template requires.
+  └─> TypescriptService.validateStructure(…): DocumentValidationResult [packages/conformetry-languages/src/modules/typescript/typescript.service.ts:107]
+     ↳ Compares the syntax trees and describes each missing declaration.
+    └─> TypescriptTreeService.compareBestCandidate(args: { candidates: Node[]; templateChild: Node; }): TreeComparison (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:67]
+       ↳ Descends into whichever candidate explains the template best.
+      └─> TypescriptTreeService.map(…)(candidate: Node): TreeComparison (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:72]
+        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TreeComparison (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:126]
+           ↳ Compares one level of two trees, descending into every match.
+          └─> TypescriptTreeService.map(…)(templateChild: Node): TreeComparison (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:133]
+            └─> TypescriptTreeService.compareChild(…): TreeComparison (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:87]
+               ↳ Matches one template child against the instance's children.
+              └─> TypescriptTreeService.buildError(…): TypescriptComparisonError [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:42]
+                 ↳ Describes a template node with no instance counterpart.
+                └─> TypescriptNodesService.countSubtree(node: Node): number (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:176]
+                   ↳ Counts a node and everything beneath it.
+                  └─> TypescriptNodesService.reduce(…)(total: number, child: Node): number (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:177]
+                    └─> TypescriptNodesService.readChildren(node: Node): Node[] [packages/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:183]
+                       ↳ Reads a node's direct children, skipping the end-of-file token.
+                      └─> TypescriptNodesService.forEachChild(…)(childNode: Node): undefined [packages/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:186]
+```
+
+<details>
+<summary>1 more call stacks</summary>
+
+**4. `PythonService.validateDocument`** — depth 6 · orphan-root
+
+```text
+🚀 PythonService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-languages/src/modules/python/python.service.ts:38]
+   ↳ Reports every declaration and comment the template requires.
+  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/conformetry-languages/src/modules/python/python-bridge.service.ts:160]
+     ↳ Compares one Python source against its rendered template.
+    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryDifference [packages/conformetry-languages/src/modules/python/python-bridge.service.ts:185]
+      └─> PythonBridgeService.toConformetryDifference(error: PythonBridgeError): ConformetryDifference [packages/conformetry-languages/src/modules/python/python-bridge.service.ts:132]
+         ↳ Maps one snake_case bridge error onto the shared error shape.
+        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryDifference> [packages/conformetry-languages/src/modules/python/python-bridge.service.ts:121]
+           ↳ Reads the optional expected and actual values.
+          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/conformetry-languages/src/modules/python/python-bridge.service.ts:111]
+             ↳ Narrows an untrusted string field from the bridge payload.
+```
+
+</details>
+
+### Module spread
+
+| Callable | Spread | Calls directly | Location |
+| --- | --- | --- | --- |
+| `MeasureService.measureTarget` | 18 | `packages/codometer-discovery:modules/discovery`, `packages/codometer-discovery:modules/targets`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/measure/measure.service.ts:302` |
+| `PluginService.runGate` | 17 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-nx:modules/run-configuration`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:427` |
+| `PluginService.runTrace` | 17 | `packages/callidescope-cli:modules/callidescope`, `packages/callidescope-nx:modules/run-configuration`, `packages/callidescope-output:modules/report` | `packages/callidescope-nx/src/modules/plugin/plugin.service.ts:471` |
+| `PluginService.runValidation` | 17 | `packages/conformetry-core:modules/reporting`, `packages/conformetry-nx:modules/instances`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:395` |
+| `MeasureService.analyzeFiles` | 16 | `packages/codometer-customization:modules/customization`, `packages/codometer-languages:modules/languages`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/measure/measure.service.ts:75` |
+| `LanguagesService.analyze` | 13 | `packages/codometer-languages:modules/comments`, `packages/codometer-languages:modules/css`, `packages/codometer-languages:modules/hcl`, `packages/codometer-languages:modules/json`, `packages/codometer-languages:modules/jupyter`, `packages/codometer-languages:modules/markdown`, `packages/codometer-languages:modules/python`, `packages/codometer-languages:modules/shell`, `packages/codometer-languages:modules/sql`, `packages/codometer-languages:modules/toml`, `packages/codometer-languages:modules/typescript`, `packages/codometer-languages:modules/yaml` | `packages/codometer-languages/src/modules/languages/languages.service.ts:56` |
+| `main` | 13 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-configuration:modules/template-discovery`, `packages/conformetry-core:modules/reporting`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-examples/examples/embedding/embed.ts:44` |
+| `CallidescopeService.analyze` | 12 | `packages/callidescope-graph:modules/cohesion`, `packages/callidescope-graph:modules/entries`, `packages/callidescope-graph:modules/graph`, `packages/callidescope-output:modules/project-reports` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:291` |
+| `PluginService.runGenerator` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-nx:modules/adapter`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:334` |
+| `AspectsService.detectSimpleAspects` | 10 | `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/major-aspects`, `applications/caelundas:modules/minor-aspects`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/specialty-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:90` |
+| `PerfectiveService.detectOrbitalEvents` | 10 | `applications/caelundas:modules/annual-solar-cycle`, `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/monthly-lunar-cycle`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades` | `applications/caelundas/src/modules/perfective/perfective.service.ts:149` |
+| `ProgressiveService.detect` | 10 | `applications/caelundas:modules/annual-solar-cycle`, `applications/caelundas:modules/aspects`, `applications/caelundas:modules/eclipses`, `applications/caelundas:modules/ingresses`, `applications/caelundas:modules/monthly-lunar-cycle`, `applications/caelundas:modules/phases`, `applications/caelundas:modules/retrogrades`, `applications/caelundas:modules/twilights` | `applications/caelundas/src/modules/progressive/progressive.service.ts:47` |
+| `AspectsService.detectCompositeAspects` | 8 | `applications/caelundas:modules/quadruple-aspects`, `applications/caelundas:modules/quintuple-aspects`, `applications/caelundas:modules/sextuple-aspects`, `applications/caelundas:modules/stellium`, `applications/caelundas:modules/triple-aspects` | `applications/caelundas/src/modules/aspects/aspects.service.ts:72` |
+| `LexemesService.enrichLexeme` | 8 | `applications/lexico-ingestion:modules/etymology`, `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/part-of-speech`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/translations` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:73` |
+| `PerfectiveService.detectObservationalEvents` | 7 | `applications/caelundas:modules/daily-cycles`, `applications/caelundas:modules/eclipses`, `applications/caelundas:modules/twilights` | `applications/caelundas/src/modules/perfective/perfective.service.ts:117` |
+| `syncGenerator` | 7 | `packages/conformetry-nx:modules/generator`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
+| `LexemesService.saveLexemeRelations` | 6 | `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/words` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:218` |
+| `DrawPermutationsService.render` | 6 | `applications/meanderaw:modules/mosaic-naming`, `applications/meanderaw:modules/mosaic-tile`, `applications/meanderaw:modules/svg-rendering` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:80` |
+| `CallidescopeService.discoverCallables` | 6 | `packages/callidescope-graph:modules/callables`, `packages/callidescope-graph:modules/classes`, `packages/callidescope-graph:modules/workspace` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:85` |
+| `MapService.runWorkspaceGraph` | 6 | `packages/codependix-cli:modules/delivery`, `packages/codependix-configuration:modules/configuration`, `packages/codependix-nx:modules/workspace-graph` | `packages/codependix-cli/src/modules/map/map.service.ts:281` |
+| `bootstrapPlugin` | 6 | `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:39` |
+| `MapService.runNestjsProject` | 5 | `packages/codependix-cli:modules/delivery`, `packages/codependix-nestjs:modules/module-graph`, `packages/codependix-nestjs:modules/nestjs-project` | `packages/codependix-cli/src/modules/map/map.service.ts:186` |
 
 ### Callables over the breadth limit (0)
 
 None.
+
+### Possibly misplaced
+
+| Callable | Declared in | Called from | Callers |
+| --- | --- | --- | --- |
+| `cn` | `packages/lexico-components:lib` | `packages/lexico-components:components` | 219/219 |
+| `CalendarService.buildInstantEvent` | `applications/caelundas:modules/calendar` | `applications/caelundas:modules/daily-cycles` | 8/9 |
+| `typedFromEntries` | `applications/caelundas:modules/caelundas` | `applications/caelundas:modules/ephemeris` | 6/6 |
+| `MosaicSymmetryService.canonicalIdentifier` | `applications/meanderaw:modules/mosaic-tile` | `applications/meanderaw:modules/draw` | 4/5 |
+| `DeliveryService.deliverGraphOutput` | `packages/codependix-cli:modules/delivery` | `packages/codependix-cli:modules/map` | 4/5 |
+| `DeliveryService.renderJson` | `packages/codependix-cli:modules/delivery` | `packages/codependix-cli:modules/map` | 4/5 |
+| `MathService.normalizeForComparison` | `applications/caelundas:modules/math` | `applications/caelundas:modules/retrogrades` | 4/4 |
+| `objectEntries` | `applications/caelundas:modules/caelundas` | `applications/caelundas:modules/ingresses` | 2/2 |
+| `transformForms` | `applications/lexico:lib` | `applications/lexico:routes` | 2/2 |
+| `NumeralsService.toDecimal` | `applications/lexico-ingestion:modules/numerals` | `applications/lexico-ingestion:modules/literature` | 2/2 |
+| `MeanderLatticeService.build` | `applications/meanderaw:modules/meander-lattice` | `applications/meanderaw:modules/meander-topology` | 2/2 |
+| `MosaicTilesService.enumerate` | `applications/meanderaw:modules/mosaic-tile` | `applications/meanderaw:modules/draw` | 2/2 |
+| `RunConfigurationService.load` | `packages/callidescope-nx:modules/run-configuration` | `packages/callidescope-nx:modules/plugin` | 2/2 |
+| `RunConfigurationService.readPreviewCount` | `packages/callidescope-nx:modules/run-configuration` | `packages/callidescope-nx:modules/plugin` | 2/2 |
+| `runAddressExecutor` | `packages/callidescope-nx:modules/address` | `packages/callidescope-nx:executors` | 2/2 |
+| `BoundariesService.evaluate` | `packages/codependix-boundaries:modules/boundaries` | `packages/codependix-boundaries:modules/boundary-check` | 2/2 |
 
 <!-- CALL_STACKS_END -->

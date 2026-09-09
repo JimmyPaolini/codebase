@@ -1,57 +1,46 @@
 // ♟️ Constants
 
-/**
-
- * `isUpward` values swept for the `comb` modifier's batch combinations.
- *
- * One value rather than two, and deliberately not the mode's own default:
- * the unmodified sweep already draws the downward comb, and
- * `--modifier comb` naming it produces a byte-identical document under a
- * second filename — `branch-motif.service.unit.test.ts` asserts that
- * identity, exactly as `parallel`'s does for a two-strand `plied`. Sweeping
- * the upward one alone is what puts the direction the corpus did not have
- * into it without putting the one it already had into it twice.
- *
- * `rung` sweeps both of its directions because neither is what the
- * unmodified drawing is — that one is a `comb`.
- */
-export const COMB_SWEEP_UPWARD_VALUES: readonly boolean[] = [true];
+import type { Modifier } from "../meander-generation/meander-generation.types";
 
 /**
-
- * `isLeftward` values swept for the `rung` modifier's batch combinations.
+ * Ply-carrying modifier names whose one-strand drawing duplicates
+ * `aligned-strands-1` once both border rules are drawn full.
  *
- * Both of them, which is the modifier's whole domain rather than a sample of
- * it. `false` leads,
- * so the rightward drawing the sweep committed under the bare name before
- * the flag existed is still the first one enumerated at each row count.
- *
- * The two are mirror images and every topology count is identical across
- * them, so this pair adds no new measurement to the charter. It is swept
- * anyway because the corpus is what the index page shows, and a direction
- * nobody can see drawn is a direction nobody will use.
+ * At one strand there is nothing to ply and nothing to serpentine: both
+ * shapes decompose to the same lone bracket `aligned` already draws at that
+ * count. The three shapes still emit different `M`/`V`/`H` runs for it — the
+ * duplication is in the *ink* the lattice carries, not in the bytes on disk
+ * — so `aligned-strands-1` is the only honest name for it and the sweep
+ * drops the strand count named here for `plied` and `serpentine` while
+ * keeping it for `aligned`.
  */
-export const RUNG_SWEEP_LEFTWARD_VALUES: readonly boolean[] = [false, true];
+export const NAMES_WITHOUT_A_ONE_STRAND_DRAWING: ReadonlySet<Modifier["name"]> =
+  new Set(["plied", "serpentine"]);
 
 /**
  * `branches` values swept for the `stagger` modifier's batch combinations.
  *
- * A contiguous run rather than the sampled ply counts `plied`
- * takes, because this parameter has a floor it does not and every value
- * above it draws a visibly different crenel. The first is
- * `MINIMUM_STAGGER_BRANCHES` itself, which is both the tightest crenel the
- * mode admits and the only one any `stagger` was drawn at before the flag
- * existed; each one after it widens the crenel by a single lattice column,
- * so no value in the run repeats the one before it at another scale.
+ * A contiguous run rather than the sampled ply counts `plied` takes, because
+ * this parameter has a floor it does not: the run opens at
+ * `MINIMUM_STAGGER_BRANCHES` itself and takes the next two whole numbers.
  *
- * It stops at six because a crenel keeps its shape and only its wavelength
- * grows: past six branches one rail run spans most of a six-repeat band and
- * the figure reads as a `comb` with a couple of changes of side rather than
- * as a crenellation. Nothing structural stops a wider one — the command
- * line accepts up to `MAXIMUM_VALUE` — so this is where the sweep stops
- * rather than where the mode does.
+ * **What it varies is a width, not a crenel.** With both band borders ruled
+ * end to end a `stagger` rail lies wholly inside a rule at every branch count
+ * — see `MINIMUM_STAGGER_BRANCHES` and `BranchMotifService.spineUnit` — so no
+ * value here draws a crenellation a reader can pick out of the rules. What it
+ * does draw is a repeat unit `branches - 1` lattice columns wide, and so a
+ * band that much wider: three, four, and five columns per unit across this
+ * run, eighteen, twenty-four, and thirty columns at the sweep's repeat count.
+ * The fork and loop counts climb with that width rather than repeating, which
+ * is why each value earns its own drawing.
+ *
+ * It stops at six because every value past it only adds another column to the
+ * same figure, at a band already two and a half times the unmodified
+ * drawing's twelve. Nothing structural stops a wider one — the command line
+ * accepts up to `MAXIMUM_VALUE` — so this is where the sweep stops rather
+ * than where the mode does.
  */
-export const STAGGER_SWEEP_BRANCH_COUNTS: readonly number[] = [3, 4, 5, 6];
+export const STAGGER_SWEEP_BRANCH_COUNTS: readonly number[] = [4, 5, 6];
 
 /**
  * The gallery page `DrawCommand` writes
@@ -147,6 +136,33 @@ export class MissingModifierParameterError extends Error {
   constructor(modifierName: string, flag: string) {
     super(`Modifier "${modifierName}" requires ${flag}`);
     this.name = "MissingModifierParameterError";
+  }
+}
+
+/**
+ * Thrown when a drawing is asked for at a repeat count too narrow to carry
+ * a lattice address in its filename.
+ *
+ * Every file the command writes for a motif-drawn family carries an
+ * address, which is what keeps a hand-named drawing on the path the sweep
+ * would have written it to. A drawing narrower than its own span plus a
+ * termination margin at either end cannot be addressed at all — see
+ * `TERMINATION_MARGIN_PITCHES` — so the request is refused here rather than
+ * filed under a name the sweep would never produce.
+ *
+ * It names the family, the modifier where there is one, and the repeat
+ * count that would work, because the alternative a reader gets otherwise is
+ * `InvalidSpanError` talking about columns and spans they never asked
+ * about. The minimum is the family's and the modifier's together: a spin
+ * cycle rounds it up to its own multiple, since the counts between are
+ * refused for a different reason entirely.
+ */
+export class NarrowRepeatCountError extends Error {
+  constructor(repeatCount: number, minimum: number, variant: string) {
+    super(
+      `a repeat count of ${repeatCount} draws a ${variant} too narrow to carry a lattice address; draw at least ${minimum} repeats`,
+    );
+    this.name = "NarrowRepeatCountError";
   }
 }
 

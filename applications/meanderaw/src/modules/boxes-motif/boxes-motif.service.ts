@@ -163,16 +163,10 @@ export class BoxesMotifService implements MotifService {
 
   /** Draws the top/bottom border shared by every unit, spanning the full pattern width. */
   border(geometry: GridGeometry, pattern: RepeatPatternOptions): string {
-    const leftX = this.gridGeometryService.formatCoordinate(geometry.offset);
-    const rightX = this.gridGeometryService.formatCoordinate(
+    return this.gridGeometryService.borderPath(
+      geometry,
       this.rightEdge(geometry, pattern),
     );
-    const topY = this.gridGeometryService.formatCoordinate(geometry.offset);
-    const bottomY = this.gridGeometryService.formatCoordinate(
-      geometry.offset + geometry.height,
-    );
-
-    return `M${rightX} ${bottomY}H${leftX}M${rightX} ${topY}H${leftX}`;
   }
 
   /** Draws one repeat unit's spiral as an SVG path attribute value, applying the unit's modifier (if any) first. */

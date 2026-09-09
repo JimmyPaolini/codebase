@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { LatticeIdentificationModule } from "../lattice-identification/lattice-identification.module";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
 import { ParallelMotifModule } from "../parallel-motif/parallel-motif.module";
@@ -9,23 +10,28 @@ import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
+import { DrawRenderingService } from "./draw-rendering.service";
 import { DrawCommand } from "./draw.command";
 
 /**
  * Registers the `draw` CLI command — the application's only command — the
  * service enumerating the space its sweep covers, the two services rendering
  * its permutation halves — one per family that has one — the service
- * rendering the index page all of them are looked through, and the service
- * that turns its options into generation parameters.
+ * rendering the index page all of them are looked through, the service that
+ * turns its options into generation parameters, and the service that renders
+ * one set of those parameters into a document and the addressed path it is
+ * written to.
  *
  * `DrawCombinationsService` is exported because the meander charter's
  * property test sweeps the same enumeration, so the corpus written here and
  * the corpus gated there cannot drift apart.
  *
- * It imports `MosaicNamingModule` because the permutation half files each
- * tile under the name its structure earns, where it earns one — a rule read
- * off the tile rather than a label the tile carries, which is why naming is
- * a module the sweep asks rather than something the enumeration hands over.
+ * It imports `LatticeIdentificationModule` and `MosaicNamingModule` for the
+ * two halves of a permutation's filename: the first spells the tile out, and
+ * the second supplies the name its structure earns where it earns one — a
+ * rule read off the tile rather than a label the tile carries, which is why
+ * naming is a module the sweep asks rather than something the enumeration
+ * hands over.
  *
  * It imports `ParallelMotifModule` for one reason: `serpentine`'s variant
  * space is not a cross product of its axes, and which rotations and flips
@@ -36,7 +42,12 @@ import { DrawCommand } from "./draw.command";
 @Module({
   controllers: [],
   exports: [DrawCombinationsService, DrawCommand],
-  imports: [MeanderGenerationModule, MosaicNamingModule, ParallelMotifModule],
+  imports: [
+    LatticeIdentificationModule,
+    MeanderGenerationModule,
+    MosaicNamingModule,
+    ParallelMotifModule,
+  ],
   providers: [
     DrawCombinationsService,
     DrawCommand,
@@ -44,6 +55,7 @@ import { DrawCommand } from "./draw.command";
     DrawNegativePermutationsService,
     DrawParametersService,
     DrawPermutationsService,
+    DrawRenderingService,
   ],
 })
 export class DrawModule {}

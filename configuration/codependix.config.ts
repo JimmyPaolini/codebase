@@ -308,72 +308,6 @@ const codependixConfiguration: CodependixConfiguration = {
         },
       },
       {
-        from: { tags: ["name:conformetry-json"] },
-        kind: "allow",
-        message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
-        name: "conformetry-json-layer",
-        to: {
-          tags: ["name:conformetry-configuration", "name:conformetry-core"],
-        },
-      },
-      {
-        from: { tags: ["name:conformetry-markdown"] },
-        kind: "allow",
-        message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
-        name: "conformetry-markdown-layer",
-        to: {
-          tags: ["name:conformetry-configuration", "name:conformetry-core"],
-        },
-      },
-      {
-        from: { tags: ["name:conformetry-python"] },
-        kind: "allow",
-        message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
-        name: "conformetry-python-layer",
-        to: {
-          tags: ["name:conformetry-configuration", "name:conformetry-core"],
-        },
-      },
-      {
-        from: { tags: ["name:conformetry-text"] },
-        kind: "allow",
-        message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
-        name: "conformetry-text-layer",
-        to: {
-          tags: ["name:conformetry-configuration", "name:conformetry-core"],
-        },
-      },
-      {
-        from: { tags: ["name:conformetry-typescript"] },
-        kind: "allow",
-        message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
-        name: "conformetry-typescript-layer",
-        to: {
-          tags: ["name:conformetry-configuration", "name:conformetry-core"],
-        },
-      },
-      {
-        from: { tags: ["name:conformetry-jupyter"] },
-        kind: "allow",
-        message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
-        name: "conformetry-jupyter-layer",
-        to: {
-          tags: [
-            "name:conformetry-configuration",
-            "name:conformetry-core",
-            "name:conformetry-json",
-            "name:conformetry-markdown",
-            "name:conformetry-python",
-          ],
-        },
-      },
-      {
         from: { tags: ["name:conformetry-languages"] },
         kind: "allow",
         message:
@@ -423,12 +357,6 @@ const codependixConfiguration: CodependixConfiguration = {
             "name:conformetry-configuration",
             "name:conformetry-core",
             "name:conformetry-generation",
-            "name:conformetry-json",
-            "name:conformetry-jupyter",
-            "name:conformetry-markdown",
-            "name:conformetry-python",
-            "name:conformetry-text",
-            "name:conformetry-typescript",
             "name:conformetry-validation",
             "name:logger",
           ],
