@@ -1060,20 +1060,16 @@ describe(MeanderTopologyService, () => {
     // measurement were authored at different moments and nothing else makes
     // them agree, so the count is taken here rather than restated there.
 
-    // The junction total moved from 5,152 to 6,538 when `branch` gained a
-    // rule along its second border, and to 24,572 when `parallel` gained
-    // both of its own: those 819 documents carry 18,034 of these where they
-    // carried none. The document count moved with it — 214 to 889 — where
-    // `branch` moved the total alone, having already forked in all of its
-    // 66. Both fell four times more: to 24,352 and 878 when the eleven
-    // `comb` duplicates of `plain` were deleted; to 24,132 and 867 when the
-    // eleven `stagger-branches-3` duplicates were; to 23,472 and 834 when
-    // issue #669 dropped `parallel`'s 33 one-strand duplicates; to
-    // 22,158 and 828 when `branch`'s figure was inset from its rules; and to
-    // 22,918 and 848 when `rung` gained its two south-railed directions —
-    // two new drawings, `southeast` and `southwest`, at each of its ten row
-    // counts, each forking exactly as its already-committed north-railed
-    // mirror does, for 20 more documents carrying 760 more of these.
+    // The total has moved seven times. 5,152 to 6,538 when `branch` ruled
+    // its second border, then to 24,572 when `parallel` ruled both: its 819
+    // documents carry 18,034 where they carried none, which is why the
+    // document count moved 214 to 889 while `branch` moved the total alone,
+    // having already forked in all 66. Then five falls: 24,352 and 878, the
+    // eleven `comb` duplicates deleted; 24,132 and 867, the eleven
+    // `stagger-branches-3`; 23,472 and 834, issue #669's 33 one-strand
+    // `parallel` duplicates; 22,158 and 828, `branch`'s figure inset from
+    // its rules; and 22,918 and 848, `rung`'s two south-railed directions,
+    // 20 documents carrying 760.
 
     // That last fall took forks away rather than documents. A rule no longer
     // running along the row a rail sits on stops forking against every tooth
