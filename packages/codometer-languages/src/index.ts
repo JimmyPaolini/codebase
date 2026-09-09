@@ -4,6 +4,8 @@ export { CommentsModule } from "./modules/comments/comments.module";
 export { CommentsService } from "./modules/comments/comments.service";
 export type {
   CommentBlock,
+  CommentBudget,
+  CommentCounter,
   CommentMeasurement,
   CommentToken,
 } from "./modules/comments/comments.types";

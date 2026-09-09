@@ -63,12 +63,18 @@ export class LanguagesService {
       workingDirectory,
     });
 
+    // Both measurers take the whole counter list and select from it, rather
+    // than being handed two lists split here: this method is at its declared
+    // breadth limit, and a split would cost a call it has no room for. Each
+    // reads `kind` — `LanguageCommentsService` skips a counter that names one,
+    // and the TypeScript walk measures only those — which is also where `kind`
+    // taking precedence over `language` is enforced.
     return {
       // Comment budgets are measured here rather than inside each analyzer:
       // Python's runs in a subprocess that returns zeros when the interpreter
       // is unreachable, and a gate living there would quietly stop gating.
-      comments: this.languageComments.measure({
-        configuration: args.configuration,
+      commentCounts: this.languageComments.measure({
+        counters: args.commentCounters,
         files: discoveredFiles,
         pythonComments: python.commentTokens,
         workingDirectory,
@@ -108,7 +114,7 @@ export class LanguagesService {
         workingDirectory,
       }),
       typescript: this.typescriptService.analyze({
-        documentation: args.configuration.documentation,
+        commentCounters: args.commentCounters,
         sourceFiles: discoveredFiles.sourceFiles,
         symbolCounters: args.symbolCounters,
         workingDirectory,

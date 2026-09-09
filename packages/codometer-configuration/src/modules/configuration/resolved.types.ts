@@ -7,12 +7,14 @@
 
 import type {
   CodometerAnalysis,
+  CodometerCommentLanguage,
   CodometerCompression,
+  CodometerFormat,
   CodometerSeverity,
   CodometerSymbolKind,
   CodometerSymbolMatcher,
 } from "./configuration.types";
-import type { ResolvedCodometerOutputConfiguration } from "./output.types";
+import type { WriteMarkdownOutput } from "./output.types";
 import type { CodometerStatisticGroup } from "./statistics.types";
 
 /**
@@ -26,15 +28,10 @@ export interface LoadedConfiguration {
   path: string | undefined;
 }
 
-/**
- * Comment-length configuration with its severity filled in.
- *
- * Each maximum stays `undefined` when it was not declared. Nothing is
- * defaulted to a number: a budget nobody wrote is one nobody chose, and
- * inventing one here would gate every comment in the repository the moment a
- * `comments` key appeared.
- */
-export interface ResolvedCodometerCommentsConfiguration {
+/** A `comment` selector with its severity filled in. */
+export interface ResolvedCodometerCommentSelector {
+  kind: CodometerSymbolKind | undefined;
+  language: CodometerCommentLanguage | undefined;
   maximumCharacters: number | undefined;
   maximumLines: number | undefined;
   maximumWords: number | undefined;
@@ -48,64 +45,53 @@ export interface ResolvedCodometerCommentsConfiguration {
  * to know which fields a configuration file may omit.
  */
 export interface ResolvedCodometerConfiguration {
-  css: ResolvedCodometerLanguageConfiguration;
   /** Stays `undefined` when nothing named one, so every path must qualify. */
-  defaultTarget: string | undefined;
-  /**
-   * Stays `undefined` when a configuration names no `documentation` block at
-   * all, which is what leaves the check off rather than gating every
-   * documented declaration against a default nobody chose.
-   */
-  documentation: ResolvedCodometerDocumentationConfiguration | undefined;
+  defaultInput: string | undefined;
   exclude: string[];
   excludeFrom: string[];
-  hcl: ResolvedCodometerLanguageConfiguration;
+  format: CodometerFormat;
+  inputs: ResolvedCodometerInput[];
   limits: ResolvedCodometerLimit[];
-  output: ResolvedCodometerOutputConfiguration;
+  outputs: ResolvedCodometerOutput[];
   python: ResolvedCodometerPythonConfiguration;
-  shell: ResolvedCodometerLanguageConfiguration;
-  sql: ResolvedCodometerLanguageConfiguration;
-  statistics: ResolvedCodometerCustomStatistic[];
-  targets: ResolvedCodometerTarget[];
-  toml: ResolvedCodometerLanguageConfiguration;
-  typescript: ResolvedCodometerLanguageConfiguration;
-  yaml: ResolvedCodometerLanguageConfiguration;
 }
 
 /** A configured counter with its badge color and group filled in. */
 export interface ResolvedCodometerCustomStatistic {
   color: string;
+  comment: ResolvedCodometerCommentSelector | undefined;
   group: CodometerStatisticGroup;
   label: string;
-  /** Empty for a symbol counter naming none, which then searches every file. */
+  /** Empty for a symbol or comment counter naming none, which then searches every file. */
   patterns: string[];
   symbols?: CodometerSymbolMatcher | undefined;
 }
 
-/** Documentation-length configuration with every default applied. */
-export interface ResolvedCodometerDocumentationConfiguration extends ResolvedCodometerCommentsConfiguration {
-  kinds: Partial<
-    Record<CodometerSymbolKind, ResolvedCodometerCommentsConfiguration>
-  >;
+/**
+ * A named set of files with its compression filled in and its negations
+ * collected.
+ *
+ * `include` holds only patterns that add files and `exclude` only patterns
+ * that remove them, whichever list they were authored in. Order carries no
+ * meaning in either: a file is in the input when some include glob claims it
+ * and no exclude glob does.
+ */
+export interface ResolvedCodometerInput {
+  analyses: CodometerAnalysis[];
+  compression: CodometerCompression;
+  /** `"."` when the input never named one, meaning the process's working directory. */
+  directory: string;
+  exclude: string[];
+  include: string[];
+  name: string;
 }
 
-/** One language's configuration with every default applied. */
-export interface ResolvedCodometerLanguageCommentsConfiguration extends ResolvedCodometerCommentsConfiguration {
-  /**
-   * Budgets over every comment in one file, or `undefined` when none were
-   * written — which leaves the block budgets the only thing judged.
-   */
-  file: ResolvedCodometerCommentsConfiguration | undefined;
-}
-
-/** One language's configuration with every default applied. */
-export interface ResolvedCodometerLanguageConfiguration {
-  /**
-   * Stays `undefined` when neither the language nor the top-level `comments`
-   * default names a block, which is what leaves the check off rather than
-   * gating every comment in the repository against a budget nobody chose.
-   */
-  comments: ResolvedCodometerLanguageCommentsConfiguration | undefined;
+/** JSON output destination with defaults applied. */
+export interface ResolvedCodometerJsonOutput {
+  custom: ResolvedCodometerCustomStatistic[];
+  indentation: number;
+  path: string;
+  type: "json";
 }
 
 /**
@@ -123,25 +109,29 @@ export interface ResolvedCodometerLimit {
   value: number;
 }
 
-/** Python analysis settings with defaults applied. */
-export interface ResolvedCodometerPythonConfiguration extends ResolvedCodometerLanguageConfiguration {
-  command: string;
+/**
+ * Markdown output destination with defaults applied.
+ *
+ * `write` stays `undefined` when the configuration supplies none: the
+ * built-in rendering and writing live in the CLI that calls it, so "unset" is
+ * what selects it rather than a default named here.
+ */
+export interface ResolvedCodometerMarkdownOutput {
+  custom: ResolvedCodometerCustomStatistic[];
+  description: string | undefined;
+  endMarker: string;
+  path: string | undefined;
+  startMarker: string;
+  type: "markdown";
+  write: undefined | WriteMarkdownOutput;
 }
 
-/**
- * A target with its compression filled in and its negations collected.
- *
- * `include` holds only patterns that add files and `exclude` only patterns
- * that remove them, whichever list they were authored in. Order carries no
- * meaning in either: a file is in the target when some include glob claims it
- * and no exclude glob does.
- */
-export interface ResolvedCodometerTarget {
-  analyses: CodometerAnalysis[];
-  compression: CodometerCompression;
-  /** `"."` when the target never named one, meaning the measured directory. */
-  directory: string;
-  exclude: string[];
-  include: string[];
-  name: string;
+/** Destination the measured statistics are written to, with defaults applied. */
+export type ResolvedCodometerOutput =
+  | ResolvedCodometerJsonOutput
+  | ResolvedCodometerMarkdownOutput;
+
+/** Python analysis settings with defaults applied. */
+export interface ResolvedCodometerPythonConfiguration {
+  command: string;
 }

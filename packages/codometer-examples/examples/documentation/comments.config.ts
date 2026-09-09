@@ -3,10 +3,13 @@ import type { CodometerConfiguration } from "@codometer/configuration";
 /**
  * How long a comment block may run, across every language that has comments.
  *
- * `comments` at the top level is the repository-wide budget, and a language's
- * own block is merged field by field over it. Here shell is loosened to eight
- * words while every other language stays at three — enough to show that an
- * override changes the field it names and leaves the rest alone.
+ * The old top-level `comments` block and the per-language `comments`
+ * overrides it could carry are both gone. Every language now gets its own
+ * `comment` selector, one custom statistic per language — there is no shared
+ * default to override, so a "budget for every language except one looser
+ * exception" is written out once per language rather than once for all of
+ * them plus one override. Shell is loosened to eight words here while every
+ * other language stays at three, the same distinction the old override made.
  *
  * A **block** is the run of comment lines a reader takes as one thought. A
  * blank line ends one, a comment trailing a value is never part of the block
@@ -23,20 +26,81 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * cannot tell the two apart, exactly as those analyzers' own `comments`
  * counters already cannot.
  *
- * No `documentation` block is set, so not one JSDoc comment is measured: the
- * two checks are enabled separately even though they share every field name
- * and reach the report through one channel. The corpus's TypeScript and
- * JavaScript sources carry only JSDoc comments, so `typescript` here measures
- * nothing at all — what is absent is as informative as what breaches.
+ * No `comment` selector here names `kind`, so not one JSDoc comment is
+ * measured: JSDoc and a plain comment block are enabled separately even
+ * though they share every field name and reach the report through one
+ * channel — see [codometer.config.ts](./codometer.config.ts). The corpus's
+ * TypeScript and JavaScript sources carry only JSDoc comments, so the
+ * `typescript` counter here measures nothing at all — what is absent is as
+ * informative as what breaches.
+ *
+ * A limit's value is a **count** of the blocks that broke a selector's own
+ * maximum, so every limit below reads `value: 0`: no block may breach.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/documentation/comments.config.ts --check limits
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../documentation/comments.config.ts --check limits
+ * echo $?   # 1
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
-  comments: { maximumWords: 3 },
+  defaultInput: "codebase",
+  format: "markdown",
+  limits: [
+    { metric: "custom.CSS Comment Budget", value: 0 },
+    { metric: "custom.HCL Comment Budget", value: 0 },
+    { metric: "custom.Python Comment Budget", value: 0 },
+    { metric: "custom.Shell Comment Budget", value: 0 },
+    { metric: "custom.SQL Comment Budget", value: 0 },
+    { metric: "custom.TOML Comment Budget", value: 0 },
+    { metric: "custom.TypeScript Comment Budget", value: 0 },
+    { metric: "custom.YAML Comment Budget", value: 0 },
+  ],
+  outputs: [
+    {
+      custom: [
+        {
+          comment: { language: "css", maximumWords: 3 },
+          label: "CSS Comment Budget",
+        },
+        {
+          comment: { language: "hcl", maximumWords: 3 },
+          label: "HCL Comment Budget",
+        },
+        {
+          comment: { language: "python", maximumWords: 3 },
+          label: "Python Comment Budget",
+        },
+        // Loosened to eight words rather than held to the three every other
+        // counter names. There is no shared budget to override any more, so
+        // "every language at three except shell at eight" is eight independent
+        // counters, and this is the one that reads differently.
+        {
+          comment: { language: "shell", maximumWords: 8 },
+          label: "Shell Comment Budget",
+        },
+        {
+          comment: { language: "sql", maximumWords: 3 },
+          label: "SQL Comment Budget",
+        },
+        {
+          comment: { language: "toml", maximumWords: 3 },
+          label: "TOML Comment Budget",
+        },
+        {
+          comment: { language: "typescript", maximumWords: 3 },
+          label: "TypeScript Comment Budget",
+        },
+        {
+          comment: { language: "yaml", maximumWords: 3 },
+          label: "YAML Comment Budget",
+        },
+      ],
+      path: "codometer-report.json",
+      type: "json",
+    },
+  ],
   python: { command: "uv run python" },
-  shell: { comments: { maximumWords: 8 } },
 };
 
 export default codometerConfiguration;

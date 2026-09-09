@@ -1,15 +1,14 @@
 // 🏷️ Types
 
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
+import type { ReportFailure } from "../measure/measure.types";
 import type {
-  DocumentationMeasurement,
-  ReportFailure,
-} from "../measure/measure.types";
-import type { CodometerSeverity } from "@codometer/configuration";
+  CodometerSeverity,
+  CustomStatisticResultInstance,
+} from "@codometer/configuration";
 
 /** Arguments accepted when building the report from one measurement. */
 export interface BuildReportArguments {
-  documentation: readonly DocumentationMeasurement[];
   failures: readonly ReportFailure[];
   /** Every metric each measured target counted, target by target. */
   indexes: ReadonlyMap<string, TargetMetricIndex>;
@@ -31,7 +30,6 @@ export interface CodometerReport {
    * reading the file can tell a metric nobody measured from one that measured
    * zero.
    */
-  documentation: DocumentationMeasurement[];
   failures: ReportFailure[];
   targets: ReportTarget[];
 }
@@ -60,6 +58,17 @@ export interface ReportLimit {
 
 /** One measured number, and whatever limits it. */
 export interface ReportMetric {
+  /**
+   * Where each measured instance was found, for a metric a per-instance
+   * selector produced — a `comment` selector today, and any future selector
+   * that measures more than a count.
+   *
+   * Stays `null` for a metric that only counts, so a consumer can tell "no
+   * instance was found" from "this metric never tracks instances" without
+   * reading the configuration that produced it — the same reasoning
+   * `ReportLimit.label` already follows for a limit nobody named.
+   */
+  instances: CustomStatisticResultInstance[] | null;
   /**
    * Every limit declared on the metric, in the order they were written.
    *

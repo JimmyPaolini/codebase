@@ -19,6 +19,20 @@ import type { CodometerReport } from "./modules/report/report.types";
 
 const COMMAND_PATH = path.resolve(import.meta.dirname, "main.ts");
 
+/**
+ * Where a spawned run's own fixture tree is rooted, inside this project
+ * rather than the system temporary directory.
+ *
+ * A spawned run no longer takes a `--directory` flag — it always measures the
+ * process's own working directory — so a suite pointing one at a fixture tree
+ * spawns with that tree as `cwd`. `@swc-node/register` resolves both its own
+ * dependencies and this project's TypeScript path aliases from `cwd` upward
+ * through each ancestor's `node_modules` and `tsconfig.json`, and a tree
+ * outside the workspace entirely never reaches either. `tmp/` is gitignored
+ * everywhere in this repository, so a fixture rooted here is never committed.
+ */
+const FIXTURE_ROOT = path.resolve(import.meta.dirname, "../tmp");
+
 describe("main end-to-end suite", () => {
   describe("environment schema e2e", () => {
     it("allows an empty schema by default", () => {
@@ -36,11 +50,28 @@ describe("main end-to-end suite", () => {
     let workingDirectory: string;
 
     beforeAll(() => {
-      workingDirectory = createFixtureTree();
+      mkdirSync(FIXTURE_ROOT, { recursive: true });
+      workingDirectory = createFixtureTree(FIXTURE_ROOT);
 
       writeFileSync(
         path.join(workingDirectory, "codometer.config.json"),
-        JSON.stringify({ excludeFrom: [".codometerignore"] }),
+        JSON.stringify({
+          excludeFrom: [".codometerignore"],
+          format: "json",
+        }),
+      );
+      // `@swc-node/register` looks for a `tsconfig.json` at `cwd` exactly,
+      // never climbing to an ancestor's — so the fixture tree needs its own,
+      // extending this project's real one to resolve the workspace's
+      // TypeScript path aliases the same way this project's own build does.
+      writeFileSync(
+        path.join(workingDirectory, "tsconfig.json"),
+        JSON.stringify({
+          extends: path.relative(
+            workingDirectory,
+            path.resolve(import.meta.dirname, "../tsconfig.json"),
+          ),
+        }),
       );
 
       const result = spawnSync(
@@ -50,8 +81,6 @@ describe("main end-to-end suite", () => {
           "@swc-node/register/esm-register",
           COMMAND_PATH,
           "measure",
-          "--directory",
-          workingDirectory,
           "--config",
           path.join(workingDirectory, "codometer.config.json"),
           // The report goes to the console, and the badge block goes into a
@@ -61,9 +90,9 @@ describe("main end-to-end suite", () => {
           "json",
           "--output-markdown",
           path.join(workingDirectory, "README.md"),
-          "--write",
         ],
         {
+          cwd: workingDirectory,
           encoding: "utf8",
           env: { ...process.env, FORCE_COLOR: "0" },
           timeout: 120_000,
@@ -97,6 +126,85 @@ describe("main end-to-end suite", () => {
         "Excluded the files codometer writes from what it measures",
       );
       expect(standardError).toContain("README.md");
+    });
+  });
+
+  // The listing this command exists to produce has to survive a tree whose
+  // root carries no configuration file — which is every workspace that states
+  // its required `format` once in a shared object each project spreads. Run as
+  // a real process because the exit code is half of what is under test, and
+  // nothing beneath the command line reports one.
+  describe("the configuration command over a tree whose root configures nothing", () => {
+    let standardOutput: string;
+    let standardError: string;
+    let exitCode: null | number;
+    let workingDirectory: string;
+
+    beforeAll(() => {
+      workingDirectory = mkdtempSync(path.join(tmpdir(), "codometer-listing-"));
+
+      mkdirSync(path.join(workingDirectory, "packages", "logger"), {
+        recursive: true,
+      });
+      // One project configures itself. Nothing above it does, and the upward
+      // search runs out at the filesystem root.
+      writeFileSync(
+        path.join(workingDirectory, "packages/logger/codometer.config.json"),
+        JSON.stringify({
+          format: "json",
+          limits: [{ label: "Bundle", metric: "codebase.size", value: 6000 }],
+        }),
+      );
+
+      const result = spawnSync(
+        process.execPath,
+        [
+          "--import",
+          "@swc-node/register/esm-register",
+          COMMAND_PATH,
+          "configuration",
+          "--directory",
+          workingDirectory,
+          "--limits",
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, FORCE_COLOR: "0" },
+          timeout: 120_000,
+        },
+      );
+
+      exitCode = result.status;
+      standardError = result.stderr;
+      standardOutput = result.stdout;
+    }, 150_000);
+
+    afterAll(() => {
+      rmSync(workingDirectory, { force: true, recursive: true });
+    });
+
+    it("still lists every limit the tree declares", () => {
+      expect.hasAssertions();
+
+      expect(standardOutput).toContain("Bundle");
+      expect(standardOutput).toContain("`codebase.size`");
+      expect(standardOutput).toContain(
+        "`packages/logger/codometer.config.json`",
+      );
+    });
+
+    it("says the walk root answered with nothing, rather than dying on it", () => {
+      expect.hasAssertions();
+
+      expect(standardOutput).toContain("Nothing answered for the walk root");
+      expect(standardError).toContain(
+        "Found no configuration answering for the walk root",
+      );
+    });
+
+    it("fails the run rather than exiting clean", () => {
+      expect.hasAssertions();
+      expect(exitCode).toBe(1);
     });
   });
 

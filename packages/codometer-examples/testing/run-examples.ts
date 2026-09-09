@@ -128,14 +128,15 @@ function runConfiguration(relativePath: string): boolean {
     return false;
   }
 
-  const run = runCodometer([
-    "--directory",
+  const run = runCodometer(
+    [
+      "--config",
+      path.join(examplesDirectory, relativePath),
+      "--check",
+      "limits",
+    ],
     corpusDirectory,
-    "--config",
-    path.join(examplesDirectory, relativePath),
-    "--check",
-    "limits",
-  ]);
+  );
 
   if (run.exitCode === expected) {
     console.info(`   ✅ ${relativePath} exited ${run.exitCode}`);

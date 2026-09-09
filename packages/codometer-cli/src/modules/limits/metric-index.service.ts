@@ -8,6 +8,7 @@ import {
 } from "./limits.constants";
 
 import type {
+  AddMetricArguments,
   DuplicateTargetFinding,
   MeasuredTarget,
   MetricIndexResult,
@@ -43,17 +44,17 @@ export class MetricIndexService {
    * here so that a limit addressing that path is refused instead of being
    * given whichever counter was indexed first.
    */
-  private addMetric(
-    index: TargetMetricIndex,
-    metricPath: string,
-    value: number,
-  ): void {
-    if (index.metrics.has(metricPath)) {
-      index.ambiguous.add(metricPath);
+  private addMetric(args: AddMetricArguments): void {
+    if (args.index.metrics.has(args.metricPath)) {
+      args.index.ambiguous.add(args.metricPath);
       return;
     }
 
-    index.metrics.set(metricPath, value);
+    args.index.metrics.set(args.metricPath, args.value);
+
+    if (args.instances !== undefined) {
+      args.index.instances.set(args.metricPath, args.instances);
+    }
   }
 
   /**
@@ -67,13 +68,22 @@ export class MetricIndexService {
     const index: TargetMetricIndex = {
       ambiguous: new Set(),
       files: target.files,
+      instances: new Map(),
       metrics: new Map(),
     };
 
-    this.addMetric(index, FILES_METRIC_PATH, target.files);
+    this.addMetric({
+      index,
+      metricPath: FILES_METRIC_PATH,
+      value: target.files,
+    });
 
     if (target.size !== undefined) {
-      this.addMetric(index, SIZE_METRIC_PATH, target.size.bytes);
+      this.addMetric({
+        index,
+        metricPath: SIZE_METRIC_PATH,
+        value: target.size.bytes,
+      });
     }
 
     if (target.language !== undefined) {
@@ -108,7 +118,7 @@ export class MetricIndexService {
         prefix === "" ? name : `${prefix}${METRIC_PATH_SEPARATOR}${name}`;
 
       if (typeof value === "number") {
-        this.addMetric(index, metricPath, value);
+        this.addMetric({ index, metricPath, value });
       } else if (this.isCounterGroup(value)) {
         this.indexCounters(index, value, metricPath);
       }
@@ -131,11 +141,12 @@ export class MetricIndexService {
     this.indexCounters(index, groups, "");
 
     for (const statistic of custom) {
-      this.addMetric(
+      this.addMetric({
         index,
-        `${CUSTOM_METRIC_PREFIX}${METRIC_PATH_SEPARATOR}${statistic.label}`,
-        statistic.count,
-      );
+        instances: statistic.instances,
+        metricPath: `${CUSTOM_METRIC_PREFIX}${METRIC_PATH_SEPARATOR}${statistic.label}`,
+        value: statistic.count,
+      });
     }
   }
 

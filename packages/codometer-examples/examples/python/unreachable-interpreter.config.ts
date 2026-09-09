@@ -12,7 +12,8 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * ```
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/python/unreachable-interpreter.config.ts --format json \
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../python/unreachable-interpreter.config.ts --format json \
  *   | jq '.targets[0].metrics[] | select(.path | startswith("python."))'
  * ```
  *
@@ -30,6 +31,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * takes a slice out of two groups at once.
  */
 const codometerConfiguration: CodometerConfiguration = {
+  format: "markdown",
   python: { command: "python-that-is-not-installed" },
 };
 

@@ -4,18 +4,15 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CommentsService } from "./comments.service";
 import { HashCommentsService } from "./hash-comments.service";
 
-import type { LanguageCommentBudget } from "./comments.types";
+import type { CommentBudget } from "./comments.types";
 
 describe(CommentsService, () => {
   let service: CommentsService;
   let hashComments: HashCommentsService;
 
   /** The budget a measurement is judged by, with one field varied. */
-  function budget(
-    overrides: Partial<LanguageCommentBudget> = {},
-  ): LanguageCommentBudget {
+  function budget(overrides: Partial<CommentBudget> = {}): CommentBudget {
     return {
-      file: undefined,
       maximumCharacters: undefined,
       maximumLines: undefined,
       maximumWords: 5,
@@ -27,7 +24,7 @@ describe(CommentsService, () => {
   /** Measures a `#`-commented document under the given budget. */
   function measure(
     content: string,
-    overrides: Partial<LanguageCommentBudget> = {},
+    overrides: Partial<CommentBudget> = {},
   ): ReturnType<CommentsService["measure"]> {
     return service.measure({
       comments: budget(overrides),
@@ -108,41 +105,6 @@ describe(CommentsService, () => {
   it("measures nothing when no maximum is declared", () => {
     expect(
       measure("# one two three\n", { maximumWords: undefined }),
-    ).toStrictEqual([]);
-  });
-
-  it("measures the whole file too when a file budget is declared", () => {
-    const measurements = measure("# one two three\n\n# four five\n", {
-      file: {
-        maximumCharacters: undefined,
-        maximumLines: undefined,
-        maximumWords: 4,
-        severity: "fail",
-      },
-      maximumWords: 4,
-    });
-
-    // Two blocks, each inside the block budget, and the file over its own —
-    // which is the whole reason the two readings are separate.
-    expect(
-      measurements.map((entry) => [entry.kind, entry.measured, entry.breached]),
-    ).toStrictEqual([
-      ["comment", 3, false],
-      ["comment", 2, false],
-      ["file comments", 5, true],
-    ]);
-  });
-
-  it("reports no file measurement for a file holding no comments", () => {
-    expect(
-      measure("echo hello\n", {
-        file: {
-          maximumCharacters: undefined,
-          maximumLines: undefined,
-          maximumWords: 1,
-          severity: "fail",
-        },
-      }),
     ).toStrictEqual([]);
   });
 

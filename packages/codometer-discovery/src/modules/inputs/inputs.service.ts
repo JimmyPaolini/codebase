@@ -8,30 +8,30 @@ import { LoggerService } from "@codebase/logger";
 
 import {
   GLOB_MAGIC_CHARACTERS,
+  InputOutsideRepositoryError,
   PATH_SEPARATOR,
-  TargetOutsideRepositoryError,
-} from "./targets.constants";
+} from "./inputs.constants";
 
 import type {
-  MatchTargetFilesArguments,
-  TargetEntryKind,
-  WalkTargetArguments,
-} from "./targets.types";
-import type { ResolvedCodometerTarget } from "@codometer/configuration";
+  InputEntryKind,
+  MatchInputFilesArguments,
+  WalkInputArguments,
+} from "./inputs.types";
+import type { ResolvedCodometerInput } from "@codometer/configuration";
 
 /**
- * Lists the files a target holds.
+ * Lists the files an input holds.
  *
- * Globs alone decide, with no ignore file consulted: a target exists to name a
+ * Globs alone decide, with no ignore file consulted: an input exists to name a
  * part of the tree outright, and the most useful part to name is compiled
  * output, which every repository's ignore files claim.
  */
 @Injectable()
-export class TargetsService {
+export class InputsService {
   // 🏗 Dependency Injection
 
   constructor(private readonly logger: LoggerService) {
-    this.logger.setContext(TargetsService.name);
+    this.logger.setContext(InputsService.name);
   }
 
   // 🔐 Private Fields
@@ -41,14 +41,14 @@ export class TargetsService {
   // 🔏 Private Methods
 
   /**
-   * Whether a directory can hold anything the target's globs claim.
+   * Whether a directory can hold anything the input's globs claim.
    *
    * A hidden directory is only entered when a glob spells it out. That is what
    * every glob library means by excluding dot files, and it is also what stops
-   * a target over the whole tree from reading the repository's git database.
+   * an input over the whole tree from reading the repository's git database.
    */
   private canDescend(
-    args: WalkTargetArguments,
+    args: WalkInputArguments,
     relativeDirectory: string,
   ): boolean {
     const isHidden = this.isHidden(relativeDirectory);
@@ -62,7 +62,7 @@ export class TargetsService {
   }
 
   /**
-   * The furthest out a target is allowed to reach, from where the run started.
+   * The furthest out an input is allowed to reach, from where the run started.
    *
    * The repository holding the measured directory, or that directory itself
    * when nothing above it looks like one. Found by marker rather than by
@@ -118,20 +118,20 @@ export class TargetsService {
   }
 
   /**
-   * Whether the target claims a file.
+   * Whether the input claims a file.
    *
    * Both lists are answered in full rather than in order, so where a pattern
    * sits within either of them cannot change the answer.
    */
   private isMatched(
-    target: ResolvedCodometerTarget,
+    input: ResolvedCodometerInput,
     relativePath: string,
   ): boolean {
     return (
-      target.include.some((pattern) =>
+      input.include.some((pattern) =>
         path.matchesGlob(relativePath, pattern),
       ) &&
-      !target.exclude.some((pattern) => path.matchesGlob(relativePath, pattern))
+      !input.exclude.some((pattern) => path.matchesGlob(relativePath, pattern))
     );
   }
 
@@ -146,7 +146,7 @@ export class TargetsService {
   /**
    * Reads a directory's entries, or none when the directory cannot be read.
    *
-   * A target naming a directory that was never built is an ordinary state
+   * An input naming a directory that was never built is an ordinary state
    * rather than a failure — it holds no files, and what that means is decided
    * by whoever asked for the measurement.
    */
@@ -154,7 +154,7 @@ export class TargetsService {
     try {
       return readdirSync(absoluteDirectory, { withFileTypes: true });
     } catch (error: unknown) {
-      this.logger.warn(`🎯 Skipped unreadable target directory`, undefined, {
+      this.logger.warn(`🎯 Skipped unreadable input directory`, undefined, {
         path: absoluteDirectory,
         reason: String(error),
       });
@@ -165,12 +165,12 @@ export class TargetsService {
   /**
    * The measured-directory-relative prefix every matched path carries.
    *
-   * Empty when the target starts where the run does. Otherwise it is the walk
+   * Empty when the input starts where the run does. Otherwise it is the walk
    * root written relative to the measured directory — `../../dist` and the
    * like — so that every path leaving this service is relative to the same
-   * directory whether or not the target reached outside it.
+   * directory whether or not the input reached outside it.
    */
-  private readTargetPrefix(
+  private readInputPrefix(
     walkDirectory: string,
     workingDirectory: string,
   ): string {
@@ -184,7 +184,7 @@ export class TargetsService {
   private resolveEntryKind(
     absolutePath: string,
     entry: Dirent,
-  ): TargetEntryKind {
+  ): InputEntryKind {
     if (entry.isDirectory()) {
       return "directory";
     }
@@ -235,8 +235,8 @@ export class TargetsService {
     return literalSegments.join(PATH_SEPARATOR);
   }
 
-  /** Collects every file one directory of the target's tree contributes. */
-  private walk(args: WalkTargetArguments): string[] {
+  /** Collects every file one directory of the input's tree contributes. */
+  private walk(args: WalkInputArguments): string[] {
     const files: string[] = [];
 
     for (const entry of this.readEntries(args.absoluteDirectory)) {
@@ -255,7 +255,7 @@ export class TargetsService {
             relativeDirectory: relativePath,
           }),
         );
-      } else if (kind === "file" && this.isMatched(args.target, relativePath)) {
+      } else if (kind === "file" && this.isMatched(args.input, relativePath)) {
         files.push(relativePath);
       }
     }
@@ -266,42 +266,42 @@ export class TargetsService {
   // 🌎 Public Methods
 
   /**
-   * Lists the files a target holds, sorted, relative to the measured directory.
+   * Lists the files an input holds, sorted, relative to the measured directory.
    *
-   * The walk starts at the target's own directory, which is the measured one
-   * unless the target named a way out of it. Where a repository builds is a
+   * The walk starts at the input's own directory, which is the measured one
+   * unless the input named a way out of it. Where a repository builds is a
    * convention its configuration states and this service is told, never one
    * inferred here from a project's position — but the reach is bounded: a
-   * directory landing outside the repository fails the target by name rather
+   * directory landing outside the repository fails the input by name rather
    * than measuring whatever it found there.
    *
    * Sorted because the walk visits directories in whatever order the
    * filesystem reports them, and a size is a sum of every file either way —
    * but a list nobody can predict is one nobody can compare.
    */
-  matchFiles(args: MatchTargetFilesArguments): string[] {
+  matchFiles(args: MatchInputFilesArguments): string[] {
     const walkDirectory = path.resolve(
       args.workingDirectory,
-      args.target.directory,
+      args.input.directory,
     );
     const boundary = this.findBoundary(args.workingDirectory);
 
     if (!this.sitsInsideBoundary(boundary, walkDirectory)) {
-      throw new TargetOutsideRepositoryError(
-        args.target.name,
+      throw new InputOutsideRepositoryError(
+        args.input.name,
         walkDirectory,
         boundary,
       );
     }
 
-    const prefix = this.readTargetPrefix(walkDirectory, args.workingDirectory);
+    const prefix = this.readInputPrefix(walkDirectory, args.workingDirectory);
     const matched = this.walk({
       absoluteDirectory: walkDirectory,
-      includeBases: args.target.include.map((pattern) =>
+      includeBases: args.input.include.map((pattern) =>
         this.toIncludeBase(pattern),
       ),
+      input: args.input,
       relativeDirectory: "",
-      target: args.target,
     }).toSorted();
 
     if (prefix === "") {

@@ -11,7 +11,8 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * files asserts exactly that agreement.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/python/default-interpreter.config.ts --format json \
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../python/default-interpreter.config.ts --format json \
  *   | jq '.targets[0].metrics[] | select(.path | startswith("python."))'
  * ```
  *
@@ -23,6 +24,8 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * what that looks like. Naming the interpreter is how a repository stops
  * depending on which machine the run happened on.
  */
-const codometerConfiguration: CodometerConfiguration = {};
+const codometerConfiguration: CodometerConfiguration = {
+  format: "markdown",
+};
 
 export default codometerConfiguration;

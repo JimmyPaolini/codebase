@@ -31,21 +31,24 @@ which maps "codometer said X" to the example that explains X.
 Each directory under [`examples/`](examples) is one example and carries its own
 `README.md`. Read in this order for a walkthrough; jump straight in for an
 answer. Every one of them measures the same corpus, pointed at a different
-configuration:
+configuration — the command line carries no `--directory` flag, so a run
+always measures the process's own working directory, and that directory is
+`examples/corpus`:
 
 ```bash
-codometer --directory examples/corpus --config examples/<name>/<file>.config.ts
+cd examples/corpus
+codometer --config ../<name>/<file>.config.ts
 ```
 
 | Example | Answers |
 | ------- | ------- |
 | [statistics](examples/statistics/README.md) | How do I count a convention no analyzer knows about? |
 | [python](examples/python/README.md) | Why is every Python counter zero? |
-| [targets](examples/targets/README.md) | How do I measure files the directory does not hold? |
+| [targets](examples/targets/README.md) | How do I measure files the current directory does not hold? |
 | [compression](examples/compression/README.md) | What does a `size` metric actually measure? |
 | [limits](examples/limits/README.md) | How high may a metric go, and why was my limit refused? |
-| [documentation](examples/documentation/README.md) | How long may a doc comment run? |
-| [write-check](examples/write-check/README.md) | What does each `--write` and `--check` combination do? |
+| [documentation](examples/documentation/README.md) | How long may a comment run, and what breaches it? |
+| [write-check](examples/write-check/README.md) | What does each `--output-*` and `--check` combination do? |
 | [output](examples/output/README.md) | Where does the report, the document, and the badge block land? |
 | [discovery](examples/discovery/README.md) | Which configuration file wins? |
 | [staleness](examples/staleness/README.md) | Why is `--check reports` failing when nothing changed? |
@@ -97,7 +100,8 @@ A bare run measures every language it recognizes. The corpus carries one
 idiomatic sample per analyzer so each group has something in it:
 
 ```bash
-codometer --directory examples/corpus --format json | jq '.targets[0].metrics[] | select(.value > 0)'
+cd examples/corpus
+codometer --format json | jq '.targets[0].metrics[] | select(.value > 0)'
 ```
 
 Two things in the output surprise people:
@@ -141,18 +145,19 @@ Two commands do that, and they are deliberately different jobs:
 
 ```bash
 # On the branch: measure, write the report, fail if a limit breached.
-codometer --directory . --output-json codometer-report.json --write --check limits
+codometer --output-json codometer-report.json --check limits
 
 # Afterwards: diff every report against the base branch's and render the result.
 codometer changes --directory . --baseline <base-reports> --markdown summary.md
 ```
 
-The first is the gate. `--write` is not optional on it: a run naming a report
-path without writing is
-[refused outright](examples/output/README.md#a-path-needs-a-reason-to-exist),
-and the report has to exist even when the gate trips, because the pull request
-that failed is the one that needs the numbers. That is the last row of the
-[`--write` / `--check` matrix](examples/write-check/README.md), and it is
+The first is the gate. `--output-json <path>` writes on its own — no companion
+flag needed, unlike the old `--write` this replaced (only the
+[bare flag is still refused](examples/output/README.md#a-bare-flag-needs-a-configured-entry-to-resolve)
+when nothing is configured to resolve it from) — and the report has to exist
+even when the gate trips, because the pull request that failed is the one that
+needs the numbers. That is the last row of the
+[`--output-*` / `--check` matrix](examples/write-check/README.md), and it is
 exactly what this repository's own `codometer` Nx target runs per project.
 
 The second is the report a reviewer reads: `codometer changes` joins each

@@ -6,9 +6,10 @@ used is stated rather than defaulted. The same two files, three ways.
 ## Run it
 
 ```bash
-codometer --directory examples/corpus --config examples/compression/gzip.config.ts
-codometer --directory examples/corpus --config examples/compression/brotli.config.ts
-codometer --directory examples/corpus --config examples/compression/none.config.ts
+cd examples/corpus
+codometer --config ../compression/gzip.config.ts
+codometer --config ../compression/brotli.config.ts
+codometer --config ../compression/none.config.ts
 ```
 
 ## What is here

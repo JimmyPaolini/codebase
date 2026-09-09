@@ -1,9 +1,16 @@
-import codometerConfiguration, {
+import {
+  codometerConfiguration,
   compiledJavaScriptTarget,
 } from "../../configuration/codometer.config.js";
 
 export default {
   ...codometerConfiguration,
+  inputs: [
+    {
+      ...compiledJavaScriptTarget,
+      include: ["dist/**/*.js"],
+    },
+  ],
   // 🎯 One rung up from 128 KB, where the `mosaic` family's move onto a
   // lattice put it: `meander-lattice`, `mosaic-tile`, and `mosaic-naming`
   // are three modules where there were none, and the compiled output
@@ -12,10 +19,4 @@ export default {
   // next step that leaves real headroom without skipping to twice the
   // measurement.
   limits: [{ metric: "Compiled JavaScript.size", value: "192 KB" }],
-  targets: [
-    {
-      ...compiledJavaScriptTarget,
-      include: ["dist/**/*.js"],
-    },
-  ],
 };

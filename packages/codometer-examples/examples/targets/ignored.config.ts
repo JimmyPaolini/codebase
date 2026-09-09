@@ -3,12 +3,12 @@ import type { CodometerConfiguration } from "@codometer/configuration";
 /**
  * The one place ignore rules do not reach.
  *
- * `examples/corpus/.gitignore` names `generated/`, and discovery reads that file itself
- * rather than invoking git — so whatever is put in there is invisible to the
- * codebase target. A declared target's globs are the exception, and that
- * exception is the whole reason targets exist: a build directory is precisely
- * the thing every repository ignores and every repository wants to gate the
- * size of.
+ * `examples/corpus/.gitignore` names `generated/`, and discovery reads that
+ * file itself rather than invoking git — so whatever is put in there is
+ * invisible to the codebase input. A declared input's globs are the
+ * exception, and that exception is the whole reason inputs exist: a build
+ * directory is precisely the thing every repository ignores and every
+ * repository wants to gate the size of.
  *
  * `generated/` is empty in a fresh checkout, because a file that is both
  * tracked and ignored breaks `git add` for everyone afterwards. Fill it from
@@ -16,16 +16,17 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  *
  * ```bash
  * cp -R packages/codometer-examples/examples/compiled packages/codometer-examples/examples/corpus/generated
- * codometer --directory examples/corpus --config examples/targets/ignored.config.ts
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../targets/ignored.config.ts
  * ```
  *
- * The codebase target still reports 28 files, exactly as it did before the copy
+ * The codebase input still reports 28 files, exactly as it did before the copy
  * — and `Ignored Output` reports the two that discovery refused to walk into.
  * Delete `examples/corpus/generated` afterwards; nothing else needs it.
  */
 const codometerConfiguration: CodometerConfiguration = {
-  python: { command: "uv run python" },
-  targets: [
+  format: "markdown",
+  inputs: [
     {
       analyses: ["language", "size"],
       compression: "gzip",
@@ -33,6 +34,7 @@ const codometerConfiguration: CodometerConfiguration = {
       name: "Ignored Output",
     },
   ],
+  python: { command: "uv run python" },
 };
 
 export default codometerConfiguration;

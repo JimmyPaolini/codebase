@@ -1,16 +1,16 @@
 // ♟️ Constants
 
-import { z } from "zod";
-
 import type {
   CodometerAnalysis,
+  CodometerCommentLanguage,
   CodometerCompression,
   CodometerDocumentationUnit,
+  CodometerFormat,
+  CodometerInput,
   CodometerSeverity,
   CodometerSymbolKind,
   CodometerSymbolModifier,
 } from "./configuration.types";
-import type { RenderMarkdownOutput, WriteMarkdownOutput } from "./output.types";
 import type { CodometerStatisticGroup } from "./statistics.types";
 
 /** Raised when the configuration path points to an unsupported file type. */
@@ -87,31 +87,43 @@ export const DEFAULT_CUSTOM_STATISTIC_COLORS = [
 export const DEFAULT_CUSTOM_STATISTIC_GROUP = "conventions";
 
 /**
- * Compression applied to a target that names none.
+ * Name of the input every run measures unless a configuration replaces it:
+ * the codebase itself.
+ *
+ * Its files are every one the repository's ignore files leave behind rather
+ * than a glob match — `include` here is a placeholder a glob-based reader
+ * never consults for this one entry — which is what makes this input
+ * different from every other one a configuration declares.
+ */
+export const DEFAULT_INPUT_NAME = "codebase";
+
+/**
+ * The built-in `codebase` input, present unless a configuration's `inputs`
+ * names an entry of its own by that name.
+ */
+export const DEFAULT_CODEBASE_INPUT: CodometerInput = {
+  analyses: ["language"],
+  include: ["**/*"],
+  name: DEFAULT_INPUT_NAME,
+};
+
+/**
+ * Compression applied to an input that names none.
  *
  * Gzip rather than the best available, because a compressed size is only worth
  * measuring against what a server would actually send, and gzip is what every
- * client understands. A target measuring bytes on disk asks for `none`.
+ * client understands. An input measuring bytes on disk asks for `none`.
  */
-export const DEFAULT_TARGET_COMPRESSION = "gzip" satisfies CodometerCompression;
+export const DEFAULT_INPUT_COMPRESSION = "gzip" satisfies CodometerCompression;
 
 /**
- * Where a target's globs start when it names no directory of its own.
+ * Where an input's globs start when it names no directory of its own.
  *
- * The measured directory. A target that means to reach outside it says so,
- * which keeps "measure what I was pointed at" the thing that needs no writing
- * down.
+ * The process's working directory. An input that means to reach outside it
+ * says so, which keeps "measure what I was pointed at" the thing that needs
+ * no writing down.
  */
-export const DEFAULT_TARGET_DIRECTORY = ".";
-
-/**
- * Name of the target every run measures: the codebase itself.
- *
- * Not declarable, because it is not a glob match. It is every file the
- * repository's ignore files leave behind, which is the one set of files no
- * glob can name.
- */
-export const DEFAULT_TARGET_NAME = "codebase";
+export const DEFAULT_INPUT_DIRECTORY = ".";
 
 /**
  * Severity a limit that names none carries.
@@ -121,16 +133,6 @@ export const DEFAULT_TARGET_NAME = "codebase";
  * `warn` is the deliberate choice, not the accidental one.
  */
 export const DEFAULT_LIMIT_SEVERITY = "fail" satisfies CodometerSeverity;
-
-/**
- * How many lines a documented declaration's comment may run when its kind
- * names no limit and none is configured at all.
- */
-export const DEFAULT_DOCUMENTATION_LIMIT = 6;
-
-/** Unit a documentation limit measures in when it names none. */
-export const DEFAULT_DOCUMENTATION_UNIT =
-  "lines" satisfies CodometerDocumentationUnit;
 
 /**
  * What each unit suffix a limit may carry multiplies its number by.
@@ -183,7 +185,7 @@ export const DEFAULT_PYTHON_COMMAND = "python3";
 /**
  * Prefix that turns an include glob into one that removes files instead.
  *
- * Read wherever a target's globs are resolved, so the negations end up in the
+ * Read wherever an input's globs are resolved, so the negations end up in the
  * exclude set rather than being matched literally against a path no file
  * starts with.
  */
@@ -220,18 +222,44 @@ export const CODOMETER_STATISTIC_GROUPS = [
   "yaml",
 ] as const satisfies readonly CodometerStatisticGroup[];
 
-/** Analyses a target may ask to have run over it. */
+/** Analyses an input may ask to have run over it. */
 export const CODOMETER_ANALYSES = [
   "language",
   "size",
 ] as const satisfies readonly CodometerAnalysis[];
 
-/** Compressions a target may ask its size to be measured under. */
+/** Languages a `comment` selector may narrow itself to. */
+export const CODOMETER_COMMENT_LANGUAGES = [
+  "css",
+  "hcl",
+  "python",
+  "shell",
+  "sql",
+  "toml",
+  "typescript",
+  "yaml",
+] as const satisfies readonly CodometerCommentLanguage[];
+
+/** Compressions an input may ask its size to be measured under. */
 export const CODOMETER_COMPRESSIONS = [
   "brotli",
   "gzip",
   "none",
 ] as const satisfies readonly CodometerCompression[];
+
+/**
+ * What a configuration reaching no `format` is told — written out rather than
+ * left as the schema's own "expected one of" line, because it is the first
+ * thing a newcomer to codometer sees.
+ */
+export const MISSING_FORMAT_MESSAGE =
+  'A codometer configuration must name a `format` of "json" or "markdown", and nothing supplies one for it. Set it in this file, or spread a shared default object that sets it — every run has to be told which report shape it produces, and a directory with no configuration file anywhere above it fails here rather than measuring with a format nobody chose.';
+
+/** Report shapes a run may produce. */
+export const CODOMETER_FORMATS = [
+  "json",
+  "markdown",
+] as const satisfies readonly CodometerFormat[];
 
 /** Severities a limit may declare for the breach it would report. */
 export const CODOMETER_SEVERITIES = [
@@ -239,7 +267,7 @@ export const CODOMETER_SEVERITIES = [
   "warn",
 ] as const satisfies readonly CodometerSeverity[];
 
-/** Declaration kinds a symbol counter may ask for. */
+/** Declaration kinds a symbol counter, or a `comment` selector, may ask for. */
 export const CODOMETER_SYMBOL_KINDS = [
   "class",
   "enum",
@@ -271,210 +299,6 @@ export const CODOMETER_SYMBOL_MODIFIERS = [
   "static",
 ] as const satisfies readonly CodometerSymbolModifier[];
 
-/**
- * Accepts a configured callback.
- *
- * Checked for being a function and nothing else: what it does with its
- * arguments is the author's business, and a schema cannot inspect it anyway.
- */
-const callbackSchema = <CallbackType>(): z.ZodType<CallbackType> =>
-  z.custom<CallbackType>((value) => typeof value === "function", {
-    message: "Expected a function",
-  });
-
-/**
- * How long a comment block may run.
- *
- * One shape, reused everywhere a comment is judged: the top-level default,
- * each language's own block, `documentation`, and each of its kinds. Written
- * once so those five can never disagree about what a budget looks like.
- */
-const commentsSchema = z.object({
-  maximumCharacters: z.number().int().min(1).optional(),
-  maximumLines: z.number().int().min(1).optional(),
-  maximumWords: z.number().int().min(1).optional(),
-  severity: z.enum(CODOMETER_SEVERITIES).optional(),
-});
-
-/** A language's comment budgets: per block, and optionally per file. */
-const languageCommentsSchema = commentsSchema.extend({
-  file: commentsSchema.optional(),
-});
-
-/** What a language may configure beyond the repository-wide defaults. */
-const languageSchema = z.object({
-  comments: languageCommentsSchema.optional(),
-});
-
-/**
- * Validates a configuration file's contents.
- *
- * Zod strips unknown keys rather than rejecting them, so a configuration
- * written for a newer codometer still loads under an older one instead of
- * failing on a field it has no opinion about.
- */
-export const codometerConfigurationSchema = z.object({
-  comments: languageCommentsSchema.optional(),
-  css: languageSchema.optional(),
-  defaultTarget: z.string().min(1).optional(),
-  documentation: commentsSchema
-    .extend({
-      kinds: z
-        .record(z.string(), commentsSchema)
-        .refine(
-          (kinds) =>
-            Object.keys(kinds).every((kind) =>
-              (CODOMETER_SYMBOL_KINDS as readonly string[]).includes(kind),
-            ),
-          {
-            message:
-              "Every key in documentation.kinds must be a valid declaration kind.",
-          },
-        )
-        .optional(),
-    })
-    .optional(),
-  exclude: z.array(z.string()).optional(),
-  excludeFrom: z.array(z.string()).optional(),
-  hcl: languageSchema.optional(),
-  // Two limits may name one metric on purpose — a `warn` short of a `fail` is
-  // how a repository sees a number coming before it stops a change — so
-  // nothing here asks the paths to be distinct.
-  limits: z
-    .array(
-      z.object({
-        label: z.string().min(1).optional(),
-        metric: z.string().min(1),
-        severity: z.enum(CODOMETER_SEVERITIES).optional(),
-        // Read rather than validated here: what a unit means is the
-        // configuration service's to say, and saying it twice is how the two
-        // answers drift apart.
-        value: z.union([z.number(), z.string()]),
-      }),
-    )
-    .optional(),
-  output: z
-    .object({
-      json: z
-        .object({
-          indentation: z.number().int().min(0).optional(),
-          path: z.string(),
-        })
-        .optional(),
-      markdown: z
-        .object({
-          description: z.string().optional(),
-          endMarker: z.string().optional(),
-          // Optional because a `write` function may name the file itself; a
-          // markdown destination with neither is rejected below.
-          path: z.string().optional(),
-          render: callbackSchema<RenderMarkdownOutput>().optional(),
-          startMarker: z.string().optional(),
-          write: callbackSchema<WriteMarkdownOutput>().optional(),
-        })
-        .refine(
-          (markdown) =>
-            markdown.path !== undefined || markdown.write !== undefined,
-          {
-            message:
-              "Markdown output needs a path, a write function, or both — otherwise nothing names the file to write.",
-          },
-        )
-        .optional(),
-    })
-    .optional(),
-  python: languageSchema.extend({ command: z.string().optional() }).optional(),
-  shell: languageSchema.optional(),
-  sql: languageSchema.optional(),
-  statistics: z
-    .array(
-      z
-        .object({
-          color: z.string().optional(),
-          group: z.enum(CODOMETER_STATISTIC_GROUPS).optional(),
-          label: z.string(),
-          patterns: z.array(z.string()).min(1).optional(),
-          symbols: z
-            .object({
-              kinds: z.array(z.enum(CODOMETER_SYMBOL_KINDS)).min(1),
-              modifiers: z.array(z.enum(CODOMETER_SYMBOL_MODIFIERS)).optional(),
-            })
-            .optional(),
-        })
-        // Without one of the two a counter has nothing to match on, and would
-        // report a permanent zero rather than announcing it was misconfigured.
-        .refine(
-          (statistic) =>
-            statistic.patterns !== undefined || statistic.symbols !== undefined,
-          {
-            message:
-              "A statistic needs patterns to match files, symbols to match declarations, or both — otherwise it counts nothing.",
-          },
-        ),
-    )
-    .optional(),
-  targets: z
-    .array(
-      z
-        .object({
-          analyses: z.array(z.enum(CODOMETER_ANALYSES)).min(1),
-          compression: z.enum(CODOMETER_COMPRESSIONS).optional(),
-          directory: z.string().min(1).optional(),
-          // A `!` here would read as a negation and match nothing instead,
-          // since every pattern in this list already removes files.
-          exclude: z
-            .array(
-              z
-                .string()
-                .refine((pattern) => !pattern.startsWith(NEGATION_PREFIX), {
-                  message:
-                    "An exclude glob already removes files, so a leading `!` has nothing to negate — write the glob without it.",
-                }),
-            )
-            .optional(),
-          include: z.array(z.string()).min(1),
-          name: z.string().min(1),
-        })
-        // A list of nothing but negations reads as a target and resolves to no
-        // include glob at all, so it would match nothing for good — and a
-        // limit written against it could never breach.
-        .superRefine((target, context) => {
-          const addsFiles = target.include.some(
-            (pattern) => !pattern.startsWith(NEGATION_PREFIX),
-          );
-
-          if (!addsFiles) {
-            context.addIssue({
-              code: "custom",
-              message: `Target "${target.name}" has no include glob that adds files — every pattern in its include list starts with "${NEGATION_PREFIX}", so it would hold nothing to measure.`,
-            });
-          }
-
-          // The codebase is measured under this name by every run, and a
-          // metric is addressed by its target's name, so a second target
-          // answering to it would take limits written against the repository
-          // itself.
-          if (target.name === DEFAULT_TARGET_NAME) {
-            context.addIssue({
-              code: "custom",
-              message: `Target "${DEFAULT_TARGET_NAME}" is the repository itself, which every run measures — a declared target needs a name of its own.`,
-            });
-          }
-        }),
-    )
-    // A metric is addressed by its target's name, so two targets sharing one
-    // would make every limit on either of them ambiguous.
-    .refine(
-      (targets) =>
-        new Set(targets.map((target) => target.name)).size === targets.length,
-      { message: "Every target needs its own name." },
-    )
-    .optional(),
-  toml: languageSchema.optional(),
-  typescript: languageSchema.optional(),
-  yaml: languageSchema.optional(),
-});
-
 // 🚨 Errors
 
 /** Raised when an explicitly named configuration file does not exist. */
@@ -482,6 +306,20 @@ export class ConfigurationFileNotFoundError extends Error {
   constructor(filePath: string) {
     super(`Configuration file not found: ${filePath}`);
     this.name = "ConfigurationFileNotFoundError";
+  }
+}
+
+/**
+ * Raised when a configuration does not satisfy the schema.
+ *
+ * Written out rather than letting a `ZodError` reach a caller, whose own
+ * message is the JSON dump of its issue list — a wall of `invalid_value`
+ * objects where a sentence saying what to write would do.
+ */
+export class InvalidConfigurationError extends Error {
+  constructor(issues: string) {
+    super(`Cannot read the codometer configuration.\n${issues}`);
+    this.name = "InvalidConfigurationError";
   }
 }
 

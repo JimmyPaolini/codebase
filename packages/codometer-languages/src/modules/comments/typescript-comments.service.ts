@@ -22,7 +22,7 @@ import type { CommentToken, TypescriptCommentScan } from "./comments.types";
  * trailing trivia is what a full parse resolves correctly, at the cost of one
  * parse per file instead of one scan.
  *
- * A JSDoc `/**` block is skipped here — `DocumentationMeasurementService`
+ * A JSDoc `/**` block is skipped here — `DeclarationCommentsService`
  * already measures those — the same check it uses to find one: the
  * delimiter's first three characters.
  */

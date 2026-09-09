@@ -1,27 +1,28 @@
 import type { CodometerConfiguration } from "@codometer/configuration";
 
 /**
- * Every field a target carries, over files the codebase target cannot see.
+ * Every field an input carries, over files the codebase input cannot see.
  *
- * The two compiled samples sit in `examples/compiled/`, beside the corpus rather than
- * inside it — which is where build output really lives, and why the targets
- * naming them carry a `directory` hop. The codebase target measures 28 files
- * and none of them are those two, because it measures one directory and they
- * are not in it.
+ * The two compiled samples sit in `examples/compiled/`, beside the corpus rather
+ * than inside it — which is where build output really lives, and why the
+ * inputs naming them carry a `directory` hop. The codebase input measures 28
+ * files and none of them are those two, because it measures one directory and
+ * they are not in it.
  *
  * The other half of the same story is `examples/corpus/.gitignore`, which names
- * `generated/`. Copy the compiled samples in there and the codebase target
- * still reports 28: discovery reads that ignore file itself. A target's globs
+ * `generated/`. Copy the compiled samples in there and the codebase input
+ * still reports 28: discovery reads that ignore file itself. An input's globs
  * are the one place ignore rules do not reach, which is what lets a repository
  * gate the size of a build directory every `.gitignore` claims.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/targets/codometer.config.ts
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../targets/codometer.config.ts
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
-  python: { command: "uv run python" },
-  targets: [
+  format: "markdown",
+  inputs: [
     // 📦 Both analyses over the compiled output. Two files.
     {
       analyses: ["language", "size"],
@@ -45,8 +46,9 @@ const codometerConfiguration: CodometerConfiguration = {
       include: ["typescript/**/*.ts"],
       name: "Sources",
     },
-    // 🧭 `directory` starts the globs somewhere else, relative to the measured
-    // directory. This one reaches up out of the corpus into the package.
+    // 🧭 `directory` starts the globs somewhere else, relative to the process's
+    // working directory. This one reaches up out of the corpus into the
+    // package.
     {
       analyses: ["size"],
       compression: "none",
@@ -55,6 +57,7 @@ const codometerConfiguration: CodometerConfiguration = {
       name: "Manifests",
     },
   ],
+  python: { command: "uv run python" },
 };
 
 export default codometerConfiguration;

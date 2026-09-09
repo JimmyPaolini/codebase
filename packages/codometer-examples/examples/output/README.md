@@ -6,7 +6,8 @@ separately, and each sink is independently replaceable.
 ## Run it
 
 ```bash
-codometer --directory examples/corpus --format json | jq '.targets[0].files'   # 28
+cd examples/corpus
+codometer --format json | jq '.targets[0].files'   # 28
 ```
 
 ## What is here
@@ -15,20 +16,22 @@ codometer --directory examples/corpus --format json | jq '.targets[0].files'   #
 output/
 ├── codometer.config.ts          a configured report and document pair
 ├── renamed-markers.config.ts    a document that explains the default markers
-├── custom-render.config.ts      a custom render, the built-in writer
-├── custom-write.config.ts       a custom writer, the built-in render
+├── custom-render.config.ts      a `write` that builds its own content, splicing the built-in writer
+├── custom-write.config.ts       a `write` that picks its own destination
 └── self-excluded.config.ts      what a run writes, it does not measure
 ```
 
 | Sink | Flag | What lands there |
 | ---- | ---- | ---------------- |
 | Console | `-f, --format <format>` | the report as `json`, or the badges as `markdown` |
-| Report | `--output-json <path>` | the structured report |
-| Markdown | `--output-markdown <path>` | the badge block, in a markdown file |
+| Report | `--output-json [path]` | the structured report |
+| Markdown | `--output-markdown [path]` | the badge block, in a markdown file |
 
-A path always names a file, never the console. `--format` defaults to
-`markdown` on a run that touches no file, which is what a bare `codometer`
-does.
+A path always names a file, never the console. Passed with no value, each
+`--output-*` flag writes wherever the configuration's matching `outputs` entry
+says to. `--format` defaults to the resolved configuration's own `format` —
+`markdown` for every example here — on a run that touches no file, which is
+what a bare `codometer` does.
 
 ## Standard output carries the result
 
@@ -41,28 +44,31 @@ One warning sharing the stream would break it.
 that is nothing but statistics as readily as a README with prose around it:
 
 ```bash
-codometer --directory examples/corpus --output-markdown document.md --write
+cd examples/corpus
+codometer --output-markdown document.md
 ```
 
-## A path needs a reason to exist
+## A bare flag needs a configured entry to resolve
 
-**An `--output-*` path is refused unless the run writes or compares it**,
-because a run doing neither would leave that file exactly as it found it —
-noticed not here but downstream, by whatever reads the report, finding nothing:
+**A path always writes — no companion flag needed.** `--output-json <path>` or
+`--output-markdown <path>` writes there outright, replacing the old
+`--write`/`--output-json <path>` pairing this schema removed. Only the **bare**
+form — the flag passed with no value, asking the run to write wherever its
+configuration says to — can still be refused, and only when that configuration
+names no matching entry in its `outputs` to resolve one from:
 
 ```text
---output-json report.json needs --write or --check reports: a run that neither
-writes that file nor compares it would leave it exactly as it found it. Add
---write to write it, --check reports to fail on a stale one, or ask for
---format json to read it on the console instead.
+--output-json needs a path, or a "json" entry in the configuration's "outputs"
+to resolve one from: neither was found, so there is nowhere to write it. Pass
+--output-json <path>, or declare a "json" output.
 ```
 
 Asking for the console is `--format json`, which names no file and so is never
 refused.
 
-**A named destination stands for all of them.** `--output-json only-this.json
---write` against [`codometer.config.ts`](codometer.config.ts) writes the report
-and **not** the configured markdown file. Adding to the configured set instead
+**A named destination stands for all of them.** `--output-json only-this.json`
+against [`codometer.config.ts`](codometer.config.ts) writes the report and
+**not** the configured markdown file. Adding to the configured set instead
 would write a file the command line never asked for.
 
 ## One markdown sink, not two
@@ -81,25 +87,37 @@ default start marker in its own prose, so codometer reads it as already carrying
 the block and rewrites the wrong region. This package's own README renames its
 markers for exactly that reason, and so does the codometer README.
 
-## Replacing half the behavior
+## One `write` function, not two callbacks
 
-`render` decides what markdown is produced; `write` decides which file it lands
-in and how. **Supplying one keeps the built-in other.**
+The old `render` and `write` callbacks — one deciding what markdown got
+produced, the other deciding where it landed and how — are now **one**
+function: `write(args) => boolean`, handed `anchors`, `check`, `description`,
+`path`, `renderBadges()`, and `statistics`. Leaving it unset keeps the built-in
+rendering and writing; supplying it takes over both, though a custom `write`
+can still call the handed `renderBadges()` and `anchors.syncAnchoredBlock` to
+reuse either half.
 
-- [`custom-render.config.ts`](custom-render.config.ts) adds a line above the
-  badges by calling `renderBadges()`, the built-in rendering of those same
-  statistics — and the result is still spliced between the markers by the
-  built-in writer.
+- [`custom-render.config.ts`](custom-render.config.ts) builds its own content —
+  a line above the badges, then `renderBadges()`, the built-in rendering of
+  those same statistics — and hands the result to
+  `anchors.syncAnchoredBlock({ content })`, which is the splice the built-in
+  writer would have done anyway.
 - [`custom-write.config.ts`](custom-write.config.ts) picks the destination from
-  what was measured, splicing with `anchors.syncAnchoredBlock` so choosing a
-  different file does not mean reimplementing marker handling. The content it
-  splices is the default badge block.
+  what was measured, calling `anchors.syncAnchoredBlock({ path })` with no
+  `content` override so the default badge block is what lands there.
+
+The console is not one of the halves a `write` takes over. `--format markdown`
+prints the **built-in** badges whatever a configuration's `write` renders,
+because a preview must not call a side-effecting callback to produce its own
+text — so under either configuration above, what the console shows and what the
+file holds can legitimately differ.
 
 One detail that costs an afternoon otherwise: **derive a custom writer's
 destination from the `path` it was handed**, which is already resolved against
-the measured directory. A bare filename passed to `syncAnchoredBlock` is not
-resolved the same way and lands relative to the working directory the command
-was run from — for an Nx target, the workspace root rather than the project.
+the process's working directory. A bare filename passed to
+`syncAnchoredBlock` is not resolved the same way and lands relative to the
+working directory the command was run from — for an Nx target, the workspace
+root rather than the project.
 
 ## What codometer writes, it does not measure
 
@@ -123,20 +141,22 @@ Run it twice against a scratch copy and read the report the second run wrote:
 
 ```bash
 cp -R examples/corpus /tmp/copy
-codometer --directory /tmp/copy --config examples/output/self-excluded.config.ts --write
-codometer --directory /tmp/copy --config examples/output/self-excluded.config.ts --write
-jq '.targets[0].files' /tmp/copy/codometer-report.json   # 28
+cd /tmp/copy
+codometer --config <path-to>/examples/output/self-excluded.config.ts --output-json --output-markdown
+codometer --config <path-to>/examples/output/self-excluded.config.ts --output-json --output-markdown
+jq '.targets[0].files' codometer-report.json   # 28
 ```
 
 Still 28, one markdown file, one JSON file — exactly what a run before either
 file existed reported. The exclusion is applied identically whatever the flags
-say, so a `--write` run and a `--check reports` run always measure the same tree.
+say, so an `--output-*` run and a `--check reports` run always measure the same
+tree.
 
 **Reading the report back does not change what is measured.** `--format json`
 names no destination, so the configured pair stays excluded and the second run
 reports the same 28. Naming a destination outright — `--output-json
-only-this.json --write` — does replace the configured pair, and a run that was
-never going to write those two files has no reason to exclude them.
+only-this.json` — does replace the configured pair, and a run that was never
+going to write those two files has no reason to exclude them.
 
 ## Next
 

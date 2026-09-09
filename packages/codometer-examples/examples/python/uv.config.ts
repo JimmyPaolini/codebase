@@ -8,7 +8,8 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * or a `.venv` names its interpreter the same way.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/python/uv.config.ts --format json \
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../python/uv.config.ts --format json \
  *   | jq '.targets[0].metrics[] | select(.path | startswith("python."))'
  * ```
  *
@@ -24,6 +25,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * field exactly as `python.classes` does.
  */
 const codometerConfiguration: CodometerConfiguration = {
+  format: "markdown",
   python: { command: "uv run python" },
 };
 

@@ -1,10 +1,10 @@
 // 🏷️ Types
 
 import type {
+  CodometerCommentLanguage,
   CodometerCommentMeasurement,
   CodometerSeverity,
   CodometerSymbolKind,
-  ResolvedCodometerConfiguration,
 } from "@codometer/configuration";
 import type { CommentRange } from "typescript";
 import type { LineCounter } from "yaml";
@@ -18,16 +18,37 @@ export interface CommentBlock {
  * How long one comment or JSDoc block may run, carried as an explicit
  * argument rather than read off a resolved configuration object.
  *
- * Shaped to match the `comment` selector a later ticket adds to
- * `@codometer/configuration` — a `language`, a `kind`, and this same set of
- * optional maxima plus `severity` — so mapping one onto this is a direct
- * field copy rather than a translation.
+ * Shaped to match the `comment` selector `@codometer/configuration` declares
+ * — a `language`, a `kind`, and this same set of optional maxima plus
+ * `severity` — so mapping one onto this is a direct field copy rather than a
+ * translation.
  */
 export interface CommentBudget {
   maximumCharacters: number | undefined;
   maximumLines: number | undefined;
   maximumWords: number | undefined;
   severity: CodometerSeverity;
+}
+
+/**
+ * One `comment`-selector custom statistic's budget, and what it is over.
+ *
+ * Mirrors the selector field for field: `kind` names a documentable
+ * declaration whose JSDoc is measured, `language` names the language whose
+ * plain comment blocks are, and `undefined` on both means every language that
+ * has comments — exactly as `CodometerCommentSelector` documents. A counter
+ * naming both is measured as a `kind`: the whole list reaches both measurers,
+ * and each selects from it by reading `kind`.
+ *
+ * Kept apart per statistic rather than merged into one budget per language or
+ * kind, so two statistics naming the same one with different maxima each
+ * count only their own breaches back against their own label.
+ */
+export interface CommentCounter {
+  budget: CommentBudget;
+  kind: CodometerSymbolKind | undefined;
+  label: string;
+  language: CodometerCommentLanguage | undefined;
 }
 
 /** One comment block, measured against one declared maximum. */
@@ -45,18 +66,10 @@ export interface CommentToken {
   source: string;
 }
 
-/** A documentation budget, plus the narrower budget one symbol kind may declare. */
-export interface DocumentationCommentBudget extends CommentBudget {
-  kinds: Partial<Record<CodometerSymbolKind, CommentBudget>>;
-}
-
-/** One language's comment budget, plus the separate budget over a whole file. */
-export interface LanguageCommentBudget extends CommentBudget {
-  /**
-   * Budgets over every comment in one file, or `undefined` when none were
-   * written — which leaves the block budgets the only thing judged.
-   */
-  file: CommentBudget | undefined;
+/** One measurement, tagged with the custom statistic label that produced it. */
+export interface LabeledCommentMeasurement {
+  label: string;
+  measurement: CommentMeasurement;
 }
 
 /**
@@ -87,7 +100,7 @@ export interface LocatedCommentToken extends CommentToken {
 
 /** Arguments accepted when measuring one file's comment blocks. */
 export interface MeasureCommentsArguments {
-  comments: LanguageCommentBudget;
+  comments: CommentBudget;
   filePath: string;
   tokens: CommentToken[];
 }
@@ -107,7 +120,8 @@ export interface MeasureCommentTextArguments {
 
 /** Arguments accepted when measuring every configured language's comments. */
 export interface MeasureLanguageCommentsArguments {
-  configuration: ResolvedCodometerConfiguration;
+  /** One `comment`-selector custom statistic's budget, per declared statistic. */
+  counters: CommentCounter[];
   files: LanguageCommentFiles;
   /**
    * Python's comments, already found by its own analyzer.

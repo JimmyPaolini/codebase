@@ -8,46 +8,40 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { RunPlanService } from "./run-plan.service";
 
 import type { MeasureCommandOptions } from "../measure/measure.types";
-import type { RunDestinations } from "./run-plan.types";
+import type { ResolveDestinationsResult } from "./run-plan.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 /** Builds a resolved configuration with the given output destinations. */
 function buildConfiguration(
-  output: Partial<ResolvedCodometerConfiguration["output"]> = {},
+  outputs: ResolvedCodometerConfiguration["outputs"] = [],
 ): ResolvedCodometerConfiguration {
   return {
-    css: { comments: undefined },
-    defaultTarget: undefined,
-    documentation: {
-      kinds: {},
-      maximumCharacters: undefined,
-      maximumLines: 6,
-      maximumWords: undefined,
-      severity: "fail",
-    },
+    defaultInput: undefined,
     exclude: [],
     excludeFrom: [],
-    hcl: { comments: undefined },
+    format: "markdown",
+    inputs: [],
     limits: [],
-    output: { json: undefined, markdown: undefined, ...output },
-    python: { command: "python3", comments: undefined },
-    shell: { comments: undefined },
-    sql: { comments: undefined },
-    statistics: [],
-    targets: [],
-    toml: { comments: undefined },
-    typescript: { comments: undefined },
-    yaml: { comments: undefined },
+    outputs,
+    python: { command: "python3" },
   };
 }
 
-const markdownConfiguration = {
+const markdownOutput = {
+  custom: [],
   description: "Repository statistics.",
   endMarker: "<!-- END -->",
   path: "README.md",
-  render: undefined,
   startMarker: "<!-- START -->",
+  type: "markdown" as const,
   write: undefined,
+};
+
+const jsonOutput = {
+  custom: [],
+  indentation: 4,
+  path: "configured.json",
+  type: "json" as const,
 };
 
 describe(RunPlanService, () => {
@@ -57,7 +51,7 @@ describe(RunPlanService, () => {
   function resolve(
     options: MeasureCommandOptions = {},
     configuration = buildConfiguration(),
-  ): RunDestinations {
+  ): ResolveDestinationsResult {
     return service.resolveDestinations({
       configuration,
       options,
@@ -78,27 +72,44 @@ describe(RunPlanService, () => {
   });
 
   describe("what the run does", () => {
-    it.each([
-      [{}, { checksLimits: false, checksReports: false, writes: false }],
+    it.each<
+      [MeasureCommandOptions, ReturnType<RunPlanService["selectMode"]>["mode"]]
+    >([
+      [
+        {},
+        {
+          checksLimits: false,
+          checksReports: false,
+          writesJson: false,
+          writesMarkdown: false,
+        },
+      ],
       [
         { check: "limits" },
-        { checksLimits: true, checksReports: false, writes: false },
+        {
+          checksLimits: true,
+          checksReports: false,
+          writesJson: false,
+          writesMarkdown: false,
+        },
       ],
       [
-        { check: "reports" },
-        { checksLimits: false, checksReports: true, writes: false },
+        { outputJson: true },
+        {
+          checksLimits: false,
+          checksReports: false,
+          writesJson: true,
+          writesMarkdown: false,
+        },
       ],
       [
-        { check: "reports,limits" },
-        { checksLimits: true, checksReports: true, writes: false },
-      ],
-      [
-        { write: true },
-        { checksLimits: false, checksReports: false, writes: true },
-      ],
-      [
-        { check: "limits", write: true },
-        { checksLimits: true, checksReports: false, writes: true },
+        { outputMarkdown: "README.md" },
+        {
+          checksLimits: false,
+          checksReports: false,
+          writesJson: false,
+          writesMarkdown: true,
+        },
       ],
     ])("reads %o as %o", (options, mode) => {
       const selection = service.selectMode(options);
@@ -113,21 +124,26 @@ describe(RunPlanService, () => {
       ).toStrictEqual({
         checksLimits: true,
         checksReports: true,
-        writes: false,
+        writesJson: false,
+        writesMarkdown: false,
       });
     });
 
     // Nothing can be stale immediately after being written, so a run asking
-    // for both has misunderstood one of them.
-    it("refuses --write together with --check reports", () => {
-      expect(
-        service.selectMode({ check: "reports", write: true }).errors,
-      ).toStrictEqual([
-        expect.stringContaining(
-          "--write cannot be combined with --check reports",
-        ) as string,
-      ]);
-    });
+    // for both on the same output has misunderstood one of them.
+    it.each<[MeasureCommandOptions]>([
+      [{ check: "reports", outputJson: true }],
+      [{ check: "reports", outputMarkdown: true }],
+    ])(
+      "refuses --check reports together with an --output-* flag",
+      (options) => {
+        expect(service.selectMode(options).errors).toStrictEqual([
+          expect.stringContaining(
+            "cannot be combined with --check reports",
+          ) as string,
+        ]);
+      },
+    );
 
     // The scenario this exists for: CI runs `--check "$GATES"` with the
     // variable unset or misspelled. Read as "gate nothing" the run would pass
@@ -144,7 +160,8 @@ describe(RunPlanService, () => {
         expect(selection.mode).toStrictEqual({
           checksLimits: false,
           checksReports: false,
-          writes: false,
+          writesJson: false,
+          writesMarkdown: false,
         });
       },
     );
@@ -154,87 +171,35 @@ describe(RunPlanService, () => {
         expect.stringContaining('does not accept "bogus"') as string,
       ]);
     });
-
-    it("reads --write as off when the flag never arrived", () => {
-      expect(service.selectMode({ write: false }).mode.writes).toBe(false);
-    });
-
-    // The failure this exists for: an nx target that named a report path but
-    // lost `--write`. The report went to the console, the run exited clean, and
-    // the first thing to notice was a pull request section rendering as though
-    // the project had changed nothing.
-    it.each([
-      [
-        { outputJson: "codometer-report.json" },
-        "--output-json codometer-report.json",
-      ],
-      [
-        { check: "limits", outputJson: "codometer-report.json" },
-        "--output-json codometer-report.json",
-      ],
-      [{ outputMarkdown: "README.md" }, "--output-markdown README.md"],
-    ])(
-      "refuses %j, which names a file nothing would write",
-      (options: MeasureCommandOptions, refusal: string) => {
-        expect(service.selectMode(options).errors).toStrictEqual([
-          expect.stringContaining(
-            `${refusal} needs --write or --check reports`,
-          ) as string,
-        ]);
-      },
-    );
-
-    // Both are named in one run rather than one at a time, so a command line
-    // with two unwritten paths is two mistakes to fix rather than two runs.
-    it("names every unwritten output path in one run", () => {
-      expect(
-        service.selectMode({
-          outputJson: "report.json",
-          outputMarkdown: "README.md",
-        }).errors,
-      ).toHaveLength(2);
-    });
-
-    // A path the run does write, and a path it compares, are both accounted
-    // for. Neither is the mistake above.
-    it.each([
-      [{ outputJson: "codometer-report.json", write: true }],
-      [{ check: "reports", outputJson: "codometer-report.json" }],
-      [{ outputMarkdown: "README.md", write: true }],
-    ])("accepts %j, which does produce that file", (options) => {
-      expect(service.selectMode(options).errors).toStrictEqual([]);
-    });
   });
 
   describe("what it prints", () => {
-    // The bare run: nothing is written, so the badges are what there is to
-    // show. This is what makes `codometer` on its own worth running.
-    it("prints the badges when the run touches no file", () => {
-      expect(service.selectMode({}).format).toBe("markdown");
+    it("reads an explicit --format value", () => {
+      const errors: string[] = [];
+
+      expect(service.resolveFormat("json", "markdown", errors)).toBe("json");
+      expect(errors).toStrictEqual([]);
     });
 
-    // A run whose output is a file has already answered the question. A
-    // document on standard output as well is what a pipeline reading that
-    // stream would choke on.
-    it.each([[{ write: true }], [{ check: "reports" }]])(
-      "prints nothing for %j, whose output is a file",
-      (options) => {
-        expect(service.selectMode(options).format).toBeUndefined();
-      },
-    );
+    it("falls back to the resolved configuration's format when omitted", () => {
+      const errors: string[] = [];
 
-    it.each(["json", "markdown"])("prints %s when asked for it", (format) => {
-      expect(service.selectMode({ format }).format).toBe(format);
-    });
-
-    it("prints what --format asked for even on a run that writes", () => {
-      expect(service.selectMode({ format: "json", write: true }).format).toBe(
-        "json",
+      expect(service.resolveFormat(undefined, "markdown", errors)).toBe(
+        "markdown",
       );
+      expect(errors).toStrictEqual([]);
+    });
+
+    // Not inferred from whether the run writes a file: the omitted flag
+    // always reads the configured format, whatever else the command line
+    // asks the run to do.
+    it("does not infer the fallback from any other flag", () => {
+      expect(service.resolveFormat(undefined, "json", [])).toBe("json");
     });
 
     it("refuses a --format it does not know, naming the ones it does", () => {
-      const { errors, format } = service.selectMode({ format: "yaml" });
+      const errors: string[] = [];
+      const format = service.resolveFormat("yaml", "markdown", errors);
 
       expect(errors).toStrictEqual([
         expect.stringContaining('--format does not accept "yaml"') as string,
@@ -246,24 +211,28 @@ describe(RunPlanService, () => {
   describe("where the output goes", () => {
     it("writes no file when nothing names a destination", () => {
       expect(resolve()).toStrictEqual({
-        json: undefined,
-        markdown: undefined,
+        destinations: { json: undefined, markdown: undefined },
+        errors: [],
       });
     });
 
     it("reads a configured markdown destination as the markdown destination", () => {
-      expect(
-        resolve({}, buildConfiguration({ markdown: markdownConfiguration })),
-      ).toStrictEqual({
+      const { destinations, errors } = resolve(
+        { outputMarkdown: true },
+        buildConfiguration([markdownOutput]),
+      );
+
+      expect(errors).toStrictEqual([]);
+      expect(destinations).toStrictEqual({
         json: undefined,
-        markdown: { ...markdownConfiguration, path: "/repo/README.md" },
+        markdown: { ...markdownOutput, path: "/repo/README.md" },
       });
     });
 
     it("lets --output-markdown override the configured path", () => {
-      const destinations = resolve(
+      const { destinations } = resolve(
         { outputMarkdown: "docs/statistics.md" },
-        buildConfiguration({ markdown: markdownConfiguration }),
+        buildConfiguration([markdownOutput]),
       );
 
       expect(destinations.markdown?.path).toBe("/repo/docs/statistics.md");
@@ -273,63 +242,85 @@ describe(RunPlanService, () => {
 
     it("keeps a configured write function as a destination of its own", () => {
       const write = (): boolean => true;
-      const destinations = resolve(
-        {},
-        buildConfiguration({
-          markdown: { ...markdownConfiguration, path: undefined, write },
-        }),
+      const { destinations, errors } = resolve(
+        { outputMarkdown: true },
+        buildConfiguration([{ ...markdownOutput, path: undefined, write }]),
       );
 
+      expect(errors).toStrictEqual([]);
       expect(destinations.markdown?.path).toBeUndefined();
       expect(destinations.markdown?.write).toBe(write);
     });
 
-    it("applies the default markers to an --output-markdown path", () => {
+    it("applies the default markers to an --output-markdown path with no configured markdown output", () => {
       expect(
-        resolve({ outputMarkdown: "docs/statistics.md" }).markdown,
-      ).toStrictEqual({
-        description: undefined,
-        endMarker: "<!-- CODE_STATISTICS_END -->",
-        path: "/repo/docs/statistics.md",
-        render: undefined,
-        startMarker: "<!-- CODE_STATISTICS_START -->",
-        write: undefined,
+        resolve({ outputMarkdown: "docs/statistics.md" }).destinations,
+      ).toMatchObject({
+        markdown: {
+          custom: [],
+          description: undefined,
+          endMarker: "<!-- CODE_STATISTICS_END -->",
+          path: "/repo/docs/statistics.md",
+          startMarker: "<!-- CODE_STATISTICS_START -->",
+          write: undefined,
+        },
       });
     });
 
+    // Nothing configured, and no path given either: there is nowhere to
+    // write it, so this is refused before anything is measured.
+    it("refuses a bare --output-markdown with no configured markdown output", () => {
+      const { destinations, errors } = resolve({ outputMarkdown: true });
+
+      expect(destinations.markdown).toBeUndefined();
+      expect(errors).toStrictEqual([
+        expect.stringContaining("--output-markdown needs a path") as string,
+      ]);
+    });
+
     it("resolves a report path against the measured directory", () => {
-      const destinations = resolve(
+      const { destinations, errors } = resolve(
         { outputJson: "reports/statistics.json" },
-        buildConfiguration({
-          json: { indentation: 4, path: "configured.json" },
-        }),
+        buildConfiguration([jsonOutput]),
       );
 
+      expect(errors).toStrictEqual([]);
       expect(destinations.json).toStrictEqual({
+        custom: [],
         indentation: 4,
         path: "/repo/reports/statistics.json",
       });
     });
 
     it("gives the report the default indentation when nothing configured one", () => {
-      expect(resolve({ outputJson: "statistics.json" }).json?.indentation).toBe(
-        2,
-      );
+      expect(
+        resolve({ outputJson: "statistics.json" }).destinations.json
+          ?.indentation,
+      ).toBe(2);
+    });
+
+    // Nothing configured, and no path given either: there is nowhere to
+    // write it, so this is refused before anything is measured.
+    it("refuses a bare --output-json with no configured json output", () => {
+      const { destinations, errors } = resolve({ outputJson: true });
+
+      expect(destinations.json).toBeUndefined();
+      expect(errors).toStrictEqual([
+        expect.stringContaining("--output-json needs a path") as string,
+      ]);
     });
 
     // A command line that names one destination names them all. Adding to the
     // configured set instead would write a file the command line never asked
     // for.
     it("lets a named destination stand for all of them", () => {
-      const destinations = resolve(
+      const { destinations } = resolve(
         { outputJson: "statistics.json" },
-        buildConfiguration({
-          json: { indentation: 4, path: "configured.json" },
-          markdown: markdownConfiguration,
-        }),
+        buildConfiguration([jsonOutput, markdownOutput]),
       );
 
       expect(destinations.json).toStrictEqual({
+        custom: [],
         indentation: 4,
         path: "/repo/statistics.json",
       });
@@ -337,11 +328,9 @@ describe(RunPlanService, () => {
     });
 
     it("drops a configured report when only --output-markdown names a destination", () => {
-      const destinations = resolve(
+      const { destinations } = resolve(
         { outputMarkdown: "docs/statistics.md" },
-        buildConfiguration({
-          json: { indentation: 2, path: "configured.json" },
-        }),
+        buildConfiguration([jsonOutput]),
       );
 
       expect(destinations.json).toBeUndefined();
@@ -349,29 +338,26 @@ describe(RunPlanService, () => {
     });
 
     it("never fires a configured write function for a run that named --output-json", () => {
-      const destinations = resolve(
+      const { destinations } = resolve(
         { outputJson: "statistics.json" },
-        buildConfiguration({
-          markdown: {
-            ...markdownConfiguration,
+        buildConfiguration([
+          {
+            ...markdownOutput,
             path: undefined,
             write: (): boolean => true,
           },
-        }),
+        ]),
       );
 
       expect(destinations.markdown).toBeUndefined();
     });
   });
 
-  describe("what it refuses to measure", () => {
+  describe("what it excludes from measurement", () => {
     it("lists every file the run writes, relative to the directory", () => {
-      const destinations = resolve(
-        {
-          outputJson: "reports/statistics.json",
-          outputMarkdown: "README.md",
-        },
-        buildConfiguration({ markdown: markdownConfiguration }),
+      const { destinations } = resolve(
+        { outputJson: "reports/statistics.json", outputMarkdown: "README.md" },
+        buildConfiguration([markdownOutput]),
       );
 
       expect(
@@ -382,7 +368,7 @@ describe(RunPlanService, () => {
     it("lists nothing when the run names no file at all", () => {
       expect(
         service.listOutputPaths({
-          destinations: resolve(),
+          destinations: resolve().destinations,
           workingDirectory: "/repo",
         }),
       ).toStrictEqual([]);

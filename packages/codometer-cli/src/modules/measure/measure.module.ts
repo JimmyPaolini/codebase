@@ -1,6 +1,6 @@
-import { ConfigurationModule, InputModule } from "@codometer/configuration";
+import { ConfigurationModule } from "@codometer/configuration";
 import { CustomizationModule } from "@codometer/customization";
-import { DiscoveryModule, TargetsModule } from "@codometer/discovery";
+import { DiscoveryModule, InputsModule } from "@codometer/discovery";
 import { LanguagesModule } from "@codometer/languages";
 import { SizeModule } from "@codometer/size";
 import { Module } from "@nestjs/common";
@@ -26,14 +26,13 @@ import { MeasureService } from "./measure.service";
     CustomizationModule,
     DeliveryModule,
     DiscoveryModule,
-    InputModule,
+    InputsModule,
     LanguagesModule,
     LimitsModule,
     LoggerModule,
     ReportModule,
     RunPlanModule,
     SizeModule,
-    TargetsModule,
   ],
   providers: [MeasureCommand, MeasureService],
 })

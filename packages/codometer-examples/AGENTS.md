@@ -12,34 +12,36 @@ nx run codometer-examples:examples     # every example, gated on the exit code i
 nx run codometer-examples:vitest       # every number and refusal message the guides quote
 ```
 
-One example on its own, which is what a guide's `## Run it` section names:
+One example on its own, which is what a guide's `## Run it` section names —
+there is no `--directory` flag any more, so the directory a guide says to
+measure is the directory you `cd` into first:
 
 ```bash
-cd packages/codometer-examples
-codometer --directory examples/corpus --config examples/<name>/<file>.config.ts --check limits
+cd packages/codometer-examples/examples/corpus
+codometer --config ../<name>/<file>.config.ts --check limits
 ```
 
 ## Codometer said X — open this example
 
 | It said | It means | Open |
 | ------- | -------- | ---- |
-| `Cannot bind the limit written against "X": nothing measured answers to it` | The path has no target name on the front, and no `defaultTarget` is set. Even one target is not enough — write `codebase.X`. | [`limits/unprefixed.config.ts`](examples/limits/unprefixed.config.ts) |
-| `it could be the "X" target's "files" metric, or the "codebase" target's "X.files" metric` | A target shares a name with a metric group, and a `defaultTarget` makes both readings valid. Write the target name in full. Removing the `defaultTarget` also removes the ambiguity. | [`limits/ambiguous.config.ts`](examples/limits/ambiguous.config.ts) |
-| `Cannot bind the limit written against "T.python.files"` on a target that exists | The target does not run the analysis that produces the counter. Add `"language"` to its `analyses`, or limit something it measures. | [`limits/unbound.config.ts`](examples/limits/unbound.config.ts) |
-| `Target "T" matched no files, and a limit is written against its "size" metric` | The glob stopped matching, or the build never ran. Do not "fix" it by removing the limit — the limit is what caught it. | [`limits/empty-target-limited.config.ts`](examples/limits/empty-target-limited.config.ts) |
+| `Cannot bind the limit written against "X": nothing measured answers to it` | The path has no target name on the front, and no `defaultInput` is set. Even one input is not enough — write `codebase.X`. | [`limits/unprefixed.config.ts`](examples/limits/unprefixed.config.ts) |
+| `it could be the "X" target's "files" metric, or the "codebase" target's "X.files" metric` | An input shares a name with a metric group, and a `defaultInput` makes both readings valid. Write the target name in full. Removing the `defaultInput` also removes the ambiguity. | [`limits/ambiguous.config.ts`](examples/limits/ambiguous.config.ts) |
+| `Cannot bind the limit written against "T.python.files"` on a target that exists | The input does not run the analysis that produces the counter. Add `"language"` to its `analyses`, or limit something it measures. | [`limits/unbound.config.ts`](examples/limits/unbound.config.ts) |
+| `Input "T" matched no files, and a limit is written against its "size" metric` | The glob stopped matching, or the build never ran. Do not "fix" it by removing the limit — the limit is what caught it. | [`limits/empty-target-limited.config.ts`](examples/limits/empty-target-limited.config.ts) |
 | `Cannot read the limit on "T.size" from "8 K"` | The trailing `b` is required. `"8 KB"` is 8000 bytes, decimal, not 8192. | [`limits/unreadable-unit.config.ts`](examples/limits/unreadable-unit.config.ts) |
-| `--write cannot be combined with --check reports` | Nothing can be stale in the run that just wrote it. Run them separately. | [`write-check/codometer.config.ts`](examples/write-check/codometer.config.ts) |
+| `--output-json or --output-markdown cannot be combined with --check reports` | Nothing can be stale in the run that just wrote it. Run them separately. Replaces the old `--write cannot be combined with --check reports` message — there is no `--write` any more. | [`write-check/codometer.config.ts`](examples/write-check/codometer.config.ts) |
 | `--check does not accept "X"` | The set is drawn from `limits` and `reports`, comma-separated. | [`write-check/codometer.config.ts`](examples/write-check/codometer.config.ts) |
-| `--output-json <path> needs --write or --check reports` | A run that neither writes nor compares would leave the file exactly as it found it. Add `--write`, or ask for `--format json`. | [`output/codometer.config.ts`](examples/output/codometer.config.ts) |
+| `--output-json needs a path, or a "json" entry in the configuration's "outputs" to resolve one from` | The bare flag (no value) asks the run to write wherever the configuration says, and nothing there names a `json` output. Pass `--output-json <path>`, or declare one. A path always writes on its own now — the old `--output-json <path> needs --write or --check reports` refusal is gone with `--write`. | [`output/codometer.config.ts`](examples/output/codometer.config.ts) |
 | `Found stale reports` right after a green run elsewhere | Compressed sizes depend on the runtime's zlib. Check on the Node version the repository pins before believing it. | [`staleness/codometer.config.ts`](examples/staleness/codometer.config.ts) |
 | `Breached a warning limit` and the run still exits 0 | `severity: "warn"` is advice. Only a `fail` limit under `--check limits` gates. | [`limits/warn.config.ts`](examples/limits/warn.config.ts) |
 | `Skipped Python analysis … command not found`, and the run still exits 0 | The interpreter is unreachable. Every `python.*` counter reads 0, and so do `jupyter.classes`/`jupyter.functions`. Name it with `python: { command: … }`. | [`python/unreachable-interpreter.config.ts`](examples/python/unreachable-interpreter.config.ts) |
-| Nothing at all — a counter reports zero | For Python, the interpreter. For a symbol counter, the wrong `kinds`/`modifiers`. For a target, the globs. | [`python/uv.config.ts`](examples/python/uv.config.ts), [`statistics/codometer.config.ts`](examples/statistics/codometer.config.ts) |
-| `Breached a documentation length limit` naming a `(comment)` kind | A YAML comment block ran over `yaml.comments.maximum`. A block is a run of `#` lines; a blank line ends one, and a trailing comment is its own. Condense it, or raise the budget. | [`documentation/yaml-comments.config.ts`](examples/documentation/yaml-comments.config.ts) |
-| A `(comment)` breach in a `.py`, `.sh`, or `.toml` file you did not expect | The line scanner reads a `#` inside a string as a comment; only YAML is read by a real tokenizer. Condense the block, or loosen that language with its own `comments` key. | [`documentation/comments.config.ts`](examples/documentation/comments.config.ts) |
+| Nothing at all — a counter reports zero | For Python, the interpreter. For a symbol counter, the wrong `kinds`/`modifiers`. For an input, the globs. | [`python/uv.config.ts`](examples/python/uv.config.ts), [`statistics/codometer.config.ts`](examples/statistics/codometer.config.ts) |
+| `Breached a failing limit` naming a `custom.<Label> Comment Budget` metric | A `comment` selector's counter found a block over its own `maximumLines`/`maximumWords`/`maximumCharacters`. There is no separate "documentation length" message any more — a comment-budget breach is an ordinary limit breach, addressed by the counter's own `custom.<label>` path. Condense the block, or raise the budget. | [`documentation/codometer.config.ts`](examples/documentation/codometer.config.ts), [`documentation/yaml-comments.config.ts`](examples/documentation/yaml-comments.config.ts) |
+| A `custom.<Language> Comment Budget` breach in a `.py`, `.sh`, or `.toml` file you did not expect | The line scanner reads a `#` inside a string as a comment; only Python, YAML, CSS, and TypeScript/JavaScript are read by a real tokenizer. Condense the block, or give that language's own `comment` selector a looser budget. | [`documentation/comments.config.ts`](examples/documentation/comments.config.ts) |
 | A shell block reported starting one line later than you counted | A `#!` shebang is never a comment, so the block starts below it. | [`documentation/comments.config.ts`](examples/documentation/comments.config.ts) |
-| `documentation` is set but no YAML comment is measured, or the reverse | The two checks are enabled separately: `documentation` measures JSDoc, `yaml.comments` measures YAML blocks. Setting one never enables the other. | [`documentation/yaml-comments.config.ts`](examples/documentation/yaml-comments.config.ts) |
-| A configuration you edited had no effect | A nearer configuration file won. The search takes the **first** file walking upward and merges nothing. | [`discovery/nested/codometer.config.ts`](examples/discovery/nested/codometer.config.ts) |
+| A `custom.<label>` comment counter reports 0 for a language whose JSDoc comments you expected it to catch | A `comment` selector naming `language` and no `kind` skips JSDoc comments entirely — a `kind`-based selector measures those instead. The two are enabled separately, even though they share every other field name and reach the report through one channel. | [`documentation/codometer.config.ts`](examples/documentation/codometer.config.ts) |
+| A configuration you edited had no effect | A nearer configuration file won. The search takes the **first** file walking upward and merges nothing — even a configuration file authored as a function is no longer recognized, so the same object always answers, whichever folder reached it. | [`discovery/nested/codometer.config.ts`](examples/discovery/nested/codometer.config.ts) |
 
 ## Three things that reliably confuse
 
@@ -103,8 +105,8 @@ codometer-examples/
 
 ## Do not fix a deliberately broken example
 
-Ten of this package's configurations are meant to fail, and six of them exit
-non-zero on purpose. `limits/unprefixed.config.ts` writes a path that binds to nothing,
+Twelve of this package's configurations are meant to fail, and eleven of them
+exit non-zero on purpose. `limits/unprefixed.config.ts` writes a path that binds to nothing,
 `limits/ambiguous.config.ts` writes a path that reads two ways,
 `limits/empty-target-limited.config.ts` limits a target that matches nothing,
 and `python/unreachable-interpreter.config.ts` names an interpreter that is not

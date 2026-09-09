@@ -19,21 +19,49 @@ import { MarkdownService } from "./markdown.service";
 
 import type {
   CodeStatisticsResult,
-  ResolvedCodometerMarkdownOutputConfiguration,
+  ResolvedCodometerCustomStatistic,
+  ResolvedCodometerMarkdownOutput,
 } from "@codometer/configuration";
 import type { DeepMocked } from "@golevelup/ts-vitest";
+
+/** Builds a resolved custom statistic naming only the fields a test needs. */
+function buildCustomStatistic(
+  label: string,
+  overrides: Partial<ResolvedCodometerCustomStatistic> = {},
+): ResolvedCodometerCustomStatistic {
+  return {
+    color: "000000",
+    comment: undefined,
+    group: "conventions",
+    label,
+    patterns: [],
+    ...overrides,
+  };
+}
+
+/**
+ * Every counter `sampleStatistics.custom` below carries, declared as this
+ * destination's own — the default a case overrides when it wants to prove one
+ * destination renders a different subset than another.
+ */
+const DEFAULT_CUSTOM_STATISTICS: ResolvedCodometerCustomStatistic[] = [
+  buildCustomStatistic("Service Files"),
+  buildCustomStatistic("Unit Tests"),
+  buildCustomStatistic("Static Methods"),
+];
 
 /** Builds a markdown destination pointing at the given path. */
 function buildDestination(
   markdownPath: string | undefined,
-  overrides: Partial<ResolvedCodometerMarkdownOutputConfiguration> = {},
-): ResolvedCodometerMarkdownOutputConfiguration {
+  overrides: Partial<ResolvedCodometerMarkdownOutput> = {},
+): ResolvedCodometerMarkdownOutput {
   return {
+    custom: DEFAULT_CUSTOM_STATISTICS,
     description: undefined,
     endMarker: "<!-- CODE_STATISTICS_END -->",
     path: markdownPath,
-    render: undefined,
     startMarker: "<!-- CODE_STATISTICS_START -->",
+    type: "markdown",
     write: undefined,
     ...overrides,
   };
@@ -368,6 +396,132 @@ describe(MarkdownService, () => {
 
     expect(block).not.toContain("### Conventions");
     expect(block).toContain("![Static Methods]");
+  });
+
+  // `statistics.custom` carries every counter declared across every
+  // configured output, deduped by label — two destinations may declare
+  // entirely different counters, and each renders only its own.
+  it("resolves a destination's own custom counters rather than every measured one", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md", {
+        custom: [buildCustomStatistic("Service Files")],
+      }),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block).toContain("![Service Files]");
+    expect(block).not.toContain("![Unit Tests]");
+    expect(block).not.toContain("![Static Methods]");
+  });
+
+  it("renders a different subset of custom counters for a different destination", () => {
+    const firstBlock = service.renderBadges({
+      destination: buildDestination("README.md", {
+        custom: [buildCustomStatistic("Service Files")],
+      }),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+    const secondBlock = service.renderBadges({
+      destination: buildDestination("METRICS.md", {
+        custom: [buildCustomStatistic("Unit Tests")],
+      }),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(firstBlock).toContain("![Service Files]");
+    expect(firstBlock).not.toContain("![Unit Tests]");
+    expect(secondBlock).toContain("![Unit Tests]");
+    expect(secondBlock).not.toContain("![Service Files]");
+  });
+
+  it("renders no Conventions group for a destination that declares no custom counters", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md", { custom: [] }),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block).not.toContain("### Conventions");
+    expect(block).not.toContain("Service Files");
+    expect(block).not.toContain("Unit Tests");
+    expect(block).not.toContain("Static Methods");
+  });
+
+  // Spec #749 user story 16: a breached comment budget still has to name the
+  // file and line it was found at once `renderDocumentationSection` is gone.
+  // Generalized past `comment`: the section renders whatever a custom
+  // statistic's `instances` carries, not a shape special to that selector.
+  it("names the file and line of a per-instance statistic's breach", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md", {
+        custom: [buildCustomStatistic("Overlong Comments")],
+      }),
+      scope: "repository",
+      statistics: {
+        ...sampleStatistics,
+        custom: [
+          {
+            color: "dc2626",
+            count: 1,
+            group: "conventions",
+            instances: [{ file: "src/values.yaml", line: 3, measured: 14 }],
+            label: "Overlong Comments",
+          },
+        ],
+      },
+      targets: [],
+    });
+
+    expect(block).toContain("### 📝 Overlong Comments");
+    expect(block).toContain("- `src/values.yaml:3` — measured 14");
+  });
+
+  // The old renderer returned an empty string when nothing breached, and
+  // that instinct is what keeps a clean run's badge block byte-identical to
+  // one with no per-instance counter configured at all.
+  it("adds nothing when a per-instance statistic breached nothing", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md", {
+        custom: [buildCustomStatistic("Overlong Comments")],
+      }),
+      scope: "repository",
+      statistics: {
+        ...sampleStatistics,
+        custom: [
+          {
+            color: "dc2626",
+            count: 0,
+            group: "conventions",
+            instances: [],
+            label: "Overlong Comments",
+          },
+        ],
+      },
+      targets: [],
+    });
+
+    expect(block).not.toContain("📝");
+  });
+
+  // The default badge path is what most destinations render, and its
+  // statistics all only count — none carries a `comment` selector — so it must
+  // stay exactly what it was before instances existed.
+  it("renders no instances section for statistics that only count", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block).not.toContain("📝");
   });
 
   it("leads with the configured description when there is one", () => {
@@ -778,7 +932,7 @@ describe(MarkdownService, () => {
     ).toBe(true);
   });
 
-  it("renders through a configured render function", () => {
+  it("writes through a configured write function that renders its own content", () => {
     const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
     temporaryDirectories.push(temporaryDirectory);
     const markdownPath = path.join(temporaryDirectory, "METRICS.md");
@@ -787,8 +941,10 @@ describe(MarkdownService, () => {
       check: false,
       destination: buildDestination(markdownPath, {
         description: "Counted by hand.",
-        render: (renderArguments) =>
-          `${renderArguments.description ?? ""}\n\nLines: ${renderArguments.statistics.linesOfCode}`,
+        write: (writeArguments) =>
+          writeArguments.anchors.syncAnchoredBlock({
+            content: `${writeArguments.description ?? ""}\n\nLines: ${writeArguments.statistics.linesOfCode}`,
+          }),
       }),
       scope: "repository",
       statistics: sampleStatistics,
@@ -802,7 +958,10 @@ describe(MarkdownService, () => {
     expect(written).not.toContain("img.shields.io");
   });
 
-  it("hands a render function the built-in rendering to build on", () => {
+  // A `write` function that wants to extend the default report, rather than
+  // replace it, gets the same badges the built-in path would have written —
+  // it never has to reimplement `renderBadges` to build on it.
+  it("hands a write function a working renderBadges to build on", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
       scope: "repository",
@@ -816,8 +975,10 @@ describe(MarkdownService, () => {
     service.sync({
       check: false,
       destination: buildDestination(markdownPath, {
-        render: (renderArguments) =>
-          `## Metrics\n\n${renderArguments.renderBadges()}`,
+        write: (writeArguments) =>
+          writeArguments.anchors.syncAnchoredBlock({
+            content: `## Metrics\n\n${writeArguments.renderBadges()}`,
+          }),
       }),
       scope: "repository",
       statistics: sampleStatistics,
@@ -934,62 +1095,6 @@ describe(MarkdownService, () => {
     expect(document.startsWith("## ⏲️ Codometer\n\n### Repository")).toBe(true);
   });
 
-  it("renders nothing for a documentation section with no breaches", () => {
-    expect(service.renderDocumentationSection({ breaches: [] })).toBe("");
-  });
-
-  it("renders one bullet per breached documentation entry", () => {
-    const section = service.renderDocumentationSection({
-      breaches: [
-        {
-          declaration: "Foo",
-          file: "src/foo.ts",
-          kind: "class",
-          limit: 6,
-          line: 3,
-          measured: 9,
-          unit: "lines",
-        },
-      ],
-    });
-
-    expect(section).toBe(
-      [
-        "### 📝 Documentation",
-        "- `src/foo.ts:3` — `Foo` (class): 9/6 lines",
-      ].join("\n\n"),
-    );
-  });
-
-  it("renders every breach as its own bullet", () => {
-    const section = service.renderDocumentationSection({
-      breaches: [
-        {
-          declaration: "Foo",
-          file: "src/foo.ts",
-          kind: "class",
-          limit: 6,
-          line: 3,
-          measured: 9,
-          unit: "lines",
-        },
-        {
-          declaration: "bar",
-          file: "src/bar.ts",
-          kind: "function",
-          limit: 4,
-          line: 1,
-          measured: 20,
-          unit: "words",
-        },
-      ],
-    });
-
-    expect(
-      section.split("\n").filter((line) => line.startsWith("- ")),
-    ).toHaveLength(2);
-  });
-
   // What a splice would place, without placing it — the form a run that writes
   // nothing shows on the console.
   it("renders the anchored block without touching a file", () => {
@@ -1005,18 +1110,23 @@ describe(MarkdownService, () => {
     expect(block).toContain("![Lines of Code]");
   });
 
-  it("renders the anchored block through a configured render function", () => {
+  // The console preview never writes a file, so it never invokes a configured
+  // `write` either — that callback both decides the content and places it,
+  // and placing it is not something a preview does. A destination naming one
+  // still previews the same default badges `sync` would fall back to.
+  it("ignores a configured write function and renders the default badges", () => {
     const block = service.renderBlock({
       destination: buildDestination("README.md", {
-        render: () => "## Metrics",
+        write: () => {
+          throw new Error("write must not be called by a console preview");
+        },
       }),
       scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
 
-    expect(block).toContain("## Metrics");
-    expect(block).not.toContain("![Lines of Code]");
+    expect(block).toContain("![Lines of Code]");
   });
 
   it("appends the block into a file whose parent directory does not exist", () => {

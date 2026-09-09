@@ -205,6 +205,49 @@ describe(ChangesService, () => {
     expect(rows.map((row) => row.unit)).toStrictEqual([null, "bytes"]);
   });
 
+  // The redesigned report drops its top-level `documentation` array — a
+  // configured counter's breach detail now lives inside the metric itself,
+  // addressed under `custom.<label>` like any other custom counter — and
+  // reports no longer carry that field at all. A diff must join this metric
+  // by name exactly like any other, rather than erroring on the report's
+  // shape or silently leaving the counter out of the table.
+  it("diffs a custom counter's metric against its baseline without dropping it", () => {
+    const buildCustomCounterReport = (value: number): CodometerReport => ({
+      targets: [
+        {
+          empty: false,
+          metrics: [
+            {
+              limits: [
+                { breached: false, label: null, severity: "fail", value: 100 },
+              ],
+              name: "codebase.custom.Service Files",
+              unit: null,
+              value,
+            },
+          ],
+          name: "codebase",
+        },
+      ],
+    });
+    const workingDirectory = writeWorkspace({
+      ".baseline/packages/logger/codometer-report.json":
+        buildCustomCounterReport(12),
+      "packages/logger/codometer-report.json": buildCustomCounterReport(15),
+    });
+
+    const rows = service.collect({
+      baselineDirectory: ".baseline",
+      workingDirectory,
+    }).rows;
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.name).toBe("codebase.custom.Service Files");
+    expect(rows[0]?.baseValue).toBe(12);
+    expect(rows[0]?.value).toBe(15);
+    expect(rows[0]?.measured).toBe(true);
+  });
+
   it("joins a measured metric to its baseline by name", () => {
     const workingDirectory = writeWorkspace({
       ".baseline/packages/logger/codometer-report.json": buildReport([
