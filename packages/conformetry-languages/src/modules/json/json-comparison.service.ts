@@ -19,7 +19,7 @@ import type { ConformetryDifference } from "@conformetry/core";
  * template declares must be present. That is what makes a generated file
  * editable after generation without immediately failing validation.
  *
- * Exported from this package so `conformetry-jupyter` can reuse it for
+ * Exported from this module so the Jupyter module can reuse it for
  * notebooks, which are JSON documents, rather than duplicating the walk.
  *
  * The walk also counts what it asked for: every template node is one

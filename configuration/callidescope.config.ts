@@ -48,15 +48,17 @@ import {
  *
  * ## The projects that override nothing
  *
- * Thirty-one projects under `packages/` now declare their own measured depth,
- * and the ones that still inherit the number below are the five conformetry
- * leaf analyzers, which hold real code that roots nothing:
- * `conformetry-typescript` has forty callables, `-json` twenty-three,
- * `-jupyter` twenty-two, `-python` eleven, and `-text` five, and every one of
- * them is reached from `conformetry-generation` above rather than entered
- * directly, so each measures zero however much it does. Gating either kind at
- * zero would fail on the first stack of any length, which is a landmine
- * rather than a ratchet.
+ * Thirty-two projects under `packages/` now declare their own measured depth.
+ * There used to be a reason more inherited the number below, and
+ * consolidating the conformetry Languages removed it: six leaf analyzers —
+ * `conformetry-typescript`, `-json`, `-jupyter`, `-markdown`, `-python`,
+ * `-text` — each held real code that rooted nothing, because every one of
+ * them was entered
+ * from above rather than directly, so each measured zero however much it did.
+ * They are now modules of `conformetry-languages`, and what was a call
+ * between packages is a call inside one, so a scoped run finally enters at a
+ * surface of its own and measures four rather than zero. That package
+ * declares four and gates like any other.
  *
  * The dependency closure a scoped run traces did fix this for
  * `codometer-changes`, which measured zero before it and ten after. The ten
@@ -67,11 +69,11 @@ import {
  * ## The projects traced by nothing
  *
  * Seven projects are not measured at all, rather than inheriting the number
- * below the way the leaf analyzers do. The four skill packages —
- * `callidescope-agents`, `codependix-agents`, `codometer-agents`,
- * `conformetry-agents` — hold barely a callable between them, the same
- * landmine the leaf analyzers avoid by inheriting rather than being gated at
- * zero, except these have no real code underneath to ever grow into. And
+ * below. The four skill packages — `callidescope-agents`,
+ * `codependix-agents`, `codometer-agents`, `conformetry-agents` — hold barely
+ * a callable between them, the same landmine a real project would avoid by
+ * declaring its own number rather than being gated at zero, except these have
+ * no real code underneath to ever grow into. And
  * `codependix-examples`, `codometer-examples`, and `conformetry-examples` are
  * fixture corpora rather than libraries: a depth number over one reports on a
  * corpus's incidental shape instead of on production code, the same reason
@@ -127,8 +129,7 @@ export const workspaceLimits = {
    * **Lowering this number is not how the ratchet descends.** It reaches only
    * the projects that declare none of their own, and those are the ones with
    * no stack to gate — the four skill packages and `codependix-examples` hold
-   * barely a callable between them, and the conformetry leaf analyzers root
-   * nothing, so each measures zero however much it does. A number lowered here
+   * barely a callable between them. A number lowered here
    * fires on the first stack any of them grows rather than on a regression, and
    * the value it stands in for is exactly the one they cannot pick for
    * themselves. To tighten a project, write the boundary-tested number in that

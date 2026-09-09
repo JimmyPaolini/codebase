@@ -14,8 +14,8 @@ export const DEFAULT_BRIDGE_WEIGHT = 1;
  * Extensions the Python validator claims.
  *
  * Notebooks are deliberately absent — `.ipynb` is a JSON envelope containing
- * markdown and code cells, so `conformetry-jupyter` owns it and calls back
- * into this package for the code cells alone.
+ * markdown and code cells, so the Jupyter module owns it and calls back into
+ * this module for the code cells alone.
  */
 export const PYTHON_VALIDATOR_FILE_EXTENSIONS = [".py"];
 
