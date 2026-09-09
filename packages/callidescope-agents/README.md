@@ -82,17 +82,13 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 ### Nx Neighborhood
 
 <!-- codependix:start name="codependix-nx" -->
-
 _This project has no immediate Nx dependencies or dependents._
-
 <!-- codependix:end name="codependix-nx" -->
 
 ### File Imports
 
 <!-- codependix:start name="codependix-imports" -->
-
 _This project has no internal file imports._
-
 <!-- codependix:end name="codependix-imports" -->
 
 <!-- CODE_STATISTICS_START -->

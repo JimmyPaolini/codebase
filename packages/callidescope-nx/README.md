@@ -337,6 +337,7 @@ flowchart LR
   DocumentationModule
   EdgesModule
   EntriesModule
+  FlagResolutionModule
   GraphModule
   InputModule
   LoggerModule([LoggerModule])
@@ -354,6 +355,7 @@ flowchart LR
   RunPlanModule
   SignaturesModule
   WorkspaceModule
+  WriteDestinationsModule
   AddressLookupModule --> CallablesModule
   AddressLookupModule --> CallidescopeModule
   AddressLookupModule --> RunPlanModule
@@ -378,6 +380,7 @@ flowchart LR
   CallidescopeModule --> ReportModule
   CallidescopeModule --> RunPlanModule
   CallidescopeModule --> WorkspaceModule
+  CallidescopeModule --> WriteDestinationsModule
   EdgesModule --> CallablesModule
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
@@ -402,6 +405,10 @@ flowchart LR
   RunConfigurationModule --> ConfigurationModule
   RunConfigurationModule --> OptionsModule
   RunPlanModule --> ConfigurationModule
+  RunPlanModule --> FlagResolutionModule
+  WriteDestinationsModule --> OutputJsonModule
+  WriteDestinationsModule --> OutputMarkdownModule
+  WriteDestinationsModule --> ReportModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._

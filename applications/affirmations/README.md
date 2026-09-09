@@ -179,8 +179,6 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 _This project has no immediate Nx dependencies or dependents._
 <!-- codependix:end name="codependix-nx" -->
 
-<!-- CODE_STATISTICS_START -->
-
 ### Python File Imports
 
 <!-- codependix:start name="codependix-imports-python" -->
@@ -213,6 +211,8 @@ graph LR
   file_testing_test_subjects_py --> file_src_subjects_py
 ```
 <!-- codependix:end name="codependix-imports-python" -->
+
+<!-- CODE_STATISTICS_START -->
 
 ## ⏲️ Codometer
 
