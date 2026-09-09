@@ -25,6 +25,12 @@ The comparison engine for one family of file types, selected by file extension,
 that measures an instance against its template.
 _Avoid_: Rule, validator rule, check
 
+**Fallback**:
+The line-by-line text comparison that every file extension no Language claims is
+routed to. An unclaimed extension is never skipped — the Fallback is the floor
+under a validation run, not a gap in it.
+_Avoid_: Default language, catch-all, unhandled
+
 **Difference**:
 Something a template declares that its instance lacks. Content the instance adds
 is never a difference.
@@ -92,19 +98,29 @@ _Avoid_: Style, kind, category
 
 **Unit space**:
 The set of repeat units a family can generate. Materialized and enumerable for `mosaic`,
-latent for every other family — which is the whole reason only `mosaic` has
-sub-families.
+latent for every other family.
 _Avoid_: Tile set, permutations, search space
 
 **Tile**:
-One member of a family's unit space, named by a canonical identifier.
+One repeat unit's worth of the lattice a band is drawn on, named by a canonical
+identifier. The lattice is the substrate of every family, so a drawing from any of them
+reduces to a tile; `mosaic` is only the family whose own unit space is enumerated as
+tiles.
 _Avoid_: Cell, unit, permutation
+
+**Lattice address**:
+What a rendered meander is called on the lattice — `<rows>r<columns>c-<hexadecimal>`,
+one hexadecimal character per interior lattice point, worth `8` north, `4` south, `2`
+east and `1` west, spanning one true repeat. It is literal rather than folded: the
+canonical symmetry class is reported beside it, and that class is what states that two
+drawings are one pattern.
+_Avoid_: Hash, fingerprint, canonical class, tile name
 
 **Sub-family**:
 A named, recognizable class of meanders within one family — `dots`, `lines`, `dashes`,
-`diamond`. A sub-family is recognized as a structural property of a tile; it may also be
-constructible by a modifier, though for `mosaic` — the only family that has
-sub-families — none is, since every member of its space is already enumerated.
+`diamond`. A sub-family is recognized as a structural property of a tile, so a drawing
+from any family can earn one; it may also be constructible by a modifier, though for
+`mosaic` none is, since every member of its space is already enumerated.
 _Avoid_: Variant, subtype, group
 
 **Modifier**:
