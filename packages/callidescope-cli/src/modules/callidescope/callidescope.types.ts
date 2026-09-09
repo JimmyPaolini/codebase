@@ -7,6 +7,7 @@ import type {
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeEntryPoints,
+  ResolvedCallidescopeWriteConfiguration,
 } from "@callidescope/configuration";
 import type {
   CallableCollection,
@@ -100,21 +101,20 @@ export interface ProjectDeclarations {
   readonly excludeByProject: ReadonlyMap<string, readonly string[]>;
   /** The depth and breadth limits each traced project is judged against. */
   readonly projectLimits: ProjectLimitsLookup;
-}
-
-/** Arguments for writing every configured destination. */
-export interface SyncDestinationsArguments {
-  readonly check: boolean;
-  readonly configuration: ResolvedCallidescopeConfiguration;
-  /** The depth and breadth limits each traced project is judged against. */
-  readonly projectLimits: ProjectLimitsLookup;
-  readonly result: CallGraphResult;
   /**
-   * Workspace-relative root of each project the run was scoped to, keyed by
-   * name. Only these projects have a README section published, so a scoped run
-   * never writes into a dependency it merely measured.
+   * The written destinations a project declared for itself, keyed by project
+   * name and read relative to that project's own root.
+   *
+   * A project that declared none is absent rather than present with an empty
+   * one, because presence is what decides the question: a project that spoke
+   * about its own destinations owns them, and the workspace README fan-out
+   * leaves it alone — including when what it said was that it publishes
+   * nothing.
    */
-  readonly startingProjectRoots: ReadonlyMap<string, string>;
+  readonly writeByProject: ReadonlyMap<
+    string,
+    ResolvedCallidescopeWriteConfiguration
+  >;
 }
 
 /** Arguments for one full trace of a workspace. */
@@ -152,4 +152,16 @@ export interface TraceOutcome extends AnalyzeOutcome {
    * name — the starting projects, not the closure they reached.
    */
   readonly startingProjectRoots: ReadonlyMap<string, string>;
+  /**
+   * The written destinations each project declared for itself, by name.
+   *
+   * Carried out of the trace rather than re-read at write time: the files were
+   * already opened once to decide what the run measures, and reading them a
+   * second time is how a run comes to publish against one answer and measure
+   * against another.
+   */
+  readonly writeByProject: ReadonlyMap<
+    string,
+    ResolvedCallidescopeWriteConfiguration
+  >;
 }

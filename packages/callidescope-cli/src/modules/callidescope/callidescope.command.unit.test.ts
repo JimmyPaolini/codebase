@@ -34,6 +34,7 @@ import { LoggerService } from "@codebase/logger";
 import { buildCallGraphResult, buildStackFrame } from "../../../testing/mocks";
 import { ReportFindingsService } from "../report-findings/report-findings.service";
 import { RunPlanService } from "../run-plan/run-plan.service";
+import { WriteDestinationsService } from "../write-destinations/write-destinations.service";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { buildUnknownCommandMessage } from "./callidescope.constants";
@@ -45,6 +46,8 @@ import type {
   ProjectLimitsLookup,
   ProjectReport,
   ResolvedCallidescopeConfiguration,
+  ResolvedCallidescopeMarkdownOutputConfiguration,
+  ResolvedCallidescopeWriteConfiguration,
 } from "@callidescope/configuration";
 import type { UnresolvedEntryPointAddress } from "@callidescope/graph";
 
@@ -74,6 +77,21 @@ function buildConfiguration(
       projectReadmes: undefined,
     },
     ...overrides,
+  };
+}
+
+/** Builds a markdown destination carrying nothing but the path it writes to. */
+function buildDestination(
+  destinationPath: string,
+): ResolvedCallidescopeMarkdownOutputConfiguration {
+  return {
+    description: undefined,
+    endMarker: "<!-- END -->",
+    heading: "## 🔭 Callidescope",
+    path: destinationPath,
+    render: undefined,
+    startMarker: "<!-- START -->",
+    writeBlock: undefined,
   };
 }
 
@@ -128,6 +146,24 @@ function buildProjectReport(projectName: string): ProjectReport {
   };
 }
 
+/** Builds what the "example" project declared about its own destinations. */
+function buildProjectWrite(
+  destinations: Partial<ResolvedCallidescopeWriteConfiguration>,
+): ReadonlyMap<string, ResolvedCallidescopeWriteConfiguration> {
+  return new Map([
+    [
+      "example",
+      {
+        json: undefined,
+        markdown: undefined,
+        mermaid: undefined,
+        projectReadmes: undefined,
+        ...destinations,
+      },
+    ],
+  ]);
+}
+
 // A deliberate misspelling: the example of a `--format` value nobody
 // recognizes, which is exactly what these tests are about.
 // cspell:ignore markdwon
@@ -152,6 +188,25 @@ describe(CallidescopeCommand, () => {
           markdown: undefined,
           mermaid: undefined,
           projectReadmes: undefined,
+        },
+      }),
+    );
+  }
+
+  /** Configures the workspace fan-out every traced project's README takes. */
+  function configureProjectReadmeFanOut(): void {
+    stubConfiguration(
+      buildConfiguration({
+        write: {
+          json: undefined,
+          markdown: undefined,
+          mermaid: undefined,
+          projectReadmes: {
+            endMarker: "<!-- END -->",
+            heading: "## 🔭 Callidescope",
+            previewCount: 3,
+            startMarker: "<!-- START -->",
+          },
         },
       }),
     );
@@ -235,6 +290,10 @@ describe(CallidescopeCommand, () => {
   function stubTrace(
     result: CallGraphResult = buildCallGraphResult(),
     projectLimits: ProjectLimitsLookup = buildProjectLimitsLookup(),
+    writeByProject: ReadonlyMap<
+      string,
+      ResolvedCallidescopeWriteConfiguration
+    > = new Map(),
   ): void {
     callidescopeService.trace.mockResolvedValue({
       projectLimits,
@@ -242,6 +301,7 @@ describe(CallidescopeCommand, () => {
       result,
       startingProjectRoots: new Map([["example", "packages/example"]]),
       unresolvedAddresses: [],
+      writeByProject,
     });
   }
 
@@ -255,6 +315,7 @@ describe(CallidescopeCommand, () => {
       result: buildCallGraphResult(),
       startingProjectRoots: new Map([["example", "packages/example"]]),
       unresolvedAddresses,
+      writeByProject: new Map(),
     });
   }
 
@@ -292,6 +353,7 @@ describe(CallidescopeCommand, () => {
         ReportFindingsService,
         FlagResolutionService,
         RunPlanService,
+        WriteDestinationsService,
       ],
     }).compile();
 
@@ -336,6 +398,7 @@ describe(CallidescopeCommand, () => {
         ReportFindingsService,
         FlagResolutionService,
         RunPlanService,
+        WriteDestinationsService,
       ],
     }).compile();
 
@@ -377,6 +440,7 @@ describe(CallidescopeCommand, () => {
         ReportFindingsService,
         FlagResolutionService,
         RunPlanService,
+        WriteDestinationsService,
       ],
     }).compile();
 
@@ -705,6 +769,99 @@ describe(CallidescopeCommand, () => {
     expect(sent?.sections[0]?.content).toContain("`example`");
   });
 
+  it("writes a project's own declared markdown destination", async () => {
+    configureProjectReadmeFanOut();
+    outputMarkdownService.sync.mockReturnValue(true);
+    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
+    stubTrace(
+      buildCallGraphResult({ projects: [buildProjectReport("example")] }),
+      buildProjectLimitsLookup(),
+      buildProjectWrite({ markdown: buildDestination("docs/CALLS.md") }),
+    );
+
+    await command.run([], { write: true });
+
+    const written = outputMarkdownService.sync.mock.calls.map(
+      ([call]) => call.destination.path,
+    );
+
+    expect(written).toStrictEqual([
+      path.join("packages/example", "docs/CALLS.md"),
+    ]);
+  });
+
+  it("leaves a project that declared its own destinations out of the fan-out", async () => {
+    configureProjectReadmeFanOut();
+    outputMarkdownService.sync.mockReturnValue(true);
+    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
+    stubTrace(
+      buildCallGraphResult({ projects: [buildProjectReport("example")] }),
+      buildProjectLimitsLookup(),
+      buildProjectWrite({ markdown: buildDestination("docs/CALLS.md") }),
+    );
+
+    await command.run([], { write: true });
+
+    const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
+
+    expect(sent?.sections).toStrictEqual([]);
+  });
+
+  it("draws the stacks in a project's own declared mermaid destination", async () => {
+    configureProjectReadmeFanOut();
+    outputMarkdownService.sync.mockReturnValue(true);
+    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
+    stubTrace(
+      buildCallGraphResult({
+        projects: [
+          {
+            ...buildProjectReport("example"),
+            stacks: [
+              {
+                depth: 2,
+                entryPointKind: "decorated-method",
+                frames: [
+                  buildStackFrame({ displayName: "Resolver.read", id: "a" }),
+                  buildStackFrame({ displayName: "Service.load", id: "b" }),
+                ],
+                isLowerBound: false,
+              },
+            ],
+          },
+        ],
+      }),
+      buildProjectLimitsLookup(),
+      buildProjectWrite({
+        markdown: buildDestination("README.md"),
+        mermaid: buildDestination("DIAGRAM.md"),
+      }),
+    );
+
+    await command.run([], { write: true });
+
+    const [report, diagram] = outputMarkdownService.sync.mock.calls.map(
+      ([call]) => call.content,
+    );
+
+    expect(report).toContain("```text");
+    expect(diagram).toContain("```mermaid");
+  });
+
+  it("fails when a project's own declared destination is stale in check mode", async () => {
+    configureProjectReadmeFanOut();
+    outputMarkdownService.sync.mockReturnValue(false);
+    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
+    stubTrace(
+      buildCallGraphResult({ projects: [buildProjectReport("example")] }),
+      buildProjectLimitsLookup(),
+      buildProjectWrite({ markdown: buildDestination("README.md") }),
+    );
+
+    await command.run([], { check: "reports" });
+
+    expect(process.exitCode).toBe(1);
+  });
+
   it("fails when a project README is stale in check mode", async () => {
     stubConfiguration(
       buildConfiguration({
@@ -990,7 +1147,7 @@ describe(CallidescopeCommand, () => {
   function stubDisallowedProjectConfigurationField(): void {
     callidescopeService.trace.mockImplementation(() => {
       throw new ProjectConfigurationFieldNotPermittedError({
-        field: "write",
+        field: "write.json",
         project: "broken",
       });
     });
@@ -1047,7 +1204,7 @@ describe(CallidescopeCommand, () => {
       undefined,
       {
         reason:
-          "broken sets write, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, and limits.",
+          "broken sets write.json, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, limits, write.markdown, and write.mermaid.",
       },
     );
   });

@@ -242,6 +242,22 @@ workspace-only fields it legitimately sets.
 | `limits.maximumDepth` | The depth every stack rooted in that project is judged against |
 | `limits.maximumBreadth` | The breadth every callable that project declares is judged against |
 | `exclude` | Globs naming that project's own files to leave untraced |
+| `write.markdown` | Where that project's own published section goes |
+| `write.mermaid` | Where that project's own diagram goes, when it wants one |
+
+**A project's written destinations are anchored to its root** the same way its
+`exclude` globs are: `write: { markdown: { path: "docs/CALLS.md" } }` in
+`packages/thing`'s own file writes `packages/thing/docs/CALLS.md`, and there is
+no spelling of it that reaches a sibling. A destination left `undefined`
+publishes nothing.
+
+A project that declares either destination is left out of the workspace's
+`write.projectReadmes` fan-out entirely — the fan-out is what it spoke instead
+of. A project that declares neither is reached by the fan-out exactly as
+before.
+
+`write.json` and `write.projectReadmes` stay workspace-only: one is the run's
+single report, and the other is a declaration about every project at once.
 
 **A project's `exclude` globs are anchored to that project's root**, never to
 the workspace: `exclude: ["src/generated/**"]` in `packages/thing`'s own file
@@ -300,10 +316,13 @@ project that refuses them keeps them out of a run that asked for everyone's.
 once, and each project asks a different question of the same edges. Two answers
 are two opinions about one artifact, which is coherent.
 
-`excludeCallees`, `directories`, `excludeFrom`, and `write` are different. They
-name what a run reads, what it writes, or how it partitions the workspace, and a
-project cannot answer those differently from the run tracing it — so they stay
-in the workspace file.
+`excludeCallees`, `directories`, `excludeFrom`, `write.json`, and
+`write.projectReadmes` are different. They name what a run reads, where the
+run's own report lands, or how it partitions the workspace, and a project
+cannot answer those differently from the run tracing it — so they stay in the
+workspace file. `<field>` in the refusal above is the name as it has to be
+typed to fix the file, dot path and all, so a project setting `write.json`
+alongside a destination it is entitled to keep is told which half to move.
 
 ### Reading the resolved set
 
@@ -343,7 +362,7 @@ file; nothing else was traced.
 **`🔭 Rejected a project configuration` — a workspace-only field.**
 
 ```text
-<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, and limits.
+<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, limits, write.markdown, and write.mermaid.
 ```
 
 Move that field to the workspace file. A retired limit is a different refusal:

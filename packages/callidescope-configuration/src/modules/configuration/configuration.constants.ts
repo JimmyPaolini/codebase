@@ -4,6 +4,8 @@ import { z } from "zod";
 
 import type {
   CallidescopeConfiguration,
+  CallidescopeWriteConfiguration,
+  ProjectFieldPermission,
   RenderMarkdownOutput,
   WriteMarkdownOutput,
 } from "./configuration.types";
@@ -131,12 +133,32 @@ const FIELD_LIST_FORMAT = new Intl.ListFormat("en", {
 });
 
 /**
+ * Reads the names one classified field contributes to the permitted set.
+ *
+ * A field classified whole contributes itself or nothing; a field classified a
+ * member at a time contributes each permitted member as a dotted name, which
+ * is what a reader has to type to fix the file and so what a refusal prints.
+ */
+const readPermittedNames = (args: {
+  field: string;
+  permission: ProjectFieldPermission | Record<string, ProjectFieldPermission>;
+}): string[] => {
+  if (typeof args.permission === "string") {
+    return args.permission === "permitted" ? [args.field] : [];
+  }
+
+  return Object.entries(args.permission)
+    .filter(([, member]) => member === "permitted")
+    .map(([member]) => `${args.field}.${member}`);
+};
+
+/**
  * Every run-level field, and whether a project's own configuration may set it.
  *
  * A record keyed by the interface rather than a list of the forbidden ones,
  * because a list only ever proves that what it names is a field — never that
- * every field is named, which is the direction that fails open. A tenth field
- * added to `CallidescopeConfiguration` fails to compile here until somebody
+ * every field is named, which is the direction that fails open. A field added
+ * to `CallidescopeConfiguration` fails to compile here until somebody
  * classifies it, instead of silently becoming settable by any project with
  * nothing in the output to say so.
  *
@@ -145,6 +167,13 @@ const FIELD_LIST_FORMAT = new Intl.ListFormat("en", {
  * differently from the run tracing it. `limits` is permitted whole: both of its
  * two members are a project's own to gate itself against, and a member that is
  * neither of those two is refused by the schema before this check is reached.
+ *
+ * `write` is the one field classified a member at a time, because its members
+ * split down the same line the record itself does. Where a project's own
+ * published section and diagram land is that project's to say — it is the
+ * document they are spliced into. The run's own JSON report and the README
+ * fan-out are not: one is the run's single output, and the other is a
+ * declaration about every project at once.
  */
 export const PROJECT_CONFIGURATION_FIELD_PERMISSIONS = {
   directories: "forbidden",
@@ -153,11 +182,31 @@ export const PROJECT_CONFIGURATION_FIELD_PERMISSIONS = {
   excludeCallees: "forbidden",
   excludeFrom: "forbidden",
   limits: "permitted",
-  write: "forbidden",
+  write: {
+    json: "forbidden",
+    markdown: "permitted",
+    mermaid: "permitted",
+    projectReadmes: "forbidden",
+  },
 } as const satisfies Record<
   keyof CallidescopeConfiguration,
-  "forbidden" | "permitted"
+  | ProjectFieldPermission
+  | Record<keyof CallidescopeWriteConfiguration, ProjectFieldPermission>
 >;
+
+/**
+ * The fields classified a member at a time rather than whole.
+ *
+ * Read by the permission check to know that finding `write` on a file settles
+ * nothing on its own, and that the members underneath it decide. Derived
+ * rather than written out, so a field that stops being classified this way
+ * stops being listed here in the same edit.
+ */
+export const PROJECT_CONFIGURATION_NESTED_FIELD_NAMES = new Set(
+  Object.entries(PROJECT_CONFIGURATION_FIELD_PERMISSIONS)
+    .filter(([, permission]) => typeof permission !== "string")
+    .map(([field]) => field),
+);
 
 /**
  * The names a project may set, looked up by a field name read off a file.
@@ -166,11 +215,15 @@ export const PROJECT_CONFIGURATION_FIELD_PERMISSIONS = {
  * an authored object rather than from the interface — so a field nothing here
  * classifies is refused rather than waved through, which is the one direction
  * a permission check may be wrong in.
+ *
+ * A field classified a member at a time contributes its permitted members as
+ * dotted names — `write.markdown` — which is the name a reader has to type to
+ * fix the file, and so the name a refusal has to print.
  */
 export const PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES = new Set(
-  Object.entries(PROJECT_CONFIGURATION_FIELD_PERMISSIONS)
-    .filter(([, permission]) => permission === "permitted")
-    .map(([field]) => field),
+  Object.entries(PROJECT_CONFIGURATION_FIELD_PERMISSIONS).flatMap(
+    ([field, permission]) => readPermittedNames({ field, permission }),
+  ),
 );
 
 /**

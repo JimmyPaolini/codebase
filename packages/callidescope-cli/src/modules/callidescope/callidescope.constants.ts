@@ -14,9 +14,6 @@ import { isRefusedProjectConfiguration } from "../address-lookup/address-lookup.
  */
 export const INCLUDE_CONSTRUCTOR_EDGES = true;
 
-/** File a project's embedded section is spliced into. */
-export const PROJECT_README_NAME = "README.md";
-
 // 🚫 Refusals
 
 /** Headline a command line the input service refused is reported under. */
