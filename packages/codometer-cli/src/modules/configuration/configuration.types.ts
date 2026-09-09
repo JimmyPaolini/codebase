@@ -4,6 +4,7 @@ import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 /** Options accepted by the configuration command. */
 export interface ConfigurationCommandOptions {
+  config?: string | undefined;
   directory?: string | undefined;
   format?: string | undefined;
   limits?: boolean | undefined;
@@ -36,10 +37,57 @@ export interface ConfiguredLimitRow {
   value: string;
 }
 
+/** Everything a tree configures, plus whatever answered for its root. */
+export interface ConfiguredTree {
+  described: ConfiguredDirectory[];
+  /**
+   * Why nothing could be resolved for the walk root, and `undefined` when
+   * something was.
+   *
+   * Carried rather than thrown. The listing is most wanted precisely when the
+   * configuration is in a state somebody is trying to understand, so an
+   * unreadable root is reported and the walk goes on with the built-in
+   * exclusions — but it still fails the run's exit code.
+   */
+  rootError: string | undefined;
+}
+
+/** Which tree to describe, and which configuration answers for its root. */
+export interface DescribeConfigurationsArguments {
+  /**
+   * Configuration file answering for the walk root, when one is named.
+   *
+   * `undefined` searches upward from the walk root instead. A workspace whose
+   * root carries no configuration file — because its shared object lives
+   * somewhere every project spreads it from — names that file here, exactly as
+   * the workspace-root measurement target already does.
+   */
+  configurationPath: string | undefined;
+  /** Directory the walk starts from, absolute. */
+  workingDirectory: string;
+}
+
+/** Every configuration file a walk found, plus whatever the walk root said. */
+export interface DiscoveredConfigurationFiles {
+  /** Configuration file paths, relative to the walk root, in walk order. */
+  files: string[];
+  /** Why nothing answered for the walk root, and `undefined` when it did. */
+  rootError: string | undefined;
+}
+
 /** Arguments accepted when rendering the configuration listing. */
 export interface RenderConfigurationArguments {
   described: readonly ConfiguredDirectory[];
   format: string;
   limitRows: readonly ConfiguredLimitRow[];
   limitsOnly: boolean;
+  rootError: string | undefined;
+}
+
+/** The exclusions a configuration walk uses, and why they may be the defaults. */
+export interface WalkExclusions {
+  /** Why the walk root's configuration could not be read, if it could not. */
+  error: string | undefined;
+  exclude: string[];
+  excludeFrom: string[];
 }

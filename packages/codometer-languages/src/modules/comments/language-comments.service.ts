@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
+import { CODOMETER_COMMENT_LANGUAGES } from "@codometer/configuration";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
@@ -16,20 +17,28 @@ import { YamlCommentsService } from "./yaml-comments.service";
 import type {
   CommentMeasurement,
   CommentToken,
+  LanguageCommentCounter,
+  LanguageCommentFiles,
   LocatedCommentToken,
   MeasureLanguageCommentsArguments,
 } from "./comments.types";
-import type { ResolvedCodometerLanguageCommentsConfiguration } from "@codometer/configuration";
+import type { CodometerCommentLanguage } from "@codometer/configuration";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
- * Measures the comment blocks of every language configured to have them.
+ * Measures the comment blocks every `comment`-selector custom statistic asks
+ * for, one counter at a time.
  *
- * The files are read here rather than inside each language analyzer, which is
+ * Files are read here rather than inside each language analyzer, which is
  * what lets Python be measured at all: its analysis runs in a subprocess and
  * returns zeros when the interpreter is unreachable, so a gate that lived
  * there would stop gating on any machine without `uv` and say nothing about
  * it. Reading the sources directly makes the budget independent of that.
+ *
+ * A counter is measured on its own rather than merged with every other one
+ * that shares a language: two custom statistics can watch the same language
+ * with different maxima, and keeping them apart is what lets each one's own
+ * breaches be counted back against its own label.
  */
 @Injectable()
 /* v8 ignore stop */
@@ -55,17 +64,13 @@ export class LanguageCommentsService {
 
   // 🔏 Private Methods
 
-  /** Measures one language's files, if a budget was declared for it. */
+  /** Reads and measures one language's files against one counter's budget. */
   private measureLanguage(args: {
-    comments: ResolvedCodometerLanguageCommentsConfiguration | undefined;
+    budget: LanguageCommentCounter["budget"];
     files: readonly string[];
     read: (content: string, filePath: string) => CommentToken[];
     workingDirectory: string;
   }): CommentMeasurement[] {
-    if (args.comments === undefined) {
-      return [];
-    }
-
     const measurements: CommentMeasurement[] = [];
 
     for (const filePath of args.files) {
@@ -77,7 +82,7 @@ export class LanguageCommentsService {
 
       measurements.push(
         ...this.comments.measure({
-          comments: args.comments,
+          comments: args.budget,
           filePath,
           tokens: args.read(content, filePath),
         }),
@@ -85,6 +90,66 @@ export class LanguageCommentsService {
     }
 
     return measurements;
+  }
+
+  /** Measures one counter's budget against one language's discovered files. */
+  private measureOneLanguage(args: {
+    counter: LanguageCommentCounter;
+    files: LanguageCommentFiles;
+    language: CodometerCommentLanguage;
+    pythonComments: readonly LocatedCommentToken[];
+    workingDirectory: string;
+  }): CommentMeasurement[] {
+    const { counter, files, language, pythonComments, workingDirectory } = args;
+
+    if (language === "python") {
+      return this.measurePython(counter.budget, pythonComments);
+    }
+
+    const readHash = (content: string): CommentToken[] =>
+      this.hashComments.read(content);
+    const readers: Record<
+      CodometerCommentLanguage,
+      {
+        files: readonly string[];
+        read: (content: string, filePath: string) => CommentToken[];
+      }
+    > = {
+      css: {
+        files: files.cssFiles,
+        read: (content) => this.cssComments.read(content),
+      },
+      hcl: {
+        files: files.hclFiles,
+        read: (content) => this.hclComments.read(content),
+      },
+      // Measured separately above: Python's tokens arrive pre-found rather
+      // than read from a file list here.
+      python: { files: [], read: readHash },
+      shell: { files: files.shellFiles, read: readHash },
+      sql: {
+        files: files.sqlFiles,
+        read: (content) => this.sqlComments.read(content),
+      },
+      toml: { files: files.tomlFiles, read: readHash },
+      typescript: {
+        files: files.sourceFiles,
+        read: (content, filePath) =>
+          this.typescriptComments.read(content, filePath),
+      },
+      yaml: {
+        files: files.yamlFiles,
+        read: (content) => this.yamlComments.read(content),
+      },
+    };
+    const { files: languageFiles, read } = readers[language];
+
+    return this.measureLanguage({
+      budget: counter.budget,
+      files: languageFiles,
+      read,
+      workingDirectory,
+    });
   }
 
   /**
@@ -95,13 +160,9 @@ export class LanguageCommentsService {
    * line numbers that would otherwise run together.
    */
   private measurePython(
-    comments: ResolvedCodometerLanguageCommentsConfiguration | undefined,
+    budget: LanguageCommentCounter["budget"],
     tokens: readonly LocatedCommentToken[],
   ): CommentMeasurement[] {
-    if (comments === undefined) {
-      return [];
-    }
-
     const byFile = new Map<string, CommentToken[]>();
 
     for (const { file, ...token } of tokens) {
@@ -112,7 +173,11 @@ export class LanguageCommentsService {
     }
 
     return [...byFile].flatMap(([filePath, fileTokens]) =>
-      this.comments.measure({ comments, filePath, tokens: fileTokens }),
+      this.comments.measure({
+        comments: budget,
+        filePath,
+        tokens: fileTokens,
+      }),
     );
   }
 
@@ -136,57 +201,36 @@ export class LanguageCommentsService {
 
   // 🌎 Public Methods
 
-  /** Measures every language whose configuration declares a comment budget. */
-  measure(args: MeasureLanguageCommentsArguments): CommentMeasurement[] {
-    const { configuration, files, workingDirectory } = args;
-    const readHash = (content: string): CommentToken[] =>
-      this.hashComments.read(content);
+  /**
+   * Measures every declared counter, keyed by the custom statistic's label.
+   *
+   * A counter naming no language measures every one of them; one naming a
+   * language measures only that one. Either way its results land under its
+   * own label, never merged with another counter's.
+   */
+  measure(
+    args: MeasureLanguageCommentsArguments,
+  ): Record<string, CommentMeasurement[]> {
+    const { counters, files, pythonComments, workingDirectory } = args;
+    const results: Record<string, CommentMeasurement[]> = {};
 
-    return [
-      ...this.measureLanguage({
-        comments: configuration.css.comments,
-        files: files.cssFiles,
-        read: (content) => this.cssComments.read(content),
-        workingDirectory,
-      }),
-      ...this.measureLanguage({
-        comments: configuration.hcl.comments,
-        files: files.hclFiles,
-        read: (content) => this.hclComments.read(content),
-        workingDirectory,
-      }),
-      ...this.measurePython(configuration.python.comments, args.pythonComments),
-      ...this.measureLanguage({
-        comments: configuration.shell.comments,
-        files: files.shellFiles,
-        read: readHash,
-        workingDirectory,
-      }),
-      ...this.measureLanguage({
-        comments: configuration.sql.comments,
-        files: files.sqlFiles,
-        read: (content) => this.sqlComments.read(content),
-        workingDirectory,
-      }),
-      ...this.measureLanguage({
-        comments: configuration.toml.comments,
-        files: files.tomlFiles,
-        read: readHash,
-        workingDirectory,
-      }),
-      ...this.measureLanguage({
-        comments: configuration.typescript.comments,
-        files: files.sourceFiles,
-        read: (content, filePath) =>
-          this.typescriptComments.read(content, filePath),
-        workingDirectory,
-      }),
-      ...this.measureLanguage({
-        comments: configuration.yaml.comments,
-        files: files.yamlFiles,
-        read: (content) => this.yamlComments.read(content),
-        workingDirectory,
-      }),
-    ];
+    for (const counter of counters) {
+      const languages =
+        counter.language === undefined
+          ? CODOMETER_COMMENT_LANGUAGES
+          : [counter.language];
+
+      results[counter.label] = languages.flatMap((language) =>
+        this.measureOneLanguage({
+          counter,
+          files,
+          language,
+          pythonComments,
+          workingDirectory,
+        }),
+      );
+    }
+
+    return results;
   }
 }

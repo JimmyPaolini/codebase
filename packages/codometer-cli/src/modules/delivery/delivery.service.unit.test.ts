@@ -18,88 +18,50 @@ import {
 
 import { DeliveryService } from "./delivery.service";
 
+import type { MeasurementResult } from "../measure/measure.types";
 import type {
-  DocumentationMeasurement,
-  MeasurementResult,
-} from "../measure/measure.types";
-import type { RunMode } from "../run-plan/run-plan.types";
-import type {
-  RenderMarkdownOutput,
-  ResolvedCodometerMarkdownOutputConfiguration,
-} from "@codometer/configuration";
+  ResolvedMarkdownDestination,
+  RunMode,
+} from "../run-plan/run-plan.types";
 import type { MockInstance } from "vitest";
 
 const statistics = buildCodeStatistics();
 const report = buildCodometerReport();
-const documentationSection = [
-  "### 📝 Documentation",
-  "- `src/foo.ts:3` — `Foo` (class): 9/6 lines",
-].join("\n\n");
 
-/** Builds a documented declaration whose comment exceeded its kind's limit. */
-function buildDocumentationBreach(): DocumentationMeasurement {
-  return {
-    breached: true,
-    declaration: "Foo",
-    file: "src/foo.ts",
-    kind: "class",
-    limit: 6,
-    line: 3,
-    measured: 9,
-    severity: "fail",
-    target: "codebase",
-    unit: "lines",
-  };
-}
-
-/** Builds a measurement carrying no targets and no documentation findings. */
+/** Builds a measurement carrying no inputs. */
 function buildMeasurement(
   overrides: Partial<MeasurementResult> = {},
 ): MeasurementResult {
   return {
-    documentation: [],
     failures: [],
     indexes: new Map(),
+    inputs: [],
     limits: [],
     statistics,
-    targets: [],
     ...overrides,
   };
 }
 
-/** Builds a fully-checked, fully-writing run mode. */
+/** Builds a run mode with every flag off unless overridden. */
 function buildMode(overrides: Partial<RunMode> = {}): RunMode {
   return {
     checksLimits: false,
     checksReports: false,
-    writes: false,
+    writesJson: false,
+    writesMarkdown: false,
     ...overrides,
   };
 }
 
-const markdownDestination = {
+const markdownDestination: ResolvedMarkdownDestination = {
+  custom: [],
   description: undefined,
   endMarker: "<!-- CODE_STATISTICS_END -->",
   path: "README.md",
-  render: undefined,
   startMarker: "<!-- CODE_STATISTICS_START -->",
+  type: "markdown",
   write: undefined,
 };
-
-/** Renders a resolved markdown destination the way `MarkdownService.sync` would. */
-function renderDestination(
-  destination: undefined | { render?: RenderMarkdownOutput | undefined },
-): string | undefined {
-  if (destination?.render === undefined) {
-    return undefined;
-  }
-
-  return destination.render({
-    description: undefined,
-    renderBadges: () => "badges",
-    statistics,
-  });
-}
 
 describe(DeliveryService, () => {
   let service: DeliveryService;
@@ -127,8 +89,6 @@ describe(DeliveryService, () => {
     vi.mocked(jsonService.render).mockReturnValue("{}\n");
     vi.mocked(jsonService.sync).mockReturnValue(true);
     vi.mocked(markdownService.renderBlock).mockReturnValue("block");
-    vi.mocked(markdownService.renderDocument).mockReturnValue("document");
-    vi.mocked(markdownService.renderDocumentationSection).mockReturnValue("");
     vi.mocked(markdownService.sync).mockReturnValue(true);
   });
 
@@ -158,12 +118,12 @@ describe(DeliveryService, () => {
   it("writes the JSON report where a path was resolved and the run writes", () => {
     service.deliver({
       destinations: {
-        json: { indentation: 2, path: "output/codometer.json" },
+        json: { custom: [], indentation: 2, path: "output/codometer.json" },
         markdown: undefined,
       },
       format: undefined,
       measurement: buildMeasurement(),
-      mode: buildMode({ writes: true }),
+      mode: buildMode({ writesJson: true }),
       report,
       scope: "project",
     });
@@ -181,7 +141,7 @@ describe(DeliveryService, () => {
 
     const stalePaths = service.deliver({
       destinations: {
-        json: { indentation: 2, path: "output/codometer.json" },
+        json: { custom: [], indentation: 2, path: "output/codometer.json" },
         markdown: undefined,
       },
       format: undefined,
@@ -194,58 +154,20 @@ describe(DeliveryService, () => {
     expect(stalePaths).toStrictEqual(["output/codometer.json"]);
   });
 
-  it("writes the badge block with no documentation section when nothing breached", () => {
+  it("does not write the JSON report when the run neither writes nor checks it", () => {
     service.deliver({
       destinations: {
-        json: undefined,
-        markdown: { ...markdownDestination, path: "docs/metrics.md" },
+        json: { custom: [], indentation: 2, path: "output/codometer.json" },
+        markdown: undefined,
       },
       format: undefined,
       measurement: buildMeasurement(),
-      mode: buildMode({ writes: true }),
+      mode: buildMode(),
       report,
       scope: "project",
     });
 
-    expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: false,
-      destination: { ...markdownDestination, path: "docs/metrics.md" },
-      scope: "project",
-      statistics,
-      targets: [],
-    });
-  });
-
-  it("appends the breached documentation section to the badge block", () => {
-    const breach = buildDocumentationBreach();
-    vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
-      documentationSection,
-    );
-
-    service.deliver({
-      destinations: {
-        json: undefined,
-        markdown: { ...markdownDestination, path: "docs/metrics.md" },
-      },
-      format: undefined,
-      measurement: buildMeasurement({ documentation: [breach] }),
-      mode: buildMode({ writes: true }),
-      report,
-      scope: "project",
-    });
-
-    expect(markdownService.renderDocumentationSection).toHaveBeenCalledWith({
-      breaches: [breach],
-    });
-    expect(markdownService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: false,
-      destination: expect.objectContaining({
-        path: "docs/metrics.md",
-      }) as ResolvedCodometerMarkdownOutputConfiguration,
-      scope: "project",
-      statistics,
-      targets: [],
-    });
+    expect(jsonService.sync).not.toHaveBeenCalled();
   });
 
   it("splices the badge block into its file when the run writes", () => {
@@ -256,7 +178,7 @@ describe(DeliveryService, () => {
       },
       format: undefined,
       measurement: buildMeasurement(),
-      mode: buildMode({ writes: true }),
+      mode: buildMode({ writesMarkdown: true }),
       report,
       scope: "project",
     });
@@ -270,69 +192,40 @@ describe(DeliveryService, () => {
     });
   });
 
-  it("splices the breached documentation section into that write", () => {
-    const breach = buildDocumentationBreach();
-    vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
-      documentationSection,
-    );
-    let syncedDestination:
-      | ResolvedCodometerMarkdownOutputConfiguration
-      | undefined;
-    vi.mocked(markdownService.sync).mockImplementationOnce((args) => {
-      syncedDestination = args.destination;
-      return true;
-    });
+  it("names a stale markdown destination the run was checking", () => {
+    vi.mocked(markdownService.sync).mockReturnValue(false);
 
-    service.deliver({
-      destinations: {
-        json: undefined,
-        markdown: markdownDestination,
-      },
+    const stalePaths = service.deliver({
+      destinations: { json: undefined, markdown: markdownDestination },
       format: undefined,
-      measurement: buildMeasurement({ documentation: [breach] }),
-      mode: buildMode({ writes: true }),
+      measurement: buildMeasurement(),
+      mode: buildMode({ checksReports: true }),
       report,
       scope: "project",
     });
 
-    const renderedContent = renderDestination(syncedDestination);
-
-    expect(renderedContent).toBe(["badges", documentationSection].join("\n\n"));
+    expect(stalePaths).toStrictEqual(["README.md"]);
   });
 
-  it("composes the documentation section after a configured custom render", () => {
-    const breach = buildDocumentationBreach();
-    vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
-      documentationSection,
-    );
-    let syncedDestination:
-      | ResolvedCodometerMarkdownOutputConfiguration
-      | undefined;
-    vi.mocked(markdownService.sync).mockImplementationOnce((args) => {
-      syncedDestination = args.destination;
-      return true;
-    });
+  it("names a configured writer's destination as 'markdown output' when it has no path", () => {
+    vi.mocked(markdownService.sync).mockReturnValue(false);
 
-    service.deliver({
+    const stalePaths = service.deliver({
       destinations: {
         json: undefined,
-        markdown: { ...markdownDestination, render: () => "custom badges" },
+        markdown: { ...markdownDestination, path: undefined },
       },
       format: undefined,
-      measurement: buildMeasurement({ documentation: [breach] }),
-      mode: buildMode({ writes: true }),
+      measurement: buildMeasurement(),
+      mode: buildMode({ checksReports: true }),
       report,
       scope: "project",
     });
 
-    const renderedContent = renderDestination(syncedDestination);
-
-    expect(renderedContent).toBe(
-      ["custom badges", documentationSection].join("\n\n"),
-    );
+    expect(stalePaths).toStrictEqual(["markdown output"]);
   });
 
-  it("hands the renderer the size of every target it measured, none for an empty one", () => {
+  it("hands the renderer the size of every input it measured, none for an empty one", () => {
     service.deliver({
       destinations: {
         json: undefined,
@@ -340,16 +233,14 @@ describe(DeliveryService, () => {
       },
       format: undefined,
       measurement: buildMeasurement({
-        targets: [
+        inputs: [
           {
-            documentation: [],
             files: 5,
             language: undefined,
             name: "Compiled JavaScript",
             size: { bytes: 5324, compression: "gzip", files: 5 },
           },
           {
-            documentation: [],
             files: 0,
             language: undefined,
             name: "Unsized",
@@ -357,7 +248,7 @@ describe(DeliveryService, () => {
           },
         ],
       }),
-      mode: buildMode({ writes: true }),
+      mode: buildMode({ writesMarkdown: true }),
       report,
       scope: "project",
     });
@@ -410,12 +301,12 @@ describe(DeliveryService, () => {
   it("prints nothing when no format was asked for, even writing a file", () => {
     service.deliver({
       destinations: {
-        json: { indentation: 2, path: "output/codometer.json" },
+        json: { custom: [], indentation: 2, path: "output/codometer.json" },
         markdown: undefined,
       },
       format: undefined,
       measurement: buildMeasurement(),
-      mode: buildMode({ writes: true }),
+      mode: buildMode({ writesJson: true }),
       report,
       scope: "project",
     });
@@ -426,12 +317,12 @@ describe(DeliveryService, () => {
   it("prints and writes in the same run when both were asked for", () => {
     service.deliver({
       destinations: {
-        json: { indentation: 2, path: "output/codometer.json" },
+        json: { custom: [], indentation: 2, path: "output/codometer.json" },
         markdown: undefined,
       },
       format: "markdown",
       measurement: buildMeasurement(),
-      mode: buildMode({ writes: true }),
+      mode: buildMode({ writesJson: true }),
       report,
       scope: "project",
     });

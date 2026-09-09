@@ -1,5 +1,5 @@
 import { CustomizationService } from "@codometer/customization";
-import { DiscoveryService, TargetsService } from "@codometer/discovery";
+import { DiscoveryService, InputsService } from "@codometer/discovery";
 import { LanguagesService } from "@codometer/languages";
 import { SizeService } from "@codometer/size";
 import { createMock } from "@golevelup/ts-vitest";
@@ -14,44 +14,47 @@ import { MeasureService } from "./measure.service";
 
 import type {
   ResolvedCodometerConfiguration,
-  ResolvedCodometerTarget,
+  ResolvedCodometerInput,
 } from "@codometer/configuration";
 import type { DiscoveryResult } from "@codometer/discovery";
 import type { LanguageResults } from "@codometer/languages";
 
-const configuration: ResolvedCodometerConfiguration = {
-  css: { comments: undefined },
-  defaultTarget: undefined,
-  documentation: {
-    kinds: {},
-    maximumCharacters: undefined,
-    maximumLines: 6,
-    maximumWords: undefined,
-    severity: "fail",
-  },
-  exclude: ["**/node_modules/**"],
-  excludeFrom: [],
-  hcl: { comments: undefined },
-  limits: [],
-  output: { json: undefined, markdown: undefined },
-  python: { command: "uv run python", comments: undefined },
-  shell: { comments: undefined },
-  sql: { comments: undefined },
-  statistics: [
-    {
-      color: "7c3aed",
-      group: "conventions",
-      label: "Service Files",
-      patterns: ["**/*.service.ts"],
-    },
-  ],
-  targets: [],
-  toml: { comments: undefined },
-  typescript: { comments: undefined },
-  yaml: { comments: undefined },
+const codebaseInput: ResolvedCodometerInput = {
+  analyses: ["language"],
+  compression: "none",
+  directory: ".",
+  exclude: [],
+  include: ["**/*"],
+  name: "codebase",
 };
 
-const compiledTarget: ResolvedCodometerTarget = {
+const configuration: ResolvedCodometerConfiguration = {
+  defaultInput: undefined,
+  exclude: ["**/node_modules/**"],
+  excludeFrom: [],
+  format: "json",
+  inputs: [codebaseInput],
+  limits: [],
+  outputs: [
+    {
+      custom: [
+        {
+          color: "7c3aed",
+          comment: undefined,
+          group: "conventions",
+          label: "Service Files",
+          patterns: ["**/*.service.ts"],
+        },
+      ],
+      indentation: 2,
+      path: "codometer-report.json",
+      type: "json",
+    },
+  ],
+  python: { command: "uv run python" },
+};
+
+const compiledInput: ResolvedCodometerInput = {
   analyses: ["size"],
   compression: "gzip",
   directory: ".",
@@ -81,6 +84,7 @@ const discoveredFiles: DiscoveryResult = {
 /** Builds a language report carrying the counters these assertions read. */
 function buildLanguageResults(): LanguageResults {
   return createMock<LanguageResults>({
+    commentCounts: {},
     jupyter: createMock<LanguageResults["jupyter"]>({
       cells: 7,
       codeCells: 6,
@@ -89,7 +93,7 @@ function buildLanguageResults(): LanguageResults {
     python: createMock<LanguageResults["python"]>({ files: 1, lines: 11 }),
     typescript: createMock<LanguageResults["typescript"]>({
       classes: 10,
-      documentation: [],
+      documentationCounts: {},
       externalPackages: new Set(["react"]),
       jsFiles: 1,
       lines: 19,
@@ -103,11 +107,11 @@ describe(MeasureService, () => {
   let service: MeasureService;
   let customizationService: CustomizationService;
   let discoveryService: DiscoveryService;
+  let inputsService: InputsService;
   let languagesService: LanguagesService;
   let limitsService: LimitsService;
   let metricIndexService: MetricIndexService;
   let sizeService: SizeService;
-  let targetsService: TargetsService;
 
   /** Builds an aggregator whose collaborators are all mocked. */
   function buildService(): MeasureService {
@@ -115,7 +119,7 @@ describe(MeasureService, () => {
       discoveryService,
       languagesService,
       customizationService,
-      targetsService,
+      inputsService,
       sizeService,
       limitsService,
       metricIndexService,
@@ -141,7 +145,7 @@ describe(MeasureService, () => {
           provide: SizeService,
           useValue: createMock<SizeService>(),
         },
-        { provide: TargetsService, useValue: createMock<TargetsService>() },
+        { provide: InputsService, useValue: createMock<InputsService>() },
       ],
     }).compile();
 
@@ -159,8 +163,8 @@ describe(MeasureService, () => {
       failures: [],
       limits: [],
     });
-    targetsService = createMock<TargetsService>();
-    vi.mocked(targetsService.matchFiles).mockReturnValue([
+    inputsService = createMock<InputsService>();
+    vi.mocked(inputsService.matchFiles).mockReturnValue([
       "dist/index.js",
       "dist/nested/deep.js",
     ]);
@@ -170,9 +174,15 @@ describe(MeasureService, () => {
       files: 2,
     });
     vi.mocked(discoveryService.categorize).mockReturnValue(discoveredFiles);
-    vi.mocked(discoveryService.discoverFiles).mockReturnValue(discoveredFiles);
+    vi.mocked(discoveryService.discoverFiles).mockReturnValue({
+      ...discoveredFiles,
+    });
     vi.mocked(languagesService.analyze).mockReturnValue(buildLanguageResults());
     vi.mocked(customizationService.buildSymbolCounters).mockReturnValue([]);
+    vi.mocked(customizationService.buildCommentCounters).mockReturnValue({
+      documentationCounters: [],
+      languageCounters: [],
+    });
     vi.mocked(customizationService.analyze).mockReturnValue([
       {
         color: "7c3aed",
@@ -187,7 +197,7 @@ describe(MeasureService, () => {
     expect(service).toBeDefined();
   });
 
-  it("passes the configured exclusions to discovery", () => {
+  it("discovers the codebase input by its ignore files, not its globs", () => {
     buildService().measure({
       configuration,
       outputPaths: [],
@@ -209,14 +219,16 @@ describe(MeasureService, () => {
     });
 
     expect(languagesService.analyze).toHaveBeenCalledExactlyOnceWith({
+      commentCounters: [],
       configuration,
       discoveredFiles,
+      documentationCounters: [],
       symbolCounters: [],
       workingDirectory: "/repo",
     });
   });
 
-  it("counts the configured conventions over the tracked files", () => {
+  it("counts the union of every output's custom statistics over the tracked files", () => {
     const result = buildService().measure({
       configuration,
       outputPaths: [],
@@ -224,8 +236,9 @@ describe(MeasureService, () => {
     });
 
     expect(customizationService.analyze).toHaveBeenCalledExactlyOnceWith({
+      commentCounts: {},
       files: discoveredFiles.files,
-      statistics: configuration.statistics,
+      statistics: configuration.outputs[0]?.custom,
       symbolCounts: {},
     });
     expect(result.statistics.custom).toStrictEqual([
@@ -264,16 +277,15 @@ describe(MeasureService, () => {
     expect(result.statistics.sourceFiles).toBe(3);
   });
 
-  it("reports the codebase as a target of its own", () => {
+  it("reports the codebase as an input of its own", () => {
     const result = buildService().measure({
       configuration,
       outputPaths: [],
       workingDirectory: "/repo",
     });
 
-    expect(result.targets).toStrictEqual([
+    expect(result.inputs).toStrictEqual([
       {
-        documentation: [],
         files: 2,
         language: result.statistics,
         name: "codebase",
@@ -292,9 +304,9 @@ describe(MeasureService, () => {
       workingDirectory: "/repo",
     });
 
-    // No declared targets here, so the codebase's own language analysis is
-    // the only thing that could have called it — pinned exactly, not just
-    // "at least once with these args".
+    // No other input here, so the codebase's own language analysis is the
+    // only thing that could have called it — pinned exactly, not just "at
+    // least once with these args".
     expect(sizeService.analyze).toHaveBeenCalledExactlyOnceWith({
       compression: "none",
       files: discoveredFiles.files,
@@ -303,19 +315,48 @@ describe(MeasureService, () => {
     expect(result.statistics.repositoryBytes).toBe(4529);
   });
 
-  it("measures the size of a declared target and leaves its language alone", () => {
+  // `--inputs` replaces the built-in `codebase` input outright (see
+  // `MeasureCommand.applyInputsOverride`), so a headline derived by looking
+  // up an input literally named "codebase" always fell back to zero under
+  // that flag. The headline has to come from whichever input actually ran
+  // language analysis, whatever it is named.
+  it("derives the headline statistics from whichever input ran language analysis, not one named codebase", () => {
     const result = buildService().measure({
-      configuration: { ...configuration, targets: [compiledTarget] },
+      configuration: {
+        ...configuration,
+        inputs: [{ ...codebaseInput, name: "Command Line" }],
+      },
       outputPaths: [],
       workingDirectory: "/repo",
     });
 
-    expect(targetsService.matchFiles).toHaveBeenCalledExactlyOnceWith({
-      target: compiledTarget,
+    expect(result.inputs).toStrictEqual([
+      {
+        files: 2,
+        language: result.statistics,
+        name: "Command Line",
+        size: undefined,
+      },
+    ]);
+    expect(result.statistics.linesOfCode).toBe(70);
+  });
+
+  it("measures the size of a declared input and leaves its language alone", () => {
+    const result = buildService().measure({
+      configuration: {
+        ...configuration,
+        inputs: [codebaseInput, compiledInput],
+      },
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(inputsService.matchFiles).toHaveBeenCalledExactlyOnceWith({
+      input: compiledInput,
       workingDirectory: "/repo",
     });
     // Exactly two calls: the codebase's own uncompressed total first, then
-    // this declared target's compressed `size` metric — not "at least one
+    // this declared input's compressed `size` metric — not "at least one
     // matching call", which would pass even if size analysis ran twice.
     expect(sizeService.analyze).toHaveBeenCalledTimes(2);
     expect(sizeService.analyze).toHaveBeenNthCalledWith(2, {
@@ -323,8 +364,7 @@ describe(MeasureService, () => {
       files: ["dist/index.js", "dist/nested/deep.js"],
       workingDirectory: "/repo",
     });
-    expect(result.targets[1]).toStrictEqual({
-      documentation: [],
+    expect(result.inputs[1]).toStrictEqual({
       files: 2,
       language: undefined,
       name: "compiled",
@@ -332,11 +372,11 @@ describe(MeasureService, () => {
     });
   });
 
-  it("runs language analysis over a target that asks for it", () => {
+  it("runs language analysis over an input that asks for it", () => {
     const result = buildService().measure({
       configuration: {
         ...configuration,
-        targets: [{ ...compiledTarget, analyses: ["language"] }],
+        inputs: [codebaseInput, { ...compiledInput, analyses: ["language"] }],
       },
       outputPaths: [],
       workingDirectory: "/repo",
@@ -348,12 +388,11 @@ describe(MeasureService, () => {
       "dist/nested/deep.js",
     ]);
     // Language analysis measures its own byte-precise total the same way the
-    // codebase does — with no compression — rather than a declared target's
-    // own compressed `size` metric, which nothing here asked for. The files
-    // are the categorized set language analysis works from, not the raw
-    // matched paths. Exactly two calls: the codebase's own, then this
-    // target's — never a third, which is what a declared `size` analysis
-    // running alongside "language" here would look like.
+    // codebase does — with no compression — rather than a declared input's
+    // own compressed `size` metric, which nothing here asked for. Exactly two
+    // calls: the codebase's own, then this input's — never a third, which is
+    // what a declared `size` analysis running alongside "language" here would
+    // look like.
     expect(sizeService.analyze).toHaveBeenCalledTimes(2);
     expect(sizeService.analyze).toHaveBeenNthCalledWith(1, {
       compression: "none",
@@ -365,165 +404,15 @@ describe(MeasureService, () => {
       files: discoveredFiles.files,
       workingDirectory: "/repo",
     });
-    expect(result.targets[1]?.language?.linesOfCode).toBe(70);
-    expect(result.targets[1]?.language?.repositoryBytes).toBe(4529);
-  });
-
-  it("attaches the codebase target's name to its documentation measurements", () => {
-    vi.mocked(languagesService.analyze).mockReturnValue(
-      createMock<LanguageResults>({
-        typescript: createMock<LanguageResults["typescript"]>({
-          documentation: [
-            {
-              breached: false,
-              declaration: "Foo",
-              file: "src/foo.ts",
-              kind: "class",
-              limit: 6,
-              line: 1,
-              measured: 3,
-              severity: "fail",
-              unit: "lines",
-            },
-          ],
-        }),
-      }),
-    );
-
-    const result = buildService().measure({
-      configuration,
-      outputPaths: [],
-      workingDirectory: "/repo",
-    });
-
-    expect(result.targets[0]?.documentation).toStrictEqual([
-      {
-        breached: false,
-        declaration: "Foo",
-        file: "src/foo.ts",
-        kind: "class",
-        limit: 6,
-        line: 1,
-        measured: 3,
-        severity: "fail",
-        target: "codebase",
-        unit: "lines",
-      },
-    ]);
-    expect(result.documentation).toStrictEqual(
-      result.targets[0]?.documentation,
-    );
-  });
-
-  it("carries every language's comment blocks through the documentation channel", () => {
-    vi.mocked(languagesService.analyze).mockReturnValue(
-      createMock<LanguageResults>({
-        comments: [
-          {
-            breached: true,
-            declaration: "why this workflow skips setup",
-            file: ".github/workflows/ci.yml",
-            kind: "comment",
-            limit: 128,
-            line: 3,
-            measured: 147,
-            severity: "fail",
-            unit: "words",
-          },
-        ],
-        typescript: createMock<LanguageResults["typescript"]>({
-          documentation: [
-            {
-              breached: false,
-              declaration: "Foo",
-              file: "src/foo.ts",
-              kind: "class",
-              limit: 6,
-              line: 1,
-              measured: 3,
-              severity: "fail",
-              unit: "lines",
-            },
-          ],
-        }),
-      }),
-    );
-
-    const result = buildService().measure({
-      configuration,
-      outputPaths: [],
-      workingDirectory: "/repo",
-    });
-
-    // One channel, both kinds: `kind` is what distinguishes them downstream.
-    expect(result.documentation.map((entry) => entry.kind)).toStrictEqual([
-      "class",
-      "comment",
-    ]);
-    expect(result.documentation[1]).toMatchObject({
-      breached: true,
-      file: ".github/workflows/ci.yml",
-      line: 3,
-      measured: 147,
-      target: "codebase",
-    });
-  });
-
-  it("attaches a declared target's name to its documentation measurements", () => {
-    vi.mocked(languagesService.analyze).mockReturnValue(
-      createMock<LanguageResults>({
-        typescript: createMock<LanguageResults["typescript"]>({
-          documentation: [
-            {
-              breached: true,
-              declaration: "Bar",
-              file: "dist/bar.js",
-              kind: "function",
-              limit: 4,
-              line: 2,
-              measured: 9,
-              severity: "warn",
-              unit: "lines",
-            },
-          ],
-        }),
-      }),
-    );
-
-    const result = buildService().measure({
-      configuration: {
-        ...configuration,
-        targets: [{ ...compiledTarget, analyses: ["language"] }],
-      },
-      outputPaths: [],
-      workingDirectory: "/repo",
-    });
-
-    expect(result.targets[1]?.documentation).toStrictEqual([
-      {
-        breached: true,
-        declaration: "Bar",
-        file: "dist/bar.js",
-        kind: "function",
-        limit: 4,
-        line: 2,
-        measured: 9,
-        severity: "warn",
-        target: "compiled",
-        unit: "lines",
-      },
-    ]);
-    expect(result.documentation).toStrictEqual([
-      ...(result.targets[0]?.documentation ?? []),
-      ...(result.targets[1]?.documentation ?? []),
-    ]);
+    expect(result.inputs[1]?.language?.linesOfCode).toBe(70);
+    expect(result.inputs[1]?.language?.repositoryBytes).toBe(4529);
   });
 
   // One unreadable file used to take the whole run with it, including the
-  // codebase's own statistics, which the failing target had nothing to do with.
-  it("steps over a target it cannot measure and keeps the rest", () => {
-    vi.mocked(targetsService.matchFiles).mockImplementation(({ target }) => {
-      if (target.name === "broken") {
+  // codebase's own statistics, which the failing input had nothing to do with.
+  it("steps over an input it cannot measure and keeps the rest", () => {
+    vi.mocked(inputsService.matchFiles).mockImplementation(({ input }) => {
+      if (input.name === "broken") {
         throw new Error("dist/ vanished mid-walk");
       }
 
@@ -533,7 +422,11 @@ describe(MeasureService, () => {
     const result = buildService().measure({
       configuration: {
         ...configuration,
-        targets: [{ ...compiledTarget, name: "broken" }, compiledTarget],
+        inputs: [
+          codebaseInput,
+          { ...compiledInput, name: "broken" },
+          compiledInput,
+        ],
       },
       outputPaths: [],
       workingDirectory: "/repo",
@@ -541,57 +434,93 @@ describe(MeasureService, () => {
 
     expect(result.failures).toStrictEqual([
       {
-        kind: "target",
+        kind: "input",
         reason: "dist/ vanished mid-walk",
         subject: "broken",
       },
     ]);
     expect(result.statistics.linesOfCode).toBe(70);
-    expect(result.targets.map((target) => target.name)).toStrictEqual([
+    expect(result.inputs.map((input) => input.name)).toStrictEqual([
       "codebase",
       "compiled",
     ]);
   });
 
-  it("collects a failure from every target that could not be measured", () => {
-    vi.mocked(targetsService.matchFiles).mockImplementation(({ target }) => {
-      throw new Error(`${target.name} is gone`);
+  // Ruling H: the `codebase` input is measured under the same try/catch as
+  // every other input now, so a discovery failure is recorded and stepped
+  // over rather than propagating and losing every other input's report.
+  it("records the codebase's own discovery failure and still measures the rest", () => {
+    vi.mocked(discoveryService.discoverFiles).mockImplementation(() => {
+      throw new Error("directory vanished mid-walk");
     });
 
     const result = buildService().measure({
       configuration: {
         ...configuration,
-        targets: [
-          { ...compiledTarget, name: "first" },
-          { ...compiledTarget, name: "second" },
-        ],
-      },
-      outputPaths: [],
-      workingDirectory: "/repo",
-    });
-
-    expect(result.failures.map((failure) => failure.subject)).toStrictEqual([
-      "first",
-      "second",
-    ]);
-  });
-
-  it("reports a non-Error thrown value as a plain string", () => {
-    vi.mocked(targetsService.matchFiles).mockImplementation(() => {
-      throwUnknown("not an Error");
-    });
-
-    const result = buildService().measure({
-      configuration: {
-        ...configuration,
-        targets: [{ ...compiledTarget, name: "broken" }],
+        inputs: [codebaseInput, compiledInput],
       },
       outputPaths: [],
       workingDirectory: "/repo",
     });
 
     expect(result.failures).toStrictEqual([
-      { kind: "target", reason: "not an Error", subject: "broken" },
+      {
+        kind: "input",
+        reason: "directory vanished mid-walk",
+        subject: "codebase",
+      },
+    ]);
+    expect(result.inputs.map((input) => input.name)).toStrictEqual([
+      "compiled",
+    ]);
+    // No input ran language analysis, so the headline falls back rather than
+    // throwing or reading a partially-built result.
+    expect(result.statistics.linesOfCode).toBe(0);
+  });
+
+  it("collects a failure from every input that could not be measured", () => {
+    vi.mocked(inputsService.matchFiles).mockImplementation(({ input }) => {
+      throw new Error(`${input.name} is gone`);
+    });
+
+    const result = buildService().measure({
+      configuration: {
+        ...configuration,
+        inputs: [
+          codebaseInput,
+          { ...compiledInput, name: "first" },
+          { ...compiledInput, name: "second" },
+        ],
+      },
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(
+      result.failures
+        .filter((failure) => failure.kind === "input")
+        .map((failure) => failure.subject),
+    ).toStrictEqual(["first", "second"]);
+  });
+
+  it("reports a non-Error thrown value as a plain string", () => {
+    vi.mocked(inputsService.matchFiles).mockImplementation(() => {
+      throwUnknown("not an Error");
+    });
+
+    const result = buildService().measure({
+      configuration: {
+        ...configuration,
+        inputs: [codebaseInput, { ...compiledInput, name: "broken" }],
+      },
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(
+      result.failures.filter((failure) => failure.kind === "input"),
+    ).toStrictEqual([
+      { kind: "input", reason: "not an Error", subject: "broken" },
     ]);
   });
 
@@ -607,24 +536,28 @@ describe(MeasureService, () => {
       workingDirectory: "/repo",
     });
 
-    expect(result.failures).toStrictEqual([
+    expect(
+      result.failures.filter((failure) => failure.kind === "limit"),
+    ).toStrictEqual([
       { kind: "limit", reason: "nothing answers", subject: "codebase.nowhere" },
     ]);
   });
 
-  it("reports two targets sharing one name without dropping the run", () => {
+  it("reports two inputs sharing one name without dropping the run", () => {
     const result = buildService().measure({
       configuration: {
         ...configuration,
-        targets: [compiledTarget, compiledTarget],
+        inputs: [codebaseInput, compiledInput, compiledInput],
       },
       outputPaths: [],
       workingDirectory: "/repo",
     });
 
-    expect(result.failures).toStrictEqual([
+    expect(
+      result.failures.filter((failure) => failure.kind === "input"),
+    ).toStrictEqual([
       {
-        kind: "target",
+        kind: "input",
         reason: expect.stringContaining(
           'Two measured targets are called "compiled"',
         ) as string,
@@ -653,20 +586,23 @@ describe(MeasureService, () => {
     ]);
   });
 
-  it("keeps a written file out of a declared target's matches too", () => {
-    vi.mocked(targetsService.matchFiles).mockReturnValue([
+  it("keeps a written file out of a declared input's matches too", () => {
+    vi.mocked(inputsService.matchFiles).mockReturnValue([
       "dist/index.js",
       "dist/report.json",
     ]);
 
     const result = buildService().measure({
-      configuration: { ...configuration, targets: [compiledTarget] },
+      configuration: {
+        ...configuration,
+        inputs: [codebaseInput, compiledInput],
+      },
       outputPaths: ["dist/report.json"],
       workingDirectory: "/repo",
     });
 
     // Exactly two calls: the codebase's own uncompressed total first, then
-    // this declared target's compressed `size` metric over the one file left
+    // this declared input's compressed `size` metric over the one file left
     // once the written report is excluded.
     expect(sizeService.analyze).toHaveBeenCalledTimes(2);
     expect(sizeService.analyze).toHaveBeenNthCalledWith(2, {
@@ -674,6 +610,6 @@ describe(MeasureService, () => {
       files: ["dist/index.js"],
       workingDirectory: "/repo",
     });
-    expect(result.targets[1]?.files).toBe(1);
+    expect(result.inputs[1]?.files).toBe(1);
   });
 });

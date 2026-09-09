@@ -46,14 +46,15 @@ describe("limits written in a configuration file", () => {
     await writeFile(
       configurationPath,
       JSON.stringify({
-        defaultTarget: "codebase",
+        defaultInput: "codebase",
+        format: "json",
+        inputs: [
+          { analyses: ["size"], include: ["dist/**/*.js"], name: "compiled" },
+        ],
         limits: [
           // Unqualified, so the default target has to supply the name.
           { metric: "typescript.interfaces", value: "40" },
           { label: "Bundle", metric: "compiled.size", value: "4 KB" },
-        ],
-        targets: [
-          { analyses: ["size"], include: ["dist/**/*.js"], name: "compiled" },
         ],
       }),
       "utf8",

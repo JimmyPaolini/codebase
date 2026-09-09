@@ -14,6 +14,7 @@ import {
 import {
   buildCssGroup,
   buildCustomGroup,
+  buildCustomStatisticInstancesSection,
   buildHclGroup,
   buildJavascriptGroup,
   buildJsonGroup,
@@ -33,12 +34,15 @@ import type {
   BuildAnchorHelpersArguments,
   RenderBadgesArguments,
   RenderDocumentArguments,
-  RenderDocumentationSectionArguments,
   SyncAnchoredBlockArguments,
   SyncMarkdownArguments,
   WrapInAnchorsArguments,
 } from "./markdown.types";
-import type { MarkdownAnchorHelpers } from "@codometer/configuration";
+import type {
+  CodeStatisticsResult,
+  MarkdownAnchorHelpers,
+  ResolvedCodometerMarkdownOutput,
+} from "@codometer/configuration";
 
 /**
  * Writes generated code statistics badges into a markdown file.
@@ -65,10 +69,7 @@ export class MarkdownService {
    *
    * Each helper keeps the name of the method it wraps, because those names are
    * the `MarkdownAnchorHelpers` contract a configured writer is written
-   * against. The cost lands in a traced call stack, where the helper and the
-   * method it forwards to appear as two frames under one name — `renderContent`
-   * below names its closure differently for exactly this reason, and can only
-   * do so because that one is not part of any contract.
+   * against.
    */
   private buildAnchorHelpers(
     args: BuildAnchorHelpersArguments,
@@ -159,29 +160,30 @@ export class MarkdownService {
   }
 
   /**
-   * The markdown a destination produces, whoever produced it.
+   * Narrow the measured statistics to one destination's own configured
+   * counters.
    *
-   * A configured `render` replaces the built-in badges and is handed them
-   * anyway, so a renderer that wants to add to the default report never has to
-   * reimplement it.
-   *
-   * The closure is `renderDefaultBadges` rather than `renderBadges`, which is
-   * what the configured renderer receives it as: a traced call stack names a
-   * closure by the binding it was written under, and two frames both reading
-   * `MarkdownService.renderBadges` look like recursion rather than like a
-   * thunk calling the method it wraps.
+   * `statistics.custom` is the union of every counter declared across every
+   * configured output, deduped by label — `MeasureService.collectStatistics`
+   * measures it once for the whole run. Two destinations may declare entirely
+   * different counters, so each has to pick its own subset back out by label
+   * before rendering, or one destination's badges would carry another's
+   * counters too.
    */
-  private renderContent(args: RenderBadgesArguments): string {
-    const { destination } = args;
-    const renderDefaultBadges = (): string => this.renderBadges(args);
+  private scopeCustomStatistics(
+    statistics: CodeStatisticsResult,
+    destination: ResolvedCodometerMarkdownOutput,
+  ): CodeStatisticsResult {
+    const labels = new Set(
+      destination.custom.map((statistic) => statistic.label),
+    );
 
-    return destination.render === undefined
-      ? renderDefaultBadges()
-      : destination.render({
-          description: destination.description,
-          renderBadges: renderDefaultBadges,
-          statistics: args.statistics,
-        });
+    return {
+      ...statistics,
+      custom: statistics.custom.filter((statistic) =>
+        labels.has(statistic.label),
+      ),
+    };
   }
 
   /**
@@ -273,12 +275,16 @@ export class MarkdownService {
    * The block a splice destination places between its markers, and the body of
    * the document a whole-file destination writes. Both are the same markdown,
    * which is why the two sinks never disagree about a number.
+   *
+   * `statistics.custom` carries every counter declared across every
+   * configured output; this destination's own `custom` list says which of
+   * them belong to it, so it is scoped down before rendering.
    */
   renderBadges(args: RenderBadgesArguments): string {
     return this.renderDocument({
       description: args.destination.description,
       scope: args.scope,
-      statistics: args.statistics,
+      statistics: this.scopeCustomStatistics(args.statistics, args.destination),
       targets: args.targets,
     });
   }
@@ -291,7 +297,7 @@ export class MarkdownService {
    */
   renderBlock(args: RenderBadgesArguments): string {
     return this.wrapInAnchors({
-      content: this.renderContent(args),
+      content: this.renderBadges(args),
       destination: args.destination,
     });
   }
@@ -307,6 +313,11 @@ export class MarkdownService {
    * being written by hand above them — one owner instead of one per
    * document. The groups underneath still distinguish `Repository` from
    * `Project` by scope, so only the top-level heading unifies.
+   *
+   * A per-instance custom statistic that breached this run gets one more
+   * section after the badges, naming the file and line of each breach —
+   * spec #749 user story 16. Nothing is appended when nothing breached, the
+   * same instinct the badge groups themselves follow.
    */
   renderDocument(args: RenderDocumentArguments): string {
     const sections: string[] = [CODOMETER_SECTION_HEADING];
@@ -317,46 +328,39 @@ export class MarkdownService {
 
     sections.push(this.buildBadgeGroups(args));
 
-    return sections.join("\n\n");
-  }
-
-  /**
-   * Render the breached documentation-length entries as a markdown section.
-   *
-   * Terse on purpose: the full per-declaration measurement already lives in
-   * the JSON report, so only the breaches — the ones worth a reader's
-   * attention — get a line here. Empty when nothing breached, so nothing is
-   * appended to a clean run's markdown.
-   */
-  renderDocumentationSection(
-    args: RenderDocumentationSectionArguments,
-  ): string {
-    if (args.breaches.length === 0) {
-      return "";
-    }
-
-    const bullets = args.breaches.map(
-      (breach) =>
-        `- \`${breach.file}:${breach.line}\` — \`${breach.declaration}\` (${breach.kind}): ${breach.measured}/${breach.limit} ${breach.unit}`,
+    const instancesSection = buildCustomStatisticInstancesSection(
+      args.statistics,
     );
 
-    return ["### 📝 Documentation", bullets.join("\n")].join("\n\n");
+    if (instancesSection !== "") {
+      sections.push(instancesSection);
+    }
+
+    return sections.join("\n\n");
   }
 
   /**
    * Sync a splice destination with the current statistics.
    *
-   * Rendering and writing are separate seams, each replaceable from the
-   * configuration on its own: `render` decides what the markdown says, `write`
-   * decides which file it lands in and how. The built-in pair renders badges
-   * and splices them between the configured anchor markers.
+   * `write` is the whole of the customizable behavior now: it decides what
+   * the markdown says and which file it lands in, replacing what used to be
+   * two separate `render` and `write` callbacks. The built-in behavior — no
+   * `write` configured — renders badges and splices them between the
+   * configured anchor markers.
    *
-   * Returns `false` only when checking, and only when the destination is
-   * missing or stale.
+   * Returns whatever a configured `write` returns; the built-in path returns
+   * `false` only when checking, and only when the destination is missing or
+   * stale.
    */
   sync(args: SyncMarkdownArguments): boolean {
     const { destination } = args;
-    const content = this.renderContent(args);
+    const statistics = this.scopeCustomStatistics(args.statistics, destination);
+    const content = this.renderDocument({
+      description: destination.description,
+      scope: args.scope,
+      statistics,
+      targets: args.targets,
+    });
     const anchors = this.buildAnchorHelpers({
       check: args.check,
       content,
@@ -367,14 +371,13 @@ export class MarkdownService {
       return anchors.syncAnchoredBlock();
     }
 
-    // Anything but an explicit `false` counts as current: a writer that
-    // returns nothing has written the file, not reported it stale.
     return destination.write({
       anchors,
       check: args.check,
-      content,
+      description: destination.description,
       path: destination.path,
-      statistics: args.statistics,
+      renderBadges: () => content,
+      statistics,
     });
   }
 }

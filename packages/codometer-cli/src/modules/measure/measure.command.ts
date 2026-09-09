@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { ConfigurationService, InputService } from "@codometer/configuration";
+import { ConfigurationService } from "@codometer/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -13,7 +13,10 @@ import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { MeasureService } from "./measure.service";
 
-import type { ReportFindingsArguments } from "../run-plan/run-plan.types";
+import type {
+  ReportFindingsArguments,
+  RunPlan,
+} from "../run-plan/run-plan.types";
 import type { MeasureCommandOptions, MeasurementResult } from "./measure.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
@@ -34,7 +37,6 @@ export class MeasureCommand extends CommandRunner {
     private readonly deliveryService: DeliveryService,
     private readonly reportService: ReportService,
     private readonly runPlanService: RunPlanService,
-    private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -67,12 +69,45 @@ export class MeasureCommand extends CommandRunner {
   }
 
   /**
+   * Replaces every configured input with the globs `--inputs` named, when it
+   * was passed.
+   *
+   * Not a filter over configured inputs: the run measures exactly the globs
+   * given, running the `language` analysis over them, with no other input —
+   * not even the built-in `codebase` one — active.
+   */
+  private applyInputsOverride(
+    configuration: ResolvedCodometerConfiguration,
+    globs: string[] | undefined,
+  ): ResolvedCodometerConfiguration {
+    if (globs === undefined) {
+      return configuration;
+    }
+
+    return {
+      ...configuration,
+      inputs: [
+        {
+          analyses: ["language"],
+          compression: "none",
+          directory: ".",
+          exclude: [],
+          include: globs,
+          name: "Command Line",
+        },
+      ],
+    };
+  }
+
+  /**
    * Read the configuration, or say why it could not be read.
    *
    * A configuration nothing can parse fails the run rather than being taken as
-   * an empty one. An empty configuration measures the whole tree and gates
-   * nothing, which is exactly the run a broken limit would have to be caught
-   * by.
+   * an empty one, and so does a directory with no configuration file anywhere
+   * above it: `format` is required with no code-level fallback, so an absent
+   * file fails on the missing `format` exactly as a file that forgot to write
+   * one does. A shared default object, spread by each project's own
+   * `codometer.config.ts`, is what states it once for a workspace.
    */
   private async readConfiguration(
     options: MeasureCommandOptions,
@@ -98,6 +133,12 @@ export class MeasureCommand extends CommandRunner {
     }
   }
 
+  /** Says the command line could not be made sense of, and fails the run. */
+  private rejectCommandLine(reasons: string[]): void {
+    this.logger.error(`📊 Rejected the command line`, undefined, { reasons });
+    process.exitCode = 1;
+  }
+
   /** Report every breached limit, and say whether one of them fails the run. */
   private reportBreaches(args: ReportFindingsArguments): boolean {
     const breached = args.measurement.limits.filter((limit) => limit.breached);
@@ -113,32 +154,6 @@ export class MeasureCommand extends CommandRunner {
     if (failing.length > 0) {
       this.logger.error(`📊 Breached a failing limit`, undefined, {
         limits: failing,
-      });
-    }
-
-    return args.mode.checksLimits && failing.length > 0;
-  }
-
-  /**
-   * Report every breached documentation length limit, and say whether one of
-   * them fails the run. Mirrors `reportBreaches`' limit-breach vocabulary.
-   */
-  private reportDocumentationBreaches(args: ReportFindingsArguments): boolean {
-    const breached = args.measurement.documentation.filter(
-      (entry) => entry.breached,
-    );
-    const failing = breached.filter((entry) => entry.severity === "fail");
-    const warning = breached.filter((entry) => entry.severity === "warn");
-
-    if (warning.length > 0) {
-      this.logger.warn(`📊 Breached a documentation length limit`, undefined, {
-        documentation: warning,
-      });
-    }
-
-    if (failing.length > 0) {
-      this.logger.error(`📊 Breached a documentation length limit`, undefined, {
-        documentation: failing,
       });
     }
 
@@ -164,7 +179,10 @@ export class MeasureCommand extends CommandRunner {
     });
 
     return (
-      args.mode.checksLimits || args.mode.checksReports || args.mode.writes
+      args.mode.checksLimits ||
+      args.mode.checksReports ||
+      args.mode.writesJson ||
+      args.mode.writesMarkdown
     );
   }
 
@@ -173,16 +191,15 @@ export class MeasureCommand extends CommandRunner {
     const failed = this.reportFailures(args);
     const stale = this.reportStaleness(args);
     const breached = this.reportBreaches(args);
-    const documented = this.reportDocumentationBreaches(args);
 
-    if (failed || stale || breached || documented) {
+    if (failed || stale || breached) {
       process.exitCode = 1;
     }
 
     this.logger.info("✅ Finished the measurement run", undefined, {
       breachCount: args.measurement.limits.filter((limit) => limit.breached)
         .length,
-      targetCount: args.measurement.targets.length,
+      inputCount: args.measurement.inputs.length,
     });
   }
 
@@ -200,12 +217,67 @@ export class MeasureCommand extends CommandRunner {
   }
 
   /**
-   * Resolve the directory the run measures, and announce that it started.
+   * Reads the flags into everything the rest of the run needs: the mode, the
+   * resolved configuration, what to print, and where each output goes.
+   *
+   * `undefined` when the run cannot proceed at all — a rejected command line,
+   * or a configuration that failed to load — with the refusal and exit code
+   * already reported, so nothing after this has to check twice.
    */
-  private resolveWorkingDirectory(options: MeasureCommandOptions): string {
-    const workingDirectory = path.resolve(
-      this.parseDirectory(options.directory),
+  private async resolveRunPlan(
+    options: MeasureCommandOptions,
+    workingDirectory: string,
+  ): Promise<RunPlan | undefined> {
+    const { errors: modeErrors, mode } =
+      this.runPlanService.selectMode(options);
+
+    if (modeErrors.length > 0) {
+      this.rejectCommandLine(modeErrors);
+      return undefined;
+    }
+
+    const loadedConfiguration = await this.readConfiguration(
+      options,
+      workingDirectory,
     );
+
+    if (loadedConfiguration === undefined) {
+      return undefined;
+    }
+
+    const configuration = this.applyInputsOverride(
+      loadedConfiguration,
+      options.inputs,
+    );
+    const formatErrors: string[] = [];
+    const format = this.runPlanService.resolveFormat(
+      options.format,
+      configuration.format,
+      formatErrors,
+    );
+    const { destinations, errors: destinationErrors } =
+      this.runPlanService.resolveDestinations({
+        configuration,
+        options,
+        workingDirectory,
+      });
+
+    if (formatErrors.length > 0 || destinationErrors.length > 0) {
+      this.rejectCommandLine([...formatErrors, ...destinationErrors]);
+      return undefined;
+    }
+
+    return { configuration, destinations, format, mode };
+  }
+
+  /**
+   * Resolve the directory the run measures, and announce that it started.
+   *
+   * Always the process's working directory: unlike every other flag, there is
+   * no per-run override for it — a run measures where it was invoked.
+   */
+  private resolveWorkingDirectory(): string {
+    const workingDirectory = path.resolve(process.cwd());
 
     this.logger.debug("🚀 Started the measurement run", undefined, {
       directory: workingDirectory,
@@ -245,22 +317,12 @@ export class MeasureCommand extends CommandRunner {
   }
 
   /**
-   * Parse the directory option from command-line input.
-   */
-  @Option({
-    description: "Directory to analyze",
-    flags: "-d, --directory [directory]",
-  })
-  public parseDirectory(value: unknown): string {
-    return this.inputService.parseDirectoryOption(value);
-  }
-
-  /**
    * Parse what the run prints from command-line input.
    *
    * Says nothing about which files are written — that is each `--output-*`
-   * flag's job. Separating them is what lets one run write a report and print
-   * a badge document without either flag having to mean both.
+   * flag's job. Omitted, it reads the resolved configuration's own required
+   * `format` field rather than inferring one from which other flags are
+   * present.
    */
   @Option({
     description: `What to print to standard output, one of ${FORMAT_NAMES.join(" and ")}`,
@@ -271,88 +333,75 @@ export class MeasureCommand extends CommandRunner {
   }
 
   /**
-   * Parse the report's destination from command-line input.
+   * Parse the glob array that replaces every configured input, from
+   * command-line input.
    *
-   * A path and nothing else. Asking for the report on the console is
-   * `--format json`, so this flag never has to be read two ways.
-   */
-  @Option({
-    description: "File to write the report to",
-    flags: "--output-json <outputJson>",
-  })
-  public parseOutputJson(value: string): string {
-    return value;
-  }
-
-  /**
-   * Parse the badge block's destination from command-line input.
-   *
-   * The path is mandatory and never defaulted. Writing here rewrites a file
-   * somebody else wrote the rest of, so a run that guessed the filename would
-   * edit a document nobody pointed it at.
+   * Each value commander hands the parser is one glob; they accumulate into
+   * one array across the whole `--inputs` invocation.
    */
   @Option({
     description:
-      "Markdown file the badge block goes into, spliced between its markers when they are there and appended with them when they are not",
-    flags: "--output-markdown <outputMarkdown>",
+      "Glob array measured in place of every configured input, with no configured input — not even the built-in codebase one — active",
+    flags: "--inputs [globs...]",
   })
-  public parseOutputMarkdown(value: string): string {
+  public parseInputs(value: string, previous: string[] = []): string[] {
+    return [...previous, value];
+  }
+
+  /**
+   * Parse the report's destination from command-line input.
+   *
+   * `true` when the flag was passed with no value, asking this run to write
+   * wherever the resolved configuration's own JSON output says to; a string
+   * when a path was given, which is used for this destination alone.
+   */
+  @Option({
+    description:
+      "Write the JSON report, at the given path or the configured one",
+    flags: "--output-json [outputJson]",
+  })
+  public parseOutputJson(value: string | true): string | true {
     return value;
   }
 
   /**
-   * Parse the write flag from command-line input.
+   * Parse the markdown badge block's destination from command-line input.
    *
-   * A boolean flag reaches the parser as `undefined` when it carries no value,
-   * and the parser runs only when the flag is present, so presence is the
-   * whole signal.
+   * `true` when the flag was passed with no value, asking this run to write
+   * wherever the resolved configuration's own markdown output says to; a
+   * string when a path was given, which is used for this destination alone.
    */
   @Option({
-    description: "Write every resolved destination",
-    flags: "--write",
+    description:
+      "Write the markdown badge block, at the given path or the configured one",
+    flags: "--output-markdown [outputMarkdown]",
   })
-  public parseWrite(value: boolean | undefined): boolean {
-    return value ?? true;
+  public parseOutputMarkdown(value: string | true): string | true {
+    return value;
   }
 
   /**
    * Measure the repository and produce every resolved output.
    *
-   * Flags are independent: `--write` writes, `--check reports` fails on a stale
-   * report, `--check limits` fails on a breached limit, `--format` prints, and
-   * none of them turns another on. Every output is produced before any finding
-   * is weighed, so a run that writes and gates leaves the report behind even
+   * Flags are independent: `--output-json`/`--output-markdown` each write
+   * their own destination, `--check reports` fails on a stale report,
+   * `--check limits` fails on a breached limit, `--format` prints, and none of
+   * them turns another on. Every output is produced before any finding is
+   * weighed, so a run that writes and gates leaves the report behind even
    * when the gate trips.
    */
   async run(
     _passedParameters: string[],
     options: MeasureCommandOptions,
   ): Promise<void> {
-    const workingDirectory = this.resolveWorkingDirectory(options);
-    const { errors, format, mode } = this.runPlanService.selectMode(options);
+    const workingDirectory = this.resolveWorkingDirectory();
+    const plan = await this.resolveRunPlan(options, workingDirectory);
 
-    if (errors.length > 0) {
-      this.logger.error(`📊 Rejected the command line`, undefined, {
-        reasons: errors,
-      });
-      process.exitCode = 1;
+    if (plan === undefined) {
       return;
     }
 
-    const configuration = await this.readConfiguration(
-      options,
-      workingDirectory,
-    );
-
-    if (configuration === undefined) {
-      return;
-    }
-
-    const destinations = this.runPlanService.resolveDestinations({
-      configuration,
-      options,
-      workingDirectory,
-    });
+    const { configuration, destinations, format, mode } = plan;
     const outputPaths = this.runPlanService.listOutputPaths({
       destinations,
       workingDirectory,

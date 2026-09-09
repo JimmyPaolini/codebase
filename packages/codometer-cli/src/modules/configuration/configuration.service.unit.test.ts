@@ -1,4 +1,7 @@
-import { ConfigurationService as CodometerConfigurationService } from "@codometer/configuration";
+import {
+  ConfigurationService as CodometerConfigurationService,
+  DEFAULT_EXCLUDE_GLOBS,
+} from "@codometer/configuration";
 import { DiscoveryService } from "@codometer/discovery";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -17,22 +20,14 @@ function buildConfiguration(
   overrides: Partial<ResolvedCodometerConfiguration> = {},
 ): ResolvedCodometerConfiguration {
   return {
-    css: { comments: undefined },
-    defaultTarget: undefined,
-    documentation: undefined,
+    defaultInput: undefined,
     exclude: [],
     excludeFrom: [],
-    hcl: { comments: undefined },
+    format: "json",
+    inputs: [],
     limits: [],
-    output: { json: undefined, markdown: undefined },
-    python: { command: "python", comments: undefined },
-    shell: { comments: undefined },
-    sql: { comments: undefined },
-    statistics: [],
-    targets: [],
-    toml: { comments: undefined },
-    typescript: { comments: undefined },
-    yaml: { comments: undefined },
+    outputs: [],
+    python: { command: "python" },
     ...overrides,
   };
 }
@@ -111,7 +106,12 @@ describe(ConfigurationService, () => {
       );
 
       await expect(
-        service.findConfigurationFiles("/repository"),
+        service
+          .findConfigurationFiles({
+            configurationPath: undefined,
+            workingDirectory: "/repository",
+          })
+          .then((discovered) => discovered.files),
       ).resolves.toStrictEqual([
         "packages/one/codometer.config.ts",
         "packages/three/codometer.config.json",
@@ -133,7 +133,10 @@ describe(ConfigurationService, () => {
         buildDiscovery([]),
       );
 
-      await service.findConfigurationFiles("/repository");
+      await service.findConfigurationFiles({
+        configurationPath: undefined,
+        workingDirectory: "/repository",
+      });
 
       expect(discoveryService.discoverFiles).toHaveBeenCalledWith({
         exclude: ["templates/**"],
@@ -141,9 +144,64 @@ describe(ConfigurationService, () => {
         workingDirectory: "/repository",
       });
     });
+
+    it("takes the walk root's exclusions from the configuration it was pointed at", async () => {
+      vi.mocked(
+        codometerConfigurationService.loadConfigurationFile,
+      ).mockResolvedValue({
+        configuration: buildConfiguration(),
+        path: undefined,
+      });
+      vi.mocked(discoveryService.discoverFiles).mockReturnValue(
+        buildDiscovery([]),
+      );
+
+      // A workspace whose root carries no configuration file names the shared
+      // one instead of falling back to the built-in exclusions.
+      await service.findConfigurationFiles({
+        configurationPath: "configuration/codometer.config.ts",
+        workingDirectory: "/repository",
+      });
+
+      expect(
+        codometerConfigurationService.loadConfigurationFile,
+      ).toHaveBeenCalledWith({
+        configurationPath: "configuration/codometer.config.ts",
+        searchDirectory: "/repository",
+      });
+    });
   });
 
   describe("describeConfigurations", () => {
+    it("keeps listing, and says so, when no configuration answers for the walk root", async () => {
+      vi.mocked(discoveryService.discoverFiles).mockReturnValue(
+        buildDiscovery(["packages/one/codometer.config.ts"]),
+      );
+      vi.mocked(codometerConfigurationService.loadConfigurationFile)
+        .mockRejectedValueOnce(new Error("needs a format"))
+        .mockResolvedValueOnce({
+          configuration: buildConfiguration(),
+          path: undefined,
+        } satisfies LoadedConfiguration);
+
+      const { described, rootError } = await service.describeConfigurations({
+        configurationPath: undefined,
+        workingDirectory: "/repository",
+      });
+
+      // The walk still happened, with the built-in exclusions standing in for
+      // the ones the unreadable root would have declared.
+      expect(discoveryService.discoverFiles).toHaveBeenCalledWith({
+        exclude: [...DEFAULT_EXCLUDE_GLOBS],
+        excludeFrom: [],
+        workingDirectory: "/repository",
+      });
+      expect(described.map((entry) => entry.directory)).toStrictEqual([
+        "packages/one",
+      ]);
+      expect(rootError).toBe("needs a format");
+    });
+
     it("reports a file that cannot be loaded rather than failing the listing", async () => {
       vi.mocked(discoveryService.discoverFiles).mockReturnValue(
         buildDiscovery(["packages/broken/codometer.config.ts"]),
@@ -155,8 +213,12 @@ describe(ConfigurationService, () => {
         } satisfies LoadedConfiguration)
         .mockRejectedValueOnce(new Error("Cannot find module"));
 
-      const described = await service.describeConfigurations("/repository");
+      const { described, rootError } = await service.describeConfigurations({
+        configurationPath: undefined,
+        workingDirectory: "/repository",
+      });
 
+      expect(rootError).toBeUndefined();
       expect(described).toStrictEqual([
         {
           configuration: undefined,

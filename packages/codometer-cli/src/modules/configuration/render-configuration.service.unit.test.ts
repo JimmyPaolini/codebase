@@ -46,6 +46,7 @@ describe(RenderConfigurationService, () => {
       format: "markdown",
       limitRows: [LIMIT_ROW],
       limitsOnly: true,
+      rootError: undefined,
     });
 
     expect(document).toContain("| Directory | Metric | Label |");
@@ -60,6 +61,7 @@ describe(RenderConfigurationService, () => {
         format: "markdown",
         limitRows: [],
         limitsOnly: true,
+        rootError: undefined,
       }),
     ).toContain("No limits are configured.");
   });
@@ -70,6 +72,7 @@ describe(RenderConfigurationService, () => {
       format: "markdown",
       limitRows: [],
       limitsOnly: false,
+      rootError: undefined,
     });
 
     expect(document).toContain("packages/broken");
@@ -81,26 +84,11 @@ describe(RenderConfigurationService, () => {
       described: [
         {
           configuration: {
-            css: { comments: undefined },
-            defaultTarget: undefined,
-            documentation: undefined,
+            defaultInput: undefined,
             exclude: [],
             excludeFrom: [".codometerignore"],
-            hcl: { comments: undefined },
-            limits: [],
-            output: { json: undefined, markdown: undefined },
-            python: { command: "uv run python", comments: undefined },
-            shell: { comments: undefined },
-            sql: { comments: undefined },
-            statistics: [
-              {
-                color: "166534",
-                group: "typescript",
-                label: "Service Files",
-                patterns: ["**/*.service.ts"],
-              },
-            ],
-            targets: [
+            format: "json",
+            inputs: [
               {
                 analyses: ["size"],
                 compression: "gzip",
@@ -110,9 +98,24 @@ describe(RenderConfigurationService, () => {
                 name: "Compiled JavaScript",
               },
             ],
-            toml: { comments: undefined },
-            typescript: { comments: undefined },
-            yaml: { comments: undefined },
+            limits: [],
+            outputs: [
+              {
+                custom: [
+                  {
+                    color: "166534",
+                    comment: undefined,
+                    group: "typescript",
+                    label: "Service Files",
+                    patterns: ["**/*.service.ts"],
+                  },
+                ],
+                indentation: 2,
+                path: "codometer-report.json",
+                type: "json",
+              },
+            ],
+            python: { command: "uv run python" },
           } satisfies ResolvedCodometerConfiguration,
           directory: "packages/logger",
           error: undefined,
@@ -122,11 +125,11 @@ describe(RenderConfigurationService, () => {
       format: "markdown",
       limitRows: [],
       limitsOnly: false,
+      rootError: undefined,
     });
 
-    expect(document).toContain("- Targets: Compiled JavaScript");
+    expect(document).toContain("- Inputs: Compiled JavaScript");
     expect(document).toContain("- Custom statistics: Service Files");
-    expect(document).toContain("- Documentation check: off");
     expect(document).toContain("`uv run python`");
     expect(document).toContain("- Exclude files: .codometerignore");
   });
@@ -137,6 +140,7 @@ describe(RenderConfigurationService, () => {
       format: "markdown",
       limitRows: [],
       limitsOnly: false,
+      rootError: undefined,
     });
 
     expect(document).toContain("Could not be read");
@@ -148,6 +152,7 @@ describe(RenderConfigurationService, () => {
       format: "json",
       limitRows: [],
       limitsOnly: false,
+      rootError: undefined,
     });
 
     // `JSON.stringify` drops an undefined value rather than emitting it, so
@@ -160,7 +165,23 @@ describe(RenderConfigurationService, () => {
           path: UNREADABLE.path,
         },
       ],
+      rootError: null,
     });
+  });
+
+  it("says the walk root answered with nothing, above the limits it still found", () => {
+    const document = service.render({
+      described: [],
+      format: "markdown",
+      limitRows: [LIMIT_ROW],
+      limitsOnly: true,
+      rootError: "needs a format",
+    });
+
+    expect(document).toContain(
+      "Nothing answered for the walk root, so the built-in exclusions were used instead: needs a format",
+    );
+    expect(document).toContain("6.00 kB");
   });
 
   it("emits only the limits under --limits when asked for json", () => {
@@ -169,8 +190,12 @@ describe(RenderConfigurationService, () => {
       format: "json",
       limitRows: [LIMIT_ROW],
       limitsOnly: true,
+      rootError: undefined,
     });
 
-    expect(JSON.parse(document)).toStrictEqual({ limits: [LIMIT_ROW] });
+    expect(JSON.parse(document)).toStrictEqual({
+      limits: [LIMIT_ROW],
+      rootError: null,
+    });
   });
 });

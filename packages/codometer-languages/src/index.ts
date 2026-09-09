@@ -4,8 +4,11 @@ export { CommentsModule } from "./modules/comments/comments.module";
 export { CommentsService } from "./modules/comments/comments.service";
 export type {
   CommentBlock,
+  CommentBudget,
   CommentMeasurement,
   CommentToken,
+  DocumentationCommentCounter,
+  LanguageCommentCounter,
 } from "./modules/comments/comments.types";
 export { CssCommentsService } from "./modules/comments/css-comments.service";
 export { HashCommentsService } from "./modules/comments/hash-comments.service";

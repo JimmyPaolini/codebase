@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   ConfigurationService as CodometerConfigurationService,
   CONFIGURATION_FILE_NAMES,
+  DEFAULT_EXCLUDE_GLOBS,
 } from "@codometer/configuration";
 import { DiscoveryService } from "@codometer/discovery";
 import { formatBytes, formatCount } from "@codometer/output";
@@ -13,6 +14,10 @@ import { ABSENT_LABEL, SIZE_METRIC_SUFFIX } from "./configuration.constants";
 import type {
   ConfiguredDirectory,
   ConfiguredLimitRow,
+  ConfiguredTree,
+  DescribeConfigurationsArguments,
+  DiscoveredConfigurationFiles,
+  WalkExclusions,
 } from "./configuration.types";
 
 /**
@@ -20,8 +25,9 @@ import type {
  *
  * Answers the question a repository gains once its limits stop living in one
  * table: where is everything configured, and what does it add up to. It reads
- * configuration and never measures anything, so it needs no build, runs in
- * milliseconds, and cannot fail for a reason unrelated to configuration.
+ * configuration and never measures anything, so it needs no build and runs in
+ * milliseconds — and no single unreadable file takes the listing down, because
+ * every failure is carried back on the result rather than thrown.
  */
 @Injectable()
 export class ConfigurationService {
@@ -94,6 +100,43 @@ export class ConfigurationService {
       : formatCount(value);
   }
 
+  /**
+   * Resolves the exclusions the walk uses, reporting rather than throwing.
+   *
+   * The walk root is not guaranteed to have a configuration answering for it:
+   * a workspace states its `format` once in a shared object that each project
+   * spreads, so the root itself may carry no configuration file at all and the
+   * upward search then finds nothing to resolve. A workspace in that shape
+   * names its own file with `--config`; one that does neither must not take
+   * the listing down — the listing is most wanted precisely when the
+   * configuration is in a state somebody is trying to understand — so the
+   * built-in exclusions stand in and the failure is carried back to be
+   * reported and to fail the run's exit code.
+   */
+  private async resolveWalkExclusions(
+    args: DescribeConfigurationsArguments,
+  ): Promise<WalkExclusions> {
+    try {
+      const { configuration } =
+        await this.configurationService.loadConfigurationFile({
+          configurationPath: args.configurationPath,
+          searchDirectory: args.workingDirectory,
+        });
+
+      return {
+        error: undefined,
+        exclude: configuration.exclude,
+        excludeFrom: configuration.excludeFrom,
+      };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : String(error),
+        exclude: [...DEFAULT_EXCLUDE_GLOBS],
+        excludeFrom: [],
+      };
+    }
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -101,25 +144,27 @@ export class ConfigurationService {
    *
    * Every file is resolved for **its own directory** rather than for the walk
    * root, which is what makes the result match what a per-project run of
-   * codometer actually sees: a configuration authored as a factory derives its
-   * targets from the directory it is called with, so resolving it anywhere
-   * else would report something no run would ever use.
+   * codometer actually sees: every configuration file is resolved against the
+   * directory it sits in, so resolving one anywhere else would report
+   * something no run would ever use.
    */
   public async describeConfigurations(
-    workingDirectory: string,
-  ): Promise<ConfiguredDirectory[]> {
-    const files = await this.findConfigurationFiles(workingDirectory);
+    args: DescribeConfigurationsArguments,
+  ): Promise<ConfiguredTree> {
+    const { files, rootError } = await this.findConfigurationFiles(args);
     const described: ConfiguredDirectory[] = [];
 
     for (const file of files) {
-      const directory = path.dirname(file);
-
       described.push(
-        await this.describeConfiguration({ directory, file, workingDirectory }),
+        await this.describeConfiguration({
+          directory: path.dirname(file),
+          file,
+          workingDirectory: args.workingDirectory,
+        }),
       );
     }
 
-    return described;
+    return { described, rootError };
   }
 
   /**
@@ -129,28 +174,29 @@ export class ConfigurationService {
    * configuration inside `node_modules` or a build directory is never picked
    * up, and one inside a folder the repository ignores is never reported as
    * something the repository configures.
+   *
+   * The exclusions come from whatever configuration answers for the walk root,
+   * because that is what says which files this repository considers its own —
+   * walking without them would list every configuration in a vendored
+   * dependency or a generator template. A root nothing answers for falls back
+   * to the built-in exclusions and reports itself instead of failing.
    */
   public async findConfigurationFiles(
-    workingDirectory: string,
-  ): Promise<string[]> {
-    // The configuration answering for the walk root is what says which files
-    // this repository considers its own. Walking without it would list every
-    // configuration in a vendored dependency or a generator template as
-    // something the repository configures.
-    const { configuration } =
-      await this.configurationService.loadConfigurationFile({
-        searchDirectory: workingDirectory,
-      });
-
+    args: DescribeConfigurationsArguments,
+  ): Promise<DiscoveredConfigurationFiles> {
+    const exclusions = await this.resolveWalkExclusions(args);
     const { files } = this.discoveryService.discoverFiles({
-      exclude: configuration.exclude,
-      excludeFrom: configuration.excludeFrom,
-      workingDirectory,
+      exclude: exclusions.exclude,
+      excludeFrom: exclusions.excludeFrom,
+      workingDirectory: args.workingDirectory,
     });
 
-    return files
-      .filter((file) => this.configurationFileNames.has(path.basename(file)))
-      .toSorted((first, second) => first.localeCompare(second));
+    return {
+      files: files
+        .filter((file) => this.configurationFileNames.has(path.basename(file)))
+        .toSorted((first, second) => first.localeCompare(second)),
+      rootError: exclusions.error,
+    };
   }
 
   /** Flattens every configured limit into one row per limit, in walk order. */

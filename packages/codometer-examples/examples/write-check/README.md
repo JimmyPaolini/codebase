@@ -1,12 +1,15 @@
-# 🔀 The `--write` / `--check` matrix
+# 🔀 The `--output-*` / `--check` matrix
 
-`--write` and `--check` are independent, and no combination is inferred. This is
-the whole surface.
+`--output-json`, `--output-markdown`, and `--check` are independent, and no
+combination is inferred. Each `--output-*` flag writes its own destination —
+bare, wherever the configuration says to. This is the whole surface, and it
+replaces the single `--write` flag this schema removed.
 
 ## Run it
 
 ```bash
-codometer --directory examples/corpus --config examples/write-check/codometer.config.ts --write --check limits
+cd examples/corpus
+codometer --config ../write-check/codometer.config.ts --output-json --output-markdown --check limits
 ```
 
 ## What is here
@@ -22,8 +25,8 @@ write-check/
 | `codometer --check limits` | no | no | yes | 1 |
 | `codometer --check reports` | no | yes | no | 0 |
 | `codometer --check reports,limits` | no | yes | yes | 1 |
-| `codometer --write` | yes | no | no | 0 |
-| `codometer --write --check limits` | yes | no | yes, after writing | 1 |
+| `codometer --output-json --output-markdown` | yes | no | no | 0 |
+| `codometer --output-json --output-markdown --check limits` | yes | no | yes, after writing | 1 |
 
 Every row is run against a scratch copy of the corpus by the test beside these
 files, with the exit code above and the files on disk checked afterwards. The
@@ -37,9 +40,9 @@ A bare run reports a breach and exits 0. A breach is a finding; only
 ## Two command lines refused before anything is measured
 
 ```text
---write cannot be combined with --check reports: a report cannot be stale in
-the run that just wrote it. Drop one of them, or run --write and --check
-reports separately.
+--output-json or --output-markdown cannot be combined with --check reports: a
+report cannot be stale in the run that just wrote it. Drop --check reports, or
+run it separately from the run that writes.
 ```
 
 ```text

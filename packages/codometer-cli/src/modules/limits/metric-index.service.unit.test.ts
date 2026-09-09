@@ -62,6 +62,38 @@ describe(MetricIndexService, () => {
     expect(indexes.get("codebase")?.metrics.has("size")).toBe(false);
   });
 
+  // Spec #749 user story 16: a per-instance selector's breaches have to
+  // survive indexing, not only the count they add up to.
+  it("indexes a custom statistic's per-instance breaches alongside its count", () => {
+    const withInstances: MeasuredTarget = {
+      ...codebaseTarget,
+      language: buildCodeStatistics({
+        custom: [
+          {
+            color: "dc2626",
+            count: 1,
+            group: "conventions",
+            instances: [{ file: "src/values.yaml", line: 3, measured: 14 }],
+            label: "Overlong Comments",
+          },
+        ],
+      }),
+    };
+    const { indexes } = service.index([withInstances]);
+
+    expect(
+      indexes.get("codebase")?.instances.get("custom.Overlong Comments"),
+    ).toStrictEqual([{ file: "src/values.yaml", line: 3, measured: 14 }]);
+  });
+
+  it("indexes no instances for a counter that only counts", () => {
+    const { indexes } = service.index([codebaseTarget]);
+
+    expect(indexes.get("codebase")?.instances.has("custom.Services")).toBe(
+      false,
+    );
+  });
+
   it("marks a path two counters answer to as ambiguous", () => {
     const doubled: MeasuredTarget = {
       ...codebaseTarget,

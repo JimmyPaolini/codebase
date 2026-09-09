@@ -72,6 +72,33 @@ export function buildCustomGroup(statistics: CodeStatisticsResult): string {
 }
 
 /**
+ * Renders every custom statistic's breaching instances as its own section.
+ *
+ * Generalized past the `comment` selector, the only per-instance selector
+ * spec #749 user story 16 names today: whichever selector a `custom`
+ * statistic's `instances` came from, each one becomes a bullet naming the
+ * file and line it was found at. A statistic that only counts — no
+ * `instances` at all — or one carrying no breaches this run contributes
+ * nothing, the same instinct `buildCustomGroup` already follows when nothing
+ * belongs to a group.
+ */
+export function buildCustomStatisticInstancesSection(
+  statistics: CodeStatisticsResult,
+): string {
+  return statistics.custom
+    .filter((statistic) => (statistic.instances?.length ?? 0) > 0)
+    .map((statistic) => {
+      const bullets = (statistic.instances ?? []).map(
+        (instance) =>
+          `- \`${instance.file}:${instance.line}\` — measured ${instance.measured}`,
+      );
+
+      return buildGroup(`📝 ${statistic.label}`, bullets);
+    })
+    .join("\n\n");
+}
+
+/**
  * Build one labelled group of badges.
  *
  * The label is what makes an unqualified counter readable: `Classes` under

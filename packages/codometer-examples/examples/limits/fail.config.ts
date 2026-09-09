@@ -9,7 +9,8 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * rather than only the failure.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/limits/fail.config.ts --check limits
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../limits/fail.config.ts --check limits
  * echo $?   # 1
  * ```
  *
@@ -17,6 +18,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * is a finding, and only the flag turns a finding into a gate.
  */
 const codometerConfiguration: CodometerConfiguration = {
+  format: "markdown",
   limits: [
     {
       label: "Lines Advisory",

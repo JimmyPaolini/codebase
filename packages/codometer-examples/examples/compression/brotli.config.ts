@@ -5,12 +5,13 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * [gzip](./gzip.config.ts) is visible rather than asserted.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/compression/brotli.config.ts
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../compression/brotli.config.ts
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
-  python: { command: "uv run python" },
-  targets: [
+  format: "markdown",
+  inputs: [
     {
       analyses: ["size"],
       compression: "brotli",
@@ -19,6 +20,7 @@ const codometerConfiguration: CodometerConfiguration = {
       name: "Compiled",
     },
   ],
+  python: { command: "uv run python" },
 };
 
 export default codometerConfiguration;

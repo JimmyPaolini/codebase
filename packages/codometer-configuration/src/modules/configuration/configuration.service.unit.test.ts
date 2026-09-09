@@ -4,30 +4,39 @@ import path from "node:path";
 
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { ZodError } from "zod";
 
 import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
   ConfigurationFileNotFoundError,
   DEFAULT_CUSTOM_STATISTIC_COLORS,
-  DEFAULT_EXCLUDE_GLOBS,
+  DEFAULT_INPUT_COMPRESSION,
+  DEFAULT_INPUT_DIRECTORY,
+  DEFAULT_INPUT_NAME,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_LIMIT_SEVERITY,
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
-  DEFAULT_TARGET_COMPRESSION,
-  DEFAULT_TARGET_DIRECTORY,
+  InvalidConfigurationError,
   InvalidLimitValueError,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 
+import type { CodometerConfiguration } from "./configuration.types";
+
+/** The minimal configuration every test builds on: only `format` is required. */
+const BASE_CONFIGURATION = {
+  format: "markdown",
+} satisfies CodometerConfiguration;
+
 /** Writes a JSON configuration holding whatever the caller passes. */
-async function writeConfiguration(configuration: unknown): Promise<string> {
+async function writeConfiguration(
+  configuration: Record<string, unknown>,
+): Promise<string> {
   return writeConfigurationFile(
     "codometer.config.json",
-    JSON.stringify(configuration),
+    JSON.stringify({ ...BASE_CONFIGURATION, ...configuration }),
   );
 }
 
@@ -78,17 +87,73 @@ describe(ConfigurationService, () => {
     expect(service).toBeDefined();
   });
 
-  it("falls back to defaults when no configuration file exists", async () => {
+  // 🗂️ Format
+
+  it("resolves format from the configuration, with no code-level fallback", async () => {
+    const configurationPath = await writeConfiguration({ format: "json" });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.format).toBe("json");
+  });
+
+  it("fails to resolve when no configuration file names a format", async () => {
     const searchDirectory = await mkdtemp(
       path.join(tmpdir(), "codometer-empty-"),
     );
 
-    const configuration = await service.loadConfiguration({ searchDirectory });
+    // Written out rather than left as the schema's own issue dump: this is the
+    // first thing a reader sees when they point codometer at a directory
+    // nothing configures.
+    await expect(
+      service.loadConfiguration({ searchDirectory }),
+    ).rejects.toThrow(
+      /must name a `format` of "json" or "markdown", and nothing supplies one/,
+    );
+  });
 
-    expect(configuration.exclude).toStrictEqual([...DEFAULT_EXCLUDE_GLOBS]);
-    expect(configuration.output.json).toBeUndefined();
-    expect(configuration.output.markdown).toBeUndefined();
+  it("fails to resolve when a configuration file names no format", async () => {
+    const configurationPath = await writeConfigurationFile(
+      "codometer.config.json",
+      JSON.stringify({ exclude: ["notepads/**"] }),
+    );
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  it("rejects a format nothing renders", async () => {
+    const configurationPath = await writeConfiguration({ format: "yaml" });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  // 🌱 Defaults
+
+  it("applies defaults when a configuration names nothing beyond format", async () => {
+    const configurationPath = await writeConfiguration({});
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.exclude).toStrictEqual([
+      "**/.nx/**",
+      "**/build/**",
+      "**/coverage/**",
+      "**/dist/**",
+      "**/node_modules/**",
+    ]);
+    expect(configuration.excludeFrom).toStrictEqual([]);
+    expect(configuration.limits).toStrictEqual([]);
+    expect(configuration.outputs).toStrictEqual([]);
     expect(configuration.python.command).toBe(DEFAULT_PYTHON_COMMAND);
+    expect(configuration.defaultInput).toBeUndefined();
   });
 
   it("discovers a configuration file in the search directory", async () => {
@@ -112,10 +177,10 @@ describe(ConfigurationService, () => {
       configurationPath,
     });
 
-    expect(configuration.exclude).toStrictEqual([
-      ...DEFAULT_EXCLUDE_GLOBS,
-      "notepads/**",
-    ]);
+    expect(configuration.exclude).toContain("notepads/**");
+    expect(
+      configuration.exclude.filter((glob) => glob === "**/dist/**"),
+    ).toStrictEqual(["**/dist/**"]);
   });
 
   it("carries configured ignore files through untouched", async () => {
@@ -135,240 +200,87 @@ describe(ConfigurationService, () => {
     ]);
   });
 
-  it("defaults the ignore file list to empty", () => {
-    expect(service.resolveConfiguration({}).excludeFrom).toStrictEqual([]);
-  });
+  // 🎯 Inputs
 
-  it("defaults the markdown markers and the JSON indentation", async () => {
-    const configurationPath = await writeConfiguration({
-      output: {
-        json: { path: "output/codometer.json" },
-        markdown: { path: "README.md" },
-      },
-    });
+  it("includes the built-in codebase input when a configuration declares none", () => {
+    const configuration = service.resolveConfiguration(BASE_CONFIGURATION);
 
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.output.json).toStrictEqual({
-      indentation: DEFAULT_JSON_INDENTATION,
-      path: "output/codometer.json",
-    });
-    expect(configuration.output.markdown).toStrictEqual({
-      description: undefined,
-      endMarker: DEFAULT_MARKDOWN_END_MARKER,
-      path: "README.md",
-      render: undefined,
-      startMarker: DEFAULT_MARKDOWN_START_MARKER,
-      write: undefined,
-    });
-  });
-
-  it("keeps configured markers and indentation", async () => {
-    const configurationPath = await writeConfiguration({
-      output: {
-        json: { indentation: 4, path: "statistics.json" },
-        markdown: {
-          endMarker: "<!-- end -->",
-          path: "docs/metrics.md",
-          startMarker: "<!-- start -->",
-        },
-      },
-    });
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.output.json?.indentation).toBe(4);
-    expect(configuration.output.markdown?.startMarker).toBe("<!-- start -->");
-    expect(configuration.output.markdown?.endMarker).toBe("<!-- end -->");
-  });
-
-  it("keeps a configured description", async () => {
-    const configurationPath = await writeConfiguration({
-      output: { markdown: { description: "Measured on push.", path: "R.md" } },
-    });
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.output.markdown?.description).toBe(
-      "Measured on push.",
-    );
-  });
-
-  it("carries the render and write callbacks through unchanged", () => {
-    const render = (): string => "rendered";
-    const write = (): boolean => true;
-
-    const configuration = service.resolveConfiguration({
-      output: { markdown: { path: "README.md", render, write } },
-    });
-
-    expect(configuration.output.markdown?.render).toBe(render);
-    expect(configuration.output.markdown?.write).toBe(write);
-  });
-
-  it("leaves the callbacks unset when the configuration supplies none", () => {
-    const configuration = service.resolveConfiguration({
-      output: { markdown: { path: "README.md" } },
-    });
-
-    expect(configuration.output.markdown?.render).toBeUndefined();
-    expect(configuration.output.markdown?.write).toBeUndefined();
-  });
-
-  it("accepts markdown output that only names a write function", () => {
-    const configuration = service.resolveConfiguration({
-      output: { markdown: { write: () => true } },
-    });
-
-    expect(configuration.output.markdown?.path).toBeUndefined();
-    expect(configuration.output.markdown?.write).toBeDefined();
-  });
-
-  it("rejects markdown output naming neither a path nor a writer", async () => {
-    const configurationPath = await writeConfiguration({
-      output: { markdown: { description: "Nowhere to write this." } },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
-  });
-
-  it("rejects a render option that is not a function", async () => {
-    const configurationPath = await writeConfiguration({
-      output: { markdown: { path: "README.md", render: "not a function" } },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
-  });
-
-  it("gives every configured counter a color from the palette", async () => {
-    const configurationPath = await writeConfiguration({
-      statistics: [
-        { label: "Services", patterns: ["**/*.service.ts"] },
-        { color: "ff0000", label: "Modules", patterns: ["**/*.module.ts"] },
-      ],
-    });
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.statistics).toStrictEqual([
+    expect(configuration.inputs).toStrictEqual([
       {
-        color: DEFAULT_CUSTOM_STATISTIC_COLORS[0],
-        group: "conventions",
-        label: "Services",
-        patterns: ["**/*.service.ts"],
-        symbols: undefined,
-      },
-      {
-        color: "ff0000",
-        group: "conventions",
-        label: "Modules",
-        patterns: ["**/*.module.ts"],
-        symbols: undefined,
+        analyses: ["language"],
+        compression: DEFAULT_INPUT_COMPRESSION,
+        directory: DEFAULT_INPUT_DIRECTORY,
+        exclude: [],
+        include: ["**/*"],
+        name: DEFAULT_INPUT_NAME,
       },
     ]);
   });
 
-  // Colors run per group, so a counter added to one group cannot recolor the
-  // badges of another and rewrite a report that had not otherwise changed.
-  it("starts the palette over for each group", () => {
+  it("keeps the built-in codebase input alongside a declared one", () => {
     const configuration = service.resolveConfiguration({
-      statistics: [
-        { label: "Services", patterns: ["**/*.service.ts"] },
-        { label: "Modules", patterns: ["**/*.module.ts"] },
-        {
-          group: "typescript",
-          label: "Classes",
-          symbols: { kinds: ["class"] },
-        },
-      ],
-    });
-
-    expect(
-      configuration.statistics.map((statistic) => statistic.color),
-    ).toStrictEqual([
-      DEFAULT_CUSTOM_STATISTIC_COLORS[0],
-      DEFAULT_CUSTOM_STATISTIC_COLORS[1],
-      DEFAULT_CUSTOM_STATISTIC_COLORS[0],
-    ]);
-  });
-
-  it("keeps a symbol counter's matcher and defaults its patterns to none", () => {
-    const configuration = service.resolveConfiguration({
-      statistics: [
-        {
-          group: "typescript",
-          label: "Static Methods",
-          symbols: { kinds: ["method"], modifiers: ["static"] },
-        },
-      ],
-    });
-
-    expect(configuration.statistics[0]).toStrictEqual({
-      color: DEFAULT_CUSTOM_STATISTIC_COLORS[0],
-      group: "typescript",
-      label: "Static Methods",
-      patterns: [],
-      symbols: { kinds: ["method"], modifiers: ["static"] },
-    });
-  });
-
-  it("cycles the palette so every counter keeps a stable color", () => {
-    const paletteLength = DEFAULT_CUSTOM_STATISTIC_COLORS.length;
-    const configuration = service.resolveConfiguration({
-      statistics: Array.from(
-        { length: paletteLength + 1 },
-        (_unused, index) => ({
-          label: `counter ${index}`,
-          patterns: ["**/*.ts"],
-        }),
-      ),
-    });
-
-    expect(configuration.statistics[paletteLength]?.color).toBe(
-      DEFAULT_CUSTOM_STATISTIC_COLORS[0],
-    );
-  });
-
-  it("defaults the counters to none", () => {
-    expect(service.resolveConfiguration({}).statistics).toStrictEqual([]);
-  });
-
-  it("defaults the targets to none", () => {
-    expect(service.resolveConfiguration({}).targets).toStrictEqual([]);
-  });
-
-  it("defaults a target's compression to gzip", () => {
-    const [target] = service.resolveConfiguration({
-      targets: [
+      ...BASE_CONFIGURATION,
+      inputs: [
         { analyses: ["size"], include: ["dist/**/*.js"], name: "compiled" },
       ],
-    }).targets;
+    });
 
-    expect(target).toStrictEqual({
+    expect(configuration.inputs.map((input) => input.name)).toStrictEqual([
+      DEFAULT_INPUT_NAME,
+      "compiled",
+    ]);
+  });
+
+  it("lets an inputs entry named codebase replace the built-in one", async () => {
+    const configurationPath = await writeConfiguration({
+      inputs: [
+        {
+          analyses: ["size"],
+          include: ["dist/**/*.js"],
+          name: DEFAULT_INPUT_NAME,
+        },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.inputs).toStrictEqual([
+      {
+        analyses: ["size"],
+        compression: DEFAULT_INPUT_COMPRESSION,
+        directory: DEFAULT_INPUT_DIRECTORY,
+        exclude: [],
+        include: ["dist/**/*.js"],
+        name: DEFAULT_INPUT_NAME,
+      },
+    ]);
+  });
+
+  it("defaults an input's compression to gzip", () => {
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      inputs: [
+        { analyses: ["size"], include: ["dist/**/*.js"], name: "compiled" },
+      ],
+    });
+    const [, input] = configuration.inputs;
+
+    expect(input).toStrictEqual({
       analyses: ["size"],
-      compression: DEFAULT_TARGET_COMPRESSION,
-      directory: DEFAULT_TARGET_DIRECTORY,
+      compression: DEFAULT_INPUT_COMPRESSION,
+      directory: DEFAULT_INPUT_DIRECTORY,
       exclude: [],
       include: ["dist/**/*.js"],
       name: "compiled",
     });
   });
 
-  it("keeps a compression the target names for itself", () => {
-    const [target] = service.resolveConfiguration({
-      targets: [
+  it("keeps a compression an input names for itself", () => {
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      inputs: [
         {
           analyses: ["size"],
           compression: "none",
@@ -376,9 +288,9 @@ describe(ConfigurationService, () => {
           name: "compiled",
         },
       ],
-    }).targets;
+    });
 
-    expect(target?.compression).toBe("none");
+    expect(configuration.inputs[1]?.compression).toBe("none");
   });
 
   // Where a negation sits in the array is exactly what used to decide which
@@ -388,20 +300,23 @@ describe(ConfigurationService, () => {
     ["first", ["!dist/**/*.map.js", "dist/**/*.js", "dist/extra/**/*.js"]],
     ["between", ["dist/**/*.js", "!dist/**/*.map.js", "dist/extra/**/*.js"]],
   ])("collects a negation written %s into the exclusions", (_, include) => {
-    const [target] = service.resolveConfiguration({
-      targets: [{ analyses: ["size"], include, name: "compiled" }],
-    }).targets;
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      inputs: [{ analyses: ["size"], include, name: "compiled" }],
+    });
+    const input = configuration.inputs[1];
 
-    expect(target?.exclude).toStrictEqual(["dist/**/*.map.js"]);
-    expect(target?.include.toSorted()).toStrictEqual([
+    expect(input?.exclude).toStrictEqual(["dist/**/*.map.js"]);
+    expect(input?.include.toSorted()).toStrictEqual([
       "dist/**/*.js",
       "dist/extra/**/*.js",
     ]);
   });
 
   it("keeps a negation out of the include globs and in the exclusions", () => {
-    const [target] = service.resolveConfiguration({
-      targets: [
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      inputs: [
         {
           analyses: ["language", "size"],
           exclude: ["dist/vendor/**"],
@@ -409,20 +324,21 @@ describe(ConfigurationService, () => {
           name: "compiled",
         },
       ],
-    }).targets;
+    });
+    const input = configuration.inputs[1];
 
-    expect(target?.include).toStrictEqual(["dist/**/*.js"]);
-    expect(target?.exclude).toStrictEqual([
+    expect(input?.include).toStrictEqual(["dist/**/*.js"]);
+    expect(input?.exclude).toStrictEqual([
       "dist/**/*.map.js",
       "dist/vendor/**",
     ]);
   });
 
   // Every pattern removing files leaves no pattern that adds any, so the
-  // target would hold nothing for good — and a limit on it could never breach.
-  it("rejects a target whose include globs only ever remove files", async () => {
+  // input would hold nothing for good — and a limit on it could never breach.
+  it("rejects an input whose include globs only ever remove files", async () => {
     const configurationPath = await writeConfiguration({
-      targets: [
+      inputs: [
         {
           analyses: ["size"],
           include: ["!dist/**/*.map.js"],
@@ -431,18 +347,16 @@ describe(ConfigurationService, () => {
       ],
     });
 
-    // Zod serializes its issues into the error message, so the target's name
+    // Zod serializes its issues into the error message, so the input's name
     // arrives quoted and escaped rather than as it was written.
     await expect(
       service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(
-      /Target .*compiled.* has no include glob that adds files/,
-    );
+    ).rejects.toThrow(/Input .*compiled.* has no include glob that adds files/);
   });
 
-  it("rejects two targets sharing one name", async () => {
+  it("rejects two inputs sharing one name", async () => {
     const configurationPath = await writeConfiguration({
-      targets: [
+      inputs: [
         { analyses: ["size"], include: ["dist/**/*.js"], name: "compiled" },
         { analyses: ["size"], include: ["build/**/*.js"], name: "compiled" },
       ],
@@ -450,12 +364,12 @@ describe(ConfigurationService, () => {
 
     await expect(
       service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
   });
 
-  it("rejects a target asking for an analysis nobody runs", async () => {
+  it("rejects an input asking for an analysis nobody runs", async () => {
     const configurationPath = await writeConfiguration({
-      targets: [
+      inputs: [
         {
           analyses: ["astrology"],
           include: ["dist/**/*.js"],
@@ -466,14 +380,14 @@ describe(ConfigurationService, () => {
 
     await expect(
       service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
   });
 
   // A `!` in a list that only ever removes files has nothing to negate, and
   // silently matches no path at all rather than the one it names.
   it("rejects a negated exclude glob", async () => {
     const configurationPath = await writeConfiguration({
-      targets: [
+      inputs: [
         {
           analyses: ["size"],
           exclude: ["!dist/**/*.map.js"],
@@ -485,12 +399,12 @@ describe(ConfigurationService, () => {
 
     await expect(
       service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
   });
 
-  it("reads the targets a configuration file declares", async () => {
+  it("reads the inputs a configuration file declares", async () => {
     const configurationPath = await writeConfiguration({
-      targets: [
+      inputs: [
         {
           analyses: ["size"],
           compression: "brotli",
@@ -504,28 +418,617 @@ describe(ConfigurationService, () => {
       configurationPath,
     });
 
-    expect(configuration.targets).toStrictEqual([
+    expect(configuration.inputs[1]).toStrictEqual({
+      analyses: ["size"],
+      compression: "brotli",
+      directory: DEFAULT_INPUT_DIRECTORY,
+      exclude: [],
+      include: ["dist/**/*.js"],
+      name: "compiled",
+    });
+  });
+
+  it("defaults an input's directory to the process's working directory", async () => {
+    const configurationPath = await writeConfiguration({
+      inputs: [
+        { analyses: ["size"], include: ["dist/**/*.js"], name: "compiled" },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.inputs[1]?.directory).toBe(DEFAULT_INPUT_DIRECTORY);
+  });
+
+  it("keeps the directory an input reaches its globs from", async () => {
+    const configurationPath = await writeConfiguration({
+      inputs: [
+        {
+          analyses: ["size"],
+          directory: "../..",
+          include: ["dist/packages/logger/**/*.js"],
+          name: "compiled",
+        },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.inputs[1]?.directory).toBe("../..");
+  });
+
+  // 📤 Outputs
+
+  it("defaults the outputs to none", () => {
+    expect(
+      service.resolveConfiguration(BASE_CONFIGURATION).outputs,
+    ).toStrictEqual([]);
+  });
+
+  it("defaults the markdown markers and the JSON indentation", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        { path: "output/codometer.json", type: "json" },
+        { path: "README.md", type: "markdown" },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.outputs[0]).toStrictEqual({
+      custom: [],
+      indentation: DEFAULT_JSON_INDENTATION,
+      path: "output/codometer.json",
+      type: "json",
+    });
+    expect(configuration.outputs[1]).toStrictEqual({
+      custom: [],
+      description: undefined,
+      endMarker: DEFAULT_MARKDOWN_END_MARKER,
+      path: "README.md",
+      startMarker: DEFAULT_MARKDOWN_START_MARKER,
+      type: "markdown",
+      write: undefined,
+    });
+  });
+
+  it("keeps configured markers and indentation", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        { indentation: 4, path: "statistics.json", type: "json" },
+        {
+          endMarker: "<!-- end -->",
+          path: "docs/metrics.md",
+          startMarker: "<!-- start -->",
+          type: "markdown",
+        },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+    const [json, markdown] = configuration.outputs;
+
+    expect(json?.type === "json" && json.indentation).toBe(4);
+    expect(markdown?.type === "markdown" && markdown.startMarker).toBe(
+      "<!-- start -->",
+    );
+    expect(markdown?.type === "markdown" && markdown.endMarker).toBe(
+      "<!-- end -->",
+    );
+  });
+
+  it("keeps a configured description", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        { description: "Measured on push.", path: "R.md", type: "markdown" },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+    const [markdown] = configuration.outputs;
+
+    expect(markdown?.type === "markdown" && markdown.description).toBe(
+      "Measured on push.",
+    );
+  });
+
+  it("carries the write callback through unchanged", () => {
+    const write = (): boolean => true;
+
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      outputs: [{ path: "README.md", type: "markdown", write }],
+    });
+    const [markdown] = configuration.outputs;
+
+    expect(markdown?.type === "markdown" && markdown.write).toBe(write);
+  });
+
+  it("validates a write callback loaded from a real configuration file", async () => {
+    const configurationPath = await writeConfigurationFile(
+      "codometer.config.mjs",
+      `export default {
+        format: "markdown",
+        outputs: [{ path: "README.md", type: "markdown", write: () => true }],
+      };`,
+    );
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+    const [markdown] = configuration.outputs;
+
+    expect(markdown?.type === "markdown" && typeof markdown.write).toBe(
+      "function",
+    );
+  });
+
+  it("rejects a markdown output whose write is not a function", async () => {
+    const configurationPath = await writeConfigurationFile(
+      "codometer.config.mjs",
+      `export default {
+        format: "markdown",
+        outputs: [{ path: "README.md", type: "markdown", write: "not a function" }],
+      };`,
+    );
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  it("leaves the write callback unset when the configuration supplies none", () => {
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      outputs: [{ path: "README.md", type: "markdown" }],
+    });
+    const [markdown] = configuration.outputs;
+
+    expect(markdown?.type === "markdown" && markdown.write).toBeUndefined();
+  });
+
+  it("accepts markdown output that only names a write function", () => {
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      outputs: [{ type: "markdown", write: () => true }],
+    });
+    const [markdown] = configuration.outputs;
+
+    expect(markdown?.type === "markdown" && markdown.path).toBeUndefined();
+    expect(markdown?.type === "markdown" && markdown.write).toBeDefined();
+  });
+
+  it("rejects markdown output naming neither a path nor a writer", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [{ description: "Nowhere to write this.", type: "markdown" }],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  it("rejects two outputs of the same type, naming the duplicated type", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        { path: "first.json", type: "json" },
+        { path: "second.json", type: "json" },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toThrow(/more than one "json" output/);
+  });
+
+  it("rejects an output naming an unknown type", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [{ path: "codometer.yaml", type: "yaml" }],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  it("gives each output its own custom counters", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        {
+          custom: [{ label: "Services", patterns: ["**/*.service.ts"] }],
+          path: "codometer.json",
+          type: "json",
+        },
+        {
+          custom: [{ label: "Modules", patterns: ["**/*.module.ts"] }],
+          path: "README.md",
+          type: "markdown",
+        },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+    const [json, markdown] = configuration.outputs;
+
+    expect(json?.custom.map((statistic) => statistic.label)).toStrictEqual([
+      "Services",
+    ]);
+    expect(markdown?.custom.map((statistic) => statistic.label)).toStrictEqual([
+      "Modules",
+    ]);
+  });
+
+  // 🏷️ Custom statistics
+
+  it("gives every configured counter a color from the palette", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        {
+          custom: [
+            { label: "Services", patterns: ["**/*.service.ts"] },
+            {
+              color: "ff0000",
+              label: "Modules",
+              patterns: ["**/*.module.ts"],
+            },
+          ],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+    const [json] = configuration.outputs;
+
+    expect(json?.custom).toStrictEqual([
       {
-        analyses: ["size"],
-        compression: "brotli",
-        directory: DEFAULT_TARGET_DIRECTORY,
-        exclude: [],
-        include: ["dist/**/*.js"],
-        name: "compiled",
+        color: DEFAULT_CUSTOM_STATISTIC_COLORS[0],
+        comment: undefined,
+        group: "conventions",
+        label: "Services",
+        patterns: ["**/*.service.ts"],
+        symbols: undefined,
+      },
+      {
+        color: "ff0000",
+        comment: undefined,
+        group: "conventions",
+        label: "Modules",
+        patterns: ["**/*.module.ts"],
+        symbols: undefined,
       },
     ]);
   });
 
+  // Colors run per group, so a counter added to one group cannot recolor the
+  // badges of another and rewrite a report that had not otherwise changed.
+  it("starts the palette over for each group", () => {
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      outputs: [
+        {
+          custom: [
+            { label: "Services", patterns: ["**/*.service.ts"] },
+            { label: "Modules", patterns: ["**/*.module.ts"] },
+            {
+              group: "typescript",
+              label: "Classes",
+              symbols: { kinds: ["class"] },
+            },
+          ],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+    const [json] = configuration.outputs;
+
+    expect(json?.custom.map((statistic) => statistic.color)).toStrictEqual([
+      DEFAULT_CUSTOM_STATISTIC_COLORS[0],
+      DEFAULT_CUSTOM_STATISTIC_COLORS[1],
+      DEFAULT_CUSTOM_STATISTIC_COLORS[0],
+    ]);
+  });
+
+  it("keeps a symbol counter's matcher and defaults its patterns to none", () => {
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      outputs: [
+        {
+          custom: [
+            {
+              group: "typescript",
+              label: "Static Methods",
+              symbols: { kinds: ["method"], modifiers: ["static"] },
+            },
+          ],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+    const [json] = configuration.outputs;
+
+    expect(json?.custom[0]).toStrictEqual({
+      color: DEFAULT_CUSTOM_STATISTIC_COLORS[0],
+      comment: undefined,
+      group: "typescript",
+      label: "Static Methods",
+      patterns: [],
+      symbols: { kinds: ["method"], modifiers: ["static"] },
+    });
+  });
+
+  it("rejects a counter with no patterns", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        {
+          custom: [{ label: "Nothing", patterns: [] }],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  // Neither matcher means a permanent zero, which is worth failing over
+  // rather than rendering as though it had been measured.
+  it("rejects a counter that matches nothing at all", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        {
+          custom: [{ label: "Nothing" }],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  it("rejects a counter naming a group that is never rendered", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        {
+          custom: [
+            { group: "notebooks", label: "Classes", patterns: ["**/*.ts"] },
+          ],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  it("rejects a symbol matcher asking for an unknown declaration kind", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        {
+          custom: [{ label: "Sigils", symbols: { kinds: ["sigil"] } }],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  // 💬 Comment selector
+
+  it("round-trips a comment selector through the schema", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        {
+          custom: [
+            {
+              comment: { language: "yaml", maximumWords: 128 },
+              label: "YAML Comment Budget",
+            },
+          ],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+    const [json] = configuration.outputs;
+
+    expect(json?.custom[0]?.comment).toStrictEqual({
+      kind: undefined,
+      language: "yaml",
+      maximumCharacters: undefined,
+      maximumLines: undefined,
+      maximumWords: 128,
+      severity: DEFAULT_LIMIT_SEVERITY,
+    });
+  });
+
+  it("accepts a comment selector naming a documentation kind and no language", () => {
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      outputs: [
+        {
+          custom: [
+            {
+              comment: { kind: "class", maximumLines: 24, severity: "warn" },
+              label: "Class Comment Budget",
+            },
+          ],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+    const [json] = configuration.outputs;
+
+    expect(json?.custom[0]?.comment).toStrictEqual({
+      kind: "class",
+      language: undefined,
+      maximumCharacters: undefined,
+      maximumLines: 24,
+      maximumWords: undefined,
+      severity: "warn",
+    });
+  });
+
+  it("leaves comment undefined for a counter naming none", () => {
+    const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
+      outputs: [
+        {
+          custom: [{ label: "Services", patterns: ["**/*.service.ts"] }],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+    const [json] = configuration.outputs;
+
+    expect(json?.custom[0]?.comment).toBeUndefined();
+  });
+
+  it("rejects a comment selector naming an unknown language", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        {
+          custom: [
+            { comment: { language: "rust" }, label: "Rust Comment Budget" },
+          ],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  it("rejects a comment selector naming an unknown declaration kind", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        {
+          custom: [
+            { comment: { kind: "sigil" }, label: "Sigil Comment Budget" },
+          ],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  it("no longer accepts a top-level comments or documentation block", async () => {
+    const configurationPath = await writeConfiguration({
+      comments: { maximumWords: 128 },
+      documentation: { maximumLines: 6 },
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration).not.toHaveProperty("comments");
+    expect(configuration).not.toHaveProperty("documentation");
+  });
+
+  it("no longer accepts a per-language comments override", async () => {
+    const configurationPath = await writeConfiguration({
+      css: { comments: { maximumWords: 40 } },
+      shell: { comments: { maximumWords: 256 } },
+      typescript: { comments: { maximumWords: 40 } },
+      yaml: { comments: { maximumWords: 128 } },
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration).not.toHaveProperty("css");
+    expect(configuration).not.toHaveProperty("shell");
+    expect(configuration).not.toHaveProperty("typescript");
+    expect(configuration).not.toHaveProperty("yaml");
+  });
+
+  // 🚫 Config-as-function
+
+  it("no longer calls a configuration exported as a function", async () => {
+    const { nestedDirectory } = await writeConfigurationTree(
+      "codometer.config.cjs",
+      `module.exports = (context) => ({
+        exclude: [context.configurationDirectory, context.directory],
+        format: "markdown",
+      });`,
+    );
+
+    // A factory export is not an object the schema recognizes, so it is
+    // treated the same as any other export that is not a plain object — one
+    // naming no format — and fails to resolve rather than being invoked.
+    await expect(
+      service.loadConfiguration({ searchDirectory: nestedDirectory }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  it("no longer awaits a configuration factory that answers with a promise", async () => {
+    const configurationPath = await writeConfigurationFile(
+      "codometer.config.cjs",
+      'module.exports = async () => ({ format: "markdown", python: { command: "awaited python" } });',
+    );
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
+  // 🎯 Limits
+
   it("defaults the limits and the default target to none", () => {
-    const configuration = service.resolveConfiguration({});
+    const configuration = service.resolveConfiguration(BASE_CONFIGURATION);
 
     expect(configuration.limits).toStrictEqual([]);
-    expect(configuration.defaultTarget).toBeUndefined();
+    expect(configuration.defaultInput).toBeUndefined();
   });
 
   it("reads the default target a configuration file names", async () => {
     const configurationPath = await writeConfiguration({
-      defaultTarget: "codebase",
+      defaultInput: "codebase",
       limits: [{ metric: "typescript.interfaces", value: 500 }],
     });
 
@@ -533,23 +1036,12 @@ describe(ConfigurationService, () => {
       configurationPath,
     });
 
-    expect(configuration.defaultTarget).toBe("codebase");
-  });
-
-  it("rejects a declared target called what the codebase is called", async () => {
-    const configurationPath = await writeConfiguration({
-      targets: [
-        { analyses: ["size"], include: ["dist/**/*.js"], name: "codebase" },
-      ],
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
+    expect(configuration.defaultInput).toBe("codebase");
   });
 
   it("defaults a limit's severity to failing and leaves its label unset", () => {
     const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
       limits: [{ metric: "codebase.linesOfCode", value: 100_000 }],
     });
 
@@ -565,6 +1057,7 @@ describe(ConfigurationService, () => {
 
   it("keeps a limit's declared severity and label", () => {
     const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
       limits: [
         {
           label: "Compiled bundle",
@@ -589,6 +1082,7 @@ describe(ConfigurationService, () => {
   // one that would stop a change, so one metric may carry both.
   it("accepts two limits naming one metric", () => {
     const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
       limits: [
         { metric: "compiled.size", severity: "warn", value: "8 KB" },
         { metric: "compiled.size", value: "10 KB" },
@@ -618,6 +1112,7 @@ describe(ConfigurationService, () => {
     ["  8 KB  ", 8000],
   ])("reads %s as %i", (value, expected) => {
     const configuration = service.resolveConfiguration({
+      ...BASE_CONFIGURATION,
       limits: [{ metric: "compiled.size", value }],
     });
 
@@ -650,6 +1145,7 @@ describe(ConfigurationService, () => {
   ])("refuses to read %s as a limit", (value) => {
     expect(() =>
       service.resolveConfiguration({
+        ...BASE_CONFIGURATION,
         limits: [{ metric: "compiled.size", value }],
       }),
     ).toThrow(InvalidLimitValueError);
@@ -662,7 +1158,7 @@ describe(ConfigurationService, () => {
 
     await expect(
       service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
   });
 
   it("rejects a limit naming no metric", async () => {
@@ -672,59 +1168,18 @@ describe(ConfigurationService, () => {
 
     await expect(
       service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
   });
 
-  it("rejects a counter with no patterns", async () => {
-    const configurationPath = await writeConfiguration({
-      statistics: [{ label: "Nothing", patterns: [] }],
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
-  });
-
-  // Neither matcher means a permanent zero, which is worth failing over
-  // rather than rendering as though it had been measured.
-  it("rejects a counter that matches neither files nor symbols", async () => {
-    const configurationPath = await writeConfiguration({
-      statistics: [{ label: "Nothing" }],
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
-  });
-
-  it("rejects a counter naming a group that is never rendered", async () => {
-    const configurationPath = await writeConfiguration({
-      statistics: [
-        { group: "notebooks", label: "Classes", patterns: ["**/*.ts"] },
-      ],
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
-  });
-
-  it("rejects a symbol matcher asking for an unknown declaration kind", async () => {
-    const configurationPath = await writeConfiguration({
-      statistics: [{ label: "Sigils", symbols: { kinds: ["sigil"] } }],
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
-  });
+  // 📄 Loading mechanics
 
   it("reads a JSONC configuration with comments", async () => {
     const configurationPath = await writeConfigurationFile(
       "codometer.config.jsonc",
       `{
         // Scratch notes are prose, not source.
-        "exclude": ["notepads/**"]
+        "exclude": ["notepads/**"],
+        "format": "markdown",
       }`,
     );
 
@@ -739,11 +1194,13 @@ describe(ConfigurationService, () => {
     const configurationPath = await writeConfigurationFile(
       "codometer.config.ts",
       `interface Configuration {
-        output: { markdown: { path: string } };
+        format: "markdown";
+        outputs: { path: string; type: "markdown" }[];
       }
 
       const configuration: Configuration = {
-        output: { markdown: { path: "README.md" } },
+        format: "markdown",
+        outputs: [{ path: "README.md", type: "markdown" }],
       };
 
       export default configuration;
@@ -753,14 +1210,15 @@ describe(ConfigurationService, () => {
     const configuration = await service.loadConfiguration({
       configurationPath,
     });
+    const [markdown] = configuration.outputs;
 
-    expect(configuration.output.markdown?.path).toBe("README.md");
+    expect(markdown?.type === "markdown" && markdown.path).toBe("README.md");
   });
 
   it("unwraps a CommonJS module's nested default export", async () => {
     const configurationPath = await writeConfigurationFile(
       "codometer.config.cjs",
-      'module.exports = { default: { python: { command: "python3.13" } } };',
+      'module.exports = { default: { format: "markdown", python: { command: "python3.13" } } };',
     );
 
     const configuration = await service.loadConfiguration({
@@ -785,17 +1243,15 @@ describe(ConfigurationService, () => {
     cwdSpy.mockRestore();
   });
 
-  it("falls back to defaults when the module exports no object", async () => {
+  it("fails to resolve when the module exports no object", async () => {
     const configurationPath = await writeConfigurationFile(
       "codometer.config.ts",
       "export default 42;",
     );
 
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.exclude).toStrictEqual([...DEFAULT_EXCLUDE_GLOBS]);
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
   });
 
   it("rejects a malformed configuration", async () => {
@@ -803,7 +1259,7 @@ describe(ConfigurationService, () => {
 
     await expect(
       service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
   });
 
   it("throws a typed error for an unsupported extension", async () => {
@@ -840,63 +1296,13 @@ describe(ConfigurationService, () => {
     cwdSpy.mockRestore();
   });
 
-  it("resolves a configuration path relative to the repository root", async () => {
-    const configuration = await service.loadConfiguration({
-      configurationPath: "configuration/codometer.config.ts",
-    });
-
-    // Asserted on a setting this repository's configuration states however it
-    // is run: the file is a factory, and which folder it was pointed at is
-    // what decides the rest of what it says.
-    expect(configuration.python.command).toBe("uv run python");
-  });
-
-  it("calls a configuration exported as a function with the run context", async () => {
-    const { nestedDirectory, rootDirectory } = await writeConfigurationTree(
-      "codometer.config.cjs",
-      `module.exports = (context) => ({
-        exclude: [context.configurationDirectory, context.directory],
-      });`,
-    );
-
-    const configuration = await service.loadConfiguration({
-      searchDirectory: nestedDirectory,
-    });
-
-    expect(configuration.exclude).toContain(rootDirectory);
-    expect(configuration.exclude).toContain(nestedDirectory);
-  });
-
-  it("unwraps a CommonJS module's nested default factory", async () => {
-    const configurationPath = await writeConfigurationFile(
-      "codometer.config.cjs",
-      'module.exports = { default: () => ({ python: { command: "nested python" } }) };',
-    );
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.python.command).toBe("nested python");
-  });
-
-  it("awaits a configuration factory that answers with a promise", async () => {
-    const configurationPath = await writeConfigurationFile(
-      "codometer.config.cjs",
-      'module.exports = async () => ({ python: { command: "awaited python" } });',
-    );
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.python.command).toBe("awaited python");
-  });
-
   it("measures a folder carrying no configuration through its nearest ancestor's", async () => {
     const { nestedDirectory } = await writeConfigurationTree(
       "codometer.config.json",
-      JSON.stringify({ python: { command: "inherited python" } }),
+      JSON.stringify({
+        format: "markdown",
+        python: { command: "inherited python" },
+      }),
     );
 
     const configuration = await service.loadConfiguration({
@@ -911,13 +1317,14 @@ describe(ConfigurationService, () => {
       "codometer.config.json",
       JSON.stringify({
         exclude: ["ancestor/**"],
+        format: "markdown",
         python: { command: "ancestor python" },
       }),
     );
 
     await writeFile(
       path.join(nestedDirectory, "codometer.config.json"),
-      JSON.stringify({ exclude: ["folder/**"] }),
+      JSON.stringify({ exclude: ["folder/**"], format: "markdown" }),
       "utf8",
     );
 
@@ -930,190 +1337,5 @@ describe(ConfigurationService, () => {
     expect(configuration.exclude).toContain("folder/**");
     expect(configuration.exclude).not.toContain("ancestor/**");
     expect(configuration.python.command).toBe(DEFAULT_PYTHON_COMMAND);
-  });
-
-  it("defaults a target's directory to the measured one", async () => {
-    const configurationPath = await writeConfiguration({
-      targets: [
-        { analyses: ["size"], include: ["dist/**/*.js"], name: "compiled" },
-      ],
-    });
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.targets[0]?.directory).toBe(DEFAULT_TARGET_DIRECTORY);
-  });
-
-  it("keeps the directory a target reaches its globs from", async () => {
-    const configurationPath = await writeConfiguration({
-      targets: [
-        {
-          analyses: ["size"],
-          directory: "../..",
-          include: ["dist/packages/logger/**/*.js"],
-          name: "compiled",
-        },
-      ],
-    });
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.targets[0]?.directory).toBe("../..");
-  });
-
-  it("leaves yaml comments undefined when unconfigured, so the check is off", () => {
-    const configuration = service.resolveConfiguration({});
-
-    expect(configuration.yaml.comments).toBeUndefined();
-  });
-
-  it("invents no maximum a configuration left out", () => {
-    const configuration = service.resolveConfiguration({
-      yaml: { comments: { maximumWords: 128 } },
-    });
-
-    // A budget nobody wrote is one nobody chose. Only `severity` defaults.
-    expect(configuration.yaml.comments).toStrictEqual({
-      file: undefined,
-      maximumCharacters: undefined,
-      maximumLines: undefined,
-      maximumWords: 128,
-      severity: DEFAULT_LIMIT_SEVERITY,
-    });
-  });
-
-  it("keeps every yaml comment field a configuration sets explicitly", () => {
-    const configuration = service.resolveConfiguration({
-      yaml: {
-        comments: {
-          maximumCharacters: 900,
-          maximumLines: 24,
-          maximumWords: 64,
-          severity: "warn",
-        },
-      },
-    });
-
-    expect(configuration.yaml.comments).toStrictEqual({
-      file: undefined,
-      maximumCharacters: 900,
-      maximumLines: 24,
-      maximumWords: 64,
-      severity: "warn",
-    });
-  });
-
-  it("merges a language's file budget over the top-level one", () => {
-    const configuration = service.resolveConfiguration({
-      comments: { file: { maximumLines: 400 }, maximumWords: 128 },
-      shell: { comments: { file: { maximumWords: 900 } } },
-    });
-
-    // The language names only a word budget for the file, so it keeps the line
-    // budget written at the top level — the same merge the block maxima get.
-    expect(configuration.shell.comments?.file).toStrictEqual({
-      maximumCharacters: undefined,
-      maximumLines: 400,
-      maximumWords: 900,
-      severity: DEFAULT_LIMIT_SEVERITY,
-    });
-    expect(configuration.yaml.comments?.file).toStrictEqual({
-      maximumCharacters: undefined,
-      maximumLines: 400,
-      maximumWords: undefined,
-      severity: DEFAULT_LIMIT_SEVERITY,
-    });
-  });
-
-  it("leaves documentation undefined when unconfigured, so the check is off", () => {
-    const configuration = service.resolveConfiguration({});
-
-    expect(configuration.documentation).toBeUndefined();
-  });
-
-  it("defaults documentation fields a configuration leaves out", () => {
-    const configuration = service.resolveConfiguration({
-      documentation: { maximumLines: 12 },
-    });
-
-    expect(configuration.documentation).toStrictEqual({
-      kinds: {},
-      maximumCharacters: undefined,
-      maximumLines: 12,
-      maximumWords: undefined,
-      severity: DEFAULT_LIMIT_SEVERITY,
-    });
-  });
-
-  it("merges a documentation kind over the block's own maxima", () => {
-    const configuration = service.resolveConfiguration({
-      documentation: {
-        kinds: { class: { maximumLines: 24 }, property: { maximumWords: 20 } },
-        maximumLines: 6,
-        maximumWords: 60,
-        severity: "warn",
-      },
-    });
-
-    // `class` names only lines, so it keeps the block's word budget; the
-    // entries are merged field by field rather than replacing it.
-    expect(configuration.documentation?.kinds).toStrictEqual({
-      class: {
-        maximumCharacters: undefined,
-        maximumLines: 24,
-        maximumWords: 60,
-        severity: "warn",
-      },
-      property: {
-        maximumCharacters: undefined,
-        maximumLines: 6,
-        maximumWords: 20,
-        severity: "warn",
-      },
-    });
-  });
-
-  it("rejects a documentation kind that names no declaration kind", async () => {
-    const configurationPath = await writeConfiguration({
-      documentation: { kinds: { sigil: { maximumLines: 10 } } },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
-  });
-
-  it("rejects a non-integer documentation kind limit", async () => {
-    const configurationPath = await writeConfiguration({
-      documentation: { kinds: { class: { maximumLines: 10.5 } } },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
-  });
-
-  it("rejects a zero documentation kind limit", async () => {
-    const configurationPath = await writeConfiguration({
-      documentation: { kinds: { class: { maximumLines: 0 } } },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
-  });
-
-  it("rejects a negative documentation default limit", async () => {
-    const configurationPath = await writeConfiguration({
-      documentation: { maximumLines: -1 },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toBeInstanceOf(ZodError);
   });
 });

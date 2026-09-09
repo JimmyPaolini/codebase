@@ -50,31 +50,17 @@ const compiledTarget: MeasuredTarget = {
 /** Builds a resolved configuration carrying nothing but its limits. */
 function buildConfiguration(
   limits: ResolvedCodometerLimit[],
-  defaultTarget?: string,
+  defaultInput?: string,
 ): ResolvedCodometerConfiguration {
   return {
-    css: { comments: undefined },
-    defaultTarget,
-    documentation: {
-      kinds: {},
-      maximumCharacters: undefined,
-      maximumLines: 6,
-      maximumWords: undefined,
-      severity: "fail",
-    },
+    defaultInput,
     exclude: [],
     excludeFrom: [],
-    hcl: { comments: undefined },
+    format: "json",
+    inputs: [],
     limits,
-    output: { json: undefined, markdown: undefined },
-    python: { command: "python3", comments: undefined },
-    shell: { comments: undefined },
-    sql: { comments: undefined },
-    statistics: [],
-    targets: [],
-    toml: { comments: undefined },
-    typescript: { comments: undefined },
-    yaml: { comments: undefined },
+    outputs: [],
+    python: { command: "python3" },
   };
 }
 
@@ -102,10 +88,10 @@ describe(LimitsService, () => {
   function evaluate(
     limit: ResolvedCodometerLimit,
     targets: MeasuredTarget[] = [codebaseTarget, compiledTarget],
-    defaultTarget?: string,
+    defaultInput?: string,
   ): LimitsEvaluation {
     return service.evaluate({
-      configuration: buildConfiguration([limit], defaultTarget),
+      configuration: buildConfiguration([limit], defaultInput),
       indexes: index(targets),
     });
   }
@@ -315,7 +301,7 @@ describe(LimitsService, () => {
     expect(
       evaluate(buildLimit("typescript.interfaces", 10), [codebaseTarget], "web")
         .failures[0]?.reason,
-    ).toMatch(/default target "web" was never measured/);
+    ).toMatch(/default input "web" was never measured/);
   });
 
   // One run has to name every limit that cannot be bound. Reporting only the

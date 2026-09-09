@@ -17,11 +17,7 @@ import { SqlCommentsService } from "./sql-comments.service";
 import { TypescriptCommentsService } from "./typescript-comments.service";
 import { YamlCommentsService } from "./yaml-comments.service";
 
-import type { LanguageCommentFiles } from "./comments.types";
-import type {
-  ResolvedCodometerCommentsConfiguration,
-  ResolvedCodometerConfiguration,
-} from "@codometer/configuration";
+import type { CommentBudget, LanguageCommentFiles } from "./comments.types";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
 describe(LanguageCommentsService, () => {
@@ -29,7 +25,7 @@ describe(LanguageCommentsService, () => {
   let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
-  const budget: ResolvedCodometerCommentsConfiguration = {
+  const budget: CommentBudget = {
     maximumCharacters: undefined,
     maximumLines: undefined,
     maximumWords: 3,
@@ -64,33 +60,6 @@ describe(LanguageCommentsService, () => {
     return workingDirectory;
   }
 
-  /** A resolved configuration whose named languages carry the budget. */
-  function configuration(
-    languages: (
-      | "css"
-      | "hcl"
-      | "python"
-      | "shell"
-      | "sql"
-      | "toml"
-      | "typescript"
-      | "yaml"
-    )[],
-  ): ResolvedCodometerConfiguration {
-    return createMock<ResolvedCodometerConfiguration>({
-      css: { comments: languages.includes("css") ? budget : undefined },
-      hcl: { comments: languages.includes("hcl") ? budget : undefined },
-      python: { comments: languages.includes("python") ? budget : undefined },
-      shell: { comments: languages.includes("shell") ? budget : undefined },
-      sql: { comments: languages.includes("sql") ? budget : undefined },
-      toml: { comments: languages.includes("toml") ? budget : undefined },
-      typescript: {
-        comments: languages.includes("typescript") ? budget : undefined,
-      },
-      yaml: { comments: languages.includes("yaml") ? budget : undefined },
-    });
-  }
-
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
@@ -120,17 +89,17 @@ describe(LanguageCommentsService, () => {
     expect(service).toBeDefined();
   });
 
-  it("measures nothing when no language declares a budget", () => {
+  it("measures nothing when no counter was declared", () => {
     const workingDirectory = writeFiles({ "a.sh": "# one two three four\n" });
 
     expect(
       service.measure({
-        configuration: configuration([]),
+        counters: [],
         files: discovered({ shellFiles: ["a.sh"] }),
         pythonComments: [],
         workingDirectory,
       }),
-    ).toStrictEqual([]);
+    ).toStrictEqual({});
   });
 
   it.each<{
@@ -158,19 +127,19 @@ describe(LanguageCommentsService, () => {
       language: "yaml",
     },
   ])(
-    "measures $language comment blocks when it declares a budget",
+    "measures $language comment blocks against a counter's own budget",
     ({ content, extension, files, language }) => {
       const workingDirectory = writeFiles({ [`a.${extension}`]: content });
 
-      const measurements = service.measure({
-        configuration: configuration([language]),
+      const results = service.measure({
+        counters: [{ budget, label: "prose", language }],
         files: discovered(files),
         pythonComments: [],
         workingDirectory,
       });
 
-      expect(measurements).toHaveLength(1);
-      expect(measurements[0]).toMatchObject({
+      expect(results["prose"]).toHaveLength(1);
+      expect(results["prose"]?.[0]).toMatchObject({
         breached: true,
         file: `a.${extension}`,
         measured: 4,
@@ -210,19 +179,19 @@ describe(LanguageCommentsService, () => {
       language: "typescript",
     },
   ])(
-    "measures $language comment blocks when it declares a budget",
+    "measures $language comment blocks against a counter's own budget",
     ({ content, extension, files, language }) => {
       const workingDirectory = writeFiles({ [`a.${extension}`]: content });
 
-      const measurements = service.measure({
-        configuration: configuration([language]),
+      const results = service.measure({
+        counters: [{ budget, label: "prose", language }],
         files: discovered(files),
         pythonComments: [],
         workingDirectory,
       });
 
-      expect(measurements).toHaveLength(1);
-      expect(measurements[0]).toMatchObject({
+      expect(results["prose"]).toHaveLength(1);
+      expect(results["prose"]?.[0]).toMatchObject({
         breached: true,
         file: `a.${extension}`,
         measured: 4,
@@ -231,11 +200,49 @@ describe(LanguageCommentsService, () => {
     },
   );
 
+  it("measures every language at once when a counter names none", () => {
+    const workingDirectory = writeFiles({
+      "a.sh": "# one two three four\n",
+      "a.yaml": "# one two three four\n",
+    });
+
+    const results = service.measure({
+      counters: [{ budget, label: "prose", language: undefined }],
+      files: discovered({ shellFiles: ["a.sh"], yamlFiles: ["a.yaml"] }),
+      pythonComments: [],
+      workingDirectory,
+    });
+
+    expect(
+      results["prose"]?.map((entry) => entry.file).toSorted(),
+    ).toStrictEqual(["a.sh", "a.yaml"]);
+  });
+
+  it("keeps two counters' results apart, even over the same language", () => {
+    const workingDirectory = writeFiles({ "a.sh": "# one two three four\n" });
+    const strict: CommentBudget = { ...budget, maximumWords: 1 };
+
+    const results = service.measure({
+      counters: [
+        { budget, label: "loose", language: "shell" },
+        { budget: strict, label: "strict", language: "shell" },
+      ],
+      files: discovered({ shellFiles: ["a.sh"] }),
+      pythonComments: [],
+      workingDirectory,
+    });
+
+    expect(results["loose"]).toHaveLength(1);
+    expect(results["strict"]).toHaveLength(1);
+    expect(results["loose"]?.[0]?.limit).toBe(3);
+    expect(results["strict"]?.[0]?.limit).toBe(1);
+  });
+
   it("measures the Python comments its own analyzer already found", () => {
     // Python is read in Python: `tokenize` runs in the subprocess and the
     // tokens arrive here, so nothing re-reads the `.py` file.
-    const measurements = service.measure({
-      configuration: configuration(["python"]),
+    const results = service.measure({
+      counters: [{ budget, label: "prose", language: "python" }],
       files: discovered({}),
       pythonComments: [
         {
@@ -266,30 +273,15 @@ describe(LanguageCommentsService, () => {
     // Adjacent lines in one file join; a different file never joins, whatever
     // the line numbers say.
     expect(
-      measurements.map((entry) => [entry.file, entry.line, entry.measured]),
+      results["prose"]?.map((entry) => [
+        entry.file,
+        entry.line,
+        entry.measured,
+      ]),
     ).toStrictEqual([
       ["a.py", 1, 4],
       ["b.py", 9, 1],
     ]);
-  });
-
-  it("measures no Python comments when Python declares no budget", () => {
-    expect(
-      service.measure({
-        configuration: configuration([]),
-        files: discovered({}),
-        pythonComments: [
-          {
-            file: "a.py",
-            line: 1,
-            ownLine: true,
-            prose: "one two three four",
-            source: "# one two three four",
-          },
-        ],
-        workingDirectory: "/repo",
-      }),
-    ).toStrictEqual([]);
   });
 
   it("reads YAML with the tokenizer rather than the line scanner", () => {
@@ -301,23 +293,23 @@ describe(LanguageCommentsService, () => {
     // tokenizer is what YAML is routed through.
     expect(
       service.measure({
-        configuration: configuration(["yaml"]),
+        counters: [{ budget, label: "prose", language: "yaml" }],
         files: discovered({ yamlFiles: ["a.yaml"] }),
         pythonComments: [],
         workingDirectory,
-      }),
+      })["prose"],
     ).toStrictEqual([]);
   });
 
   it("skips a file it cannot read and warns", () => {
-    const measurements = service.measure({
-      configuration: configuration(["shell"]),
+    const results = service.measure({
+      counters: [{ budget, label: "prose", language: "shell" }],
       files: discovered({ shellFiles: ["missing.sh"] }),
       pythonComments: [],
       workingDirectory: "/repo",
     });
 
-    expect(measurements).toStrictEqual([]);
+    expect(results["prose"]).toStrictEqual([]);
     expect(loggerService.warn).toHaveBeenCalledWith(
       "🗒️ Skipped comment measurement",
       undefined,

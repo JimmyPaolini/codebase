@@ -288,11 +288,17 @@ only what is true of this workspace in particular.
   `nx run callidescope-cli:start -- limits --config configuration/callidescope.config.ts`.
   `affirmations`, `callidescope-examples`, and the workspace root carry no gate,
   and each `project.json` target description says why.
-- **Comment blocks are capped at 128 words**, declared in
-  [`configuration/codometer.config.ts`](configuration/codometer.config.ts) and
-  reaching every language codometer measures comments in. Shell is looser at
-  256, because `scripts/shell/` holds command references whose whole body is one
-  block documenting flags.
+- **Comment blocks are capped at 128 words**, reaching every language
+  codometer measures comments in. Shell is looser at 256, because
+  `scripts/shell/` holds command references whose whole body is one block
+  documenting flags. A budget is an ordinary custom statistic — a `comment`
+  selector counting the blocks that broke its own maxima — gated by an
+  ordinary `limits[]` entry against that statistic's count, the same
+  consolidation every other counter gets. A `comment` selector carries no
+  inheritance, so [`configuration/codometer.config.ts`](configuration/codometer.config.ts)
+  writes one selector per language rather than a shared default with a shell
+  override; a language codometer starts measuring comments in is not gated
+  here until that enumeration is updated to cover it.
 - **`codependix --check boundaries` complements `@nx/enforce-module-boundaries`
   rather than replacing it** — it states the rules an import-statement linter
   structurally cannot, and ESLint reports at the import site with a line number,
@@ -629,10 +635,15 @@ When a file nears 512 lines, split it along the module file suffixes (`*.types.t
 [`configuration/codometer.config.ts`](configuration/codometer.config.ts) and
 enforced by codometer rather than ESLint, so a breach names a file and line
 rather than a rule. Shell is looser because `scripts/shell/` holds command
-references whose whole body is one block documenting flags. The
+references whose whole body is one block documenting flags. The budget is per
+block, never file-wide, and `maximumCharacters`, `maximumLines`, and
+`maximumWords` are separate fields rather than one steered by a unit — nothing
+is defaulted to a number, so a budget nobody wrote is one nobody chose. A
+`comment` selector can also narrow to a documented declaration's JSDoc-style
+comment by `kind`, but this repository declares none: gating this prose is not
+a reason to start gating every JSDoc comment against the same budget. The
 [codometer-configure](.agents/skills/codometer-configure/SKILL.md) skill covers
-how a block is delimited, which languages are measured how accurately, and the
-`documentation` budget this repository leaves unset;
+how a block is delimited and which languages are measured how accurately;
 [codometer-triage](.agents/skills/codometer-triage/SKILL.md) covers a breach.
 
 **Compiled size is gated per project** by each `codometer.config.ts`, and
@@ -807,8 +818,10 @@ pnpm exec nx run codebase:install-skills
 ```
 
 Five things reach `.agents/` and so must skip the **vendored** skills while
-still covering this repository's own: `prettier` scans `.`, `codometer` scans
-`--directory .`, GitHub Linguist reads every committed file (one vendored skill
+still covering this repository's own: `prettier` scans `.`, `codometer`
+measures the process's working directory by default and reads
+`configuration/.codometerignore`, GitHub Linguist reads every committed file
+(one vendored skill
 ships half a megabyte of bundled browser JavaScript that would otherwise
 dominate the language bar), and `cspell` and `markdownlint` both reach
 `.agents/` because this repository's own skills are documentation and are held

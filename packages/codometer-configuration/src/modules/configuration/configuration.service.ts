@@ -1,19 +1,22 @@
 import { Injectable } from "@nestjs/common";
+import { z } from "zod";
 
 import { ConfigurationLoaderService } from "./configuration-loader.service";
+import { codometerConfigurationSchema } from "./configuration-schema.constants";
 import {
-  CODOMETER_SYMBOL_KINDS,
-  codometerConfigurationSchema,
+  DEFAULT_CODEBASE_INPUT,
   DEFAULT_CUSTOM_STATISTIC_COLORS,
   DEFAULT_CUSTOM_STATISTIC_GROUP,
   DEFAULT_EXCLUDE_GLOBS,
+  DEFAULT_INPUT_COMPRESSION,
+  DEFAULT_INPUT_DIRECTORY,
+  DEFAULT_INPUT_NAME,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_LIMIT_SEVERITY,
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
-  DEFAULT_TARGET_COMPRESSION,
-  DEFAULT_TARGET_DIRECTORY,
+  InvalidConfigurationError,
   InvalidLimitValueError,
   LIMIT_UNIT_MULTIPLIERS,
   LIMIT_VALUE_PATTERN,
@@ -21,30 +24,24 @@ import {
 } from "./configuration.constants";
 
 import type {
-  CodometerCommentsConfiguration,
   CodometerConfiguration,
   CodometerCustomStatistic,
-  CodometerDocumentationConfiguration,
-  CodometerLanguageCommentsConfiguration,
+  CodometerInput,
+  CodometerJsonOutput,
   CodometerLimit,
-  CodometerSymbolKind,
-  CodometerTarget,
+  CodometerMarkdownOutput,
+  CodometerOutput,
   LoadConfigurationArguments,
 } from "./configuration.types";
 import type {
-  CodometerOutputConfiguration,
-  ResolvedCodometerJsonOutputConfiguration,
-  ResolvedCodometerMarkdownOutputConfiguration,
-} from "./output.types";
-import type {
   LoadedConfiguration,
-  ResolvedCodometerCommentsConfiguration,
   ResolvedCodometerConfiguration,
   ResolvedCodometerCustomStatistic,
-  ResolvedCodometerDocumentationConfiguration,
-  ResolvedCodometerLanguageCommentsConfiguration,
+  ResolvedCodometerInput,
+  ResolvedCodometerJsonOutput,
   ResolvedCodometerLimit,
-  ResolvedCodometerTarget,
+  ResolvedCodometerMarkdownOutput,
+  ResolvedCodometerOutput,
 } from "./resolved.types";
 import type { CodometerStatisticGroup } from "./statistics.types";
 
@@ -69,6 +66,23 @@ export class ConfigurationService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Validates a configuration object, refusing it in prose rather than in JSON.
+   *
+   * Every load goes through here — a file's contents and the empty object a
+   * directory with no configuration file stands in with alike — so the two
+   * fail identically and a reader gets the same sentence either way.
+   */
+  private parseConfiguration(configuration: unknown): CodometerConfiguration {
+    const parsed = codometerConfigurationSchema.safeParse(configuration);
+
+    if (!parsed.success) {
+      throw new InvalidConfigurationError(z.prettifyError(parsed.error));
+    }
+
+    return parsed.data;
+  }
 
   /**
    * Reads a limit's value, in decimal units when it was written as a string.
@@ -118,47 +132,16 @@ export class ConfigurationService {
   }
 
   /**
-   * Fills in the severity a `comments` block may leave out.
-   *
-   * `undefined` when a configuration names no block, the same way
-   * `resolveDocumentation` returns `undefined`: the check is opt-in, so a
-   * repository that never wrote one is measured and reported like any other
-   * but gated by nothing. Each maximum is carried through as written, absent
-   * included — nothing invents a budget nobody chose.
-   */
-  private resolveComments(
-    ...layers: (CodometerCommentsConfiguration | undefined)[]
-  ): ResolvedCodometerCommentsConfiguration | undefined {
-    const written = layers.filter((layer) => layer !== undefined);
-
-    if (written.length === 0) {
-      return undefined;
-    }
-
-    const merged = written.reduce<CodometerCommentsConfiguration>(
-      (carried, layer) => ({
-        maximumCharacters: layer.maximumCharacters ?? carried.maximumCharacters,
-        maximumLines: layer.maximumLines ?? carried.maximumLines,
-        maximumWords: layer.maximumWords ?? carried.maximumWords,
-        severity: layer.severity ?? carried.severity,
-      }),
-      {},
-    );
-
-    return {
-      maximumCharacters: merged.maximumCharacters,
-      maximumLines: merged.maximumLines,
-      maximumWords: merged.maximumWords,
-      severity: merged.severity ?? DEFAULT_LIMIT_SEVERITY,
-    };
-  }
-
-  /**
-   * Gives every configured counter a color and a group.
+   * Gives every configured counter a color and a group, and its `comment`
+   * selector a severity.
    *
    * Colors are handed out by position within a group rather than within the
    * whole list, so adding a counter to one group does not recolor the badges
    * of another — which would rewrite a report that had not otherwise changed.
+   * A `comment` selector's own defaulting is inlined here rather than given
+   * its own method: this list already runs one call deep inside its output
+   * destination's own resolution, and a further call would push the whole
+   * chain past what this package's callidescope gate allows.
    */
   private resolveCustomStatistics(
     statistics: CodometerCustomStatistic[] | undefined,
@@ -169,6 +152,7 @@ export class ConfigurationService {
       const group = statistic.group ?? DEFAULT_CUSTOM_STATISTIC_GROUP;
       const position = positionsByGroup.get(group) ?? 0;
       positionsByGroup.set(group, position + 1);
+      const { comment } = statistic;
 
       return {
         color:
@@ -177,6 +161,17 @@ export class ConfigurationService {
             position % DEFAULT_CUSTOM_STATISTIC_COLORS.length
           ] ??
           "7c3aed",
+        comment:
+          comment === undefined
+            ? undefined
+            : {
+                kind: comment.kind,
+                language: comment.language,
+                maximumCharacters: comment.maximumCharacters,
+                maximumLines: comment.maximumLines,
+                maximumWords: comment.maximumWords,
+                severity: comment.severity ?? DEFAULT_LIMIT_SEVERITY,
+              },
         group,
         label: statistic.label,
         patterns: statistic.patterns ?? [],
@@ -186,77 +181,65 @@ export class ConfigurationService {
   }
 
   /**
-   * Fills in every field a documentation block may leave out.
+   * Fills in every input's compression and directory, and splits its globs
+   * into what they add and what they remove.
    *
-   * `undefined` when a configuration names no block at all, the same way
-   * `limits` resolves to an empty array when nothing was written: the check
-   * is opt-in, so a repository that never wrote one is measured and reported
-   * like any other but gated by nothing.
+   * A `!` prefix in `include` is what the tool this replaced used to subtract
+   * a file, and there it mattered where in the array it sat. Here the
+   * negations join the exclude globs in a single set, so an input holds the
+   * same files however its patterns are arranged.
    */
-  private resolveDocumentation(
-    configured: CodometerDocumentationConfiguration | undefined,
-  ): ResolvedCodometerDocumentationConfiguration | undefined {
-    const block = this.resolveComments(configured);
-
-    if (configured === undefined || block === undefined) {
-      return undefined;
-    }
-
-    const kinds: Partial<
-      Record<CodometerSymbolKind, ResolvedCodometerCommentsConfiguration>
-    > = {};
-
-    const written = configured.kinds ?? {};
-
-    // Walked over the known kinds rather than the written keys, so no cast is
-    // needed to get from `Object.keys`' `string` back to a symbol kind. The
-    // schema has already refused any key that is not one of these.
-    for (const kind of CODOMETER_SYMBOL_KINDS) {
-      // Merged over the block's own maxima rather than replacing them, so a
-      // kind naming only `maximumLines` still inherits `maximumWords`.
-      const resolved = this.resolveComments(configured, written[kind]);
-
-      if (written[kind] !== undefined && resolved !== undefined) {
-        kinds[kind] = resolved;
-      }
-    }
-
-    return { ...block, kinds };
-  }
-
-  /** Applies defaults to the JSON output destination, if one was named. */
-  private resolveJsonOutput(
-    output: CodometerOutputConfiguration | undefined,
-  ): ResolvedCodometerJsonOutputConfiguration | undefined {
-    if (output?.json === undefined) {
-      return undefined;
-    }
-
+  private resolveInput(input: CodometerInput): ResolvedCodometerInput {
     return {
-      indentation: output.json.indentation ?? DEFAULT_JSON_INDENTATION,
-      path: output.json.path,
+      analyses: [...input.analyses],
+      compression: input.compression ?? DEFAULT_INPUT_COMPRESSION,
+      directory: input.directory ?? DEFAULT_INPUT_DIRECTORY,
+      exclude: [
+        ...new Set([
+          ...input.include
+            .filter((pattern) => pattern.startsWith(NEGATION_PREFIX))
+            .map((pattern) => pattern.slice(NEGATION_PREFIX.length)),
+          ...(input.exclude ?? []),
+        ]),
+      ],
+      include: input.include.filter(
+        (pattern) => !pattern.startsWith(NEGATION_PREFIX),
+      ),
+      name: input.name,
     };
   }
 
   /**
-   * Resolves a language's comment budgets, block and file alike.
+   * Resolves every declared input, and the built-in `codebase` one.
    *
-   * `file` is merged across the same layers the block maxima are, so a
-   * top-level `comments.file` can be loosened for one language without that
-   * language having to restate it.
+   * The built-in entry is prepended unless the configuration already declares
+   * one by that name, which replaces it outright — the only way a
+   * configuration reaches the built-in whole-tree scan under a compression or
+   * a different set of analyses.
    */
-  private resolveLanguageComments(
-    ...layers: (CodometerLanguageCommentsConfiguration | undefined)[]
-  ): ResolvedCodometerLanguageCommentsConfiguration | undefined {
-    const block = this.resolveComments(...layers);
+  private resolveInputs(
+    inputs: CodometerInput[] | undefined,
+  ): ResolvedCodometerInput[] {
+    const declared = inputs ?? [];
+    const hasCodebaseInput = declared.some(
+      (input) => input.name === DEFAULT_INPUT_NAME,
+    );
+    const effective = hasCodebaseInput
+      ? declared
+      : [DEFAULT_CODEBASE_INPUT, ...declared];
 
-    if (block === undefined) {
-      return undefined;
-    }
+    return effective.map((input) => this.resolveInput(input));
+  }
 
+  /** Applies defaults to one JSON output destination. */
+  private resolveJsonOutput(
+    output: CodometerJsonOutput,
+  ): ResolvedCodometerJsonOutput {
     return {
-      ...block,
-      file: this.resolveComments(...layers.map((layer) => layer?.file)),
+      custom: this.resolveCustomStatistics(output.custom),
+      indentation: output.indentation ?? DEFAULT_JSON_INDENTATION,
+      path: output.path,
+      type: "json",
     };
   }
 
@@ -278,56 +261,32 @@ export class ConfigurationService {
     }));
   }
 
-  /** Applies defaults to the markdown output destination, if one was named. */
+  /** Applies defaults to one markdown output destination. */
   private resolveMarkdownOutput(
-    output: CodometerOutputConfiguration | undefined,
-  ): ResolvedCodometerMarkdownOutputConfiguration | undefined {
-    if (output?.markdown === undefined) {
-      return undefined;
-    }
-
-    const { markdown } = output;
-
+    output: CodometerMarkdownOutput,
+  ): ResolvedCodometerMarkdownOutput {
     return {
-      description: markdown.description,
-      endMarker: markdown.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
-      path: markdown.path,
+      custom: this.resolveCustomStatistics(output.custom),
+      description: output.description,
+      endMarker: output.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
+      path: output.path,
+      startMarker: output.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
+      type: "markdown",
       // Left unset rather than defaulted: the built-in rendering and writing
-      // live in the CLI that calls them, so "unset" is what selects them.
-      render: markdown.render,
-      startMarker: markdown.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
-      write: markdown.write,
+      // live in the CLI that calls it, so "unset" is what selects it.
+      write: output.write,
     };
   }
 
-  /**
-   * Splits every target's globs into what they add and what they remove.
-   *
-   * A `!` prefix in an include glob is what the tool this replaced used to
-   * subtract a file, and there it mattered where in the array it sat. Here the
-   * negations join the exclude globs in a single set, so a target holds the
-   * same files however its patterns are arranged.
-   */
-  private resolveTargets(
-    targets: CodometerTarget[] | undefined,
-  ): ResolvedCodometerTarget[] {
-    return (targets ?? []).map((target) => ({
-      analyses: [...target.analyses],
-      compression: target.compression ?? DEFAULT_TARGET_COMPRESSION,
-      directory: target.directory ?? DEFAULT_TARGET_DIRECTORY,
-      exclude: [
-        ...new Set([
-          ...target.include
-            .filter((pattern) => pattern.startsWith(NEGATION_PREFIX))
-            .map((pattern) => pattern.slice(NEGATION_PREFIX.length)),
-          ...(target.exclude ?? []),
-        ]),
-      ],
-      include: target.include.filter(
-        (pattern) => !pattern.startsWith(NEGATION_PREFIX),
-      ),
-      name: target.name,
-    }));
+  /** Applies defaults to every declared output destination. */
+  private resolveOutputs(
+    outputs: CodometerOutput[] | undefined,
+  ): ResolvedCodometerOutput[] {
+    return (outputs ?? []).map((output) =>
+      output.type === "json"
+        ? this.resolveJsonOutput(output)
+        : this.resolveMarkdownOutput(output),
+    );
   }
 
   // 🌎 Public Methods
@@ -368,12 +327,19 @@ export class ConfigurationService {
     const loaded = await this.configurationLoaderService.load(args);
 
     if (loaded === undefined) {
-      return { configuration: this.resolveConfiguration({}), path: undefined };
+      // Validated through the same schema as a file's contents rather than
+      // resolved directly, so a repository with no configuration file at all
+      // fails on a missing `format` exactly like one whose file forgot it —
+      // there is no code-level fallback for either.
+      return {
+        configuration: this.resolveConfiguration(this.parseConfiguration({})),
+        path: undefined,
+      };
     }
 
     return {
       configuration: this.resolveConfiguration(
-        codometerConfigurationSchema.parse(loaded.configuration),
+        this.parseConfiguration(loaded.configuration),
       ),
       path: loaded.path,
     };
@@ -389,14 +355,7 @@ export class ConfigurationService {
     configuration: CodometerConfiguration,
   ): ResolvedCodometerConfiguration {
     return {
-      css: {
-        comments: this.resolveLanguageComments(
-          configuration.comments,
-          configuration.css?.comments,
-        ),
-      },
-      defaultTarget: configuration.defaultTarget,
-      documentation: this.resolveDocumentation(configuration.documentation),
+      defaultInput: configuration.defaultInput,
       // Additive rather than a replacement: the defaults are directories no
       // repository wants counted, so a configuration naming its own noise
       // should not have to restate them to keep them out.
@@ -407,55 +366,12 @@ export class ConfigurationService {
         ]),
       ],
       excludeFrom: configuration.excludeFrom ?? [],
-      hcl: {
-        comments: this.resolveLanguageComments(
-          configuration.comments,
-          configuration.hcl?.comments,
-        ),
-      },
+      format: configuration.format,
+      inputs: this.resolveInputs(configuration.inputs),
       limits: this.resolveLimits(configuration.limits),
-      output: {
-        json: this.resolveJsonOutput(configuration.output),
-        markdown: this.resolveMarkdownOutput(configuration.output),
-      },
+      outputs: this.resolveOutputs(configuration.outputs),
       python: {
         command: configuration.python?.command ?? DEFAULT_PYTHON_COMMAND,
-        comments: this.resolveLanguageComments(
-          configuration.comments,
-          configuration.python?.comments,
-        ),
-      },
-      shell: {
-        comments: this.resolveLanguageComments(
-          configuration.comments,
-          configuration.shell?.comments,
-        ),
-      },
-      sql: {
-        comments: this.resolveLanguageComments(
-          configuration.comments,
-          configuration.sql?.comments,
-        ),
-      },
-      statistics: this.resolveCustomStatistics(configuration.statistics),
-      targets: this.resolveTargets(configuration.targets),
-      toml: {
-        comments: this.resolveLanguageComments(
-          configuration.comments,
-          configuration.toml?.comments,
-        ),
-      },
-      typescript: {
-        comments: this.resolveLanguageComments(
-          configuration.comments,
-          configuration.typescript?.comments,
-        ),
-      },
-      yaml: {
-        comments: this.resolveLanguageComments(
-          configuration.comments,
-          configuration.yaml?.comments,
-        ),
       },
     };
   }

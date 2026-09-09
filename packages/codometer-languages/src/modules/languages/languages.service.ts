@@ -67,8 +67,8 @@ export class LanguagesService {
       // Comment budgets are measured here rather than inside each analyzer:
       // Python's runs in a subprocess that returns zeros when the interpreter
       // is unreachable, and a gate living there would quietly stop gating.
-      comments: this.languageComments.measure({
-        configuration: args.configuration,
+      commentCounts: this.languageComments.measure({
+        counters: args.commentCounters,
         files: discoveredFiles,
         pythonComments: python.commentTokens,
         workingDirectory,
@@ -108,7 +108,7 @@ export class LanguagesService {
         workingDirectory,
       }),
       typescript: this.typescriptService.analyze({
-        documentation: args.configuration.documentation,
+        documentationCounters: args.documentationCounters,
         sourceFiles: discoveredFiles.sourceFiles,
         symbolCounters: args.symbolCounters,
         workingDirectory,

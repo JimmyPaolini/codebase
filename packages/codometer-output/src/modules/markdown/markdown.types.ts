@@ -3,33 +3,14 @@
 import type {
   CodeStatisticsResult,
   CodometerCompression,
-  CodometerDocumentationUnit,
-  ResolvedCodometerMarkdownOutputConfiguration,
+  ResolvedCodometerMarkdownOutput,
 } from "@codometer/configuration";
 
 /** Arguments accepted when building the anchor helpers a writer is handed. */
 export interface BuildAnchorHelpersArguments {
   check: boolean;
   content: string;
-  destination: ResolvedCodometerMarkdownOutputConfiguration;
-}
-
-/**
- * One comment that ran over the limit its kind carries.
- *
- * A rendering-only shape: only the fields a bullet needs, so this package
- * never has to know the richer measurement type the caller carries it in.
- * `kind` is a plain string because a JSDoc block and a YAML comment block both
- * arrive here — this package renders the word, it does not judge it.
- */
-export interface DocumentationBreach {
-  declaration: string;
-  file: string;
-  kind: string;
-  limit: number;
-  line: number;
-  measured: number;
-  unit: CodometerDocumentationUnit;
+  destination: ResolvedCodometerMarkdownOutput;
 }
 
 /**
@@ -43,7 +24,7 @@ export type MeasurementScope = "project" | "repository";
 
 /** Arguments accepted when rendering the built-in badge report. */
 export interface RenderBadgesArguments {
-  destination: ResolvedCodometerMarkdownOutputConfiguration;
+  destination: ResolvedCodometerMarkdownOutput;
   scope: MeasurementScope;
   statistics: CodeStatisticsResult;
   targets: readonly TargetSize[];
@@ -58,23 +39,18 @@ export interface RenderDocumentArguments {
   targets: readonly TargetSize[];
 }
 
-/** Arguments accepted when rendering the breached documentation entries. */
-export interface RenderDocumentationSectionArguments {
-  breaches: readonly DocumentationBreach[];
-}
-
 /** Arguments accepted when splicing a rendered block into a file. */
 export interface SyncAnchoredBlockArguments {
   check: boolean;
   content: string;
-  destination: ResolvedCodometerMarkdownOutputConfiguration;
+  destination: ResolvedCodometerMarkdownOutput;
   path: string | undefined;
 }
 
 /** Arguments accepted when syncing a markdown destination with the statistics. */
 export interface SyncMarkdownArguments {
   check: boolean;
-  destination: ResolvedCodometerMarkdownOutputConfiguration;
+  destination: ResolvedCodometerMarkdownOutput;
   scope: MeasurementScope;
   statistics: CodeStatisticsResult;
   targets: readonly TargetSize[];
@@ -97,5 +73,5 @@ export interface TargetSize {
 /** Arguments accepted when wrapping rendered content in the anchor markers. */
 export interface WrapInAnchorsArguments {
   content: string;
-  destination: ResolvedCodometerMarkdownOutputConfiguration;
+  destination: ResolvedCodometerMarkdownOutput;
 }

@@ -7,7 +7,8 @@ both halves.
 ## Run it
 
 ```bash
-codometer --directory examples/corpus --config examples/python/uv.config.ts --format json \
+cd examples/corpus
+codometer --config ../python/uv.config.ts --format json \
   | jq '.targets[0].metrics[] | select(.path | startswith("python."))'
 ```
 

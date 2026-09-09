@@ -10,11 +10,12 @@ import { CommentsService } from "../comments/comments.service";
 import { DocumentationMeasurementService } from "./documentation-measurement.service";
 import { TypescriptService } from "./typescript.service";
 
-import type { TypescriptSymbolCounter } from "./typescript.types";
 import type {
-  ResolvedCodometerCommentsConfiguration,
-  ResolvedCodometerDocumentationConfiguration,
-} from "@codometer/configuration";
+  CommentMeasurement,
+  DocumentationCommentCounter,
+} from "../comments/comments.types";
+import type { TypescriptSymbolCounter } from "./typescript.types";
+import type { CodometerSymbolKind } from "@codometer/configuration";
 
 const { readFileSyncMock } = vi.hoisted(() => ({
   readFileSyncMock: vi.fn<(filePath: string, encoding: string) => string>(),
@@ -53,6 +54,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/foo.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -73,6 +75,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/utils.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -91,6 +94,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/types.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -110,6 +114,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/imports.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -133,6 +138,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/comments.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -155,6 +161,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/todos.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -170,6 +177,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/consts.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -190,6 +198,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/advanced.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -205,6 +214,7 @@ describe(TypescriptService, () => {
     readFileSyncMock.mockReturnValue("let mutable = 1;");
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/mutable.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -221,6 +231,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/decorated.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -243,6 +254,7 @@ describe(TypescriptService, () => {
       .mockReturnValueOnce("module.exports = {};");
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/class-expression.ts", "src/view.tsx", "src/index.js"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -262,6 +274,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/imports-mixed.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -275,6 +288,7 @@ describe(TypescriptService, () => {
     readFileSyncMock.mockReturnValue(`import "";`);
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/empty-specifier.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -348,6 +362,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/type-shapes.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -370,6 +385,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/generics.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -387,6 +403,7 @@ describe(TypescriptService, () => {
       .mockReturnValueOnce("a\nb");
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/a.ts", "src/b.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -405,6 +422,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/no-tags.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -440,6 +458,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/local.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -460,6 +479,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/special-tags.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -482,6 +502,7 @@ describe(TypescriptService, () => {
     );
 
     const result = service.analyze({
+      documentationCounters: [],
       sourceFiles: ["src/decorators.ts"],
       symbolCounters: [],
       workingDirectory: "/repo",
@@ -511,6 +532,7 @@ describe(TypescriptService, () => {
       );
 
       const result = service.analyze({
+        documentationCounters: [],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [{ ...staticMethods }],
         workingDirectory: "/repo",
@@ -529,6 +551,7 @@ describe(TypescriptService, () => {
       );
 
       const result = service.analyze({
+        documentationCounters: [],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [
           {
@@ -556,6 +579,7 @@ describe(TypescriptService, () => {
       );
 
       const result = service.analyze({
+        documentationCounters: [],
         sourceFiles: ["src/shapes.ts"],
         symbolCounters: [
           {
@@ -588,6 +612,7 @@ describe(TypescriptService, () => {
       );
 
       const result = service.analyze({
+        documentationCounters: [],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [
           { ...staticMethods },
@@ -609,6 +634,7 @@ describe(TypescriptService, () => {
       readFileSyncMock.mockReturnValue(`export const value = 1;`);
 
       const result = service.analyze({
+        documentationCounters: [],
         sourceFiles: ["src/value.ts"],
         symbolCounters: [{ ...staticMethods }],
         workingDirectory: "/repo",
@@ -627,6 +653,7 @@ describe(TypescriptService, () => {
       );
 
       const result = service.analyze({
+        documentationCounters: [],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [
           { ...staticMethods },
@@ -648,6 +675,7 @@ describe(TypescriptService, () => {
       readFileSyncMock.mockReturnValue(`class Foo { static build(): void {} }`);
 
       const result = service.analyze({
+        documentationCounters: [],
         sourceFiles: ["packages/one/src/foo.ts", "applications/two/src/foo.ts"],
         symbolCounters: [{ ...staticMethods, patterns: ["packages/**"] }],
         workingDirectory: "/repo",
@@ -658,27 +686,41 @@ describe(TypescriptService, () => {
   });
 
   describe("documentation length measurement", () => {
-    /** A kind's entry, spelled out the way resolution leaves it. */
-    const inLines = (
+    /** One kind's counter, over a line budget, labeled by its own kind. */
+    const counterFor = (
+      kind: CodometerSymbolKind,
       maximumLines: number,
-    ): ResolvedCodometerCommentsConfiguration => ({
-      maximumCharacters: undefined,
-      maximumLines,
-      maximumWords: undefined,
-      severity: "fail",
+    ): DocumentationCommentCounter => ({
+      budget: {
+        maximumCharacters: undefined,
+        maximumLines,
+        maximumWords: undefined,
+        severity: "fail",
+      },
+      kind,
+      label: kind,
     });
 
-    const documentation: ResolvedCodometerDocumentationConfiguration = {
-      kinds: {
-        class: inLines(6),
-        interface: inLines(5),
-        method: inLines(4),
-        property: inLines(3),
-      },
-      ...inLines(6),
-    };
+    /** Every declaration count. */
+    const allCounters: DocumentationCommentCounter[] = [
+      counterFor("class", 6),
+      counterFor("interface", 5),
+      counterFor("method", 4),
+      counterFor("property", 3),
+      counterFor("function", 6),
+      counterFor("enum", 6),
+      counterFor("getter", 6),
+      counterFor("setter", 6),
+    ];
 
-    it("does nothing when no documentation configuration is given", () => {
+    /** Every measurement from `documentationCounts`, flattened and unlabeled. */
+    function flattenDocumentation(
+      documentationCounts: Record<string, CommentMeasurement[]>,
+    ): CommentMeasurement[] {
+      return Object.values(documentationCounts).flat();
+    }
+
+    it("does nothing when no documentation counter is given", () => {
       readFileSyncMock.mockReturnValue(
         `/**
           * A class.
@@ -687,12 +729,15 @@ describe(TypescriptService, () => {
       );
 
       const result = service.analyze({
+        documentationCounters: [],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
       });
 
-      expect(result.documentation).toStrictEqual([]);
+      expect(flattenDocumentation(result.documentationCounts)).toStrictEqual(
+        [],
+      );
     });
 
     it("measures a documented class, interface, function, method, and property under their limits", () => {
@@ -724,28 +769,30 @@ describe(TypescriptService, () => {
       );
 
       const result = service.analyze({
-        documentation,
+        documentationCounters: allCounters,
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
       });
 
       expect(
-        result.documentation.map((measurement) => ({
+        flattenDocumentation(result.documentationCounts).map((measurement) => ({
           breached: measurement.breached,
           declaration: measurement.declaration,
           kind: measurement.kind,
         })),
-      ).toStrictEqual([
-        { breached: false, declaration: "Foo", kind: "class" },
-        { breached: false, declaration: "value", kind: "property" },
-        { breached: false, declaration: "run", kind: "method" },
-        { breached: false, declaration: "Bar", kind: "interface" },
-        { breached: false, declaration: "greet", kind: "function" },
-      ]);
+      ).toStrictEqual(
+        expect.arrayContaining([
+          { breached: false, declaration: "Foo", kind: "class" },
+          { breached: false, declaration: "value", kind: "property" },
+          { breached: false, declaration: "run", kind: "method" },
+          { breached: false, declaration: "Bar", kind: "interface" },
+          { breached: false, declaration: "greet", kind: "function" },
+        ]),
+      );
     });
 
-    it("marks a declaration whose comment exceeds its kind's limit as breached", () => {
+    it("marks a declaration whose comment exceeds its own counter's limit as breached", () => {
       readFileSyncMock.mockReturnValue(
         `/**
           * A class.
@@ -756,34 +803,17 @@ describe(TypescriptService, () => {
          }`,
       );
 
-      const [measurement] = service.analyze({
-        documentation: { ...documentation, kinds: { class: inLines(2) } },
+      const result = service.analyze({
+        documentationCounters: [counterFor("class", 2)],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
-      }).documentation;
+      });
+      const [measurement] = result.documentationCounts["class"] ?? [];
 
       expect(measurement?.breached).toBe(true);
       expect(measurement?.limit).toBe(2);
       expect(measurement?.kind).toBe("class");
-    });
-
-    it("falls back to the default limit for a kind naming none", () => {
-      readFileSyncMock.mockReturnValue(
-        `/**
-          * An interface with no configured kind limit.
-          */
-         export interface Bar {}`,
-      );
-
-      const [measurement] = service.analyze({
-        documentation: { ...documentation, kinds: {} },
-        sourceFiles: ["src/bar.ts"],
-        symbolCounters: [],
-        workingDirectory: "/repo",
-      }).documentation;
-
-      expect(measurement?.limit).toBe(6);
     });
 
     it("measures characters instead of lines when configured", () => {
@@ -792,17 +822,24 @@ describe(TypescriptService, () => {
          export class Foo {}`,
       );
 
-      const [measurement] = service.analyze({
-        documentation: {
-          ...documentation,
-          kinds: {},
-          maximumCharacters: 1,
-          maximumLines: undefined,
-        },
+      const result = service.analyze({
+        documentationCounters: [
+          {
+            budget: {
+              maximumCharacters: 1,
+              maximumLines: undefined,
+              maximumWords: undefined,
+              severity: "fail",
+            },
+            kind: "class",
+            label: "class",
+          },
+        ],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
-      }).documentation;
+      });
+      const [measurement] = result.documentationCounts["class"] ?? [];
 
       expect(measurement?.unit).toBe("characters");
       expect(measurement?.measured).toBe("/** Short. */".length);
@@ -816,17 +853,24 @@ describe(TypescriptService, () => {
          export class Foo {}`,
       );
 
-      const [measurement] = service.analyze({
-        documentation: {
-          ...documentation,
-          kinds: {},
-          maximumLines: undefined,
-          maximumWords: 1,
-        },
+      const result = service.analyze({
+        documentationCounters: [
+          {
+            budget: {
+              maximumCharacters: undefined,
+              maximumLines: undefined,
+              maximumWords: 1,
+              severity: "fail",
+            },
+            kind: "class",
+            label: "class",
+          },
+        ],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
-      }).documentation;
+      });
+      const [measurement] = result.documentationCounts["class"] ?? [];
 
       expect(measurement?.unit).toBe("words");
       expect(measurement?.measured).toBe(6);
@@ -836,13 +880,15 @@ describe(TypescriptService, () => {
       readFileSyncMock.mockReturnValue(`export class Foo {}`);
 
       const result = service.analyze({
-        documentation,
+        documentationCounters: allCounters,
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
       });
 
-      expect(result.documentation).toStrictEqual([]);
+      expect(flattenDocumentation(result.documentationCounts)).toStrictEqual(
+        [],
+      );
     });
 
     it("does not treat a plain block comment as JSDoc", () => {
@@ -852,13 +898,15 @@ describe(TypescriptService, () => {
       );
 
       const result = service.analyze({
-        documentation,
+        documentationCounters: allCounters,
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
       });
 
-      expect(result.documentation).toStrictEqual([]);
+      expect(flattenDocumentation(result.documentationCounts)).toStrictEqual(
+        [],
+      );
     });
 
     it("reports the file and 1-indexed line of the declaration", () => {
@@ -871,18 +919,19 @@ describe(TypescriptService, () => {
          export class Foo {}`,
       );
 
-      const [measurement] = service.analyze({
-        documentation,
+      const result = service.analyze({
+        documentationCounters: [counterFor("class", 6)],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
-      }).documentation;
+      });
+      const [measurement] = result.documentationCounts["class"] ?? [];
 
       expect(measurement?.file).toBe("src/foo.ts");
       expect(measurement?.line).toBe(6);
     });
 
-    it("measures a documented enum under the default limit", () => {
+    it("measures a documented enum under its counter's limit", () => {
       readFileSyncMock.mockReturnValue(
         `/**
           * A status.
@@ -893,12 +942,13 @@ describe(TypescriptService, () => {
          }`,
       );
 
-      const [measurement] = service.analyze({
-        documentation,
+      const result = service.analyze({
+        documentationCounters: [counterFor("enum", 6)],
         sourceFiles: ["src/status.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
-      }).documentation;
+      });
+      const [measurement] = result.documentationCounts["enum"] ?? [];
 
       expect(measurement).toMatchObject({
         breached: false,
@@ -907,7 +957,7 @@ describe(TypescriptService, () => {
       });
     });
 
-    it("measures a documented getter and setter under the default limit", () => {
+    it("measures a documented getter and setter under their counters' limits", () => {
       readFileSyncMock.mockReturnValue(
         `export class Foo {
            /**
@@ -925,22 +975,27 @@ describe(TypescriptService, () => {
       );
 
       const result = service.analyze({
-        documentation,
+        documentationCounters: [
+          counterFor("getter", 6),
+          counterFor("setter", 6),
+        ],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
       });
 
       expect(
-        result.documentation.map((measurement) => ({
+        flattenDocumentation(result.documentationCounts).map((measurement) => ({
           breached: measurement.breached,
           declaration: measurement.declaration,
           kind: measurement.kind,
         })),
-      ).toStrictEqual([
-        { breached: false, declaration: "value", kind: "getter" },
-        { breached: false, declaration: "value", kind: "setter" },
-      ]);
+      ).toStrictEqual(
+        expect.arrayContaining([
+          { breached: false, declaration: "value", kind: "getter" },
+          { breached: false, declaration: "value", kind: "setter" },
+        ]),
+      );
     });
 
     it("names an anonymous default-exported function as such", () => {
@@ -951,12 +1006,13 @@ describe(TypescriptService, () => {
          export default function (): void {}`,
       );
 
-      const [measurement] = service.analyze({
-        documentation,
+      const result = service.analyze({
+        documentationCounters: [counterFor("function", 6)],
         sourceFiles: ["src/foo.ts"],
         symbolCounters: [],
         workingDirectory: "/repo",
-      }).documentation;
+      });
+      const [measurement] = result.documentationCounts["function"] ?? [];
 
       expect(measurement?.declaration).toBe("(anonymous)");
     });

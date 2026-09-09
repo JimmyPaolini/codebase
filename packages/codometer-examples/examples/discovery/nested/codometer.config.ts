@@ -14,12 +14,16 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  *
  * ```bash
  * # This file wins: one badge, "Configurations", and no "Service Files".
- * codometer --directory examples/discovery/nested
+ * cd packages/codometer-examples/examples/discovery/nested
+ * codometer
  *
  * # One folder up carries no configuration, so the search continues to the
  * # package's: "Service Files" and "Unit Tests" return, "Configurations" does
- * # not.
- * codometer --directory examples/discovery
+ * # not — and so does the package's own "Corpus" input, now reported empty
+ * # since this folder holds no `examples/corpus/`. See this package's own
+ * # guide for why one plain configuration file now answers for both cases.
+ * cd packages/codometer-examples/examples/discovery
+ * codometer
  * ```
  *
  * Merging the two would leave a limit that never applied looking exactly like
@@ -30,8 +34,19 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * it.
  */
 const codometerConfiguration: CodometerConfiguration = {
-  statistics: [
-    { color: "9333ea", label: "Configurations", patterns: ["**/*.config.ts"] },
+  format: "markdown",
+  outputs: [
+    {
+      custom: [
+        {
+          color: "9333ea",
+          label: "Configurations",
+          patterns: ["**/*.config.ts"],
+        },
+      ],
+      path: "codometer-report.json",
+      type: "json",
+    },
   ],
 };
 

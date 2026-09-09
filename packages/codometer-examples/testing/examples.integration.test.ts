@@ -9,6 +9,7 @@ import {
   exampleConfiguration,
   measure,
   readMetric,
+  readMetricInstances,
   readMetricLimits,
   readTarget,
   runCodometer,
@@ -27,25 +28,16 @@ import {
 
 /** Runs one example configuration over the committed corpus. */
 const measureExample = (...segments: readonly string[]): CodometerReport =>
-  measure([
-    "--directory",
-    corpusDirectory,
-    "--config",
-    exampleConfiguration(...segments),
-  ]);
+  measure(["--config", exampleConfiguration(...segments)], corpusDirectory);
 
 /** Runs one example configuration as a gate, and returns what it produced. */
 const gateExample = (
   ...segments: readonly string[]
 ): ReturnType<typeof runCodometer> =>
-  runCodometer([
-    "--directory",
+  runCodometer(
+    ["--config", exampleConfiguration(...segments), "--check", "limits"],
     corpusDirectory,
-    "--config",
-    exampleConfiguration(...segments),
-    "--check",
-    "limits",
-  ]);
+  );
 
 describe("every example configuration this package ships", () => {
   describe("targets", () => {
@@ -74,12 +66,10 @@ describe("every example configuration this package ships", () => {
           { recursive: true },
         );
 
-        const report = measure([
-          "--directory",
+        const report = measure(
+          ["--config", exampleConfiguration("targets", "ignored.config.ts")],
           directory,
-          "--config",
-          exampleConfiguration("targets", "ignored.config.ts"),
-        ]);
+        );
 
         // Still 28: discovery reads the ignore file itself rather than
         // invoking git, so the two copied files are invisible to it.
@@ -159,12 +149,10 @@ describe("every example configuration this package ships", () => {
     });
 
     it("reports a breach without failing when nothing asked for a gate", () => {
-      const run = runCodometer([
-        "--directory",
+      const run = runCodometer(
+        ["--config", exampleConfiguration("limits", "fail.config.ts")],
         corpusDirectory,
-        "--config",
-        exampleConfiguration("limits", "fail.config.ts"),
-      ]);
+      );
 
       // A breach is a finding; only `--check limits` turns a finding into a gate.
       expect(run.exitCode).toBe(0);
@@ -186,12 +174,12 @@ describe("every example configuration this package ships", () => {
       expect(run.exitCode).toBe(1);
       // The exact sentence both guides quote. `linesOfCode` is real, spelled
       // correctly, and on the only target measured — and still binds to
-      // nothing, because no `defaultTarget` says which target it belongs to.
+      // nothing, because no `defaultInput` says which target it belongs to.
       expect(run.standardError).toContain(
         String.raw`Cannot bind the limit written against \"linesOfCode\": nothing measured answers to it.`,
       );
       expect(run.standardError).toContain(
-        "Write the target's name in front of the metric path, or configure a default target.",
+        "Write the target's name in front of the metric path, or configure a default input.",
       );
     });
 
@@ -205,7 +193,7 @@ describe("every example configuration this package ships", () => {
       expect(run.standardError).toContain("Compiled.typescript.files");
     });
 
-    it("reads an unprefixed path as the default target's", () => {
+    it("reads an unprefixed path as the default input's", () => {
       const run = gateExample("limits", "default-target.config.ts");
       const report = measureExample("limits", "default-target.config.ts");
 
@@ -260,26 +248,28 @@ describe("every example configuration this package ships", () => {
       );
     });
 
-    it("measures every documented declaration, breached or not", () => {
+    it("counts the declarations of each kind that breach their own budget", () => {
       const report = documentationReport;
-      const breached = report.documentation.filter((entry) => entry.breached);
 
-      expect(report.documentation).toHaveLength(26);
+      // Only the class and method counters find a breach — one instance each,
+      // named by file, line, and measured length. A counter that holds is
+      // still measured, just at zero.
       expect(
-        breached.map((entry) => entry.declaration).toSorted(),
-      ).toStrictEqual(["CatalogService", "blank"]);
-    });
-
-    it("never measures a declaration carrying no doc comment", () => {
-      const report = documentationReport;
-      const declarations = report.documentation.map(
-        (entry) => entry.declaration,
-      );
-
-      // A module-level constant is not a documented declaration, whatever comment
-      // sits above it.
-      expect(declarations).not.toContain("priceLine");
-      expect(declarations).not.toContain("DEFAULT_CURRENCY");
+        readMetricInstances(report, "codebase", "custom.Class Comment Budget"),
+      ).toStrictEqual([
+        { file: "typescript/catalog.service.ts", line: 18, measured: 8 },
+      ]);
+      expect(
+        readMetricInstances(report, "codebase", "custom.Method Comment Budget"),
+      ).toStrictEqual([
+        { file: "javascript/receipt.js", line: 12, measured: 7 },
+      ]);
+      expect(
+        readMetric(report, "codebase", "custom.Interface Comment Budget"),
+      ).toBe(0);
+      expect(
+        readMetric(report, "codebase", "custom.Property Comment Budget"),
+      ).toBe(0);
     });
 
     it("is gated by the same flag every other limit is", () => {
@@ -291,63 +281,61 @@ describe("every example configuration this package ships", () => {
     it("measures a YAML comment block through the same channel", () => {
       const report = measureExample("documentation", "yaml-comments.config.ts");
 
-      // One block, the note above `pipeline.yaml`'s anchor, reported once per
-      // declared maximum. A configuration naming no `documentation` block
-      // measures no JSDoc comment at all, so every entry here is a YAML one.
+      // One block, the note above `pipeline.yaml`'s anchor, carrying two
+      // maxima. One line against a maximum of one holds; twelve words against
+      // a maximum of five breaches — so the counter reports one breach, at
+      // whichever measurement broke its budget, not one entry per maximum.
       expect(
-        report.documentation.map((entry) => [
-          entry.unit,
-          entry.measured,
-          entry.limit,
-          entry.breached,
-        ]),
-      ).toStrictEqual([
-        ["lines", 1, 1, false],
-        ["words", 12, 5, true],
-      ]);
-      expect(report.documentation[0]).toMatchObject({
-        file: "yaml/pipeline.yaml",
-        kind: "comment",
-        line: 2,
-      });
+        readMetricInstances(report, "codebase", "custom.YAML Comment Budget"),
+      ).toStrictEqual([{ file: "yaml/pipeline.yaml", line: 2, measured: 12 }]);
     });
 
     it("measures every language, and honours a language override", () => {
       const report = measureExample("documentation", "comments.config.ts");
+      const readInstances = (
+        label: string,
+      ): CodometerReport["targets"][number]["metrics"][number]["instances"] =>
+        readMetricInstances(report, "codebase", `custom.${label}`);
 
-      expect(
-        report.documentation.map((entry) => [
-          entry.file,
-          entry.line,
-          entry.measured,
-          entry.limit,
-        ]),
-      ).toStrictEqual([
-        ["css/theme.css", 1, 12, 3],
-        ["hcl/network.tf", 1, 12, 3],
-        ["python/inventory.py", 7, 10, 3],
-        // Line 2, not line 1: a `#!` shebang is never a comment.
-        ["shell/release.sh", 2, 11, 8],
-        ["shell/release.sh", 8, 6, 8],
-        ["sql/reporting.sql", 1, 7, 3],
-        ["toml/service.toml", 1, 5, 3],
-        ["yaml/pipeline.yaml", 2, 12, 3],
+      // Every non-JSDoc block in the corpus breaches its own language's
+      // three-word budget, except shell's second block, which holds under the
+      // eight-word override — so it is absent rather than listed as a breach.
+      expect(readInstances("CSS Comment Budget")).toStrictEqual([
+        { file: "css/theme.css", line: 1, measured: 12 },
+      ]);
+      expect(readInstances("HCL Comment Budget")).toStrictEqual([
+        { file: "hcl/network.tf", line: 1, measured: 12 },
+      ]);
+      expect(readInstances("Python Comment Budget")).toStrictEqual([
+        { file: "python/inventory.py", line: 7, measured: 10 },
+      ]);
+      // Line 2, not line 1: a `#!` shebang is never a comment. Only this
+      // block breaches the loosened eight-word budget — the second block, at
+      // line 8, measures six and holds.
+      expect(readInstances("Shell Comment Budget")).toStrictEqual([
+        { file: "shell/release.sh", line: 2, measured: 11 },
+      ]);
+      expect(readInstances("SQL Comment Budget")).toStrictEqual([
+        { file: "sql/reporting.sql", line: 1, measured: 7 },
+      ]);
+      expect(readInstances("TOML Comment Budget")).toStrictEqual([
+        { file: "toml/service.toml", line: 1, measured: 5 },
+      ]);
+      expect(readInstances("YAML Comment Budget")).toStrictEqual([
+        { file: "yaml/pipeline.yaml", line: 2, measured: 12 },
       ]);
     });
 
-    it("never measures a JSDoc comment through the `typescript` channel", () => {
+    it("never measures a JSDoc comment through a plain-language channel", () => {
       // The corpus's TypeScript and JavaScript sources carry only JSDoc
-      // comments, and `typescript` skips exactly those — `documentation`
-      // measures them instead. Nothing from either corpus folder appears here.
+      // comments, and a `comment` selector naming no `kind` skips exactly
+      // those — `codometer.config.ts`'s `kind`-based counters measure them
+      // instead. The TypeScript counter here finds nothing at all.
       const report = measureExample("documentation", "comments.config.ts");
-      const files = report.documentation.map((entry) => entry.file);
 
       expect(
-        files.filter((file) => file.startsWith("typescript/")),
-      ).toStrictEqual([]);
-      expect(
-        files.filter((file) => file.startsWith("javascript/")),
-      ).toStrictEqual([]);
+        readMetric(report, "codebase", "custom.TypeScript Comment Budget"),
+      ).toBe(0);
     });
 
     it("gates a YAML comment breach the same way", () => {
@@ -359,10 +347,7 @@ describe("every example configuration this package ships", () => {
 
   describe("configuration discovery", () => {
     it("takes the first configuration found walking upward", () => {
-      const nested = measure([
-        "--directory",
-        exampleConfiguration("discovery", "nested"),
-      ]);
+      const nested = measure([], exampleConfiguration("discovery", "nested"));
       const counters = readTarget(nested, "codebase").metrics.filter((metric) =>
         metric.path.startsWith("custom."),
       );
@@ -375,34 +360,39 @@ describe("every example configuration this package ships", () => {
     });
 
     it("continues upward from a folder carrying no configuration", () => {
-      const parent = measure([
-        "--directory",
-        exampleConfiguration("discovery"),
-      ]);
+      const parent = measure([], exampleConfiguration("discovery"));
       const counters = readTarget(parent, "codebase").metrics.filter((metric) =>
         metric.path.startsWith("custom."),
       );
 
+      // The package's own configuration — conventions and all — is what
+      // answers. Nothing here is a function of which folder was measured, so
+      // its own "Corpus" input is resolved too, and reported as a failure
+      // rather than gating anything: this bare run neither writes nor checks,
+      // and a failure fails only a run that does one of those.
       expect(counters.map((metric) => metric.path)).toStrictEqual([
         "custom.Service Files",
         "custom.Unit Tests",
         "custom.Static Methods",
       ]);
+      expect(readTarget(parent, "Corpus").empty).toBe(true);
+      expect(parent.failures).toHaveLength(1);
     });
   });
 
-  describe("the write and check matrix", () => {
+  describe("the output and check matrix", () => {
     const runRow = (
       directory: string,
       ...flags: readonly string[]
     ): ReturnType<typeof runCodometer> =>
-      runCodometer([
-        "--directory",
+      runCodometer(
+        [
+          "--config",
+          exampleConfiguration("write-check", "codometer.config.ts"),
+          ...flags,
+        ],
         directory,
-        "--config",
-        exampleConfiguration("write-check", "codometer.config.ts"),
-        ...flags,
-      ]);
+      );
 
     it("writes only when asked, and gates only when asked", () => {
       withCorpusCopy((directory) => {
@@ -414,7 +404,9 @@ describe("every example configuration this package ships", () => {
         expect(runRow(directory, "--check", "limits").exitCode).toBe(1);
         expect(fs.existsSync(reportPath)).toBe(false);
 
-        expect(runRow(directory, "--write").exitCode).toBe(0);
+        expect(
+          runRow(directory, "--output-json", "--output-markdown").exitCode,
+        ).toBe(0);
         expect(fs.existsSync(reportPath)).toBe(true);
         expect(fs.existsSync(path.join(directory, "statistics.md"))).toBe(true);
       });
@@ -422,7 +414,13 @@ describe("every example configuration this package ships", () => {
 
     it("produces every report before it fails on a breach", () => {
       withCorpusCopy((directory) => {
-        const run = runRow(directory, "--write", "--check", "limits");
+        const run = runRow(
+          directory,
+          "--output-json",
+          "--output-markdown",
+          "--check",
+          "limits",
+        );
 
         expect(run.exitCode).toBe(1);
         // The report is on disk even though the gate tripped: a pull request that
@@ -435,16 +433,16 @@ describe("every example configuration this package ships", () => {
 
     it("compares a written report rather than rewriting it", () => {
       withCorpusCopy((directory) => {
-        runRow(directory, "--write");
+        runRow(directory, "--output-json", "--output-markdown");
 
         expect(runRow(directory, "--check", "reports").exitCode).toBe(0);
         expect(runRow(directory, "--check", "reports,limits").exitCode).toBe(1);
       });
     });
 
-    it("refuses --write --check reports", () => {
+    it("refuses --output-json combined with --check reports", () => {
       withCorpusCopy((directory) => {
-        const run = runRow(directory, "--write", "--check", "reports");
+        const run = runRow(directory, "--output-json", "--check", "reports");
 
         expect(run.exitCode).toBe(1);
         expect(run.standardError).toContain(
@@ -463,12 +461,7 @@ describe("every example configuration this package ships", () => {
 
   describe("the output sinks", () => {
     it("carries the report on standard output and diagnostics on standard error", () => {
-      const run = runCodometer([
-        "--directory",
-        corpusDirectory,
-        "--format",
-        "json",
-      ]);
+      const run = runCodometer(["--format", "json"], corpusDirectory);
 
       // The assertion is that this parses at all: a log line sharing the stream
       // would break every `codometer --format json > report.json` pipeline.
@@ -476,17 +469,17 @@ describe("every example configuration this package ships", () => {
       expect(run.standardError).toContain("Finished the measurement run");
     });
 
-    it("writes the badge block where --output-markdown named", () => {
+    it("writes the badge block where --output-markdown named a path", () => {
       withCorpusCopy((directory) => {
-        const run = runCodometer([
-          "--directory",
+        const run = runCodometer(
+          [
+            "--config",
+            exampleConfiguration("output", "codometer.config.ts"),
+            "--output-markdown",
+            "document.md",
+          ],
           directory,
-          "--config",
-          exampleConfiguration("output", "codometer.config.ts"),
-          "--output-markdown",
-          "document.md",
-          "--write",
-        ]);
+        );
         const written = fs.readFileSync(
           path.join(directory, "document.md"),
           "utf8",
@@ -498,7 +491,7 @@ describe("every example configuration this package ships", () => {
         // serves a bare statistics page and a README with prose alike.
         expect(written).toContain("<!-- CODE_STATISTICS_START -->");
         // And a named destination stands for all of them, so the configured
-        // report and splice are not written.
+        // report is not written.
         expect(
           fs.existsSync(path.join(directory, "codometer-report.json")),
         ).toBe(false);
@@ -510,8 +503,9 @@ describe("every example configuration this package ships", () => {
       // through a shell. Anything on standard output but the report — one log
       // line, one warning — breaks this outright.
       const piped = runPipeline(
-        ["--directory", corpusDirectory, "--format", "json"],
+        ["--format", "json"],
         "report.targets[0].files",
+        corpusDirectory,
       );
 
       // The exit code first, so a pipeline that died under load reports which
@@ -523,29 +517,38 @@ describe("every example configuration this package ships", () => {
       expect(piped.standardError).toContain("Finished the measurement run");
     });
 
-    it("refuses an --output-json path on a run that neither writes nor compares", () => {
-      const run = runCodometer([
-        "--directory",
+    it("refuses a bare --output-json on a run whose configuration names none", () => {
+      // A path always means a file — `--output-json <path>` writes there
+      // outright, with no companion flag needed. Only the bare flag, asking
+      // for wherever the configuration says to, can still be refused, and
+      // only when that configuration names no "json" output to resolve one
+      // from.
+      const run = runCodometer(
+        [
+          "--config",
+          exampleConfiguration("python", "uv.config.ts"),
+          "--output-json",
+        ],
         corpusDirectory,
-        "--output-json",
-        "report.json",
-      ]);
+      );
 
       expect(run.exitCode).toBe(1);
-      expect(run.standardError).toContain("needs --write or --check reports");
+      expect(run.standardError).toContain(
+        String.raw`--output-json needs a path, or a \"json\" entry in the configuration's \"outputs\" to resolve one from`,
+      );
     });
 
-    it("lets a named destination stand for all of them", () => {
+    it("lets a named path write on its own, with no companion flag", () => {
       withCorpusCopy((directory) => {
-        const run = runCodometer([
-          "--directory",
+        const run = runCodometer(
+          [
+            "--config",
+            exampleConfiguration("output", "codometer.config.ts"),
+            "--output-json",
+            "only-this.json",
+          ],
           directory,
-          "--config",
-          exampleConfiguration("output", "codometer.config.ts"),
-          "--output-json",
-          "only-this.json",
-          "--write",
-        ]);
+        );
 
         expect(run.exitCode).toBe(0);
         expect(fs.existsSync(path.join(directory, "only-this.json"))).toBe(
@@ -562,27 +565,25 @@ describe("every example configuration this package ships", () => {
     it("appends the block when the markers are absent and creates the file", () => {
       withCorpusCopy((directory) => {
         const destination = path.join(directory, "statistics.md");
+        const configuration = exampleConfiguration(
+          "output",
+          "codometer.config.ts",
+        );
 
-        runCodometer([
-          "--directory",
+        runCodometer(
+          ["--config", configuration, "--output-markdown"],
           directory,
-          "--config",
-          exampleConfiguration("output", "codometer.config.ts"),
-          "--write",
-        ]);
+        );
 
         const first = fs.readFileSync(destination, "utf8");
 
         expect(first).toContain("<!-- CODE_STATISTICS_START -->");
         expect(first).toContain("<!-- CODE_STATISTICS_END -->");
 
-        runCodometer([
-          "--directory",
+        runCodometer(
+          ["--config", configuration, "--output-markdown"],
           directory,
-          "--config",
-          exampleConfiguration("output", "codometer.config.ts"),
-          "--write",
-        ]);
+        );
 
         // Rewritten in place rather than appended a second time.
         const second = fs.readFileSync(destination, "utf8");
@@ -593,13 +594,14 @@ describe("every example configuration this package ships", () => {
 
     it("splices between renamed markers", () => {
       withCorpusCopy((directory) => {
-        runCodometer([
-          "--directory",
+        runCodometer(
+          [
+            "--config",
+            exampleConfiguration("output", "renamed-markers.config.ts"),
+            "--output-markdown",
+          ],
           directory,
-          "--config",
-          exampleConfiguration("output", "renamed-markers.config.ts"),
-          "--write",
-        ]);
+        );
 
         const written = fs.readFileSync(
           path.join(directory, "statistics.md"),
@@ -611,15 +613,16 @@ describe("every example configuration this package ships", () => {
       });
     });
 
-    it("keeps the built-in writer when only render is supplied", () => {
+    it("splices a `write` function's own content between the markers", () => {
       withCorpusCopy((directory) => {
-        runCodometer([
-          "--directory",
+        runCodometer(
+          [
+            "--config",
+            exampleConfiguration("output", "custom-render.config.ts"),
+            "--output-markdown",
+          ],
           directory,
-          "--config",
-          exampleConfiguration("output", "custom-render.config.ts"),
-          "--write",
-        ]);
+        );
 
         const written = fs.readFileSync(
           path.join(directory, "statistics.md"),
@@ -627,22 +630,24 @@ describe("every example configuration this package ships", () => {
         );
 
         // The custom line, the built-in badges beneath it, and the built-in
-        // splice around both.
+        // splice around both — `write` built the content itself and handed it
+        // to `anchors.syncAnchoredBlock`.
         expect(written).toContain("source files");
         expect(written).toContain("img.shields.io");
         expect(written).toContain("<!-- CODE_STATISTICS_START -->");
       });
     });
 
-    it("keeps the built-in renderer when only write is supplied", () => {
+    it("lets a `write` function pick its own destination", () => {
       withCorpusCopy((directory) => {
-        runCodometer([
-          "--directory",
+        runCodometer(
+          [
+            "--config",
+            exampleConfiguration("output", "custom-write.config.ts"),
+            "--output-markdown",
+          ],
           directory,
-          "--config",
-          exampleConfiguration("output", "custom-write.config.ts"),
-          "--write",
-        ]);
+        );
 
         // The corpus holds Python, so the writer chose the other file.
         expect(fs.existsSync(path.join(directory, "polyglot.md"))).toBe(true);
@@ -664,13 +669,10 @@ describe("every example configuration this package ships", () => {
           "self-excluded.config.ts",
         );
         const write = (): void => {
-          runCodometer([
-            "--directory",
+          runCodometer(
+            ["--config", configuration, "--output-json", "--output-markdown"],
             directory,
-            "--config",
-            configuration,
-            "--write",
-          ]);
+          );
         };
 
         // Twice: the first run creates the two destinations, the second measures
@@ -700,25 +702,15 @@ describe("every example configuration this package ships", () => {
           "self-excluded.config.ts",
         );
 
-        runCodometer([
-          "--directory",
+        runCodometer(
+          ["--config", configuration, "--output-json", "--output-markdown"],
           directory,
-          "--config",
-          configuration,
-          "--write",
-        ]);
+        );
 
         // Asking for the report on the console is `--format json`, which names
         // no destination and so cannot drop the configured pair. The two files
-        // stay excluded and the count is the one the write run reported. The
-        // optional-value `--json` this replaced did count as a destination, so
-        // reading the report used to change which tree was measured.
-        const after = measure([
-          "--directory",
-          directory,
-          "--config",
-          configuration,
-        ]);
+        // stay excluded and the count is the one the write run reported.
+        const after = measure(["--config", configuration], directory);
 
         expect(readTarget(after, "codebase").files).toBe(28);
       });
@@ -726,13 +718,15 @@ describe("every example configuration this package ships", () => {
 
     it("says on the console what it left out", () => {
       withCorpusCopy((directory) => {
-        const run = runCodometer([
-          "--directory",
+        const run = runCodometer(
+          [
+            "--config",
+            exampleConfiguration("output", "self-excluded.config.ts"),
+            "--output-json",
+            "--output-markdown",
+          ],
           directory,
-          "--config",
-          exampleConfiguration("output", "self-excluded.config.ts"),
-          "--write",
-        ]);
+        );
 
         expect(run.standardError).toContain("statistics.md");
       });
@@ -748,23 +742,13 @@ describe("every example configuration this package ships", () => {
         );
         const reportPath = path.join(directory, "codometer-report.json");
 
-        runCodometer([
-          "--directory",
-          directory,
-          "--config",
-          configuration,
-          "--write",
-        ]);
+        runCodometer(["--config", configuration, "--output-json"], directory);
 
         expect(
-          runCodometer([
-            "--directory",
+          runCodometer(
+            ["--config", configuration, "--check", "reports"],
             directory,
-            "--config",
-            configuration,
-            "--check",
-            "reports",
-          ]).exitCode,
+          ).exitCode,
         ).toBe(0);
 
         // Stand in for a Node release whose bundled zlib compresses differently.
@@ -783,14 +767,10 @@ describe("every example configuration this package ships", () => {
 
         fs.writeFileSync(reportPath, JSON.stringify(written, null, 2));
 
-        const stale = runCodometer([
-          "--directory",
+        const stale = runCodometer(
+          ["--config", configuration, "--check", "reports"],
           directory,
-          "--config",
-          configuration,
-          "--check",
-          "reports",
-        ]);
+        );
 
         expect(stale.exitCode).toBe(1);
         expect(stale.standardError).toContain("Found stale reports");

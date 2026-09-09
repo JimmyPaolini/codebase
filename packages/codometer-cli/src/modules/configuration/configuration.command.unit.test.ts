@@ -51,9 +51,10 @@ describe(ConfigurationCommand, () => {
   });
 
   beforeEach(() => {
-    vi.mocked(configurationService.describeConfigurations).mockResolvedValue(
-      [],
-    );
+    vi.mocked(configurationService.describeConfigurations).mockResolvedValue({
+      described: [],
+      rootError: undefined,
+    });
     vi.mocked(configurationService.toLimitRows).mockReturnValue([]);
     vi.mocked(renderConfigurationService.render).mockReturnValue("rendered");
     write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
@@ -108,6 +109,22 @@ describe(ConfigurationCommand, () => {
     expect(command.parseDirectory(true)).toBe(process.cwd());
   });
 
+  it("hands the configuration it was pointed at to the walk", async () => {
+    await command.run([], { config: "configuration/codometer.config.ts" });
+
+    expect(configurationService.describeConfigurations).toHaveBeenCalledWith({
+      configurationPath: "configuration/codometer.config.ts",
+      workingDirectory: process.cwd(),
+    });
+  });
+
+  it("reads the configuration path it is given, and leaves it unset otherwise", () => {
+    expect(command.parseConfig("configuration/codometer.config.ts")).toBe(
+      "configuration/codometer.config.ts",
+    );
+    expect(command.parseConfig(undefined)).toBeUndefined();
+  });
+
   it("reads the format it is given, and falls back to markdown", () => {
     expect(command.parseFormat("json")).toBe("json");
     expect(command.parseFormat("")).toBe("markdown");
@@ -119,14 +136,17 @@ describe(ConfigurationCommand, () => {
   });
 
   it("counts the configurations it could not read when it logs", async () => {
-    vi.mocked(configurationService.describeConfigurations).mockResolvedValue([
-      {
-        configuration: undefined,
-        directory: "packages/broken",
-        error: "Cannot find module",
-        path: "packages/broken/codometer.config.ts",
-      },
-    ]);
+    vi.mocked(configurationService.describeConfigurations).mockResolvedValue({
+      described: [
+        {
+          configuration: undefined,
+          directory: "packages/broken",
+          error: "Cannot find module",
+          path: "packages/broken/codometer.config.ts",
+        },
+      ],
+      rootError: undefined,
+    });
 
     await command.run([], {});
 
@@ -135,6 +155,27 @@ describe(ConfigurationCommand, () => {
       undefined,
       { configurationCount: 1, unreadableCount: 1 },
     );
+  });
+
+  it("fails the run when nothing answers for the walk root, and still writes the listing", async () => {
+    const previousExitCode = process.exitCode;
+
+    vi.mocked(configurationService.describeConfigurations).mockResolvedValue({
+      described: [],
+      rootError: "needs a format",
+    });
+
+    try {
+      await command.run([], {});
+
+      // The listing is what the command exists to produce, so it is still
+      // written — but a zero exit code would claim the repository's own
+      // exclusions were read when they never were.
+      expect(write).toHaveBeenCalledWith("rendered\n");
+      expect(process.exitCode).toBe(1);
+    } finally {
+      process.exitCode = previousExitCode;
+    }
   });
 
   it("refuses a format it does not know, naming the ones it takes", async () => {

@@ -3,9 +3,19 @@
 import type {
   CodeStatisticsResult,
   CodometerSeverity,
+  CustomStatisticResultInstance,
   ResolvedCodometerConfiguration,
 } from "@codometer/configuration";
 import type { SizeResult } from "@codometer/size";
+
+/** Arguments accepted when recording one metric within one target's index. */
+export interface AddMetricArguments {
+  index: TargetMetricIndex;
+  /** Set only by a per-instance selector — a `comment` selector today. */
+  instances?: CustomStatisticResultInstance[] | undefined;
+  metricPath: string;
+  value: number;
+}
 
 /** Arguments accepted when binding one metric path within one target. */
 export interface BindMetricArguments {
@@ -113,7 +123,7 @@ export interface MetricIndexResult {
 
 /** Arguments accepted when resolving one limit's path to a single metric. */
 export interface ResolveMetricArguments {
-  defaultTarget: string | undefined;
+  defaultInput: string | undefined;
   indexes: ReadonlyMap<string, TargetMetricIndex>;
   /** The dotted path exactly as the limit was written. */
   path: string;
@@ -129,5 +139,16 @@ export interface TargetMetricIndex {
    */
   ambiguous: Set<string>;
   files: number;
+  /**
+   * Where each metric's per-instance measurements were found, keyed by the
+   * same dotted path `metrics` uses.
+   *
+   * Only a metric a per-instance selector produced has an entry here — a
+   * `comment` selector today, and any future selector that measures more
+   * than a count. A metric with no entry counted matches and nothing more,
+   * so a consumer reading this map can tell the two apart without reading
+   * the configuration that produced either.
+   */
+  instances: Map<string, CustomStatisticResultInstance[]>;
   metrics: Map<string, number>;
 }

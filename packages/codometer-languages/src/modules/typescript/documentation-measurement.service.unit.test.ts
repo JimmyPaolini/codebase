@@ -6,13 +6,13 @@ import { CommentsService } from "../comments/comments.service";
 
 import { DocumentationMeasurementService } from "./documentation-measurement.service";
 
+import type { DocumentationCommentCounter } from "../comments/comments.types";
 import type { TypescriptWalkContext } from "./typescript.types";
-import type { ResolvedCodometerDocumentationConfiguration } from "@codometer/configuration";
 
 /** Builds the walk context a measurement is taken against. */
 function buildContext(
   source: string,
-  documentation: ResolvedCodometerDocumentationConfiguration | undefined,
+  documentationCounters: DocumentationCommentCounter[],
 ): { context: TypescriptWalkContext; node: tsCompiler.Node } {
   const sourceFile = tsCompiler.createSourceFile(
     "src/foo.ts",
@@ -29,7 +29,7 @@ function buildContext(
   return {
     context: {
       counters: [],
-      documentation,
+      documentationCounters,
       filePath: "src/foo.ts",
       insideClass: false,
       sourceFile,
@@ -43,7 +43,7 @@ function buildContext(
         decorators: 0,
         docComments: 0,
         docTags: {},
-        documentation: [],
+        documentationCounts: {},
         enums: 0,
         exported: 0,
         externalPackages: new Set(),
@@ -66,27 +66,16 @@ function buildContext(
   };
 }
 
-const documentation: ResolvedCodometerDocumentationConfiguration = {
-  kinds: {
-    class: {
-      maximumCharacters: undefined,
-      maximumLines: 6,
-      maximumWords: undefined,
-      severity: "fail",
-    },
+const classCounter: DocumentationCommentCounter = {
+  budget: {
+    maximumCharacters: undefined,
+    maximumLines: 6,
+    maximumWords: undefined,
+    severity: "fail",
   },
-  maximumCharacters: undefined,
-  maximumLines: 6,
-  maximumWords: undefined,
-  severity: "fail",
+  kind: "class",
+  label: "class-docs",
 };
-
-/** The block above, judged in one unit rather than lines. */
-function inUnit(
-  overrides: Partial<ResolvedCodometerDocumentationConfiguration>,
-): ResolvedCodometerDocumentationConfiguration {
-  return { ...documentation, kinds: {}, maximumLines: undefined, ...overrides };
-}
 
 describe(DocumentationMeasurementService, () => {
   let service: DocumentationMeasurementService;
@@ -103,32 +92,31 @@ describe(DocumentationMeasurementService, () => {
     expect(service).toBeDefined();
   });
 
-  it("returns undefined when the walk carries no documentation configuration", () => {
+  it("returns nothing when the walk carries no documentation counter", () => {
     const { context, node } = buildContext(
       `/**
         * A class.
         */
        export class Foo {}`,
-      undefined,
+      [],
     );
 
     expect(service.measure(node, context)).toStrictEqual([]);
   });
 
-  it("returns undefined for a declaration with no JSDoc comment", () => {
-    const { context, node } = buildContext(
-      `export class Foo {}`,
-      documentation,
-    );
+  it("returns nothing for a declaration with no JSDoc comment", () => {
+    const { context, node } = buildContext(`export class Foo {}`, [
+      classCounter,
+    ]);
 
     expect(service.measure(node, context)).toStrictEqual([]);
   });
 
-  it("returns undefined for a plain block comment, not a JSDoc one", () => {
+  it("returns nothing for a plain block comment, not a JSDoc one", () => {
     const { context, node } = buildContext(
       `/* Not a doc comment. */
        export class Foo {}`,
-      documentation,
+      [classCounter],
     );
 
     expect(service.measure(node, context)).toStrictEqual([]);
@@ -141,10 +129,10 @@ describe(DocumentationMeasurementService, () => {
         * Line two.
         */
        export class Foo {}`,
-      documentation,
+      [classCounter],
     );
 
-    expect(service.measure(node, context)[0]).toMatchObject({
+    expect(service.measure(node, context)[0]?.measurement).toMatchObject({
       breached: false,
       kind: "class",
       measured: 4,
@@ -152,14 +140,32 @@ describe(DocumentationMeasurementService, () => {
     });
   });
 
+  it("tags the measurement with the counter's own label", () => {
+    const { context, node } = buildContext(
+      `/**
+        * Line one.
+        * Line two.
+        */
+       export class Foo {}`,
+      [classCounter],
+    );
+
+    expect(service.measure(node, context)[0]?.label).toBe("class-docs");
+  });
+
   it("measures characters, the raw comment block's length", () => {
     const text = "/** Short. */";
     const { context, node } = buildContext(
       `${text}\n       export class Foo {}`,
-      inUnit({ maximumCharacters: 1 }),
+      [
+        {
+          ...classCounter,
+          budget: { ...classCounter.budget, maximumCharacters: 1 },
+        },
+      ],
     );
 
-    expect(service.measure(node, context)[0]).toMatchObject({
+    expect(service.measure(node, context)[0]?.measurement).toMatchObject({
       measured: text.length,
       unit: "characters",
     });
@@ -171,10 +177,19 @@ describe(DocumentationMeasurementService, () => {
         * This comment has exactly seven words total.
         */
        export class Foo {}`,
-      inUnit({ maximumWords: 1 }),
+      [
+        {
+          ...classCounter,
+          budget: {
+            ...classCounter.budget,
+            maximumLines: undefined,
+            maximumWords: 1,
+          },
+        },
+      ],
     );
 
-    expect(service.measure(node, context)[0]).toMatchObject({
+    expect(service.measure(node, context)[0]?.measurement).toMatchObject({
       measured: 7,
       unit: "words",
     });
@@ -184,13 +199,24 @@ describe(DocumentationMeasurementService, () => {
     const { context, node } = buildContext(
       `/** Four words right here. */
        export class Foo {}`,
-      inUnit({ maximumWords: 1 }),
+      [
+        {
+          ...classCounter,
+          budget: {
+            ...classCounter.budget,
+            maximumLines: undefined,
+            maximumWords: 1,
+          },
+        },
+      ],
     );
 
-    expect(service.measure(node, context)[0]).toMatchObject({ measured: 4 });
+    expect(service.measure(node, context)[0]?.measurement).toMatchObject({
+      measured: 4,
+    });
   });
 
-  it("marks a declaration whose measured length exceeds its kind's limit as breached", () => {
+  it("marks a declaration whose measured length exceeds its own counter's limit as breached", () => {
     const { context, node } = buildContext(
       `/**
         * One.
@@ -198,35 +224,45 @@ describe(DocumentationMeasurementService, () => {
         * Three.
         */
        export class Foo {}`,
-      {
-        ...documentation,
-        kinds: {
-          class: {
-            maximumCharacters: undefined,
-            maximumLines: 2,
-            maximumWords: undefined,
-            severity: "fail",
-          },
+      [
+        {
+          ...classCounter,
+          budget: { ...classCounter.budget, maximumLines: 2 },
         },
-      },
+      ],
     );
 
-    expect(service.measure(node, context)[0]).toMatchObject({
+    expect(service.measure(node, context)[0]?.measurement).toMatchObject({
       breached: true,
       limit: 2,
     });
   });
 
-  it("falls back to the default limit for a kind naming none", () => {
+  it("measures a declaration once per counter that names its kind", () => {
     const { context, node } = buildContext(
       `/**
-        * An interface with no configured kind limit.
+        * One.
+        * Two.
+        * Three.
         */
-       export interface Bar {}`,
-      { ...documentation, kinds: {} },
+       export class Foo {}`,
+      [
+        classCounter,
+        {
+          ...classCounter,
+          budget: { ...classCounter.budget, maximumLines: 2 },
+          label: "strict",
+        },
+      ],
     );
 
-    expect(service.measure(node, context)[0]).toMatchObject({ limit: 6 });
+    const measurements = service.measure(node, context);
+
+    expect(measurements).toHaveLength(2);
+    expect(measurements.map((entry) => entry.label)).toStrictEqual([
+      "class-docs",
+      "strict",
+    ]);
   });
 
   it("names the declaration by its own identifier", () => {
@@ -235,10 +271,10 @@ describe(DocumentationMeasurementService, () => {
         * A function.
         */
        export function greet(): void {}`,
-      documentation,
+      [{ ...classCounter, kind: "function" }],
     );
 
-    expect(service.measure(node, context)[0]).toMatchObject({
+    expect(service.measure(node, context)[0]?.measurement).toMatchObject({
       declaration: "greet",
       kind: "function",
     });
@@ -250,10 +286,10 @@ describe(DocumentationMeasurementService, () => {
         * An anonymous function.
         */
        export default function (): void {}`,
-      documentation,
+      [{ ...classCounter, kind: "function" }],
     );
 
-    expect(service.measure(node, context)[0]).toMatchObject({
+    expect(service.measure(node, context)[0]?.measurement).toMatchObject({
       declaration: "(anonymous)",
     });
   });
@@ -266,19 +302,21 @@ describe(DocumentationMeasurementService, () => {
         * A class.
         */
        export class Foo {}`,
-      documentation,
+      [classCounter],
     );
 
-    expect(service.measure(node, context)[0]).toMatchObject({ line: 6 });
+    expect(service.measure(node, context)[0]?.measurement).toMatchObject({
+      line: 6,
+    });
   });
 
-  it("returns undefined for a node kind no documentation limit can name", () => {
+  it("returns nothing for a node kind no documentation counter names", () => {
     const { context, node } = buildContext(
       `/**
         * A comment above something that is not a documentable declaration.
         */
        import "./whatever";`,
-      documentation,
+      [classCounter],
     );
 
     expect(service.measure(node, context)).toStrictEqual([]);

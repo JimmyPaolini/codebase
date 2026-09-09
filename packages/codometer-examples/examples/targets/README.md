@@ -1,13 +1,15 @@
 # 🎯 Targets
 
-A **target** is a named set of files, addressed by glob. That is what lets one
-measure compiled output: something that lives outside the measured directory, is
-named by a `.gitignore`, or both.
+A **target** is a named set of files, addressed by glob — declared under the
+configuration's `inputs` array, which is what `targets` used to be called.
+That is what lets one measure compiled output: something that lives outside
+the measured directory, is named by a `.gitignore`, or both.
 
 ## Run it
 
 ```bash
-codometer --directory examples/corpus --config examples/targets/codometer.config.ts
+cd examples/corpus
+codometer --config ../targets/codometer.config.ts
 ```
 
 ## What is here
@@ -50,7 +52,8 @@ exception. Try it:
 
 ```bash
 cp -R packages/codometer-examples/examples/compiled packages/codometer-examples/examples/corpus/generated
-codometer --directory examples/corpus --config examples/targets/ignored.config.ts
+cd packages/codometer-examples/examples/corpus
+codometer --config ../targets/ignored.config.ts
 rm -rf packages/codometer-examples/examples/corpus/generated
 ```
 

@@ -3,7 +3,7 @@ import {
   DEFAULT_MARKDOWN_START_MARKER,
 } from "@codometer/configuration";
 
-import type { ResolvedCodometerMarkdownOutputConfiguration } from "@codometer/configuration";
+import type { ResolvedMarkdownDestination } from "../run-plan/run-plan.types";
 
 // ♟️ Constants
 
@@ -15,12 +15,12 @@ import type { ResolvedCodometerMarkdownOutputConfiguration } from "@codometer/co
  * defaults a configuration inherits, so what is printed matches what would
  * have been written byte for byte.
  */
-export const DEFAULT_MARKDOWN_DESTINATION: ResolvedCodometerMarkdownOutputConfiguration =
-  {
-    description: undefined,
-    endMarker: DEFAULT_MARKDOWN_END_MARKER,
-    path: undefined,
-    render: undefined,
-    startMarker: DEFAULT_MARKDOWN_START_MARKER,
-    write: undefined,
-  };
+export const DEFAULT_MARKDOWN_DESTINATION: ResolvedMarkdownDestination = {
+  custom: [],
+  description: undefined,
+  endMarker: DEFAULT_MARKDOWN_END_MARKER,
+  path: undefined,
+  startMarker: DEFAULT_MARKDOWN_START_MARKER,
+  type: "markdown",
+  write: undefined,
+};
