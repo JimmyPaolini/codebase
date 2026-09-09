@@ -1,6 +1,6 @@
 ---
 name: testing-strategy
-description: "Use codebase testing conventions: unit, integration, end-to-end test naming and Nx commands. Use when adding tests or recommending test coverage."
+description: "Use codebase testing conventions: unit, integration, end-to-end test naming and Nx commands, plus the four gates a change must clear — test coverage, type coverage, compiled size, and advisory duplication. Use when adding tests, recommending test coverage, running type-coverage, or checking which quality gates a touched project has to pass."
 license: MIT
 ---
 
@@ -54,6 +54,34 @@ Additional coverage practices from recent 96% threshold work:
 - For orchestration services, combine focused unit tests with a small set of integration tests that verify cross-service error propagation and empty-data behavior.
 - Include module wiring and constants/types-adjacent smoke tests where needed so structural files do not remain persistent blind spots under strict thresholds.
 - Before opening or updating a coverage-focused PR, run the CI-shaped command locally: `nx affected --target=vitest --configuration=coverage --base=main`.
+
+## The other gates beside test coverage
+
+Test coverage is one of four numbers a change has to clear. Passing `vitest`
+proves nothing about the other three, so run each one that applies to a project
+you touched.
+
+| Gate | Threshold | How to run |
+| ---- | --------- | ---------- |
+| Test coverage | 96% branches, functions, lines, statements — set once in `configuration/vitest.config.ts` | `nx run <project>:vitest --configuration=coverage` |
+| Type coverage | Per project, in that project's own `package.json` as `typeCoverage.atLeast`. Most packages sit at 100 with `strict: true` | `nx run <project>:type-coverage` |
+| Compiled size | Per project, declared in its own `codometer.config.ts`. Only projects that emit something declare one | `nx run <project>:codometer` |
+| Duplication | **Not a gate.** Advisory only, and nothing in CI runs it | `nx run codebase:jscpd` |
+
+**Type coverage is the one most often forgotten**, because `typecheck` passing
+looks like the same assurance and is not. `typecheck` asks whether the types are
+consistent; `type-coverage` asks how much of the code is actually typed. A
+project can pass the first at 88% coverage and fail the second. The workspace
+root is the one exception to the manifest rule — its 95 is a `--at-least` flag
+on the root `type-coverage` target in `project.json`, not a manifest field.
+
+**Compiled size lives with codometer**, not here. A breach names the project and
+fails the build pipeline; the `codometer-triage` skill covers what to do about
+it, and `codometer-configure` covers declaring a target and its limit. The short
+version is the same as any limit: reduce what is measured, never raise the
+number on the change that broke it.
+
+**Lowering any of these thresholds to make a change pass is not an option.**
 
 ## Mocking with `createMock`
 

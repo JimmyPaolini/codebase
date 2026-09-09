@@ -587,9 +587,9 @@ Call stacks traced through `packages/callidescope-cli`, deepest first. Each fram
 
 | Measure | Value |
 | --- | --- |
-| Callables | 136 |
+| Callables | 138 |
 | Files | 44 |
-| Calls traced | 190 |
+| Calls traced | 192 |
 | Call stacks | 18 |
 | Deepest stack | 15 |
 | Stacks through recursion | 0 |
@@ -609,7 +609,7 @@ What this project is judged against. `declared` is the number in this project's 
 **1. `CallidescopeCommand.run`** — depth ≥ 15 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.run(passedParameters: string[], options: CallidescopeCommandOptions): Promise<void> [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:465]
+🚀 CallidescopeCommand.run(passedParameters: string[], options: CallidescopeCommandOptions): Promise<void> [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:467]
    ↳ Traces the workspace, reports, and sets the exit code.
   └─> CallidescopeCommand.traceWorkspace(options: CallidescopeCommandOptions): Promise<void> [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:288]
      ↳ Traces the workspace, reports, and sets the exit code.
@@ -808,7 +808,7 @@ What this project is judged against. `declared` is the number in this project's 
 **13. `CallidescopeCommand.parseMarkdown`** — depth 2 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.parseMarkdown(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:427]
+🚀 CallidescopeCommand.parseMarkdown(value: string | undefined): string | undefined [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:428]
    ↳ Parses `--markdown`.
   └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/callidescope-configuration/src/modules/input/input.service.ts:121]
      ↳ Trims an optional string option, treating blank as absent.
@@ -888,11 +888,12 @@ What this project is judged against. `declared` is the number in this project's 
 | `CallidescopeService.loadProjectDeclarations` | 5 | `ProjectConfigurationService.loadProjectConfigurations`, `CallidescopeService.map(…)`, `CallidescopeService.map(…)`, `CallidescopeService.filter(…)`, `ProjectConfigurationService.resolveLimits` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:231` |
 | `BreadthCommand.printBreadth` | 5 | `InputService.resolveFormatOption`, `AddressLookupService.locate`, `BreadthCommand.resolveAddresses`, `BreadthCommand.buildReports`, `AddressReportService.renderBreadthReports` | `packages/callidescope-cli/src/modules/breadth/breadth.command.ts:130` |
 | `ReportFindingsService.reportFindings` | 4 | `ReportFindingsService.reportStaleness`, `ReportFindingsService.reportDeepStacks`, `ReportFindingsService.reportWideCallables`, `ReportFindingsService.reportEmptyTrace` | `packages/callidescope-cli/src/modules/report-findings/report-findings.service.ts:127` |
-| `RunPlanService.readCheckNames` | 4 | `RunPlanService.describeAcceptedCheckNames`, `RunPlanService.filter(…)`, `RunPlanService.map(…)`, `RunPlanService.validateCheckNames` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:62` |
-| `CallidescopeCommand.run` | 4 | `CallidescopeCommand.reject`, `buildUnknownCommandMessage`, `CallidescopeCommand.traceWorkspace`, `readRefusalHeadline` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:465` |
+| `RunPlanService.readCheckNames` | 4 | `RunPlanService.describeAcceptedCheckNames`, `RunPlanService.filter(…)`, `RunPlanService.map(…)`, `RunPlanService.validateCheckNames` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:63` |
+| `CallidescopeCommand.run` | 4 | `CallidescopeCommand.reject`, `buildUnknownCommandMessage`, `CallidescopeCommand.traceWorkspace`, `readRefusalHeadline` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:467` |
 | `AddressReportService.renderBreadthDiagram` | 4 | `AddressReportService.toFrame`, `AddressReportService.map(…)`, `AddressReportService.map(…)`, `MermaidReportService.renderStacks` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:59` |
 | `LimitsCommand.run` | 4 | `LimitsService.list`, `RenderLimitsService.render`, `readRefusalHeadline`, `LimitsCommand.reject` | `packages/callidescope-cli/src/modules/limits/limits.command.ts:85` |
-| `RunPlanService.prepareRun` | 3 | `RunPlanService.selectMode`, `ConfigurationService.loadConfigurationFile`, `RunPlanService.resolveMarkdownDestination` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:185` |
+| `RunPlanService.prepareRun` | 3 | `RunPlanService.selectMode`, `ConfigurationService.loadConfigurationFile`, `RunPlanService.resolveMarkdownDestination` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:186` |
+| `RunPlanService.selectMode` | 3 | `RunPlanService.readCheckNames`, `RunPlanService.filter(…)`, `RunPlanService.map(…)` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:250` |
 | `CallidescopeCommand.report` | 3 | `OutputJsonService.buildReport`, `MarkdownReportService.renderRun`, `CallidescopeCommand.readPreviewCount` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:190` |
 | `AddressReportService.renderBreadth` | 3 | `AddressReportService.buildBreadthPayload`, `AddressReportService.renderBreadthDiagram`, `AddressReportService.renderReferenceTable` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:151` |
 | `AddressReportService.renderDepth` | 3 | `AddressReportService.buildDepthPayload`, `MermaidReportService.renderStacks`, `AddressReportService.renderDepthStacks` | `packages/callidescope-cli/src/modules/address-report/address-report.service.ts:206` |
@@ -914,12 +915,11 @@ What this project is judged against. `declared` is the number in this project's 
 | `DepthCommand.map(…)` | 2 | `AddressDepthService.buildDownwardStacks`, `AddressDepthService.buildUpwardStacks` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:114` |
 | `DepthCommand.resolveAddresses` | 2 | `InputService.promptForAutocompleteMultiselect`, `AddressLookupService.listAddresses` | `packages/callidescope-cli/src/modules/depth/depth.command.ts:152` |
 | `RenderLimitsService.map(…)` | 2 | `RenderLimitsService.renderRow`, `RenderLimitsService.renderProject` | `packages/callidescope-cli/src/modules/limits/render-limits.service.ts:61` |
-| `RunPlanService.describeAcceptedCheckNames` | 1 | `RunPlanService.map(…)` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:50` |
-| `RunPlanService.resolveMarkdownDestination` | 1 | `ConfigurationService.resolveConfiguration` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:94` |
-| `RunPlanService.validateCheckNames` | 1 | `RunPlanService.describeAcceptedCheckNames` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:110` |
-| `RunPlanService.prepareLookup` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:138` |
-| `RunPlanService.selectMode` | 1 | `RunPlanService.readCheckNames` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:249` |
-| `RunPlanService.validateProjectLimits` | 1 | `RunPlanService.some(…)` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:300` |
+| `RunPlanService.describeAcceptedCheckNames` | 1 | `RunPlanService.map(…)` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:51` |
+| `RunPlanService.resolveMarkdownDestination` | 1 | `ConfigurationService.resolveConfiguration` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:95` |
+| `RunPlanService.validateCheckNames` | 1 | `RunPlanService.describeAcceptedCheckNames` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:111` |
+| `RunPlanService.prepareLookup` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:139` |
+| `RunPlanService.validateProjectLimits` | 1 | `RunPlanService.some(…)` | `packages/callidescope-cli/src/modules/run-plan/run-plan.service.ts:320` |
 | `readRefusalHeadline` | 1 | `isRefusedProjectConfiguration` | `packages/callidescope-cli/src/modules/callidescope/callidescope.constants.ts:71` |
 | `UnresolvedEntryPointAddressError.constructor` | 1 | `UnresolvedEntryPointAddressError.joinDescriptions` | `packages/callidescope-cli/src/modules/callidescope/callidescope.constants.ts:106` |
 | `UnresolvedEntryPointAddressError.joinDescriptions` | 1 | `UnresolvedEntryPointAddressError.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.constants.ts:120` |
@@ -932,7 +932,7 @@ What this project is judged against. `declared` is the number in this project's 
 | `CallidescopeCommand.parseDirectories` | 1 | `InputService.parseCommaDelimitedOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:400` |
 | `CallidescopeCommand.parseFormat` | 1 | `InputService.parseFormat` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:409` |
 | `CallidescopeCommand.parseJson` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:418` |
-| `CallidescopeCommand.parseMarkdown` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:427` |
+| `CallidescopeCommand.parseMarkdown` | 1 | `InputService.parseOptionalOption` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:428` |
 | `AddressLookupService.describeProblem` | 1 | `AddressService.describeCandidates` | `packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:53` |
 | `AddressLookupService.listAddresses` | 1 | `AddressService.listAddresses` | `packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:82` |
 | `AddressLookupService.resolve` | 1 | `AddressService.resolve` | `packages/callidescope-cli/src/modules/address-lookup/address-lookup.service.ts:104` |
@@ -1265,14 +1265,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10637-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-352.56_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10715-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-356.02_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-64-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-39.47_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-40.02_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -1281,7 +1281,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-40-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-228-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-229-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-1-166534?style=flat-square)
 
 ### JavaScript
@@ -1290,15 +1290,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-16-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-19-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-21-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-422-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-118-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-362-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-427-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-120-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-369-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-178-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-374-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-382-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-322-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-85-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-533-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1185-475569?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-86-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-534-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1191-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

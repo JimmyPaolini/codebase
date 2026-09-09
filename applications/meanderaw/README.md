@@ -17,12 +17,13 @@ sub-command was picked:
 
 `--type` and `--rows` go together: one without the other is refused rather than treated
 as a sweep, since neither flag can be declared `required` when passing neither is how the
-sweep is asked for. Every other flag — `--modifier` and the parameter it needs
-(`--strands`, `--branches`, `--leftward`, `--upward`),
+sweep is asked for. Every other flag — `--modifier` and the parameters it carries
+(`--strands`, `--branches`, `--direction`, and `serpentine`'s optional `--flip` and
+`--offset`),
 `--sub-family`, `--repeat-count`, `--output-directory` — narrows the one drawing. A modifier
-that takes a parameter is refused without it, rather than defaulted; the two boolean
-directions are exempt, because a boolean flag left off and one passed `false` reach the
-command identically.
+that requires a parameter is refused without it, rather than defaulted; `--direction` is
+exempt, because the direction it names is the one every `rung` drawing carried before the
+other three were reachable, so leaving it off draws that one rather than nothing.
 
 `--sub-family` is the one flag that narrows a drawing without adjusting a repeat unit: it
 names a member of a family's own unit space. For `mosaic` it is **required**, because that
@@ -52,9 +53,10 @@ over is its filename:
 ```text
 output/
   index.html                                        every drawing, linked and captioned
+  lattice-addresses.md                              every drawing's lattice address
   <family>/
     <rows>-rows/
-      <variant>-<repeatCount>-repeats.svg           `plain` where there is no modifier
+      <variant>-<repeatCount>-repeats-<address>.svg `plain` where there is no modifier
       <columns>-columns/                            `mosaic`'s tiles, all it draws
 
         <identifier>[-<name>].svg
@@ -63,9 +65,29 @@ output/
           <identifier>[-<name>].svg
 ```
 
-So `output/chain/7-rows/edge-flip-6-repeats.svg`,
+So `output/chain/7-rows/edge-flip-6-repeats-7r14c.svg`,
 `output/mosaic/6-rows/1-columns/00000-dots.svg`, and
 `output/negative/6-rows/permutations/1-columns/030303-ruled.svg`.
+
+**That trailing `<address>` is where the drawing sits on the lattice**, read off the
+finished ink rather than off the parameters, so a drawing that changed shape cannot keep
+the name it had. It comes in two spellings, and which one a family uses is declared once
+per family by `FILENAME_ADDRESS_CONVENTION` rather than chosen per drawing:
+
+- **The full address** — the row-and-span shape, then one hexadecimal character per
+  addressed lattice point: `7r3c-444cccccccccccc888`. `branch`, `cross`, and `negative`
+  carry it, and so a filename alone says everything about which pattern was drawn.
+- **The shape alone** — `7r14c`, and no identifier. `boxes`, `chain`, `parallel`,
+  `snake`, `swirl`, and `whirl` carry this, because their widest repeat spans enough
+  lattice points that a full address would put the filename past the 255-byte limit
+  filesystems impose on one path component: 566 bytes for `parallel` at twelve strands,
+  515 for `boxes` at twelve rows, 295 for `chain`. Two drawings of one family at one row
+  count and one span can therefore share a filename shape, and the 🗺️ Lattice
+  Addresses table below is where the identifier that separates them is written down.
+
+`mosaic` is spelled by neither rule. Every drawing it files is one enumerated tile, so its
+filename is that tile's identifier from the start — `00000-dots.svg` — with no variant or
+repeat count in front of it to append anything to.
 
 `mosaic` has no `permutations/` level, and nothing beside those `<columns>-columns/`
 directories either. That level separated an enumerated half from a named one, and for
@@ -75,8 +97,10 @@ different: its named half draws ten sources built by rule, and its
 enumerated half inverts `mosaic` tiles. A modifier carrying a
 
 parameter puts it in the variant too, or two of its own drawings would collide on one
-path: `output/branch/7-rows/stagger-branches-4-6-repeats.svg` and
-`output/branch/7-rows/comb-upward-6-repeats.svg`. A directory listing is
+path: `output/branch/7-rows/stagger-branches-4-6-repeats-7r3c-444cccccccccccc888.svg`
+and
+`output/branch/7-rows/stagger-branches-5-6-repeats-7r4c-4444cccccccccccccccc8888.svg`.
+A directory listing is
 then the parameter space it enumerates, and the 8,759 enumerated tiles — which would be
 unreadable as one flat directory — sit under the row count and column span that produced
 them, named by nothing but the hexadecimal string that distinguishes them, with the handful whose
@@ -120,14 +144,25 @@ Ten families of meander are implemented, and they share a set of properties that
 load-bearing to how a meander looks. The invariants were extracted from the six families
 that predate them, by measuring every committed SVG rather than by reading the code, and
 each is marked fixed or negotiable. A new family that breaks a fixed invariant is not a
-new family — it is a different kind of drawing. Three of the four that came after break a
-negotiable one each, on purpose: `cross` crosses, and `negative` and `branch` both branch
-— in different shapes, which "The Branching Family" below is about. `negative` breaks the
-other one too, in three of its ten modes, and that is not a second family creeping in: the
-survey below found that 3,070 of the 3,179 `mosaic` tiles it measured have a crossing
-negative, so a `negative` family that crossed nowhere was drawing the 3.3% minority of its
-own source space. The fourth of the four, `parallel`, breaks none of them, and that is the
-point of it.
+new family — it is a different kind of drawing. All four of the families that came after
+break a negotiable one: `cross` crosses, and `negative`, `branch`, and `parallel` all
+branch — in different shapes, which "The Branching Family" and "The Parallel Family" below
+are about. `negative` breaks the other one too, in three of its ten modes, and that is not
+a second family creeping in: the survey below found that 3,070 of the 3,179 `mosaic` tiles
+it measured have a crossing negative, so a `negative` family that crossed nowhere was
+drawing the 3.3% minority of its own source space.
+
+`parallel` was the exception until this corpus was drawn, and its row of
+`RELAXED_INVARIANTS` was empty on purpose. **That is reversed.** Ruling both borders of
+its band — the same closing `branch` takes, though there the rules stand a lattice row
+clear of the ink — meets each strand's
+rising end with west, east, and south ink at one lattice point, so 642 of its 786 drawings
+fork. The row is not blanket: the other 144 are the `serpentine` drawings whose first and
+last strips are each one lattice row deep, where the flat ribbon on such a strip _is_ the
+rule and nothing rises to meet it. So the relaxation carries a **structural condition**
+rather than a list of modifier names, which is the only such row in the declaration. See
+`docs/adr/0006-close-both-band-borders-in-branch-and-parallel.md` for why both borders were
+closed and what it cost.
 
 `mosaic` breaks both, and it is the only family that breaks them in its **enumerated half
 alone** — which is now the whole of it. Its unit space is every assignment of direction
@@ -141,7 +176,7 @@ _present_ is taken from committed output rather than from a generated drawing.
 | --- | --- | --- |
 | 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Fixed |
 | 2 | **Space-filling** — every interior white channel is exactly one stroke width | Fixed |
-| 3 | **No branching** — ink contains no T-junctions | Relaxed by `branch` in every mode, by `negative` in every mode but `ruled-closed`, by `mosaic` across its enumerated half, and by `chain` and `snake` under `edge` and `edge-flip` |
+| 3 | **No branching** — ink contains no T-junctions | Relaxed by `branch` in every mode, by `negative` in every mode but `ruled-closed`, by `parallel` wherever a border strip has depth, by `mosaic` across its enumerated half, and by `chain` and `snake` under `edge` and `edge-flip` |
 | 4 | **No crossing** — ink contains no X-junctions | Relaxed by `cross` except under `interrupted`, by `mosaic` across its enumerated half, and by `negative` under `brick-straight`, `brick-upright`, and `grid` |
 | 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Fixed |
 | 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
@@ -149,15 +184,18 @@ _present_ is taken from committed output rather than from a generated drawing.
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
-against the corpus as it now stands, 1,159 named patterns beside 8,759 enumerated tiles.
+against the corpus as it now stands, 1,118 named patterns beside 8,759 enumerated tiles.
 The named half was 174 until the sweep's row range was raised to the command line's own,
-and it has moved with every family that gained a mode or a parameter since; the enumerated
+and it has moved with every family that gained a mode or a parameter since — and, when
+closing both band borders left four names drawing what another name already drew, with the
+four that were deleted, and again with `branch`'s six two-row drawings, which insetting
+that family's figure from its own rules put below its structural minimum; the enumerated
 half was 3,554 until `mosaic` was capped at 6 rows, 449 after that, and 8,759 once that
 family's matching rule was replaced by an edge budget over a lattice. Most of these counts
 have moved several times for those reasons alone — see the note under "Meander Charter"
 above:
 
-- **Every interior white channel is exactly one stroke width**, in all 9,918 files. The
+- **Every interior white channel is exactly one stroke width**, in all 9,877 files. The
   channel width equals the stroke width equals half a grid unit, and that single number
   is the same in every document the project has ever written — the stroke is `unit / 2`
   at every row count, in every family, at every ply of `parallel`. #340 and #413 both
@@ -172,31 +210,43 @@ above:
   ten modes and 30 of its 100 documents — `brick-straight` is stack bond, whose mortar runs
   unbroken both ways where running bond's does not, `grid` inverts the `dots` sub-family,
   and `brick-upright` inverts `diamond` — for 705 X-junctions between them. Its permutation
-  half crosses in 106 of its 159 drawings, which is the same finding at the scale of a
-  whole space rather than of three named modes. Nowhere else in the 9,918-file corpus.
+  half crosses in 136 of its 208 drawings, which is the same finding at the scale of a
+  whole space rather than of three named modes. Nowhere else in the 9,877-file corpus.
   `cross` carries twelve at every one of its row counts, 6 through 12, so its count is a
   property of the repeat count rather than of `rows`. See "The Crossing Family" and "The
   Negative Space Family" below.
-- **Ink branches in three places, and only there.** 5,152 T-junctions across 214 of the 1,159 named patterns. 360 of them, across 36 patterns, are `chain` and `snake` under `edge`
-  and `edge-flip`, ten per document at every row count: the `edge` family widens the
+- **Ink branches in four places, and only there.** 22,918 T-junctions across 848 of the
+  1,118 named patterns. 360 of them, across 36 patterns, are `chain` and `snake` under
+  `edge` and `edge-flip`, ten per document at every row count: the `edge` family widens the
   repeat unit past the zigzag it contains, so the zigzag's terminating vertical lands in
   the _interior_ of the band border rather than at its end, and the border runs on either
   side of it — five such junctions along the top border, five along the bottom. An earlier
   reading of this measurement reported zero everywhere; the reference assets are
   hand-verified ground truth for what these patterns should look like, so the geometry is
-  right and the count was wrong. The other 3,638 are the point of two families rather than
-  a side effect of anything: 1,900 across the `negative` family's 30 documents and 1,738
-  across the `branch` family's 88 — see "The Negative Space Family" and "The Branching
-  Family" below.
-- **Ink was a forest everywhere until it was a tree in one place.** Read as a graph, a
-  document's ink is lattice points joined by one-pitch steps. All 725 documents that
-  predate `branch` are one of two things and neither is a tree: 455 are forests of many
-  components — a disjoint union of simple arcs — and 270 carry loops, being `negative`'s
-  245, `cross`'s 7 solid drawings, and 18 `snake` drawings under `edge`/`edge-flip`.
-  `branch`'s 88 are the only trees in the corpus: one connected piece, `edges = nodes − 1`,
-  no loop anywhere. See "The Branching Family" below.
+  right and the count was wrong. The other 22,558 are the point of three families rather
+  than a side effect of anything: 3,054 across the `negative` family's 90 branching
+  documents, 2,130 across all 80 of `branch`'s, and 17,374 across 642 of `parallel`'s 786
+  — see "The Negative Space Family", "The Branching Family", and "The Parallel Family"
+  below.
+- **The corpus was a forest with a few trees in it, and now it has none.** Read as a
+  graph, a document's ink is lattice points joined by one-pitch steps, and a **tree** is
+  the case where those points form one connected piece with `edges = nodes − 1`. Until
+  both border rules were closed the corpus held 110 of them — `branch`'s 88, which were
+  spanning trees of the band's lattice, and the 22 one-strand `serpentine` drawings, each
+  a single ribbon that simply did not end before the band did. Both routes ran through an
+  open border, and ruling both borders closed both — but not the same way, which is the
+  part worth keeping. A ribbon that meets a rule at each end closes a loop, so it leaves
+  the tree set by gaining an edge. `branch` briefly left it that way too, and now leaves
+  it by falling apart instead: its figure is inset by a lattice row from every rule beside
+  it, so each rule is a piece of its own and the drawing is a forest of two or three. By
+  either route, **not one of the 9,877 committed documents is a tree**. 5,817 of the
+  9,877 are forests of many components and 4,060 carry a loop, where before the two halves
+  stood at 6,390 and 3,418. What was measured is still the
+  interesting thing — a corpus this large containing exactly two shapes of ink graph — and
+  the trees turn out to have been an artifact of two families having a border left open.
+  See "The Branching Family" and "The Parallel Family" below.
 - **The negative space branches and crosses freely.** It branches in every family, and it
-  genuinely crosses in 203 of the 1,159 named drawings — every one of them `parallel`
+  genuinely crosses in 203 of the 1,118 named drawings — every one of them `parallel`
   under `serpentine` — and in the `diamond` sub-family, which is the shape the `mosaic
   split` modifier drew before that family stopped drawing motifs. Crossing patterns
   are already generated here; they have only ever been white, never ink.
@@ -214,7 +264,7 @@ property.
 
 **The named half of the sweep runs to each family's own `FAMILY_MAXIMUM_ROWS`**, which is
 the same record the command line validates against — so every drawing the command line can
-be asked for is also a drawing this repository commits and the charter gates: 1,159
+be asked for is also a drawing this repository commits and the charter gates: 1,118
 combinations, each family from its own structural minimum through its own ceiling. That
 ceiling is the shared `MAXIMUM_VALUE` of 12 for nine of the ten families, and 6 for
 `mosaic`, whose reasons are below.
@@ -248,11 +298,14 @@ above 6 rows.
 
 A **family** is a generator of repeat units — its **unit space**. A **modifier** is a
 named constructor into that space; a **sub-family** is a named predicate over it. Both
-are views on one underlying space, which is why `mosaic` is the only family with
-sub-families today: [#365](https://github.com/JimmyPaolini/codebase/pull/365)
+are views on one underlying space, which is why `mosaic` is the only family whose
+sub-families can be **asked for**: [#365](https://github.com/JimmyPaolini/codebase/pull/365)
 materialized its unit space as enumerable tiles, so its regions — `lines`, `dashes`,
-`dots`, `diamond` — became recognizable. The other nine families have latent unit spaces
-and therefore only modifiers.
+`dots`, `diamond` — became nameable at the command line. The other nine families have
+latent unit spaces and therefore only modifiers. Evaluating a predicate needs no
+enumeration, though, so a drawing from any of those nine can still **earn** a sub-family
+name from the tile it draws — 85 of the 1,118 swept combinations do, and the
+[lattice address table](output/lattice-addresses.md) reports which.
 
 ### The mosaic family draws no motif
 
@@ -293,7 +346,7 @@ is refused by `MissingSubFamilyError` rather than defaulting to the bar, and the
 names the eight sub-families to choose from. `MotifRegistryService` holds no entry for the
 family at all, which `MotifDrawnType` makes a type error rather than a lookup answering
 `undefined`, and `DrawCombinationsService` leaves it out of the named-type sweep entirely
-— so the named half is 1,159 rather than 1,183, and every one of this family's 8,551
+— so the named half is 1,118 rather than 1,142, and every one of this family's 8,551
 drawings comes from one enumeration.
 
 ### A `mosaic` tile is a lattice of four-direction points
@@ -821,10 +874,13 @@ loops before the shape that inspired it can satisfy the tree test (`edges = vert
 
 ## 🔬 Unit Spaces Beyond Mosaic
 
-`mosaic` is the only family with sub-families, and
+`mosaic` is the only family whose unit space is materialized and enumerable, and
 [#414](https://github.com/JimmyPaolini/codebase/issues/414) asked whether that asymmetry
 can be removed: is there, for `boxes`, `chain`, `snake`, `swirl`, and `whirl`, a generating
 rule producing a finite enumerable unit space the way `mosaic`'s exact-cover rule does?
+Only `mosaic` had sub-families when this was measured, and the ticket read that as the
+visible half of the same asymmetry; the second blockquote below records why it is no
+longer, and why nothing measured here moved when it stopped being.
 
 **A rule exists, it is the same rule for all five, and that is exactly the problem.** The
 charter's own invariants already define one. It is family-agnostic, and at the pitch these
@@ -1077,6 +1133,27 @@ scheme, and the only safety net is 23 byte-exact reference assets concentrated a
 The expand phase would add the tile type and a tile-driven renderer alongside the existing
 services and prove byte-equality family by family across the whole 114-file sweep; only
 then could the contract phase delete the per-family path emission.
+
+> **What has since been implemented, and what has not.** The fourth bullet is done, and
+> only the fourth. Every drawing in every family now carries a **lattice address** —
+> `<rows>r<span>c-` and one hexadecimal character per interior lattice point — with its
+> canonical symmetry class beside it, spelled and folded by
+> `LatticeIdentificationService` in `src/modules/lattice-identification/` and tabulated
+> for all 9,877 committed drawings in [`output/lattice-addresses.md`](output/lattice-addresses.md). The
+> other three bullets are untouched: there is no family-agnostic lattice enumerator, the
+> motif services still emit their own path data rather than producing a lattice tile for
+> one shared renderer, and the modifiers are still per-family arithmetic rather than
+> constructors over tiles. **The recommendation to leave the asymmetry stands, for the
+> reason it was given.** That verdict was about _materializing_ a space of 12,082,896
+> tiles at five rows and 3.36 × 10²² at eight, and addressing one point of a space
+> requires no materialization: identification reads a finished document and names the one
+> tile it found there. Nothing about the verdict is reopened. One leg of it reads
+> differently now — finding 3 above says a predicate over one tile names nothing, and a
+> predicate over one tile does name that tile: 85 of the 1,118 swept combinations earn a
+> structural sub-family name, `branch`, `negative`, and `parallel` between them. What the
+> five families here lack is not the naming but a space whose regions a name would
+> partition, and every one of them still earns no name at any swept row count and
+> modifier.
 
 ### Measured, and not measured
 
@@ -1340,7 +1417,7 @@ it already covers the named modes above 6 rows, which have never had a committed
 lattice point of every one of the 308 committed drawings carries ink — the 100 named and
 the 208 enumerated alike — including the band's first and last lattice column, which
 invariant 7 would have excused. The family needs no termination carve-out at all, where
-6,005 of the 9,918 committed documents do have a gap there. The reason is the survey's own
+6,005 of the 9,877 committed documents do have a gap there. The reason is the survey's own
 finding that no cell of any of the 3,179
 permutation tiles has corridor degree 0: a cell with at least one corridor becomes a
 lattice point with at least one arm of ink.
@@ -1409,85 +1486,147 @@ themselves are compared to nothing.
 
 ## 🌿 The Branching Family
 
-`branch` inks a **spanning tree** of the band's lattice. Every lattice point of the band
-carries ink, and the one-pitch steps joining them number exactly one fewer than the points
-themselves, over a single connected piece — which is the definition of a tree, so the ink
-forks everywhere and closes a loop nowhere.
+`branch` inks a **rail-and-tooth figure** over the band's lattice, **inset by one lattice
+row from the rules that close the band**. Every lattice point of the band carries ink, and
+the ink forks wherever a rail meets a tooth — which is the family's whole point and the
+invariant it was added to relax.
 
-That is the first tree this repository has drawn, and the claim is a count rather than a
-description. Read as a graph, all 3,421 documents that predate this family fall into two
-groups: **3,366 are forests** of many components — a family's ink is a disjoint union of
-simple arcs, so `edges = nodes − components` with the component count in the dozens — and
-**55 carry loops**: `negative`'s thirty at the time, `cross`'s seven solid drawings, and
-the eighteen `snake` drawings whose `edge` pitch closes a loop against the band border.
-Across the corpus as it now stands 485 carry loops, the extra 430 being the `negative`
-modes and enumerated sources added since. Not one is a tree. All 88 of `branch`'s are, and
+**It closes a loop nowhere, and it is not a tree either.** While one of the two borders
+was left empty the family's 88 documents were the only trees this repository had drawn: one
+connected piece, `edges = nodes − 1`, no loop anywhere. Ruling both borders unconditionally
+took that away twice over — it closed a rectangle between every adjacent pair of teeth, and
+because a rule then ran along the very row each rail sat on, it swallowed the crenellation
+whole and every `stagger` drawing rendered as the plain comb. Insetting the figure one
+lattice row from each rule beside it undid both: no rule touches the ink, so nothing is
+swallowed and nothing closes. Each of its 80 documents is a **forest** — `edges = nodes −
+components`, no loop in any piece — of **two or three components**, the figure and the one
+or two rules standing clear of it. Nothing failed when either of those changed; the loop
+count was measured and published here, never gated by anything. See
+`docs/adr/0006-close-both-band-borders-in-branch-and-parallel.md`.
+
+What the ruling did buy is identifiability, and that is what the inset preserved: with one
+border open, `plain`, `comb-upward`, and `stagger-branches-3` drew one pattern under three
+names at each of eleven row counts, and the empty border was the only ink telling them
+apart. The corpus that resulted has no tree in it at all — `parallel`'s one-strand
+`serpentine`, the other route to one, closed against its own new rules at the same time,
+and its names were then dropped as duplicates for a separate reason. What is left is the
+two-way split the tree was the exception to: 5,817 of the 9,877 committed documents are
+forests of many components — `branch`'s 80 among them — and 4,060 carry a loop.
 `meander-topology.service.integration.test.ts` reads every committed document off disk and
-asserts both halves of that.
+asserts that.
 
 ### What it draws
 
-Three modes, each a different spanning tree of the same lattice, and each of the three
-modifiers carries a parameter of its own. `comb`'s and `rung`'s are directions and reflect
-the drawing without changing a single count; `stagger`'s is the one that changes its shape.
+Three modes over the same lattice, and two of the three carry a parameter of their own.
+`rung`'s is a compass direction and reflects the drawing without changing a single count;
+`stagger`'s decides how wide the repeat unit is.
 
-- **`comb [--upward]`** (also what no modifier draws) — a rail along one of the band's
-  border rows, with a full tooth reaching from it into every lattice column. A repeat unit
-  is two lattice columns wide, so six repeats span twelve columns. `--upward` puts the rail
-  along the bottom and stands the teeth up, which turns the drawing upside down and changes
-  nothing else — every tooth already spans the whole band, so the rail's own row is all a
-  direction has left to move. `--modifier comb` with no direction is byte-identical to no
-  modifier at all, which is why the sweep commits only the upward one: the downward comb is
-  already on disk as `plain`.
-- **`stagger --branches <n>`** — the same teeth, with the rail changing side once per
-  repeat unit: along the top for one run of branches, along the bottom for the next. The
-  band reads as a crenellation rather than a fringe. `--branches` is how many teeth one
-  rail joins before it changes side, so the repeat unit is `branches − 1` columns wide and
-  the crenel's wavelength is the parameter. Three is the minimum and the shape every
-  `stagger` was drawn at before the flag existed; below it a run has no tooth strictly
-  inside it, the mode stops forking altogether, and the figure degenerates from a tree
-  into a simple path — see `MINIMUM_STAGGER_BRANCHES`.
-- **`rung [--leftward]`** — the construction turned on its side: one vertical stile per
-  repeat unit, a horizontal rung off it at every lattice row, and a rail along the top
-  joining each unit to the next. Each unit reads as an `E`, or as a `Ǝ` under
-  `--leftward`, which reflects the whole drawing rather than changing it: the stile moves
-  to the unit's other column, the rungs reach the other way, and the one stile with no
-  rail beyond it moves to the other end of the band. Every count below is identical across
-  the two directions, which is why the mirror itself is what is asserted.
+- **No modifier at all** — a rail along row `0`, a tooth hanging off it in every lattice
+  column down to row `rows − 1`, and **one** rule along row `rows`, a clear lattice row
+  below the teeth's free ends. A repeat unit is two lattice columns wide, so six repeats
+  span twelve columns. It is committed as `plain-…svg`, and the code names the mode `comb`,
+  after the fringe it draws. **`--modifier comb` and its `--upward` direction are gone**,
+  and they were removed while both borders were ruled end to end, when neither could change
+  a single lattice edge. With the figure inset, an upward comb would put its rail on the
+  bottom row and its teeth a row clear of the top, so it would be a drawing of its own
+  again; restoring it is a decision about which drawings the corpus commits rather than a
+  correction of anything.
+- **`stagger --branches <n>`** — the same teeth over a wider repeat unit, and the one mode
+  inset from **both** rules. `--branches` is how many teeth one rail run joins before it
+  changes side, so the unit is `branches − 1` lattice columns wide. Its teeth span rows `1`
+  to `rows − 1` and its rail alternates between those two rows, so both rules — row `0` and
+  row `rows` — stand a clear row away and the crenellation the parameter names is drawn
+  rather than swallowed. The unit width is what `--branches` varies, over
+  `6 × (branches − 1)` columns rather than twelve. Four is the minimum: three makes the
+  unit exactly two columns wide, which is the width no modifier already draws at. That
+  width coincidence is all that is left of the bound's reason — the collapse it was set
+  against is gone, and a three-branch crenel now draws a figure of its own — so the floor
+  is retained rather than derived. See `MINIMUM_STAGGER_BRANCHES` and
+  [#682](https://github.com/JimmyPaolini/codebase/issues/682).
+- **`rung --direction <northeast|northwest|southeast|southwest>`** — the construction
+  turned on its side, and the one mode whose interior is a different figure rather than a
+  different width: one vertical stile per repeat unit, a horizontal rung off it at every
+  row the stile spans, and a rail along one of the band's two borders carrying on to the
+  next unit's stile. It takes one rule, along the other border, a clear lattice row beyond
+  the stiles' and rungs' free ends. Each unit reads as an `E`, or as a `Ǝ` mirrored, or as
+  either of those turned upside down.
 
-At six repeats the figure has `columns × (rows + 1)` lattice points and one fewer step
-joining them, in every mode at every row count — twelve columns everywhere but `stagger`,
-whose unit width is its own crenel's. Ink T-junctions, which is invariant 3's own count:
+  The direction names both axes at once: **the border the rail runs along**, then **the
+  way the rungs face** — where a rung's free end travels, which is the way the stile is
+  not. `northeast` is what a bare `--modifier rung` draws, and it is the one drawing the
+  mode made before the other three were reachable.
 
-| Mode | 2 rows | 3 | 4 | 5 | 6 | 7 | 8 |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `comb`, either direction | 10 | 10 | 10 | 10 | 10 | 10 | 10 |
-| `stagger`, 3 branches | 5 | 5 | 5 | 5 | 5 | 5 | 5 |
-| `stagger`, 4 branches | 11 | 11 | 11 | 11 | 11 | 11 | 11 |
-| `stagger`, 5 branches | 17 | 17 | 17 | 17 | 17 | 17 | 17 |
-| `stagger`, 6 branches | 23 | 23 | 23 | 23 | 23 | 23 | 23 |
-| `rung`, either direction | 11 | 17 | 23 | 29 | 35 | 41 | 47 |
+  | Direction | Rail row | Stile column | Rungs reach | Figure rows | Rule row |
+  | --- | --- | --- | --- | --- | --- |
+  | `northeast` | `0` | the unit's first | east | `0` to `rows − 1` | `rows` |
+  | `northwest` | `0` | the unit's last | west | `0` to `rows − 1` | `rows` |
+  | `southeast` | `rows` | the unit's first | east | `1` to `rows` | `0` |
+  | `southwest` | `rows` | the unit's last | west | `1` to `rows` | `0` |
 
-`stagger`'s rows are `repeatCount × (branches − 2) − 1`: a run of `branches` teeth forks at
-the `branches − 2` strictly inside it, and the run at the band's own end is one tooth
-short. `rung`'s is `6 × rows − 1`.
+  Each is one of the others reflected, so the stile moves to the unit's other column or the
+  whole figure turns over, and the unit whose rungs run the full two columns moves to the
+  other end of the band. Every count below is identical across all four, which is why the
+  mirrors themselves are what is asserted.
 
-Every mode also leaves **free ends** — lattice points carrying a single arm of ink, where
-a stroke stops rather than turning, forking, or closing. Each mode leaves exactly two more
-of them than it has forks, so at six repeats `comb` leaves 12 and `stagger` 7, 13, 19, and
-25 at every row count, while `rung` leaves `6 × rows + 1`, from 13 at 2 rows to 49 at 8.
-They matter to the write-up below: both unbounded constructions measured there have none.
+  Two of the four are also the one place a filename says more than an address can. A
+  north-railed drawing and its southern mirror differ in exactly two vertical lattice
+  edges, both of them leaving a border row, and a lattice address spells out only the
+  interior levels — so `rung-northeast-6-repeats-8r2c-61e1e1e1e1e1a1.svg` and
+  `rung-southeast-…` share their address and are declared collisions in
+  `EXPECTED_ADDRESS_COLLISIONS`. They are four different drawings all the same, separated
+  on the full lattice and on the ink.
 
-Every row but `rung`'s is flat because those forks sit on the rail rather than on the
-teeth, and a rail's length does not depend on how tall the band is. Two of the rows cover
-a reflected pair each — a `comb` turned upside down and a `rung` pointing the other way
-draw a mirror image and measure identically — so the reflection itself is what
-`branch-motif.service.unit.test.ts` asserts, since no count here could tell the pair apart. `rung`'s forks sit on
-its stiles, so its row climbs by one per unit per row added — which is also why the
-family's minimum is 2 rows rather than 1: at one row a stile has no interior lattice point,
-the rung-into-stile junction the mode is named for does not exist, and each unit
-degenerates to a plain bracket. `branch-motif.service.unit.test.ts` measures that count at
-one row as well as at the minimum, so the number and its reason cannot drift apart.
+At six repeats the figure has `columns × (rows + 1)` lattice points and one step fewer
+joining them than that for every piece it falls into — `edges = nodes − components`, which
+is exactly a **forest** — in every mode at every row count. Twelve lattice columns
+everywhere but `stagger`, whose unit width is its own parameter's. Measured at six repeats,
+flat across all ten row counts except where the row says otherwise:
+
+| Mode | Lattice columns | Ink T-junctions | Free ends | Pieces | Cycles |
+| --- | --- | --- | --- | --- | --- |
+| no modifier | 12 | 10 | 14 | 2 | 0 |
+| `stagger`, 4 branches | 18 | 11 | 17 | 3 | 0 |
+| `stagger`, 5 branches | 24 | 17 | 23 | 3 | 0 |
+| `stagger`, 6 branches | 30 | 23 | 29 | 3 | 0 |
+| `rung`, any of the four directions | 12 | `6 × rows − 7` | `6 × rows − 3` | 2 | 0 |
+
+The **pieces** column is what insetting the figure from its rules shows. A rule a clear
+lattice row away from the ink touches none of it, so it is a component of its own: `comb`
+and `rung` take one rule and fall into two pieces, `stagger` takes both and falls into
+three. That is also why the cycle column is zero everywhere — nothing joins a rule to the
+figure, so no rectangle closes between a pair of teeth.
+
+Each mode's fork count reads off its own width and nothing else. `comb` has one rail, and
+it forks once per interior lattice column, `columns − 2` times, leaving one free end at
+every tooth's far end plus one at each end of its rule. `stagger`'s rail changes side once
+per crenel, so it forks `branches − 2` times per repeat unit and one fewer where the last
+run reaches the band's edge — `(branches − 2) × repeats − 1`, with free ends six more than
+that. Those two arithmetics are what "the parameter varies a width" means when it is stated
+as a count, and `branch-motif.service.unit.test.ts` measures the three-branch crenel the
+floor excludes against them too. `rung`'s stiles stand only every second column, and every
+one of its forks sits in a stile's own column — against the rail at the stile's head, and
+against a rung at every row strictly inside the stile's span — which is why that row is the
+only one that climbs. That suite also asserts the `rung` mirrors themselves, since no count
+here could tell the four directions apart.
+
+The family's minimum is **3 rows, and it is `stagger`'s** rather than the lattice's. `comb`
+and `rung` are inset at one end only, keeping their rail on a border row where a reader
+already sees the band close, so both still draw at two rows — `comb` at the ten forks it holds at
+every row count, `rung` at the first step of its own climb, five. `stagger` is inset at
+both ends, because its rail moves between the two rows its teeth end at and neither of
+those may be a ruled one, so it needs two free rows between the rules. A two-row band gives
+it one: every tooth collapses to zero length, no vertical ink is drawn at all, and the
+drawing is three parallel rules with not one fork in it. `branch-motif.service.unit.test.ts`
+renders all three modes below the minimum and measures every claim in this paragraph, so
+the number and its reason cannot drift apart.
+
+**Free ends** — lattice points carrying a single arm of ink, where a stroke stops rather
+than turning, forking, or closing — are back in every mode, and they are the other thing
+the inset restored. Ruling a border along the row a tooth ended on closed every one of
+them; a rule a row clear of that end closes none, so a tooth stops short of the rule below
+it and terminates. `rung` also leaves one per rung that stops short of the next stile.
+They matter to the write-up below, which judged a figure with none of them not to read as
+a meander.
 
 ### What it holds and what it relaxes
 
@@ -1500,12 +1639,22 @@ one row as well as at the minimum, so the number and its reason cannot drift apa
   of the few in the corpus that does not.
 - **Invariant 3, no branching — relaxed, in every mode.** Declared in the charter property
   test's `RELAXED_INVARIANTS`, which asserts the relaxation is _present_ rather than
-  merely permitted: a mode that stopped forking would fail.
-- **Invariant 4, no crossing** — held. A rail meets a tooth at the tooth's end, never
-  through its middle, so no lattice point in any mode carries four arms. Zero X-junctions
-  at every row count in every mode.
+  merely permitted: a mode that stopped forking would fail. The fewest forks any of the
+  family's 80 documents leaves is 10, so the permission is exercised rather than merely
+  held — and the row count at which one of its modes stopped forking is exactly what sets
+  the family's structural minimum.
+- **Invariant 4, no crossing** — held, and the inset is what makes it trivial: a rule
+  stands a clear lattice row from the figure and meets no tooth at all, so no lattice
+  point in any mode carries four arms. Zero X-junctions at every row count in every mode.
 - **Invariant 5, band** — held. The band is `CANVAS_HEIGHT` tall whatever the row count,
   and tiles horizontally; row count is density, not size.
+
+**Closing no loop is not on this list, and never was.** No charter invariant is about a
+loop, so the family closing 5 to 29 of them for one commit, and none of them before or
+since, is a measurement that moved twice rather than a permission that had to be granted or
+taken back. It is measured and published, here and in the charter test; nothing gates it.
+The same goes for the component count: falling into two or three pieces is not a
+compliance question either.
 
 Its own negative space is reported and not gated, per the ruling that invariants 3 and 4
 constrain ink only.
@@ -1513,64 +1662,83 @@ constrain ink only.
 ### How it differs from the negative space family
 
 Both relax no-branching, and both trace back to the same shortlist in the negative space
-survey above, so the difference is worth stating rather than assuming. It is the loops —
-and, since `negative` grew to ten modes, the crossing: `branch` relaxes invariant 3 and
-nothing else, where `negative` relaxes invariant 4 as well in three of its modes.
+survey above, so the difference is worth stating rather than assuming. **It is the loops
+again, and it briefly was not.** `branch` closed none while one of its borders was open;
+ruling both put a rectangle between every adjacent pair of teeth and moved it inside the
+range `negative` already occupied; insetting the figure from its rules took every one of
+those loops back out. So the difference is what it always was — `branch` is acyclic in
+every mode at every row count and `negative` is not — with the crossing beside it:
+`branch` relaxes invariant 3 and nothing else, where `negative` relaxes invariant 4 as well
+in three of its ten modes.
 
-`negative` inks a whole corridor graph, and a corridor graph closes a loop through each of
-its own repeats: ninety of its hundred committed drawings carry up to 65 cycles each, on
-one to thirteen components. `branch` inks a loop-free spanning subgraph of a lattice: 0
-cycles, on one component, always. The ten `negative` drawings that carry no cycle are
-`ruled-closed`'s, whose ink is the band's own rules and nothing joining them — a forest of
-one component per lattice row, and still not a tree. Both ends of that range are asserted in
-`meander-topology.service.integration.test.ts`, from the same loop that counts the trees —
-the numbers were published in three places and computed in none until they were.
-The survey anticipated exactly this — its "A note for the branching
-family" found that every one of the 104 _branches only_ tiles has at least one cycle at
-the rendered scale, and that a bounded-tree family would have to **omit corridors** to
-break them. This family omits them by construction rather than by search: a spine and
-teeth have `nodes − 1` steps by counting, so there is no room left for a cycle and none
-has to be looked for.
+What the loop counts say is about shape rather than about permission. `negative` inks a
+whole corridor graph, which closes a loop through each of its own repeats: ninety of its
+hundred committed drawings carry up to 65 cycles each, spread over one to thirteen
+components. `branch` inks a lattice cut down to a rail, a set of verticals, and one or two
+rules standing clear of them, so each of its 80 drawings is a forest of two or three
+pieces with no cycle in any of them. The ten `negative` drawings that carry no cycle are
+`ruled-closed`'s, whose ink is the band's own rules and nothing joining them: a forest of
+one component per lattice row, which is the corner of that family shaped the way this one
+now is throughout. Both ends of `negative`'s range are asserted in
+`meander-topology.service.integration.test.ts` rather than merely published here.
+
+The survey anticipated the loop-free figure — its "A note for the branching family" found that
+every one of the 104 _branches only_ tiles has at least one cycle at the rendered scale,
+and that a bounded-tree family would have to **omit corridors** to break them. This family
+does omit them, and by construction rather than by search: a rail and teeth reaching for a
+rule they never touch have `nodes − components` steps by counting. Ruling both borders put
+every one of those loops back for one commit, and the note described this family for
+exactly that long.
 
 Put plainly: `negative` is what the white space of an existing pattern already looks
-like, and `branch` is what is left of a lattice once every loop has been cut out of it.
-Same relaxation, opposite ends of the same measurement.
+like, and `branch` is a lattice cut down to the least ink that still fills it. Same
+relaxation, opposite ends of the same measurement, and one commit in which they were not.
 
 ### Unbounded branching: explored, not implemented
 
 Issue [#416](https://github.com/JimmyPaolini/codebase/issues/416) asks for unbounded
 branching — forks plus loops — to be explored and written up rather than built, including
 whether the output still reads as a meander. It was, on two constructions, both at six
-repeats. **No code for either ships**; both are one added rail away from the shipped
-`comb` and are described here precisely enough to rebuild.
+repeats. **Neither of the two ships**, and for one commit one of them did — which is what
+this write-up has to be read against. The two-rail construction it describes is exactly
+what every mode drew while a rule ran along the row each rail sat on, measured at 11
+cycles, 20 T-junctions, no X-junctions, and no free ends. What the family draws now is the
+one-rail figure again, its teeth a lattice row shorter and a rule standing clear below
+them: 0 cycles, 10 T-junctions, no X-junctions, 14 free ends, and two components rather
+than one. The full-lattice construction still ships nowhere and is described here precisely
+enough to rebuild.
 
 | Construction | Cycles | T-junctions | X-junctions | Free ends | Space-filling |
 | --- | --- | --- | --- | --- | --- |
-| `comb`, as shipped | 0 | 10 | 0 | 12 | yes |
-| Two rails — `comb` plus a second rail along the bottom row | 11 | 20 | 0 | 0 | yes |
+| One rail — the family as it was drawn before either border was ruled | 0 | 10 | 0 | 12 | yes |
+| Two rails — a rule along both borders, touching the figure, which is what every mode drew for one commit | 11 | 20 | 0 | 0 | yes |
+| Inset rail and rule — the one-rail figure with a rule a clear row below it, which is what no modifier draws now | 0 | 10 | 0 | 14 | yes |
 | Full lattice — every lattice edge inked | 11 × (`rows` − 1) | 2 × `rows` + 18 | 10 × (`rows` − 1) | 0 | yes |
 
-Three findings, in order of how much they cost:
+Three findings, and the middle one was overruled and then reinstated:
 
 1. **Unbounded branching is legal.** The two-rail figure holds invariants 1, 2, 4, and 5
-   exactly as the tree does, and relaxes only invariant 3. Nothing in the charter forced
-   the tree; the tree was chosen.
-2. **It stops reading as a meander, and the reason is countable.** Closing the loops
-   closes the ends: `comb` has twelve free ends — one lattice point per column with a
-   single arm of ink — and both unbounded constructions have zero. A meander reads as a
-   line that runs somewhere; a figure in which every stroke is enclosed and nothing
-   terminates reads as a grille or a fence. The two-rail figure is a ladder: twelve
-   identical rectangles, no rhythm, no direction, nothing the eye follows. This is a
-   judgement, but it is a judgement about a number that was measured rather than about an
-   impression.
+   exactly as the tree did, and relaxes only invariant 3. Nothing in the charter forced the
+   tree; the tree was chosen, and has since been unchosen — the family is a forest of two
+   or three pieces rather than one connected piece with `nodes − 1` steps.
+2. **It reads less as a meander, and the reason is countable — and this is the finding the
+   fix was made to honour.** Closing the loops closes the ends: the one-rail figure has
+   twelve free ends, one lattice point per column with a single arm of ink, and the
+   two-rail figure has none. A meander reads as a line that runs somewhere; a figure in
+   which every stroke is enclosed and nothing terminates reads more like a grille. That
+   judgement was overruled by a measurement — with one border open, three of this family's
+   names drew one pattern, and a family identifiable only by which border it carries is
+   worse than a family that reads as a ladder — and then it turned out not to be a choice
+   between the two. A rule inset by one lattice row identifies the band without touching
+   the ink, so every mode has free ends again while every name stays distinct: 14 with no
+   modifier, 17 to 29 under `stagger`, and `6 × rows − 3` under `rung`.
 3. **Pushed to its limit it collides with a different invariant.** #416's premise is that
    forks plus loops admit any orthogonal drawing. They do — but only once invariant 4 goes
    too: the full lattice acquires 10 X-junctions per interior row. Crossing is `cross`'s
    relaxation, not this family's, so "any orthogonal drawing" is not reachable from
    invariant 3 alone. Unbounded branching that keeps invariant 4 is a narrow band between
-   the tree and the ladder, and the ladder end of it is where the meander reading fails.
-
-The tree mode ships because it is the one that keeps free ends while forking.
+   the tree and the ladder, and this family sits at the tree end of it: it forks freely,
+   closes nothing, and keeps its free ends.
 
 ### Provenance: derived, not attested
 
@@ -1578,21 +1746,26 @@ The geometry is **derived**. The six oldest families have byte-exact reference S
 `testing/assets/` that were checked against hand-drawn originals; `branch` has none, and
 neither does `negative` or `cross`. Its committed output in `output/` is its own baseline,
 pinned by measurement rather than by likeness — every count in this section is the output
-of an assertion, `comb`'s own row of the exploration table included. The only exceptions
-are the two unbounded constructions' rows, which were measured during the spike and are
-gated by nothing, because their code does not ship.
+of an assertion, the inset row of the exploration table included, since that row is what no
+modifier now draws. Three rows there are not: the one-rail figure and the two-rail one,
+neither of which anything draws any more, and the full lattice, which nothing ever did. All
+three were measured when they were drawn and are gated by nothing.
 
 ## 🧵 The Parallel Family
 
 `parallel` draws meanders in which `N` strands run alongside one another, turning
-together, one channel apart. It is the tenth family, and the only one of the four added
-since the charter was written that relaxes no invariant at all — it is space-filling,
-orthogonal, non-branching, non-crossing, and a single band, strictly, at every ply.
+together, one channel apart, between a rule along each of the band's two borders. It is the
+tenth family, and it **used to relax no invariant at all**. Closing both of those borders
+ended that: a rule meets a strand's rising end with west, east, and south ink at one
+lattice point, so 642 of its 786 drawings fork and the family relaxes invariant 3. It is
+still space-filling, orthogonal, non-crossing, and a single band, strictly, at every ply.
 
-Its 819 committed drawings are eleven row counts, 2 through 12, crossed with its three
+Its 786 committed drawings are eleven row counts, 2 through 12, crossed with its three
 ply-carrying modifiers — `plied`, `aligned`, and `serpentine` — each swept over its whole
 range at each row count. That range is the row count itself: a bundle of `N` strands needs
-`N` rows, so twelve rows admit a twelve-ply bundle and two rows admit a two-ply one.
+`N` rows, so twelve rows admit a twelve-ply bundle and two rows admit a two-ply one. Its
+floor is the modifier's rather than the family's — only `aligned` sweeps a ply of one, for
+the reason under "The ply" below.
 
 **The family commits no unmodified drawing, and that is deliberate.** Drawn with no
 modifier it is a two-strand `plied` bundle, so the sweep used to write those same bytes as
@@ -1622,7 +1795,8 @@ round the unit is drawn — which is why `aligned` costs the charter nothing and
 what the eye does with the band.
 
 `serpentine` is the one that stops being brackets. A bracket turns once and stops, so a
-`plied` band is a row of separate ⊔ and ⊓ pieces with free ends at the border. A serpentine
+`plied` band is a row of ⊔ and ⊓ pieces, each ending where a border rule now catches it —
+which is what makes the whole band one connected piece with no free end anywhere. A serpentine
 ribbon never stops: it runs down a column, along the bottom of its own strip, up the next
 column, along the top, and on — so every two columns it completes one ⊔⊓ pair _joined at
 both turns_, which is a square-cornered S lying on its side. The charter admits no curves
@@ -1641,8 +1815,11 @@ exact cover for the same reason a bundle is one.
 ### Turning a ribbon over, and moving the flat one
 
 Two things about a stack of ribbons were fixed and are now swept, and neither can cost the
-family a charter invariant — a ribbon's exact cover is an argument about its own strip, and
-both of these change only the order it visits that strip in, or which strip it is.
+family invariant 2 or 4 — a ribbon's exact cover is an argument about its own strip, and
+both of these change only the order it visits that strip in, or which strip it is. They do
+decide invariant 3, though, and that is the one thing about them worth knowing twice: how
+deep the first and last strips end up is exactly what says whether a drawing forks, so
+these two axes are what the family's relaxation is conditional on.
 
 **`--flip` turns ribbons upside down.** Every ribbon used to wave in phase, all turning at
 the bottom out of an even column. `alternating` flips every other one, so the stack
@@ -1668,8 +1845,8 @@ partition whose depths are all equal changes nothing; `alternating` and `one` na
 ribbon below three strands; and flipping a flat strip is a no-op, since it turns at the top
 and the bottom of the same row. So the sweep asks the geometry which variants are distinct
 rather than enumerating the product and committing the same drawing several times over —
-`819` rather than the `1,032` a naive cross product would have written, with the difference
-being duplicates rather than drawings.
+`786` across the whole family rather than the `1,199` a naive cross product would have
+written, with the difference being duplicates rather than drawings.
 
 ### What a bundle draws
 
@@ -1685,44 +1862,63 @@ property falls out of that rather than being checked for afterwards. Take any la
 of a unit: if it is at or above its own column's turn row it sits on that column's arm, and
 if it is below, it is that far in from the unit's edge, so the crossbar of the strand whose
 turn row it is reaches it. So every lattice point of the band carries ink — including the
-first and last lattice column, which `channelWidthCompliant` exempts and which 2,176
+first and last lattice column, which `channelWidthCompliant` exempts and which 6,005
 documents in the corpus do leave a gap at. The brackets of a unit are pairwise disjoint and
-no unit draws a run outside its own columns, so every lattice point carries one arm of ink
-or two: never three, never four.
+no unit draws a run outside its own columns, so a point inside a unit carries one arm of
+ink or two: never three, never four.
+
+**The border rules are where the third arm comes from.** A rule runs the full width of
+each border, and every bracket has an end rising to meet one — so at that end the point
+carries the rule reaching west, the rule reaching east, and the bracket's own arm. That is
+a T-junction, and it is why this family relaxes invariant 3. It is never a fourth arm: a
+border row has no ink beyond it, so nothing can reach the point from outside the band.
 
 A serpentine stack gets there by a different route with the same ending. Its strips are
 row-disjoint, so its ribbons are node-disjoint, and a ribbon covers every lattice point of
-its own strip; the strips are the whole band, so the stack is. A lattice point carries the
-two arms of the run it sits inside, or one arm and one connector at a turn, and never a
-third — because the two connectors touching any one column sit at opposite ends of it, the
-bottom of the strip from an even column and the top from an odd one.
+its own strip; the strips are the whole band, so the stack is. Inside a strip a lattice
+point carries the two arms of the run it sits inside, or one arm and one connector at a
+turn, and never a third — because the two connectors touching any one column sit at
+opposite ends of it, the bottom of the strip from an even column and the top from an odd
+one. The rules add the third arm here too, and this is the shape where they sometimes do
+not: a strip one lattice row deep has no vertical run of its own, so the flat ribbon on it
+_is_ the rule beside it and nothing rises to meet anything. A stack whose first and last
+strips are both that shallow therefore forks nowhere.
 
 ### What it holds and what it relaxes
 
-It relaxes **nothing**. Among the four families added since the charter was written that
-makes it the exception — `cross`, `negative`, and `branch` were each added to break one —
-and its empty row in `RELAXED_INVARIANTS` is the point of the family rather than an
-omission.
+**It relaxes invariant 3, and it did not always.** This paragraph used to say the row in
+`RELAXED_INVARIANTS` was empty and that the emptiness was the point of the family rather
+than an omission. That is reversed. Ruling both borders of the band put a T-junction
+wherever a strand rises to meet one, so the family joins `cross`, `negative`, and `branch`
+in breaking a negotiable invariant, and no family added since the charter was written
+relaxes nothing.
 
-**One thing did change, and it is a measurement rather than a relaxation.** A `serpentine`
-ply of one is a single ribbon running the whole band without stopping or repeating a step —
-one connected piece, every lattice point on it, no cycle. That is a **tree**, which until
-now only `branch` drew. The two arrive at it from opposite directions: `branch` is a tree
-because it forks at most of its columns, and a one-ply serpentine is a tree because it forks
-at none and simply does not end until the band does. A path is the degenerate tree, and this
-is the corpus's first one. The corpus-wide assertion that used to read "trees are exactly
-the `branch` documents" now names both families and pins the parallel half to the one ply
-that can manage it, since a two-ply serpentine is two ribbons and so a forest.
+**The row is conditional, and it is the only one that is.** 642 of the 786 drawings fork;
+the other 144 are `serpentine` stacks whose first and last strips are each one lattice row
+deep, where the flat ribbon _is_ the rule and nothing rises to meet it. No set of modifier
+names says that — the same `serpentine` both does and does not fork depending on its ply
+and its rotation — so the relaxation carries a `CharterCondition`,
+`border-strip-has-depth`, answered from the same `ParallelSerpentineService.strips` the
+drawing is cut by. `parallel serpentine-strands-3-offset-1` at three rows is one of the 144,
+and the repeat unit it draws is the `mosaic` `zigzag` tile `56a9` — the same lattice edges,
+under two families' names. A blanket claim that this family branches would have contradicted
+a drawing it commits.
 
-`parallel-motif.service.unit.test.ts` measures that at every swept ply and row count, as a
-lattice point count rather than as a boolean — which is the stronger reading, since it
-counts the first and last lattice column that `channelWidthCompliant` exempts — beside the
-component count (`strands` per repeat unit), the free-end count (two per strand), and the
-cycle count (zero). The charter sweep then measures the same 819 drawings again through
-`MeanderGenerationService.generate`, against that declaration, in both directions: an
+**The loops came with the forks.** The 642 that fork are exactly the 642 that close a loop,
+and the 144 that do not are exactly the 144 that stay acyclic. `plied` and `aligned` are
+now one connected piece with no free end at all, carrying 11 to 77 cycles; `serpentine`
+stays 2 to 12 pieces with 0 to 12. The `serpentine` ply of one that used to be the corpus's
+only path — a single ribbon running the whole band without stopping — is gone with the
+other one-strand duplicates, so nothing here is a tree any more either.
+
+`parallel-motif.service.unit.test.ts` measures the covering at every swept ply and row
+count, as a lattice point count rather than as a boolean — which is the stronger reading,
+since it counts the first and last lattice column that `channelWidthCompliant` exempts. The
+charter sweep then measures the same 786 drawings again through
+`MeanderGenerationService.generate`, against the declaration, in both directions: an
 invariant a family does not relax must hold, and one it does relax must actually break. So
-the empty row is a claim that can fail, and declaring a relaxation this family does not have
-fails exactly its own 819 cases and nothing else.
+the conditional row is a claim that can fail from either side — dropping the condition fails
+on those 144, and dropping the row fails on the other 642.
 
 ### Nothing gets thinner
 
@@ -1781,7 +1977,10 @@ Offsetting an existing family's stroke centres by one lattice pitch breaks invar
 six original families and invariant 4 in two of them, because their features are one
 lattice unit deep; widening the motif's logical grid repairs those, but is then
 space-filling for no combination of scale and count, since coverage needs `count ≥ scale`
-while non-degeneracy needs `count < scale / 2 + 1`.
+while non-degeneracy needs `count < scale / 2 + 1`. That this family now relaxes invariant 3
+itself does not revive the offset: the drawing it would break belongs to whichever family
+was offset, and those six hold invariant 3 everywhere but `chain`'s and `snake`'s two
+`edge` modes. The crossing and the covering rule it out regardless.
 
 So `parallel` cannot be an existing family redrawn with double lines: there is no existing
 repeat unit for it to double. What is recorded here is that construction, not a claim about
@@ -1795,9 +1994,9 @@ of no other.
 All three of this family's modifiers carry `strands`, and the command line takes any of them
 as `--modifier <name> --strands N`. With no modifier the family draws a `plied` bundle at
 its default ply of two, and `plied` naming two is byte-identical to that — asserted, and the
-reason the sweep leaves that one value out rather than committing the same drawing under a
-second filename. `aligned` and `serpentine` have no unmodified drawing to collide with, so
-their ranges are swept whole.
+reason the sweep leaves the unmodified entry out rather than committing the same drawing
+under a second filename. `aligned` has nothing to collide with at either end, so its range
+is swept whole.
 
 `strands` is bounded above by the drawing's own `rows`, not by the shared maximum of 12,
 because the bound is the geometry's: the innermost strand's arms are `rows − strands + 1`
@@ -1806,12 +2005,27 @@ bare segment running alongside nothing. `STRUCTURAL_MINIMUM_ROWS` cannot state t
 one number per family and this one moves with the modifier — so `InvalidStrandCountError`
 does.
 
-Below, it is bounded by **one**, not two. Two was the original floor, on the argument that a
-family named for strands running alongside one another needs two of them to have one. That
-is an argument about the family's name rather than about its geometry: a single-strand ply is
-one bracket per repeat unit, two lattice columns wide, and it covers both its columns to the
-full height of the band exactly as every deeper ply covers its own. It is the shallow end of
-the same axis, and a range with no bottom step is one the sweep cannot show the shape of.
+Below, it is bounded by **one**, not two, and exactly one modifier reaches that floor. Two
+was the original floor, on the argument that a family named for strands running alongside
+one another needs two of them to have one. That is an argument about the family's name
+rather than about its geometry: a single-strand ply is one bracket per repeat unit, two
+lattice columns wide, and it covers both its columns to the full height of the band exactly
+as every deeper ply covers its own. It is the shallow end of the same axis, and a range with
+no bottom step is one the sweep cannot show the shape of.
+
+**At one strand there is nothing left to ply or serpentine, so only one name survives
+there.** `aligned-strands-1`, `plied-strands-1`, `serpentine-strands-1`, and
+`serpentine-strands-1-flip-one` used to be four filenames over one drawing at each of eleven
+row counts — alternation needs a second unit to alternate against, a stack of one strip is
+the whole band, and a flip of one flat ribbon turns it into itself. Their interiors were
+already one drawing; what told the four apart was which border each carried, so closing both
+made them one drawing outright — the same lattice points and the same lattice edges, drawn
+by path data that still differs in direction and grouping and so is not byte-identical. The
+three redundant names are no longer swept, and
+`NAMES_WITHOUT_A_ONE_STRAND_DRAWING` names the two modifiers whose range starts at two.
+`aligned-strands-1` is the survivor: at one strand every unit
+opens the same way by having no other unit to differ from, which is the one description of
+that drawing that stays true.
 
 The family's structural minimum is **2 rows**, and what sets it is the family's own axis
 rather than any one drawing's geometry. It used to be 4: the sweep applied one flat list of
@@ -1837,6 +2051,37 @@ byte-exact reference asset exists for it as one does for the six oldest families
 committed output in `output/` is its own baseline, pinned by measurement rather than by
 likeness. Every figure in this section is the expected value of an assertion.
 
+## 🗺️ Lattice Addresses
+
+Every one of the 9,877 committed drawings is addressed on the lattice every family is
+drawn on, and the whole table is generated into
+[`output/lattice-addresses.md`](output/lattice-addresses.md). It is filed beside the
+corpus it describes rather than spliced in here: nine thousand rows take a README to
+about a megabyte, and parsing a markdown file that size is most of what
+`nx run meanderaw:markdown-lint` would then spend its time on.
+
+**Family** is the directory a drawing is filed under and **Modifier** the variant within
+it — the modifier's slug for a family drawn from a motif, and the tile's own name in the
+two enumerated halves, all of `mosaic` and `negative`'s `permutations/` subtree, whose
+drawings have no modifier at all. **Rows** is the band's depth and **Span** the column
+span of the true repeat the address is read over. **Address** is the name;
+**Canonical class** is the one string a whole symmetry class shares, and is never
+substituted for it; **Sub-family** is the name the ink earns where it earns one.
+
+A class shared across two families is the discovery rather than a collision: `parallel`'s
+`serpentine-strands-3-offset-1` at three rows is the `mosaic` `zigzag` tile `56a9`, and
+its four-strand, two-offset sibling is `56a933`.
+
+```bash
+nx run meanderaw:address-table         # compare the committed table against a fresh sweep
+nx run meanderaw:address-table:write   # rewrite it
+```
+
+A `check` fails for one of two reasons. The table is **stale** — a drawing changed shape
+without the table following — and a `write` fixes it. Or drawings of one family **share an
+address** at a multiplicity `EXPECTED_ADDRESS_COLLISIONS` does not declare, which is
+duplicate art or an address too coarse to separate the two, and no rewrite fixes it.
+
 ## 👔 Conformetry
 
 This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
@@ -1849,13 +2094,13 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 493 |
-| Files | 98 |
-| Calls traced | 651 |
+| Callables | 501 |
+| Files | 103 |
+| Calls traced | 674 |
 | Call stacks | 50 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 44 |
+| Unfollowable calls | 46 |
 
 ### Limits
 
@@ -1871,7 +2116,7 @@ What this project is judged against. `declared` is the number in this project's 
 **1. `DrawCommand.run`** — depth ≥ 16 · decorated-method
 
 ```text
-🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:346]
+🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:331]
    ↳ Sweeps every meander, or draws the one `--type` and `--rows` name.
   └─> DrawCommand.sweep(outputDirectory: string): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:152]
      ↳ Draws every meander the application can draw, and indexes them all in one page.
@@ -1880,7 +2125,7 @@ What this project is judged against. `declared` is the number in this project's 
       └─> DrawCommand.map(…)(parameters: GenerationParameters): RenderedDocument [applications/meanderaw/src/modules/draw/draw.command.ts:137]
         └─> DrawCommand.renderParameters(parameters: GenerationParameters): RenderedDocument [applications/meanderaw/src/modules/draw/draw.command.ts:141]
            ↳ Renders one set of generation parameters, beside the path those parameters name.
-          └─> MeanderGenerationService.generate(parameters: GenerationParameters): string [applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:364]
+          └─> MeanderGenerationService.generate(parameters: GenerationParameters): string [applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:365]
              ↳ Validates the parameters, then renders the finished SVG document.
             └─> MeanderGenerationService.generateSubFamily(parameters: GenerationParameters, subFamily: MosaicBuildableSubFamily): string [applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:122]
                ↳ Renders the tile a sub-family names, rather than a motif service's own repeat unit.
@@ -1897,11 +2142,31 @@ What this project is judged against. `declared` is the number in this project's 
                              ↳ The path data one point draws: the edges it owns, or a dot where it owns none and is reached by none.
                             └─> MosaicTileMotifService.format(value: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:46]
                                ↳ Rounds and trims one pixel coordinate for interpolation into path data.
-                              └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+                              └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
                                  ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**2. `SnakeMotifService.path`** — depth ≥ 9 · orphan-root
+**2. `LatticeIdentificationService.identifyDocument`** — depth ≥ 9 · orphan-root
+
+```text
+🚀 LatticeIdentificationService.identifyDocument(document: string, unit: LatticeUnit): LatticeAddress [applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:197]
+   ↳ What a rendered document is, on the lattice: its band's row count, the column span its true repeat was read at, the…
+  └─> LatticeIdentificationService.canonicalIdentifier(tile: MosaicTile): string [applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:131]
+     ↳ The identifier every tile in a symmetry class shares: {@link identify} of the one member…
+    └─> MosaicSymmetryService.canonicalTile(tile: MosaicTile): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:185]
+       ↳ The one tile of a symmetry class the corpus draws.
+      └─> MosaicSymmetryService.orbit(tile: MosaicTile): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:69]
+         ↳ Every tile the symmetry group maps `tile` to, itself included, with duplicates left in.
+        └─> MosaicSymmetryService.transform(tile: MosaicTile, options: MosaicTransformChoice): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:150]
+           ↳ The tile one group element maps `tile` to.
+          └─> MosaicTileService.blankEdges(shape: MosaicTileShape): MosaicEdgesDraft [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:151]
+             ↳ A tile's worth of unset edges, ready to be marked one at a time and handed to {@link build}.
+            └─> MosaicTileService.grid(levels: number): boolean[][] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:153]
+              └─> MosaicTileService.from(…)(): boolean[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:154]
+                └─> MosaicTileService.from(…)(): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:155]
+```
+
+**3. `SnakeMotifService.path`** — depth ≥ 9 · orphan-root
 
 ```text
 🚀 SnakeMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:79]
@@ -1923,7 +2188,10 @@ What this project is judged against. `declared` is the number in this project's 
                    ↳ How wide a row's horizontal segment is: shrinking by two grid levels per row moving inward from either edge, clamped to…
 ```
 
-**3. `ChainMotifService.path`** — depth ≥ 9 · orphan-root
+<details>
+<summary>47 more call stacks</summary>
+
+**4. `ChainMotifService.path`** — depth ≥ 9 · orphan-root
 
 ```text
 🚀 ChainMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:88]
@@ -1945,10 +2213,7 @@ What this project is judged against. `declared` is the number in this project's 
                    ↳ How wide a row's horizontal segment is: shrinking by two grid levels per row moving inward from either edge, clamped to…
 ```
 
-<details>
-<summary>47 more call stacks</summary>
-
-**4. `NegativeMotifService.path`** — depth ≥ 8 · orphan-root
+**5. `NegativeMotifService.path`** — depth ≥ 8 · orphan-root
 
 ```text
 🚀 NegativeMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:265]
@@ -1963,11 +2228,11 @@ What this project is judged against. `declared` is the number in this project's 
              ↳ One vertical run's path data, down `column` across the given lattice row span.
             └─> NegativeMotifService.coordinate(geometry: GridGeometry, level: number): string [applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:102]
                ↳ One grid level as a formatted pixel coordinate; the grid is square, so a row and a column convert the same way.
-              └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+              └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
                  ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**5. `NegativeMotifService.rightEdge`** — depth ≥ 8 · orphan-root
+**6. `NegativeMotifService.rightEdge`** — depth ≥ 8 · orphan-root
 
 ```text
 🚀 NegativeMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:277]
@@ -1985,14 +2250,14 @@ What this project is judged against. `declared` is the number in this project's 
               └─> MosaicTileService.from(…)(): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:155]
 ```
 
-**6. `MosaicSymmetryService.variants`** — depth 7 · orphan-root
+**7. `MosaicSymmetryService.variants`** — depth 7 · orphan-root
 
 ```text
-🚀 MosaicSymmetryService.variants(tile: MosaicTile): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:275]
+🚀 MosaicSymmetryService.variants(tile: MosaicTile): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:230]
    ↳ Every distinct tile that draws the same pattern as `tile`, itself included — its symmetry class, as tiles rather than…
-  └─> MosaicSymmetryService.orbit(tile: MosaicTile): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:83]
+  └─> MosaicSymmetryService.orbit(tile: MosaicTile): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:69]
      ↳ Every tile the symmetry group maps `tile` to, itself included, with duplicates left in.
-    └─> MosaicSymmetryService.transform(tile: MosaicTile, options: MosaicTransformChoice): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:164]
+    └─> MosaicSymmetryService.transform(tile: MosaicTile, options: MosaicTransformChoice): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:150]
        ↳ The tile one group element maps `tile` to.
       └─> MosaicTileService.blankEdges(shape: MosaicTileShape): MosaicEdgesDraft [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:151]
          ↳ A tile's worth of unset edges, ready to be marked one at a time and handed to {@link build}.
@@ -2001,24 +2266,24 @@ What this project is judged against. `declared` is the number in this project's 
             └─> MosaicTileService.from(…)(): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:155]
 ```
 
-**7. `ParallelMotifService.path`** — depth ≥ 7 · orphan-root
+**8. `ParallelMotifService.path`** — depth ≥ 7 · orphan-root
 
 ```text
-🚀 ParallelMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:172]
+🚀 ParallelMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:204]
    ↳ Draws one repeat unit: a bundle of nested brackets under `plied` and `aligned`, and a slice of every stacked ribbon…
-  └─> ParallelSerpentineService.path(geometry: GridGeometry, unit: MotifUnit, strands: number): string [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:216]
+  └─> ParallelSerpentineService.path(geometry: GridGeometry, unit: MotifUnit, strands: number): string [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:230]
      ↳ Draws one repeat unit of every ribbon in the stack.
-    └─> ParallelSerpentineService.map(…)(strip: SerpentineStrip, index: number): string [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:228]
-      └─> ParallelSerpentineService.ribbonPath(…): string [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:146]
+    └─> ParallelSerpentineService.map(…)(strip: SerpentineStrip, index: number): string [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:242]
+      └─> ParallelSerpentineService.ribbonPath(…): string [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:160]
          ↳ One strand's run through one repeat unit: a full-height vertical in each of the unit's columns, joined by the connector…
-        └─> ParallelSerpentineService.from(…)(_value: unknown, offset: number): string [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:156]
-          └─> ParallelSerpentineService.coordinate(geometry: GridGeometry, level: number): string [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:105]
+        └─> ParallelSerpentineService.from(…)(_value: unknown, offset: number): string [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:170]
+          └─> ParallelSerpentineService.coordinate(geometry: GridGeometry, level: number): string [applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:118]
              ↳ One grid level as a formatted pixel coordinate; the grid is square, so a row and a column convert the same way.
-            └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+            └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
                ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**8. `SwirlMotifService.path`** — depth ≥ 7 · orphan-root
+**9. `SwirlMotifService.path`** — depth ≥ 7 · orphan-root
 
 ```text
 🚀 SwirlMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:157]
@@ -2036,7 +2301,7 @@ What this project is judged against. `declared` is the number in this project's 
             └─> MotifTransformsService.map(…)([x, y]: MotifLevelPoint): MotifLevelPoint [applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:158]
 ```
 
-**9. `WhirlMotifService.path`** — depth ≥ 7 · orphan-root
+**10. `WhirlMotifService.path`** — depth ≥ 7 · orphan-root
 
 ```text
 🚀 WhirlMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:148]
@@ -2054,42 +2319,10 @@ What this project is judged against. `declared` is the number in this project's 
             └─> WhirlMotifService.from(…)(_value: unknown, index: number): number [applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:46]
 ```
 
-**10. `BranchMotifService.path`** — depth ≥ 6 · orphan-root
+**11. `MeanderTopologyService.connectivity`** — depth ≥ 6 · orphan-root
 
 ```text
-🚀 BranchMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:359]
-   ↳ Draws one repeat unit of whichever spanning tree the modifier selects.
-  └─> BranchMotifService.rungUnit(…): string [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:194]
-     ↳ One `rung` repeat unit: a stile down one of the unit's two lattice columns, a rung reaching across to the other at…
-    └─> BranchMotifService.from(…)(_value: unknown, row: number): string [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:201]
-      └─> BranchMotifService.horizontalRun(geometry: GridGeometry, row: number, columns: BranchSpan): string [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:95]
-         ↳ One horizontal run's path data, along `row` across the given lattice column span.
-        └─> BranchMotifService.coordinate(geometry: GridGeometry, level: number): string [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:88]
-           ↳ One grid level as a formatted pixel coordinate; the grid is square, so a row and a column convert the same way.
-          └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
-             ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
-```
-
-**11. `CrossMotifService.path`** — depth ≥ 6 · orphan-root
-
-```text
-🚀 CrossMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:199]
-   ↳ Draws one repeat unit of the warp: two bars, the connector linking them across the top, and the connector linking the…
-  └─> CrossMotifService.bar(geometry: GridGeometry, columnLevel: number, unit: MotifUnit): string [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:68]
-     ↳ One warp bar's path data, drawn down `columnLevel` as one run or, under `interrupted`, as two.
-    └─> CrossMotifService.map(…)(span: CrossLevelSpan): string [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:74]
-      └─> CrossMotifService.verticalRun(geometry: GridGeometry, columnLevel: number, levels: CrossLevelSpan): string [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:165]
-         ↳ One vertical run's path data, down `columnLevel` across the given row span.
-        └─> CrossMotifService.coordinate(geometry: GridGeometry, level: number): string [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:117]
-           ↳ One grid level as a formatted pixel coordinate; the grid is square, so a row and a column convert the same way.
-          └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
-             ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
-```
-
-**12. `MeanderTopologyService.connectivity`** — depth ≥ 6 · orphan-root
-
-```text
-🚀 MeanderTopologyService.connectivity(document: string): InkConnectivity [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:283]
+🚀 MeanderTopologyService.connectivity(document: string): InkConnectivity [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:284]
    ↳ Counts one rendered meander's ink as a graph: its painted lattice points, the one-pitch steps joining them, and how…
   └─> MeanderLatticeService.build(document: string): LatticeGraph [applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:233]
      ↳ Reduces a rendered meander to the lattice steps and points its ink paints.
@@ -2101,10 +2334,10 @@ What this project is judged against. `declared` is the number in this project's 
           └─> UnmeasurableDocumentError.constructor(reason: string): UnmeasurableDocumentError [applications/meanderaw/src/modules/meander-lattice/meander-lattice.constants.ts:61]
 ```
 
-**13. `MeanderTopologyService.measure`** — depth ≥ 6 · orphan-root
+**12. `MeanderTopologyService.measure`** — depth ≥ 6 · orphan-root
 
 ```text
-🚀 MeanderTopologyService.measure(document: string): MeanderTopology [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:317]
+🚀 MeanderTopologyService.measure(document: string): MeanderTopology [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:318]
    ↳ Measures one rendered meander's channel widths and its ink and negative junction counts.
   └─> MeanderLatticeService.build(document: string): LatticeGraph [applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:233]
      ↳ Reduces a rendered meander to the lattice steps and points its ink paints.
@@ -2116,7 +2349,7 @@ What this project is judged against. `declared` is the number in this project's 
           └─> UnmeasurableDocumentError.constructor(reason: string): UnmeasurableDocumentError [applications/meanderaw/src/modules/meander-lattice/meander-lattice.constants.ts:61]
 ```
 
-**14. `MosaicConnectivityService.isAcyclic`** — depth ≥ 6 · orphan-root
+**13. `MosaicConnectivityService.isAcyclic`** — depth ≥ 6 · orphan-root
 
 ```text
 🚀 MosaicConnectivityService.isAcyclic(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:189]
@@ -2131,7 +2364,7 @@ What this project is judged against. `declared` is the number in this project's 
           └─> MosaicTileService.map(…)({ east }: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:208]
 ```
 
-**15. `MosaicConnectivityService.isOneComponent`** — depth ≥ 6 · orphan-root
+**14. `MosaicConnectivityService.isOneComponent`** — depth ≥ 6 · orphan-root
 
 ```text
 🚀 MosaicConnectivityService.isOneComponent(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:194]
@@ -2146,19 +2379,36 @@ What this project is judged against. `declared` is the number in this project's 
           └─> MosaicTileService.map(…)({ east }: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:208]
 ```
 
-**16. `ChainMotifService.rightEdge`** — depth 5 · orphan-root
+**15. `BranchMotifService.path`** — depth ≥ 6 · orphan-root
 
 ```text
-🚀 ChainMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:134]
-   ↳ Delegates to {@link SnakeMotifService}: `chain` shares `snake`'s grid exactly.
-  └─> SnakeMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:112]
-     ↳ The x-coordinate of the last unit's rightmost point, before the stroke-width margin.
-    └─> SnakeMotifService.unitWidth(geometry: GridGeometry, rows: number, modifier?: Modifier): number [applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:125]
-       ↳ How far each successive unit is translated horizontally: the zigzag spans every grid level up to `rows - 1`, widened to…
-      └─> SnakeSequenceService.unitWidthLevels(rows: number, modifier: Modifier | undefined): number [applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:246]
-         ↳ How many grid levels one repeat unit spans: `rows` when the `edge` family widens the pitch to close flush against the…
-        └─> SnakeSequenceService.flipPitchLevels(rows: number): number [applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:144]
-           ↳ How many grid levels bare `flip`'s fused tile spans: twice the motif's own `rows - 2`, verified against `5 rows` (pitch…
+🚀 BranchMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:376]
+   ↳ Draws one repeat unit of whichever spine-and-teeth figure the modifier selects; {@link border} rules the two borders it…
+  └─> BranchMotifService.rungUnit(…): string [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:192]
+     ↳ One `rung` repeat unit: a stile down one of the unit's two lattice columns, a rung reaching across to the other at…
+    └─> BranchMotifService.from(…)(_value: unknown, row: number): string [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:199]
+      └─> BranchMotifService.horizontalRun(geometry: GridGeometry, row: number, columns: BranchSpan): string [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:106]
+         ↳ One horizontal run's path data, along `row` across the given lattice column span.
+        └─> BranchMotifService.coordinate(geometry: GridGeometry, level: number): string [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:99]
+           ↳ One grid level as a formatted pixel coordinate; the grid is square, so a row and a column convert the same way.
+          └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
+             ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
+```
+
+**16. `CrossMotifService.path`** — depth ≥ 6 · orphan-root
+
+```text
+🚀 CrossMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:199]
+   ↳ Draws one repeat unit of the warp: two bars, the connector linking them across the top, and the connector linking the…
+  └─> CrossMotifService.bar(geometry: GridGeometry, columnLevel: number, unit: MotifUnit): string [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:68]
+     ↳ One warp bar's path data, drawn down `columnLevel` as one run or, under `interrupted`, as two.
+    └─> CrossMotifService.map(…)(span: CrossLevelSpan): string [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:74]
+      └─> CrossMotifService.verticalRun(geometry: GridGeometry, columnLevel: number, levels: CrossLevelSpan): string [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:165]
+         ↳ One vertical run's path data, down `columnLevel` across the given row span.
+        └─> CrossMotifService.coordinate(geometry: GridGeometry, level: number): string [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:117]
+           ↳ One grid level as a formatted pixel coordinate; the grid is square, so a row and a column convert the same way.
+          └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
+             ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
 **17. `MosaicNamingService.matches`** — depth ≥ 5 · orphan-root
@@ -2253,17 +2503,19 @@ What this project is judged against. `declared` is the number in this project's 
            ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**25. `BoxesMotifService.path`** — depth ≥ 4 · orphan-root
+**25. `ChainMotifService.rightEdge`** — depth 5 · orphan-root
 
 ```text
-🚀 BoxesMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:179]
-   ↳ Draws one repeat unit's spiral as an SVG path attribute value, applying the unit's modifier (if any) first.
-  └─> BoxesMotifService.unitPoints(…): readonly MotifLevelPoint[] [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:129]
-     ↳ Applies the unit's modifier (spin's rotation, spin-flip's rotation plus mirror) to the base spiral points.
-    └─> BoxesMotifService.spiralPoints(rows: number): MotifLevelPoint[] [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:111]
-       ↳ Traces the full inward spiral for one unit, in grid levels.
-      └─> BoxesMotifService.advanceSpiral(bounds: BoxesSpiralBounds, moveIndex: number): MotifLevelPoint [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:40]
-         ↳ Computes the next spiral corner, mutating `bounds` to shrink the side it just used.
+🚀 ChainMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:134]
+   ↳ Delegates to {@link SnakeMotifService}: `chain` shares `snake`'s grid exactly.
+  └─> SnakeMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:112]
+     ↳ The x-coordinate of the last unit's rightmost point, before the stroke-width margin.
+    └─> SnakeMotifService.unitWidth(geometry: GridGeometry, rows: number, modifier?: Modifier): number [applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:125]
+       ↳ How far each successive unit is translated horizontally: the zigzag spans every grid level up to `rows - 1`, widened to…
+      └─> SnakeSequenceService.unitWidthLevels(rows: number, modifier: Modifier | undefined): number [applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:246]
+         ↳ How many grid levels one repeat unit spans: `rows` when the `edge` family widens the pitch to close flush against the…
+        └─> SnakeSequenceService.flipPitchLevels(rows: number): number [applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:144]
+           ↳ How many grid levels bare `flip`'s fused tile spans: twice the motif's own `rows - 2`, verified against `5 rows` (pitch…
 ```
 
 **26. `MosaicTileService.assertWellFormed`** — depth ≥ 4 · orphan-root
@@ -2278,71 +2530,64 @@ What this project is judged against. `declared` is the number in this project's 
       └─> MalformedMosaicTileError.constructor(reason: string): MalformedMosaicTileError [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.constants.ts:173]
 ```
 
-**27. `DrawCommand.parseFlip`** — depth ≥ 3 · decorated-method
+**27. `BoxesMotifService.path`** — depth ≥ 4 · orphan-root
+
+```text
+🚀 BoxesMotifService.path(geometry: GridGeometry, unit: MotifUnit): string [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:173]
+   ↳ Draws one repeat unit's spiral as an SVG path attribute value, applying the unit's modifier (if any) first.
+  └─> BoxesMotifService.unitPoints(…): readonly MotifLevelPoint[] [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:129]
+     ↳ Applies the unit's modifier (spin's rotation, spin-flip's rotation plus mirror) to the base spiral points.
+    └─> BoxesMotifService.spiralPoints(rows: number): MotifLevelPoint[] [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:111]
+       ↳ Traces the full inward spiral for one unit, in grid levels.
+      └─> BoxesMotifService.advanceSpiral(bounds: BoxesSpiralBounds, moveIndex: number): MotifLevelPoint [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:40]
+         ↳ Computes the next spiral corner, mutating `bounds` to shrink the side it just used.
+```
+
+**28. `DrawCommand.parseFlip`** — depth ≥ 3 · decorated-method
 
 ```text
 🚀 DrawCommand.parseFlip(value: string): SerpentineFlip [applications/meanderaw/src/modules/draw/draw.command.ts:231]
    ↳ Parses `--flip`, rejecting any value outside the supported set. Used only with `--modifier serpentine`.
-  └─> DrawParametersService.serpentineFlip(value: string): SerpentineFlip [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:224]
+  └─> DrawParametersService.serpentineFlip(value: string): SerpentineFlip [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:204]
      ↳ Narrows `--flip`, rejecting any value outside the supported set. Used only with `--modifier serpentine`.
-    └─> DrawParametersService.isSerpentineFlip(value: string): value is SerpentineFlip [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:91]
+    └─> DrawParametersService.isSerpentineFlip(value: string): value is SerpentineFlip [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:75]
        ↳ Narrows a raw string to a {@link SerpentineFlip} without an unchecked assertion.
 ```
 
-**28. `DrawCommand.parseModifier`** — depth ≥ 3 · decorated-method
+**29. `DrawCommand.parseModifier`** — depth ≥ 3 · decorated-method
 
 ```text
 🚀 DrawCommand.parseModifier(value: string): Modifier["name"] [applications/meanderaw/src/modules/draw/draw.command.ts:254]
    ↳ Parses `--modifier`, rejecting any name outside the supported set. Omitted entirely when no modifier is requested.
-  └─> DrawParametersService.modifierName(value: string): Modifier["name"] [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:211]
+  └─> DrawParametersService.modifierName(value: string): Modifier["name"] [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:191]
      ↳ Narrows `--modifier` to a supported {@link Modifier} name, rejecting anything outside the supported set.
-    └─> DrawParametersService.isModifierName(value: string): value is Modifier["name"] [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:81]
+    └─> DrawParametersService.isModifierName(value: string): value is Modifier["name"] [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:65]
        ↳ Narrows a raw string to a supported {@link Modifier} name, so the option parser can reject an unknown one by name.
 ```
 
-**29. `DrawCommand.parseSubFamily`** — depth ≥ 3 · decorated-method
+**30. `DrawCommand.parseSubFamily`** — depth ≥ 3 · decorated-method
 
 ```text
 🚀 DrawCommand.parseSubFamily(value: string): MosaicSubFamily [applications/meanderaw/src/modules/draw/draw.command.ts:313]
    ↳ Parses `--sub-family`, rejecting any name outside the set of recognized sub-families.
-  └─> DrawParametersService.subFamily(value: string): MosaicBuildableSubFamily [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:268]
+  └─> DrawParametersService.subFamily(value: string): MosaicBuildableSubFamily [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:248]
      ↳ Narrows `--sub-family` to a {@link MosaicBuildableSubFamily}, which for `mosaic` is the only way to name a drawing: the…
-    └─> DrawParametersService.isSubFamily(value: string): value is MosaicBuildableSubFamily [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:96]
+    └─> DrawParametersService.isSubFamily(value: string): value is MosaicBuildableSubFamily [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:80]
        ↳ Narrows a raw string to a {@link MosaicBuildableSubFamily} without an unchecked assertion.
 ```
 
-**30. `DrawCommand.parseType`** — depth ≥ 3 · decorated-method
+**31. `DrawCommand.parseType`** — depth ≥ 3 · decorated-method
 
 ```text
 🚀 DrawCommand.parseType(value: string): MeanderType [applications/meanderaw/src/modules/draw/draw.command.ts:322]
    ↳ Parses `--type`, rejecting any value outside the supported set. Optional, since a sweep names no family.
-  └─> DrawParametersService.type(value: string): MeanderType [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:281]
+  └─> DrawParametersService.type(value: string): MeanderType [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:261]
      ↳ Narrows `--type` to a supported {@link MeanderType}, rejecting anything outside the supported set.
-    └─> DrawParametersService.isMeanderType(value: string): value is MeanderType [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:76]
+    └─> DrawParametersService.isMeanderType(value: string): value is MeanderType [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:60]
        ↳ Narrows a raw string to a supported {@link MeanderType} without an unchecked assertion.
 ```
 
-**31. `BoxesMotifService.anonymous`** — depth 3 · orphan-root
-
-```text
-🚀 BoxesMotifService.anonymous(): MotifLevelPoint[] [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:155]
-  └─> MotifTransformsService.mirror(…): MotifLevelPoint[] [applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:66]
-     ↳ Reflects every point across a line through `center`, keeping point order unchanged. `"horizontal"` reflects over a…
-    └─> MotifTransformsService.map(…)([x, y]: MotifLevelPoint): MotifLevelPoint [applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:73]
-```
-
-**32. `BranchMotifService.rightEdge`** — depth 3 · orphan-root
-
-```text
-🚀 BranchMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:376]
-   ↳ The x-coordinate of the drawing's last lattice column, before the stroke-width margin.
-  └─> BranchMotifService.lastColumn(pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:142]
-     ↳ The lattice column the drawing ends at: one short of the columns its repeat units span, since the units count lattice…
-    └─> BranchMotifService.unitColumns(modifier: Modifier | undefined): number [applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:313]
-       ↳ How many lattice columns one repeat unit of this drawing spans. `stagger` is the only mode that answers anything but…
-```
-
-**33. `MeanderTopologyService.neighbors`** — depth 3 · orphan-root
+**32. `MeanderTopologyService.neighbors`** — depth 3 · orphan-root
 
 ```text
 🚀 MeanderTopologyService.neighbors(point: LatticePoint): LatticePoint[] [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:82]
@@ -2352,7 +2597,7 @@ What this project is judged against. `declared` is the number in this project's 
        ↳ The `"column,row"` key {@link MeanderLatticeService} records lattice points and one-pitch steps under.
 ```
 
-**34. `MosaicConnectivityService.neighbors`** — depth 3 · orphan-root
+**33. `MosaicConnectivityService.neighbors`** — depth 3 · orphan-root
 
 ```text
 🚀 MosaicConnectivityService.neighbors(point: MosaicTilePoint): MosaicTilePoint[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:73]
@@ -2361,10 +2606,10 @@ What this project is judged against. `declared` is the number in this project's 
     └─> MosaicConnectivityService.map(…)(…): { column: number; level: number; } [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:159]
 ```
 
-**35. `MosaicTilesService.isMatching`** — depth 3 · orphan-root
+**34. `MosaicTilesService.isMatching`** — depth 3 · orphan-root
 
 ```text
-🚀 MosaicTilesService.isMatching(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:225]
+🚀 MosaicTilesService.isMatching(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:236]
    ↳ Whether every point of a tile is touched by at most one edge — the family's original exact-cover rule, restated over…
   └─> MosaicTileService.incidentEdges(tile: MosaicTile, level: number, column: number): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:226]
      ↳ How many distinct edges touch a point, which differs from {@link degree} at one column and nowhere else: there a set…
@@ -2372,17 +2617,16 @@ What this project is judged against. `declared` is the number in this project's 
        ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**36. `ParallelMotifService.rightEdge`** — depth ≥ 3 · orphan-root
+**35. `BoxesMotifService.anonymous`** — depth 3 · orphan-root
 
 ```text
-🚀 ParallelMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:200]
-   ↳ The x-coordinate of the drawing's last lattice column, before the stroke-width margin.
-  └─> ParallelMotifService.strandCount(modifier: Modifier | undefined): number [applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:225]
-     ↳ How many strands a drawing's modifier asks for; no modifier draws {@link DEFAULT_PARALLEL_STRANDS}.
-    └─> UnknownParallelModifierError.constructor(modifierName: string): UnknownParallelModifierError [applications/meanderaw/src/modules/parallel-motif/parallel-motif.constants.ts:30]
+🚀 BoxesMotifService.anonymous(): MotifLevelPoint[] [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:155]
+  └─> MotifTransformsService.mirror(…): MotifLevelPoint[] [applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:66]
+     ↳ Reflects every point across a line through `center`, keeping point order unchanged. `"horizontal"` reflects over a…
+    └─> MotifTransformsService.map(…)([x, y]: MotifLevelPoint): MotifLevelPoint [applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:73]
 ```
 
-**37. `SwirlMotifService.rightEdge`** — depth 3 · orphan-root
+**36. `SwirlMotifService.rightEdge`** — depth 3 · orphan-root
 
 ```text
 🚀 SwirlMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:190]
@@ -2393,7 +2637,7 @@ What this project is judged against. `declared` is the number in this project's 
        ↳ How many grid levels the motif's own two-armed spiral spans before the `flip` modifier's mirrored twin is fused on.
 ```
 
-**38. `WhirlMotifService.rightEdge`** — depth 3 · orphan-root
+**37. `WhirlMotifService.rightEdge`** — depth 3 · orphan-root
 
 ```text
 🚀 WhirlMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:188]
@@ -2404,55 +2648,74 @@ What this project is judged against. `declared` is the number in this project's 
        ↳ How many grid levels the motif's own single-arm spiral spans before the `flip` modifier's mirrored twin is fused on.
 ```
 
-**39. `BoxesMotifService.toXCoordinate`** — depth 2 · orphan-root
+**38. `MotifPitchService.columnSpan`** — depth ≥ 3 · orphan-root
 
 ```text
-🚀 BoxesMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:183]
-  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+🚀 MotifPitchService.columnSpan(options: MotifPitchOptions): number [applications/meanderaw/src/modules/meander-generation/motif-pitch.service.ts:97]
+   ↳ The column span of one **true** repeat: the distance between two units of the drawing that are identical, which is a…
+  └─> MotifPitchService.columnPitch(options: MotifPitchOptions): number [applications/meanderaw/src/modules/meander-generation/motif-pitch.service.ts:69]
+     ↳ The pitch: the lattice columns the drawing's right edge advances by when one repeat unit is added.
+    └─> GridGeometryService.compute(rows: number): GridGeometry [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:51]
+       ↳ Derives grid unit, offset, and stroke width from a row count and the fixed canvas height.
+```
+
+**39. `MeanderTopologyService.key`** — depth 2 · orphan-root
+
+```text
+🚀 MeanderTopologyService.key({ column, row }: LatticePoint): string [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:81]
+  └─> MeanderTopologyService.key(column: number, row: number): string [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:135]
+     ↳ The `"column,row"` key {@link MeanderLatticeService} records lattice points and one-pitch steps under.
+```
+
+**40. `BoxesMotifService.toXCoordinate`** — depth 2 · orphan-root
+
+```text
+🚀 BoxesMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:177]
+  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**40. `BoxesMotifService.toYCoordinate`** — depth 2 · orphan-root
+**41. `BoxesMotifService.toYCoordinate`** — depth 2 · orphan-root
 
 ```text
-🚀 BoxesMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:187]
-  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+🚀 BoxesMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:181]
+  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**41. `SnakeMotifService.toXCoordinate`** — depth 2 · orphan-root
+**42. `SnakeMotifService.toXCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 SnakeMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:87]
-  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**42. `SnakeMotifService.toYCoordinate`** — depth 2 · orphan-root
+**43. `SnakeMotifService.toYCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 SnakeMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:91]
-  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**43. `ChainMotifService.toXCoordinate`** — depth 2 · orphan-root
+**44. `ChainMotifService.toXCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 ChainMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:104]
-  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**44. `ChainMotifService.toYCoordinate`** — depth 2 · orphan-root
+**45. `ChainMotifService.toYCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 ChainMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:108]
-  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**45. `CrossMotifService.rightEdge`** — depth 2 · orphan-root
+**46. `CrossMotifService.rightEdge`** — depth 2 · orphan-root
 
 ```text
 🚀 CrossMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:222]
@@ -2461,19 +2724,11 @@ What this project is judged against. `declared` is the number in this project's 
      ↳ How many grid levels the whole pattern spans: two per repeat unit, plus one.
 ```
 
-**46. `MeanderTopologyService.key`** — depth 2 · orphan-root
-
-```text
-🚀 MeanderTopologyService.key({ column, row }: LatticePoint): string [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:81]
-  └─> MeanderTopologyService.key(column: number, row: number): string [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:135]
-     ↳ The `"column,row"` key {@link MeanderLatticeService} records lattice points and one-pitch steps under.
-```
-
 **47. `SwirlMotifService.toXCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 SwirlMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:160]
-  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
@@ -2481,7 +2736,7 @@ What this project is judged against. `declared` is the number in this project's 
 
 ```text
 🚀 SwirlMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:164]
-  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
@@ -2489,7 +2744,7 @@ What this project is judged against. `declared` is the number in this project's 
 
 ```text
 🚀 WhirlMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:151]
-  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
@@ -2497,7 +2752,7 @@ What this project is judged against. `declared` is the number in this project's 
 
 ```text
 🚀 WhirlMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:155]
-  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:39]
+  └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
@@ -2507,85 +2762,81 @@ What this project is judged against. `declared` is the number in this project's 
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `DrawPermutationsService.render` | 6 | `applications/meanderaw:modules/mosaic-naming`, `applications/meanderaw:modules/mosaic-tile`, `applications/meanderaw:modules/svg-rendering` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:80` |
+| `DrawPermutationsService.render` | 7 | `applications/meanderaw:modules/lattice-identification`, `applications/meanderaw:modules/mosaic-naming`, `applications/meanderaw:modules/mosaic-tile`, `applications/meanderaw:modules/svg-rendering` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:80` |
+| `MeanderGenerationService.buildPaths` | 6 | `applications/meanderaw:modules/boxes-motif`, `applications/meanderaw:modules/branch-motif`, `applications/meanderaw:modules/cross-motif`, `applications/meanderaw:modules/parallel-motif` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:78` |
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MeanderGenerationService.generate` | 14 | `MeanderGenerationService.generateSubFamily`, `MeanderGenerationService.validateRows`, `MeanderGenerationService.validateRepeatCount`, `MeanderGenerationService.validateModifier`, `MeanderGenerationService.validateModifierCycle`, `MeanderGenerationService.validateStaggerBranches`, `MeanderGenerationService.validateStrands`, `MeanderGenerationService.validateOffset`, `MotifRegistryService.resolve`, `MeanderGenerationService.motifDrawnType`, `GridGeometryService.compute`, `MeanderGenerationService.buildPaths`, `SvgRenderingService.render`, `MeanderGenerationService.format` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:364` |
+| `MeanderGenerationService.generate` | 14 | `MeanderGenerationService.generateSubFamily`, `MeanderGenerationService.validateRows`, `MeanderGenerationService.validateRepeatCount`, `MeanderGenerationService.validateModifier`, `MeanderGenerationService.validateModifierCycle`, `MeanderGenerationService.validateStaggerBranches`, `MeanderGenerationService.validateStrands`, `MeanderGenerationService.validateOffset`, `MotifRegistryService.resolve`, `MeanderGenerationService.motifDrawnType`, `GridGeometryService.compute`, `MeanderGenerationService.buildPaths`, `SvgRenderingService.render`, `MeanderGenerationService.format` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:365` |
 | `MosaicTileGenerationService.generate` | 8 | `InvalidRowsError.constructor`, `InvalidRepeatCountError.constructor`, `GridGeometryService.compute`, `MosaicTileGenerationService.from(…)`, `MosaicTileMotifService.leadingOverhang`, `MosaicTileMotifService.rightEdge`, `SvgRenderingService.render`, `MosaicTileGenerationService.format` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:59` |
 | `DrawCommand.sweep` | 8 | `DrawCommand.renderCombinations`, `DrawCommand.assertNoPathCollisions`, `DrawCommand.writeDocuments`, `DrawPermutationsService.rowsSweep`, `DrawPermutationsService.render`, `DrawNegativePermutationsService.rowsSweep`, `DrawNegativePermutationsService.render`, `DrawIndexService.render` | `applications/meanderaw/src/modules/draw/draw.command.ts:152` |
 
 <details>
-<summary>297 more callables</summary>
+<summary>304 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MosaicTilesService.enumerate` | 7 | `MosaicTilesService.isAdmitted`, `OversizedMosaicTileError.constructor`, `MosaicTilesService.edges`, `MosaicTileService.blankEdges`, `MosaicTilesService.assign`, `MosaicTilesService.map(…)`, `MosaicTilesService.toSorted(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:174` |
-| `DrawCombinationsService.expandModifierName` | 7 | `DrawCombinationsService.map(…)`, `DrawCombinationsService.flatMap(…)`, `DrawCombinationsService.strandCounts`, `DrawCombinationsService.isPlyModifierName`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:100` |
-| `ChainMotifService.path` | 6 | `SnakeSequenceService.unitPoints`, `ChainMotifService.flipSubpaths`, `ChainMotifService.splitIndex`, `SnakeMotifService.unitWidth`, `ChainMotifService.map(…)`, `SnakeMotifService.borderSegment` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:88` |
+| `MosaicTilesService.enumerate` | 7 | `MosaicTilesService.isAdmitted`, `OversizedMosaicTileError.constructor`, `MosaicTilesService.edges`, `MosaicTileService.blankEdges`, `MosaicTilesService.assign`, `MosaicTilesService.map(…)`, `MosaicTilesService.toSorted(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:185` |
 | `MeanderLatticeService.build` | 6 | `MeanderLatticeService.strokeWidth`, `MeanderLatticeService.pathData`, `MeanderLatticeService.trace`, `MeanderLatticeService.commands`, `MeanderLatticeService.snap`, `MeanderLatticeService.dimension` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:233` |
+| `LatticeIdentificationService.identifyDocument` | 6 | `MeanderLatticeService.build`, `LatticeIdentificationService.assertAddressable`, `LatticeIdentificationService.readTile`, `LatticeIdentificationService.identify`, `MosaicNamingService.name`, `LatticeIdentificationService.canonicalIdentifier` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:197` |
+| `ChainMotifService.path` | 6 | `SnakeSequenceService.unitPoints`, `ChainMotifService.flipSubpaths`, `ChainMotifService.splitIndex`, `SnakeMotifService.unitWidth`, `ChainMotifService.map(…)`, `SnakeMotifService.borderSegment` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:88` |
 | `NegativeTileGenerationService.generate` | 6 | `NegativeTileGenerationService.validate`, `GridGeometryService.compute`, `NegativeTileGenerationService.from(…)`, `SvgRenderingService.render`, `NegativeTileGenerationService.format`, `NegativeMotifService.tileRightEdge` | `applications/meanderaw/src/modules/negative-motif/negative-tile-generation.service.ts:77` |
-| `DrawPermutationsService.render` | 6 | `OutputPathService.familyDirectory`, `MosaicTilesService.maximumColumns`, `MosaicTilesService.enumerate`, `MosaicSymmetryService.canonicalIdentifier`, `MosaicNamingService.name`, `MosaicTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:80` |
-| `BranchMotifService.path` | 5 | `BranchMotifService.mode`, `BranchMotifService.unitColumns`, `BranchMotifService.rungUnit`, `BranchMotifService.isLeftward`, `BranchMotifService.spineUnit` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:359` |
-| `MeanderTopologyService.measure` | 5 | `MeanderLatticeService.build`, `MeanderTopologyService.tally`, `MeanderTopologyService.inkDegree`, `MeanderTopologyService.negativeDegree`, `MeanderTopologyService.isChannelWidthCompliant` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:317` |
+| `DrawCombinationsService.expandModifierName` | 6 | `DrawCombinationsService.flatMap(…)`, `DrawCombinationsService.strandCounts`, `DrawCombinationsService.isPlyModifierName`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)`, `DrawCombinationsService.map(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:100` |
+| `DrawPermutationsService.render` | 6 | `OutputPathService.familyDirectory`, `MosaicTilesService.maximumColumns`, `MosaicTilesService.enumerate`, `LatticeIdentificationService.canonicalIdentifier`, `MosaicNamingService.name`, `MosaicTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:80` |
+| `MeanderTopologyService.measure` | 5 | `MeanderLatticeService.build`, `MeanderTopologyService.tally`, `MeanderTopologyService.inkDegree`, `MeanderTopologyService.negativeDegree`, `MeanderTopologyService.isChannelWidthCompliant` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:318` |
+| `BranchMotifService.path` | 5 | `BranchMotifService.mode`, `BranchMotifService.unitColumns`, `BranchMotifService.rungUnit`, `BranchMotifService.isLeftward`, `BranchMotifService.spineUnit` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:376` |
 | `NegativeMotifService.tilePath` | 5 | `NegativeMotifService.reach`, `NegativeMotifService.from(…)`, `NegativeMotifService.from(…)`, `NegativeMotifService.map(…)`, `NegativeMotifService.map(…)` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:304` |
+| `MeanderGenerationService.buildPaths` | 5 | `MeanderGenerationService.from(…)`, `BoxesMotifService.border`, `BranchMotifService.border`, `CrossMotifService.border`, `ParallelMotifService.border` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:78` |
 | `MeanderGenerationService.generateSubFamily` | 5 | `InvalidSubFamilyError.constructor`, `ConflictingSubFamilyError.constructor`, `MosaicSubFamilyService.tile`, `UnavailableSubFamilyError.constructor`, `MosaicTileGenerationService.generate` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:122` |
-| `DrawParametersService.modifier` | 5 | `DrawParametersService.combModifier`, `DrawParametersService.isPlyModifierName`, `DrawParametersService.plyModifier`, `DrawParametersService.rungModifier`, `DrawParametersService.staggerModifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:184` |
-| `BranchMotifService.rungUnit` | 4 | `BranchMotifService.rungRail`, `BranchMotifService.from(…)`, `BranchMotifService.verticalRun`, `BranchMotifService.stileColumn` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:194` |
+| `MeanderTopologyService.connectivity` | 4 | `MeanderLatticeService.build`, `MeanderTopologyService.components`, `MeanderTopologyService.adjacency`, `MeanderTopologyService.freeEnds` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:284` |
+| `MosaicConnectivityService.connectivity` | 4 | `MosaicConnectivityService.adjacency`, `MeanderTopologyService.components`, `MosaicConnectivityService.edgeCount`, `MosaicConnectivityService.freeEnds` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:177` |
+| `MosaicSymmetryService.transform` | 4 | `MosaicTileService.edges`, `MosaicTileService.blankEdges`, `MosaicSymmetryService.place`, `MosaicTileService.build` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:150` |
+| `MosaicTilesService.assign` | 4 | `MosaicTilesService.edges`, `MosaicTilesService.record`, `MosaicTilesService.set`, `MosaicTilesService.clear` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:106` |
+| `BranchMotifService.rungUnit` | 4 | `BranchMotifService.rungRail`, `BranchMotifService.from(…)`, `BranchMotifService.verticalRun`, `BranchMotifService.stileColumn` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:192` |
 | `SnakeSequenceService.unitPoints` | 4 | `SnakeSequenceService.fusedFlipPoints`, `SnakeSequenceService.points`, `MotifTransformsService.closeEdge`, `MotifTransformsService.mirror` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:192` |
 | `SnakeMotifService.path` | 4 | `SnakeSequenceService.unitPoints`, `SnakeMotifService.unitWidth`, `MotifTransformsService.pointsToPathData`, `SnakeMotifService.borderSegment` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:79` |
-| `MeanderTopologyService.connectivity` | 4 | `MeanderLatticeService.build`, `MeanderTopologyService.components`, `MeanderTopologyService.adjacency`, `MeanderTopologyService.freeEnds` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:283` |
-| `MosaicConnectivityService.connectivity` | 4 | `MosaicConnectivityService.adjacency`, `MeanderTopologyService.components`, `MosaicConnectivityService.edgeCount`, `MosaicConnectivityService.freeEnds` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:177` |
-| `MosaicSymmetryService.transform` | 4 | `MosaicTileService.edges`, `MosaicTileService.blankEdges`, `MosaicSymmetryService.place`, `MosaicTileService.build` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:164` |
-| `MosaicTilesService.assign` | 4 | `MosaicTilesService.edges`, `MosaicTilesService.record`, `MosaicTilesService.set`, `MosaicTilesService.clear` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:102` |
 | `NegativeSourceService.tile` | 4 | `NegativeSourceService.isColumnSource`, `MosaicTileService.build`, `NegativeSourceService.columnEdges`, `NegativeSourceService.tileSource` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:232` |
-| `ParallelMotifService.path` | 4 | `ParallelMotifService.strandCount`, `ParallelSerpentineService.path`, `ParallelMotifService.opensUp`, `ParallelMotifService.from(…)` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:172` |
+| `ParallelMotifService.path` | 4 | `ParallelMotifService.strandCount`, `ParallelSerpentineService.path`, `ParallelMotifService.opensUp`, `ParallelMotifService.from(…)` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:204` |
 | `SwirlMotifService.borderSegment` | 4 | `MotifTransformsService.rightmostLevel`, `SwirlMotifService.subpaths`, `SwirlMotifService.unitWidth`, `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:135` |
 | `SwirlMotifService.path` | 4 | `SwirlMotifService.unitWidth`, `SwirlMotifService.map(…)`, `SwirlMotifService.subpaths`, `SwirlMotifService.borderSegment` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:157` |
 | `WhirlMotifService.borderSegment` | 4 | `MotifTransformsService.rightmostLevel`, `WhirlMotifService.subpaths`, `WhirlMotifService.unitWidth`, `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:126` |
 | `WhirlMotifService.path` | 4 | `WhirlMotifService.unitWidth`, `WhirlMotifService.map(…)`, `WhirlMotifService.subpaths`, `WhirlMotifService.borderSegment` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:148` |
-| `DrawNegativePermutationsService.render` | 4 | `OutputPathService.familyDirectory`, `DrawNegativePermutationsService.map(…)`, `DrawNegativePermutationsService.filter(…)`, `MosaicTilesService.enumerate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:140` |
+| `DrawNegativePermutationsService.render` | 4 | `OutputPathService.familyDirectory`, `DrawNegativePermutationsService.map(…)`, `DrawNegativePermutationsService.filter(…)`, `MosaicTilesService.enumerate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:141` |
+| `DrawParametersService.modifier` | 4 | `DrawParametersService.isPlyModifierName`, `DrawParametersService.plyModifier`, `DrawParametersService.rungModifier`, `DrawParametersService.staggerModifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:168` |
 | `DrawCommand.writeDocuments` | 4 | `DrawCommand.map(…)`, `DrawCommand.map(…)`, `DrawCommand.map(…)`, `DrawCommand.map(…)` | `applications/meanderaw/src/modules/draw/draw.command.ts:190` |
-| `BoxesMotifService.unitPoints` | 3 | `BoxesMotifService.spiralPoints`, `BoxesMotifService.centerPoint`, `MotifTransformsService.rotate` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:129` |
-| `BoxesMotifService.path` | 3 | `BoxesMotifService.unitPoints`, `BoxesMotifService.unitWidth`, `BoxesMotifService.pointsToPathData` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:179` |
-| `BranchMotifService.spineUnit` | 3 | `BranchMotifService.from(…)`, `BranchMotifService.horizontalRun`, `BranchMotifService.spineRow` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:264` |
-| `SnakeSequenceService.fusedFlipPoints` | 3 | `SnakeSequenceService.flipPitchLevels`, `SnakeSequenceService.points`, `MotifTransformsService.mirror` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:53` |
-| `SnakeMotifService.borderSegment` | 3 | `SnakeSequenceService.unitTraceRightLevel`, `SnakeMotifService.unitWidth`, `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:58` |
-| `CrossMotifService.border` | 3 | `CrossMotifService.rightEdgeLevels`, `CrossMotifService.horizontalRun`, `CrossMotifService.crossingLevel` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:179` |
 | `MeanderLatticeService.trace` | 3 | `MeanderLatticeService.snap`, `MeanderLatticeService.addHorizontal`, `MeanderLatticeService.addVertical` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:204` |
 | `MeanderTopologyService.neighbors` | 3 | `MeanderTopologyService.key`, `MeanderTopologyService.map(…)`, `MeanderTopologyService.filter(…)` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:165` |
 | `MosaicSubFamilyService.tile` | 3 | `MosaicSubFamilyService.closes`, `MosaicTileService.build`, `MosaicSubFamilyService.grid` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-sub-family.service.ts:118` |
 | `MosaicTileMotifService.path` | 3 | `MosaicTileMotifService.unitSegments`, `MosaicTileMotifService.format`, `MosaicTileMotifService.rightEdge` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:140` |
-| `MosaicTilesService.record` | 3 | `MosaicTileService.build`, `MosaicSymmetryService.canonicalIdentifier`, `MosaicSymmetryService.canonicalTile` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:132` |
+| `MosaicTilesService.record` | 3 | `MosaicTileService.build`, `MosaicSymmetryService.canonicalTile`, `MosaicSymmetryService.edgeKey` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:145` |
+| `MosaicNamingService.matching` | 3 | `MosaicNamingService.map(…)`, `MosaicNamingService.filter(…)`, `MosaicNamingService.rules` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:168` |
+| `LatticeIdentificationService.readTile` | 3 | `MosaicTileService.blankEdges`, `MosaicTileService.mark`, `MosaicTileService.build` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:237` |
+| `BoxesMotifService.unitPoints` | 3 | `BoxesMotifService.spiralPoints`, `BoxesMotifService.centerPoint`, `MotifTransformsService.rotate` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:129` |
+| `BoxesMotifService.path` | 3 | `BoxesMotifService.unitPoints`, `BoxesMotifService.unitWidth`, `BoxesMotifService.pointsToPathData` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:173` |
+| `BranchMotifService.spineUnit` | 3 | `BranchMotifService.from(…)`, `BranchMotifService.horizontalRun`, `BranchMotifService.spineRow` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:257` |
+| `SnakeSequenceService.fusedFlipPoints` | 3 | `SnakeSequenceService.flipPitchLevels`, `SnakeSequenceService.points`, `MotifTransformsService.mirror` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:53` |
+| `SnakeMotifService.borderSegment` | 3 | `SnakeSequenceService.unitTraceRightLevel`, `SnakeMotifService.unitWidth`, `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:58` |
+| `CrossMotifService.border` | 3 | `CrossMotifService.rightEdgeLevels`, `CrossMotifService.horizontalRun`, `CrossMotifService.crossingLevel` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:179` |
 | `NegativeSourceService.tileSource` | 3 | `NegativeSourceService.brickEdges`, `NegativeSourceService.stairEdges`, `MosaicTileService.build` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:187` |
 | `NegativeMotifService.columnPath` | 3 | `NegativeMotifService.from(…)`, `NegativeMotifService.mergeRuns(…)`, `NegativeMotifService.mergeRuns` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:86` |
 | `NegativeMotifService.rowPath` | 3 | `NegativeMotifService.from(…)`, `NegativeMotifService.mergeRuns(…)`, `NegativeMotifService.mergeRuns` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:226` |
 | `NegativeMotifService.path` | 3 | `NegativeMotifService.tilePath`, `NegativeSourceService.tile`, `NegativeSourceService.source` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:265` |
 | `NegativeMotifService.rightEdge` | 3 | `NegativeMotifService.tileRightEdge`, `NegativeSourceService.tile`, `NegativeSourceService.source` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:277` |
-| `ParallelSerpentineService.variants` | 3 | `ParallelSerpentineService.from(…)`, `ParallelSerpentineService.strips`, `ParallelSerpentineService.map(…)` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:296` |
+| `ParallelSerpentineService.variants` | 3 | `ParallelSerpentineService.from(…)`, `ParallelSerpentineService.strips`, `ParallelSerpentineService.map(…)` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:310` |
 | `SwirlMotifService.basePoints` | 3 | `SwirlMotifService.firstArmPoints`, `MotifTransformsService.rotate`, `SwirlMotifService.centerPoint` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:45` |
 | `SwirlMotifService.flippedPoints` | 3 | `SwirlMotifService.basePoints`, `SwirlMotifService.pitchLevels`, `MotifTransformsService.mirror` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:91` |
 | `WhirlMotifService.basePoints` | 3 | `WhirlMotifService.armPoints`, `MotifTransformsService.rotate`, `WhirlMotifService.centerPoint` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:65` |
 | `WhirlMotifService.flippedPoints` | 3 | `WhirlMotifService.basePoints`, `WhirlMotifService.pitchLevels`, `MotifTransformsService.mirror` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:80` |
-| `MeanderGenerationService.buildPaths` | 3 | `MeanderGenerationService.from(…)`, `BoxesMotifService.border`, `CrossMotifService.border` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:78` |
-| `MosaicNamingService.matching` | 3 | `MosaicNamingService.map(…)`, `MosaicNamingService.filter(…)`, `MosaicNamingService.rules` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:168` |
+| `MotifPitchService.columnPitch` | 3 | `GridGeometryService.compute`, `MotifRegistryService.resolve`, `MotifPitchService.rightEdge` | `applications/meanderaw/src/modules/meander-generation/motif-pitch.service.ts:69` |
 | `DrawIndexService.renderSection` | 3 | `DrawIndexService.map(…)`, `DrawIndexService.escape`, `DrawIndexService.slug` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:111` |
 | `DrawIndexService.render` | 3 | `DrawIndexService.groupByDirectory`, `DrawIndexService.map(…)`, `DrawIndexService.renderContents` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:148` |
-| `DrawNegativePermutationsService.map(…)` | 3 | `MosaicSymmetryService.canonicalIdentifier`, `DrawNegativePermutationsService.classify`, `NegativeTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:154` |
-| `BoxesMotifService.border` | 2 | `GridGeometryService.formatCoordinate`, `BoxesMotifService.rightEdge` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:165` |
-| `BranchMotifService.mode` | 2 | `BranchMotifService.isBranchModifierName`, `UnknownBranchModeError.constructor` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:346` |
-| `SnakeSequenceService.rowOrder` | 2 | `SnakeSequenceService.from(…)`, `SnakeSequenceService.map(…)` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:93` |
-| `SnakeSequenceService.points` | 2 | `SnakeSequenceService.rowOrder`, `SnakeSequenceService.forEach(…)` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:152` |
-| `SnakeSequenceService.unitTraceRightLevel` | 2 | `MotifTransformsService.rightmostLevel`, `SnakeSequenceService.unitPoints` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:234` |
-| `CrossMotifService.bar` | 2 | `CrossMotifService.map(…)`, `CrossMotifService.barSpans` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:68` |
-| `CrossMotifService.barSpans` | 2 | `UnknownCrossModifierError.constructor`, `CrossMotifService.crossingLevel` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:97` |
-| `CrossMotifService.path` | 2 | `CrossMotifService.horizontalRun`, `CrossMotifService.bar` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:199` |
+| `DrawNegativePermutationsService.map(…)` | 3 | `LatticeIdentificationService.canonicalIdentifier`, `DrawNegativePermutationsService.classify`, `NegativeTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:155` |
 | `MeanderLatticeService.commands` | 2 | `MeanderLatticeService.map(…)`, `MeanderLatticeService.groups` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:120` |
 | `MeanderLatticeService.groups` | 2 | `UnsupportedPathCommandError.constructor`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:138` |
 | `MeanderLatticeService.strokeWidth` | 2 | `MeanderLatticeService.map(…)`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:186` |
-| `OutputPathService.build` | 2 | `OutputPathService.familyDirectory`, `OutputPathService.fileName` | `applications/meanderaw/src/modules/svg-rendering/output-path.service.ts:126` |
+| `OutputPathService.build` | 2 | `OutputPathService.familyDirectory`, `OutputPathService.fileName` | `applications/meanderaw/src/modules/svg-rendering/output-path.service.ts:122` |
 | `MosaicTileService.assertPointAgrees` | 2 | `MalformedMosaicTileError.constructor`, `MosaicTileService.assertPointJoinsBelow` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:50` |
 | `MosaicTileService.assertWellFormed` | 2 | `MalformedMosaicTileError.constructor`, `MosaicTileService.assertPointAgrees` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:128` |
 | `MosaicTileService.from(…)` | 2 | `MosaicTileService.horizontal`, `MosaicTileService.vertical` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:176` |
@@ -2594,26 +2845,13 @@ What this project is judged against. `declared` is the number in this project's 
 | `MosaicConnectivityService.neighbors` | 2 | `MosaicConnectivityService.map(…)`, `MosaicConnectivityService.filter(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:134` |
 | `MosaicConnectivityService.isAcyclic` | 2 | `MeanderTopologyService.isAcyclic`, `MosaicConnectivityService.connectivity` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:189` |
 | `MosaicConnectivityService.isOneComponent` | 2 | `MeanderTopologyService.isOneComponent`, `MosaicConnectivityService.connectivity` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:194` |
-| `MosaicSymmetryService.edgeKey` | 2 | `MosaicTileService.edges`, `MosaicSymmetryService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:58` |
-| `MosaicSymmetryService.place` | 2 | `MosaicTileService.mark`, `MosaicSymmetryService.mapColumn` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:105` |
-| `MosaicSymmetryService.signature` | 2 | `MosaicSymmetryService.flatMap(…)`, `MosaicSymmetryService.edgeKey` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:155` |
-| `MosaicSymmetryService.canonicalIdentifier` | 2 | `MosaicSymmetryService.identify`, `MosaicSymmetryService.canonicalTile` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:201` |
-| `MosaicSymmetryService.canonicalTile` | 2 | `MosaicSymmetryService.signature`, `MosaicSymmetryService.orbit` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:211` |
-| `MosaicSymmetryService.variants` | 2 | `MosaicSymmetryService.orbit`, `MosaicSymmetryService.edgeKey` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:275` |
+| `MosaicSymmetryService.place` | 2 | `MosaicTileService.mark`, `MosaicSymmetryService.mapColumn` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:91` |
+| `MosaicSymmetryService.signature` | 2 | `MosaicSymmetryService.flatMap(…)`, `MosaicSymmetryService.edgeKey` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:141` |
+| `MosaicSymmetryService.canonicalTile` | 2 | `MosaicSymmetryService.signature`, `MosaicSymmetryService.orbit` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:185` |
+| `MosaicSymmetryService.edgeKey` | 2 | `MosaicTileService.edges`, `MosaicSymmetryService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:213` |
+| `MosaicSymmetryService.variants` | 2 | `MosaicSymmetryService.orbit`, `MosaicSymmetryService.edgeKey` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:230` |
 | `MosaicTileMotifService.pointSegments` | 2 | `MosaicTileMotifService.format`, `MosaicTileService.isBare` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:51` |
-| `MosaicTilesService.set` | 2 | `MosaicTilesService.address`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:146` |
-| `NegativeSourceService.brickEdges` | 2 | `MosaicTileService.blankEdges`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:78` |
-| `NegativeSourceService.columnEdges` | 2 | `MosaicTileService.blankEdges`, `NegativeSourceService.markColumn` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:108` |
-| `NegativeSourceService.stairEdges` | 2 | `MosaicTileService.blankEdges`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:170` |
-| `NegativeSourceService.source` | 2 | `NegativeSourceService.isNegativeModifierName`, `UnknownNegativeSourceError.constructor` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:215` |
-| `NegativeTileGenerationService.validate` | 2 | `InvalidRowsError.constructor`, `InvalidRepeatCountError.constructor` | `applications/meanderaw/src/modules/negative-motif/negative-tile-generation.service.ts:54` |
-| `ParallelSerpentineService.from(…)` | 2 | `ParallelSerpentineService.connectorRow`, `ParallelSerpentineService.coordinate` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:156` |
-| `ParallelSerpentineService.path` | 2 | `ParallelSerpentineService.map(…)`, `ParallelSerpentineService.strips` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:216` |
-| `ParallelSerpentineService.map(…)` | 2 | `ParallelSerpentineService.ribbonPath`, `ParallelSerpentineService.isFlipped` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:228` |
-| `ParallelMotifService.rightEdge` | 2 | `ParallelMotifService.lastColumn`, `ParallelMotifService.strandCount` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:200` |
-| `SwirlMotifService.subpaths` | 2 | `SwirlMotifService.basePoints`, `SwirlMotifService.flippedPoints` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:107` |
-| `WhirlMotifService.subpaths` | 2 | `WhirlMotifService.basePoints`, `WhirlMotifService.flippedPoints` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:96` |
-| `MeanderGenerationService.motifDrawnType` | 2 | `MeanderGenerationService.isTileDrawnType`, `MissingSubFamilyError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:176` |
+| `MosaicTilesService.set` | 2 | `MosaicTilesService.address`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:157` |
 | `MosaicNamingService.cornerLanes` | 2 | `MosaicTileService.edges`, `MosaicNamingService.from(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:83` |
 | `MosaicNamingService.isUnbroken` | 2 | `MosaicTileService.edges`, `MosaicNamingService.isEveryEdgeDrawn` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:142` |
 | `MosaicNamingService.bare` | 2 | `MosaicNamingService.everyPoint(…)`, `MosaicNamingService.everyPoint` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:217` |
@@ -2626,62 +2864,49 @@ What this project is judged against. `declared` is the number in this project's 
 | `MosaicNamingService.matches` | 2 | `MosaicNamingService.vertical`, `MosaicNamingService.isUnbroken` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:241` |
 | `MosaicNamingService.matches` | 2 | `MosaicNamingService.corner`, `MosaicNamingService.cornerLanes` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:253` |
 | `MosaicNamingService.matches` | 2 | `MosaicNamingService.corner`, `MosaicNamingService.cornerLanes` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:257` |
+| `LatticeIdentificationService.canonicalIdentifier` | 2 | `LatticeIdentificationService.identify`, `MosaicSymmetryService.canonicalTile` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:131` |
+| `BoxesMotifService.border` | 2 | `GridGeometryService.borderPath`, `BoxesMotifService.rightEdge` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:165` |
+| `BranchMotifService.border` | 2 | `GridGeometryService.borderPath`, `BranchMotifService.rightEdge` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:343` |
+| `BranchMotifService.mode` | 2 | `BranchMotifService.isBranchModifierName`, `UnknownBranchModeError.constructor` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:363` |
+| `SnakeSequenceService.rowOrder` | 2 | `SnakeSequenceService.from(…)`, `SnakeSequenceService.map(…)` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:93` |
+| `SnakeSequenceService.points` | 2 | `SnakeSequenceService.rowOrder`, `SnakeSequenceService.forEach(…)` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:152` |
+| `SnakeSequenceService.unitTraceRightLevel` | 2 | `MotifTransformsService.rightmostLevel`, `SnakeSequenceService.unitPoints` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:234` |
+| `CrossMotifService.bar` | 2 | `CrossMotifService.map(…)`, `CrossMotifService.barSpans` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:68` |
+| `CrossMotifService.barSpans` | 2 | `UnknownCrossModifierError.constructor`, `CrossMotifService.crossingLevel` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:97` |
+| `CrossMotifService.path` | 2 | `CrossMotifService.horizontalRun`, `CrossMotifService.bar` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:199` |
+| `NegativeSourceService.brickEdges` | 2 | `MosaicTileService.blankEdges`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:78` |
+| `NegativeSourceService.columnEdges` | 2 | `MosaicTileService.blankEdges`, `NegativeSourceService.markColumn` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:108` |
+| `NegativeSourceService.stairEdges` | 2 | `MosaicTileService.blankEdges`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:170` |
+| `NegativeSourceService.source` | 2 | `NegativeSourceService.isNegativeModifierName`, `UnknownNegativeSourceError.constructor` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:215` |
+| `NegativeTileGenerationService.validate` | 2 | `InvalidRowsError.constructor`, `InvalidRepeatCountError.constructor` | `applications/meanderaw/src/modules/negative-motif/negative-tile-generation.service.ts:54` |
+| `ParallelSerpentineService.from(…)` | 2 | `ParallelSerpentineService.connectorRow`, `ParallelSerpentineService.coordinate` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:170` |
+| `ParallelSerpentineService.path` | 2 | `ParallelSerpentineService.map(…)`, `ParallelSerpentineService.strips` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:230` |
+| `ParallelSerpentineService.map(…)` | 2 | `ParallelSerpentineService.ribbonPath`, `ParallelSerpentineService.isFlipped` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:242` |
+| `ParallelMotifService.border` | 2 | `GridGeometryService.borderPath`, `ParallelMotifService.rightEdge` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:188` |
+| `ParallelMotifService.rightEdge` | 2 | `ParallelMotifService.lastColumn`, `ParallelMotifService.strandCount` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:232` |
+| `SwirlMotifService.subpaths` | 2 | `SwirlMotifService.basePoints`, `SwirlMotifService.flippedPoints` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:107` |
+| `WhirlMotifService.subpaths` | 2 | `WhirlMotifService.basePoints`, `WhirlMotifService.flippedPoints` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:96` |
+| `MeanderGenerationService.motifDrawnType` | 2 | `MeanderGenerationService.isTileDrawnType`, `MissingSubFamilyError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:176` |
 | `DrawCombinationsService.combinationsForType` | 2 | `DrawCombinationsService.flatMap(…)`, `DrawCombinationsService.rowsSweep` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:79` |
 | `DrawCombinationsService.flatMap(…)` | 2 | `DrawCombinationsService.map(…)`, `DrawCombinationsService.modifiersForType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:80` |
-| `DrawCombinationsService.flatMap(…)` | 2 | `DrawCombinationsService.map(…)`, `ParallelSerpentineService.variants` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:109` |
-| `DrawCombinationsService.modifiersForType` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:153` |
-| `DrawCombinationsService.enumerate` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:249` |
+| `DrawCombinationsService.flatMap(…)` | 2 | `DrawCombinationsService.map(…)`, `ParallelSerpentineService.variants` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:105` |
+| `DrawCombinationsService.modifiersForType` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:152` |
+| `DrawCombinationsService.enumerate` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:252` |
 | `DrawIndexService.groupByDirectory` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:74` |
 | `DrawIndexService.map(…)` | 2 | `DrawIndexService.escape`, `DrawIndexService.slug` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:102` |
-| `DrawNegativePermutationsService.classify` | 2 | `MosaicSymmetryService.canonicalIdentifier`, `DrawNegativePermutationsService.find(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:112` |
-| `DrawNegativePermutationsService.find(…)` | 2 | `MosaicSymmetryService.canonicalIdentifier`, `NegativeSourceService.tile` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:116` |
-| `DrawParametersService.plyModifier` | 2 | `MissingModifierParameterError.constructor`, `DrawParametersService.serpentineModifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:110` |
-| `DrawParametersService.modifierName` | 2 | `DrawParametersService.isModifierName`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:211` |
-| `DrawParametersService.serpentineFlip` | 2 | `DrawParametersService.isSerpentineFlip`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:224` |
-| `DrawParametersService.single` | 2 | `IncompleteDrawingError.constructor`, `DrawParametersService.modifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:244` |
-| `DrawParametersService.subFamily` | 2 | `DrawParametersService.isSubFamily`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:268` |
-| `DrawParametersService.type` | 2 | `DrawParametersService.isMeanderType`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:281` |
+| `DrawNegativePermutationsService.classify` | 2 | `LatticeIdentificationService.canonicalIdentifier`, `DrawNegativePermutationsService.find(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:112` |
+| `DrawNegativePermutationsService.find(…)` | 2 | `LatticeIdentificationService.canonicalIdentifier`, `NegativeSourceService.tile` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:117` |
+| `DrawParametersService.plyModifier` | 2 | `MissingModifierParameterError.constructor`, `DrawParametersService.serpentineModifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:94` |
+| `DrawParametersService.modifierName` | 2 | `DrawParametersService.isModifierName`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:191` |
+| `DrawParametersService.serpentineFlip` | 2 | `DrawParametersService.isSerpentineFlip`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:204` |
+| `DrawParametersService.single` | 2 | `IncompleteDrawingError.constructor`, `DrawParametersService.modifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:224` |
+| `DrawParametersService.subFamily` | 2 | `DrawParametersService.isSubFamily`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:248` |
+| `DrawParametersService.type` | 2 | `DrawParametersService.isMeanderType`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:261` |
 | `DrawCommand.assertNoPathCollisions` | 2 | `DrawCommand.map(…)`, `CollidingPathsError.constructor` | `applications/meanderaw/src/modules/draw/draw.command.ts:118` |
 | `DrawCommand.render` | 2 | `DrawCommand.renderParameters`, `DrawParametersService.single` | `applications/meanderaw/src/modules/draw/draw.command.ts:129` |
 | `DrawCommand.renderCombinations` | 2 | `DrawCommand.map(…)`, `DrawCombinationsService.enumerate` | `applications/meanderaw/src/modules/draw/draw.command.ts:134` |
 | `DrawCommand.renderParameters` | 2 | `OutputPathService.build`, `MeanderGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw.command.ts:141` |
-| `DrawCommand.run` | 2 | `DrawCommand.sweep`, `DrawCommand.render` | `applications/meanderaw/src/modules/draw/draw.command.ts:346` |
-| `MotifTransformsService.mirror` | 1 | `MotifTransformsService.map(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:66` |
-| `MotifTransformsService.pointsToPathData` | 1 | `MotifTransformsService.reduce(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:87` |
-| `MotifTransformsService.rightmostLevel` | 1 | `MotifTransformsService.flatMap(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:132` |
-| `MotifTransformsService.flatMap(…)` | 1 | `MotifTransformsService.map(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:133` |
-| `MotifTransformsService.rotate` | 1 | `MotifTransformsService.map(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:145` |
-| `BoxesMotifService.pointsToPathData` | 1 | `BoxesMotifService.reduce(…)` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:74` |
-| `BoxesMotifService.spiralPoints` | 1 | `BoxesMotifService.advanceSpiral` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:111` |
-| `BoxesMotifService.anonymous` | 1 | `MotifTransformsService.mirror` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:155` |
-| `BoxesMotifService.toXCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:183` |
-| `BoxesMotifService.toYCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:187` |
-| `BoxesMotifService.rightEdge` | 1 | `BoxesMotifService.unitWidth` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:196` |
-| `BranchMotifService.coordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:88` |
-| `BranchMotifService.horizontalRun` | 1 | `BranchMotifService.coordinate` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:95` |
-| `BranchMotifService.lastColumn` | 1 | `BranchMotifService.unitColumns` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:142` |
-| `BranchMotifService.rungRail` | 1 | `BranchMotifService.stileColumn` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:159` |
-| `BranchMotifService.from(…)` | 1 | `BranchMotifService.horizontalRun` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:201` |
-| `BranchMotifService.spineRow` | 1 | `BranchMotifService.isUpward` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:234` |
-| `BranchMotifService.from(…)` | 1 | `BranchMotifService.verticalRun` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:271` |
-| `BranchMotifService.verticalRun` | 1 | `BranchMotifService.coordinate` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:320` |
-| `BranchMotifService.rightEdge` | 1 | `BranchMotifService.lastColumn` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:376` |
-| `SnakeSequenceService.rowSpan` | 1 | `SnakeSequenceService.rowSpanWidth` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:112` |
-| `SnakeSequenceService.forEach(…)` | 1 | `SnakeSequenceService.rowSpan` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:158` |
-| `SnakeSequenceService.unitWidthLevels` | 1 | `SnakeSequenceService.flipPitchLevels` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:246` |
-| `SnakeMotifService.toXCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:87` |
-| `SnakeMotifService.toYCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:91` |
-| `SnakeMotifService.rightEdge` | 1 | `SnakeMotifService.unitWidth` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:112` |
-| `SnakeMotifService.unitWidth` | 1 | `SnakeSequenceService.unitWidthLevels` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:125` |
-| `ChainMotifService.toXCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:104` |
-| `ChainMotifService.toYCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:108` |
-| `ChainMotifService.map(…)` | 1 | `MotifTransformsService.pointsToPathData` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:113` |
-| `ChainMotifService.rightEdge` | 1 | `SnakeMotifService.rightEdge` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:134` |
-| `CrossMotifService.map(…)` | 1 | `CrossMotifService.verticalRun` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:74` |
-| `CrossMotifService.coordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:117` |
-| `CrossMotifService.horizontalRun` | 1 | `CrossMotifService.coordinate` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:144` |
-| `CrossMotifService.verticalRun` | 1 | `CrossMotifService.coordinate` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:165` |
-| `CrossMotifService.rightEdge` | 1 | `CrossMotifService.rightEdgeLevels` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:222` |
+| `DrawCommand.run` | 2 | `DrawCommand.sweep`, `DrawCommand.render` | `applications/meanderaw/src/modules/draw/draw.command.ts:331` |
 | `MeanderLatticeService.addHorizontal` | 1 | `MeanderLatticeService.key` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:55` |
 | `MeanderLatticeService.addVertical` | 1 | `MeanderLatticeService.key` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:73` |
 | `MeanderLatticeService.command` | 1 | `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:91` |
@@ -2689,6 +2914,7 @@ What this project is judged against. `declared` is the number in this project's 
 | `MeanderLatticeService.dimension` | 1 | `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:125` |
 | `MeanderLatticeService.pathData` | 1 | `MeanderLatticeService.map(…)` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:170` |
 | `MeanderLatticeService.snap` | 1 | `OffLatticeCoordinateError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:175` |
+| `GridGeometryService.borderPath` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:41` |
 | `MeanderTopologyService.adjacency` | 1 | `MeanderTopologyService.key` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:69` |
 | `MeanderTopologyService.key` | 1 | `MeanderTopologyService.key` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:81` |
 | `MeanderTopologyService.neighbors` | 1 | `MeanderTopologyService.neighbors` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:82` |
@@ -2722,12 +2948,10 @@ What this project is judged against. `declared` is the number in this project's 
 | `MosaicSubFamilyService.grid` | 1 | `MosaicSubFamilyService.from(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-sub-family.service.ts:66` |
 | `MosaicSubFamilyService.from(…)` | 1 | `MosaicSubFamilyService.from(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-sub-family.service.ts:71` |
 | `MosaicSubFamilyService.from(…)` | 1 | `MosaicSubFamilyService.marks` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-sub-family.service.ts:72` |
-| `MosaicSymmetryService.flatMap(…)` | 1 | `MosaicSymmetryService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:62` |
-| `MosaicSymmetryService.orbit` | 1 | `MosaicSymmetryService.transform` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:83` |
-| `MosaicSymmetryService.flatMap(…)` | 1 | `MosaicSymmetryService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:157` |
-| `MosaicSymmetryService.map(…)` | 1 | `MosaicSymmetryService.rank` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:157` |
-| `MosaicSymmetryService.identify` | 1 | `MosaicSymmetryService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:251` |
-| `MosaicSymmetryService.flatMap(…)` | 1 | `MosaicSymmetryService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:253` |
+| `MosaicSymmetryService.orbit` | 1 | `MosaicSymmetryService.transform` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:69` |
+| `MosaicSymmetryService.flatMap(…)` | 1 | `MosaicSymmetryService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:143` |
+| `MosaicSymmetryService.map(…)` | 1 | `MosaicSymmetryService.rank` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:143` |
+| `MosaicSymmetryService.flatMap(…)` | 1 | `MosaicSymmetryService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:217` |
 | `MosaicTileMotifService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:46` |
 | `MosaicTileMotifService.unitSegments` | 1 | `MosaicTileMotifService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:74` |
 | `MosaicTileMotifService.flatMap(…)` | 1 | `MosaicTileMotifService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:80` |
@@ -2739,9 +2963,59 @@ What this project is judged against. `declared` is the number in this project's 
 | `MosaicTileMotifService.flatMap(…)` | 1 | `MosaicTileMotifService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:173` |
 | `MosaicTileGenerationService.from(…)` | 1 | `MosaicTileMotifService.path` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:85` |
 | `MosaicTileGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:98` |
-| `MosaicTilesService.clear` | 1 | `MosaicTilesService.address` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:118` |
-| `MosaicTilesService.isAdmitted` | 1 | `MosaicTilesService.edges` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:205` |
-| `MosaicTilesService.isMatching` | 1 | `MosaicTileService.incidentEdges` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:225` |
+| `MosaicTilesService.clear` | 1 | `MosaicTilesService.address` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:122` |
+| `MosaicTilesService.isAdmitted` | 1 | `MosaicTilesService.edges` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:216` |
+| `MosaicTilesService.isMatching` | 1 | `MosaicTileService.incidentEdges` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:236` |
+| `MosaicNamingService.from(…)` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:87` |
+| `MosaicNamingService.everyPoint` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:102` |
+| `MosaicNamingService.every(…)` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106` |
+| `MosaicNamingService.isCorner` | 1 | `MosaicTileService.degree` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:110` |
+| `MosaicNamingService.isEveryEdgeDrawn` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:119` |
+| `MosaicNamingService.name` | 1 | `MosaicNamingService.matching` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:175` |
+| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicTileService.isBare` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:218` |
+| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicNamingService.isCorner` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:220` |
+| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicNamingService.isHorizontal` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:222` |
+| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicNamingService.isVertical` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:224` |
+| `MosaicNamingService.matches` | 1 | `MosaicNamingService.bare` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:227` |
+| `MosaicNamingService.matches` | 1 | `MosaicNamingService.isUnbroken` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:245` |
+| `LatticeIdentificationService.assertAddressable` | 1 | `InvalidSpanError.constructor` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:84` |
+| `LatticeIdentificationService.identify` | 1 | `LatticeIdentificationService.flatMap(…)` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:159` |
+| `LatticeIdentificationService.flatMap(…)` | 1 | `LatticeIdentificationService.map(…)` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:161` |
+| `MotifTransformsService.mirror` | 1 | `MotifTransformsService.map(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:66` |
+| `MotifTransformsService.pointsToPathData` | 1 | `MotifTransformsService.reduce(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:87` |
+| `MotifTransformsService.rightmostLevel` | 1 | `MotifTransformsService.flatMap(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:132` |
+| `MotifTransformsService.flatMap(…)` | 1 | `MotifTransformsService.map(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:133` |
+| `MotifTransformsService.rotate` | 1 | `MotifTransformsService.map(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:145` |
+| `BoxesMotifService.pointsToPathData` | 1 | `BoxesMotifService.reduce(…)` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:74` |
+| `BoxesMotifService.spiralPoints` | 1 | `BoxesMotifService.advanceSpiral` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:111` |
+| `BoxesMotifService.anonymous` | 1 | `MotifTransformsService.mirror` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:155` |
+| `BoxesMotifService.toXCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:177` |
+| `BoxesMotifService.toYCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:181` |
+| `BoxesMotifService.rightEdge` | 1 | `BoxesMotifService.unitWidth` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:190` |
+| `BranchMotifService.coordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:99` |
+| `BranchMotifService.horizontalRun` | 1 | `BranchMotifService.coordinate` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:106` |
+| `BranchMotifService.lastColumn` | 1 | `BranchMotifService.unitColumns` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:140` |
+| `BranchMotifService.rungRail` | 1 | `BranchMotifService.stileColumn` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:157` |
+| `BranchMotifService.from(…)` | 1 | `BranchMotifService.horizontalRun` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:199` |
+| `BranchMotifService.from(…)` | 1 | `BranchMotifService.verticalRun` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:264` |
+| `BranchMotifService.verticalRun` | 1 | `BranchMotifService.coordinate` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:313` |
+| `BranchMotifService.rightEdge` | 1 | `BranchMotifService.lastColumn` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:393` |
+| `SnakeSequenceService.rowSpan` | 1 | `SnakeSequenceService.rowSpanWidth` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:112` |
+| `SnakeSequenceService.forEach(…)` | 1 | `SnakeSequenceService.rowSpan` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:158` |
+| `SnakeSequenceService.unitWidthLevels` | 1 | `SnakeSequenceService.flipPitchLevels` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:246` |
+| `SnakeMotifService.toXCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:87` |
+| `SnakeMotifService.toYCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:91` |
+| `SnakeMotifService.rightEdge` | 1 | `SnakeMotifService.unitWidth` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:112` |
+| `SnakeMotifService.unitWidth` | 1 | `SnakeSequenceService.unitWidthLevels` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:125` |
+| `ChainMotifService.toXCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:104` |
+| `ChainMotifService.toYCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:108` |
+| `ChainMotifService.map(…)` | 1 | `MotifTransformsService.pointsToPathData` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:113` |
+| `ChainMotifService.rightEdge` | 1 | `SnakeMotifService.rightEdge` | `applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:134` |
+| `CrossMotifService.map(…)` | 1 | `CrossMotifService.verticalRun` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:74` |
+| `CrossMotifService.coordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:117` |
+| `CrossMotifService.horizontalRun` | 1 | `CrossMotifService.coordinate` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:144` |
+| `CrossMotifService.verticalRun` | 1 | `CrossMotifService.coordinate` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:165` |
+| `CrossMotifService.rightEdge` | 1 | `CrossMotifService.rightEdgeLevels` | `applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:222` |
 | `NegativeSourceService.markColumn` | 1 | `MosaicTileService.mark` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:148` |
 | `NegativeMotifService.from(…)` | 1 | `NegativeMotifService.hasMark` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:93` |
 | `NegativeMotifService.mergeRuns(…)` | 1 | `NegativeMotifService.verticalRun` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:96` |
@@ -2758,15 +3032,15 @@ What this project is judged against. `declared` is the number in this project's 
 | `NegativeMotifService.tileRightEdge` | 1 | `NegativeMotifService.lastColumn` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:330` |
 | `NegativeTileGenerationService.from(…)` | 1 | `NegativeMotifService.tilePath` | `applications/meanderaw/src/modules/negative-motif/negative-tile-generation.service.ts:83` |
 | `NegativeTileGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/negative-motif/negative-tile-generation.service.ts:89` |
-| `ParallelSerpentineService.coordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:105` |
-| `ParallelSerpentineService.ribbonPath` | 1 | `ParallelSerpentineService.from(…)` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:146` |
-| `ParallelSerpentineService.stripDepths` | 1 | `ParallelSerpentineService.from(…)` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:195` |
-| `ParallelSerpentineService.strips` | 1 | `ParallelSerpentineService.stripDepths` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:255` |
-| `ParallelSerpentineService.map(…)` | 1 | `ParallelSerpentineService.isFlipped` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:307` |
-| `ParallelMotifService.coordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:96` |
-| `ParallelMotifService.strandPath` | 1 | `ParallelMotifService.coordinate` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:141` |
-| `ParallelMotifService.from(…)` | 1 | `ParallelMotifService.strandPath` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:186` |
-| `ParallelMotifService.strandCount` | 1 | `UnknownParallelModifierError.constructor` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:225` |
+| `ParallelSerpentineService.coordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:118` |
+| `ParallelSerpentineService.ribbonPath` | 1 | `ParallelSerpentineService.from(…)` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:160` |
+| `ParallelSerpentineService.stripDepths` | 1 | `ParallelSerpentineService.from(…)` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:209` |
+| `ParallelSerpentineService.strips` | 1 | `ParallelSerpentineService.stripDepths` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:269` |
+| `ParallelSerpentineService.map(…)` | 1 | `ParallelSerpentineService.isFlipped` | `applications/meanderaw/src/modules/parallel-motif/parallel-serpentine.service.ts:321` |
+| `ParallelMotifService.coordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:103` |
+| `ParallelMotifService.strandPath` | 1 | `ParallelMotifService.coordinate` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:147` |
+| `ParallelMotifService.from(…)` | 1 | `ParallelMotifService.strandPath` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:218` |
+| `ParallelMotifService.strandCount` | 1 | `UnknownParallelModifierError.constructor` | `applications/meanderaw/src/modules/parallel-motif/parallel-motif.service.ts:257` |
 | `SwirlMotifService.toXCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:160` |
 | `SwirlMotifService.toYCoordinate` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:164` |
 | `SwirlMotifService.map(…)` | 1 | `MotifTransformsService.pointsToPathData` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:169` |
@@ -2783,37 +3057,26 @@ What this project is judged against. `declared` is the number in this project's 
 | `MeanderGenerationService.validateOffset` | 1 | `InvalidOffsetError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:243` |
 | `MeanderGenerationService.validateRepeatCount` | 1 | `InvalidRepeatCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:256` |
 | `MeanderGenerationService.validateRows` | 1 | `InvalidRowsError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:282` |
-| `MeanderGenerationService.validateStaggerBranches` | 1 | `InvalidStaggerBranchCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:303` |
-| `MeanderGenerationService.validateStrands` | 1 | `InvalidStrandCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:335` |
-| `MeanderGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:389` |
-| `MosaicNamingService.from(…)` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:87` |
-| `MosaicNamingService.everyPoint` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:102` |
-| `MosaicNamingService.every(…)` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106` |
-| `MosaicNamingService.isCorner` | 1 | `MosaicTileService.degree` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:110` |
-| `MosaicNamingService.isEveryEdgeDrawn` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:119` |
-| `MosaicNamingService.name` | 1 | `MosaicNamingService.matching` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:175` |
-| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicTileService.isBare` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:218` |
-| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicNamingService.isCorner` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:220` |
-| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicNamingService.isHorizontal` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:222` |
-| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicNamingService.isVertical` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:224` |
-| `MosaicNamingService.matches` | 1 | `MosaicNamingService.bare` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:227` |
-| `MosaicNamingService.matches` | 1 | `MosaicNamingService.isUnbroken` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:245` |
+| `MeanderGenerationService.validateStaggerBranches` | 1 | `InvalidStaggerBranchCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:304` |
+| `MeanderGenerationService.validateStrands` | 1 | `InvalidStrandCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:336` |
+| `MeanderGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:390` |
+| `MotifPitchService.columnSpan` | 1 | `MotifPitchService.columnPitch` | `applications/meanderaw/src/modules/meander-generation/motif-pitch.service.ts:97` |
 | `DrawCombinationsService.map(…)` | 1 | `DrawCombinationsService.repeatCountFor` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:81` |
-| `DrawCombinationsService.filter(…)` | 1 | `DrawCombinationsService.isModifierName` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:158` |
-| `DrawCombinationsService.flatMap(…)` | 1 | `DrawCombinationsService.expandModifierName` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:161` |
-| `DrawCombinationsService.rowsSweep` | 1 | `DrawCombinationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:184` |
+| `DrawCombinationsService.filter(…)` | 1 | `DrawCombinationsService.isModifierName` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:157` |
+| `DrawCombinationsService.flatMap(…)` | 1 | `DrawCombinationsService.expandModifierName` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:160` |
+| `DrawCombinationsService.rowsSweep` | 1 | `DrawCombinationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:183` |
 | `DrawCombinationsService.strandCounts` | 1 | `DrawCombinationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:219` |
-| `DrawCombinationsService.filter(…)` | 1 | `DrawCombinationsService.isMeanderType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:251` |
-| `DrawCombinationsService.flatMap(…)` | 1 | `DrawCombinationsService.combinationsForType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:255` |
+| `DrawCombinationsService.filter(…)` | 1 | `DrawCombinationsService.isMeanderType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:254` |
+| `DrawCombinationsService.flatMap(…)` | 1 | `DrawCombinationsService.combinationsForType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:258` |
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.toSorted(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:87` |
 | `DrawIndexService.toSorted(…)` | 1 | `DrawIndexService.familyRank` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:92` |
 | `DrawIndexService.renderContents` | 1 | `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:99` |
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.escape` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:116` |
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.renderSection` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:151` |
-| `DrawNegativePermutationsService.filter(…)` | 1 | `MosaicTileService.maximumDegree` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:150` |
-| `DrawNegativePermutationsService.rowsSweep` | 1 | `DrawNegativePermutationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:170` |
-| `DrawParametersService.staggerModifier` | 1 | `MissingModifierParameterError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:165` |
-| `DrawPermutationsService.rowsSweep` | 1 | `DrawPermutationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:112` |
+| `DrawNegativePermutationsService.filter(…)` | 1 | `MosaicTileService.maximumDegree` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:151` |
+| `DrawNegativePermutationsService.rowsSweep` | 1 | `DrawNegativePermutationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:172` |
+| `DrawParametersService.staggerModifier` | 1 | `MissingModifierParameterError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:149` |
+| `DrawPermutationsService.rowsSweep` | 1 | `DrawPermutationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:113` |
 | `DrawCommand.map(…)` | 1 | `DrawCommand.renderParameters` | `applications/meanderaw/src/modules/draw/draw.command.ts:137` |
 | `DrawCommand.parseFlip` | 1 | `DrawParametersService.serpentineFlip` | `applications/meanderaw/src/modules/draw/draw.command.ts:231` |
 | `DrawCommand.parseModifier` | 1 | `DrawParametersService.modifierName` | `applications/meanderaw/src/modules/draw/draw.command.ts:254` |
@@ -2826,8 +3089,7 @@ What this project is judged against. `declared` is the number in this project's 
 
 | Callable | Declared in | Called from | Callers |
 | --- | --- | --- | --- |
-| `MosaicSymmetryService.canonicalIdentifier` | `applications/meanderaw:modules/mosaic-tile` | `applications/meanderaw:modules/draw` | 4/5 |
-| `MeanderLatticeService.build` | `applications/meanderaw:modules/meander-lattice` | `applications/meanderaw:modules/meander-topology` | 2/2 |
+| `LatticeIdentificationService.canonicalIdentifier` | `applications/meanderaw:modules/lattice-identification` | `applications/meanderaw:modules/draw` | 4/5 |
 | `MosaicTilesService.enumerate` | `applications/meanderaw:modules/mosaic-tile` | `applications/meanderaw:modules/draw` | 2/2 |
 <!-- CALL_STACKS_END -->
 

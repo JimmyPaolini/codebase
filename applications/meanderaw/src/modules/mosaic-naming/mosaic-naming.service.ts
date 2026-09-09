@@ -19,7 +19,7 @@ import type {
  * A tile is identified by its bit string, which describes it exactly and
  * tells a reader nothing. A name is the missing half: a word for a whole
  * region of the space, earned by a tile's structure rather than assigned to
- * it. `MosaicSymmetryService.canonicalIdentifier` says which tile this is;
+ * it. `LatticeIdentificationService.canonicalIdentifier` says which tile this is;
  * this says what kind of tile it is, where there is a kind to say.
  *
  * Three things follow from names being rules rather than labels:

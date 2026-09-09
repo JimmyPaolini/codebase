@@ -12,6 +12,32 @@
     "type:application"
   ],
   "targets": {
+    "address-table": {
+      "cache": false,
+      "configurations": {
+        "check": {
+          "command": "node --import @swc-node/register/esm-register testing/address-table.ts --check"
+        },
+        "write": {
+          "command": "node --import @swc-node/register/esm-register testing/address-table.ts --write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Address every committed drawing under `output/` on the lattice and compare the result against `output/lattice-addresses.md`, the table this project commits, or rewrite that table. A `check` failure is one of two things: the table is stale, so a drawing changed shape without the table following and `write` fixes it; or drawings of one family share an address at a multiplicity `EXPECTED_ADDRESS_COLLISIONS` does not declare, which is duplicate art or an address too coarse to separate them and no rewrite fixes it. It reads the committed corpus rather than redrawing it, so the whole sweep costs about three seconds. It is deliberately **uncached**, because the table it writes sits inside the `output/**` it reads: the file is this target's gated file under `check` and its written file under `write`, and no single target-level declaration can say both. AGENTS.md § Task Cache Inputs forbids a task's own artifact being one of its inputs, because it rewrites the hash it was just cached under and can never hit its own cache, and a declaration that is wrong for one of two configurations is worse than no cache when the whole sweep costs about three seconds. The table lives under `output/` rather than in `README.md` because nine thousand rows take that file to about a megabyte, and parsing markdown that size took this project's `markdown-lint` from under a second to forty-two — `output/` is excluded from `markdownlint`, `cspell`, `oxfmt`, and `prettier`, though not from ESLint's markdown rules, which parse it wherever it sits. `output/**` is still named beside the `default` that already globs it, so a reader can see what the target reads without resolving a named input; `^production` and the `@swc-node/register` entry are named for the same reason, because the sweep boots this project's own container through that loader.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "^production",
+        "{projectRoot}/output/**",
+        "default",
+        {
+          "externalDependencies": ["@swc-node/register"]
+        }
+      ],
+      "options": {
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["{projectRoot}/output/lattice-addresses.md"]
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "options": {

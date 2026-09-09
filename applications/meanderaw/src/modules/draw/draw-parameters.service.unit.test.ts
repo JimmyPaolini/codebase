@@ -1,10 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import {
-  DEFAULT_COMB_IS_UPWARD,
-  DEFAULT_RUNG_IS_LEFTWARD,
-} from "../branch-motif/branch-motif.constants";
+import { DEFAULT_RUNG_DIRECTION } from "../branch-motif/branch-motif.constants";
 
 import { DrawParametersService } from "./draw-parameters.service";
 
@@ -48,7 +45,6 @@ describe(DrawParametersService, () => {
 
   describe("modifierName", () => {
     it.each([
-      "comb",
       "edge",
       "edge-flip",
       "flip",
@@ -103,12 +99,8 @@ describe(DrawParametersService, () => {
         options: { modifier: "plied" as const, strands: 3 },
       },
       {
-        expected: { isUpward: true, name: "comb" },
-        options: { modifier: "comb" as const, upward: true },
-      },
-      {
-        expected: { isLeftward: true, name: "rung" },
-        options: { leftward: true, modifier: "rung" as const },
+        expected: { direction: "southwest", name: "rung" },
+        options: { direction: "southwest" as const, modifier: "rung" as const },
       },
       {
         expected: { branches: 4, name: "stagger" },
@@ -134,29 +126,19 @@ describe(DrawParametersService, () => {
       );
     });
 
-    // 🎯 The two modifiers carrying a parameter that are not refused
-    // without it, and the reason is the parameter's type rather than a
-    // softer rule: commander reports a boolean flag left off and one passed
-    // `false` identically, so there is no "absent" for these to refuse.
-    // Each takes the direction every committed drawing of its mode was made
-    // with instead.
-    it.each([
-      {
-        expected: { isUpward: DEFAULT_COMB_IS_UPWARD, name: "comb" },
-        modifier: "comb" as const,
-      },
-      {
-        expected: { isLeftward: DEFAULT_RUNG_IS_LEFTWARD, name: "rung" },
-        modifier: "rung" as const,
-      },
-    ])(
-      "defaults $modifier's direction rather than refusing it",
-      ({ expected, modifier }) => {
-        expect(service.modifier({ ...baseOptions, modifier })).toStrictEqual(
-          expected,
-        );
-      },
-    );
+    // 🎯 The one modifier carrying a parameter that is not refused without
+    // it, and it is a choice rather than a limitation: `--direction` takes a
+    // named value, so an absent one is a state this could refuse. It takes
+    // the one direction every committed `rung` drawing was made with
+    // instead.
+    it("defaults rung's direction rather than refusing it", () => {
+      expect(
+        service.modifier({ ...baseOptions, modifier: "rung" }),
+      ).toStrictEqual({
+        direction: DEFAULT_RUNG_DIRECTION,
+        name: "rung",
+      });
+    });
   });
 
   describe("single", () => {

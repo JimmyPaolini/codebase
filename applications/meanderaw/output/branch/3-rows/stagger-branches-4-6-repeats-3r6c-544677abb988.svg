@@ -1,0 +1,9 @@
+<svg width="350" height="70" viewBox="0 0 350 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 25V45M25 25V45M45 25V45M5 25H65" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M65 25V45M85 25V45M105 25V45M65 45H125" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M125 25V45M145 25V45M165 25V45M125 25H185" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M185 25V45M205 25V45M225 25V45M185 45H245" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M245 25V45M265 25V45M285 25V45M245 25H305" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M305 25V45M325 25V45M345 25V45M305 45H345" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M345 65H5M345 5H5" stroke="black" stroke-width="10" stroke-linecap="square"/>
+</svg>

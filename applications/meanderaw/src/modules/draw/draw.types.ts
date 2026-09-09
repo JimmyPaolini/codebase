@@ -1,5 +1,6 @@
 // 🏷️ Types
 
+import type { RungDirection } from "../branch-motif/branch-motif.types";
 import type {
   MeanderType,
   Modifier,
@@ -13,17 +14,15 @@ import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types"
  * Everything but `outputDirectory` and `repeatCount` is optional, and that is
  * the command's whole contract: `draw` with no drawing named sweeps every
  * meander the application can draw, and `draw --type <family> --rows <n>`
- * draws that one. `branches`, `leftward`, `modifier`, `strands`, and
- * `upward` arrive
+ * draws that one. `branches`, `direction`, `modifier`, and `strands` arrive
  * separately because nest-commander derives each option's key from its own
  * long flag — {@link DrawParametersService.modifier} is what puts them back
  * together.
  *
- * `leftward` and `upward` are the two parameters whose absence is not a
- * refusal. Both are booleans, and commander cannot distinguish a flag left
- * off from one passed `false`, so `rung` and `comb` take
- * {@link DEFAULT_RUNG_IS_LEFTWARD} and {@link DEFAULT_COMB_IS_UPWARD} where
- * the others throw.
+ * `direction` is one of the parameters whose absence is not a refusal:
+ * `rung` takes `DEFAULT_RUNG_DIRECTION` where `stagger` and the
+ * ply-carrying modifiers throw, because the direction it names is the one
+ * every `rung` was drawn in before the other three were reachable.
  *
  * `subFamily` needs no such combining: it names a region of the family's
  * unit space on its own, and it is mutually exclusive with `modifier`, which
@@ -33,8 +32,8 @@ import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types"
  */
 export interface DrawCommandOptions {
   branches?: number;
+  direction?: RungDirection;
   flip?: SerpentineFlip;
-  leftward?: boolean;
   modifier?: Modifier["name"];
   offset?: number;
   outputDirectory: string;
@@ -44,7 +43,6 @@ export interface DrawCommandOptions {
 
   subFamily?: MosaicBuildableSubFamily;
   type?: MeanderType;
-  upward?: boolean;
 }
 
 /**

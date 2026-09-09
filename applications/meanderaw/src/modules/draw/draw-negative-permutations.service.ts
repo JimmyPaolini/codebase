@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { STRUCTURAL_MINIMUM_ROWS } from "../meander-generation/meander-generation.constants";
-import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MOSAIC_TILE_MAXIMUM_ROWS } from "../mosaic-tile/mosaic-tile.constants";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
@@ -64,8 +64,8 @@ export class DrawNegativePermutationsService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(MosaicSymmetryService)
-    private readonly mosaicSymmetryService: MosaicSymmetryService,
+    @Inject(LatticeIdentificationService)
+    private readonly latticeIdentificationService: LatticeIdentificationService,
     @Inject(MosaicTileService)
     private readonly mosaicTileService: MosaicTileService,
     @Inject(MosaicTilesService)
@@ -104,17 +104,18 @@ export class DrawNegativePermutationsService {
    * count.
    *
    * It lives here rather than on `NegativeSourceService` because naming a
-   * class needs `MosaicSymmetryService`, and the `negative` module
+   * class needs `LatticeIdentificationService`, and the `negative` module
    * deliberately depends on no `mosaic` module at run time — a source tile is
    * a value there, not a drawing. This half is where the two families
    * already meet.
    */
   private classify(tile: MosaicTile, rows: number): NegativeSource | undefined {
-    const identifier = this.mosaicSymmetryService.canonicalIdentifier(tile);
+    const identifier =
+      this.latticeIdentificationService.canonicalIdentifier(tile);
 
     return NEGATIVE_SOURCE_NAMES.find(
       (source) =>
-        this.mosaicSymmetryService.canonicalIdentifier(
+        this.latticeIdentificationService.canonicalIdentifier(
           this.negativeSourceService.tile(source, rows),
         ) === identifier,
     );
@@ -152,7 +153,8 @@ export class DrawNegativePermutationsService {
           NEGATIVE_SOURCE_MAXIMUM_DEGREE,
       )
       .map((tile) => {
-        const identifier = this.mosaicSymmetryService.canonicalIdentifier(tile);
+        const identifier =
+          this.latticeIdentificationService.canonicalIdentifier(tile);
         const source = this.classify(tile, rows);
 
         return {
