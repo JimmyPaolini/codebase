@@ -41,7 +41,6 @@ function buildConfiguration(
   overrides: Partial<ResolvedCallidescopeConfiguration> = {},
 ): ResolvedCallidescopeConfiguration {
   return {
-    allowSpreadFor: [],
     directories: [],
     entryPoints: {
       addresses: [],
@@ -54,12 +53,7 @@ function buildConfiguration(
     excludeFrom: [],
     ignoreCallees: [],
     limits: {
-      callerMajorityRatio: 0.8,
-      directSpreadThreshold: 3,
       maximumDepth: DEFAULT_MAXIMUM_DEPTH,
-      maximumImplementationCandidates: 8,
-      minimumCallers: 2,
-      spreadThreshold: 4,
     },
     output: {
       format: "markdown",
@@ -67,10 +61,6 @@ function buildConfiguration(
       markdown: undefined,
       mermaid: undefined,
       projectReadmes: undefined,
-    },
-    workspaceStructure: {
-      modulesDirectory: "modules",
-      rootModuleSegment: "src",
     },
     ...overrides,
   };

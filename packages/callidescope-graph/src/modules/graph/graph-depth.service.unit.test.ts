@@ -8,11 +8,7 @@ import { GraphDepthService } from "./graph-depth.service";
 import { GraphService } from "./graph.service";
 
 import type { DepthMeasurement } from "./graph.types";
-import type {
-  CallableId,
-  CallEdge,
-  ModuleId,
-} from "@callidescope/configuration";
+import type { CallableId, CallEdge } from "@callidescope/configuration";
 
 /** Builds an edge between two identifiers. */
 function edge(from: string, to: string): CallEdge {
@@ -28,13 +24,11 @@ function edge(from: string, to: string): CallEdge {
 /** Measures a graph described as `from -> to` pairs. */
 function measure(args: {
   ids: string[];
-  moduleIds?: Record<string, ModuleId>;
   pairs: [string, string][];
   unresolvedCallerId?: string;
 }): {
   depthOf: (callableId: CallableId) => number;
   measurement: DepthMeasurement;
-  spreadOf: (callableId: CallableId) => number;
   unresolvedAt: (callableId: CallableId) => boolean;
 } {
   const graph = new GraphService().assemble({
@@ -55,13 +49,7 @@ function measure(args: {
     callableIds: args.ids,
     graph,
   });
-  const measurement = new GraphDepthService().measure({
-    condensed,
-    graph,
-    moduleIdByCallable: new Map(
-      args.ids.map((id) => [id, args.moduleIds?.[id] ?? `example:${id}`]),
-    ),
-  });
+  const measurement = new GraphDepthService().measure({ condensed, graph });
 
   const read = (
     callableId: CallableId,
@@ -72,7 +60,6 @@ function measure(args: {
       measurement.byComponent[componentId] ?? {
         deepestSuccessor: undefined,
         depth: 0,
-        moduleIds: new Set(),
         reachesUnresolved: false,
       }
     );
@@ -81,7 +68,6 @@ function measure(args: {
   return {
     depthOf: (callableId) => read(callableId).depth,
     measurement,
-    spreadOf: (callableId) => read(callableId).moduleIds.size,
     unresolvedAt: (callableId) => read(callableId).reachesUnresolved,
   };
 }
@@ -173,29 +159,6 @@ describe(GraphDepthService, () => {
     expect(depthOf("a")).toBe(3);
   });
 
-  it("collects the modules everything below a callable sits in", () => {
-    const { spreadOf } = measure({
-      ids: ["a", "b", "c"],
-      moduleIds: { a: "example:one", b: "example:two", c: "example:three" },
-      pairs: [
-        ["a", "b"],
-        ["b", "c"],
-      ],
-    });
-
-    expect(spreadOf("a")).toBe(3);
-  });
-
-  it("counts two callables in one module as one module", () => {
-    const { spreadOf } = measure({
-      ids: ["a", "b"],
-      moduleIds: { a: "example:one", b: "example:one" },
-      pairs: [["a", "b"]],
-    });
-
-    expect(spreadOf("a")).toBe(1);
-  });
-
   it("propagates an unfollowable call up to everything above it", () => {
     const { unresolvedAt } = measure({
       ids: ["a", "b"],
@@ -224,24 +187,9 @@ describe(GraphDepthService, () => {
         successorsByComponent: [new Set([99])],
       },
       graph: new GraphService().assemble({ edges: [], unresolvedCalls: [] }),
-      moduleIdByCallable: new Map([["a", "example:one"]]),
     });
 
     expect(measurement.byComponent[0]?.depth).toBe(1);
-  });
-
-  it("ignores a member it has no module for", () => {
-    const measurement = new GraphDepthService().measure({
-      condensed: {
-        componentIdByCallable: new Map([["a", 0]]),
-        memberIdsByComponent: [["a"]],
-        successorsByComponent: [new Set()],
-      },
-      graph: new GraphService().assemble({ edges: [], unresolvedCalls: [] }),
-      moduleIdByCallable: new Map(),
-    });
-
-    expect(measurement.byComponent[0]?.moduleIds.size).toBe(0);
   });
 
   it("treats a component with no successor list as a leaf", () => {
@@ -252,7 +200,6 @@ describe(GraphDepthService, () => {
         successorsByComponent: [],
       },
       graph: new GraphService().assemble({ edges: [], unresolvedCalls: [] }),
-      moduleIdByCallable: new Map([["a", "example:one"]]),
     });
 
     expect(measurement.byComponent[0]?.depth).toBe(1);

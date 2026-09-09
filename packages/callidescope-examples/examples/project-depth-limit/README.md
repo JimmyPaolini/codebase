@@ -44,25 +44,16 @@ anything is traced.
 limits: { maximumDepth: 5 }
 ```
 
-**Never spread the workspace limits into it.** A workspace limits object carries
-limits that shape the graph itself — `spreadThreshold`,
-`maximumImplementationCandidates` — and those are workspace-only, so a project
-file holding one is rejected outright. Two projects disagreeing about them would
-be describing two different graphs over the same shared code, and there is one
-graph.
-
 Nothing is lost by writing the override alone. Limits fall back one at a time
-rather than as an object, so every limit a project does not name still comes
-from the run. And a spread would have nothing left to give: depth and breadth
-are the only two a project may set, so it would supply the field being
-overridden plus the one that gets the file rejected.
+rather than as an object, so a limit a project does not name still comes from
+the run.
 
 ## Why two configuration files sit at this package's root
 
 Because the two roles are read differently, and one file cannot hold both.
 [`callidescope.workspace.config.ts`](../../callidescope.workspace.config.ts) is
-the _workspace_ configuration this run is handed — output destinations, the
-module layout, the default limits every project falls back to. It carries the
+the _workspace_ configuration this run is handed — output destinations, and the
+default limits every project falls back to. It carries the
 longer name because those fields are workspace-only, so being discovered as this
 package's own project configuration would refuse the run. Its doc comment works
 through that in full.

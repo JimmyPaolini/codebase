@@ -9,6 +9,7 @@ import {
   collectFixtureCallables,
   FIXTURE_ROOT,
 } from "../../../testing/programs";
+import { MAXIMUM_IMPLEMENTATION_CANDIDATES } from "../classes/classes.constants";
 
 import { CallSitesService } from "./call-sites.service";
 import { EdgesService } from "./edges.service";
@@ -308,22 +309,22 @@ describe(EdgesService, () => {
   });
 
   it("drops an interface member when too many classes implement it", () => {
+    const implementations = Array.from(
+      { length: MAXIMUM_IMPLEMENTATION_CANDIDATES + 1 },
+      (_unused, index) =>
+        `export class Runner${String(index)} { public run = (): void => {}; }`,
+    ).join("\n");
     const projectProgram = buildFixtureProgram({
       "packages/example/src/modules/a/a.service.ts": `
         export interface Runner { run: () => void; }
-        export class OneRunner { public run = (): void => {}; }
-        export class TwoRunner { public run = (): void => {}; }
-        export class ThreeRunner { public run = (): void => {}; }
+        ${implementations}
       `,
       "packages/example/src/modules/b/b.service.ts": `
         import type { Runner } from "../a/a.service";
         export function entry(runner: Runner): void { runner.run(); }
       `,
     });
-    const services = buildFixtureServices({
-      maximumCandidates: 2,
-      projectProgram,
-    });
+    const services = buildFixtureServices({ projectProgram });
     const collection = collectFixtureCallables({ projectProgram, services });
     const collected = services.edges.build({
       callablesById: collection.byId,

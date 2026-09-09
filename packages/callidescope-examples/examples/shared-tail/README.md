@@ -21,4 +21,4 @@ node.
 
 ## Next
 
-[module spread](../module-spread/README.md).
+[frame annotations](../frame-annotations/README.md).

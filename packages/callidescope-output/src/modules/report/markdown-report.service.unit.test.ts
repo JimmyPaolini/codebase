@@ -54,8 +54,6 @@ function limitsLookup(limits: ProjectLimits): ProjectLimitsLookup {
 function report(stacks: CallStack[]): ProjectReport {
   return {
     callableBreadths: [],
-    misplacedCallables: [],
-    moduleSpreads: [],
     projectName: "example",
     stacks,
     summary: {
@@ -68,7 +66,6 @@ function report(stacks: CallStack[]): ProjectReport {
       projectCount: 1,
       unresolvedCallCount: 0,
     },
-    typeDepths: [],
   };
 }
 
@@ -221,7 +218,7 @@ describe(MarkdownReportService, () => {
     ).toContain("`example`");
   });
 
-  it("reports a project's counts, spreads, breadth, and misplaced callables", () => {
+  it("reports a project's counts and breadth", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       limits: buildProjectLimitsLookup(),
@@ -231,9 +228,9 @@ describe(MarkdownReportService, () => {
     });
 
     expect(rendered).toContain("| Callables | 4 |");
-    expect(rendered).toContain("### Module spread");
     expect(rendered).toContain("### Breadth");
-    expect(rendered).toContain("### Possibly misplaced");
+    expect(rendered).not.toContain("### Module spread");
+    expect(rendered).not.toContain("### Possibly misplaced");
   });
 
   it("names the call-stacks section as depth, distinct from breadth", () => {
@@ -509,64 +506,6 @@ describe(MarkdownReportService, () => {
   });
 
   // 📊 Finding tables
-
-  it("gives a spread finding a row naming what it calls and where it lives", () => {
-    const rendered = service.renderProjectSection({
-      heading: "## 🔭 Callidescope",
-      limits: buildProjectLimitsLookup(),
-      previewCount: 3,
-      rendering: "tree",
-      report: {
-        ...report([]),
-        moduleSpreads: [
-          {
-            depth: 5,
-            directModuleIds: ["example:modules/first", "example:modules/other"],
-            displayName: "Service.dispatch",
-            id: "dispatch",
-            location: buildSourceLocation({
-              filePath: "dispatch.ts",
-              line: 42,
-            }),
-            statementCount: 9,
-            transitiveSpread: 6,
-          },
-        ],
-      },
-    });
-
-    expect(rendered).toContain("| `Service.dispatch` | 6 |");
-    expect(rendered).toContain("`example:modules/first`");
-    expect(rendered).toContain("`dispatch.ts:42`");
-  });
-
-  it("gives a misplaced finding a row naming both modules and the split", () => {
-    const rendered = service.renderProjectSection({
-      heading: "## 🔭 Callidescope",
-      limits: buildProjectLimitsLookup(),
-      previewCount: 3,
-      rendering: "tree",
-      report: {
-        ...report([]),
-        misplacedCallables: [
-          {
-            callerCount: 4,
-            displayName: "normalizeExtension",
-            foreignCallerCount: 4,
-            homeModuleId: "example:modules/typescript",
-            id: "normalize",
-            location: buildSourceLocation(),
-            suggestedModuleId: "example:modules/discovery",
-          },
-        ],
-      },
-    });
-
-    expect(rendered).toContain("| `normalizeExtension` |");
-    expect(rendered).toContain("`example:modules/typescript`");
-    expect(rendered).toContain("`example:modules/discovery`");
-    expect(rendered).toContain("| 4/4 |");
-  });
 
   it("gives a wide callable a row naming its breadth and direct callees", () => {
     const rendered = service.renderProjectSection({

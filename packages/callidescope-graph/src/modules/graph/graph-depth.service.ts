@@ -5,14 +5,10 @@ import type {
   DepthMeasurement,
   MeasureDepthArguments,
 } from "./graph.types";
-import type { CallableId, ModuleId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/configuration";
 
 /**
- * Measures the longest call stack below every component, and what it touches.
- *
- * Depth and module spread are computed in the same pass because they are the
- * same traversal: both are a fold over everything reachable from a node, and
- * running them together makes the cohesion finding effectively free.
+ * Measures the longest call stack below every component.
  *
  * The traversal is iterative and post-order. Because it runs on the
  * condensation, which is acyclic, a memo entry is final once written — there is
@@ -34,14 +30,11 @@ export class GraphDepthService {
   private combine(args: {
     memberIds: readonly CallableId[];
     memo: readonly ComponentDepth[];
-    ownModules: Set<ModuleId>;
     reachesUnresolved: boolean;
     successors: ReadonlySet<number>;
   }): ComponentDepth {
-    const moduleIds = new Set(args.ownModules);
     const deepest = this.foldSuccessors({
       memo: args.memo,
-      moduleIds,
       successors: args.successors,
     });
 
@@ -51,21 +44,13 @@ export class GraphDepthService {
     return {
       deepestSuccessor: deepest.successor,
       depth: args.memberIds.length + deepest.depth,
-      moduleIds,
       reachesUnresolved: args.reachesUnresolved || deepest.reachesUnresolved,
     };
   }
 
-  /**
-   * Folds every successor's result into the running module set.
-   *
-   * Mutates `moduleIds` rather than returning a union, because this runs once
-   * per component and allocating a fresh set per successor is the difference
-   * between a linear pass and a quadratic one on a wide graph.
-   */
+  /** Picks the deepest successor of one component out of the memo. */
   private foldSuccessors(args: {
     memo: readonly ComponentDepth[];
-    moduleIds: Set<ModuleId>;
     successors: ReadonlySet<number>;
   }): {
     depth: number;
@@ -81,10 +66,6 @@ export class GraphDepthService {
 
       if (resolved === undefined) {
         continue;
-      }
-
-      for (const moduleId of resolved.moduleIds) {
-        args.moduleIds.add(moduleId);
       }
 
       reachesUnresolved = reachesUnresolved || resolved.reachesUnresolved;
@@ -108,24 +89,6 @@ export class GraphDepthService {
     );
   }
 
-  /** Collects the modules the members of one component sit in. */
-  private readOwnModules(args: {
-    memberIds: readonly CallableId[];
-    moduleIdByCallable: ReadonlyMap<CallableId, ModuleId>;
-  }): Set<ModuleId> {
-    const moduleIds = new Set<ModuleId>();
-
-    for (const memberId of args.memberIds) {
-      const moduleId = args.moduleIdByCallable.get(memberId);
-
-      if (moduleId !== undefined) {
-        moduleIds.add(moduleId);
-      }
-    }
-
-    return moduleIds;
-  }
-
   // 🌎 Public Methods
 
   /** Measures every component, deepest-first, in one iterative pass. */
@@ -142,10 +105,6 @@ export class GraphDepthService {
         this.combine({
           memberIds,
           memo: byComponent,
-          ownModules: this.readOwnModules({
-            memberIds,
-            moduleIdByCallable: args.moduleIdByCallable,
-          }),
           reachesUnresolved: this.hasUnresolved({
             memberIds,
             unresolvedCallerIds: args.graph.unresolvedCallerIds,

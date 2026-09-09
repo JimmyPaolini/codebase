@@ -43,9 +43,7 @@ export interface ProjectIndexRow {
   /** True when the project's own configuration set the limit it is judged by. */
   readonly isDeclared: boolean;
   readonly limit: number;
-  readonly misplacedCount: number;
   readonly projectName: string;
-  readonly spreadCount: number;
   readonly widest: number;
 }
 

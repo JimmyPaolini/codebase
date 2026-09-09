@@ -177,6 +177,44 @@ exceeds a limit. Distinct from staleness below: measured is about which run
 produced a number, staleness is about whether a committed one still matches.
 _Avoid_: Fresh, rebuilt, stale
 
+## Callidescope
+
+**Callable**:
+One function-like declaration the tool traces — a function, a method, an
+accessor, an arrow property, or a callback handed to another callable.
+Identified by its file and the byte offset its declaration starts at, and
+addressed as `<file>#<qualified-name>`.
+_Avoid_: Function, symbol, node
+
+**Stack**:
+One entry point and the single deepest path of frames below it. A stack whose
+path runs through a call nothing could follow reports a **floor** rather than a
+measurement.
+_Avoid_: Trace, path, chain
+
+**Depth**:
+Frames on a stack, entry point inclusive, and one of the two things callidescope
+gates. Never used for nesting elsewhere.
+_Avoid_: Height, levels, layers
+
+**Breadth**:
+Distinct callables one callable calls directly, and the other thing callidescope
+gates. Measured for every callable whether or not a limit exists to exceed.
+_Avoid_: Fan-out, width, spread
+
+**Entry point**:
+A callable that roots a stack, because a framework, a runtime, or nothing at all
+calls it. `declared` is the only kind a person chose; every other kind is
+inferred from a decorator, a file name, an export, or from nothing having called
+it.
+_Avoid_: Root, caller, top-level
+
+Callidescope has no notion of a **module** and measures no **cohesion**. It once
+derived a `<project>:<subtree>` module identifier to report module spread and
+misplaced callables against; both findings and the identifier were removed — see
+[ADR 0006](docs/adr/0006-narrow-callidescope-to-depth-and-breadth.md). A
+callable belongs to a **project** and to a file, and to nothing between them.
+
 ## Codependix
 
 **Graph**:

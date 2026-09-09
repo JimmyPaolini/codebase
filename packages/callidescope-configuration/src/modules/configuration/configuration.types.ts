@@ -4,8 +4,6 @@ import type { CallGraphResult } from "./call-graph.types";
 
 /** The shape of a `callidescope.config.ts` default export. */
 export interface CallidescopeConfiguration {
-  /** Globs whose callables are exempt from the module-spread finding. */
-  allowSpreadFor?: string[] | undefined;
   /**
    * Project directories to trace. Every directory holding its own
    * `tsconfig.json`, found by walking the workspace, when omitted.
@@ -31,7 +29,6 @@ export interface CallidescopeConfiguration {
   ignoreCallees?: string[] | undefined;
   limits?: CallidescopeLimits | undefined;
   output?: CallidescopeOutputConfiguration | undefined;
-  workspaceStructure?: CallidescopeWorkspaceStructure | undefined;
 }
 
 /** Which callables are treated as the roots of a call stack. */
@@ -75,15 +72,14 @@ export interface CallidescopeJsonOutputConfiguration {
   path: string;
 }
 
-/** Thresholds that decide what a run reports. */
+/**
+ * Thresholds that decide what a run reports.
+ *
+ * Two, and both per project: how deep a stack may run, and how widely one
+ * callable may reach. Every limit this tool once had beyond these described a
+ * finding nobody acted on.
+ */
 export interface CallidescopeLimits {
-  /**
-   * Share of a callable's callers that must sit in one foreign module before it
-   * is reported as misplaced. Between 0 (exclusive) and 1 (inclusive).
-   */
-  callerMajorityRatio?: number | undefined;
-  /** Modules a callable must call directly before spread is reported. */
-  directSpreadThreshold?: number | undefined;
   /**
    * Distinct callables a callable may call directly before it is reported.
    *
@@ -93,12 +89,6 @@ export interface CallidescopeLimits {
   maximumBreadth?: number | undefined;
   /** Frames a call stack may hold before it is reported. */
   maximumDepth?: number | undefined;
-  /** Implementations one interface member may resolve to before giving up. */
-  maximumImplementationCandidates?: number | undefined;
-  /** Callers a callable needs before its placement is judged. */
-  minimumCallers?: number | undefined;
-  /** Distinct modules a callable's transitive callees may touch. */
-  spreadThreshold?: number | undefined;
 }
 
 /** Markdown output destination. */
@@ -157,17 +147,6 @@ export interface CallidescopeProjectReadmeConfiguration {
   /** Stacks shown before the rest fold into a disclosure. */
   previewCount?: number | undefined;
   startMarker?: string | undefined;
-}
-
-/**
- * Names the directory layout a workspace uses, for a repository that does not
- * follow this tool's own.
- */
-export interface CallidescopeWorkspaceStructure {
-  /** The subdirectory a module identifier is derived from. */
-  modulesDirectory?: string | undefined;
-  /** Identifier used for a file sitting directly under the source root. */
-  rootModuleSegment?: string | undefined;
 }
 
 /**
@@ -322,7 +301,6 @@ export type RenderMarkdownOutput = (args: RenderMarkdownArguments) => string;
  * know which fields a configuration file may omit.
  */
 export interface ResolvedCallidescopeConfiguration {
-  allowSpreadFor: string[];
   directories: string[];
   entryPoints: ResolvedCallidescopeEntryPoints;
   exclude: string[];
@@ -330,7 +308,6 @@ export interface ResolvedCallidescopeConfiguration {
   ignoreCallees: string[];
   limits: ResolvedCallidescopeLimits;
   output: ResolvedCallidescopeOutputConfiguration;
-  workspaceStructure: ResolvedCallidescopeWorkspaceStructure;
 }
 
 /** Entry-point rules with defaults applied. */
@@ -350,8 +327,6 @@ export interface ResolvedCallidescopeJsonOutputConfiguration {
 
 /** Thresholds with defaults applied. */
 export interface ResolvedCallidescopeLimits {
-  callerMajorityRatio: number;
-  directSpreadThreshold: number;
   /**
    * Distinct callables a callable may call directly before it is reported.
    *
@@ -361,9 +336,6 @@ export interface ResolvedCallidescopeLimits {
    */
   maximumBreadth?: number | undefined;
   maximumDepth: number;
-  maximumImplementationCandidates: number;
-  minimumCallers: number;
-  spreadThreshold: number;
 }
 
 /**
@@ -404,12 +376,6 @@ export interface ResolvedCallidescopeProjectReadmeConfiguration {
   heading: string;
   previewCount: number;
   startMarker: string;
-}
-
-/** A workspace's directory layout with defaults applied. */
-export interface ResolvedCallidescopeWorkspaceStructure {
-  modulesDirectory: string;
-  rootModuleSegment: string;
 }
 
 /** Arguments accepted by the per-project limit resolver. */

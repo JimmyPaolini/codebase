@@ -76,14 +76,6 @@ export const MERMAID_LABEL_ESCAPES: ReadonlyMap<string, string> = new Map([
 /** Header of the run or project summary table. */
 export const MARKDOWN_SUMMARY_HEADER = "| Measure | Value |\n| --- | --- |";
 
-/** Header of the module-spread table. */
-export const MARKDOWN_SPREAD_HEADER =
-  "| Callable | Spread | Calls directly | Location |\n| --- | --- | --- | --- |";
-
-/** Header of the misplaced-callable table. */
-export const MARKDOWN_MISPLACED_HEADER =
-  "| Callable | Declared in | Called from | Callers |\n| --- | --- | --- | --- |";
-
 /** Header of the breadth table. */
 export const MARKDOWN_WIDE_CALLABLES_HEADER =
   "| Callable | Breadth | Calls directly | Location |\n| --- | --- | --- | --- |";
@@ -106,7 +98,7 @@ export const ROOT_PROJECT_LABEL = ".";
 
 /** Header of the per-project index table. */
 export const MARKDOWN_PROJECT_INDEX_HEADER =
-  "| Project | Deepest | Limit | Headroom | Widest | Spread | Misplaced |\n| --- | --- | --- | --- | --- | --- | --- |";
+  "| Project | Deepest | Limit | Headroom | Widest |\n| --- | --- | --- | --- | --- |";
 
 /** Header of the depth-headroom scoreboard. */
 export const MARKDOWN_HEADROOM_HEADER =

@@ -154,8 +154,8 @@ export class EdgesService {
   /**
    * Whether a callee's own display name matches a configured ignore glob.
    *
-   * Matched the same way `allowSpreadFor` exempts a file, against
-   * `Type.member` rather than a path: a cross-cutting callable like a logger
+   * Matched against `Type.member` rather than against a path: a
+   * cross-cutting callable like a logger
    * has no single file worth naming, but every one of its call sites shares
    * the same display name.
    */

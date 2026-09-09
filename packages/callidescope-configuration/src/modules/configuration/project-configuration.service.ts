@@ -4,7 +4,6 @@ import { Injectable } from "@nestjs/common";
 
 import {
   PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES,
-  PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
 } from "./configuration.constants";
@@ -158,24 +157,13 @@ export class ProjectConfigurationService {
     // Widened before it is walked, because a field name read off a file is a
     // string and the interface has no index signature to read it through.
     const fields: Readonly<Record<string, unknown>> = { ...authored };
-    const limits: Readonly<Record<string, unknown>> = { ...authored.limits };
 
     for (const [field, value] of Object.entries(fields)) {
       if (
         value !== undefined &&
-        field !== "limits" &&
         !PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES.has(field)
       ) {
         return field;
-      }
-    }
-
-    for (const [limit, value] of Object.entries(limits)) {
-      if (
-        value !== undefined &&
-        !PROJECT_CONFIGURATION_PERMITTED_LIMIT_NAMES.has(limit)
-      ) {
-        return `limits.${limit}`;
       }
     }
 

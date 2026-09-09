@@ -233,17 +233,10 @@ export class ProjectReportsService {
         (first, second) => second.depth - first.depth,
       );
 
-      const owns = (callableId: string): boolean =>
-        args.callablesById.get(callableId)?.node.projectName === projectName;
-
       return {
         callableBreadths: (
           callableBreadthsByProject.get(projectName) ?? []
         ).toSorted((first, second) => second.breadth - first.breadth),
-        misplacedCallables: args.misplacedCallables.filter((finding) =>
-          owns(finding.id),
-        ),
-        moduleSpreads: args.moduleSpreads.filter((finding) => owns(finding.id)),
         projectName,
         stacks,
         summary: this.buildSummary({
@@ -253,9 +246,6 @@ export class ProjectReportsService {
           projectName,
           stacks,
         }),
-        typeDepths: args.typeDepths.filter((summary) =>
-          summary.moduleId.startsWith(`${projectName}:`),
-        ),
       };
     });
   }

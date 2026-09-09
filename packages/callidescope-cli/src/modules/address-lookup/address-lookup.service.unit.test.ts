@@ -14,7 +14,6 @@ import type { ResolvedCallidescopeConfiguration } from "@callidescope/configurat
 /** Builds a resolved configuration with the defaults this suite assumes. */
 function buildConfiguration(): ResolvedCallidescopeConfiguration {
   return {
-    allowSpreadFor: [],
     directories: [],
     entryPoints: {
       addresses: [],
@@ -27,12 +26,7 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
     excludeFrom: [],
     ignoreCallees: [],
     limits: {
-      callerMajorityRatio: 0.8,
-      directSpreadThreshold: 3,
       maximumDepth: 6,
-      maximumImplementationCandidates: 8,
-      minimumCallers: 2,
-      spreadThreshold: 4,
     },
     output: {
       format: "markdown",
@@ -40,10 +34,6 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       markdown: undefined,
       mermaid: undefined,
       projectReadmes: undefined,
-    },
-    workspaceStructure: {
-      modulesDirectory: "modules",
-      rootModuleSegment: "src",
     },
   };
 }
