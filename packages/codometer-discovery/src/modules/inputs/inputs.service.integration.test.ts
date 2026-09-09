@@ -8,19 +8,16 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import {
-  createTargetTree,
-  removeTargetTree,
-} from "../../../testing/target-tree";
+import { createInputTree, removeInputTree } from "../../../testing/input-tree";
 
-import { TargetsService } from "./targets.service";
+import { InputsService } from "./inputs.service";
 
-import type { ResolvedCodometerTarget } from "@codometer/configuration";
+import type { ResolvedCodometerInput } from "@codometer/configuration";
 
-/** Builds a resolved target over the fixture tree's build directory. */
-function buildTarget(
-  overrides: Partial<ResolvedCodometerTarget> = {},
-): ResolvedCodometerTarget {
+/** Builds a resolved input over the fixture tree's build directory. */
+function buildInput(
+  overrides: Partial<ResolvedCodometerInput> = {},
+): ResolvedCodometerInput {
   return {
     analyses: ["size"],
     compression: "gzip",
@@ -32,39 +29,39 @@ function buildTarget(
   };
 }
 
-describe(`${TargetsService.name} over a real directory`, () => {
+describe(`${InputsService.name} over a real directory`, () => {
   let configurationService: ConfigurationService;
-  let service: TargetsService;
+  let service: InputsService;
   let workingDirectory: string;
 
-  /** Lists the files the given target holds in the fixture tree. */
-  function matchFiles(target: ResolvedCodometerTarget): string[] {
-    return service.matchFiles({ target, workingDirectory });
+  /** Lists the files the given input holds in the fixture tree. */
+  function matchFiles(input: ResolvedCodometerInput): string[] {
+    return service.matchFiles({ input, workingDirectory });
   }
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [ConfigurationModule],
       providers: [
-        TargetsService,
+        InputsService,
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
     configurationService = await module.resolve(ConfigurationService);
-    service = await module.resolve(TargetsService);
-    workingDirectory = createTargetTree();
+    service = await module.resolve(InputsService);
+    workingDirectory = createInputTree();
   });
 
   afterAll(() => {
-    removeTargetTree(workingDirectory);
+    removeInputTree(workingDirectory);
   });
 
   it("holds every file its globs claim, sorted", () => {
     expect.hasAssertions();
     // `dist/link.js` is a link to a file and counts; `dist/loop` is a link to
     // an ancestor directory and is never entered.
-    expect(matchFiles(buildTarget())).toStrictEqual([
+    expect(matchFiles(buildInput())).toStrictEqual([
       "dist/index.js",
       "dist/link.js",
       "dist/nested/deep.js",
@@ -76,7 +73,7 @@ describe(`${TargetsService.name} over a real directory`, () => {
   it("leaves out what an exclude glob claims", () => {
     expect.hasAssertions();
     expect(
-      matchFiles(buildTarget({ exclude: ["dist/vendor/**"] })),
+      matchFiles(buildInput({ exclude: ["dist/vendor/**"] })),
     ).not.toContain("dist/vendor/bundled.js");
   });
 
@@ -92,11 +89,14 @@ describe(`${TargetsService.name} over a real directory`, () => {
   ])("holds the same files with the negation written %s", (_, include) => {
     expect.hasAssertions();
 
-    const [target] = configurationService.resolveConfiguration({
-      targets: [{ analyses: ["size"], include, name: "compiled" }],
-    }).targets;
+    const input = configurationService
+      .resolveConfiguration({
+        format: "json",
+        inputs: [{ analyses: ["size"], include, name: "compiled" }],
+      })
+      .inputs.find((candidate) => candidate.name === "compiled");
 
-    expect(target && matchFiles(target)).toStrictEqual([
+    expect(input && matchFiles(input)).toStrictEqual([
       "dist/index.js",
       "dist/link.js",
       "dist/nested/deep.js",
@@ -107,8 +107,8 @@ describe(`${TargetsService.name} over a real directory`, () => {
   it("leaves hidden directories alone unless a glob spells one out", () => {
     expect.hasAssertions();
     // Every glob library excludes dot files from `**`, and it is also what
-    // keeps a target over the whole tree out of the git database.
-    expect(matchFiles(buildTarget({ include: ["**/*.js"] }))).toStrictEqual([
+    // keeps an input over the whole tree out of the git database.
+    expect(matchFiles(buildInput({ include: ["**/*.js"] }))).toStrictEqual([
       "dist/index.js",
       "dist/link.js",
       "dist/nested/deep.js",
@@ -117,29 +117,29 @@ describe(`${TargetsService.name} over a real directory`, () => {
       "other/index.js",
     ]);
     expect(
-      matchFiles(buildTarget({ include: [".hidden/**/*.js"] })),
+      matchFiles(buildInput({ include: [".hidden/**/*.js"] })),
     ).toStrictEqual([".hidden/secret.js"]);
   });
 
   it("holds nothing when the directory it names was never built", () => {
     expect.hasAssertions();
-    // Not an error here: whether an empty target matters is decided by
+    // Not an error here: whether an empty input matters is decided by
     // whoever asked for the measurement, not by the walk.
     expect(
-      matchFiles(buildTarget({ include: ["build/**/*.js"] })),
+      matchFiles(buildInput({ include: ["build/**/*.js"] })),
     ).toStrictEqual([]);
   });
 
   it("holds nothing from a link pointing at a file that is gone", () => {
     expect.hasAssertions();
-    expect(matchFiles(buildTarget())).not.toContain("dist/broken.js");
+    expect(matchFiles(buildInput())).not.toContain("dist/broken.js");
   });
 
   it("holds nothing when the directory it names cannot be read", () => {
     expect.hasAssertions();
     expect(
       service.matchFiles({
-        target: buildTarget(),
+        input: buildInput(),
         workingDirectory: `${workingDirectory}/never-created`,
       }),
     ).toStrictEqual([]);
@@ -148,7 +148,7 @@ describe(`${TargetsService.name} over a real directory`, () => {
   it("holds a file a glob names outright", () => {
     expect.hasAssertions();
     expect(
-      matchFiles(buildTarget({ include: ["dist/nested/deep.js"] })),
+      matchFiles(buildInput({ include: ["dist/nested/deep.js"] })),
     ).toStrictEqual(["dist/nested/deep.js"]);
   });
 });

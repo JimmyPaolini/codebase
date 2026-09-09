@@ -1,16 +1,33 @@
 // 🏷️ Types
 
-import type { CodometerOutputConfiguration } from "./output.types";
+import type { WriteMarkdownOutput } from "./output.types";
 import type { CodometerStatisticGroup } from "./statistics.types";
 
 /**
- * An analysis codometer can run over a target.
+ * An analysis codometer can run over an input.
  *
  * `language` parses the matched files and counts what they declare; `size`
- * compresses them and counts bytes. Which of them a target runs is the only
+ * compresses them and counts bytes. Which of them an input runs is the only
  * thing separating a source tree from build output.
  */
 export type CodometerAnalysis = "language" | "size";
+
+/**
+ * A language a `comment` custom-statistic selector may narrow itself to.
+ *
+ * The same eight languages that used to carry their own `comments` override:
+ * every language this tool reads comments from except the JSDoc-style
+ * documentation a `kind` narrows to, which is not tied to one language.
+ */
+export type CodometerCommentLanguage =
+  | "css"
+  | "hcl"
+  | "python"
+  | "shell"
+  | "sql"
+  | "toml"
+  | "typescript"
+  | "yaml";
 
 /**
  * One comment measured against the limit its kind carries.
@@ -36,30 +53,21 @@ export interface CodometerCommentMeasurement {
 }
 
 /**
- * How long one comment block may run.
+ * Selects a comment budget for a `CodometerCustomStatistic` to measure.
  *
- * A block is the run of comment lines a reader takes as one thought: a blank
- * line ends one, and a comment trailing a value is never part of the block
- * above it.
- *
- * One field per unit rather than a `maximum` paired with a `unit`, because the
- * three are not alternatives — a repository can hold prose to a word budget
- * and still refuse a block that sprawls over forty lines, and a shape that
- * makes them exclusive cannot say that. A field left out is not measured, and
- * a block is reported once per declared limit.
- *
- * Configured apart from `documentation` rather than as a kind within it. The
- * two are written by different hands for different readers — a JSDoc comment
- * documents a declaration a caller will meet, a YAML comment explains a
- * setting to whoever edits it next — so one number would have to be wrong for
- * one of them, and enabling either check would otherwise silently enable the
+ * A matching custom statistic's `value` counts the blocks that broke this
+ * selector's own maxima, and its `instances` names each one's file and line.
+ * No selector inherits from another: a general budget and a narrower
+ * exception are both written out in full, rather than one merging over the
  * other.
  *
- * Not YAML-specific, though YAML is the only language reading it today: every
- * comment syntax this tool knows reduces to the same three counts, so a second
- * language needs a `comments` key of its own and nothing here.
+ * Omitting `language` applies the budget to every language that has comments.
+ * Naming `kind` narrows the budget to a documented declaration's JSDoc-style
+ * comment for that kind, rather than a plain comment block.
  */
-export interface CodometerCommentsConfiguration {
+export interface CodometerCommentSelector {
+  kind?: CodometerSymbolKind | undefined;
+  language?: CodometerCommentLanguage | undefined;
   /** How many characters a block may hold, markers and newlines and all. */
   maximumCharacters?: number | undefined;
   /** How many lines a block may span. */
@@ -82,33 +90,26 @@ export type CodometerCompression = "brotli" | "gzip" | "none";
 /**
  * Configuration authored in a `codometer.config.ts` file.
  *
- * Every field is optional. A repository with no configuration file at all is
- * still measurable, which is what keeps the tool usable before anyone has
- * decided what their exclusions or output destinations should be.
+ * Every field but `format` is optional, so a repository can leave its
+ * exclusions and output destinations unwritten until it has decided what they
+ * should be. `format` is the one thing every run must be told, and there is no
+ * built-in fallback for it — so a directory with no configuration file
+ * anywhere above it does not measure at all: it fails on the missing `format`
+ * exactly as a file that forgot to write one does. A shared default object,
+ * spread by each project's own file, is how a workspace states it once.
  */
 export interface CodometerConfiguration {
   /**
-   * How long a comment block may run, for every language that has comments.
+   * Input an unqualified limit's metric path belongs to.
    *
-   * The repository-wide default. A language's own `comments` block is merged
-   * field by field over it, so one budget can be written once and loosened for
-   * the one language that needs it.
-   */
-  comments?: CodometerLanguageCommentsConfiguration | undefined;
-  css?: CodometerLanguageConfiguration | undefined;
-  /**
-   * Target a limit's metric path belongs to when it names none itself.
-   *
-   * A limit addresses its metric by target name followed by metric path.
-   * Naming a default lets the target that dominates a repository's limits go
+   * A limit addresses its metric by input name followed by metric path.
+   * Naming a default lets the input that dominates a repository's limits go
    * unwritten, leaving `typescript.interfaces` where every line would
-   * otherwise repeat the same target name. A path that could be read either
+   * otherwise repeat the same input name. A path that could be read either
    * way is rejected rather than resolved, so the shorthand can never bind
    * somewhere unintended.
    */
-  defaultTarget?: string | undefined;
-  /** How long a documented declaration's JSDoc comment may run, by kind. */
-  documentation?: CodometerDocumentationConfiguration | undefined;
+  defaultInput?: string | undefined;
   exclude?: string[] | undefined;
   /**
    * Ignore files, in gitignore syntax, whose patterns also exclude files.
@@ -119,7 +120,25 @@ export interface CodometerConfiguration {
    * mention at all: discovery reads those files itself.
    */
   excludeFrom?: string[] | undefined;
-  hcl?: CodometerLanguageConfiguration | undefined;
+  /**
+   * Which report shape a run produces.
+   *
+   * Required, with no code-level fallback: a shared default object — spread
+   * by every project's own `codometer.config.ts` — is what sets it once for a
+   * workspace, and a configuration reaching neither it nor its own value
+   * fails to resolve rather than silently picking one.
+   */
+  format: CodometerFormat;
+  /**
+   * Named sets of files measured alongside — or instead of — the codebase.
+   *
+   * A built-in entry named `codebase` — the whole-tree scan, running the
+   * `language` analysis — is always present unless this array declares an
+   * entry of its own by that name, which replaces it outright. A
+   * configuration declaring no `inputs` at all gets exactly that built-in
+   * entry and nothing else, which is today's implicit whole-tree behavior.
+   */
+  inputs?: CodometerInput[] | undefined;
   /**
    * How high each measured metric may go.
    *
@@ -127,87 +146,38 @@ export interface CodometerConfiguration {
    * and gated by nothing.
    */
   limits?: CodometerLimit[] | undefined;
-  output?: CodometerOutputConfiguration | undefined;
+  /**
+   * Destinations the measured statistics are written to.
+   *
+   * An array of typed entries rather than a fixed-key object, so each entry
+   * carries its own `custom` counters independently of every other one.
+   *
+   * At most one entry per `type`: a second entry of a kind is refused rather
+   * than silently ignored, because `--output-json [path]` and
+   * `--output-markdown [path]` each name one path, so nothing on the command
+   * line could ever address a second destination of the same kind.
+   */
+  outputs?: CodometerOutput[] | undefined;
   python?: CodometerPythonConfiguration | undefined;
-  shell?: CodometerLanguageConfiguration | undefined;
-  sql?: CodometerLanguageConfiguration | undefined;
-  /**
-   * Counters for the conventions a repository holds itself to.
-   *
-   * A repository that suffixes its files — `*.service.ts`, `*.unit.test.ts` —
-   * or forbids a construct outright has a vocabulary no language analyzer
-   * knows about, and counting it is the difference between "1015 TypeScript
-   * files" and "how much of this is services, and how much is the tests for
-   * them".
-   */
-  statistics?: CodometerCustomStatistic[] | undefined;
-  /**
-   * Named sets of files measured alongside the codebase itself.
-   *
-   * Everything the repository holds is measured without one — a target is how
-   * a repository names a *part* of itself, most often compiled output, which
-   * its ignore files keep out of the codebase measurement on purpose.
-   */
-  targets?: CodometerTarget[] | undefined;
-  toml?: CodometerLanguageConfiguration | undefined;
-  /** How TypeScript and JavaScript sources are analyzed for non-JSDoc comments. */
-  typescript?: CodometerLanguageConfiguration | undefined;
-  yaml?: CodometerLanguageConfiguration | undefined;
 }
-
-/**
- * What a configuration file authored as a function is handed.
- *
- * Two absolute directories and nothing else. `directory` is what this run
- * measures and `configurationDirectory` is where the file deciding that sits,
- * which between them let one configuration serve every folder beneath it:
- * the difference of the two is the measured folder's position, and every path
- * convention a repository holds — where its build output lands, where a
- * package's manifest sits — is derivable from that position by the
- * configuration rather than being known by codometer.
- *
- * Nothing about the run's flags is here on purpose. A configuration that could
- * see whether the run writes or gates could describe a different repository to
- * each, and then no two runs would be measuring the same thing.
- */
-export interface CodometerConfigurationContext {
-  /**
-   * Absolute directory holding the configuration file being loaded.
-   *
-   * The nearest ancestor carrying one, unless a path was named outright.
-   */
-  configurationDirectory: string;
-  /** Absolute directory this run measures. */
-  directory: string;
-}
-
-/**
- * A configuration file that decides what to say from where it is being run.
- *
- * The alternative to a static object, and the reason a workspace of twenty
- * near-identical projects needs one configuration file rather than twenty:
- * the convention is written once and each folder's targets and limits fall out
- * of its position. Returning a promise is allowed, so a factory may read a
- * manifest or an ignore file before answering.
- */
-export type CodometerConfigurationFactory = (
-  context: CodometerConfigurationContext,
-) => CodometerConfiguration | Promise<CodometerConfiguration>;
 
 /**
  * One configured counter.
  *
- * A counter measures one of two things. With `patterns` alone it counts
+ * A counter measures one of three things. With `patterns` alone it counts
  * *files* whose repository-relative path matches at least one glob. With
  * `symbols` it counts *declarations* in TypeScript and JavaScript sources
  * matching the AST criteria, and `patterns` then narrows which files are
- * searched rather than being what is counted.
+ * searched rather than being what is counted. With `comment` it counts
+ * *comment blocks* that broke the selector's own budget, instead of files or
+ * declarations.
  *
  * Either way a match is counted once, however many patterns claim it.
  */
 export interface CodometerCustomStatistic {
   /** Badge color, as a shields.io hexadecimal triplet. */
   color?: string | undefined;
+  comment?: CodometerCommentSelector | undefined;
   /**
    * Which badge group the counter is rendered into.
    *
@@ -221,56 +191,62 @@ export interface CodometerCustomStatistic {
   symbols?: CodometerSymbolMatcher | undefined;
 }
 
-/**
- * How long a documented declaration's JSDoc comment may run, by kind.
- *
- * The same three maxima every other comment is judged by, plus `kinds`, which
- * earns a class more room than a property without forcing one repository-wide
- * number to be either loose enough to permit a property essay or tight enough
- * to forbid a class overview that should exist.
- *
- * A kind's entry is merged field by field over the block's own maxima, so a
- * kind naming only `maximumLines` still inherits the `maximumWords` written
- * beside it. That is the one merge rule, and it is the same one a language's
- * `comments` block follows over the top-level `comments` default.
- */
-export interface CodometerDocumentationConfiguration extends CodometerCommentsConfiguration {
-  kinds?:
-    | Partial<Record<CodometerSymbolKind, CodometerCommentsConfiguration>>
-    | undefined;
-}
-
 /** Unit a documentation length is measured in. */
 export type CodometerDocumentationUnit = "characters" | "lines" | "words";
 
+/** Which report shape a run produces. */
+export type CodometerFormat = "json" | "markdown";
+
 /**
- * How long a language's comments may run, per block and optionally per file.
+ * A named set of files, declared by include and exclude globs.
  *
- * The maxima written directly here are **per block** — the run of comment
- * lines a reader takes as one thought — because that is what a comment budget
- * is normally about: one explanation that got away from its author. A file
- * holding forty well-sized comments is not the same problem as one holding a
- * single essay, and a file-wide number cannot tell them apart.
+ * Globs are relative to `directory`, which itself is relative to the
+ * process's working directory — not to the configuration file's own
+ * directory — and a leading `!` on an include glob excludes instead of
+ * including. Negations are collected rather than applied in order, so moving
+ * one within the array cannot change which files the input holds.
  *
- * `file` adds the other reading for repositories that want it: every comment
- * in one file, measured together. Declaring it does not change the block
- * budgets, and a file is reported against both.
+ * Ignore files are not consulted, except for the entry named `codebase`,
+ * whose files are every one the repository's ignore files leave behind
+ * rather than a glob match. An entry declared under that name replaces the
+ * built-in one, which is what lets a repository measure the whole tree under
+ * a compression or a different set of analyses — but only its `compression`
+ * and `analyses` are read. Its `include` and `exclude` globs are not
+ * consulted at all, because the whole-tree scan is discovered by ignore-file
+ * walking rather than by matching globs; to measure a subset of the tree,
+ * declare an input under some other name.
  */
-export interface CodometerLanguageCommentsConfiguration extends CodometerCommentsConfiguration {
-  file?: CodometerCommentsConfiguration | undefined;
+export interface CodometerInput {
+  /** Which analyses run over the matched files. At least one. */
+  analyses: CodometerAnalysis[];
+  compression?: CodometerCompression | undefined;
+  /**
+   * Where the input's globs start, relative to the process's working
+   * directory.
+   *
+   * Defaults to the working directory itself. A repository that builds into
+   * one tree while measuring a project in another names the way out here —
+   * `"../.."` for a project two levels down from a workspace-level `dist` —
+   * so that codometer never has to know a build output convention to find the
+   * files an input claims.
+   */
+  directory?: string | undefined;
+  exclude?: string[] | undefined;
+  include: string[];
+  name: string;
 }
 
 /**
- * What a language may configure beyond the repository-wide defaults.
+ * Where and how the JSON statistics report is written.
  *
- * A key of its own per language, the way `python` already had one, so what is
- * being configured is readable from the path rather than the field name alone.
- * A language's `comments` block is merged field by field over the top-level
- * `comments` default, so naming one maximum there never silently drops the
- * others.
+ * `custom` names the counters rendered into this destination, independently
+ * of any other output's own set.
  */
-export interface CodometerLanguageConfiguration {
-  comments?: CodometerLanguageCommentsConfiguration | undefined;
+export interface CodometerJsonOutput {
+  custom?: CodometerCustomStatistic[] | undefined;
+  indentation?: number | undefined;
+  path: string;
+  type: "json";
 }
 
 /**
@@ -286,10 +262,10 @@ export interface CodometerLimit {
   /**
    * The metric this limits, as a dotted path.
    *
-   * Written as the target's name followed by the metric's path within it —
+   * Written as the input's name followed by the metric's path within it —
    * `codebase.typescript.interfaces`, `codebase.markdown.files`, or
-   * `Compiled JavaScript.size`. With a `defaultTarget` configured, a path
-   * naming no target is read as that target's. A path that resolves to more
+   * `Compiled JavaScript.size`. With a `defaultInput` configured, a path
+   * naming no input is read as that input's. A path that resolves to more
    * than one metric, or to none, fails the run rather than binding to
    * whichever came first.
    */
@@ -313,8 +289,34 @@ export interface CodometerLimit {
   value: number | string;
 }
 
-/** How Python sources are analyzed, and how long their comments may run. */
-export interface CodometerPythonConfiguration extends CodometerLanguageConfiguration {
+/**
+ * Where and how the markdown report is written.
+ *
+ * `write` is the whole of the customizable behavior: it turns the measured
+ * statistics into markdown and decides which file that markdown lands in and
+ * how, replacing what used to be two separate callbacks. Leaving it unset
+ * keeps the built-in rendering and writing.
+ *
+ * `path` is optional because a `write` function may choose the file itself —
+ * but one of the two must be present, or there is no markdown output at all.
+ * `custom` names the counters rendered into this destination, independently
+ * of any other output's own set.
+ */
+export interface CodometerMarkdownOutput {
+  custom?: CodometerCustomStatistic[] | undefined;
+  description?: string | undefined;
+  endMarker?: string | undefined;
+  path?: string | undefined;
+  startMarker?: string | undefined;
+  type: "markdown";
+  write?: undefined | WriteMarkdownOutput;
+}
+
+/** Destination the measured statistics are written to, one report shape each. */
+export type CodometerOutput = CodometerJsonOutput | CodometerMarkdownOutput;
+
+/** How Python sources are analyzed. */
+export interface CodometerPythonConfiguration {
   command?: string | undefined;
 }
 
@@ -376,37 +378,6 @@ export type CodometerSymbolModifier =
   | "public"
   | "readonly"
   | "static";
-
-/**
- * A named set of files, declared by include and exclude globs.
- *
- * Globs are relative to `directory`, and a leading `!` on an include glob
- * excludes instead of including. Negations are collected rather than applied
- * in order, so moving one within the array cannot change which files the
- * target holds.
- *
- * Ignore files are not consulted. A target names its files outright, which is
- * what lets one measure compiled output — a directory `.gitignore` claims, and
- * therefore the one place ignore rules must not reach.
- */
-export interface CodometerTarget {
-  /** Which analyses run over the matched files. At least one. */
-  analyses: CodometerAnalysis[];
-  compression?: CodometerCompression | undefined;
-  /**
-   * Where the target's globs start, relative to the measured directory.
-   *
-   * Defaults to the measured directory itself. A repository that builds into
-   * one tree while measuring a project in another names the way out here —
-   * `"../.."` for a project two levels down from a workspace-level `dist` —
-   * so that codometer never has to know a build output convention to find the
-   * files a target claims.
-   */
-  directory?: string | undefined;
-  exclude?: string[] | undefined;
-  include: string[];
-  name: string;
-}
 
 /** Arguments accepted when loading a configuration file. */
 export interface LoadConfigurationArguments {

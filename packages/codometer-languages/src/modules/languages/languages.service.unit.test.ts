@@ -26,13 +26,25 @@ import { YamlService } from "../yaml/yaml.service";
 
 import { LanguagesService } from "./languages.service";
 
+import type { DocumentationCommentCounter } from "../comments/comments.types";
 import type { DiscoveredLanguageFiles } from "./languages.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 const configuration = createMock<ResolvedCodometerConfiguration>({
-  documentation: { maximumLines: 6 },
   python: { command: "uv run python" },
 });
+const documentationCounters: DocumentationCommentCounter[] = [
+  {
+    budget: {
+      maximumCharacters: undefined,
+      maximumLines: 6,
+      maximumWords: undefined,
+      severity: "fail",
+    },
+    kind: "class",
+    label: "class-docs",
+  },
+];
 
 const discoveredFiles: DiscoveredLanguageFiles = {
   cssFiles: ["src/styles.css"],
@@ -94,8 +106,10 @@ describe(LanguagesService, () => {
 
   beforeEach(() => {
     service.analyze({
+      commentCounters: [],
       configuration,
       discoveredFiles,
+      documentationCounters,
       symbolCounters: [],
       workingDirectory: "/repo",
     });
@@ -130,7 +144,7 @@ describe(LanguagesService, () => {
     });
   });
 
-  it("passes the resolved documentation configuration through to typescript.analyze", async () => {
+  it("passes the configured documentation counters through to typescript.analyze", async () => {
     const module = await Test.createTestingModule({
       providers: [
         LanguagesService,
@@ -159,27 +173,31 @@ describe(LanguagesService, () => {
     const isolatedTypescriptService = await module.resolve(TypescriptService);
 
     isolatedService.analyze({
+      commentCounters: [],
       configuration,
       discoveredFiles,
+      documentationCounters,
       symbolCounters: [],
       workingDirectory: "/repo",
     });
 
     expect(isolatedTypescriptService.analyze).toHaveBeenCalledWith(
-      expect.objectContaining({ documentation: configuration.documentation }),
+      expect.objectContaining({ documentationCounters }),
     );
   });
 
   it("reports one entry per language", () => {
     const results = service.analyze({
+      commentCounters: [],
       configuration,
       discoveredFiles,
+      documentationCounters,
       symbolCounters: [],
       workingDirectory: "/repo",
     });
 
     expect(Object.keys(results).toSorted()).toStrictEqual([
-      "comments",
+      "commentCounts",
       "css",
       "hcl",
       "json",

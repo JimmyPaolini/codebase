@@ -50,13 +50,13 @@ describe(ConfigurationLoaderService, () => {
   it("loads a JSON configuration file", async () => {
     const configurationPath = await writeConfigurationFile(
       "codometer.config.json",
-      JSON.stringify({ defaultTarget: "codebase" }),
+      JSON.stringify({ defaultInput: "codebase" }),
     );
 
     const loaded = await service.load({ configurationPath });
 
     expect(loaded).toStrictEqual({
-      configuration: { defaultTarget: "codebase" },
+      configuration: { defaultInput: "codebase" },
       path: configurationPath,
     });
   });
@@ -66,35 +66,32 @@ describe(ConfigurationLoaderService, () => {
       "codometer.config.jsonc",
       `{
         // a comment JSON.parse would reject
-        "defaultTarget": "codebase",
+        "defaultInput": "codebase",
       }`,
     );
 
     const loaded = await service.load({ configurationPath });
 
     expect(loaded).toStrictEqual({
-      configuration: { defaultTarget: "codebase" },
+      configuration: { defaultInput: "codebase" },
       path: configurationPath,
     });
   });
 
-  it("calls a configuration exported as a function with its run context", async () => {
+  it("no longer invokes a configuration exported as a function", async () => {
     const configurationPath = await writeConfigurationFile(
       "codometer.config.cjs",
       `module.exports = (context) => ({
         exclude: [context.configurationDirectory, context.directory],
       });`,
     );
-    const configurationDirectory = path.dirname(configurationPath);
-    const searchDirectory = await mkdtemp(
-      path.join(tmpdir(), "codometer-loader-searched-"),
-    );
 
-    const loaded = await service.load({ configurationPath, searchDirectory });
+    // A bare function is not an object the loader recognizes, so it falls
+    // back to an empty configuration rather than being called with a context
+    // nobody builds anymore.
+    const loaded = await service.load({ configurationPath });
 
-    expect(loaded?.configuration).toStrictEqual({
-      exclude: [configurationDirectory, searchDirectory],
-    });
+    expect(loaded?.configuration).toStrictEqual({});
   });
 
   it("throws a typed error for an unsupported configuration file extension", async () => {
@@ -132,34 +129,61 @@ describe(ConfigurationLoaderService, () => {
   });
 
   it("resolves a configuration path relative to the repository root", async () => {
-    // This repository's own configuration file, found by climbing from the
-    // process cwd — which a test run leaves at the repository root — up to
-    // the marker `findRepositoryRoot` looks for.
+    // A configuration path written relative to a repository root, read from a
+    // nested working directory — which is what a task runner leaves behind
+    // whenever it sets the cwd to the project rather than the workspace. The
+    // fixture is a temporary repository rather than this one so that loading
+    // it never evaluates this package's own sources a second time.
+    const repositoryRoot = await mkdtemp(
+      path.join(tmpdir(), "codometer-loader-repository-"),
+    );
+    await writeFile(
+      path.join(repositoryRoot, "pnpm-workspace.yaml"),
+      "",
+      "utf8",
+    );
+    const configurationDirectory = path.join(repositoryRoot, "configuration");
+    await mkdir(configurationDirectory, { recursive: true });
+    const configurationPath = path.join(
+      configurationDirectory,
+      "codometer.config.json",
+    );
+    await writeFile(
+      configurationPath,
+      JSON.stringify({ defaultInput: "codebase" }),
+      "utf8",
+    );
+    const nestedDirectory = path.join(repositoryRoot, "packages", "project");
+    await mkdir(nestedDirectory, { recursive: true });
+    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(nestedDirectory);
+
     const loaded = await service.load({
-      configurationPath: "configuration/codometer.config.ts",
+      configurationPath: "configuration/codometer.config.json",
     });
 
-    expect(loaded).toBeDefined();
+    cwdSpy.mockRestore();
+
+    expect(loaded).toStrictEqual({
+      configuration: { defaultInput: "codebase" },
+      path: configurationPath,
+    });
   });
 
-  it("reads a factory's default export through interop", async () => {
+  it("no longer invokes a factory's default export through interop", async () => {
     const configurationPath = await writeConfigurationFile(
       "codometer.config.mjs",
       `export default (context) => ({ exclude: [context.directory] });`,
     );
-    const searchDirectory = await mkdtemp(
-      path.join(tmpdir(), "codometer-loader-searched-"),
-    );
 
-    const loaded = await service.load({ configurationPath, searchDirectory });
+    const loaded = await service.load({ configurationPath });
 
-    expect(loaded?.configuration).toStrictEqual({ exclude: [searchDirectory] });
+    expect(loaded?.configuration).toStrictEqual({});
   });
 
   it("finds a configuration file by walking up from a nested directory", async () => {
     const configurationPath = await writeConfigurationFile(
       "codometer.config.json",
-      JSON.stringify({ defaultTarget: "codebase" }),
+      JSON.stringify({ defaultInput: "codebase" }),
     );
     const rootDirectory = path.dirname(configurationPath);
     const nestedDirectory = path.join(rootDirectory, "packages", "project");
@@ -168,7 +192,7 @@ describe(ConfigurationLoaderService, () => {
     const loaded = await service.load({ searchDirectory: nestedDirectory });
 
     expect(loaded).toStrictEqual({
-      configuration: { defaultTarget: "codebase" },
+      configuration: { defaultInput: "codebase" },
       path: configurationPath,
     });
   });

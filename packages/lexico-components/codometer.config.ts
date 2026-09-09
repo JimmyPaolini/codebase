@@ -1,9 +1,9 @@
-import codometerConfiguration from "../../configuration/codometer.config.js";
+import { codometerConfiguration } from "../../configuration/codometer.config.js";
 
 /**
  * What this component library is measured by.
  *
- * It overrides `targets` because the Vite library build writes a bundle rather
+ * It overrides `inputs` because the Vite library build writes a bundle rather
  * than a compiled tree, and `limits` because two of them sit on that one
  * metric: an advisory beneath the ceiling. Everything else — the convention
  * counters, the Python command — is spread in from the shared configuration
@@ -38,16 +38,16 @@ export default {
   // again, relative to this project, because that is the only anchor a
   // per-project run has.
   exclude: ["src/components/**", "src/hooks/**", "src/lib/**"],
-  limits: [
-    { metric: "Library bundle.size", severity: "warn", value: "384 KB" },
-    { metric: "Library bundle.size", value: "512 KB" },
-  ],
-  targets: [
+  inputs: [
     {
       analyses: ["size"],
       compression: "gzip",
       include: ["dist/**/*.js"],
       name: "Library bundle",
     },
+  ],
+  limits: [
+    { metric: "Library bundle.size", severity: "warn", value: "384 KB" },
+    { metric: "Library bundle.size", value: "512 KB" },
   ],
 };

@@ -4,16 +4,16 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { TargetOutsideRepositoryError } from "./targets.constants";
-import { TargetsService } from "./targets.service";
+import { InputOutsideRepositoryError } from "./inputs.constants";
+import { InputsService } from "./inputs.service";
 
-import type { ResolvedCodometerTarget } from "@codometer/configuration";
+import type { ResolvedCodometerInput } from "@codometer/configuration";
 import type { Dirent } from "node:fs";
 
 // The walk is mocked down to the one filesystem call it makes for an ordinary
 // tree, which is what lets these assertions read which directories it entered.
 // Real trees, links, and unreadable directories are walked in
-// `targets.service.integration.test.ts`.
+// `inputs.service.integration.test.ts`.
 const { existsSyncMock, readdirSyncMock } = vi.hoisted(() => ({
   existsSyncMock: vi.fn<(candidatePath: string) => boolean>(),
   readdirSyncMock: vi.fn<(directory: string) => Dirent[]>(),
@@ -46,10 +46,10 @@ const TREE: Readonly<Record<string, readonly (readonly [string, boolean])[]>> =
     "/repo/node_modules/library": [["index.js", true]],
   };
 
-/** Builds a resolved target over the mocked tree's build directory. */
-function buildTarget(
-  overrides: Partial<ResolvedCodometerTarget> = {},
-): ResolvedCodometerTarget {
+/** Builds a resolved input over the mocked tree's build directory. */
+function buildInput(
+  overrides: Partial<ResolvedCodometerInput> = {},
+): ResolvedCodometerInput {
   return {
     analyses: ["size"],
     compression: "gzip",
@@ -71,15 +71,15 @@ function createEntry(name: string, isFile: boolean): Dirent {
   });
 }
 
-describe(TargetsService, () => {
-  let service: TargetsService;
+describe(InputsService, () => {
+  let service: InputsService;
 
-  /** Lists the files the given target holds in the mocked tree. */
+  /** Lists the files the given input holds in the mocked tree. */
   function matchFiles(
-    overrides: Partial<ResolvedCodometerTarget> = {},
+    overrides: Partial<ResolvedCodometerInput> = {},
   ): string[] {
     return service.matchFiles({
-      target: buildTarget(overrides),
+      input: buildInput(overrides),
       workingDirectory: "/repo",
     });
   }
@@ -87,18 +87,18 @@ describe(TargetsService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        TargetsService,
+        InputsService,
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
-    service = await module.resolve(TargetsService);
+    service = await module.resolve(InputsService);
   });
 
   beforeEach(() => {
     existsSyncMock.mockReset();
     // The mocked tree is a repository rooted at `/repo`, which is how far out
-    // of the measured folder a target is allowed to reach.
+    // of the measured folder an input is allowed to reach.
     existsSyncMock.mockImplementation(
       (candidatePath: string) => candidatePath === "/repo/.git",
     );
@@ -122,12 +122,12 @@ describe(TargetsService, () => {
     ]);
   });
 
-  it("starts where the target says, and reports what it found from the measured directory", () => {
+  it("starts where the input says, and reports what it found from the measured directory", () => {
     // A project measured in its own folder while its build output is written
     // to a tree above it. Where that tree sits is the configuration's to say:
-    // the target names the way out, and nothing here knows the convention.
+    // the input names the way out, and nothing here knows the convention.
     const matched = service.matchFiles({
-      target: buildTarget({ directory: "../.." }),
+      input: buildInput({ directory: "../.." }),
       workingDirectory: "/repo/packages/project",
     });
 
@@ -141,13 +141,13 @@ describe(TargetsService, () => {
     });
   });
 
-  it("refuses a target whose directory lands outside the repository", () => {
+  it("refuses an input whose directory lands outside the repository", () => {
     expect(() =>
       service.matchFiles({
-        target: buildTarget({ directory: "../../.." }),
+        input: buildInput({ directory: "../../.." }),
         workingDirectory: "/repo/packages/project",
       }),
-    ).toThrow(TargetOutsideRepositoryError);
+    ).toThrow(InputOutsideRepositoryError);
   });
 
   it("leaves out a file no include glob claims", () => {
@@ -164,7 +164,7 @@ describe(TargetsService, () => {
   it("never reads a directory no glob could match inside", () => {
     matchFiles();
 
-    // The whole reason a glob's literal prefix is worked out at all: a target
+    // The whole reason a glob's literal prefix is worked out at all: an input
     // over one build directory must not enumerate every dependency to find it.
     expect(readdirSyncMock).toHaveBeenCalledWith("/repo/dist", {
       withFileTypes: true,

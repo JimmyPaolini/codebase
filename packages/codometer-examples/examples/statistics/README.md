@@ -8,15 +8,21 @@ same list, and the interesting case is a counter carrying both.
 ## Run it
 
 ```bash
-codometer --directory examples/corpus --config examples/statistics/codometer.config.ts
+cd examples/corpus
+codometer --config ../statistics/codometer.config.ts
 ```
 
 ## What is here
 
 ```text
 statistics/
-└── codometer.config.ts    seven counters over the sample corpus
+└── codometer.config.ts    seven counters, declared under one output's `custom` array
 ```
+
+A counter is measured once it belongs to some configured output's `custom`
+list — there is no longer a top-level `statistics` array independent of where
+a report lands. This file declares one `json` output purely so every counter
+below is computed; a bare run writes nothing to it.
 
 | Counter | Declared as | Result |
 | ------- | ----------- | ------ |

@@ -42,13 +42,13 @@ function createGeneratedSource(functionCount: number): string {
 }
 
 /**
- * Contents of the target fixture tree, keyed by path relative to its root.
+ * Contents of the input fixture tree, keyed by path relative to its root.
  *
- * A build directory rather than a source tree, because that is what a target
+ * A build directory rather than a source tree, because that is what an input
  * exists to name: every ignore file in every repository claims it, so nothing
  * but an outright glob can measure it.
  */
-export const TARGET_FIXTURE_FILES: Readonly<Record<string, string>> = {
+export const INPUT_FIXTURE_FILES: Readonly<Record<string, string>> = {
   ".hidden/secret.js": "export const secret = 1;\n",
   "dist/index.js": createGeneratedSource(128),
   "dist/nested/deep.js": "export const deep = 1;\n",
@@ -59,19 +59,19 @@ export const TARGET_FIXTURE_FILES: Readonly<Record<string, string>> = {
 };
 
 /**
- * Writes the target fixture tree to a fresh temporary directory.
+ * Writes the input fixture tree to a fresh temporary directory.
  *
  * `dist/link.js` points at a file and `dist/loop` points at its own ancestor —
  * the first is followed the way every glob library follows links, the second
  * is what makes following directories forever a bad idea. `dist/broken.js`
  * points at nothing at all, which a build directory left half-cleaned holds.
  *
- * Every caller owes the tree a `removeTargetTree`.
+ * Every caller owes the tree a `removeInputTree`.
  */
-export function createTargetTree(): string {
-  const root = mkdtempSync(path.join(tmpdir(), "codometer-target-"));
+export function createInputTree(): string {
+  const root = mkdtempSync(path.join(tmpdir(), "codometer-input-"));
 
-  for (const [relativePath, contents] of Object.entries(TARGET_FIXTURE_FILES)) {
+  for (const [relativePath, contents] of Object.entries(INPUT_FIXTURE_FILES)) {
     const absolutePath = path.join(root, relativePath);
     mkdirSync(path.dirname(absolutePath), { recursive: true });
     writeFileSync(absolutePath, contents);
@@ -90,7 +90,7 @@ export function createTargetTree(): string {
   return root;
 }
 
-/** Removes a target fixture tree, whether or not the suite that made it passed. */
-export function removeTargetTree(root: string): void {
+/** Removes an input fixture tree, whether or not the suite that made it passed. */
+export function removeInputTree(root: string): void {
   rmSync(root, { force: true, recursive: true });
 }

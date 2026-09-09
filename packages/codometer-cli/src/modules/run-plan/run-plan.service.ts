@@ -14,22 +14,26 @@ import {
   CHECK_NAMES,
   CHECK_REPORTS,
   CHECK_SEPARATOR,
-  FORMAT_JSON,
   FORMAT_MARKDOWN,
   FORMAT_NAMES,
 } from "./run-plan.constants";
 
 import type { MeasureCommandOptions } from "../measure/measure.types";
 import type {
-  JsonDestination,
   ListOutputPathsArguments,
   MeasureFormat,
   ModeSelection,
   ResolveDestinationsArguments,
+  ResolveDestinationsResult,
+  ResolvedJsonDestination,
+  ResolvedMarkdownDestination,
   RunDestinations,
   RunMode,
 } from "./run-plan.types";
-import type { ResolvedCodometerMarkdownOutputConfiguration } from "@codometer/configuration";
+import type {
+  CodometerFormat,
+  ResolvedCodometerOutput,
+} from "@codometer/configuration";
 import type { MeasurementScope } from "@codometer/output";
 
 /**
@@ -57,17 +61,14 @@ export class RunPlanService {
     return `${problem}. It takes a comma-separated set drawn from ${CHECK_NAMES.map((name) => `"${name}"`).join(" and ")}, as in "--check ${CHECK_NAMES.join(CHECK_SEPARATOR)}".`;
   }
 
-  /**
-   * Whether the command line named a destination of its own.
-   *
-   * A command line that names one names them *all*: `--json` on its own asks
-   * for the report and nothing else, whatever the configuration file also
-   * describes. Adding to the configured set instead would put a second
-   * document on the stream the first one was piped out of.
-   */
-  private namesDestination(options: MeasureCommandOptions): boolean {
-    return (
-      options.outputJson !== undefined || options.outputMarkdown !== undefined
+  /** Finds the first output of the given type, if the configuration named one. */
+  private findConfiguredOutput<Type extends ResolvedCodometerOutput["type"]>(
+    outputs: readonly ResolvedCodometerOutput[],
+    type: Type,
+  ): Extract<ResolvedCodometerOutput, { type: Type }> | undefined {
+    return outputs.find(
+      (output): output is Extract<ResolvedCodometerOutput, { type: Type }> =>
+        output.type === type,
     );
   }
 
@@ -109,98 +110,49 @@ export class RunPlanService {
     return this.validateCheckNames(names, errors);
   }
 
-  /**
-   * Reads `--format` into what the run prints, if anything.
-   *
-   * Left off, a run that writes or compares a file prints nothing — its output
-   * is the file, and a document on standard output as well is what a pipeline
-   * reading that stream would choke on. A run that touches no file prints the
-   * badges instead, which is what makes a bare `codometer` useful with no
-   * arguments at all.
-   *
-   * An unknown format is refused rather than defaulted. Every other flag here
-   * names something the run does, and silently printing markdown to a command
-   * line that asked for something else would answer a question nobody asked.
-   */
-  private readFormat(
-    value: string | undefined,
-    mode: RunMode,
-    errors: string[],
-  ): MeasureFormat | undefined {
-    if (value === undefined) {
-      return this.touchesFiles(mode) ? undefined : FORMAT_MARKDOWN;
-    }
-
-    const matched = FORMAT_NAMES.find((name) => name === value);
-
-    if (matched === undefined) {
-      errors.push(
-        `--format does not accept "${value}". It takes one of ${FORMAT_NAMES.map((name) => `"${name}"`).join(" and ")}, as in "--format ${FORMAT_MARKDOWN}".`,
-      );
-    }
-
-    return matched;
-  }
-
-  /**
-   * Refuses a report path no mode of this run would ever put a report at.
-   *
-   * `--json <path>` asks for a file, and only a run that writes or compares
-   * one produces it. Without either, the report goes to the console and the
-   * file stays unwritten — and because the run exits clean, the first thing to
-   * notice used to be the pull request's bundle section, rendering as though
-   * the project had changed nothing. Refused here instead, before anything is
-   * measured, naming the flag that has to be added.
-   *
-   * A pathless `--json` is untouched. The console is what it asked for, not a
-   * file that failed to appear.
-   */
-  private requireWrittenOutput(
-    options: MeasureCommandOptions,
-    mode: RunMode,
-    errors: string[],
-  ): void {
-    if (mode.writes || mode.checksReports) {
-      return;
-    }
-
-    const named = [
-      { flag: "--output-json", format: FORMAT_JSON, path: options.outputJson },
-      {
-        flag: "--output-markdown",
-        format: FORMAT_MARKDOWN,
-        path: options.outputMarkdown,
-      },
-    ].filter((option) => option.path !== undefined);
-
-    for (const option of named) {
-      errors.push(
-        `${option.flag} ${option.path} needs --write or --check ${CHECK_REPORTS}: a run that neither writes that file nor compares it would leave it exactly as it found it. Add --write to write it, --check ${CHECK_REPORTS} to fail on a stale one, or ask for --format ${option.format} to read it on the console instead.`,
-      );
-    }
-  }
-
-  /** Where the report goes, if anywhere. */
+  /** Where the report goes, if this run resolves that destination at all. */
   private resolveJson(
     args: ResolveDestinationsArguments,
     named: boolean,
-  ): JsonDestination | undefined {
-    if (named && args.options.outputJson === undefined) {
+    errors: string[],
+  ): ResolvedJsonDestination | undefined {
+    const { outputJson } = args.options;
+
+    if (named && outputJson === undefined) {
       return undefined;
     }
 
-    const configured = args.configuration.output.json;
+    const configured = this.findConfiguredOutput(
+      args.configuration.outputs,
+      "json",
+    );
 
-    if (args.options.outputJson === undefined && configured === undefined) {
+    if (typeof outputJson === "string") {
+      return {
+        custom: configured?.custom ?? [],
+        indentation: configured?.indentation ?? DEFAULT_JSON_INDENTATION,
+        path: path.resolve(args.workingDirectory, outputJson),
+      };
+    }
+
+    if (configured === undefined) {
+      // `outputJson === true` is a bare flag, asking this run to write the
+      // report wherever the configuration says to — refused when nothing
+      // does, since there is then nowhere to put it. `undefined` with
+      // nothing configured either is simply not part of this run.
+      if (outputJson === true) {
+        errors.push(
+          `--output-json needs a path, or a "json" entry in the configuration's "outputs" to resolve one from: neither was found, so there is nowhere to write it. Pass --output-json <path>, or declare a "json" output.`,
+        );
+      }
+
       return undefined;
     }
 
     return {
-      indentation: configured?.indentation ?? DEFAULT_JSON_INDENTATION,
-      path: this.resolvePath(
-        args.workingDirectory,
-        args.options.outputJson ?? configured?.path,
-      ),
+      custom: configured.custom,
+      indentation: configured.indentation,
+      path: path.resolve(args.workingDirectory, configured.path),
     };
   }
 
@@ -210,42 +162,64 @@ export class RunPlanService {
    * One sink rather than two. The block is spliced between its markers when
    * the file already carries them, and appended with them when it does not,
    * so the same flag serves a README somebody else wrote the rest of and a
-   * file that holds nothing but badges — which is why there is no longer a
-   * separate whole-document destination to pick between.
+   * file that holds nothing but badges.
    *
-   * The path is never defaulted. Splicing rewrites a file somebody else wrote,
-   * so a run that guessed the filename would edit a document nobody pointed
-   * it at.
-   *
-   * A configured `write` function is a destination in its own right: it picks
-   * the file itself, so a configuration that supplies one without a path still
-   * has a destination.
+   * The path is never defaulted from nothing: it comes from the command line,
+   * or from a configured `markdown` output's own path or `write`. A
+   * configured `write` function is a destination in its own right — it picks
+   * the file itself — so it counts as "resolvable" even without a path.
    */
   private resolveMarkdown(
     args: ResolveDestinationsArguments,
     named: boolean,
-  ): ResolvedCodometerMarkdownOutputConfiguration | undefined {
-    if (named && args.options.outputMarkdown === undefined) {
+    errors: string[],
+  ): ResolvedMarkdownDestination | undefined {
+    const { outputMarkdown } = args.options;
+
+    if (named && outputMarkdown === undefined) {
       return undefined;
     }
 
-    const configured = args.configuration.output.markdown ?? {
-      description: undefined,
-      endMarker: DEFAULT_MARKDOWN_END_MARKER,
-      path: undefined,
-      render: undefined,
-      startMarker: DEFAULT_MARKDOWN_START_MARKER,
-      write: undefined,
-    };
-    const destinationPath = args.options.outputMarkdown ?? configured.path;
+    const configured = this.findConfiguredOutput(
+      args.configuration.outputs,
+      "markdown",
+    );
 
-    if (destinationPath === undefined && configured.write === undefined) {
+    if (typeof outputMarkdown === "string") {
+      return {
+        custom: configured?.custom ?? [],
+        description: configured?.description,
+        endMarker: configured?.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
+        path: this.resolvePath(args.workingDirectory, outputMarkdown),
+        startMarker: configured?.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
+        type: "markdown",
+        write: configured?.write,
+      };
+    }
+
+    if (configured === undefined) {
+      // `outputMarkdown === true` is a bare flag, refused when the
+      // configuration names no markdown output at all — there is then
+      // neither a path nor a `write` function to resolve a destination from.
+      // `undefined` with nothing configured either is simply not part of
+      // this run.
+      if (outputMarkdown === true) {
+        errors.push(
+          `--output-markdown needs a path, or a "markdown" entry in the configuration's "outputs" to resolve one from: neither was found, so there is nowhere to write it. Pass --output-markdown <path>, or declare a "markdown" output.`,
+        );
+      }
+
       return undefined;
     }
 
     return {
-      ...configured,
-      path: this.resolvePath(args.workingDirectory, destinationPath),
+      custom: configured.custom,
+      description: configured.description,
+      endMarker: configured.endMarker,
+      path: this.resolvePath(args.workingDirectory, configured.path),
+      startMarker: configured.startMarker,
+      type: "markdown",
+      write: configured.write,
     };
   }
 
@@ -257,17 +231,6 @@ export class RunPlanService {
     return destinationPath === undefined
       ? undefined
       : path.resolve(workingDirectory, destinationPath);
-  }
-
-  /**
-   * Whether the run does anything with a file at all.
-   *
-   * A run that neither writes nor compares has nothing to do with a file, so
-   * every destination it resolved is left alone and the badges go to the
-   * console instead.
-   */
-  private touchesFiles(mode: RunMode): boolean {
-    return mode.writes || mode.checksReports;
   }
 
   /** Keeps the names `--check` knows and complains about the rest. */
@@ -313,34 +276,66 @@ export class RunPlanService {
   }
 
   /**
-   * Resolves which files the run writes.
+   * Resolves which files the run writes, and refuses a destination this run
+   * has no way to have produced.
    *
-   * Only files. A run that resolves none still prints its badges, but that is
-   * `--format`'s doing rather than a destination standing in for the console,
-   * which is what let a configured path quietly put a second document on the
-   * stream a pipeline was reading.
+   * `--output-json`/`--output-markdown` passed bare ask this run to write
+   * wherever the configuration says to; refused before anything is measured
+   * when the configuration names no such output at all, since there is then
+   * nowhere to write it.
    */
-  resolveDestinations(args: ResolveDestinationsArguments): RunDestinations {
-    const named = this.namesDestination(args.options);
-
-    return {
-      json: this.resolveJson(args, named),
-      markdown: this.resolveMarkdown(args, named),
+  resolveDestinations(
+    args: ResolveDestinationsArguments,
+  ): ResolveDestinationsResult {
+    const named =
+      args.options.outputJson !== undefined ||
+      args.options.outputMarkdown !== undefined;
+    const errors: string[] = [];
+    const destinations: RunDestinations = {
+      json: this.resolveJson(args, named, errors),
+      markdown: this.resolveMarkdown(args, named, errors),
     };
+
+    return { destinations, errors };
+  }
+
+  /**
+   * Reads `--format` into what the run prints, falling back to the resolved
+   * configuration's own `format` when the flag was left off.
+   *
+   * The fallback never infers from which other flags are present — omitting
+   * `--format` always reads the same value the configuration declares,
+   * whether or not this run also writes a file.
+   */
+  resolveFormat(
+    value: string | undefined,
+    configuredFormat: CodometerFormat,
+    errors: string[],
+  ): MeasureFormat | undefined {
+    if (value === undefined) {
+      return configuredFormat;
+    }
+
+    const matched = FORMAT_NAMES.find((name) => name === value);
+
+    if (matched === undefined) {
+      errors.push(
+        `--format does not accept "${value}". It takes one of ${FORMAT_NAMES.map((name) => `"${name}"`).join(" and ")}, as in "--format ${FORMAT_MARKDOWN}".`,
+      );
+    }
+
+    return matched;
   }
 
   /**
    * Reads the flags into what the run writes and what it fails on.
    *
-   * `--write --check reports` is refused rather than obeyed: nothing can be
-   * stale immediately after being written, so a run asking for both has
-   * misunderstood one of them and would pass whatever it was meant to catch.
-   *
-   * An `--output-*` path with neither flag is refused for the mirror-image
-   * reason: it names a file the run was never going to write. The failure
-   * this catches is an nx target that quietly lost its `--write` — it exited
-   * clean, wrote nothing, and the first thing to notice was a pull request
-   * section rendering as though the project had changed nothing.
+   * Writing is answered per output, by whether that output's own
+   * `--output-*` flag was passed at all. `--output-json`/`--output-markdown`
+   * together with `--check reports` is refused rather than obeyed: nothing
+   * can be stale immediately after being written, so a run asking for both on
+   * the same output has misunderstood one of them and would silently compare
+   * instead of writing.
    */
   selectMode(options: MeasureCommandOptions): ModeSelection {
     const errors: string[] = [];
@@ -348,19 +343,17 @@ export class RunPlanService {
     const mode: RunMode = {
       checksLimits: names.has(CHECK_LIMITS),
       checksReports: names.has(CHECK_REPORTS),
-      writes: options.write === true,
+      writesJson: options.outputJson !== undefined,
+      writesMarkdown: options.outputMarkdown !== undefined,
     };
-    const format = this.readFormat(options.format, mode, errors);
 
-    if (mode.writes && mode.checksReports) {
+    if (mode.checksReports && (mode.writesJson || mode.writesMarkdown)) {
       errors.push(
-        `--write cannot be combined with --check ${CHECK_REPORTS}: a report cannot be stale in the run that just wrote it. Drop one of them, or run --write and --check ${CHECK_REPORTS} separately.`,
+        `--output-json or --output-markdown cannot be combined with --check ${CHECK_REPORTS}: a report cannot be stale in the run that just wrote it. Drop --check ${CHECK_REPORTS}, or run it separately from the run that writes.`,
       );
     }
 
-    this.requireWrittenOutput(options, mode, errors);
-
-    return { errors, format, mode };
+    return { errors, mode };
   }
 
   /**

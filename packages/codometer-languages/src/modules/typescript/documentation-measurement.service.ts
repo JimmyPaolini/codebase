@@ -5,8 +5,11 @@ import { CommentsService } from "../comments/comments.service";
 
 import { SYMBOL_KIND_BY_SYNTAX_KIND } from "./typescript.constants";
 
-import type { CommentMeasurement } from "../comments/comments.types";
-import type { TypescriptWalkContext } from "./typescript.types";
+import type { LabeledCommentMeasurement } from "../comments/comments.types";
+import type {
+  PreparedDocumentation,
+  TypescriptWalkContext,
+} from "./typescript.types";
 
 /**
  * Finds a documentable declaration's leading JSDoc comment and hands it to be
@@ -57,6 +60,56 @@ export class DocumentationMeasurementService {
   }
 
   /**
+   * Everything a measurement needs about one node, or `undefined` when there
+   * is nothing to measure.
+   *
+   * Split out of `measure` so that method stays inside this repository's
+   * statement budget without a helper on the measuring path itself — this one
+   * is called before the comment counting starts, so it adds no frame to the
+   * deepest stack the JSDoc walk reaches.
+   */
+  private prepare(
+    node: tsCompiler.Node,
+    context: TypescriptWalkContext,
+  ): PreparedDocumentation | undefined {
+    const { documentationCounters, sourceFile } = context;
+    const kind = SYMBOL_KIND_BY_SYNTAX_KIND[node.kind];
+
+    if (kind === undefined) {
+      return undefined;
+    }
+
+    const counters = documentationCounters.filter(
+      (counter) => counter.kind === kind,
+    );
+
+    if (counters.length === 0) {
+      return undefined;
+    }
+
+    const range = this.getJsDocRange(node, sourceFile);
+
+    if (range === undefined) {
+      return undefined;
+    }
+
+    const source = sourceFile.text
+      .slice(range.pos, range.end)
+      .replaceAll("\r\n", "\n");
+
+    return {
+      counters,
+      declaration: this.getDeclarationName(node),
+      kind,
+      line:
+        sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile))
+          .line + 1,
+      prose: this.readProse(source),
+      source,
+    };
+  }
+
+  /**
    * The comment's prose, with its delimiters and each line's `*` stripped.
    *
    * Stripped for the word count only. A character count stays the raw slice —
@@ -75,45 +128,48 @@ export class DocumentationMeasurementService {
   // 🌎 Public Methods
 
   /**
-   * Measures one declaration's leading JSDoc comment, if it has one.
+   * Measures one declaration's leading JSDoc comment against every
+   * documentation counter that names its kind, if it has one.
    *
-   * Empty when the node's kind is not one a documentation limit can name, or
-   * when it carries no `/**` comment at all — neither is a measurement, and
-   * reporting one would name a declaration nothing documented. A declaration
-   * is measured once per maximum its kind declares, because the maxima are not
-   * alternatives: one can hold while another breaks.
+   * Empty when the node's kind matches no configured counter, or when it
+   * carries no `/**` comment at all — neither is a measurement, and reporting
+   * one would name a declaration nothing documented. A declaration is
+   * measured once per counter that names its kind and once per maximum that
+   * counter declares, because neither is an alternative: one can hold while
+   * another breaks.
    */
   measure(
     node: tsCompiler.Node,
     context: TypescriptWalkContext,
-  ): CommentMeasurement[] {
-    const { documentation, sourceFile } = context;
-    const kind = SYMBOL_KIND_BY_SYNTAX_KIND[node.kind];
+  ): LabeledCommentMeasurement[] {
+    const prepared = this.prepare(node, context);
 
-    if (documentation === undefined || kind === undefined) {
+    if (prepared === undefined) {
       return [];
     }
 
-    const range = this.getJsDocRange(node, sourceFile);
+    const { counters, declaration, kind, line, prose, source } = prepared;
+    const labeled: LabeledCommentMeasurement[] = [];
 
-    if (range === undefined) {
-      return [];
+    // Walked rather than mapped: a `flatMap` callback here would be one more
+    // frame on the deepest stack this package owns, and the JSDoc walk already
+    // reaches this method through nine of them.
+    for (const counter of counters) {
+      const measurements = this.comments.measureText({
+        comments: counter.budget,
+        declaration,
+        filePath: context.filePath,
+        kind,
+        line,
+        prose,
+        source,
+      });
+
+      for (const measurement of measurements) {
+        labeled.push({ label: counter.label, measurement });
+      }
     }
 
-    const source = sourceFile.text
-      .slice(range.pos, range.end)
-      .replaceAll("\r\n", "\n");
-
-    return this.comments.measureText({
-      comments: documentation.kinds[kind] ?? documentation,
-      declaration: this.getDeclarationName(node),
-      filePath: context.filePath,
-      kind,
-      line:
-        sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile))
-          .line + 1,
-      prose: this.readProse(source),
-      source,
-    });
+    return labeled;
   }
 }

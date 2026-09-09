@@ -87,7 +87,24 @@ export interface CustomStatisticResult {
   color: string;
   count: number;
   group: CodometerStatisticGroup;
+  /**
+   * Where each measured instance was found, for a selector that measures
+   * per-instance rather than only counting matches.
+   *
+   * Left unset by a counter that only counts — `patterns`, `symbols` — since
+   * neither measures anything beyond a match. A `comment` selector populates
+   * it with every block that broke its budget.
+   */
+  instances?: CustomStatisticResultInstance[] | undefined;
   label: string;
+}
+
+/** One measured occurrence a per-instance selector found. */
+export interface CustomStatisticResultInstance {
+  file: string;
+  /** 1-indexed line the measured thing starts on. */
+  line: number;
+  measured: number;
 }
 
 /**

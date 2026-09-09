@@ -203,7 +203,6 @@ export function buildCodometerReport(
   overrides: Partial<CodometerReport> = {},
 ): CodometerReport {
   return {
-    documentation: [],
     failures: [],
     targets: [
       {
@@ -211,6 +210,7 @@ export function buildCodometerReport(
         files: 3,
         metrics: [
           {
+            instances: null,
             limits: [],
             name: "codebase.files",
             path: "files",

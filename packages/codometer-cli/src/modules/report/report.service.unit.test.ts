@@ -4,7 +4,6 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { ReportService } from "./report.service";
 
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
-import type { DocumentationMeasurement } from "../measure/measure.types";
 import type { CodometerReport } from "./report.types";
 
 /** Builds one target's index, since only its metrics and file count vary. */
@@ -12,7 +11,12 @@ function buildIndex(
   files: number,
   metrics: [string, number][],
 ): TargetMetricIndex {
-  return { ambiguous: new Set(), files, metrics: new Map(metrics) };
+  return {
+    ambiguous: new Set(),
+    files,
+    instances: new Map(),
+    metrics: new Map(metrics),
+  };
 }
 
 const codebaseIndex = buildIndex(12, [
@@ -31,7 +35,6 @@ describe(ReportService, () => {
   /** Builds a report over the codebase and the compiled target. */
   function build(limits: EvaluatedLimit[] = []): CodometerReport {
     return service.build({
-      documentation: [],
       failures: [],
       indexes: new Map([
         ["codebase", codebaseIndex],
@@ -53,9 +56,38 @@ describe(ReportService, () => {
     expect(service).toBeDefined();
   });
 
+  // Spec #749 user story 16: a breach still names its file and line once it
+  // reaches the report, not only while it is still in memory.
+  it("carries a metric's per-instance breaches through to its report entry", () => {
+    const index = buildIndex(9, [["custom.Overlong Comments", 1]]);
+    index.instances.set("custom.Overlong Comments", [
+      { file: "src/values.yaml", line: 3, measured: 14 },
+    ]);
+
+    const report = service.build({
+      failures: [],
+      indexes: new Map([["codebase", index]]),
+      limits: [],
+    });
+
+    expect(
+      report.targets[0]?.metrics.find(
+        (metric) => metric.path === "custom.Overlong Comments",
+      )?.instances,
+    ).toStrictEqual([{ file: "src/values.yaml", line: 3, measured: 14 }]);
+  });
+
+  it("carries `null` instances for a metric that only counts", () => {
+    expect(
+      build().targets[0]?.metrics.find((metric) => metric.path === "files")
+        ?.instances,
+    ).toBeNull();
+  });
+
   it("names every metric by its target and its path", () => {
     expect(build().targets[0]?.metrics).toStrictEqual([
       {
+        instances: null,
         limits: [],
         name: "codebase.files",
         path: "files",
@@ -63,6 +95,7 @@ describe(ReportService, () => {
         value: 12,
       },
       {
+        instances: null,
         limits: [],
         name: "codebase.typescript.interfaces",
         path: "typescript.interfaces",
@@ -175,7 +208,6 @@ describe(ReportService, () => {
   // produced: no limit field, a passing verdict, and a non-zero exit.
   it("says outright that a target matched nothing", () => {
     const report = service.build({
-      documentation: [],
       failures: [],
       indexes: new Map([["compiled", buildIndex(0, [["files", 0]])]]),
       limits: [],
@@ -186,6 +218,7 @@ describe(ReportService, () => {
       files: 0,
       metrics: [
         {
+          instances: null,
           limits: [],
           name: "compiled.files",
           path: "files",
@@ -199,7 +232,6 @@ describe(ReportService, () => {
 
   it("carries whatever the run could not do into the document", () => {
     const report = service.build({
-      documentation: [],
       failures: [
         { kind: "limit", reason: "nothing answers", subject: "web.size" },
       ],
@@ -208,38 +240,11 @@ describe(ReportService, () => {
     });
 
     expect(report).toStrictEqual({
-      documentation: [],
       failures: [
         { kind: "limit", reason: "nothing answers", subject: "web.size" },
       ],
       targets: [],
     });
-  });
-
-  it("carries the documentation measurements through unchanged", () => {
-    const documentation: DocumentationMeasurement[] = [
-      {
-        breached: true,
-        declaration: "Foo",
-        file: "src/foo.ts",
-        kind: "class",
-        limit: 6,
-        line: 1,
-        measured: 9,
-        severity: "fail",
-        target: "codebase",
-        unit: "lines",
-      },
-    ];
-
-    const report = service.build({
-      documentation,
-      failures: [],
-      indexes: new Map(),
-      limits: [],
-    });
-
-    expect(report.documentation).toStrictEqual(documentation);
   });
 
   // The name is the join key a later run is compared against, so it has to

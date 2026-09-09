@@ -60,6 +60,7 @@ export class ReportService {
       const name = this.buildMetricName(args.target, path);
 
       metrics.push({
+        instances: args.index.instances.get(path) ?? null,
         limits: (args.limits.get(name) ?? []).map((limit) =>
           this.buildLimit(limit),
         ),
@@ -131,7 +132,6 @@ export class ReportService {
     }
 
     return {
-      documentation: [...args.documentation],
       failures: [...args.failures],
       targets,
     };

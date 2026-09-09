@@ -1,4 +1,4 @@
-import codometerConfiguration from "../../configuration/codometer.config.js";
+import { codometerConfiguration } from "../../configuration/codometer.config.js";
 
 // 🎯 Targets
 
@@ -11,7 +11,7 @@ const compression = "gzip";
 /**
  * What this application is measured by.
  *
- * It overrides `targets` because its build does not compile to one tree: the
+ * It overrides `inputs` because its build does not compile to one tree: the
  * four below partition it rather than overlapping, so the totals in the pull
  * request report add up. The entry chunk is what every visitor downloads, the
  * route chunks are what they download on navigation, and the server output
@@ -32,13 +32,7 @@ const compression = "gzip";
  */
 export default {
   ...codometerConfiguration,
-  limits: [
-    { metric: "Client entry JavaScript.size", value: "384 KB" },
-    { metric: "Client route JavaScript.size", value: "192 KB" },
-    { metric: "Client CSS.size", value: "48 KB" },
-    { metric: "Server JavaScript.size", value: "384 KB" },
-  ],
-  targets: [
+  inputs: [
     {
       analyses: [...analyses],
       compression,
@@ -63,5 +57,11 @@ export default {
       include: ["dist/server/**/*.js"],
       name: "Server JavaScript",
     },
+  ],
+  limits: [
+    { metric: "Client entry JavaScript.size", value: "384 KB" },
+    { metric: "Client route JavaScript.size", value: "192 KB" },
+    { metric: "Client CSS.size", value: "48 KB" },
+    { metric: "Server JavaScript.size", value: "384 KB" },
   ],
 };

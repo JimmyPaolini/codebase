@@ -239,6 +239,7 @@ uncapitalizes
 unconfigured
 underspecified
 unfollowable
+ungated
 unioned
 unknowncase
 unredacted

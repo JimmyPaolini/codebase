@@ -92,7 +92,13 @@ export class TypescriptService {
 
   /** Read one source file, count its lines and comments, and walk its AST. */
   private analyzeFile(args: AnalyzeTypescriptFileArguments): void {
-    const { counters, documentation, filePath, stats, workingDirectory } = args;
+    const {
+      counters,
+      documentationCounters,
+      filePath,
+      stats,
+      workingDirectory,
+    } = args;
     const content = readFileSync(
       path.resolve(workingDirectory, filePath),
       "utf8",
@@ -110,7 +116,7 @@ export class TypescriptService {
     this.scanComments(content, stats);
     this.walkNode(sourceFile, {
       counters,
-      documentation,
+      documentationCounters,
       filePath,
       insideClass: false,
       sourceFile,
@@ -123,9 +129,12 @@ export class TypescriptService {
     node: tsCompiler.Node,
     context: TypescriptWalkContext,
   ): void {
-    context.stats.documentation.push(
-      ...this.documentationMeasurementService.measure(node, context),
-    );
+    for (const {
+      label,
+      measurement,
+    } of this.documentationMeasurementService.measure(node, context)) {
+      (context.stats.documentationCounts[label] ??= []).push(measurement);
+    }
   }
 
   /** Count a discovered comment and update the appropriate metrics. */
@@ -198,7 +207,9 @@ export class TypescriptService {
     return {
       ...EMPTY_TYPESCRIPT_RESULT,
       docTags: { ...EMPTY_TYPESCRIPT_RESULT.docTags },
-      documentation: [],
+      documentationCounts: Object.fromEntries(
+        input.documentationCounters.map((counter) => [counter.label, []]),
+      ),
       externalPackages: new Set<string>(),
       jsFiles: sourceFiles.filter((filePath) =>
         JS_EXTENSIONS.has(path.extname(filePath)),
@@ -454,7 +465,7 @@ export class TypescriptService {
     for (const filePath of input.sourceFiles) {
       this.analyzeFile({
         counters: this.getCountersForFile(filePath, input.symbolCounters),
-        documentation: input.documentation,
+        documentationCounters: input.documentationCounters,
         filePath,
         stats,
         workingDirectory: input.workingDirectory,

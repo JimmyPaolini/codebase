@@ -1,10 +1,10 @@
 // 🏷️ Types
 
 import type {
+  CodometerCommentLanguage,
   CodometerCommentMeasurement,
   CodometerSeverity,
   CodometerSymbolKind,
-  ResolvedCodometerConfiguration,
 } from "@codometer/configuration";
 import type { CommentRange } from "typescript";
 import type { LineCounter } from "yaml";
@@ -45,18 +45,39 @@ export interface CommentToken {
   source: string;
 }
 
-/** A documentation budget, plus the narrower budget one symbol kind may declare. */
-export interface DocumentationCommentBudget extends CommentBudget {
-  kinds: Partial<Record<CodometerSymbolKind, CommentBudget>>;
+/**
+ * One `comment`-selector custom statistic's budget over documentable JSDoc.
+ *
+ * Built from a custom statistic naming `kind`, one per declared statistic
+ * rather than merged into a single shared budget: two statistics can watch
+ * the same kind with different maxima, and keeping them apart is what lets
+ * each one's own breaches be counted back against its own label.
+ */
+export interface DocumentationCommentCounter {
+  budget: CommentBudget;
+  kind: CodometerSymbolKind;
+  label: string;
 }
 
-/** One language's comment budget, plus the separate budget over a whole file. */
-export interface LanguageCommentBudget extends CommentBudget {
-  /**
-   * Budgets over every comment in one file, or `undefined` when none were
-   * written — which leaves the block budgets the only thing judged.
-   */
-  file: CommentBudget | undefined;
+/** One measurement, tagged with the custom statistic label that produced it. */
+export interface LabeledCommentMeasurement {
+  label: string;
+  measurement: CommentMeasurement;
+}
+
+/**
+ * One `comment`-selector custom statistic's budget over plain comment blocks.
+ *
+ * `language` is the selector's own — `undefined` applies the budget to every
+ * language that has comments, exactly as `CodometerCommentSelector` documents.
+ * Kept apart per statistic rather than merged into one budget per language,
+ * so two statistics naming the same language with different maxima each
+ * count only their own breaches.
+ */
+export interface LanguageCommentCounter {
+  budget: CommentBudget;
+  label: string;
+  language: CodometerCommentLanguage | undefined;
 }
 
 /**
@@ -87,7 +108,7 @@ export interface LocatedCommentToken extends CommentToken {
 
 /** Arguments accepted when measuring one file's comment blocks. */
 export interface MeasureCommentsArguments {
-  comments: LanguageCommentBudget;
+  comments: CommentBudget;
   filePath: string;
   tokens: CommentToken[];
 }
@@ -107,7 +128,8 @@ export interface MeasureCommentTextArguments {
 
 /** Arguments accepted when measuring every configured language's comments. */
 export interface MeasureLanguageCommentsArguments {
-  configuration: ResolvedCodometerConfiguration;
+  /** One `comment`-selector custom statistic's budget, per declared statistic. */
+  counters: LanguageCommentCounter[];
   files: LanguageCommentFiles;
   /**
    * Python's comments, already found by its own analyzer.

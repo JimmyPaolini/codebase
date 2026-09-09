@@ -1,11 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import {
-  COMMENT_EXCERPT_LENGTH,
-  COMMENT_KIND,
-  FILE_COMMENT_DECLARATION,
-  FILE_COMMENT_KIND,
-} from "./comments.constants";
+import { COMMENT_EXCERPT_LENGTH, COMMENT_KIND } from "./comments.constants";
 
 import type {
   CommentBlock,
@@ -44,73 +39,63 @@ export class CommentsService {
 
   // 🔏 Private Methods
 
-  /** Counts the words in a comment's prose, markers already stripped. */
+  /**
+   * Counts the words in a comment's prose, markers already stripped.
+   *
+   * Splitting a trimmed string on whitespace runs never yields an empty
+   * token, so the empty case is the only one worth guarding — and guarding it
+   * rather than filtering keeps a callback frame off the deepest stack this
+   * package owns.
+   */
   private countWords(prose: string): number {
-    return prose
-      .trim()
-      .split(/\s+/u)
-      .filter((word) => word.length > 0).length;
+    const trimmed = prose.trim();
+
+    return trimmed === "" ? 0 : trimmed.split(/\s+/u).length;
   }
 
-  /** Every declared maximum, paired with what this comment measured. */
+  /**
+   * Every declared maximum, paired with what this comment measured.
+   *
+   * Written as three guarded pushes rather than a table walked by `flatMap`,
+   * because the callback would be one more frame on the deepest stack this
+   * package owns — the JSDoc walk reaches here through eleven of them, and
+   * `callidescope.config.ts` gates that at what it measures.
+   */
   private declaredLimits(
     args: { prose: string; source: string },
     comments: CommentBudget,
   ): { limit: number; measured: number; unit: CodometerDocumentationUnit }[] {
     const declared: {
-      limit: number | undefined;
-      measured: () => number;
+      limit: number;
+      measured: number;
       unit: CodometerDocumentationUnit;
-    }[] = [
-      {
+    }[] = [];
+
+    if (comments.maximumCharacters !== undefined) {
+      declared.push({
         limit: comments.maximumCharacters,
-        measured: () => args.source.length,
+        measured: args.source.length,
         unit: "characters",
-      },
-      {
-        limit: comments.maximumLines,
-        measured: () => args.source.split("\n").length,
-        unit: "lines",
-      },
-      {
-        limit: comments.maximumWords,
-        measured: () => this.countWords(args.prose),
-        unit: "words",
-      },
-    ];
-
-    return declared.flatMap(({ limit, measured, unit }) =>
-      limit === undefined ? [] : [{ limit, measured: measured(), unit }],
-    );
-  }
-
-  /**
-   * Measures every comment in one file together, if a file budget was written.
-   *
-   * Nothing when none was, which is the normal case: a budget is usually about
-   * one explanation that got away from its author, and blocks are what say
-   * that. A file holding forty well-sized comments is a different thing from
-   * one holding a single essay, and only the block reading tells them apart.
-   *
-   * A file with no comments at all is not reported — there is nothing there to
-   * be too long.
-   */
-  private measureFile(args: MeasureCommentsArguments): CommentMeasurement[] {
-    const { file } = args.comments;
-
-    if (file === undefined || args.tokens.length === 0) {
-      return [];
+      });
     }
 
-    return this.measureText({
-      comments: file,
-      declaration: FILE_COMMENT_DECLARATION,
-      filePath: args.filePath,
-      kind: FILE_COMMENT_KIND,
-      line: args.tokens[0]?.line ?? 1,
-      prose: this.readProse(args.tokens),
-      source: this.readSource(args.tokens),
-    });
+    if (comments.maximumLines !== undefined) {
+      declared.push({
+        limit: comments.maximumLines,
+        measured: args.source.split("\n").length,
+        unit: "lines",
+      });
+    }
+
+    if (comments.maximumWords !== undefined) {
+      declared.push({
+        limit: comments.maximumWords,
+        measured: this.countWords(args.prose),
+        unit: "words",
+      });
+    }
+
+    return declared;
   }
 
   /** The prose of a run of comment lines, markers already stripped. */
@@ -177,7 +162,7 @@ export class CommentsService {
    * alternatives: one can hold while another breaks.
    */
   measure(args: MeasureCommentsArguments): CommentMeasurement[] {
-    const blocks = this.groupIntoBlocks(args.tokens).flatMap((block) => {
+    return this.groupIntoBlocks(args.tokens).flatMap((block) => {
       const prose = this.readProse(block.tokens);
 
       return this.measureText({
@@ -190,8 +175,6 @@ export class CommentsService {
         source: this.readSource(block.tokens),
       });
     });
-
-    return [...blocks, ...this.measureFile(args)];
   }
 
   /**

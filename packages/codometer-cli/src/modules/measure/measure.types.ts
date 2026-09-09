@@ -3,32 +3,43 @@
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
 import type {
   CodeStatisticsResult,
-  CodometerCommentMeasurement,
   ResolvedCodometerConfiguration,
-  ResolvedCodometerTarget,
+  ResolvedCodometerCustomStatistic,
+  ResolvedCodometerInput,
 } from "@codometer/configuration";
 import type { DiscoveryResult } from "@codometer/discovery";
+import type {
+  DocumentationCommentCounter,
+  LanguageCommentCounter,
+  TypescriptSymbolCounter,
+} from "@codometer/languages";
 import type { SizeResult } from "@codometer/size";
 
 /**
  * Arguments accepted when running every analyzer over one set of files.
  */
 export interface AnalyzeFilesArguments {
+  commentCounters: LanguageCommentCounter[];
   configuration: ResolvedCodometerConfiguration;
   discoveredFiles: DiscoveryResult;
+  documentationCounters: DocumentationCommentCounter[];
+  statistics: ResolvedCodometerCustomStatistic[];
+  symbolCounters: TypescriptSymbolCounter[];
   workingDirectory: string;
 }
 
 /**
- * One measured comment, with the target it was found in.
+ * What every analysis declared for one input reported over its files.
  *
- * Both a JSDoc block and a YAML comment block arrive here: they are gated the
- * same way, reported the same way, and rendered by the same line of markdown,
- * so a second channel would only be the same code twice. `kind` is what says
- * which one a reader is looking at.
+ * An analysis an input did not ask for reports `undefined` rather than a zero,
+ * so an input nobody measured the size of is never mistaken for an empty one.
  */
-export interface DocumentationMeasurement extends CodometerCommentMeasurement {
-  target: string;
+export interface InputMeasurement {
+  /** How many files the input's globs claimed. */
+  files: number;
+  language: CodeStatisticsResult | undefined;
+  name: string;
+  size: SizeResult | undefined;
 }
 
 /**
@@ -50,49 +61,73 @@ export interface MeasureArguments {
 /**
  * Options accepted by the measure command.
  *
- * `--write` and `--check` are independent: neither implies the other, and no
- * combination of them is inferred.
- *
- * Standard output and files are asked for separately: `--format` says what to
- * print, and each `--output-*` says which file to write. A path therefore
- * always means a file and never the console, which is what the optional-value
- * `--json`/`--markdown` flags used to overload — a flag whose meaning changed
- * depending on whether it carried a value.
+ * `--output-json` and `--output-markdown` are each independent: passing one
+ * never implicitly writes the other, and neither implies `--check reports`.
+ * There is no `--write` — passing an `--output-*` flag at all is what makes
+ * this run produce that destination.
  */
 export interface MeasureCommandOptions {
   /** The comma-separated set of things to fail on, as it was written. */
   check?: string | true | undefined;
   config?: string | undefined;
-  directory?: string | undefined;
   /** What to print to standard output, as it was written. */
   format?: string | undefined;
-  /** The file the report is written to. Never defaulted. */
-  outputJson?: string | undefined;
-  /** The markdown file the badge block goes into. Never defaulted. */
-  outputMarkdown?: string | undefined;
-  write?: boolean | undefined;
+  /**
+   * The glob array that replaces every configured input for this run, as
+   * written. `undefined` when the flag was never passed at all.
+   */
+  inputs?: string[] | undefined;
+  /**
+   * The report's destination, as it was written.
+   *
+   * `true` for a bare flag naming no path, a string for an explicit one, and
+   * `undefined` when the flag was never passed.
+   */
+  outputJson?: string | true | undefined;
+  /**
+   * The markdown destination, as it was written.
+   *
+   * `true` for a bare flag naming no path, a string for an explicit one, and
+   * `undefined` when the flag was never passed.
+   */
+  outputMarkdown?: string | true | undefined;
 }
 
 /**
- * Everything one run measured, target by target.
+ * Arguments accepted when measuring one declared input.
+ */
+export interface MeasureInputArguments {
+  commentCounters: LanguageCommentCounter[];
+  configuration: ResolvedCodometerConfiguration;
+  documentationCounters: DocumentationCommentCounter[];
+  input: ResolvedCodometerInput;
+  outputPaths: readonly string[];
+  statistics: ResolvedCodometerCustomStatistic[];
+  symbolCounters: TypescriptSymbolCounter[];
+  workingDirectory: string;
+}
+
+/**
+ * Everything one run measured, input by input.
  *
- * `statistics` is the codebase target's language metrics, which is the report
- * every consumer renders today. It is the same object the target carries, held
- * out separately so nothing downstream has to know which target it came from.
+ * `statistics` is the `codebase` input's own language metrics, which is the
+ * report every consumer renders today. It is the same object that input
+ * carries, held out separately so nothing downstream has to know which input
+ * it came from.
  */
 export interface MeasurementResult {
-  /** Every documented declaration across every target, flattened, in measurement order. */
-  documentation: DocumentationMeasurement[];
   /**
    * Whatever the run could not do, collected rather than thrown.
    *
-   * A target that will not measure and a limit that binds to nothing are both
+   * An input that will not measure and a limit that binds to nothing are both
    * recorded here and stepped over, so one run names every one of them instead
    * of stopping at the first and hiding the rest behind it.
    */
   failures: ReportFailure[];
-  /** Every metric each measured target counted, addressable by dotted path. */
+  /** Every metric each measured input counted, addressable by dotted path. */
   indexes: Map<string, TargetMetricIndex>;
+  /** Every input measured, in the order `inputs` declared them. */
+  inputs: InputMeasurement[];
   /**
    * What every declared limit found, in the order they were declared.
    *
@@ -101,17 +136,6 @@ export interface MeasurementResult {
    */
   limits: EvaluatedLimit[];
   statistics: CodeStatisticsResult;
-  targets: TargetMeasurement[];
-}
-
-/**
- * Arguments accepted when measuring one declared target.
- */
-export interface MeasureTargetArguments {
-  configuration: ResolvedCodometerConfiguration;
-  outputPaths: readonly string[];
-  target: ResolvedCodometerTarget;
-  workingDirectory: string;
 }
 
 /**
@@ -126,31 +150,16 @@ export interface ReportFailure {
   /** Which part of the run it failed in. */
   kind: ReportFailureKind;
   reason: string;
-  /** A target's name for a target failure, a limit's written path for a limit. */
+  /** An input's name for an input failure, a limit's written path for a limit. */
   subject: string;
 }
 
 /**
  * Which part of a run a failure belongs to.
  *
- * `target` is a set of files that could not be measured; `limit` is a declared
+ * `input` is a set of files that could not be measured; `limit` is a declared
  * limit that could not be held against anything. Neither is a breach, and a
  * consumer that treats them as one reports a passing gate for a metric nobody
  * ever measured.
  */
-export type ReportFailureKind = "limit" | "target";
-
-/**
- * What every analysis declared for one target reported over its files.
- *
- * An analysis a target did not ask for reports `undefined` rather than a zero,
- * so a target nobody measured the size of is never mistaken for an empty one.
- */
-export interface TargetMeasurement {
-  documentation: DocumentationMeasurement[];
-  /** How many files the target's globs claimed. */
-  files: number;
-  language: CodeStatisticsResult | undefined;
-  name: string;
-  size: SizeResult | undefined;
-}
+export type ReportFailureKind = "input" | "limit";

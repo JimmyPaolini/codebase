@@ -1,6 +1,6 @@
-import { DEFAULT_TARGET_NAME } from "@codometer/configuration";
+import { DEFAULT_INPUT_NAME } from "@codometer/configuration";
 import { CustomizationService } from "@codometer/customization";
-import { DiscoveryService, TargetsService } from "@codometer/discovery";
+import { DiscoveryService, InputsService } from "@codometer/discovery";
 import { LanguagesService } from "@codometer/languages";
 import { SizeService } from "@codometer/size";
 import { Injectable } from "@nestjs/common";
@@ -8,25 +8,28 @@ import { Injectable } from "@nestjs/common";
 import { LimitsService } from "../limits/limits.service";
 import { MetricIndexService } from "../limits/metric-index.service";
 
+import { EMPTY_CODE_STATISTICS_RESULT } from "./measure.constants";
+
 import type { LimitFailure } from "../limits/limits.types";
 import type {
   AnalyzeFilesArguments,
-  DocumentationMeasurement,
+  InputMeasurement,
   MeasureArguments,
+  MeasureInputArguments,
   MeasurementResult,
-  MeasureTargetArguments,
   ReportFailure,
-  TargetMeasurement,
 } from "./measure.types";
 import type {
   CodeStatisticsResult,
   CodometerAnalysis,
-  CodometerCommentMeasurement,
-  JavascriptStatistics,
-  ResolvedCodometerTarget,
-  TypescriptStatistics,
+  ResolvedCodometerCustomStatistic,
+  ResolvedCodometerInput,
+  ResolvedCodometerOutput,
 } from "@codometer/configuration";
-import type { TypescriptResult } from "@codometer/languages";
+import type {
+  CommentMeasurement,
+  TypescriptResult,
+} from "@codometer/languages";
 
 /**
  * Aggregates every analyzer's report into a single set of statistics.
@@ -34,7 +37,7 @@ import type { TypescriptResult } from "@codometer/languages";
  * The one place `@codometer/discovery`, `@codometer/languages`,
  * `@codometer/size`, and `@codometer/customization` meet. None of the four
  * imports another, so joining them has to happen somewhere, and a call-stack
- * trace reports that join as module spread against `measureTarget` and
+ * trace reports that join as module spread against `measureInput` and
  * `analyzeFiles` — the two methods that personally name three of the four.
  * That is the arrangement working, not drifting: pushing the join down into
  * one of the packages is what would couple them to each other.
@@ -47,7 +50,7 @@ export class MeasureService {
     private readonly discoveryService: DiscoveryService,
     private readonly languagesService: LanguagesService,
     private readonly customizationService: CustomizationService,
-    private readonly targetsService: TargetsService,
+    private readonly inputsService: InputsService,
     private readonly sizeService: SizeService,
     private readonly limitsService: LimitsService,
     private readonly metricIndexService: MetricIndexService,
@@ -70,91 +73,77 @@ export class MeasureService {
    * of as the place all three are joined.
    *
    * Takes the files it is given rather than finding them, so the codebase and
-   * a target naming compiled output are counted by exactly the same analyzers.
+   * an input naming compiled output are counted by exactly the same analyzers.
    */
-  private analyzeFiles(args: AnalyzeFilesArguments): {
-    documentation: CodometerCommentMeasurement[];
-    statistics: CodeStatisticsResult;
-  } {
+  private analyzeFiles(args: AnalyzeFilesArguments): CodeStatisticsResult {
     const directory = args.workingDirectory;
     const { discoveredFiles } = args;
     const languages = this.languagesService.analyze({
+      commentCounters: args.commentCounters,
       configuration: args.configuration,
       discoveredFiles,
-      symbolCounters: this.customizationService.buildSymbolCounters(
-        args.configuration.statistics,
-      ),
+      documentationCounters: args.documentationCounters,
+      symbolCounters: args.symbolCounters,
       workingDirectory: directory,
     });
     // `none` compression is size analysis's own way of saying "uncompressed",
     // which is what a headline byte total is: the reader is not asking what
-    // this target compresses to, only how large it is.
+    // this input compresses to, only how large it is.
     const size = this.sizeService.analyze({
       compression: "none",
       files: discoveredFiles.files,
       workingDirectory: directory,
     });
+    // A comment-selector custom statistic's own breaches, merged back by
+    // label: a documentation counter and a plain-language counter are
+    // measured through two different calls, but a label belongs to exactly
+    // one custom statistic either way.
+    const commentCounts: Record<string, CommentMeasurement[]> = {
+      ...languages.commentCounts,
+      ...languages.typescript.documentationCounts,
+    };
 
     return {
-      // One channel for both: a JSDoc block and a YAML comment block are
-      // gated, reported, and rendered identically, and `kind` is what tells a
-      // reader which is which.
-      documentation: [
-        ...languages.typescript.documentation,
-        ...languages.comments,
-      ],
-      statistics: {
-        css: { ...languages.css },
-        custom: this.customizationService.analyze({
-          files: discoveredFiles.files,
-          statistics: args.configuration.statistics,
-          symbolCounts: languages.typescript.symbolCounts,
-        }),
-        folders: this.getFolderCount(discoveredFiles.files),
-        hcl: { ...languages.hcl },
-        javascript: this.buildJavascriptStatistics(languages.typescript),
-        // The JSON, Jupyter, markdown, and Python analyzers already report
-        // exactly the shape their group declares, so nothing is projected.
-        json: { ...languages.json },
-        jupyter: { ...languages.jupyter },
-        // Notebook code is source too: its lines are counted once here, and
-        // the cells they came from are never handed to the standalone
-        // analyzers.
-        linesOfCode:
-          languages.typescript.lines +
-          languages.python.lines +
-          languages.jupyter.codeLines,
-        markdown: { ...languages.markdown },
-        python: { ...languages.python },
-        repositoryBytes: size.bytes,
-        shell: { ...languages.shell },
-        sourceFiles:
-          languages.typescript.tsFiles +
-          languages.typescript.jsFiles +
-          languages.python.files,
-        sql: { ...languages.sql },
-        toml: { ...languages.toml },
-        typescript: this.buildTypescriptStatistics(languages.typescript),
-        yaml: { ...languages.yaml },
-      },
+      css: { ...languages.css },
+      custom: this.customizationService.analyze({
+        commentCounts,
+        files: discoveredFiles.files,
+        statistics: args.statistics,
+        symbolCounts: languages.typescript.symbolCounts,
+      }),
+      folders: this.getFolderCount(discoveredFiles.files),
+      hcl: { ...languages.hcl },
+      javascript: this.buildJavascriptStatistics(languages.typescript),
+      // The JSON, Jupyter, markdown, and Python analyzers already report
+      // exactly the shape their group declares, so nothing is projected.
+      json: { ...languages.json },
+      jupyter: { ...languages.jupyter },
+      // Notebook code is source too: its lines are counted once here, and
+      // the cells they came from are never handed to the standalone
+      // analyzers.
+      linesOfCode:
+        languages.typescript.lines +
+        languages.python.lines +
+        languages.jupyter.codeLines,
+      markdown: { ...languages.markdown },
+      python: { ...languages.python },
+      repositoryBytes: size.bytes,
+      shell: { ...languages.shell },
+      sourceFiles:
+        languages.typescript.tsFiles +
+        languages.typescript.jsFiles +
+        languages.python.files,
+      sql: { ...languages.sql },
+      toml: { ...languages.toml },
+      typescript: this.buildTypescriptStatistics(languages.typescript),
+      yaml: { ...languages.yaml },
     };
-  }
-
-  /** Stamps every documentation measurement with the target it was found in. */
-  private attachTargetName(
-    documentation: readonly CodometerCommentMeasurement[],
-    targetName: string,
-  ): DocumentationMeasurement[] {
-    return documentation.map((measurement) => ({
-      ...measurement,
-      target: targetName,
-    }));
   }
 
   /** Project the TypeScript analyzer's counters onto the JavaScript group. */
   private buildJavascriptStatistics(
     typescriptStats: TypescriptResult,
-  ): JavascriptStatistics {
+  ): CodeStatisticsResult["javascript"] {
     return {
       asyncFunctions: typescriptStats.asyncFunctions,
       classes: typescriptStats.classes,
@@ -176,7 +165,7 @@ export class MeasureService {
   /** Project the TypeScript analyzer's counters onto the TypeScript group. */
   private buildTypescriptStatistics(
     typescriptStats: TypescriptResult,
-  ): TypescriptStatistics {
+  ): CodeStatisticsResult["typescript"] {
     return {
       decorators: typescriptStats.decorators,
       docComments: typescriptStats.docComments,
@@ -188,33 +177,59 @@ export class MeasureService {
   }
 
   /**
-   * The YAML counters alone, without the comment measurements beside them.
+   * Every custom statistic declared across every configured output, deduped
+   * by label.
    *
-   * `YamlResult` carries its measurements next to its counters the way
-   * `TypescriptResult` does, and those travel through the documentation
-   * channel instead — so spreading the whole result here would leave an array
-   * inside an object whose type says it holds only numbers.
+   * Measured once per input rather than once per output: an output's own
+   * `custom` array says which counters it renders, not which counters exist,
+   * so the union is what the measurement pipeline needs and each output's own
+   * renderer picks its own subset back out by label.
    */
-  /** Reads whatever a target's measurement threw as a printable sentence. */
+  private collectStatistics(
+    outputs: readonly ResolvedCodometerOutput[],
+  ): ResolvedCodometerCustomStatistic[] {
+    const byLabel = new Map<string, ResolvedCodometerCustomStatistic>();
+
+    for (const output of outputs) {
+      for (const statistic of output.custom) {
+        byLabel.set(statistic.label, statistic);
+      }
+    }
+
+    return [...byLabel.values()];
+  }
+
+  /** Reads whatever an input's measurement threw as a printable sentence. */
   private describeFailure(error: unknown): string {
     return error instanceof Error ? error.message : String(error);
   }
 
   /**
-   * Discovers the codebase's files, minus the ones codometer writes itself.
+   * Discovers one input's files, minus the ones codometer writes itself.
    *
-   * The exclusion is applied here rather than handed to discovery as a glob,
-   * so a destination is removed by being that exact file and not by matching
-   * a pattern that might claim another.
+   * The built-in `codebase` input is discovered by whatever its ignore files
+   * leave behind rather than by matching its own `include`/`exclude` globs —
+   * those stay placeholders for that one input, exactly as
+   * `@codometer/configuration` documents. Every other input's files are
+   * whatever its globs claim.
    */
-  private discoverCodebase(args: MeasureArguments): string[] {
-    const discovered = this.discoveryService.discoverFiles({
-      exclude: args.configuration.exclude,
-      excludeFrom: args.configuration.excludeFrom,
-      workingDirectory: args.workingDirectory,
-    });
+  private discoverInputFiles(
+    input: ResolvedCodometerInput,
+    args: MeasureInputArguments,
+  ): string[] {
+    const discovered =
+      input.name === DEFAULT_INPUT_NAME
+        ? this.discoveryService.discoverFiles({
+            exclude: args.configuration.exclude,
+            excludeFrom: args.configuration.excludeFrom,
+            workingDirectory: args.workingDirectory,
+          }).files
+        : this.inputsService.matchFiles({
+            input,
+            workingDirectory: args.workingDirectory,
+          });
 
-    return this.excludeOutputPaths(discovered.files, args.outputPaths);
+    return this.excludeOutputPaths(discovered, args.outputPaths);
   }
 
   /**
@@ -239,7 +254,7 @@ export class MeasureService {
   }
 
   /**
-   * Count the unique folders the target's files sit in.
+   * Count the unique folders the input's files sit in.
    */
   private getFolderCount(files: string[]): number {
     const folders = new Set<string>();
@@ -256,77 +271,34 @@ export class MeasureService {
   }
 
   /**
-   * Measure every declared target, keeping whatever the failures leave.
-   *
-   * A target that cannot be measured — a glob pointing at a directory that
-   * vanished, a file that will not open — is recorded and stepped over. One
-   * unreadable file used to take the whole run with it, including the
-   * codebase's own statistics, which no target had anything to do with.
-   */
-  private measureDeclaredTargets(args: MeasureArguments): {
-    failures: ReportFailure[];
-    targets: TargetMeasurement[];
-  } {
-    const failures: ReportFailure[] = [];
-    const targets: TargetMeasurement[] = [];
-
-    for (const target of args.configuration.targets) {
-      try {
-        targets.push(
-          this.measureTarget({
-            configuration: args.configuration,
-            outputPaths: args.outputPaths,
-            target,
-            workingDirectory: args.workingDirectory,
-          }),
-        );
-      } catch (error: unknown) {
-        failures.push({
-          kind: "target",
-          reason: this.describeFailure(error),
-          subject: target.name,
-        });
-      }
-    }
-
-    return { failures, targets };
-  }
-
-  /**
-   * Measure one declared target with whichever analyses it asked for.
+   * Measure one declared input with whichever analyses it asked for.
    *
    * An analysis nobody asked for is not run at all. Compressing a source tree
    * to answer a question nobody put costs more than every other analysis put
    * together.
    */
-  private measureTarget(args: MeasureTargetArguments): TargetMeasurement {
-    const { target } = args;
-    const files = this.excludeOutputPaths(
-      this.targetsService.matchFiles({
-        target,
-        workingDirectory: args.workingDirectory,
-      }),
-      args.outputPaths,
-    );
-    const language = this.runsAnalysis(target, "language")
+  private measureInput(args: MeasureInputArguments): InputMeasurement {
+    const { input } = args;
+    const files = this.discoverInputFiles(input, args);
+    const language = this.runsAnalysis(input, "language")
       ? this.analyzeFiles({
+          commentCounters: args.commentCounters,
           configuration: args.configuration,
           discoveredFiles: this.discoveryService.categorize(files),
+          documentationCounters: args.documentationCounters,
+          statistics: args.statistics,
+          symbolCounters: args.symbolCounters,
           workingDirectory: args.workingDirectory,
         })
       : undefined;
 
     return {
-      documentation:
-        language === undefined
-          ? []
-          : this.attachTargetName(language.documentation, target.name),
       files: files.length,
-      language: language?.statistics,
-      name: target.name,
-      size: this.runsAnalysis(target, "size")
+      language,
+      name: input.name,
+      size: this.runsAnalysis(input, "size")
         ? this.sizeService.analyze({
-            compression: target.compression,
+            compression: input.compression,
             files,
             workingDirectory: args.workingDirectory,
           })
@@ -345,47 +317,59 @@ export class MeasureService {
     }));
   }
 
-  /** Whether a target asked for one of the analyses. */
+  /** Whether an input asked for one of the analyses. */
   private runsAnalysis(
-    target: ResolvedCodometerTarget,
+    input: ResolvedCodometerInput,
     analysis: CodometerAnalysis,
   ): boolean {
-    return target.analyses.includes(analysis);
+    return input.analyses.includes(analysis);
   }
 
   // 🌎 Public Methods
 
   /**
-   * Measure the codebase and every target declared alongside it.
+   * Measure every input the configuration declares.
    *
-   * The codebase is measured first and always: it is the one target no glob
-   * can name, being whatever the repository's ignore files leave behind. It is
-   * also the one target measured without a net — if the directory it was
-   * pointed at cannot be read there is no report to salvage, whereas a
-   * declared target that fails leaves everything else worth reporting.
+   * The built-in `codebase` input is not special-cased here — resolution
+   * already prepends it unless a configuration replaces it by name, so this
+   * simply measures whichever inputs it was handed, in the order given. An
+   * input that cannot be measured — a glob pointing at a directory that
+   * vanished, a file that will not open — is recorded and stepped over, so one
+   * unreadable file never takes the whole run with it.
    */
   measure(args: MeasureArguments): MeasurementResult {
-    const files = this.discoverCodebase(args);
-    const codebase = this.analyzeFiles({
-      configuration: args.configuration,
-      discoveredFiles: this.discoveryService.categorize(files),
-      workingDirectory: args.workingDirectory,
-    });
-    const declared = this.measureDeclaredTargets(args);
-    const targets: TargetMeasurement[] = [
-      {
-        documentation: this.attachTargetName(
-          codebase.documentation,
-          DEFAULT_TARGET_NAME,
-        ),
-        files: files.length,
-        language: codebase.statistics,
-        name: DEFAULT_TARGET_NAME,
-        size: undefined,
-      },
-      ...declared.targets,
-    ];
-    const { duplicates, indexes } = this.metricIndexService.index(targets);
+    const statistics = this.collectStatistics(args.configuration.outputs);
+    const commentCounters =
+      this.customizationService.buildCommentCounters(statistics);
+    const symbolCounters =
+      this.customizationService.buildSymbolCounters(statistics);
+    const failures: ReportFailure[] = [];
+    const inputs: InputMeasurement[] = [];
+
+    for (const input of args.configuration.inputs) {
+      try {
+        inputs.push(
+          this.measureInput({
+            commentCounters: commentCounters.languageCounters,
+            configuration: args.configuration,
+            documentationCounters: commentCounters.documentationCounters,
+            input,
+            outputPaths: args.outputPaths,
+            statistics,
+            symbolCounters,
+            workingDirectory: args.workingDirectory,
+          }),
+        );
+      } catch (error: unknown) {
+        failures.push({
+          kind: "input",
+          reason: this.describeFailure(error),
+          subject: input.name,
+        });
+      }
+    }
+
+    const { duplicates, indexes } = this.metricIndexService.index(inputs);
     // Evaluated here rather than by whoever renders the report, so that a
     // limit addressing a metric nothing measured is a failure of the
     // measurement rather than of one output format.
@@ -393,22 +377,33 @@ export class MeasureService {
       configuration: args.configuration,
       indexes,
     });
+    // The first input, in declaration order, that ran language analysis —
+    // never one looked up by the literal name `codebase`. `--inputs`
+    // replaces the built-in `codebase` input outright (see
+    // `MeasureCommand.applyInputsOverride`), so a name-based lookup always
+    // fell back to `EMPTY_CODE_STATISTICS_RESULT` under that flag even
+    // though the override's own input ran language analysis and had real
+    // numbers to report. A configuration naming more than one language-
+    // analyzed input is not disambiguated further than this: whichever one
+    // was declared first is the one the headline reports.
+    const languageMeasured = inputs.find(
+      (measured) => measured.language !== undefined,
+    );
 
     return {
-      documentation: targets.flatMap((target) => target.documentation),
       failures: [
-        ...declared.failures,
+        ...failures,
         ...duplicates.map((duplicate) => ({
-          kind: "target" as const,
+          kind: "input" as const,
           reason: duplicate.reason,
           subject: duplicate.target,
         })),
         ...this.readLimitFailures(evaluation.failures),
       ],
       indexes,
+      inputs,
       limits: evaluation.limits,
-      statistics: codebase.statistics,
-      targets,
+      statistics: languageMeasured?.language ?? EMPTY_CODE_STATISTICS_RESULT,
     };
   }
 }

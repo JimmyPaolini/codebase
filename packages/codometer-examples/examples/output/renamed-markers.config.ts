@@ -10,18 +10,21 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * README does, and so does this package's.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/output/renamed-markers.config.ts --write
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../output/renamed-markers.config.ts --output-markdown
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
-  output: {
-    markdown: {
+  format: "markdown",
+  outputs: [
+    {
       description: "Measured from the sample corpus.",
       endMarker: "<!-- SAMPLE_STATISTICS_END -->",
       path: "statistics.md",
       startMarker: "<!-- SAMPLE_STATISTICS_START -->",
+      type: "markdown",
     },
-  },
+  ],
   python: { command: "uv run python" },
 };
 

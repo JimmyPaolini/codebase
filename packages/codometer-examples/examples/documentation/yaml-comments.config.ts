@@ -3,10 +3,13 @@ import type { CodometerConfiguration } from "@codometer/configuration";
 /**
  * How long a YAML comment block may run.
  *
- * The other half of comment length, configured apart from `documentation` and
- * enabled on its own: this file sets `yaml.comments` and no `documentation`
- * block, so not one JSDoc comment in the corpus is measured. Gating YAML prose
- * is not a reason to start gating every doc comment against the same number.
+ * The other half of comment length, configured apart from a JSDoc `comment`
+ * selector and enabled on its own: this file's counter names
+ * `language: "yaml"` and no `kind`, so not one JSDoc comment in the corpus is
+ * measured.
+ * Gating YAML prose is not a reason to start gating every doc comment against
+ * the same number — see [codometer.config.ts](./codometer.config.ts) for the
+ * `kind`-based counters.
  *
  * A **block** is the run of `#` lines a reader takes as one thought. A blank
  * line ends one, and a comment trailing a value is never part of the block
@@ -15,29 +18,41 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * stays a character in a string.
  *
  * The corpus holds exactly one block, the note above `pipeline.yaml`'s anchor,
- * and this configuration declares two budgets for it. It is reported **twice**,
- * once per declared maximum, and the two disagree: one line against a maximum
- * of one holds, while twelve words against a maximum of five breaches. That is
- * the whole reason they are separate fields rather than one `maximum` steered
- * by a `unit` — a block can sit inside one budget and outside another, and a
- * shape that made them alternatives could not say so. Both numbers are far
- * below anything a repository would really write, so one short comment is
- * enough to show the check working.
- *
- * A breach here reaches the report through the same channel a JSDoc breach
- * does, and renders the same way — `kind` is what says which it was. It is
- * gated by the same `--check limits` flag, and like a documentation limit it
- * has no `metric` path to write: the blocks are found rather than addressed.
+ * and this selector declares two maxima for it: one line, and five words. The
+ * two disagree — one line against a maximum of one holds, while twelve words
+ * against a maximum of five breaches — which is why they are separate fields
+ * rather than one `maximum` steered by a `unit`: a block can sit inside one
+ * budget and outside another. Both maxima belong to **one counter**, though,
+ * and a block that breaches either is one breach against that counter's
+ * `limits[]` entry — the old report used to list the same block twice, once
+ * per unit; the counter's own `instances` now lists it once, at whichever
+ * measurement broke a maximum. Both numbers are far below anything a
+ * repository would really write, so one short comment is enough to show the
+ * check working.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/documentation/yaml-comments.config.ts --check limits
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../documentation/yaml-comments.config.ts --check limits
+ * echo $?   # 1
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
+  defaultInput: "codebase",
+  format: "markdown",
+  limits: [{ metric: "custom.YAML Comment Budget", value: 0 }],
+  outputs: [
+    {
+      custom: [
+        {
+          comment: { language: "yaml", maximumLines: 1, maximumWords: 5 },
+          label: "YAML Comment Budget",
+        },
+      ],
+      path: "codometer-report.json",
+      type: "json",
+    },
+  ],
   python: { command: "uv run python" },
-  yaml: {
-    comments: { maximumLines: 1, maximumWords: 5, severity: "fail" },
-  },
 };
 
 export default codometerConfiguration;
