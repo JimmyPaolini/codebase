@@ -9,16 +9,14 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
  * Language that composes the others.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
- * **at** what it measured rather than above it: a stack at the limit passes, so
- * this gate is green the day it arrives and the number is a starting point to
- * ratchet down from rather than a target to grow into.
+ * **at** what it measured rather than above it: a stack or a callable at either
+ * limit passes, so this gate is green the day it arrives and each number is a
+ * starting point to ratchet down from rather than a target to grow into.
  *
- * No `maximumBreadth`. The widest callables here are the comparison walks,
- * whose fan-out is the shape of the syntax tree they descend rather than a
- * budget anybody chose; gating it would fire on the next node kind a Language
- * learns to compare and say nothing about the code. Run `breadth` against this
- * project to read it. Breadth is left out of this gate until there is a number
- * worth holding.
+ * Eleven direct callees at the widest, among the comparison walks — fan-out
+ * shaped by the syntax tree they descend rather than a budget anybody chose.
+ * The next node kind a Language learns to compare is what moves this number
+ * now.
  *
  * @see configuration/callidescope.config.ts — `projectDefaults`, spread below
  * for everything this file does not override
@@ -26,7 +24,7 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
 export default {
   ...projectDefaults,
   limits: {
-    maximumBreadth: undefined,
+    maximumBreadth: 11,
     maximumDepth: 13,
   },
 };

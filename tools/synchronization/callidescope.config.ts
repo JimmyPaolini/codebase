@@ -6,28 +6,20 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
  * Ten frames down `SynchronizationCommand.run`, the top-level command every
  * synchronizer runs beneath.
  *
- * No `maximumBreadth`. Two callables tie at the project's widest, nine, and
- * they are not the same shape. `SynchronizationCommand.synchronize`
- * dispatches to one `synchronize` method per registered synchronizer, so its
- * width is that fixed roster rather than a budget to hold down.
- * `PullRequestLabelsCommand.reconcile` is ordinary sequential orchestration
+ * Nine direct callees at the widest, where two callables tie:
+ * `SynchronizationCommand.synchronize` dispatching to one `synchronize`
+ * method per registered synchronizer — a fixed roster — and
+ * `PullRequestLabelsCommand.reconcile`'s ordinary sequential orchestration
  * with error handling: list the repository's labels, bail out on failure,
  * plan the reconciliation, bail out on that failing too, then report the
- * plan and report what is stale — a width that grows by one every time a
- * step or a failure branch is added, rather than a budget. A tie decides
- * against gating: holding the fixed roster down would also hold down the
- * orchestrator sitting beside it at the same number, and gating it would
- * fire on the next ordinary step and say nothing about the shape of the
- * code. The measurement is deliberately not quoted here, because nothing
- * would check it — a sentence naming a number no gate enforces goes false
- * the first time somebody adds a step, which is the decay this whole
- * arrangement exists to end. Run `breadth` against this project to read it.
- * Breadth is left out of this gate until there is a number worth holding.
+ * plan and report what is stale. Every traced project gates breadth now, the
+ * orchestrator included, so the next step or failure branch it gains is what
+ * moves this number rather than what a tie once excused it from.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
- * **at** what it measured rather than above it: a stack at the limit passes, so
- * this gate is green the day it arrives and the number is a starting point to
- * ratchet down from rather than a target to grow into.
+ * **at** what it measured rather than above it: a stack or a callable at either
+ * limit passes, so this gate is green the day it arrives and each number is a
+ * starting point to ratchet down from rather than a target to grow into.
  *
  * @see configuration/callidescope.config.ts — `projectDefaults`, spread below
  * for everything this file does not override
@@ -35,7 +27,7 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
 export default {
   ...projectDefaults,
   limits: {
-    maximumBreadth: undefined,
+    maximumBreadth: 9,
     maximumDepth: 10,
   },
 };
