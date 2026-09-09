@@ -22,18 +22,14 @@ Call stacks traced through `packages/codometer-discovery`, deepest first. Each f
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 7 | declared |
-| `maximumBreadth` | 7 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 7 |
+| `maximumBreadth` | 7 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -71,10 +67,6 @@ None.
 | `TargetsService.map(…)` | 1 | `TargetsService.toIncludeBase` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:300` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

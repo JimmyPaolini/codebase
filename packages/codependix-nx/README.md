@@ -104,18 +104,14 @@ Call stacks traced through `packages/codependix-nx`, deepest first. Each frame s
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 4 | declared |
-| `maximumBreadth` | 8 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 4 |
+| `maximumBreadth` | 8 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -146,10 +142,6 @@ None.
 | `WorkspaceGraphService.map(…)` | 1 | `NeighborhoodService.renderEdge` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:71` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 <!-- CODE_STATISTICS_START -->

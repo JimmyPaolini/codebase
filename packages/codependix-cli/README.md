@@ -385,12 +385,12 @@ Call stacks traced through `packages/codependix-cli`, deepest first. Each frame 
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 15 | declared |
-| `maximumBreadth` | 7 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 15 |
+| `maximumBreadth` | 7 |
 
 ### Call stacks (depth)
 
@@ -479,13 +479,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `MapService.runWorkspaceGraph` | 6 | `packages/codependix-cli:modules/delivery`, `packages/codependix-configuration:modules/configuration`, `packages/codependix-nx:modules/workspace-graph` | `packages/codependix-cli/src/modules/map/map.service.ts:281` |
-| `MapService.runNestjsProject` | 5 | `packages/codependix-cli:modules/delivery`, `packages/codependix-nestjs:modules/module-graph`, `packages/codependix-nestjs:modules/nestjs-project` | `packages/codependix-cli/src/modules/map/map.service.ts:186` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -543,13 +536,6 @@ What this project is judged against. `declared` is the number in this project's 
 | `MapCommand.parseWrite` | 1 | `InputService.parseFlagOption` | `packages/codependix-cli/src/modules/map/map.command.ts:287` |
 
 </details>
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `DeliveryService.deliverGraphOutput` | `packages/codependix-cli:modules/delivery` | `packages/codependix-cli:modules/map` | 4/5 |
-| `DeliveryService.renderJson` | `packages/codependix-cli:modules/delivery` | `packages/codependix-cli:modules/map` | 4/5 |
 <!-- CALL_STACKS_END -->
 
 <!-- CODE_STATISTICS_START -->

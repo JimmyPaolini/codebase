@@ -272,12 +272,12 @@ Call stacks traced through `packages/conformetry-configuration`, deepest first. 
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 13 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 13 |
+| `maximumBreadth` | 5 |
 
 ### Call stacks (depth)
 
@@ -364,10 +364,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -449,10 +445,6 @@ None.
 | `InstanceDiscoveryService.map(…)` | 1 | `InstanceDiscoveryService.weighInstance` | `packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:277` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

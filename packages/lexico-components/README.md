@@ -453,12 +453,12 @@ Call stacks traced through `packages/lexico-components`, deepest first. Each fra
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 3 | declared |
-| `maximumBreadth` | 7 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 3 |
+| `maximumBreadth` | 7 |
 
 ### Call stacks (depth)
 
@@ -2008,10 +2008,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -2251,12 +2247,6 @@ None.
 | `useBreakpoint` | 1 | `useMediaQuery` | `packages/lexico-components/src/hooks/use-media-query.ts:62` |
 
 </details>
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `cn` | `packages/lexico-components:lib` | `packages/lexico-components:components` | 219/219 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

@@ -22,12 +22,12 @@ Call stacks traced through `packages/codometer-output`, deepest first. Each fram
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 11 | declared |
-| `maximumBreadth` | 16 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 11 |
+| `maximumBreadth` | 16 |
 
 ### Call stacks (depth)
 
@@ -50,10 +50,6 @@ What this project is judged against. `declared` is the number in this project's 
   └─> MarkdownService.wrapInAnchors(args: WrapInAnchorsArguments): string [packages/codometer-output/src/modules/markdown/markdown.service.ts:244]
      ↳ Wrap rendered markdown in the configured anchor markers.
 ```
-
-### Module spread
-
-None.
 
 ### Breadth
 
@@ -113,10 +109,6 @@ None.
 | `RenderService.flatMap(…)` | 1 | `RenderService.renderProject` | `packages/codometer-output/src/modules/render/render.service.ts:161` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

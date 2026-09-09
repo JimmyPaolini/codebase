@@ -22,12 +22,12 @@ Call stacks traced through `packages/codometer-languages`, deepest first. Each f
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 11 | declared |
-| `maximumBreadth` | 12 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 11 |
+| `maximumBreadth` | 12 |
 
 ### Call stacks (depth)
 
@@ -235,12 +235,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `LanguagesService.analyze` | 13 | `packages/codometer-languages:modules/comments`, `packages/codometer-languages:modules/css`, `packages/codometer-languages:modules/hcl`, `packages/codometer-languages:modules/json`, `packages/codometer-languages:modules/jupyter`, `packages/codometer-languages:modules/markdown`, `packages/codometer-languages:modules/python`, `packages/codometer-languages:modules/shell`, `packages/codometer-languages:modules/sql`, `packages/codometer-languages:modules/toml`, `packages/codometer-languages:modules/typescript`, `packages/codometer-languages:modules/yaml` | `packages/codometer-languages/src/modules/languages/languages.service.ts:56` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -359,10 +353,6 @@ What this project is judged against. `declared` is the number in this project's 
 | `YamlService.analyze` | 1 | `YamlService.countDocument` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:123` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

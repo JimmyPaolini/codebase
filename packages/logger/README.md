@@ -96,12 +96,12 @@ Call stacks traced through `packages/logger`, deepest first. Each frame shows wh
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 4 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 4 |
+| `maximumBreadth` | 2 |
 
 ### Call stacks (depth)
 
@@ -117,10 +117,6 @@ What this project is judged against. `declared` is the number in this project's 
          ↳ Splits a leading emoji off a message, leaving prose behind.
 ```
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -128,10 +124,6 @@ None.
 | `checkConventionalMessage` | 2 | `parseLogMessage`, `isConventionalVerb` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:61` |
 | `CallExpression` | 2 | `isLoggerObjectText`, `checkMessageArgumentConvention` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:151` |
 | `checkMessageArgumentConvention` | 1 | `checkConventionalMessage` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:91` |
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

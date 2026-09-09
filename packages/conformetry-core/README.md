@@ -116,18 +116,14 @@ Call stacks traced through `packages/conformetry-core`, deepest first. Each fram
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 6 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 6 |
+| `maximumBreadth` | 4 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -171,10 +167,6 @@ None.
 | `RunnerService.map(…)` | 1 | `RunnerService.validateDocument` | `packages/conformetry-core/src/modules/runner/runner.service.ts:88` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

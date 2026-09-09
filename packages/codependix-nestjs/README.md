@@ -104,18 +104,14 @@ Call stacks traced through `packages/codependix-nestjs`, deepest first. Each fra
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 5 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 5 |
+| `maximumBreadth` | 5 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -146,10 +142,6 @@ None.
 | `NestjsProjectService.map(…)` | 1 | `NestjsProjectService.describeProject` | `packages/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:147` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 <!-- CODE_STATISTICS_START -->

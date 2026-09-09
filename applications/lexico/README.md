@@ -109,12 +109,12 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 9 | declared |
-| `maximumBreadth` | 9 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 9 |
+| `maximumBreadth` | 9 |
 
 ### Call stacks (depth)
 
@@ -381,10 +381,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -468,12 +464,6 @@ None.
 | `WordForms` | 1 | `transformForms` | `applications/lexico/src/routes/word.$id.tsx:51` |
 
 </details>
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `transformForms` | `applications/lexico:lib` | `applications/lexico:routes` | 2/2 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
