@@ -45,20 +45,21 @@ import {
  * its two configuration files are the worked examples of this shape, and it
  * depends on the configuration package for real.
  *
- * ## The projects that override depth alone
+ * ## The projects that used to override nothing
  *
- * Every traced project holds a file, and five of them — the conformetry leaf
- * analyzers — still take this file's own depth: `conformetry-typescript` has
- * forty callables, `-json` twenty-three, `-jupyter` twenty-two, `-python`
- * eleven, and `-text` five, and every one of them is reached from
- * `conformetry-generation` above rather than entered directly, so each roots
- * nothing and measures zero depth however much it does. A depth limit set at
- * what it measures would be zero, which fails on the first stack of any
- * length, which is a landmine rather than a ratchet, so each names `limits`
- * with `maximumDepth` left at the number below and `maximumBreadth` set to
- * what a run scoped to it actually measured — breadth has no such landmine,
- * since a callable's own fan-out counts whether or not anything ever calls
- * it.
+ * Every traced project holds a complete file now — see
+ * `docs/adr/0007-complete-project-configurations.md`. There used to be a
+ * class of project that took the number below without a file of its own, and
+ * consolidating the conformetry Languages removed the last of it: six leaf
+ * analyzers — `conformetry-typescript`, `-json`, `-jupyter`, `-markdown`,
+ * `-python`, `-text` — each held real code that rooted nothing, because every
+ * one of them was entered from above rather than directly, so each measured
+ * zero however much it did. They are now modules of `conformetry-languages`,
+ * and what was a call between packages is a call inside one, so a scoped run
+ * finally enters at a surface of its own and measures four rather than zero.
+ * That package spreads `projectDefaults`, declares `limits.maximumDepth: 4`
+ * beside it, and gates like any other — breadth included, since a callable's
+ * own fan-out counts whether or not anything ever calls it.
  *
  * The dependency closure a scoped run traces did fix this for
  * `codometer-changes`, which measured zero before it and ten after. The ten
@@ -68,14 +69,13 @@ import {
  *
  * ## The projects traced by nothing
  *
- * Seven projects are not measured at all, rather than taking the number below
- * the way the leaf analyzers do — so they hold no configuration file either,
- * being no project's file to write. The four skill packages —
- * `callidescope-agents`, `codependix-agents`, `codometer-agents`,
- * `conformetry-agents` — hold barely a callable between them, the same
- * landmine the leaf analyzers avoid by taking the default rather than being
- * gated at zero, except these have no real code underneath to ever grow into.
- * And
+ * Seven projects are not measured at all, rather than taking the number
+ * below — so they hold no configuration file either, being no project's file
+ * to write. The four skill packages — `callidescope-agents`,
+ * `codependix-agents`, `codometer-agents`, `conformetry-agents` — hold barely
+ * a callable between them, the same landmine a real project would avoid by
+ * declaring its own number rather than being gated at zero, except these have
+ * no real code underneath to ever grow into. And
  * `codependix-examples`, `codometer-examples`, and `conformetry-examples` are
  * fixture corpora rather than libraries: a depth number over one reports on a
  * corpus's incidental shape instead of on production code, the same reason
@@ -115,16 +115,16 @@ import {
  * targets only onto a project that holds one
  * (`packages/callidescope-nx/src/modules/plugin/plugin.service.ts:353`).
  *
- * Imported by the five conformetry leaf analyzers above, which name
- * `maximumDepth: workspaceLimits.maximumDepth` explicitly rather than
- * spreading it, so a number lowered here still reaches them; every other
- * project's own boundary-tested number would otherwise be mistaken for one
- * still tracking this file.
+ * Imported by `configuration/` above, the one traced project judged by this
+ * object directly rather than through a `callidescope.config.ts` of its own,
+ * so a number lowered here still reaches it; every other project's own
+ * boundary-tested number would otherwise be mistaken for one still tracking
+ * this file.
  */
 export const workspaceLimits = {
   /**
-   * `configuration/` project's own breadth, and the number the five
-   * conformetry leaf analyzers took before this ticket measured their own.
+   * `configuration/` project's own breadth — the one traced project with no
+   * `callidescope.config.ts` of its own to measure it into.
    *
    * Two, from `bodyCoAuthoredOnly` and `footerCoAuthoredOnly` in
    * `configuration/commitlint.config.ts`, tied at the widest — each filters
@@ -138,11 +138,10 @@ export const workspaceLimits = {
    * The depth `projectDefaults` carries into a project that overrides nothing
    * of its own — and no longer this repository's ratchet.
    *
-   * **The ratchet is thirty-seven numbers now**, one per project that declares
-   * a depth of its own — the forty-two project files less the five conformetry
-   * leaf analyzers named below, which take this one explicitly. Every one of
-   * the thirty-seven is set from a boundary-tested run at its gate's own
-   * scope: it passes at the number written and fails one below it. That is what
+   * **The ratchet is one number per traced project now**, one project file
+   * each declaring a depth of its own, set from a boundary-tested run at its
+   * gate's own scope: it passes at the number written and fails one below
+   * it. That is what
    * a ratchet is, and it is what this single number could never be. Seventeen
    * is the deepest stack anywhere in the repository, so as one workspace-wide
    * limit it gated the three projects near it and nothing else — `logger` at
@@ -151,17 +150,18 @@ export const workspaceLimits = {
    * configuration/callidescope.config.ts` prints the whole set and the file
    * each number is written in.
    *
-   * **Lowering this number is not how the ratchet descends.** It reaches only
-   * the five conformetry leaf analyzers, the projects whose files name
-   * `maximumDepth: workspaceLimits.maximumDepth` explicitly rather than a
-   * boundary-tested number of their own, and those are the ones with no
-   * stack to gate: each roots nothing, so each measures zero depth however
-   * much it does. A number lowered here fires on the first stack any of them
-   * grows rather than on a regression, and the value it stands in for is
-   * exactly the one they cannot pick for themselves. To tighten a project,
-   * write the boundary-tested number in that project's own
-   * `callidescope.config.ts`; `## The projects that override depth alone`
-   * above says which five those are and why each still takes this one.
+   * **Lowering this number is not how the ratchet descends.** Every traced
+   * project now writes its own complete file, with its own boundary-tested
+   * number beside the spread, so no traced project reads this value as the
+   * number it is judged by any more.
+   * The seven projects with no stack to gate are the ones `## The projects
+   * traced by nothing` above names, and they hold no configuration file to
+   * read a lowered number from either. What a number here still sets is the
+   * starting point `projectDefaults` hands a project that has not yet
+   * measured and declared its own — a new project, not an existing one, since
+   * every existing traced project's own file is what a gate reads. To tighten
+   * a project already declaring its own, write the boundary-tested number in
+   * that project's own `callidescope.config.ts` instead.
    *
    * The history is still worth keeping, because it is what the per-project
    * numbers were measured against. Set to the issue's suggested six, one
@@ -215,18 +215,16 @@ export const workspaceLimits = {
  *
  * **Spreading this is what makes a complete file cheap.** A project's
  * configuration must set every field — that is what lets it be read as the
- * whole statement of how the project is traced and judged — and writing eleven
- * members out by hand in forty-two files would be a tax nobody pays twice.
+ * whole statement of how the project is traced and judged — and writing
+ * eleven members out by hand in every traced project's own file would be a
+ * tax nobody pays twice.
  * The spread costs one line, and what a reader then sees in the project's own
  * file is the complete set: the tool's own decorator list, its entry-point
  * switches, the default depth, and a markdown destination pointing at that
  * project's own README.
  *
  * Every traced project spreads it, each writing its own `limits` beside the
- * spread the way the example above shows. The five conformetry leaf analyzers
- * are the only ones that do not write a boundary-tested depth: each roots no
- * stack, so each names `maximumDepth: workspaceLimits.maximumDepth` and
- * declares a measured `maximumBreadth` of its own beside it.
+ * spread the way the example above shows.
  * `packages/callidescope-examples/callidescope.config.ts` is outside that count
  * altogether: the package is excluded from workspace tracing by
  * `.callidescopeignore`, and its own file is the annotated worked example this
@@ -247,12 +245,12 @@ export const projectDefaults = {
     /**
      * Left unset here, and never actually taken by anything: every traced
      * project's own `limits` now names a real, boundary-tested
-     * `maximumBreadth`, `workspaceLimits` included for `configuration/` and
-     * the five conformetry leaf analyzers. The field stays `undefined` rather
-     * than a number, because this object carries no gate scope of its own to
-     * measure one against — a value written here would be a guess rather
-     * than a measurement, and every project that spreads this object
-     * overrides `limits` wholesale rather than merging into it.
+     * `maximumBreadth`, `workspaceLimits` included for `configuration/`. The
+     * field stays `undefined` rather than a number, because this object
+     * carries no gate scope of its own to measure one against — a value
+     * written here would be a guess rather than a measurement, and every
+     * project that spreads this object overrides `limits` wholesale rather
+     * than merging into it.
      */
     maximumBreadth: undefined,
     maximumDepth: workspaceLimits.maximumDepth,
@@ -275,8 +273,9 @@ export const projectDefaults = {
      * No diagram by default.
      *
      * A project's README carries the table today and nothing else, and turning
-     * a diagram on for every project at once is a decision about thirty-eight
-     * documents rather than a default. A project that wants one writes it here.
+     * a diagram on for every project at once is a decision about every
+     * traced project's document rather than a default. A project that wants
+     * one writes it here.
      */
     mermaid: undefined,
   },

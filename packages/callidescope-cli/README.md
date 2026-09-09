@@ -1280,7 +1280,6 @@ flowchart LR
   DocumentationModule
   EdgesModule
   EntriesModule
-  FlagResolutionModule
   GraphModule
   InputModule
   LimitsModule
@@ -1295,7 +1294,6 @@ flowchart LR
   RunPlanModule
   SignaturesModule
   WorkspaceModule
-  WriteDestinationsModule
   AddressLookupModule --> CallablesModule
   AddressLookupModule --> CallidescopeModule
   AddressLookupModule --> RunPlanModule
@@ -1321,7 +1319,6 @@ flowchart LR
   CallidescopeModule --> ReportModule
   CallidescopeModule --> RunPlanModule
   CallidescopeModule --> WorkspaceModule
-  CallidescopeModule --> WriteDestinationsModule
   DepthModule --> AddressLookupModule
   DepthModule --> AddressReportModule
   DepthModule --> GraphModule
@@ -1347,10 +1344,6 @@ flowchart LR
   ProjectReportsModule --> GraphModule
   ProjectReportsModule --> SignaturesModule
   RunPlanModule --> ConfigurationModule
-  RunPlanModule --> FlagResolutionModule
-  WriteDestinationsModule --> OutputJsonModule
-  WriteDestinationsModule --> OutputMarkdownModule
-  WriteDestinationsModule --> ReportModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -1417,11 +1410,6 @@ graph LR
   file_src_modules_run_plan_run_plan_service_ts["src/modules/run-plan/run-plan.service.ts"]
   file_src_modules_run_plan_run_plan_service_unit_test_ts["src/modules/run-plan/run-plan.service.unit.test.ts"]
   file_src_modules_run_plan_run_plan_types_ts["src/modules/run-plan/run-plan.types.ts"]
-  file_src_modules_write_destinations_write_destinations_constants_ts["src/modules/write-destinations/write-destinations.constants.ts"]
-  file_src_modules_write_destinations_write_destinations_module_ts["src/modules/write-destinations/write-destinations.module.ts"]
-  file_src_modules_write_destinations_write_destinations_service_ts["src/modules/write-destinations/write-destinations.service.ts"]
-  file_src_modules_write_destinations_write_destinations_service_unit_test_ts["src/modules/write-destinations/write-destinations.service.unit.test.ts"]
-  file_src_modules_write_destinations_write_destinations_types_ts["src/modules/write-destinations/write-destinations.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
@@ -1474,20 +1462,17 @@ graph LR
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_report_findings_report_findings_service_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_write_destinations_write_destinations_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_command_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_report_findings_report_findings_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_write_destinations_write_destinations_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_callidescope_callidescope_constants_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_callidescope_callidescope_command_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_report_findings_report_findings_module_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_run_plan_run_plan_module_ts
-  file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_write_destinations_write_destinations_module_ts
   file_src_modules_callidescope_callidescope_service_integration_test_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_callidescope_callidescope_service_integration_test_ts --> file_testing_modules_ts
   file_src_modules_callidescope_callidescope_service_ts --> file_src_modules_callidescope_callidescope_constants_ts
@@ -1536,12 +1521,7 @@ graph LR
   file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_write_destinations_write_destinations_service_ts
-  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_write_destinations_write_destinations_constants_ts
-  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_write_destinations_write_destinations_types_ts
-  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_write_destinations_write_destinations_service_ts
-  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_write_destinations_write_destinations_types_ts
-  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
@@ -1552,14 +1532,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10637-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-352.56_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10715-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-356.02_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-64-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-39.47_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-40.02_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -1568,7 +1548,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-40-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-228-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-229-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-1-166534?style=flat-square)
 
 ### JavaScript
@@ -1577,15 +1557,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-16-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-19-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-21-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-422-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-118-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-362-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-427-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-120-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-369-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-178-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-374-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-382-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-322-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-85-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-533-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1185-475569?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-86-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-534-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1191-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

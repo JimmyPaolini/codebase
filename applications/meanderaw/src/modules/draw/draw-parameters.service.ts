@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 
 import {
-  DEFAULT_COMB_IS_UPWARD,
-  DEFAULT_RUNG_IS_LEFTWARD,
+  DEFAULT_RUNG_DIRECTION,
+  RUNG_ORIENTATIONS_BY_DIRECTION,
+  SUPPORTED_RUNG_DIRECTIONS,
 } from "../branch-motif/branch-motif.constants";
 import {
   PLY_MODIFIER_NAMES,
@@ -18,6 +19,7 @@ import {
   UnsupportedOptionError,
 } from "./draw.constants";
 
+import type { RungDirection } from "../branch-motif/branch-motif.types";
 import type {
   GenerationParameters,
   MeanderType,
@@ -35,15 +37,15 @@ import type { DrawCommandOptions } from "./draw.types";
  * It exists because `DrawCommand` has one command's worth of room and two
  * commands' worth of options: nest-commander derives each option's key from
  * its own long flag, so `--modifier` and the parameter it needs
- * (`plied`'s `--strands`, `stagger`'s `--branches`, `rung`'s `--leftward`,
- * `comb`'s `--upward`) are parsed by separate
+ * (`plied`'s `--strands`, `stagger`'s `--branches`, `rung`'s `--direction`)
+ * are parsed by separate
  * methods that cannot see each other. Recombining them, and narrowing every
  * raw string to the union it belongs to, is the whole of this service — the
  * command keeps only the `@Option` methods nest-commander insists live on
  * it, and delegates each one here.
  *
  * One builder per parameter-carrying modifier, rather than one method that
- * knows all six: {@link modifier} is then a flat dispatch on the name, and
+ * knows all five: {@link modifier} is then a flat dispatch on the name, and
  * each builder holds only its own parameter's absence and the flag that
  * would have supplied it.
  */
@@ -59,19 +61,6 @@ export class DrawParametersService {
 
   // 🔏 Private Methods
 
-  /**
-   * The `comb` modifier
- `--upward` describes.
-   *
-   * Like {@link rungModifier} it cannot refuse an absent flag, and for the
-   * same reason: a boolean left off and a boolean passed `false` reach this
-   * identically. It takes {@link DEFAULT_COMB_IS_UPWARD}, which is what
-   * makes `--modifier comb` draw exactly what no modifier at all draws.
-   */
-  private combModifier(isUpward: boolean | undefined): Modifier {
-    return { isUpward: isUpward ?? DEFAULT_COMB_IS_UPWARD, name: "comb" };
-  }
-
   /** Narrows a raw string to a supported {@link MeanderType} without an unchecked assertion. */
   private isMeanderType(value: string): value is MeanderType {
     return SUPPORTED_TYPES.includes(value);
@@ -85,6 +74,23 @@ export class DrawParametersService {
   /** Narrows a modifier name to one of the ply-carrying ones, so `--strands` is demanded for exactly those. */
   private isPlyModifierName(value: Modifier["name"]): value is PlyModifierName {
     return PLY_MODIFIER_NAMES.includes(value);
+  }
+
+  /**
+   * Narrows a raw string to a {@link RungDirection} without an unchecked
+   * assertion.
+   *
+   * It asks the total map over the union rather than searching
+   * {@link SUPPORTED_RUNG_DIRECTIONS}, the way
+   * `BranchMotifService.isBranchModifierName` already asks
+   * `BRANCH_MODES_BY_MODIFIER_NAME`. That list is typed as the four
+   * directions rather than as strings, because the sweep enumerates it — and
+   * an array of a literal union cannot be searched for an arbitrary string
+   * without one. The refusal below still names the list, so the message a
+   * reader sees comes from the same place the sweep reads.
+   */
+  private isRungDirection(value: string): value is RungDirection {
+    return Object.hasOwn(RUNG_ORIENTATIONS_BY_DIRECTION, value);
   }
 
   /** Narrows a raw string to a {@link SerpentineFlip} without an unchecked assertion. */
@@ -123,19 +129,17 @@ export class DrawParametersService {
   }
 
   /**
-   * The `rung` modifier `--leftward` describes.
+   * The `rung` modifier `--direction` describes.
    *
-   * The only builder that cannot refuse an absent flag, and the reason is
-   * the flag's own type: commander reports a boolean left off and a boolean
-   * passed `false` identically, so "not stated" is not a state this can
-   * see. It takes {@link DEFAULT_RUNG_IS_LEFTWARD} instead, which is the
-   * direction every `rung` drawn before the flag existed pointed.
+   * The only builder that does not refuse an absent flag, and it is a
+   * choice rather than a limitation: a named value can be told absent where
+   * the boolean `--leftward` this replaced could not, so `rung` could
+   * demand its direction the way `stagger` demands its branch count. It
+   * takes {@link DEFAULT_RUNG_DIRECTION} instead, which is the one
+   * direction the mode drew before the other three were reachable.
    */
-  private rungModifier(isLeftward: boolean | undefined): Modifier {
-    return {
-      isLeftward: isLeftward ?? DEFAULT_RUNG_IS_LEFTWARD,
-      name: "rung",
-    };
+  private rungModifier(direction: RungDirection | undefined): Modifier {
+    return { direction: direction ?? DEFAULT_RUNG_DIRECTION, name: "rung" };
   }
 
   /**
@@ -178,7 +182,7 @@ export class DrawParametersService {
    * where no `--modifier` was given. A modifier carrying a parameter is
    * refused rather than defaulted when that parameter is absent, since
    * guessing one would silently draw something other than what was asked
-   * for — the two booleans excepted, for the reason
+   * for — `rung`'s direction excepted, for the reason
    * {@link rungModifier} gives.
    */
   modifier(options: DrawCommandOptions): Modifier | undefined {
@@ -188,16 +192,12 @@ export class DrawParametersService {
       return undefined;
     }
 
-    if (modifier === "comb") {
-      return this.combModifier(options.upward);
-    }
-
     if (this.isPlyModifierName(modifier)) {
       return this.plyModifier(modifier, options);
     }
 
     if (modifier === "rung") {
-      return this.rungModifier(options.leftward);
+      return this.rungModifier(options.direction);
     }
 
     if (modifier === "stagger") {
@@ -214,6 +214,19 @@ export class DrawParametersService {
         "modifier",
         value,
         SUPPORTED_MODIFIER_NAMES,
+      );
+    }
+
+    return value;
+  }
+
+  /** Narrows `--direction`, rejecting any value outside the supported set. Used only with `--modifier rung`. */
+  rungDirection(value: string): RungDirection {
+    if (!this.isRungDirection(value)) {
+      throw new UnsupportedOptionError(
+        "direction",
+        value,
+        SUPPORTED_RUNG_DIRECTIONS,
       );
     }
 

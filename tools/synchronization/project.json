@@ -59,6 +59,7 @@
         "{workspaceRoot}/.vscode/settings.json",
         "{workspaceRoot}/AGENTS.md",
         "{workspaceRoot}/configuration/conventional.config.cjs",
+        "{workspaceRoot}/CONTRIBUTING.md",
         "{workspaceRoot}/release.config.cjs",
         "shared-globals"
       ],

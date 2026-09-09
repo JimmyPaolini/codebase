@@ -26,7 +26,7 @@ a break of `n` pitches leaves `(2n - 1)` stroke widths of white.
 
 - **Break by one pitch.** Chosen. White gap `= 1 × strokeWidth`, exactly the
   channel invariant 2 already permits everywhere else. Measured on
-  `cross/6-rows/interrupted-6-repeats.svg`: `channelWidthCompliant: true`,
+  `cross/6-rows/interrupted-6-repeats-6r2c-56883344a9.svg`: `channelWidthCompliant: true`,
   `inkTJunctions: 0`, `inkXJunctions: 0`. Its unit test measures the four white
   gaps down one bar in pixels — two where the bar meets the band borders, two
   either side of the rail — and asserts all four equal the stroke width.
