@@ -84,6 +84,22 @@ export type Modifier =
 export type MotifDrawnType = Exclude<MeanderType, TileDrawnType>;
 
 /**
+ * The family, row count, and optional modifier one repeat unit's own column
+ * span is derived from.
+ *
+ * It is {@link RepeatPatternOptions} without the repeat count, and the
+ * omission is the point: a pitch is what a repeat count multiplies rather
+ * than something a repeat count changes. `MotifPitchService` recovers it by
+ * asking a motif service for two counts and subtracting, so a count named
+ * here would be a probe rather than a parameter.
+ */
+export interface MotifPitchOptions {
+  readonly modifier?: Modifier;
+  readonly rows: number;
+  readonly type: MotifDrawnType;
+}
+
+/**
  * The per-type contract `MeanderGenerationService` dispatches through:
  * every type draws its repeat units with `path` and reports how far right
  * the last one extends with `rightEdge`. `border` is optional because only

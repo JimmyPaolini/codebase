@@ -43,6 +43,10 @@ import type {
  * `MosaicSymmetryService.canonicalTile` picks which member of a class the
  * corpus draws. Which member the walk happens to reach first therefore does
  * not matter.
+ *
+ * Nothing here knows what a tile is called. The fold is keyed on
+ * `MosaicSymmetryService.edgeKey`, so the naming this family's filenames use
+ * can depend on this module without this module depending back on it.
  */
 @Injectable()
 export class MosaicTilesService {
@@ -128,17 +132,24 @@ export class MosaicTilesService {
     }
   }
 
-  /** Keeps the tile the current assignment describes, unless a tile already found draws the same pattern. */
+  /**
+   * Keeps the tile the current assignment describes, unless a tile already
+   * found draws the same pattern.
+   *
+   * The key is the representative's own edge key rather than the name a
+   * drawing carries. Both are constant across a symmetry class and tell two
+   * classes of one shape apart, so either folds the walk identically — and
+   * the edge key is the one this module can read without depending on
+   * `LatticeIdentificationService`, which depends on this one.
+   */
   private record(enumeration: MosaicEnumeration): void {
-    const { edges, shape, tilesByIdentifier } = enumeration;
+    const { edges, shape, tilesByKey } = enumeration;
     const tile = this.mosaicTileService.build(shape, edges);
-    const identifier = this.mosaicSymmetryService.canonicalIdentifier(tile);
+    const representative = this.mosaicSymmetryService.canonicalTile(tile);
+    const key = this.mosaicSymmetryService.edgeKey(representative);
 
-    if (!tilesByIdentifier.has(identifier)) {
-      tilesByIdentifier.set(
-        identifier,
-        this.mosaicSymmetryService.canonicalTile(tile),
-      );
+    if (!tilesByKey.has(key)) {
+      tilesByKey.set(key, representative);
     }
   }
 
@@ -165,7 +176,7 @@ export class MosaicTilesService {
 
   /**
    * Every distinct tile of the given size, one per symmetry class, ordered
-   * by canonical identifier so the sweep is stable across runs.
+   * by canonical edge key so the sweep is stable across runs.
    *
    * A shape the budget does not admit is refused rather than enumerated
    * slowly: the walk is `2 ** edges` wide, so one shape too many is not a
@@ -187,12 +198,12 @@ export class MosaicTilesService {
     const enumeration: MosaicEnumeration = {
       edges: this.mosaicTileService.blankEdges(shape),
       shape,
-      tilesByIdentifier: new Map<string, MosaicTile>(),
+      tilesByKey: new Map<string, MosaicTile>(),
     };
 
     this.assign(0, enumeration);
 
-    const tiles = [...enumeration.tilesByIdentifier.entries()]
+    const tiles = [...enumeration.tilesByKey.entries()]
       .toSorted(([first], [second]) => first.localeCompare(second))
       .map(([, tile]) => tile);
 

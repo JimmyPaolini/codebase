@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { LatticeIdentificationModule } from "../lattice-identification/lattice-identification.module";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
 import { ParallelMotifModule } from "../parallel-motif/parallel-motif.module";
@@ -22,10 +23,12 @@ import { DrawCommand } from "./draw.command";
  * property test sweeps the same enumeration, so the corpus written here and
  * the corpus gated there cannot drift apart.
  *
- * It imports `MosaicNamingModule` because the permutation half files each
- * tile under the name its structure earns, where it earns one — a rule read
- * off the tile rather than a label the tile carries, which is why naming is
- * a module the sweep asks rather than something the enumeration hands over.
+ * It imports `LatticeIdentificationModule` and `MosaicNamingModule` for the
+ * two halves of a permutation's filename: the first spells the tile out, and
+ * the second supplies the name its structure earns where it earns one — a
+ * rule read off the tile rather than a label the tile carries, which is why
+ * naming is a module the sweep asks rather than something the enumeration
+ * hands over.
  *
  * It imports `ParallelMotifModule` for one reason: `serpentine`'s variant
  * space is not a cross product of its axes, and which rotations and flips
@@ -36,7 +39,12 @@ import { DrawCommand } from "./draw.command";
 @Module({
   controllers: [],
   exports: [DrawCombinationsService, DrawCommand],
-  imports: [MeanderGenerationModule, MosaicNamingModule, ParallelMotifModule],
+  imports: [
+    LatticeIdentificationModule,
+    MeanderGenerationModule,
+    MosaicNamingModule,
+    ParallelMotifModule,
+  ],
   providers: [
     DrawCombinationsService,
     DrawCommand,
