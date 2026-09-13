@@ -90,48 +90,6 @@ _This project has no immediate Nx dependencies or dependents._
 _This project has no internal file imports._
 <!-- codependix:end name="codependix-imports" -->
 
-<!-- CALL_STACKS_START -->
-
-## 🔭 Callidescope
-
-Call stacks traced through `packages/codependix-agents`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
-
-| Measure | Value |
-| --- | --- |
-| Callables | 0 |
-| Files | 3 |
-| Calls traced | 0 |
-| Call stacks | 0 |
-| Deepest stack | 0 |
-| Stacks through recursion | 0 |
-| Unfollowable calls | 0 |
-
-### Limits
-
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
-
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 17 | inherited |
-| `maximumBreadth` | none | — |
-
-### Call stacks (depth)
-
-None.
-
-### Module spread
-
-None.
-
-### Breadth
-
-None.
-
-### Possibly misplaced
-
-None.
-<!-- CALL_STACKS_END -->
-
 <!-- CODE_STATISTICS_START -->
 
 ## ⏲️ Codometer

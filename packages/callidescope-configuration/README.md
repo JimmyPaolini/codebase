@@ -7,9 +7,8 @@ This package is the configuration reader for
 file, validates it, and fills in every field the file left out, so that no
 analyzer has to know which options are optional.
 
-It knows nothing about call graphs. What a threshold means, which decorator
-marks a stack root, how a module identifier is derived — all of that lives in
-the CLI. This package only answers "what did the repository ask for".
+It knows nothing about call graphs. What a threshold means, and which decorator
+marks a stack root, live in the CLI. This package only answers "what did the repository ask for".
 
 ```bash
 npm install --save-dev @callidescope/configuration
@@ -27,7 +26,7 @@ import { type CallidescopeConfiguration } from "@callidescope/configuration";
 
 const callidescopeConfiguration: CallidescopeConfiguration = {
   excludeFrom: ["configuration/.callidescopeignore"],
-  limits: { maximumDepth: 6, spreadThreshold: 4 },
+  limits: { maximumBreadth: 5, maximumDepth: 6 },
 };
 
 export default callidescopeConfiguration;
@@ -39,18 +38,14 @@ see [Project Configuration](#project-configuration).
 
 ## Limits
 
-Every threshold but one has a default, so a configuration file names only what
-it wants to change.
+There are two, both per project, both gated. A limit the schema does not name is
+refused rather than ignored, so a number nothing reads cannot sit in a file
+looking as though it were in force.
 
 | Limit | Default | Meaning |
 | ----- | ------- | ------- |
 | `maximumDepth` | `6` | Frames a call stack may hold, entry point inclusive |
 | `maximumBreadth` | **none** | Callables one callable may call directly |
-| `spreadThreshold` | `4` | Distinct modules a callable's transitive callees may touch |
-| `directSpreadThreshold` | `3` | Modules a callable must call _directly_ before spread is reported |
-| `maximumImplementationCandidates` | `8` | Implementations one interface member may resolve to |
-| `minimumCallers` | `2` | Callers a callable needs before its placement is judged |
-| `callerMajorityRatio` | `0.8` | Share of callers in one foreign module that marks a callable misplaced |
 
 `maximumBreadth` is the one limit with no default. Until something declares a
 number nothing can exceed it, so breadth is measured and reported without being
@@ -58,14 +53,10 @@ gated — and a run given `--check breadth` is refused rather than passing over 
 limit nobody chose. It is also the one limit a workspace cannot usefully pick
 alone: see [Project Configuration](#project-configuration).
 
-`directSpreadThreshold` exists because transitive spread on its own flags every
-entry point — an entry point legitimately reaches the whole program. Requiring
-direct breadth as well is what isolates the callable personally orchestrating
-unrelated concerns.
-
-`maximumImplementationCandidates` is the primary noise control. A structurally matched
-interface member named `run` or `sync` otherwise resolves to dozens of unrelated
-classes and manufactures a call stack no execution ever takes.
+The **implementation-candidate cap** is deliberately not here. It decides where
+structural interface resolution stops guessing rather than what a run judges, so
+it is a constant in [`@callidescope/graph`](../callidescope-graph/README.md)
+instead — see [the decision record](../../docs/adr/0006-narrow-callidescope-to-depth-and-breadth.md).
 
 ## Entry Points
 
@@ -229,18 +220,10 @@ const projectConfiguration: CallidescopeConfiguration = {
 export default projectConfiguration;
 ```
 
-**Do not spread a workspace limits object into a project's `limits`.** Such an
-object carries `spreadThreshold` and the rest of the graph-shaping limits, every
-one of which only a workspace may set, so a project file holding one is rejected
-before anything is traced.
-
 Nothing is lost by writing the override alone, because **a project inherits per
 limit rather than per object**. Each limit falls back to the workspace's number
 on its own, so a project naming `maximumDepth` still inherits `maximumBreadth`,
-and a project naming neither is handed the workspace's object itself. A spread
-would have nothing left to contribute either: depth and breadth are the only two
-limits a project may set, so it would supply exactly the field being overridden
-plus the one that gets the file rejected.
+and a project naming neither is handed the workspace's object itself.
 
 The workspace number is a **default rather than a ceiling**. A project declaring
 a higher limit than the workspace keeps its own — a workspace number pinned by
@@ -259,23 +242,16 @@ takes effect at the same layer `exclude` does: a project that asks for its test
 files gets them walked in a run that left every other project's out, and a
 project that refuses them keeps them out of a run that asked for everyone's.
 
-### Why the other limits cannot vary per project
+### Why the workspace-only fields cannot vary per project
 
 `maximumDepth` and `maximumBreadth` **judge** a call graph: the graph is built
 once, and each project asks a different question of the same edges. Two answers
 are two opinions about one artifact, which is coherent.
 
-Every other limit **shapes what the graph is**. `spreadThreshold` and
-`directSpreadThreshold` decide which callables become findings,
-`maximumImplementationCandidates` decides which structural matches become edges
-at all, and `minimumCallers` with `callerMajorityRatio` decides what counts as a
-misplacement. Two projects disagreeing about any of them would each be
-describing a different graph over the same shared code — and a run measures one
-graph, so there is one set of those. The same reasoning puts `ignoreCallees`,
-`allowSpreadFor`, `directories`, `excludeFrom`, `output`, and
-`workspaceStructure` in the workspace file: they name what a run reads, what it
-writes, or how it partitions the workspace, and a project cannot answer those
-differently from the run tracing it.
+`ignoreCallees`, `directories`, `excludeFrom`, and `output` are different. They
+name what a run reads, what it writes, or how it partitions the workspace, and a
+project cannot answer those differently from the run tracing it — so they stay
+in the workspace file.
 
 ### Reading the resolved set
 
@@ -315,13 +291,12 @@ file; nothing else was traced.
 **`🔭 Rejected a project configuration` — a workspace-only field.**
 
 ```text
-<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, limits.maximumBreadth, and limits.maximumDepth.
+<project> sets <field>, which only the workspace configuration may set. A project configuration may set entryPoints, exclude, and limits.
 ```
 
-Move that field to the workspace file. `<field>` is printed as
-`limits.spreadThreshold` for a limit and as a bare name for a top-level field,
-so the message says which of the two is wrong. Spreading the workspace limits
-into a project is the usual way this happens.
+Move that field to the workspace file. A retired limit is a different refusal:
+the schema names it, because `limits` accepts `maximumDepth` and
+`maximumBreadth` and nothing else.
 
 **`🔭 Rejected a project configuration` — a declared address resolved to
 nothing.**

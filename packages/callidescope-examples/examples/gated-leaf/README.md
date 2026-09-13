@@ -197,10 +197,6 @@ What this project is judged against. `declared` is the number in this project's 
          ↳ Ends the chain, which is where the fourth frame is.
 ```
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -208,8 +204,4 @@ None.
 | `GatedLeafService.read` | 3 | `GatedLeafService.parse`, `GatedLeafService.normalize`, `GatedLeafService.finish` | `packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40` |
 | `GatedLeafService.normalize` | 1 | `GatedLeafService.finish` | `packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:22` |
 | `GatedLeafService.parse` | 1 | `GatedLeafService.normalize` | `packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:27` |
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->

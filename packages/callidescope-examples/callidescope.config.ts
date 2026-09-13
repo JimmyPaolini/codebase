@@ -5,32 +5,11 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
  *
  * Two files at this root, two roles. `callidescope.workspace.config.ts` beside
  * this one is the *workspace* configuration a run of these fixtures is handed:
- * it names the output destinations, the module layout, and the default limits
- * every project the run reaches falls back to. This file is this *project's*
+ * it names the output destinations and the default limits every project the
+ * run reaches falls back to. This file is this *project's*
  * own, discovered the way every project's is — by name, at the root holding the
  * `tsconfig.json` that makes it a project — and it may only say the four things
  * a project is entitled to say about itself.
- *
- * ## Never spread the workspace limits
- *
- * A project writes the limits it overrides and nothing else:
- *
- * ```ts
- * limits: { maximumDepth: 5 }
- * ```
- *
- * Spreading a workspace limits object into this one is refused before anything
- * is traced, because such an object carries limits that shape the graph —
- * `spreadThreshold`, `maximumImplementationCandidates` — and two projects that
- * disagreed about those would be describing two different graphs over the same
- * shared code.
- *
- * Nothing is lost by writing only the override. Limits fall back one at a time
- * rather than as an object, so `maximumBreadth` and every analysis-shaping
- * limit still come from the run. And a spread would have nothing left to
- * contribute anyway: depth and breadth are the only two a project may set, so
- * it would supply the field being overridden plus the one that gets the file
- * rejected.
  *
  * ## Why five
  *

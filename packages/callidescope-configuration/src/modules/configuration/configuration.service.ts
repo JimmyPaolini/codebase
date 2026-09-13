@@ -11,24 +11,16 @@ import {
   callidescopeConfigurationSchema,
   CONFIGURATION_FILE_NAMES,
   ConfigurationFileNotFoundError,
-  DEFAULT_ALLOW_SPREAD_FOR,
-  DEFAULT_CALLER_MAJORITY_RATIO,
-  DEFAULT_DIRECT_SPREAD_THRESHOLD,
   DEFAULT_ENTRY_POINT_DECORATORS,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
-  DEFAULT_MINIMUM_CALLERS,
-  DEFAULT_MODULES_DIRECTORY,
   DEFAULT_OUTPUT_FORMAT,
   DEFAULT_PREVIEW_COUNT,
   DEFAULT_PROJECT_README_HEADING,
-  DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_RUN_HEADING,
-  DEFAULT_SPREAD_THRESHOLD,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
@@ -40,7 +32,6 @@ import type {
   CallidescopeLimits,
   CallidescopeMarkdownOutputConfiguration,
   CallidescopeOutputConfiguration,
-  CallidescopeWorkspaceStructure,
   LoadConfigurationArguments,
   LoadedCallidescopeConfiguration,
   LoadedCallidescopeConfigurationFile,
@@ -50,7 +41,6 @@ import type {
   ResolvedCallidescopeLimits,
   ResolvedCallidescopeMarkdownOutputConfiguration,
   ResolvedCallidescopeProjectReadmeConfiguration,
-  ResolvedCallidescopeWorkspaceStructure,
 } from "./configuration.types";
 
 /**
@@ -167,13 +157,6 @@ export class ConfigurationService {
       : JSON.parse(configurationContent);
   }
 
-  /** Applies the default globs exempt from the module-spread finding. */
-  private resolveAllowSpreadFor(
-    allowSpreadFor: string[] | undefined,
-  ): string[] {
-    return allowSpreadFor ?? [...DEFAULT_ALLOW_SPREAD_FOR];
-  }
-
   /** Resolves a configuration path against the cwd, then the repository root. */
   private resolveConfigurationPath(configurationPath: string): string {
     const absolutePath = path.resolve(configurationPath);
@@ -254,17 +237,8 @@ export class ConfigurationService {
     const authored = limits ?? {};
 
     return {
-      callerMajorityRatio:
-        authored.callerMajorityRatio ?? DEFAULT_CALLER_MAJORITY_RATIO,
-      directSpreadThreshold:
-        authored.directSpreadThreshold ?? DEFAULT_DIRECT_SPREAD_THRESHOLD,
       maximumBreadth: authored.maximumBreadth,
       maximumDepth: authored.maximumDepth ?? DEFAULT_MAXIMUM_DEPTH,
-      maximumImplementationCandidates:
-        authored.maximumImplementationCandidates ??
-        DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
-      minimumCallers: authored.minimumCallers ?? DEFAULT_MINIMUM_CALLERS,
-      spreadThreshold: authored.spreadThreshold ?? DEFAULT_SPREAD_THRESHOLD,
     };
   }
 
@@ -309,24 +283,6 @@ export class ConfigurationService {
       heading: projectReadmes.heading ?? DEFAULT_PROJECT_README_HEADING,
       previewCount: projectReadmes.previewCount ?? DEFAULT_PREVIEW_COUNT,
       startMarker: projectReadmes.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
-    };
-  }
-
-  /**
-   * Applies defaults to the workspace's directory layout.
-   *
-   * Defaults to this tool's own repository layout, so a project that never
-   * configures this keeps tracing the way it always has.
-   */
-  private resolveWorkspaceStructure(
-    workspaceStructure: CallidescopeWorkspaceStructure | undefined,
-  ): ResolvedCallidescopeWorkspaceStructure {
-    const authored = workspaceStructure ?? {};
-
-    return {
-      modulesDirectory: authored.modulesDirectory ?? DEFAULT_MODULES_DIRECTORY,
-      rootModuleSegment:
-        authored.rootModuleSegment ?? DEFAULT_ROOT_MODULE_SEGMENT,
     };
   }
 
@@ -434,7 +390,6 @@ export class ConfigurationService {
     configuration: CallidescopeConfiguration,
   ): ResolvedCallidescopeConfiguration {
     return {
-      allowSpreadFor: this.resolveAllowSpreadFor(configuration.allowSpreadFor),
       directories: configuration.directories ?? [],
       entryPoints: this.resolveEntryPoints(configuration.entryPoints),
       exclude: this.resolveExclude(configuration.exclude),
@@ -450,9 +405,6 @@ export class ConfigurationService {
         mermaid: this.resolveMarkdownDestination(configuration.output?.mermaid),
         projectReadmes: this.resolveProjectReadmes(configuration.output),
       },
-      workspaceStructure: this.resolveWorkspaceStructure(
-        configuration.workspaceStructure,
-      ),
     };
   }
 }

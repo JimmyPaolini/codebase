@@ -16,25 +16,12 @@ import {
  * never this object directly.
  *
  * A project's own `callidescope.config.ts` writes only the limits it overrides
- * — `limits: { maximumDepth: 10 }`, and nothing beside it. **Never spread this
- * object into one.** `spreadThreshold` is a limit only a workspace may set, and
- * a project file carrying it is refused outright before anything is traced.
- *
- * Writing the override alone drops nothing. `ProjectConfigurationService`
- * resolves each limit on its own, falling back to the workspace's number per
- * limit rather than per object, so a project that names one keeps every other
- * one it inherits. And a spread has nothing left to contribute anyway:
- * `maximumDepth` and `maximumBreadth` are the only two limits a project may
- * set, so it would supply exactly the field being overridden, plus the one that
- * gets the file rejected.
- *
- * `codometer.config.ts`'s `compiledJavaScriptTarget`, beside this file in this
- * directory, is a precedent that does not transfer, and reasoning from it is
- * what once wrote this rule inverted. That object is a target: one element of a
- * list, `Omit`-typed because it is deliberately incomplete, with no per-field
- * fallback anywhere behind it. A project replacing it wholesale really does
- * lose every counter it did not restate, which is what lexico did. A limit is
- * neither a list element nor incomplete, and does have that fallback.
+ * — `limits: { maximumDepth: 10 }`, and nothing beside it. Writing the
+ * override alone drops nothing: `ProjectConfigurationService` resolves each
+ * limit on its own, falling back to the workspace's number per limit rather
+ * than per object, so a project that names one keeps the other. A spread has
+ * nothing left to contribute anyway, `maximumDepth` and `maximumBreadth` being
+ * the only two limits there are.
  *
  * A project's file also carries no type annotation, and so no import of
  * `CallidescopeConfiguration`. An `import type` is still an Nx dependency
@@ -51,40 +38,43 @@ import {
  *
  * ## The projects that override nothing
  *
- * Thirty-two projects under `packages/` now declare their own measured depth,
- * and six declare nothing and are held to the number below. Two reasons,
- * neither of them that nobody got to them. The four skill packages —
- * `callidescope-agents`, `codependix-agents`, `codometer-agents`,
- * `conformetry-agents` — and `codependix-examples` hold between zero and three
- * callables, so there is no stack of theirs to gate. Gating that at zero would
- * fail on the first stack of any length, which is a landmine rather than a
- * ratchet.
- *
- * There used to be a third reason, and consolidating the conformetry Languages
- * removed it. Five leaf analyzers — `conformetry-typescript`, `-json`,
- * `-jupyter`, `-python`, `-text` — each held real code that rooted nothing,
- * because every one of them was entered from above rather than directly, so
- * each measured zero however much it did. They are now modules of
- * `conformetry-languages`, and what was a call between packages is a call
- * inside one, so a scoped run finally enters at a surface of its own and
- * measures four rather than zero. That package declares four and gates like
- * any other.
- *
- * `codometer-examples` is the sixth, and it is the same landmine one frame
- * along. It measures two, over two callables in a package that is a corpus and
- * a test suite rather than a library, and a limit at two breaches the moment
- * either of those callables gains a single frame — which, in a fixture corpus,
- * is a thing somebody adds casually and correctly. Headroom is not the
- * alternative: a limit set above what a project measures gates nothing and
- * lies about having been measured. So this one inherits, and the honest record
- * of its two is a `breadth`/`depth` run against it rather than a number in a
- * file.
+ * Thirty-two projects under `packages/` now declare their own measured depth.
+ * There used to be a reason more inherited the number below, and
+ * consolidating the conformetry Languages removed it: five leaf analyzers —
+ * `conformetry-typescript`, `-json`, `-jupyter`, `-python`, `-text` — each
+ * held real code that rooted nothing, because every one of them was entered
+ * from above rather than directly, so each measured zero however much it did.
+ * They are now modules of `conformetry-languages`, and what was a call
+ * between packages is a call inside one, so a scoped run finally enters at a
+ * surface of its own and measures four rather than zero. That package
+ * declares four and gates like any other.
  *
  * The dependency closure a scoped run traces did fix this for
  * `codometer-changes`, which measured zero before it and ten after. The ten
  * with no caller are a different phenomenon and the closure does not reach
  * them: it supplies the callees a stack descends into, and what these are
  * missing is a caller.
+ *
+ * ## The projects traced by nothing
+ *
+ * Seven projects are not measured at all, rather than inheriting the number
+ * below. The four skill packages — `callidescope-agents`,
+ * `codependix-agents`, `codometer-agents`, `conformetry-agents` — hold barely
+ * a callable between them, the same landmine a real project would avoid by
+ * declaring its own number rather than being gated at zero, except these have
+ * no real code underneath to ever grow into. And
+ * `codependix-examples`, `codometer-examples`, and `conformetry-examples` are
+ * fixture corpora rather than libraries: a depth number over one reports on a
+ * corpus's incidental shape instead of on production code, the same reason
+ * `packages/callidescope-examples` is excluded below in favor of its own
+ * report-freshness gate.
+ *
+ * A project cannot exclude itself this way — discovery finds a project's
+ * `tsconfig.json` before that project's own `callidescope.config.ts` is ever
+ * read, so removing a project from tracing has to happen at the workspace's
+ * own file. `configuration/.callidescopeignore` is where all seven are named,
+ * beside `packages/callidescope-examples` and the other exclusions this
+ * workspace declares.
  *
  * Six projects under `applications/` and `tools/` declare their own measured
  * depth the same way, and none of them inherit — but two more things sit
@@ -107,12 +97,7 @@ import {
  * (`packages/callidescope-nx/src/modules/plugin/plugin.service.ts:353`).
  *
  * Still exported although nothing imports it, because a rule needs a name to
- * be about, and narrowing it to the one limit a project may override was
- * considered and rejected — that leaves an object whose only member every
- * reader of it immediately replaces.
- * `packages/callidescope-cli/testing/workspace-limits.integration.test.ts`
- * fails if the workspace-only limit ever leaves this object, so the
- * prohibition above cannot quietly stop being true.
+ * be about.
  */
 export const workspaceLimits = {
   /**
@@ -133,8 +118,7 @@ export const workspaceLimits = {
    * **Lowering this number is not how the ratchet descends.** It reaches only
    * the projects that declare none of their own, and those are the ones with
    * no stack to gate — the four skill packages and `codependix-examples` hold
-   * barely a callable between them, and the conformetry leaf analyzers root
-   * nothing, so each measures zero however much it does. A number lowered here
+   * barely a callable between them. A number lowered here
    * fires on the first stack any of them grows rather than on a regression, and
    * the value it stands in for is exactly the one they cannot pick for
    * themselves. To tighten a project, write the boundary-tested number in that
@@ -164,7 +148,6 @@ export const workspaceLimits = {
    * code, which is the trade this comment exists to refuse.
    */
   maximumDepth: 17,
-  spreadThreshold: 4,
 } satisfies CallidescopeLimits;
 
 /**
@@ -197,7 +180,7 @@ export const workspaceLimits = {
  * this run, because its fixtures exist to breach the limits set here.
  *
  * - `packages/callidescope-examples/README.md` — how to read a stack, and how
- *   to act on a depth, module-spread, or misplaced-callable finding.
+ *   to act on a depth or breadth finding.
  * - `packages/callidescope-examples/AGENTS.md` — a "callidescope reported X →
  *   open this example" table, for an agent handed a failing run.
  */

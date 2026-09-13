@@ -28,9 +28,9 @@ holds, most of which are specific to this workspace.
 
 | Skill | Reach for it when |
 | ----- | ----------------- |
-| [callidescope-trace](skills/callidescope-trace/SKILL.md) | Running `callidescope`, `depth`, or `breadth`, and reading what any of them printed — a stack, a spread row, a caller list |
+| [callidescope-trace](skills/callidescope-trace/SKILL.md) | Running `callidescope`, `depth`, or `breadth`, and reading what any of them printed — a stack, a breadth row, a caller list |
 | [callidescope-configure](skills/callidescope-configure/SKILL.md) | Telling a run what to do — the flags, and the `callidescope.config.ts` they read alongside |
-| [callidescope-triage](skills/callidescope-triage/SKILL.md) | A depth or breadth gate failed, a committed report went stale, a spread or misplacement row needs acting on, or a run was refused |
+| [callidescope-triage](skills/callidescope-triage/SKILL.md) | A depth or breadth gate failed, a committed report went stale, or a run was refused |
 
 That is conformetry's generate / configure / validate, codometer's measure /
 configure / triage, and codependix's export / configure / triage, one more
@@ -294,45 +294,3 @@ _This project has no internal file imports._
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
-
-<!-- CALL_STACKS_START -->
-
-## 🔭 Callidescope
-
-Call stacks traced through `packages/callidescope-agents`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
-
-| Measure | Value |
-| --- | --- |
-| Callables | 0 |
-| Files | 3 |
-| Calls traced | 0 |
-| Call stacks | 0 |
-| Deepest stack | 0 |
-| Stacks through recursion | 0 |
-| Unfollowable calls | 0 |
-
-### Limits
-
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
-
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 17 | inherited |
-| `maximumBreadth` | none | — |
-
-### Call stacks (depth)
-
-None.
-
-### Module spread
-
-None.
-
-### Breadth
-
-None.
-
-### Possibly misplaced
-
-None.
-<!-- CALL_STACKS_END -->

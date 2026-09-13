@@ -20,9 +20,7 @@ import type { ProjectReport } from "@callidescope/configuration";
 /** A project report carrying only the numbers the index and scoreboard read. */
 function report(args: {
   deepest?: number;
-  misplaced?: number;
   name: string;
-  spreads?: number;
   widest?: number;
 }): ProjectReport {
   const widest = args.widest ?? 0;
@@ -41,24 +39,6 @@ function report(args: {
               signature: undefined,
             },
           ],
-    misplacedCallables: Array.from({ length: args.misplaced ?? 0 }, () => ({
-      callerCount: 3,
-      displayName: "Helper.read",
-      foreignCallerCount: 3,
-      homeModuleId: `${args.name}:src`,
-      id: `${args.name}-misplaced`,
-      location: buildSourceLocation(),
-      suggestedModuleId: `${args.name}:modules/other`,
-    })),
-    moduleSpreads: Array.from({ length: args.spreads ?? 0 }, () => ({
-      depth: 2,
-      directModuleIds: [`${args.name}:src`],
-      displayName: "Orchestrator.run",
-      id: `${args.name}-spread`,
-      location: buildSourceLocation(),
-      statementCount: 4,
-      transitiveSpread: 5,
-    })),
     projectName: args.name,
     stacks: [],
     summary: {
@@ -71,7 +51,6 @@ function report(args: {
       projectCount: 1,
       unresolvedCallCount: 0,
     },
-    typeDepths: [],
   };
 }
 
@@ -105,19 +84,11 @@ describe(WorkspaceReportService, () => {
   it("gives a project a row carrying what it measured and what it is held to", () => {
     const rendered = service.renderProjectIndex({
       limits: buildProjectLimitsLookup({ byProject: { "packages/thing": 10 } }),
-      projects: [
-        report({
-          deepest: 7,
-          misplaced: 2,
-          name: "packages/thing",
-          spreads: 1,
-          widest: 4,
-        }),
-      ],
+      projects: [report({ deepest: 7, name: "packages/thing", widest: 4 })],
     });
 
     expect(rendered).toContain(
-      "| `packages/thing` | 7 | 10 declared | 3 | 4 | 1 | 2 |",
+      "| `packages/thing` | 7 | 10 declared | 3 | 4 |",
     );
   });
 

@@ -4,12 +4,10 @@ import { MermaidReportService } from "./mermaid-report.service";
 import {
   LIMIT_ABSENT_LABEL,
   MARKDOWN_DEEP_STACKS_HEADING,
-  MARKDOWN_MISPLACED_HEADER,
   MARKDOWN_PROJECT_LIMIT_NAMES,
   MARKDOWN_PROJECT_LIMITS_HEADER,
   MARKDOWN_PROJECT_LIMITS_HEADING,
   MARKDOWN_PROJECT_LIMITS_SUMMARY,
-  MARKDOWN_SPREAD_HEADER,
   MARKDOWN_SUMMARY_HEADER,
   MARKDOWN_WIDE_CALLABLES_HEADER,
   MARKDOWN_WIDE_CALLABLES_HEADING,
@@ -30,8 +28,6 @@ import type {
   CallGraphSummary,
   CallStack,
   LimitProvenance,
-  MisplacedCallableFinding,
-  ModuleSpreadFinding,
   ProjectLimits,
   WideCallableFinding,
 } from "@callidescope/configuration";
@@ -121,19 +117,6 @@ export class MarkdownReportService {
     return cells.join(" | ");
   }
 
-  /** Renders the misplaced-callable findings belonging to one scope. */
-  private renderMisplaced(
-    findings: readonly MisplacedCallableFinding[],
-  ): string {
-    return this.renderTable({
-      header: MARKDOWN_MISPLACED_HEADER,
-      rows: findings.map(
-        (finding) =>
-          `| \`${finding.displayName}\` | \`${finding.homeModuleId}\` | \`${finding.suggestedModuleId}\` | ${String(finding.foreignCallerCount)}/${String(finding.callerCount)} |`,
-      ),
-    });
-  }
-
   /**
    * Renders the two limits one project is judged against, and their origin.
    *
@@ -156,17 +139,6 @@ export class MarkdownReportService {
         (name) => `| \`${name}\` | ${this.renderLimitCells(limits[name])} |`,
       ),
     ].join("\n");
-  }
-
-  /** Renders the module-spread findings belonging to one scope. */
-  private renderSpreads(findings: readonly ModuleSpreadFinding[]): string {
-    return this.renderTable({
-      header: MARKDOWN_SPREAD_HEADER,
-      rows: findings.map(
-        (finding) =>
-          `| \`${finding.displayName}\` | ${String(finding.transitiveSpread)} | ${finding.directModuleIds.map((moduleId) => `\`${moduleId}\``).join(", ")} | \`${finding.location.filePath}:${String(finding.location.line)}\` |`,
-      ),
-    });
   }
 
   /** Renders one stack: a labelled heading line and its tree in a fence. */
@@ -320,20 +292,12 @@ export class MarkdownReportService {
         stacks: report.stacks,
       }),
       "",
-      "### Module spread",
-      "",
-      this.renderSpreads(report.moduleSpreads),
-      "",
       "### Breadth",
       "",
       this.renderCallableBreadths({
         previewCount: args.previewCount,
         reports: report.callableBreadths,
       }),
-      "",
-      "### Possibly misplaced",
-      "",
-      this.renderMisplaced(report.misplacedCallables),
     ].join("\n");
   }
 
@@ -380,20 +344,12 @@ export class MarkdownReportService {
         stacks: result.deepStacks,
       }),
       "",
-      `${subsection} Module spread`,
-      "",
-      this.renderSpreads(result.moduleSpreads),
-      "",
       `${subsection} ${MARKDOWN_WIDE_CALLABLES_HEADING} (${String(result.wideCallables.length)})`,
       "",
       this.renderCallableBreadths({
         previewCount: args.previewCount,
         reports: result.wideCallables,
       }),
-      "",
-      `${subsection} Possibly misplaced`,
-      "",
-      this.renderMisplaced(result.misplacedCallables),
       "",
     ].join("\n");
   }

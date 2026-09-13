@@ -1,6 +1,5 @@
 import { CallablesModule } from "../src/modules/callables/callables.module";
 import { ClassesModule } from "../src/modules/classes/classes.module";
-import { CohesionModule } from "../src/modules/cohesion/cohesion.module";
 import { DocumentationModule } from "../src/modules/documentation/documentation.module";
 import { EdgesModule } from "../src/modules/edges/edges.module";
 import { EntriesModule } from "../src/modules/entries/entries.module";
@@ -19,7 +18,6 @@ import { WorkspaceModule } from "../src/modules/workspace/workspace.module";
  */
 export const ANALYSIS_MODULES = [
   CallablesModule,
-  CohesionModule,
   DocumentationModule,
   EdgesModule,
   EntriesModule,

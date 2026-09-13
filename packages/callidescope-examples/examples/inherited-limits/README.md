@@ -131,10 +131,6 @@ What this project is judged against. `declared` is the number in this project's 
                ↳ Ends the chain, which is where the fourth frame is.
 ```
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -142,8 +138,4 @@ None.
 | `InheritedLimitsService.forward` | 1 | `GatedLeafService.read` | `packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts:26` |
 | `InheritedLimitsService.prepare` | 1 | `InheritedLimitsService.forward` | `packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts:31` |
 | `InheritedLimitsService.request` | 1 | `InheritedLimitsService.prepare` | `packages/callidescope-examples/examples/inherited-limits/inherited-limits.ts:38` |
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->

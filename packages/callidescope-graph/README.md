@@ -1,6 +1,6 @@
 # 🔭 Callidescope Graph
 
-**Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion.**
+**Builds the call graph from traced TypeScript source and measures its depth and breadth.**
 
 This package is the leaf of the
 [`@callidescope/cli`](../callidescope-cli/README.md) package graph: it depends
@@ -18,12 +18,11 @@ npm install --save-dev @callidescope/graph
 - **`workspace`** — resolves which projects and files are in scope
 - **`callables`** — discovers the callable declarations
 - **`entry-points`** — resolves configured entry points
-- **`class-hierarchy`** — resolves interface members to concrete implementations
+- **`class-hierarchy`** — resolves interface members to concrete implementations, capped by `MAXIMUM_IMPLEMENTATION_CANDIDATES`
 - **`signatures`** — reads callable signatures
 - **`documentation`** — reads a callable's documentation comment
 - **`edges`** — resolves call sites to callee declarations
 - **`graph`** — assembles the above into `CallGraph`/`CondensedGraph` and measures depth and breadth over it
-- **`cohesion`** — misplaced-callable and module-spread detection, since both are graph-analysis over an already-built graph rather than rendering concerns
 
 ## Test
 
@@ -270,7 +269,6 @@ graph LR
 flowchart LR
   CallablesModule
   ClassesModule
-  CohesionModule
   DocumentationModule
   EdgesModule
   EntriesModule
@@ -322,11 +320,6 @@ graph LR
   file_src_modules_classes_classes_types_ts["src/modules/classes/classes.types.ts"]
   file_src_modules_classes_external_service_ts["src/modules/classes/external.service.ts"]
   file_src_modules_classes_external_service_unit_test_ts["src/modules/classes/external.service.unit.test.ts"]
-  file_src_modules_cohesion_cohesion_constants_ts["src/modules/cohesion/cohesion.constants.ts"]
-  file_src_modules_cohesion_cohesion_module_ts["src/modules/cohesion/cohesion.module.ts"]
-  file_src_modules_cohesion_cohesion_service_ts["src/modules/cohesion/cohesion.service.ts"]
-  file_src_modules_cohesion_cohesion_service_unit_test_ts["src/modules/cohesion/cohesion.service.unit.test.ts"]
-  file_src_modules_cohesion_cohesion_types_ts["src/modules/cohesion/cohesion.types.ts"]
   file_src_modules_documentation_documentation_constants_ts["src/modules/documentation/documentation.constants.ts"]
   file_src_modules_documentation_documentation_module_ts["src/modules/documentation/documentation.module.ts"]
   file_src_modules_documentation_documentation_service_ts["src/modules/documentation/documentation.service.ts"]
@@ -423,9 +416,11 @@ graph LR
   file_src_modules_callables_callables_types_ts --> file_src_modules_workspace_workspace_types_ts
   file_src_modules_classes_classes_module_ts --> file_src_modules_classes_classes_service_ts
   file_src_modules_classes_classes_module_ts --> file_src_modules_classes_external_service_ts
+  file_src_modules_classes_classes_service_ts --> file_src_modules_classes_classes_constants_ts
   file_src_modules_classes_classes_service_ts --> file_src_modules_classes_classes_types_ts
   file_src_modules_classes_classes_service_ts --> file_src_modules_classes_external_service_ts
   file_src_modules_classes_classes_service_ts --> file_src_modules_program_program_types_ts
+  file_src_modules_classes_classes_service_unit_test_ts --> file_src_modules_classes_classes_constants_ts
   file_src_modules_classes_classes_service_unit_test_ts --> file_src_modules_classes_classes_service_ts
   file_src_modules_classes_classes_service_unit_test_ts --> file_src_modules_classes_classes_types_ts
   file_src_modules_classes_classes_service_unit_test_ts --> file_src_modules_classes_external_service_ts
@@ -434,19 +429,6 @@ graph LR
   file_src_modules_classes_classes_types_ts --> file_src_modules_program_program_types_ts
   file_src_modules_classes_external_service_unit_test_ts --> file_src_modules_classes_external_service_ts
   file_src_modules_classes_external_service_unit_test_ts --> file_testing_modules_ts
-  file_src_modules_cohesion_cohesion_module_ts --> file_src_modules_cohesion_cohesion_service_ts
-  file_src_modules_cohesion_cohesion_service_ts --> file_src_modules_callables_callables_types_ts
-  file_src_modules_cohesion_cohesion_service_ts --> file_src_modules_cohesion_cohesion_types_ts
-  file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_callables_callables_types_ts
-  file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_cohesion_cohesion_service_ts
-  file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_cohesion_cohesion_types_ts
-  file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_graph_components_service_ts
-  file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_graph_graph_depth_service_ts
-  file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
-  file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_cohesion_cohesion_service_unit_test_ts --> file_testing_modules_ts
-  file_src_modules_cohesion_cohesion_types_ts --> file_src_modules_callables_callables_types_ts
-  file_src_modules_cohesion_cohesion_types_ts --> file_src_modules_graph_graph_types_ts
   file_src_modules_documentation_documentation_module_ts --> file_src_modules_documentation_documentation_service_ts
   file_src_modules_documentation_documentation_service_ts --> file_src_modules_documentation_documentation_constants_ts
   file_src_modules_documentation_documentation_service_ts --> file_src_modules_documentation_documentation_types_ts
@@ -475,6 +457,7 @@ graph LR
   file_src_modules_edges_edges_service_ts --> file_src_modules_edges_symbol_resolution_service_ts
   file_src_modules_edges_edges_service_ts --> file_src_modules_program_program_service_ts
   file_src_modules_edges_edges_service_ts --> file_src_modules_workspace_workspace_service_ts
+  file_src_modules_edges_edges_service_unit_test_ts --> file_src_modules_classes_classes_constants_ts
   file_src_modules_edges_edges_service_unit_test_ts --> file_src_modules_edges_call_sites_service_ts
   file_src_modules_edges_edges_service_unit_test_ts --> file_src_modules_edges_edges_service_ts
   file_src_modules_edges_edges_service_unit_test_ts --> file_src_modules_edges_symbol_resolution_service_ts
@@ -631,7 +614,6 @@ graph LR
   file_testing_mocks_ts --> file_src_modules_callables_callables_types_ts
   file_testing_modules_ts --> file_src_modules_callables_callables_module_ts
   file_testing_modules_ts --> file_src_modules_classes_classes_module_ts
-  file_testing_modules_ts --> file_src_modules_cohesion_cohesion_module_ts
   file_testing_modules_ts --> file_src_modules_documentation_documentation_module_ts
   file_testing_modules_ts --> file_src_modules_edges_edges_module_ts
   file_testing_modules_ts --> file_src_modules_entries_entries_module_ts

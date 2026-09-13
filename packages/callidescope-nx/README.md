@@ -274,7 +274,7 @@ a workspace to build one from.
 | [`@callidescope/nx`](.) | Nx plugin: per-project trace targets, resolved through the Nx graph |
 | [`@callidescope/cli`](../callidescope-cli/README.md) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
-| [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
+| [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth and breadth |
 | [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
 
 ## Test
@@ -333,7 +333,6 @@ flowchart LR
   CallablesModule
   CallidescopeModule
   ClassesModule
-  CohesionModule
   ConfigurationModule
   DocumentationModule
   EdgesModule
@@ -366,7 +365,6 @@ flowchart LR
   CallablesModule --> WorkspaceModule
   CallidescopeModule --> CallablesModule
   CallidescopeModule --> ClassesModule
-  CallidescopeModule --> CohesionModule
   CallidescopeModule --> ConfigurationModule
   CallidescopeModule --> EdgesModule
   CallidescopeModule --> EntriesModule

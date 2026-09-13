@@ -2,7 +2,6 @@ import { ConfigurationModule, InputModule } from "@callidescope/configuration";
 import {
   CallablesModule,
   ClassesModule,
-  CohesionModule,
   EdgesModule,
   EntriesModule,
   GraphModule,
@@ -33,7 +32,6 @@ import { CallidescopeService } from "./callidescope.service";
   exports: [CallidescopeCommand, CallidescopeService],
   imports: [
     CallablesModule,
-    CohesionModule,
     ConfigurationModule,
     EdgesModule,
     EntriesModule,

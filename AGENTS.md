@@ -270,7 +270,7 @@ only what is true of this workspace in particular.
 
 | Toolchain | Gates | Branch gate | Skills |
 | --------- | ----- | ----------- | ------ |
-| [callidescope](packages/callidescope-cli/README.md) | Call-stack depth, breadth, module spread | each project's `gate` | [trace](packages/callidescope-agents/skills/callidescope-trace/SKILL.md) · [configure](packages/callidescope-agents/skills/callidescope-configure/SKILL.md) · [triage](packages/callidescope-agents/skills/callidescope-triage/SKILL.md) |
+| [callidescope](packages/callidescope-cli/README.md) | Call-stack depth, breadth | each project's `gate` | [trace](packages/callidescope-agents/skills/callidescope-trace/SKILL.md) · [configure](packages/callidescope-agents/skills/callidescope-configure/SKILL.md) · [triage](packages/callidescope-agents/skills/callidescope-triage/SKILL.md) |
 | [codependix](packages/codependix-cli/README.md) | Dependency-graph boundary rules | `codebase:codependix:check` | [export](packages/codependix-agents/skills/codependix-export/SKILL.md) · [configure](packages/codependix-agents/skills/codependix-configure/SKILL.md) · [triage](packages/codependix-agents/skills/codependix-triage/SKILL.md) · [navigate](packages/codependix-agents/skills/codependix-navigate/SKILL.md) |
 | [codometer](packages/codometer-cli/README.md) | Sizes, counts, comment-block length | `codebase:codometer` and each project's `codometer` | [measure](packages/codometer-agents/skills/codometer-measure/SKILL.md) · [configure](packages/codometer-agents/skills/codometer-configure/SKILL.md) · [triage](packages/codometer-agents/skills/codometer-triage/SKILL.md) |
 | conformetry | Generated code against its template | `conformetry-validate` | [generate](.agents/skills/conformetry-generate/SKILL.md) · [configure](.agents/skills/conformetry-configure/SKILL.md) · [validate](.agents/skills/conformetry-validate/SKILL.md) |
@@ -286,8 +286,9 @@ only what is true of this workspace in particular.
   `configuration/callidescope.config.ts`, so a project's own file writes only
   what it overrides. Read them as a set rather than looking for a table —
   `nx run callidescope-cli:start -- limits --config configuration/callidescope.config.ts`.
-  `affirmations`, `callidescope-examples`, and the workspace root carry no gate,
-  and each `project.json` target description says why.
+  `affirmations`, the workspace root, `callidescope-examples`, the four skill
+  packages, and the codependix/codometer/conformetry examples packages carry no
+  gate, and each `project.json` target description says why.
 - **Comment blocks are capped at 128 words**, declared in
   [`configuration/codometer.config.ts`](configuration/codometer.config.ts) and
   reaching every language codometer measures comments in. Shell is looser at
