@@ -1,4 +1,7 @@
-import { InputService } from "@callidescope/configuration";
+import {
+  DEFAULT_OUTPUT_FORMAT,
+  InputService,
+} from "@callidescope/configuration";
 import { AddressDepthService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -110,7 +113,7 @@ export class DepthCommand extends CommandRunner {
 
     process.stdout.write(
       this.addressReportService.renderDepthReports({
-        format: workspace.configuration.output.format,
+        format: resolvedOptions.format ?? DEFAULT_OUTPUT_FORMAT,
         reports: identified.map(({ address, id }) => ({
           address,
           downward: this.addressDepthService.buildDownwardStacks({

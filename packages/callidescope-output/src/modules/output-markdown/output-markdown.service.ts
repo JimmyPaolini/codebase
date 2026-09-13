@@ -152,7 +152,7 @@ export class OutputMarkdownService {
 
   // 🌎 Public Methods
 
-  /** Builds the helpers a configured `write` function is handed. */
+  /** Builds the helpers a configured `writeBlock` function is handed. */
   public buildHelpers(args: SyncMarkdownArguments): MarkdownAnchorHelpers {
     const { content } = args;
 
@@ -177,7 +177,7 @@ export class OutputMarkdownService {
   /** Syncs the configured markdown destination with the current findings. */
   public sync(args: SyncMarkdownArguments): boolean {
     const { content } = args;
-    const custom = args.destination.write;
+    const custom = args.destination.writeBlock;
 
     if (custom === undefined) {
       return this.syncAnchoredBlock({
@@ -256,7 +256,7 @@ export class OutputMarkdownService {
           path: section.path,
           render: undefined,
           startMarker: args.destination.startMarker,
-          write: undefined,
+          writeBlock: undefined,
         },
         path: section.path,
       });

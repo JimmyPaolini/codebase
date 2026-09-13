@@ -40,7 +40,7 @@ function traceFixture(files: Record<string, string>): {
   const collection = collectFixtureCallables({ projectProgram, services });
   const collected = services.edges.build({
     callablesById: collection.byId,
-    ignoreCallees: [],
+    excludeCallees: [],
     includeConstructorEdges: true,
     workspaceRoot: FIXTURE_ROOT,
   });
@@ -88,7 +88,7 @@ describe(EdgesService, () => {
 
     subject.build({
       callablesById: new Map(),
-      ignoreCallees: [],
+      excludeCallees: [],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -328,7 +328,7 @@ describe(EdgesService, () => {
     const collection = collectFixtureCallables({ projectProgram, services });
     const collected = services.edges.build({
       callablesById: collection.byId,
-      ignoreCallees: [],
+      excludeCallees: [],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -349,7 +349,7 @@ describe(EdgesService, () => {
     const collection = collectFixtureCallables({ projectProgram, services });
     const collected = services.edges.build({
       callablesById: collection.byId,
-      ignoreCallees: [],
+      excludeCallees: [],
       includeConstructorEdges: false,
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -370,7 +370,7 @@ describe(EdgesService, () => {
 
   // 🙈 Ignored callees
 
-  it("drops an edge whose callee matches an ignore glob", () => {
+  it("drops an edge whose callee matches a configured exclusion glob", () => {
     const projectProgram = buildFixtureProgram({
       "packages/example/src/modules/a/logger.service.ts": `
         export class LoggerService { public info(): void {} }
@@ -384,7 +384,7 @@ describe(EdgesService, () => {
     const collection = collectFixtureCallables({ projectProgram, services });
     const collected = services.edges.build({
       callablesById: collection.byId,
-      ignoreCallees: ["LoggerService.*"],
+      excludeCallees: ["LoggerService.*"],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -403,7 +403,7 @@ describe(EdgesService, () => {
     ).not.toContain("entry -> LoggerService.info");
   });
 
-  it("keeps an edge whose callee does not match any ignore glob", () => {
+  it("keeps an edge whose callee does not match any configured exclusion glob", () => {
     const projectProgram = buildFixtureProgram({
       "packages/example/src/modules/a/logger.service.ts": `
         export class LoggerService { public info(): void {} }
@@ -418,7 +418,7 @@ describe(EdgesService, () => {
     const collection = collectFixtureCallables({ projectProgram, services });
     const collected = services.edges.build({
       callablesById: collection.byId,
-      ignoreCallees: ["LoggerService.*"],
+      excludeCallees: ["LoggerService.*"],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -451,7 +451,7 @@ describe(EdgesService, () => {
     const collection = collectFixtureCallables({ projectProgram, services });
     const collected = services.edges.build({
       callablesById: collection.byId,
-      ignoreCallees: ["LoggerService.*"],
+      excludeCallees: ["LoggerService.*"],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -485,7 +485,7 @@ describe(EdgesService, () => {
     });
     const collected = services.edges.build({
       callablesById: collection.byId,
-      ignoreCallees: [],
+      excludeCallees: [],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     });

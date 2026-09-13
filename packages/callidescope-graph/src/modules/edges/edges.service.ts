@@ -59,7 +59,7 @@ export class EdgesService {
   private buildSiteEdges(args: {
     callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
     caller: DiscoveredCallable;
-    ignoreCallees: readonly string[];
+    excludeCallees: readonly string[];
     includeConstructorEdges: boolean;
     site: CallSite;
     workspaceRoot: string;
@@ -87,10 +87,10 @@ export class EdgesService {
       .filter((calleeId): calleeId is CallableId => calleeId !== undefined)
       .filter(
         (calleeId) =>
-          !this.isIgnoredCallee({
+          !this.isExcludedCallee({
             callablesById: args.callablesById,
             calleeId,
-            ignoreCallees: args.ignoreCallees,
+            excludeCallees: args.excludeCallees,
           }),
       );
 
@@ -152,23 +152,23 @@ export class EdgesService {
   }
 
   /**
-   * Whether a callee's own display name matches a configured ignore glob.
+   * Whether a callee's own display name matches a configured exclusion glob.
    *
    * Matched against `Type.member` rather than against a path: a
    * cross-cutting callable like a logger
    * has no single file worth naming, but every one of its call sites shares
    * the same display name.
    */
-  private isIgnoredCallee(args: {
+  private isExcludedCallee(args: {
     callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
     calleeId: CallableId;
-    ignoreCallees: readonly string[];
+    excludeCallees: readonly string[];
   }): boolean {
     const displayName = args.callablesById.get(args.calleeId)?.node.displayName;
 
     return (
       displayName !== undefined &&
-      args.ignoreCallees.some((glob) => path.matchesGlob(displayName, glob))
+      args.excludeCallees.some((glob) => path.matchesGlob(displayName, glob))
     );
   }
 
@@ -257,7 +257,7 @@ export class EdgesService {
         const result = this.buildSiteEdges({
           callablesById: args.callablesById,
           caller,
-          ignoreCallees: args.ignoreCallees,
+          excludeCallees: args.excludeCallees,
           includeConstructorEdges: args.includeConstructorEdges,
           site,
           workspaceRoot: args.workspaceRoot,

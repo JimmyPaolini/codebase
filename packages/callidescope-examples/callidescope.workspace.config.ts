@@ -39,7 +39,7 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
  * root, and the two roles are read differently. A run resolves a configuration
  * beside every project it traces, and a project's own file may set only
  * `entryPoints`, `limits.maximumDepth`, `limits.maximumBreadth`, and `exclude`.
- * This one legitimately sets `output`, which only a workspace configuration may
+ * This one legitimately sets `write`, which only a workspace configuration may
  * set — so being discovered as this package's project configuration would
  * refuse the run outright.
  *
@@ -71,7 +71,7 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
      */
     maximumDepth: 6,
   },
-  output: {
+  write: {
     /** The whole run as JSON, which is the machine-readable shape. */
     json: { path: "packages/callidescope-examples/output/report.json" },
     /** The printed trees, spliced between anchors. */

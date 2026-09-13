@@ -194,7 +194,7 @@ describe(ProjectConfigurationService, () => {
   it("skips the file already loaded as the run's own configuration", async () => {
     const workspaceRoot = await writeWorkspace({
       "packages/examples": JSON.stringify({
-        output: { json: { path: "report.json" } },
+        write: { json: { path: "report.json" } },
       }),
     });
 
@@ -223,7 +223,7 @@ describe(ProjectConfigurationService, () => {
   it("skips the run's own configuration named relative to the workspace root", async () => {
     const workspaceRoot = await writeWorkspace({
       "packages/examples": JSON.stringify({
-        output: { json: { path: "report.json" } },
+        write: { json: { path: "report.json" } },
       }),
     });
 
@@ -246,7 +246,7 @@ describe(ProjectConfigurationService, () => {
   it("still resolves every other project's file alongside the skipped one", async () => {
     const workspaceRoot = await writeWorkspace({
       "packages/examples": JSON.stringify({
-        output: { json: { path: "report.json" } },
+        write: { json: { path: "report.json" } },
       }),
       "packages/gated": JSON.stringify({ limits: { maximumDepth: 3 } }),
     });
@@ -325,9 +325,9 @@ describe(ProjectConfigurationService, () => {
 
   it.each([
     ["directories", { directories: ["packages/other"] }],
-    ["output", { output: { json: { path: "report.json" } } }],
+    ["write", { write: { json: { path: "report.json" } } }],
     ["excludeFrom", { excludeFrom: [".callidescopeignore"] }],
-    ["ignoreCallees", { ignoreCallees: ["Logger.log"] }],
+    ["excludeCallees", { excludeCallees: ["Logger.log"] }],
   ])(
     "refuses a project configuration that sets %s",
     async (field, configuration) => {
@@ -352,7 +352,7 @@ describe(ProjectConfigurationService, () => {
   it("names the project, the field, and the fields a project may set", async () => {
     const workspaceRoot = await writeWorkspace({
       "packages/broken": JSON.stringify({
-        output: { json: { path: "report.json" } },
+        write: { json: { path: "report.json" } },
       }),
     });
 
@@ -362,7 +362,7 @@ describe(ProjectConfigurationService, () => {
         workspaceRoot,
       }),
     ).rejects.toThrow(
-      "packages/broken sets output, which only the workspace configuration " +
+      "packages/broken sets write, which only the workspace configuration " +
         "may set. A project configuration may set entryPoints, exclude, " +
         "and limits.",
     );
@@ -421,7 +421,7 @@ describe(ProjectConfigurationService, () => {
       "packages/examples": JSON.stringify({
         directories: ["packages"],
         excludeFrom: [".callidescopeignore"],
-        output: { json: { path: "report.json" } },
+        write: { json: { path: "report.json" } },
       }),
     });
 

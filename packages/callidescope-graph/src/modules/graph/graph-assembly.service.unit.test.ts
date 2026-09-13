@@ -35,7 +35,7 @@ function assemble(files: Record<string, string>): AssembledGraph {
 
   return subject.assemble({
     callablesById: collection.byId,
-    ignoreCallees: [],
+    excludeCallees: [],
     includeConstructorEdges: true,
     workspaceRoot: FIXTURE_ROOT,
   });

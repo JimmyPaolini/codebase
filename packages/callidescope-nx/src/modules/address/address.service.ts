@@ -1,4 +1,5 @@
 import { AddressLookupService, AddressReportService } from "@callidescope/cli";
+import { DEFAULT_OUTPUT_FORMAT } from "@callidescope/configuration";
 import { AddressDepthService, BreadthService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 
@@ -141,7 +142,7 @@ export class AddressService {
     return {
       ok: true,
       report: this.addressReportService.renderBreadthReports({
-        format: workspace.configuration.output.format,
+        format: args.format ?? DEFAULT_OUTPUT_FORMAT,
         reports,
       }),
     };
@@ -160,7 +161,7 @@ export class AddressService {
     return {
       ok: true,
       report: this.addressReportService.renderDepthReports({
-        format: workspace.configuration.output.format,
+        format: args.format ?? DEFAULT_OUTPUT_FORMAT,
         reports: identified.map(({ address, id }) => {
           const stackArguments = {
             callablesById: workspace.located.callablesById,

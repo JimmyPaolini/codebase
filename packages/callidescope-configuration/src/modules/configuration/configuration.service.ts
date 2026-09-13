@@ -17,7 +17,6 @@ import {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_OUTPUT_FORMAT,
   DEFAULT_PREVIEW_COUNT,
   DEFAULT_PROJECT_README_HEADING,
   DEFAULT_RUN_HEADING,
@@ -31,7 +30,7 @@ import type {
   CallidescopeEntryPoints,
   CallidescopeLimits,
   CallidescopeMarkdownOutputConfiguration,
-  CallidescopeOutputConfiguration,
+  CallidescopeWriteConfiguration,
   LoadConfigurationArguments,
   LoadedCallidescopeConfiguration,
   LoadedCallidescopeConfigurationFile,
@@ -218,15 +217,15 @@ export class ConfigurationService {
 
   /** Applies defaults to the JSON output destination, if one was named. */
   private resolveJsonOutput(
-    output: CallidescopeOutputConfiguration | undefined,
+    write: CallidescopeWriteConfiguration | undefined,
   ): ResolvedCallidescopeJsonOutputConfiguration | undefined {
-    if (output?.json === undefined) {
+    if (write?.json === undefined) {
       return undefined;
     }
 
     return {
-      indentation: output.json.indentation ?? DEFAULT_JSON_INDENTATION,
-      path: output.json.path,
+      indentation: write.json.indentation ?? DEFAULT_JSON_INDENTATION,
+      path: write.json.path,
     };
   }
 
@@ -264,19 +263,19 @@ export class ConfigurationService {
       // live in the CLI that calls them, so "unset" is what selects them.
       render: destination.render,
       startMarker: destination.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
-      write: destination.write,
+      writeBlock: destination.writeBlock,
     };
   }
 
   /** Applies defaults to the project README destination, if it was asked for. */
   private resolveProjectReadmes(
-    output: CallidescopeOutputConfiguration | undefined,
+    write: CallidescopeWriteConfiguration | undefined,
   ): ResolvedCallidescopeProjectReadmeConfiguration | undefined {
-    if (output?.projectReadmes === undefined) {
+    if (write?.projectReadmes === undefined) {
       return undefined;
     }
 
-    const { projectReadmes } = output;
+    const { projectReadmes } = write;
 
     return {
       endMarker: projectReadmes.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
@@ -393,17 +392,16 @@ export class ConfigurationService {
       directories: configuration.directories ?? [],
       entryPoints: this.resolveEntryPoints(configuration.entryPoints),
       exclude: this.resolveExclude(configuration.exclude),
+      excludeCallees: configuration.excludeCallees ?? [],
       excludeFrom: configuration.excludeFrom ?? [],
-      ignoreCallees: configuration.ignoreCallees ?? [],
       limits: this.resolveLimits(configuration.limits),
-      output: {
-        format: configuration.output?.format ?? DEFAULT_OUTPUT_FORMAT,
-        json: this.resolveJsonOutput(configuration.output),
+      write: {
+        json: this.resolveJsonOutput(configuration.write),
         markdown: this.resolveMarkdownDestination(
-          configuration.output?.markdown,
+          configuration.write?.markdown,
         ),
-        mermaid: this.resolveMarkdownDestination(configuration.output?.mermaid),
-        projectReadmes: this.resolveProjectReadmes(configuration.output),
+        mermaid: this.resolveMarkdownDestination(configuration.write?.mermaid),
+        projectReadmes: this.resolveProjectReadmes(configuration.write),
       },
     };
   }

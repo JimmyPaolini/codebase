@@ -77,13 +77,12 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       includeTests: false,
     },
     exclude: [],
+    excludeCallees: [],
     excludeFrom: [],
-    ignoreCallees: [],
     limits: {
       maximumDepth: 2,
     },
-    output: {
-      format: "markdown",
+    write: {
       json: undefined,
       markdown: undefined,
       mermaid: undefined,
@@ -855,7 +854,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
     it("refuses a project setting a field only the workspace may set", async () => {
       const workspaceRoot = await buildConfiguredWorkspace({
-        output: { json: { path: "report.json" } },
+        write: { json: { path: "report.json" } },
       });
 
       await expect(
@@ -873,7 +872,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
       // configuration, and refused for the very fields it may set as a
       // workspace configuration.
       const workspaceRoot = await buildConfiguredWorkspace({
-        output: { json: { path: "report.json" } },
+        write: { json: { path: "report.json" } },
       });
 
       const outcome = await service.trace({

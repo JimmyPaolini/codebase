@@ -68,10 +68,10 @@ describe(ConfigurationService, () => {
 
     expect(configuration.exclude).toStrictEqual([...DEFAULT_EXCLUDE_GLOBS]);
     expect(configuration.excludeFrom).toStrictEqual([]);
-    expect(configuration.ignoreCallees).toStrictEqual([]);
+    expect(configuration.excludeCallees).toStrictEqual([]);
     expect(configuration.directories).toStrictEqual([]);
-    expect(configuration.output.json).toBeUndefined();
-    expect(configuration.output.markdown).toBeUndefined();
+    expect(configuration.write.json).toBeUndefined();
+    expect(configuration.write.markdown).toBeUndefined();
   });
 
   it("applies every limit default", () => {
@@ -130,12 +130,12 @@ describe(ConfigurationService, () => {
     expect(configuration.limits.maximumBreadth).toBeUndefined();
   });
 
-  it("keeps authored callee-ignore globs", () => {
+  it("keeps authored callee-exclusion globs", () => {
     const configuration = service.resolveConfiguration({
-      ignoreCallees: ["LoggerService.*"],
+      excludeCallees: ["LoggerService.*"],
     });
 
-    expect(configuration.ignoreCallees).toStrictEqual(["LoggerService.*"]);
+    expect(configuration.excludeCallees).toStrictEqual(["LoggerService.*"]);
   });
 
   it("keeps authored entry-point rules, including disabling them", () => {
@@ -179,14 +179,14 @@ describe(ConfigurationService, () => {
     expect(occurrences).toHaveLength(1);
   });
 
-  // 📤 Output destinations
+  // 📤 Write destinations
 
   it("defaults the JSON indentation when a path is named", () => {
     const configuration = service.resolveConfiguration({
-      output: { json: { path: "output/callidescope.json" } },
+      write: { json: { path: "output/callidescope.json" } },
     });
 
-    expect(configuration.output.json).toStrictEqual({
+    expect(configuration.write.json).toStrictEqual({
       indentation: DEFAULT_JSON_INDENTATION,
       path: "output/callidescope.json",
     });
@@ -194,60 +194,60 @@ describe(ConfigurationService, () => {
 
   it("keeps an authored JSON indentation, zero included", () => {
     const configuration = service.resolveConfiguration({
-      output: { json: { indentation: 0, path: "output/callidescope.json" } },
+      write: { json: { indentation: 0, path: "output/callidescope.json" } },
     });
 
-    expect(configuration.output.json?.indentation).toBe(0);
+    expect(configuration.write.json?.indentation).toBe(0);
   });
 
   it("defaults the markdown markers when a path is named", () => {
     const configuration = service.resolveConfiguration({
-      output: { markdown: { path: "REPORT.md" } },
+      write: { markdown: { path: "REPORT.md" } },
     });
 
-    expect(configuration.output.markdown).toStrictEqual({
+    expect(configuration.write.markdown).toStrictEqual({
       description: undefined,
       endMarker: DEFAULT_MARKDOWN_END_MARKER,
       heading: DEFAULT_RUN_HEADING,
       path: "REPORT.md",
       render: undefined,
       startMarker: DEFAULT_MARKDOWN_START_MARKER,
-      write: undefined,
+      writeBlock: undefined,
     });
   });
 
   it("keeps authored markdown markers, description, and callbacks", () => {
     const render = (): string => "rendered";
-    const write = (): boolean => true;
+    const writeBlock = (): boolean => true;
 
     const configuration = service.resolveConfiguration({
-      output: {
+      write: {
         markdown: {
           description: "Call stacks",
           endMarker: "<!-- END -->",
           path: "REPORT.md",
           render,
           startMarker: "<!-- START -->",
-          write,
+          writeBlock,
         },
       },
     });
 
-    expect(configuration.output.markdown?.description).toBe("Call stacks");
-    expect(configuration.output.markdown?.startMarker).toBe("<!-- START -->");
-    expect(configuration.output.markdown?.endMarker).toBe("<!-- END -->");
-    expect(configuration.output.markdown?.render).toBe(render);
-    expect(configuration.output.markdown?.write).toBe(write);
+    expect(configuration.write.markdown?.description).toBe("Call stacks");
+    expect(configuration.write.markdown?.startMarker).toBe("<!-- START -->");
+    expect(configuration.write.markdown?.endMarker).toBe("<!-- END -->");
+    expect(configuration.write.markdown?.render).toBe(render);
+    expect(configuration.write.markdown?.writeBlock).toBe(writeBlock);
   });
 
   it("keeps an authored markdown heading", () => {
     const configuration = service.resolveConfiguration({
-      output: {
+      write: {
         markdown: { heading: "## 🔭 Callidescope", path: "README.md" },
       },
     });
 
-    expect(configuration.output.markdown?.heading).toBe("## 🔭 Callidescope");
+    expect(configuration.write.markdown?.heading).toBe("## 🔭 Callidescope");
   });
 
   it("carries an authored heading through the file schema, not only the resolver", async () => {
@@ -259,27 +259,27 @@ describe(ConfigurationService, () => {
     // while the file said `##`, so the schema is asserted through
     // `loadConfiguration` rather than only through `resolveConfiguration`.
     const configurationPath = await writeConfiguration({
-      output: { markdown: { heading: "### Deep", path: "README.md" } },
+      write: { markdown: { heading: "### Deep", path: "README.md" } },
     });
 
     const configuration = await service.loadConfiguration({
       configurationPath,
     });
 
-    expect(configuration.output.markdown?.heading).toBe("### Deep");
+    expect(configuration.write.markdown?.heading).toBe("### Deep");
   });
 
   it("leaves the diagram destination alone until it is asked for", () => {
     expect(
-      service.resolveConfiguration({ output: {} }).output.mermaid,
+      service.resolveConfiguration({ write: {} }).write.mermaid,
     ).toBeUndefined();
   });
 
   it("defaults the diagram destination's markers when a path is named", () => {
     expect(
       service.resolveConfiguration({
-        output: { mermaid: { path: "GRAPH.md" } },
-      }).output.mermaid,
+        write: { mermaid: { path: "GRAPH.md" } },
+      }).write.mermaid,
     ).toStrictEqual({
       description: undefined,
       endMarker: DEFAULT_MARKDOWN_END_MARKER,
@@ -287,7 +287,7 @@ describe(ConfigurationService, () => {
       path: "GRAPH.md",
       render: undefined,
       startMarker: DEFAULT_MARKDOWN_START_MARKER,
-      write: undefined,
+      writeBlock: undefined,
     });
   });
 
@@ -295,43 +295,34 @@ describe(ConfigurationService, () => {
     // Two destinations rather than one with a mode, so a repository can
     // publish the tree and the diagram from the same run.
     const configuration = service.resolveConfiguration({
-      output: {
+      write: {
         markdown: { path: "REPORT.md" },
         mermaid: { endMarker: "<!-- END -->", path: "GRAPH.md" },
       },
     });
 
-    expect(configuration.output.markdown?.path).toBe("REPORT.md");
-    expect(configuration.output.markdown?.endMarker).toBe(
+    expect(configuration.write.markdown?.path).toBe("REPORT.md");
+    expect(configuration.write.markdown?.endMarker).toBe(
       DEFAULT_MARKDOWN_END_MARKER,
     );
-    expect(configuration.output.mermaid?.path).toBe("GRAPH.md");
-    expect(configuration.output.mermaid?.endMarker).toBe("<!-- END -->");
+    expect(configuration.write.mermaid?.path).toBe("GRAPH.md");
+    expect(configuration.write.mermaid?.endMarker).toBe("<!-- END -->");
   });
-
-  it.each(["json", "markdown", "mermaid"] as const)(
-    "keeps %s as the printed format",
-    (format) => {
-      expect(
-        service.resolveConfiguration({ output: { format } }).output.format,
-      ).toBe(format);
-    },
-  );
 
   // 📚 Project READMEs
 
   it("leaves the project READMEs alone until they are asked for", () => {
     expect(
-      service.resolveConfiguration({ output: {} }).output.projectReadmes,
+      service.resolveConfiguration({ write: {} }).write.projectReadmes,
     ).toBeUndefined();
   });
 
   it("defaults every part of an empty project README destination", () => {
     const configuration = service.resolveConfiguration({
-      output: { projectReadmes: {} },
+      write: { projectReadmes: {} },
     });
 
-    expect(configuration.output.projectReadmes).toStrictEqual({
+    expect(configuration.write.projectReadmes).toStrictEqual({
       endMarker: DEFAULT_MARKDOWN_END_MARKER,
       heading: DEFAULT_PROJECT_README_HEADING,
       previewCount: DEFAULT_PREVIEW_COUNT,
@@ -341,7 +332,7 @@ describe(ConfigurationService, () => {
 
   it("keeps an authored heading, preview count, and markers", () => {
     const configuration = service.resolveConfiguration({
-      output: {
+      write: {
         projectReadmes: {
           endMarker: "<!-- END -->",
           heading: "## Call stacks",
@@ -351,7 +342,7 @@ describe(ConfigurationService, () => {
       },
     });
 
-    expect(configuration.output.projectReadmes).toStrictEqual({
+    expect(configuration.write.projectReadmes).toStrictEqual({
       endMarker: "<!-- END -->",
       heading: "## Call stacks",
       previewCount: 10,
@@ -564,7 +555,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a JSON output destination with no path", async () => {
     const configurationPath = await writeConfiguration({
-      output: { json: { indentation: 2 } },
+      write: { json: { indentation: 2 } },
     });
 
     await expect(
@@ -574,7 +565,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a markdown output destination with no path", async () => {
     const configurationPath = await writeConfiguration({
-      output: { markdown: { description: "no path" } },
+      write: { markdown: { description: "no path" } },
     });
 
     await expect(
@@ -584,7 +575,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a non-function render callback", async () => {
     const configurationPath = await writeConfiguration({
-      output: { markdown: { path: "REPORT.md", render: "not a function" } },
+      write: { markdown: { path: "REPORT.md", render: "not a function" } },
     });
 
     await expect(
@@ -594,6 +585,26 @@ describe(ConfigurationService, () => {
 
   it("rejects an exclusion list holding a non-string", async () => {
     const configurationPath = await writeConfiguration({ exclude: [7] });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toThrow(ZodError);
+  });
+
+  it("refuses the retired ignoreCallees field rather than aliasing it", async () => {
+    const configurationPath = await writeConfiguration({
+      ignoreCallees: ["LoggerService.*"],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toThrow(ZodError);
+  });
+
+  it("refuses the retired output field rather than aliasing it", async () => {
+    const configurationPath = await writeConfiguration({
+      output: { markdown: { path: "REPORT.md" } },
+    });
 
     await expect(
       service.loadConfiguration({ configurationPath }),

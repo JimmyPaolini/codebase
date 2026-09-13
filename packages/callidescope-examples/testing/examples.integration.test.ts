@@ -437,7 +437,7 @@ function traceFixtures(
         ...(overrides.exclude ?? []),
       ],
       limits: { ...callidescopeConfiguration.limits, ...overrides.limits },
-      output: { json: { path: reportPath } },
+      write: { json: { path: reportPath } },
     }),
     "utf8",
   );

@@ -82,13 +82,12 @@ function buildConfiguration(
       includeTests: true,
     },
     exclude: [],
+    excludeCallees: [],
     excludeFrom: [],
-    ignoreCallees: [],
     limits: {
       maximumDepth: 2,
     },
-    output: {
-      format: "markdown",
+    write: {
       json: undefined,
       markdown: undefined,
       mermaid: undefined,

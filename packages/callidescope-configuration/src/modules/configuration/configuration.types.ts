@@ -14,8 +14,6 @@ export interface CallidescopeConfiguration {
   directories?: string[] | undefined;
   entryPoints?: CallidescopeEntryPoints | undefined;
   exclude?: string[] | undefined;
-  /** Gitignore-syntax files listing paths to leave untraced. */
-  excludeFrom?: string[] | undefined;
   /**
    * Globs matched against a callable's display name (`Type.member`):
    * calls landing on a match are dropped from the graph entirely, counting
@@ -26,9 +24,11 @@ export interface CallidescopeConfiguration {
    * is — counting it would move every other callable's numbers on a change
    * that has nothing to do with them.
    */
-  ignoreCallees?: string[] | undefined;
+  excludeCallees?: string[] | undefined;
+  /** Gitignore-syntax files listing paths to leave untraced. */
+  excludeFrom?: string[] | undefined;
   limits?: CallidescopeLimits | undefined;
-  output?: CallidescopeOutputConfiguration | undefined;
+  write?: CallidescopeWriteConfiguration | undefined;
 }
 
 /** Which callables are treated as the roots of a call stack. */
@@ -109,25 +109,7 @@ export interface CallidescopeMarkdownOutputConfiguration {
   path: string;
   render?: RenderMarkdownOutput | undefined;
   startMarker?: string | undefined;
-  write?: undefined | WriteMarkdownOutput;
-}
-
-/** Where a run writes its findings. */
-export interface CallidescopeOutputConfiguration {
-  /** What the run prints to standard output. Markdown unless told otherwise. */
-  format?: CallidescopeOutputFormat | undefined;
-  json?: CallidescopeJsonOutputConfiguration | undefined;
-  markdown?: CallidescopeMarkdownOutputConfiguration | undefined;
-  /**
-   * A markdown block whose call stacks are drawn rather than printed.
-   *
-   * Its own destination rather than a mode on `markdown`, so a repository can
-   * publish both: the tree carries what each frame takes, returns, and
-   * documents, and the diagram carries the shape they make together. Neither
-   * one is the other with a flag flipped.
-   */
-  mermaid?: CallidescopeMarkdownOutputConfiguration | undefined;
-  projectReadmes?: CallidescopeProjectReadmeConfiguration | undefined;
+  writeBlock?: undefined | WriteMarkdownOutput;
 }
 
 /** How a run renders what it found. */
@@ -147,6 +129,22 @@ export interface CallidescopeProjectReadmeConfiguration {
   /** Stacks shown before the rest fold into a disclosure. */
   previewCount?: number | undefined;
   startMarker?: string | undefined;
+}
+
+/** Where a run writes its findings. */
+export interface CallidescopeWriteConfiguration {
+  json?: CallidescopeJsonOutputConfiguration | undefined;
+  markdown?: CallidescopeMarkdownOutputConfiguration | undefined;
+  /**
+   * A markdown block whose call stacks are drawn rather than printed.
+   *
+   * Its own destination rather than a mode on `markdown`, so a repository can
+   * publish both: the tree carries what each frame takes, returns, and
+   * documents, and the diagram carries the shape they make together. Neither
+   * one is the other with a flag flipped.
+   */
+  mermaid?: CallidescopeMarkdownOutputConfiguration | undefined;
+  projectReadmes?: CallidescopeProjectReadmeConfiguration | undefined;
 }
 
 /**
@@ -232,7 +230,7 @@ export interface LoadProjectConfigurationsArguments {
   workspaceRoot: string;
 }
 
-/** Splicing helpers handed to a configured `write` function. */
+/** Splicing helpers handed to a configured `writeBlock` function. */
 export interface MarkdownAnchorHelpers {
   endMarker: string;
   startMarker: string;
@@ -304,10 +302,10 @@ export interface ResolvedCallidescopeConfiguration {
   directories: string[];
   entryPoints: ResolvedCallidescopeEntryPoints;
   exclude: string[];
+  excludeCallees: string[];
   excludeFrom: string[];
-  ignoreCallees: string[];
   limits: ResolvedCallidescopeLimits;
-  output: ResolvedCallidescopeOutputConfiguration;
+  write: ResolvedCallidescopeWriteConfiguration;
 }
 
 /** Entry-point rules with defaults applied. */
@@ -341,7 +339,7 @@ export interface ResolvedCallidescopeLimits {
 /**
  * Markdown output destination with defaults applied.
  *
- * `render` and `write` stay `undefined` when the configuration supplies
+ * `render` and `writeBlock` stay `undefined` when the configuration supplies
  * neither: the built-in implementations live in the CLI that calls them, so
  * "unset" is what selects them rather than a default named here.
  */
@@ -352,7 +350,15 @@ export interface ResolvedCallidescopeMarkdownOutputConfiguration {
   path: string;
   render: RenderMarkdownOutput | undefined;
   startMarker: string;
-  write: undefined | WriteMarkdownOutput;
+  writeBlock: undefined | WriteMarkdownOutput;
+}
+
+/** Project README destination with defaults applied. */
+export interface ResolvedCallidescopeProjectReadmeConfiguration {
+  endMarker: string;
+  heading: string;
+  previewCount: number;
+  startMarker: string;
 }
 
 /**
@@ -362,20 +368,11 @@ export interface ResolvedCallidescopeMarkdownOutputConfiguration {
  * names no destination reports to the console and exits on violations, so
  * nothing it writes can go stale.
  */
-export interface ResolvedCallidescopeOutputConfiguration {
-  format: CallidescopeOutputFormat;
+export interface ResolvedCallidescopeWriteConfiguration {
   json: ResolvedCallidescopeJsonOutputConfiguration | undefined;
   markdown: ResolvedCallidescopeMarkdownOutputConfiguration | undefined;
   mermaid: ResolvedCallidescopeMarkdownOutputConfiguration | undefined;
   projectReadmes: ResolvedCallidescopeProjectReadmeConfiguration | undefined;
-}
-
-/** Project README destination with defaults applied. */
-export interface ResolvedCallidescopeProjectReadmeConfiguration {
-  endMarker: string;
-  heading: string;
-  previewCount: number;
-  startMarker: string;
 }
 
 /** Arguments accepted by the per-project limit resolver. */
@@ -400,7 +397,7 @@ export interface ResolveProjectLimitsArguments {
   workspaceConfigurationPath: string | undefined;
 }
 
-/** What a `write` function is handed. */
+/** What a `writeBlock` function is handed. */
 export interface WriteMarkdownArguments {
   /** True when nothing may be written and staleness is the only question. */
   check: boolean;

@@ -114,7 +114,16 @@ Two consequences worth knowing before reaching for `exclude`:
   opened before any of this. Use the run's `exclude` to drop such a project,
   which is settled early enough to keep discovery from opening it at all.
 
-## Output
+### Excluding callees
+
+`excludeCallees` is a different filter from `exclude`: it names globs matched
+against a callable's display name (`Type.member`) rather than against a file
+path. A call landing on a match is dropped from the graph entirely, counting
+toward neither the caller's depth nor its breadth — the shape a cross-cutting
+callable like a logger needs, since every call site into it is a fact about
+instrumentation rather than about how deep or wide the code around it is.
+
+## Write
 
 Every destination is optional, and unconfigured is the normal case: a run that
 names no destination reports to the console and exits non-zero on violations, so
@@ -122,28 +131,30 @@ nothing it writes can go stale.
 
 | Destination | Purpose |
 | ----------- | ------- |
-| `output.json` | A machine-readable report at `path`, indented by `indentation` |
-| `output.markdown` | A marker-delimited block spliced into `path` |
-| `output.mermaid` | The same block with its call stacks drawn as one mermaid flowchart |
-| `output.projectReadmes` | One section per traced project, in that project's own `README.md` |
+| `write.json` | A machine-readable report at `path`, indented by `indentation` |
+| `write.markdown` | A marker-delimited block spliced into `path` |
+| `write.mermaid` | The same block with its call stacks drawn as one mermaid flowchart |
+| `write.projectReadmes` | One section per traced project, in that project's own `README.md` |
 
-`output.mermaid` takes the same keys as `output.markdown` — they differ in what
+`write.mermaid` takes the same keys as `write.markdown` — they differ in what
 goes between the anchors, not in how a block is placed or overridden — and is a
 separate destination so a repository can publish the printed trees and the
 diagram from one run.
 
-`output.format` is separate from all four: it decides what the run prints,
-`markdown`, `mermaid`, or `json`, and defaults to `markdown`. Writing to a file
-and printing to a terminal are independent, so both can be on at once.
+The console format — `markdown`, `mermaid`, or `json`, defaulting to `markdown`
+— is a command-line concern rather than a configuration field: it decides what
+one invocation prints, never what a run writes to a file, so it is selected
+only by the CLI's own `--format` flag. Writing to a file and printing to a
+terminal are independent, so both can be on at once.
 
-`output.markdown` and `output.mermaid` each take a `description`, placed under
+`write.markdown` and `write.mermaid` each take a `description`, placed under
 the heading, and a `heading`, which defaults to `# 🔭 Callidescope`. Set it
 whenever the block is spliced into a file that already has a title: a second
 first-level heading is something most markdown linters reject. The block's
 subsections follow the level down on their own, so an `##` heading writes
 `###` subsections.
 
-`output.projectReadmes` takes `heading` (`## 🔭 Callidescope` by default),
+`write.projectReadmes` takes `heading` (`## 🔭 Callidescope` by default),
 `previewCount` (how many stacks are shown before the rest go behind a
 disclosure, three by default), and the same `startMarker`/`endMarker` pair the
 markdown destination uses. `{}` accepts all four defaults.
@@ -153,14 +164,14 @@ writes a section for **every** traced project, creating a `README.md` where a
 project has none. A workspace whose root holds a `tsconfig.json` is itself such
 a project, and the section it gets describes whatever that config's `include`
 catches and no other project claims — rarely anything anybody means by "the
-workspace". Exclude the root's own `tsconfig.json` and point `output.markdown`
+workspace". Exclude the root's own `tsconfig.json` and point `write.markdown`
 at the root readme instead, which is the block that really is about the
 workspace: it carries the summary counts, one row per project against that
 project's own depth limit, and a scoreboard of how many sit over, on, or clear
 of theirs.
 
 A markdown destination may supply `render` to replace the built-in tables, or
-`write` to place the block itself. A `write` function is handed
+`writeBlock` to place the block itself. A `writeBlock` function is handed
 `syncAnchoredBlock` and `wrapInAnchors`, so a custom writer reuses the same
 splice rather than reimplementing it. Returning `false` reports the destination
 as stale; anything else, `undefined` included, counts as current.
@@ -248,7 +259,7 @@ project that refuses them keeps them out of a run that asked for everyone's.
 once, and each project asks a different question of the same edges. Two answers
 are two opinions about one artifact, which is coherent.
 
-`ignoreCallees`, `directories`, `excludeFrom`, and `output` are different. They
+`excludeCallees`, `directories`, `excludeFrom`, and `write` are different. They
 name what a run reads, what it writes, or how it partitions the workspace, and a
 project cannot answer those differently from the run tracing it — so they stay
 in the workspace file.

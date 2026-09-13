@@ -50,13 +50,12 @@ function buildConfiguration(
       includeTests: false,
     },
     exclude: [],
+    excludeCallees: [],
     excludeFrom: [],
-    ignoreCallees: [],
     limits: {
       maximumDepth: DEFAULT_MAXIMUM_DEPTH,
     },
-    output: {
-      format: "markdown",
+    write: {
       json: undefined,
       markdown: undefined,
       mermaid: undefined,

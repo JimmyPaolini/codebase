@@ -116,7 +116,7 @@ function resolveEntries(
   const graph = new GraphService().assemble(
     services.edges.build({
       callablesById,
-      ignoreCallees: [],
+      excludeCallees: [],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     }),
@@ -182,7 +182,7 @@ describe(EntriesService, () => {
     const graph = new GraphService().assemble(
       services.edges.build({
         callablesById: collection.byId,
-        ignoreCallees: [],
+        excludeCallees: [],
         includeConstructorEdges: true,
         workspaceRoot: FIXTURE_ROOT,
       }),

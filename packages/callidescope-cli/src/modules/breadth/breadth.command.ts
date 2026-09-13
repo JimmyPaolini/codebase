@@ -1,4 +1,7 @@
-import { InputService } from "@callidescope/configuration";
+import {
+  DEFAULT_OUTPUT_FORMAT,
+  InputService,
+} from "@callidescope/configuration";
 import { BreadthService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -146,7 +149,7 @@ export class BreadthCommand extends CommandRunner {
 
     process.stdout.write(
       this.addressReportService.renderBreadthReports({
-        format: workspace.configuration.output.format,
+        format: resolvedOptions.format ?? DEFAULT_OUTPUT_FORMAT,
         reports,
       }),
     );
