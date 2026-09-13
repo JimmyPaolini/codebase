@@ -78,6 +78,13 @@ export type {
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";
 export { ProjectConfigurationService } from "./modules/configuration/project-configuration.service";
+export { flagResolutionError } from "./modules/flag-resolution/flag-resolution.constants";
+export { FlagResolutionModule } from "./modules/flag-resolution/flag-resolution.module";
+export { FlagResolutionService } from "./modules/flag-resolution/flag-resolution.service";
+export type {
+  CallidescopeRunFlags,
+  ResolvedRunFlags,
+} from "./modules/flag-resolution/flag-resolution.types";
 export {
   InputError,
   missingInputError,

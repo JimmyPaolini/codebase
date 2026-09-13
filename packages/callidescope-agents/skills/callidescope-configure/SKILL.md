@@ -32,9 +32,9 @@ leaves every committed report exactly as it found it.
 | `-a, --addresses` | Comma-separated callable addresses, each `<file>#<qualified-name>`. `depth` and `breadth` only. Prompted for when omitted |
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |
 | `-d, --directories` | Comma-separated project directories to trace, each holding its own `tsconfig.json` |
-| `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default |
-| `--json` | Where the machine-readable report goes. Needs `--write` or `--check reports` |
-| `-m, --markdown` | Where the markdown block goes. Needs `--write` or `--check reports` |
+| `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default. Anything else is refused rather than rewritten |
+| `--json` | Where the machine-readable report goes. Overrides the path of a declared `write.json`, and nothing else about it. Needs `--write` or `--check reports` |
+| `-m, --markdown` | Where the markdown block goes. Overrides the path of a declared `write.markdown`, and nothing else about it. Needs `--write` or `--check reports` |
 | `--check` | Fail on a comma-separated set drawn from `breadth`, `depth`, and `reports` |
 | `--write` | Write every configured destination |
 
@@ -163,7 +163,7 @@ anything else could supply it:
 | Value | With no terminal |
 | ----- | ---------------- |
 | `--addresses`, which `depth` and `breadth` need | **Refused**, exit non-zero. Nothing else can supply it |
-| `--format` | The format in the configuration stands, and the run proceeds |
+| `--format` | The default, `markdown`, stands and the run proceeds. No configuration field declares one |
 
 The refusal is the load-bearing half. `prompts` does not fail on a non-terminal
 stdin — it draws its menu, never resolves, and lets the process **exit 0 having

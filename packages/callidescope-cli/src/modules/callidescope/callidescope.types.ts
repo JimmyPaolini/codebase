@@ -4,7 +4,6 @@ import type {
   CallableId,
   CallGraphResult,
   CallidescopeLimits,
-  CallidescopeOutputFormat,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeEntryPoints,
@@ -50,7 +49,14 @@ export interface CallidescopeCommandOptions {
   readonly config?: string | undefined;
   /** Project directories to trace. Every project in the workspace when omitted. */
   readonly directories?: string[] | undefined;
-  readonly format?: CallidescopeOutputFormat | undefined;
+  /**
+   * `--format`, exactly as it was typed.
+   *
+   * Left wide on purpose: a value nobody recognizes is refused by the one
+   * resolver that knows which formats exist, rather than rewritten to
+   * markdown before it ever gets there.
+   */
+  readonly format?: string | undefined;
   readonly json?: string | undefined;
   readonly markdown?: string | undefined;
   readonly write?: boolean | undefined;

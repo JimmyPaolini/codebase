@@ -244,6 +244,17 @@ Nothing was traced. The message lists the reasons; these are the ones to expect:
   than obeyed silently — which is what it used to do, exiting 0 over a file it
   never created. Add the verb the message names. `--check reports` counts as
   one: it compares a destination, so an override is meaningful there too.
+- **A destination flag overriding a destination nobody declared.** `--json` and
+  `--markdown` change where a **declared** report goes; they cannot conjure one
+  the configuration never asked for, or a requirement that configuration be
+  complete would be circumventable from a terminal. Add the `write.json` or
+  `write.markdown` the message names to the configuration this run reads, then
+  point it elsewhere with the flag.
+- **`--format` does not accept that value.** It takes `markdown`, `mermaid`, or
+  `json`, and the message lists them. An unrecognized value is refused rather
+  than rewritten to markdown, which is what it used to do — a run that printed
+  a tree for `--format mermiad` exited 0 having taught its reader that the flag
+  does nothing.
 - **`depth` or `breadth` with no address.** Those commands take
   `<file>#<qualified-name>`. At a real terminal outside CI they trace first and
   then complete the address against every callable they found, so the name can
@@ -433,3 +444,7 @@ to the configuration only when the measurement itself is wrong — a module
 identifier derived from the wrong directory, an entry-point rule missing, a
 cross-cutting logger inflating everything's numbers — and the
 `callidescope-configure` skill covers each of those.
+
+<!-- A deliberate misspelling: the example of a `--format` value nobody
+recognizes, which is exactly what this refusal is about.
+cspell:ignore mermiad -->

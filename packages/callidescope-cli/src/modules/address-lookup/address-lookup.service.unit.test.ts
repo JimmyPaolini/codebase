@@ -89,6 +89,7 @@ describe(AddressLookupService, () => {
       authoredLimits: undefined,
       configuration,
       configurationPath: undefined,
+      format: "markdown",
       workspaceRoot: "/workspace",
     });
     callidescopeService.locate.mockResolvedValue(located);
@@ -98,6 +99,7 @@ describe(AddressLookupService, () => {
 
     expect(workspace).toStrictEqual({
       configuration,
+      format: "markdown",
       located,
       workspaceRoot: "/workspace",
     });
@@ -120,6 +122,7 @@ describe(AddressLookupService, () => {
       authoredLimits: undefined,
       configuration: buildConfiguration(),
       configurationPath: undefined,
+      format: "markdown",
       workspaceRoot: "/workspace",
     });
     callidescopeService.locate.mockResolvedValue(located);
@@ -134,17 +137,22 @@ describe(AddressLookupService, () => {
     expect(callidescopeService.locate).toHaveBeenCalledTimes(1);
   });
 
-  it("scopes the trace to the directories a flag named", async () => {
+  // The scope is read off the resolved configuration rather than off the
+  // options, because the flag and the configured list were already merged by
+  // the one resolver that does that. Choosing between them a second time here
+  // is how the two came to disagree.
+  it("scopes the trace to the directories the resolved configuration names", async () => {
     runPlanService.prepareLookup.mockResolvedValue({
       authoredLimits: undefined,
-      configuration: buildConfiguration(),
+      configuration: { ...buildConfiguration(), directories: ["alpha"] },
       configurationPath: undefined,
+      format: "markdown",
       workspaceRoot: "/workspace",
     });
     callidescopeService.locate.mockResolvedValue(buildLocated());
     addressService.resolve.mockReturnValue({ kind: "not-found" });
 
-    await service.locate({ directories: ["alpha"] });
+    await service.locate({ directories: ["ignored-because-already-merged"] });
 
     expect(
       callidescopeService.locate.mock.calls[0]?.[0].directories,

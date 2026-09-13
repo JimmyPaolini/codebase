@@ -19,7 +19,8 @@ export interface AddressCommandOptions {
   readonly config?: string | undefined;
   /** Project directories to trace. Every project in the workspace when omitted. */
   readonly directories?: string[] | undefined;
-  readonly format?: CallidescopeOutputFormat | undefined;
+  /** `--format`, exactly as it was typed, for the resolver to judge. */
+  readonly format?: string | undefined;
 }
 
 /**
@@ -32,6 +33,8 @@ export interface AddressCommandOptions {
  */
 export interface LocatedWorkspace {
   readonly configuration: ResolvedCallidescopeConfiguration;
+  /** What the lookup prints, resolved from the command line and refused if unknown. */
+  readonly format: CallidescopeOutputFormat;
   readonly located: LocateOutcome;
   readonly workspaceRoot: string;
 }

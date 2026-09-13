@@ -249,18 +249,6 @@ describe(InputService, () => {
     ]);
   });
 
-  // 🖨️ Format
-
-  it.each([
-    ["json", "json"],
-    ["markdown", "markdown"],
-    ["mermaid", "mermaid"],
-    [undefined, "markdown"],
-    ["nonsense", "markdown"],
-  ] as const)("parses the format option %s as %s", (value, expected) => {
-    expect(service.parseFormat(value)).toBe(expected);
-  });
-
   // 🔡 Optional option
 
   it("passes a non-blank optional option through trimmed", () => {

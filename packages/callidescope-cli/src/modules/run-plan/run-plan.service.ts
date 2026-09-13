@@ -1,6 +1,7 @@
 import {
   ConfigurationService,
-  DEFAULT_OUTPUT_FORMAT,
+  flagResolutionError,
+  FlagResolutionService,
 } from "@callidescope/configuration";
 import { Injectable } from "@nestjs/common";
 
@@ -17,13 +18,13 @@ import {
 
 import type { AddressCommandOptions } from "../address-lookup/address-lookup.types";
 import type { CallidescopeCommandOptions } from "../callidescope/callidescope.types";
-import type { PreparedRun, RunMode, RunModeSelection } from "./run-plan.types";
 import type {
-  CallidescopeLimits,
-  ProjectLimitsLookup,
-  ResolvedCallidescopeConfiguration,
-  ResolvedCallidescopeMarkdownOutputConfiguration,
-} from "@callidescope/configuration";
+  PreparedLookup,
+  PreparedRun,
+  RunMode,
+  RunModeSelection,
+} from "./run-plan.types";
+import type { ProjectLimitsLookup } from "@callidescope/configuration";
 
 /**
  * Reads the command line and configuration into what the run will do.
@@ -41,6 +42,7 @@ export class RunPlanService {
 
   constructor(
     private readonly configurationService: ConfigurationService,
+    private readonly flagResolutionService: FlagResolutionService,
     private readonly logger: LoggerService,
   ) {}
 
@@ -94,20 +96,18 @@ export class RunPlanService {
     return this.validateCheckNames(names, errors);
   }
 
-  /** Merges the markdown destination a flag named over the configured one. */
-  private resolveMarkdownDestination(args: {
-    configuration: ResolvedCallidescopeConfiguration;
-    markdown: string | undefined;
-  }): ResolvedCallidescopeMarkdownOutputConfiguration | undefined {
-    const configured = args.configuration.write.markdown;
-
-    if (args.markdown === undefined) {
-      return configured;
-    }
-
-    return this.configurationService.resolveConfiguration({
-      write: { markdown: { path: args.markdown } },
-    }).write.markdown;
+  /**
+   * Reports a command line nothing can be done with, and fails the run.
+   *
+   * Two gates reach this rather than one: what `--check` and `--write` mean
+   * together is decided from the command line alone, while whether a
+   * destination flag has anything to override needs the configuration loaded
+   * first. Both report under the same headline, so which of the two refused
+   * is a detail of the reasons rather than of the message.
+   */
+  private reject(reasons: readonly string[]): void {
+    this.logger.error("🔭 Rejected the command line", undefined, { reasons });
+    process.exitCode = 1;
   }
 
   /** Keeps the names `--check` knows and complains about the rest. */
@@ -138,13 +138,15 @@ export class RunPlanService {
    * mode to reject in the first place — only the workspace to trace and the
    * format to print in, both of which every run already resolves the same
    * way `prepareRun` does.
+   *
+   * A refused command line is thrown rather than returned: unlike a run,
+   * every caller here needs the resolved workspace to do anything at all, so
+   * there is no half-prepared lookup to hand back. `InputError` is the class
+   * every command already reports as a rejected command line.
    */
-  public async prepareLookup(options: AddressCommandOptions): Promise<{
-    authoredLimits: CallidescopeLimits | undefined;
-    configuration: ResolvedCallidescopeConfiguration;
-    configurationPath: string | undefined;
-    workspaceRoot: string;
-  }> {
+  public async prepareLookup(
+    options: AddressCommandOptions,
+  ): Promise<PreparedLookup> {
     const workspaceRoot = process.cwd();
     // The file-aware load rather than the plain one, for the same reason
     // `prepareRun` uses it: a lookup resolves a configuration beside every
@@ -155,17 +157,27 @@ export class RunPlanService {
     // sets.
     const {
       authored,
-      configuration,
+      configuration: loaded,
       path: configurationPath,
     } = await this.configurationService.loadConfigurationFile({
       configurationPath: options.config,
       searchDirectory: workspaceRoot,
     });
+    const { configuration, errors, format } =
+      this.flagResolutionService.resolveRunFlags({
+        configuration: loaded,
+        flags: { directories: options.directories, format: options.format },
+      });
+
+    if (errors.length > 0) {
+      throw flagResolutionError(errors);
+    }
 
     return {
       authoredLimits: authored.limits,
       configuration,
       configurationPath,
+      format,
       workspaceRoot,
     };
   }
@@ -183,13 +195,10 @@ export class RunPlanService {
   public async prepareRun(
     options: CallidescopeCommandOptions,
   ): Promise<PreparedRun | undefined> {
-    const { errors, mode } = this.selectMode(options);
+    const { errors: modeErrors, mode } = this.selectMode(options);
 
-    if (errors.length > 0) {
-      this.logger.error(`🔭 Rejected the command line`, undefined, {
-        reasons: errors,
-      });
-      process.exitCode = 1;
+    if (modeErrors.length > 0) {
+      this.reject(modeErrors);
       return undefined;
     }
 
@@ -211,30 +220,35 @@ export class RunPlanService {
       configurationPath: options.config,
       searchDirectory: workspaceRoot,
     });
-    const configuration: ResolvedCallidescopeConfiguration = {
-      ...loaded,
-      write: {
-        json:
-          options.json === undefined
-            ? loaded.write.json
-            : { indentation: 2, path: options.json },
-        markdown: this.resolveMarkdownDestination({
-          configuration: loaded,
+    // Every combination of a flag with a configured value happens here and
+    // nowhere else, under one precedence rule this service does not restate.
+    const { configuration, errors, format } =
+      this.flagResolutionService.resolveRunFlags({
+        configuration: loaded,
+        flags: {
+          // The mode flags are handed over with the rest rather than held
+          // back, so the resolver is given the whole command line and the
+          // rule that it changes nothing for them is exercised rather than
+          // merely written down. `selectMode` above is what reads them.
+          check: options.check,
+          directories: options.directories,
+          format: options.format,
+          json: options.json,
           markdown: options.markdown,
-        }),
-        mermaid: loaded.write.mermaid,
-        projectReadmes: loaded.write.projectReadmes,
-      },
-    };
+          write: options.write,
+        },
+      });
+
+    if (errors.length > 0) {
+      this.reject(errors);
+      return undefined;
+    }
 
     return {
       authoredLimits: authored.limits,
       configuration,
       configurationPath,
-      // Presentation rather than declared: the console format is a
-      // per-invocation choice a command line makes, never something a
-      // configuration file writes down.
-      format: options.format ?? DEFAULT_OUTPUT_FORMAT,
+      format,
       mode,
       workspaceRoot,
     };

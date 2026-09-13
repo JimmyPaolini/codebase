@@ -2,6 +2,7 @@ import path from "node:path";
 
 import {
   ConfigurationService,
+  FlagResolutionService,
   InputError,
   InputService,
   ProjectConfigurationError,
@@ -126,6 +127,10 @@ function buildProjectReport(projectName: string): ProjectReport {
     },
   };
 }
+
+// A deliberate misspelling: the example of a `--format` value nobody
+// recognizes, which is exactly what these tests are about.
+// cspell:ignore markdwon
 
 describe(CallidescopeCommand, () => {
   let command: CallidescopeCommand;
@@ -285,6 +290,7 @@ describe(CallidescopeCommand, () => {
         AddressService,
         InputService,
         ReportFindingsService,
+        FlagResolutionService,
         RunPlanService,
       ],
     }).compile();
@@ -328,6 +334,7 @@ describe(CallidescopeCommand, () => {
         { provide: InputService, useValue: inputService },
         AddressService,
         ReportFindingsService,
+        FlagResolutionService,
         RunPlanService,
       ],
     }).compile();
@@ -368,6 +375,7 @@ describe(CallidescopeCommand, () => {
         AddressService,
         InputService,
         ReportFindingsService,
+        FlagResolutionService,
         RunPlanService,
       ],
     }).compile();
@@ -488,14 +496,35 @@ describe(CallidescopeCommand, () => {
     expect(outputJsonService.buildReport).toHaveBeenCalledTimes(1);
   });
 
+  // Carried through as written rather than narrowed here: which formats exist
+  // is the resolver's to decide, and a value nobody recognizes has to reach it
+  // to be refused rather than be rewritten to markdown on the way.
   it.each([
     ["json", "json"],
     ["markdown", "markdown"],
     ["mermaid", "mermaid"],
-    [undefined, "markdown"],
-    ["nonsense", "markdown"],
-  ] as const)("parses the format flag %s as %s", (value, expected) => {
+    [undefined, undefined],
+    ["nonsense", "nonsense"],
+  ] as const)("carries the format flag %s through as %s", (value, expected) => {
     expect(command.parseFormat(value)).toBe(expected);
+  });
+
+  it("refuses a format nobody recognizes rather than printing markdown", async () => {
+    const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+
+    await command.run([], { format: "markdwon" });
+
+    expect(process.exitCode).toBe(1);
+    expect(write).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected the command line",
+      undefined,
+      {
+        reasons: [
+          '--format does not accept "markdwon". It takes one of "markdown", "mermaid", "json".',
+        ],
+      },
+    );
   });
 
   it("prints a diagram when the format flag asks for mermaid", async () => {
@@ -1292,29 +1321,42 @@ describe(CallidescopeCommand, () => {
     expect(outputJsonService.sync).toHaveBeenCalledTimes(1);
   });
 
-  it("prefers the JSON path a flag names over the configured one", async () => {
+  // A path flag changes the path and nothing beside it: a configured
+  // indentation survived nothing at all when the destination was re-resolved
+  // from the path alone.
+  it("prefers the JSON path a flag names while keeping the configured indentation", async () => {
+    stubConfiguration(
+      buildConfiguration({
+        write: {
+          json: { indentation: 4, path: "output/report.json" },
+          markdown: undefined,
+          mermaid: undefined,
+          projectReadmes: undefined,
+        },
+      }),
+    );
     outputJsonService.sync.mockReturnValue(true);
 
     await command.run([], { json: "flagged.json", write: true });
 
     expect(outputJsonService.sync.mock.calls[0]?.[0].destination).toStrictEqual(
       {
-        indentation: 2,
+        indentation: 4,
         path: "flagged.json",
       },
     );
   });
 
-  it("prefers the markdown path a flag names over the configured one", async () => {
-    configurationService.resolveConfiguration.mockReturnValue(
+  it("prefers the markdown path a flag names while keeping every other property", async () => {
+    stubConfiguration(
       buildConfiguration({
         write: {
           json: undefined,
           markdown: {
-            description: undefined,
+            description: "What the run found.",
             endMarker: "<!-- END -->",
-            heading: "# 🔭 Callidescope",
-            path: "flagged.md",
+            heading: "# 🔭 Configured",
+            path: "docs/report.md",
             render: undefined,
             startMarker: "<!-- START -->",
             writeBlock: undefined,
@@ -1328,10 +1370,45 @@ describe(CallidescopeCommand, () => {
 
     await command.run([], { markdown: "flagged.md", write: true });
 
-    expect(outputMarkdownService.sync.mock.calls[0]?.[0].destination.path).toBe(
-      "flagged.md",
-    );
+    expect(
+      outputMarkdownService.sync.mock.calls[0]?.[0].destination,
+    ).toStrictEqual({
+      description: "What the run found.",
+      endMarker: "<!-- END -->",
+      heading: "# 🔭 Configured",
+      path: "flagged.md",
+      render: undefined,
+      startMarker: "<!-- START -->",
+      writeBlock: undefined,
+    });
   });
+
+  // A flag may change where a declared report goes and may not ask for a
+  // report the configuration never declared, which is the precedence rule
+  // itself.
+  it.each([
+    ["--json", { json: "flagged.json", write: true }, "write.json"],
+    ["--markdown", { markdown: "flagged.md", write: true }, "write.markdown"],
+  ])(
+    "refuses %s when the configuration declares no such destination",
+    async (flag, options, field) => {
+      await command.run([], options);
+
+      expect(process.exitCode).toBe(1);
+      expect(outputJsonService.sync).not.toHaveBeenCalled();
+      expect(outputMarkdownService.sync).not.toHaveBeenCalled();
+      expect(logger.error).toHaveBeenCalledWith(
+        "🔭 Rejected the command line",
+        undefined,
+        {
+          reasons: [
+            `${flag} overrides a destination the configuration does not declare. ` +
+              `Add \`${field}\` to the configuration this run reads, then use ${flag} to send it somewhere else.`,
+          ],
+        },
+      );
+    },
+  );
 
   it("writes nothing when no destination is configured", async () => {
     await command.run([], { write: true });

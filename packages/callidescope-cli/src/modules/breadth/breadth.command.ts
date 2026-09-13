@@ -1,7 +1,4 @@
-import {
-  DEFAULT_OUTPUT_FORMAT,
-  InputService,
-} from "@callidescope/configuration";
+import { InputService } from "@callidescope/configuration";
 import { BreadthService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -18,7 +15,6 @@ import type {
   LocatedWorkspace,
 } from "../address-lookup/address-lookup.types";
 import type { BreadthReport } from "../address-report/address-report.types";
-import type { CallidescopeOutputFormat } from "@callidescope/configuration";
 import type { LogData } from "@codebase/logger";
 
 /**
@@ -149,7 +145,7 @@ export class BreadthCommand extends CommandRunner {
 
     process.stdout.write(
       this.addressReportService.renderBreadthReports({
-        format: resolvedOptions.format ?? DEFAULT_OUTPUT_FORMAT,
+        format: workspace.format,
         reports,
       }),
     );
@@ -224,13 +220,19 @@ export class BreadthCommand extends CommandRunner {
     return this.inputService.parseCommaDelimitedOption(value);
   }
 
-  /** Parses `--format`. */
+  /**
+   * Parses `--format`.
+   *
+   * Carried through as written: a value nobody recognizes is refused by the
+   * one resolver that knows which formats exist, rather than rewritten to
+   * markdown on the way there.
+   */
   @Option({
     description: "What to print: markdown, mermaid, or json",
     flags: "-f, --format [format]",
   })
-  public parseFormat(value: string | undefined): CallidescopeOutputFormat {
-    return this.inputService.parseFormat(value);
+  public parseFormat(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
   }
 
   /**

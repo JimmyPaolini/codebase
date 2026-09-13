@@ -310,7 +310,11 @@ export class CallidescopeCommand extends CommandRunner {
       authoredLimits,
       configuration,
       configurationPath,
-      directories: resolvedOptions.directories ?? configuration.directories,
+      // Read off the configuration rather than the options: the flag and the
+      // configured list were already merged by the one resolver that does
+      // that, so choosing between them again here is how they came to
+      // disagree.
+      directories: configuration.directories,
       workspaceRoot,
     });
 
@@ -408,13 +412,19 @@ export class CallidescopeCommand extends CommandRunner {
     return this.inputService.parseCommaDelimitedOption(value);
   }
 
-  /** Parses `--format`, which decides what the run prints. */
+  /**
+   * Parses `--format`, which decides what the run prints.
+   *
+   * Carried through as written rather than narrowed here: which values exist
+   * is the resolver's to decide, and a value nobody recognizes has to reach
+   * it to be refused rather than quietly rewritten to markdown on the way.
+   */
   @Option({
     description: "What to print: markdown, mermaid, or json",
     flags: "-f, --format [format]",
   })
-  public parseFormat(value: string | undefined): CallidescopeOutputFormat {
-    return this.inputService.parseFormat(value);
+  public parseFormat(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Parses `--json`. */
