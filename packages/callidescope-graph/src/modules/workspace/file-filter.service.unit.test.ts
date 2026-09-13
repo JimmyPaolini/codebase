@@ -142,10 +142,13 @@ describe(FileFilterService, () => {
     });
 
     // Git only reports paths it tracks, so the assertion names one that
-    // exists rather than one the pattern would merely have matched.
-    expect(
-      filter.isExcluded("applications/lexico/src/lib/routeTree.gen.ts"),
-    ).toBe(true);
+    // exists rather than one the pattern would merely have matched. The
+    // agent-skill packages are excluded outright rather than by any single
+    // project, so this path stays in the workspace ignore file regardless of
+    // how far project-owned exclusions migrate into their own configurations.
+    expect(filter.isExcluded("packages/callidescope-agents/README.md")).toBe(
+      true,
+    );
     expect(filter.isExcluded("packages/callidescope-cli/src/main.ts")).toBe(
       false,
     );

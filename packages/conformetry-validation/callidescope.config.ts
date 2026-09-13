@@ -1,3 +1,5 @@
+import { projectDefaults } from "../../configuration/callidescope.config.js";
+
 /**
  * What conformetry-validation is held to, measured rather than assumed.
  *
@@ -9,11 +11,11 @@
  * this gate is green the day it arrives and the number is a starting point to
  * ratchet down from rather than a target to grow into.
  *
- * @see configuration/callidescope.config.ts — the limits this file falls back
- * to for everything it does not name, and why it neither spreads nor imports
- * them
+ * @see configuration/callidescope.config.ts — `projectDefaults`, spread below
+ * for everything this file does not override
  */
 export default {
+  ...projectDefaults,
   limits: {
     maximumBreadth: 10,
     maximumDepth: 12,
