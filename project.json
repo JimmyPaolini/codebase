@@ -901,21 +901,6 @@
         "cwd": "{projectRoot}"
       }
     },
-    "upgrade-dependencies": {
-      "cache": false,
-      "configurations": {
-        "check": {
-          "command": "pnpm outdated --recursive"
-        },
-        "write": {
-          "command": "pnpm dedupe"
-        }
-      },
-      "defaultConfiguration": "check",
-      "description": "Check for dependency updates (check) or dedupe the lockfile (write). Per-package version bumps come from Dependabot (.github/dependabot.yml) as isolated pull requests, not from this target — a bulk `pnpm update --latest --recursive` here once gated every dependency behind one pre-commit lint run, so a single breaking major (typescript 7 dropping the JavaScript compiler API; eslint-plugin-unicorn v68 renaming `prevent-abbreviations`) silently blocked every other update for months. Dependabot's own `ignore` rules hold those two majors back instead, documented there. `write` only dedupes: it reaches transitive dependencies that individual Dependabot bumps cannot, since a transitive package satisfying its parents' ranges stays pinned even as its parents move. `check` still reports every package outdated, Dependabot-ignored ones included, so a hold stays visible. See .github/workflows/upgrade-dependencies.yml and .github/dependabot.yml for the full history.",
-      "executor": "nx:run-commands",
-      "options": {}
-    },
     "validate-branch-name": {
       "cache": false,
       "description": "Validate the current branch name against the configured naming convention. The pre-push hook calls the binary directly to avoid a project graph build; this target is for manual use.",

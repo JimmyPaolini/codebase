@@ -59,7 +59,7 @@ jobs:
       # stays pinned even as its parents move — how a vulnerable copy
       # survives a run of successful upgrades.
       - name: 📦 Deduplicate Lockfile
-        run: pnpm exec nx run codebase:upgrade-dependencies:write
+        run: pnpm dedupe
 
       # The cheapest thing that proves the dedupe did not break Nx itself.
       # Loading the project graph loads every workspace plugin — failing here
