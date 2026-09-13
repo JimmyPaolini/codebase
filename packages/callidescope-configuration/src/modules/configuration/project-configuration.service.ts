@@ -3,6 +3,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 
 import {
+  PROJECT_CONFIGURATION_NESTED_FIELD_NAMES,
   PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
@@ -159,11 +160,56 @@ export class ProjectConfigurationService {
     const fields: Readonly<Record<string, unknown>> = { ...authored };
 
     for (const [field, value] of Object.entries(fields)) {
+      if (value === undefined) {
+        continue;
+      }
+
+      const forbidden = PROJECT_CONFIGURATION_NESTED_FIELD_NAMES.has(field)
+        ? this.findForbiddenMember({ field, value })
+        : this.readForbiddenField(field);
+
+      if (forbidden !== undefined) {
+        return forbidden;
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Finds the first member a project set inside a field classified one member
+   * at a time.
+   *
+   * The dotted name is what comes back — `write.json` rather than `write` —
+   * because the field alone would send a reader to delete a block half of
+   * which they are entitled to keep.
+   *
+   * A value that is not an object at all is refused under the field's own
+   * name. The schema has already rejected every such file by the time this
+   * runs, so this is the guard that makes the walk total rather than a branch
+   * with a story behind it.
+   */
+  private findForbiddenMember(args: {
+    field: string;
+    value: unknown;
+  }): string | undefined {
+    if (typeof args.value !== "object" || args.value === null) {
+      return args.field;
+    }
+
+    // Widened the same way the field walk above is, and for the same reason: a
+    // member name read off a file is a string, and `Object.entries` over a bare
+    // `object` hands back values nothing has typed.
+    const members: Readonly<Record<string, unknown>> = { ...args.value };
+
+    for (const [member, memberValue] of Object.entries(members)) {
+      const name = `${args.field}.${member}`;
+
       if (
-        value !== undefined &&
-        !PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES.has(field)
+        memberValue !== undefined &&
+        !PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES.has(name)
       ) {
-        return field;
+        return name;
       }
     }
 
@@ -232,6 +278,13 @@ export class ProjectConfigurationService {
     path: string | undefined;
   }): string | undefined {
     return args.authored === undefined ? undefined : args.path;
+  }
+
+  /** The name of a whole field a project may not set, or nothing when it may. */
+  private readForbiddenField(field: string): string | undefined {
+    return PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES.has(field)
+      ? undefined
+      : field;
   }
 
   // 🌎 Public Methods

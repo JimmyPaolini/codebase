@@ -116,6 +116,55 @@ export interface CallidescopeMarkdownOutputConfiguration {
 export type CallidescopeOutputFormat = "json" | "markdown" | "mermaid";
 
 /**
+ * The complete shape of a project's own `callidescope.config.ts`.
+ *
+ * Every member is required. A project file is meant to be readable as the
+ * whole statement of how that project is traced and judged, which a shape with
+ * optional members cannot be: an absent field and a field set to the value it
+ * would have defaulted to look identical in the diff, and only one of them was
+ * a decision. A project spreads the workspace's `projectDefaults` and overrides
+ * what it means to, so completeness costs one line rather than twenty — the
+ * same arrangement this repository's codometer configuration files already run.
+ *
+ * A member is required, not non-empty: `undefined` is the value that says *no
+ * destination*, so a project with nothing worth publishing writes that rather
+ * than leaving the member out.
+ *
+ * Nothing is obliged to use this yet. The loader still accepts the partial
+ * `CallidescopeConfiguration` a project file has always been able to write, and
+ * this type is what a project file may be checked against once it declares
+ * itself completely.
+ */
+export interface CallidescopeProjectConfiguration {
+  entryPoints: CallidescopeProjectEntryPoints;
+  /** Globs matched against paths relative to this project's own root. */
+  exclude: string[];
+  limits: CallidescopeProjectLimits;
+  write: CallidescopeProjectWriteConfiguration;
+}
+
+/** Which of a project's callables are treated as the roots of a call stack. */
+export interface CallidescopeProjectEntryPoints {
+  addresses: string[];
+  decorators: string[];
+  includeExportedFunctions: boolean;
+  includeOrphans: boolean;
+  includeTests: boolean;
+}
+
+/**
+ * The two limits a project is gated by.
+ *
+ * `maximumBreadth` is required and may be `undefined`, which is a project
+ * saying outright that it gates depth and not breadth — the one thing the
+ * absent field could never distinguish itself from a project that forgot.
+ */
+export interface CallidescopeProjectLimits {
+  maximumBreadth: number | undefined;
+  maximumDepth: number;
+}
+
+/**
  * A section spliced into every traced project's own README.
  *
  * One destination rather than a list of paths: which files these are follows
@@ -129,6 +178,24 @@ export interface CallidescopeProjectReadmeConfiguration {
   /** Stacks shown before the rest fold into a disclosure. */
   previewCount?: number | undefined;
   startMarker?: string | undefined;
+}
+
+/**
+ * Where a project's own published section and diagram land.
+ *
+ * Both paths are read relative to the project's own root, so a project cannot
+ * write into a sibling by declaring one. The run's JSON report and the README
+ * fan-out are absent by construction: neither is a project's to redirect.
+ *
+ * A destination is the shared markdown-block shape rather than a complete one
+ * of its own. What a project is *judged* by has to be written out; where the
+ * markers and the heading of its own block sit is presentation the tool has a
+ * working answer for, and requiring all seven members would make overriding a
+ * path cost six restatements of a default.
+ */
+export interface CallidescopeProjectWriteConfiguration {
+  markdown: CallidescopeMarkdownOutputConfiguration | undefined;
+  mermaid: CallidescopeMarkdownOutputConfiguration | undefined;
 }
 
 /** Where a run writes its findings. */
@@ -249,6 +316,9 @@ export interface MarkdownAnchorHelpers {
   /** The content wrapped in the configured markers, ready to place anywhere. */
   wrapInAnchors: (content?: string) => string;
 }
+
+/** Whether a project's own configuration may set one field, or one member. */
+export type ProjectFieldPermission = "forbidden" | "permitted";
 
 /**
  * The two limits one project is gated by, each with the file it came from.

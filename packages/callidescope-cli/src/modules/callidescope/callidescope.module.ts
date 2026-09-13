@@ -20,6 +20,7 @@ import { LoggerModule } from "@codebase/logger";
 
 import { ReportFindingsModule } from "../report-findings/report-findings.module";
 import { RunPlanModule } from "../run-plan/run-plan.module";
+import { WriteDestinationsModule } from "../write-destinations/write-destinations.module";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
@@ -47,6 +48,7 @@ import { CallidescopeService } from "./callidescope.service";
     ReportModule,
     RunPlanModule,
     WorkspaceModule,
+    WriteDestinationsModule,
   ],
   providers: [CallidescopeCommand, CallidescopeService],
 })

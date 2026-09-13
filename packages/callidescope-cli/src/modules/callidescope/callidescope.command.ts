@@ -1,17 +1,10 @@
-import path from "node:path";
-
 import {
   DEFAULT_JSON_INDENTATION,
-  DEFAULT_PREVIEW_COUNT,
   DEFAULT_RUN_HEADING,
   InputService,
 } from "@callidescope/configuration";
 import { AddressService } from "@callidescope/graph";
-import {
-  MarkdownReportService,
-  OutputJsonService,
-  OutputMarkdownService,
-} from "@callidescope/output";
+import { MarkdownReportService, OutputJsonService } from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -21,10 +14,10 @@ import { ADDRESS_NOT_FOUND_ADVICE } from "../address-lookup/address-lookup.const
 import { ReportFindingsService } from "../report-findings/report-findings.service";
 import { CHECK_NAMES } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
+import { WriteDestinationsService } from "../write-destinations/write-destinations.service";
 
 import {
   buildUnknownCommandMessage,
-  PROJECT_README_NAME,
   readRefusalHeadline,
   REJECTED_COMMAND_LINE,
   REJECTED_CONFIGURATION,
@@ -32,19 +25,14 @@ import {
 } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
 
-import type {
-  CallidescopeCommandOptions,
-  SyncDestinationsArguments,
-} from "./callidescope.types";
+import type { CallidescopeCommandOptions } from "./callidescope.types";
 import type {
   CallGraphResult,
   CallidescopeOutputFormat,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
-  ResolvedCallidescopeProjectReadmeConfiguration,
 } from "@callidescope/configuration";
 import type { UnresolvedEntryPointAddress } from "@callidescope/graph";
-import type { ProjectSection } from "@callidescope/output";
 import type { LogData } from "@codebase/logger";
 
 /**
@@ -71,10 +59,10 @@ export class CallidescopeCommand extends CommandRunner {
     private readonly callidescopeService: CallidescopeService,
     private readonly inputService: InputService,
     private readonly outputJsonService: OutputJsonService,
-    private readonly outputMarkdownService: OutputMarkdownService,
     private readonly markdownReportService: MarkdownReportService,
     private readonly reportFindingsService: ReportFindingsService,
     private readonly runPlanService: RunPlanService,
+    private readonly writeDestinationsService: WriteDestinationsService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -86,41 +74,6 @@ export class CallidescopeCommand extends CommandRunner {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /**
-   * Builds one section per scoped project, addressed to that project's README.
-   *
-   * The map holds the projects the run was scoped to, so a project it only
-   * measured through the dependency closure has no root here and is dropped.
-   * That is the rule rather than an accident: a scoped run publishes its own
-   * projects, and leaves its dependencies' READMEs to the run that is scoped
-   * to them.
-   */
-  private buildProjectSections(args: {
-    destination: ResolvedCallidescopeProjectReadmeConfiguration;
-    limits: ProjectLimitsLookup;
-    result: CallGraphResult;
-    startingProjectRoots: ReadonlyMap<string, string>;
-  }): ProjectSection[] {
-    return args.result.projects.flatMap((report) => {
-      const root = args.startingProjectRoots.get(report.projectName);
-
-      return root === undefined
-        ? []
-        : [
-            {
-              content: this.markdownReportService.renderProjectSection({
-                heading: args.destination.heading,
-                limits: args.limits,
-                previewCount: args.destination.previewCount,
-                rendering: "tree",
-                report,
-              }),
-              path: path.join(root, PROJECT_README_NAME),
-            },
-          ];
-    });
-  }
 
   /**
    * States why one declared address failed to resolve, naming the project and
@@ -153,15 +106,6 @@ export class CallidescopeCommand extends CommandRunner {
     return `${label} declares an entryPoints.addresses entry that matches more than one declaration: "${address}". ${this.addressService.describeCandidates(
       { address, candidates: resolution.candidates },
     )}`;
-  }
-
-  /** How many stacks a section shows before the rest are folded away. */
-  private readPreviewCount(
-    configuration: ResolvedCallidescopeConfiguration,
-  ): number {
-    return (
-      configuration.write.projectReadmes?.previewCount ?? DEFAULT_PREVIEW_COUNT
-    );
   }
 
   /**
@@ -216,73 +160,13 @@ export class CallidescopeCommand extends CommandRunner {
         description: undefined,
         heading: DEFAULT_RUN_HEADING,
         limits: args.projectLimits,
-        previewCount: this.readPreviewCount(args.configuration),
+        previewCount: this.writeDestinationsService.readPreviewCount(
+          args.configuration,
+        ),
         rendering: args.format === "mermaid" ? "diagram" : "tree",
         result: args.result,
       }),
     );
-  }
-
-  /** Writes every configured destination, returning the stale ones. */
-  private syncDestinations(args: SyncDestinationsArguments): string[] {
-    const stale: string[] = [];
-    const { json, markdown, mermaid } = args.configuration.write;
-
-    if (
-      json !== undefined &&
-      !this.outputJsonService.sync({
-        check: args.check,
-        destination: json,
-        result: args.result,
-      })
-    ) {
-      stale.push(json.path);
-    }
-
-    // Both anchored destinations write the same report; they differ only in
-    // whether its stacks are printed or drawn.
-    for (const [destination, rendering] of [
-      [markdown, "tree"],
-      [mermaid, "diagram"],
-    ] as const) {
-      if (
-        destination !== undefined &&
-        !this.outputMarkdownService.sync({
-          check: args.check,
-          content: this.markdownReportService.renderRun({
-            description: destination.description,
-            heading: destination.heading,
-            limits: args.projectLimits,
-            previewCount: this.readPreviewCount(args.configuration),
-            rendering,
-            result: args.result,
-          }),
-          destination,
-          result: args.result,
-        })
-      ) {
-        stale.push(destination.path);
-      }
-    }
-
-    const { projectReadmes } = args.configuration.write;
-
-    if (projectReadmes !== undefined) {
-      stale.push(
-        ...this.outputMarkdownService.syncProjectReadmes({
-          check: args.check,
-          destination: projectReadmes,
-          sections: this.buildProjectSections({
-            destination: projectReadmes,
-            limits: args.projectLimits,
-            result: args.result,
-            startingProjectRoots: args.startingProjectRoots,
-          }),
-        }),
-      );
-    }
-
-    return stale;
   }
 
   /** Traces the workspace, reports, and sets the exit code. */
@@ -354,12 +238,13 @@ export class CallidescopeCommand extends CommandRunner {
     // Reports are produced before either finding is weighed, so a run that
     // writes and gates leaves its reports behind even when the gate trips.
     const stalePaths = this.runPlanService.touchesFiles(mode)
-      ? this.syncDestinations({
+      ? this.writeDestinationsService.syncDestinations({
           check: mode.checksReports,
           configuration,
           projectLimits: outcome.projectLimits,
           result: outcome.result,
           startingProjectRoots: outcome.startingProjectRoots,
+          writeByProject: outcome.writeByProject,
         })
       : [];
 

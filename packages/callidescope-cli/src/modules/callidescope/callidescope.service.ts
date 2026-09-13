@@ -259,6 +259,23 @@ export class CallidescopeService {
         workspaceConfiguration: args.configuration,
         workspaceConfigurationPath: args.configurationPath,
       }),
+      // Keyed off the authored file rather than the resolved configuration,
+      // the same split the exclusions above make: resolution manufactures a
+      // `write` object for every project, so only the file as written can say
+      // whether this project spoke about its own destinations at all — which
+      // is the question that decides whether the workspace fan-out still
+      // reaches it.
+      writeByProject: new Map(
+        loaded
+          .filter(
+            (projectConfiguration) =>
+              projectConfiguration.authored.write !== undefined,
+          )
+          .map((projectConfiguration) => [
+            projectConfiguration.project,
+            projectConfiguration.configuration.write,
+          ]),
+      ),
     };
   }
 
@@ -404,6 +421,7 @@ export class CallidescopeService {
       projectLimits,
       projectNames,
       startingProjectRoots,
+      writeByProject,
     } = await this.discoverCallables(args);
     const analyzed = this.analyze({
       callablesById: collection.byId,
@@ -417,6 +435,11 @@ export class CallidescopeService {
       workspaceRoot: args.workspaceRoot,
     });
 
-    return { ...analyzed, projectNames, startingProjectRoots };
+    return {
+      ...analyzed,
+      projectNames,
+      startingProjectRoots,
+      writeByProject,
+    };
   }
 }

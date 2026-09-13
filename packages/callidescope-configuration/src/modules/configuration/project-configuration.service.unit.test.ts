@@ -325,7 +325,8 @@ describe(ProjectConfigurationService, () => {
 
   it.each([
     ["directories", { directories: ["packages/other"] }],
-    ["write", { write: { json: { path: "report.json" } } }],
+    ["write.json", { write: { json: { path: "report.json" } } }],
+    ["write.projectReadmes", { write: { projectReadmes: {} } }],
     ["excludeFrom", { excludeFrom: [".callidescopeignore"] }],
     ["excludeCallees", { excludeCallees: ["Logger.log"] }],
   ])(
@@ -362,9 +363,9 @@ describe(ProjectConfigurationService, () => {
         workspaceRoot,
       }),
     ).rejects.toThrow(
-      "packages/broken sets write, which only the workspace configuration " +
-        "may set. A project configuration may set entryPoints, exclude, " +
-        "and limits.",
+      "packages/broken sets write.json, which only the workspace " +
+        "configuration may set. A project configuration may set entryPoints, " +
+        "exclude, limits, write.markdown, and write.mermaid.",
     );
   });
 
@@ -381,6 +382,8 @@ describe(ProjectConfigurationService, () => {
     ["limits.maximumDepth", { limits: { maximumDepth: 5 } }],
     ["limits.maximumBreadth", { limits: { maximumBreadth: 10 } }],
     ["exclude", { exclude: ["**/*.spec.ts"] }],
+    ["write.markdown", { write: { markdown: { path: "README.md" } } }],
+    ["write.mermaid", { write: { mermaid: { path: "DIAGRAM.md" } } }],
   ])(
     "accepts a project configuration that sets %s",
     async (_field, configuration) => {
@@ -396,6 +399,28 @@ describe(ProjectConfigurationService, () => {
       expect(loaded).toHaveLength(1);
     },
   );
+
+  it("resolves the written destinations a project declared for itself", async () => {
+    const workspaceRoot = await writeWorkspace({
+      "packages/published": JSON.stringify({
+        write: {
+          markdown: { heading: "## 🔭 Callidescope", path: "README.md" },
+          mermaid: { path: "docs/diagram.md" },
+        },
+      }),
+    });
+
+    const [loaded] = await service.loadProjectConfigurations({
+      projects: ["packages/published"],
+      workspaceRoot,
+    });
+
+    expect(loaded?.configuration.write.markdown).toMatchObject({
+      heading: "## 🔭 Callidescope",
+      path: "README.md",
+    });
+    expect(loaded?.configuration.write.mermaid?.path).toBe("docs/diagram.md");
+  });
 
   it("resolves the addresses a project declared as its own entry points", async () => {
     const workspaceRoot = await writeWorkspace({

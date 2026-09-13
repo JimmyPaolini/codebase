@@ -525,6 +525,52 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     expect(outcome.result.summary.fileCount).toBe(2);
   });
 
+  // 📝 A project's own written destinations
+
+  it("carries the destinations a project declared for itself out of the trace", async () => {
+    // The destinations are read from the same file, at the same moment, as the
+    // exclusions and limits above: a run that published against one read and
+    // measured against another would be describing two codebases.
+    const workspaceRoot = await buildWorkspace();
+
+    await writeFile(
+      path.join(workspaceRoot, "packages", "example", PROJECT_CONFIGURATION),
+      JSON.stringify({
+        write: {
+          markdown: { heading: "## Calls", path: "docs/CALLS.md" },
+          mermaid: { path: "docs/DIAGRAM.md" },
+        },
+      }),
+      "utf8",
+    );
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(
+      outcome.writeByProject.get("packages/example")?.markdown,
+    ).toMatchObject({
+      heading: "## Calls",
+      path: "docs/CALLS.md",
+    });
+    expect(outcome.writeByProject.get("packages/example")?.mermaid?.path).toBe(
+      "docs/DIAGRAM.md",
+    );
+  });
+
+  it("names no project that declared nothing about its destinations", async () => {
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot: tracedWorkspaceRoot,
+    });
+
+    expect(outcome.writeByProject.size).toBe(0);
+  });
+
   // 🧪 A project's own test files
 
   it("walks a project's test files when that project asked for them", async () => {
