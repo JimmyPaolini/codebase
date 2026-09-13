@@ -43,6 +43,15 @@ inputs:
       TypeScript project too.
     default: "true"
 
+outputs:
+  nx-cache-primary-key:
+    description: |
+      The exact-match key the Nx cache restore step computed for this job.
+      Empty when `nx-cache` is "false". Pass it to `cleanup-codebase`'s own
+      `nx-cache-primary-key` input so a save at the end of the job reuses the
+      same key rather than recomputing it a second place.
+    value: ${{ steps.nx-cache.outputs.cache-primary-key }}
+
 runs:
   using: composite
   steps:
@@ -134,9 +143,18 @@ runs:
     # a build leaving no `dist/` behind. Which tasks hit hollow is a lottery,
     # so a green re-run is luck. The reverse mismatch is safe: files with no
     # row are an ordinary miss.
-    - name: ♻️ Sync Nx Cache
+
+    # Restore only, saving is `cleanup-codebase`'s job. The combined
+    # `actions/cache` action only saves on a clean exit, and its documented
+    # `save-always` escape hatch is deprecated: its `post-if` cannot see that
+    # input, so it never actually fires on a cancellation. The split
+    # restore/save actions are the combination GitHub documents as saving
+    # through a `timeout-minutes` kill, which is why a job that wants that
+    # calls `cleanup-codebase` itself, last, with `if: always()`.
+    - name: ♻️ Restore Nx Cache
       if: inputs.nx-cache == 'true'
-      uses: actions/cache@v6
+      id: nx-cache
+      uses: actions/cache/restore@v6
       with:
         path: |
           .nx/cache

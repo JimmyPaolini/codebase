@@ -52,6 +52,7 @@ jobs:
           fetch-depth: 0
 
       - name: 🕋 Setup Codebase
+        id: setup
         uses: ./.github/actions/setup-codebase
 
       # ESLint's own incremental cache, keyed per run and restored from the most
@@ -120,3 +121,14 @@ jobs:
             packages/*/type-coverage-report.txt
             tools/*/type-coverage-report.txt
           retention-days: 30
+
+      # Last, unconditionally: a cold run of this task graph runs close
+      # enough to this job's timeout that whether one commit's first attempt
+      # finishes in time is close to a coin flip. Saving whatever `.nx/cache`
+      # holds even when the flip goes the other way is what lets a retry, or
+      # the next commit pushed, build on real progress instead of redoing it.
+      - name: 🧹 Cleanup Codebase
+        if: always()
+        uses: ./.github/actions/cleanup-codebase
+        with:
+          nx-cache-primary-key: ${{ steps.setup.outputs.nx-cache-primary-key }}
