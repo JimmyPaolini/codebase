@@ -286,8 +286,9 @@ only what is true of this workspace in particular.
   `configuration/callidescope.config.ts`, so a project's own file writes only
   what it overrides. Read them as a set rather than looking for a table —
   `nx run callidescope-cli:start -- limits --config configuration/callidescope.config.ts`.
-  `affirmations`, `callidescope-examples`, and the workspace root carry no gate,
-  and each `project.json` target description says why.
+  `affirmations`, the workspace root, `callidescope-examples`, the four skill
+  packages, and the codependix/codometer/conformetry examples packages carry no
+  gate, and each `project.json` target description says why.
 - **Comment blocks are capped at 128 words**, declared in
   [`configuration/codometer.config.ts`](configuration/codometer.config.ts) and
   reaching every language codometer measures comments in. Shell is looser at
