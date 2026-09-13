@@ -1,0 +1,76 @@
+# Dependabot owns per-package version bumps for the npm workspace and the
+# GitHub Actions pins that nothing else touches today. Python dependencies
+# stay on `uv lock --upgrade` in .github/workflows/upgrade-dependencies.yml
+# for now — not moved here yet.
+#
+# One pull request per dependency, or per group below, is what fixes the
+# actual failure mode this replaces: `pnpm update --latest --recursive`
+# bumped every dependency in one commit gated behind the full lint-codebase
+# pre-commit hook, so one breaking major anywhere silently blocked every
+# other update — eslint-plugin-unicorn did exactly that for sixteen weeks
+# (2026-05-31 through 2026-09-11). Isolating each update into its own pull
+# request means a breaking major fails that pull request's own checks,
+# visibly, instead of taking every other update down with it.
+
+# Both PR-metadata gates already carve dependabot out: validate-conventions.yml
+# skips `github.actor == 'dependabot[bot]'`, and so does audit-issues.yml. So
+# a dependabot pull request needs none of the gitmoji commit format, the
+# type:/scope:/source: labels, or the four-heading body validate-conventions
+# enforces elsewhere in this repository — only lint-codebase, test-coverage,
+# make-projects, and scan-security still run against it.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: friday
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - automated
+    assignees:
+      - JimmyPaolini
+    groups:
+      # Routine patch/minor churn across the ~200-entry catalog lands as one
+      # pull request instead of dozens; a major always gets its own, so it
+      # can fail its own checks without blocking anything grouped here.
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # typescript 7 is the native compiler: its entrypoint exports only a
+      # version string, so the JavaScript compiler API nx, typescript-eslint,
+      # knip, and type-coverage all read is gone. Crossing that major is a
+      # deliberate migration, never an unattended bump — see project.json's
+      # upgrade-dependencies target for the fuller history of this hold.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      # eslint-plugin-unicorn v68 renamed `prevent-abbreviations` to
+      # `name-replacements`, and the majors since add or change dozens of
+      # other rules. See configuration/eslint.config.ts and
+      # .github/workflows/upgrade-dependencies.yml for the incident this
+      # ignore rule replaces.
+      - dependency-name: eslint-plugin-unicorn
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: friday
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - automated
+      - ci
+    assignees:
+      - JimmyPaolini
+    groups:
+      # Action version bumps are low-risk, small diffs — one pull request for
+      # all of them keeps this from adding weekly PR noise on its own.
+      actions:
+        patterns:
+          - "*"

@@ -908,15 +908,11 @@
           "command": "pnpm outdated --recursive"
         },
         "write": {
-          "commands": [
-            "pnpm update --latest --recursive \"!typescript\"",
-            "pnpm dedupe"
-          ],
-          "parallel": false
+          "command": "pnpm dedupe"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Check for dependency updates (check) or upgrade every dependency to its latest version and dedupe the lockfile (write). `write` holds typescript back, because typescript 7 removed the JavaScript compiler API that nx, typescript-eslint, knip and type-coverage all read: crossing that major is a deliberate migration, not a weekly bump. `check` deliberately still reports typescript as outdated, so the hold stays visible. See .github/workflows/upgrade-dependencies.yml for the full reasoning behind both the hold and the dedupe.",
+      "description": "Check for dependency updates (check) or dedupe the lockfile (write). Per-package version bumps come from Dependabot (.github/dependabot.yml) as isolated pull requests, not from this target — a bulk `pnpm update --latest --recursive` here once gated every dependency behind one pre-commit lint run, so a single breaking major (typescript 7 dropping the JavaScript compiler API; eslint-plugin-unicorn v68 renaming `prevent-abbreviations`) silently blocked every other update for months. Dependabot's own `ignore` rules hold those two majors back instead, documented there. `write` only dedupes: it reaches transitive dependencies that individual Dependabot bumps cannot, since a transitive package satisfying its parents' ranges stays pinned even as its parents move. `check` still reports every package outdated, Dependabot-ignored ones included, so a hold stays visible. See .github/workflows/upgrade-dependencies.yml and .github/dependabot.yml for the full history.",
       "executor": "nx:run-commands",
       "options": {}
     },
