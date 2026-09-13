@@ -614,6 +614,54 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     });
   });
 
+  // 📏 A limit the command line overrode
+
+  it("judges a project by the limit the command line overrode", async () => {
+    // Through the real chain rather than against `resolveLimits` directly: a
+    // limit is enforced out of each project's own file, and the defect this
+    // covers was an override that reached the run's own configuration and
+    // stopped — every unit on either side of that hop passing while
+    // `--maximum-depth` gated nothing at all.
+    const workspaceRoot = await buildWorkspace();
+
+    await writeProjectConfiguration({
+      overrides: { limits: { maximumDepth: 7 } },
+      projectRoot: path.join(workspaceRoot, "packages", "example"),
+    });
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      limitOverrides: { maximumDepth: 3 },
+      workspaceRoot,
+    });
+
+    expect(
+      outcome.projectLimits.byProject.get("packages/example")?.maximumDepth,
+    ).toBe(3);
+  });
+
+  it("keeps a project's own limit when no flag overrode it", async () => {
+    // The control the case above needs: 3 has to be the flag's answer rather
+    // than anything the fixture would have said on its own.
+    const workspaceRoot = await buildWorkspace();
+
+    await writeProjectConfiguration({
+      overrides: { limits: { maximumDepth: 7 } },
+      projectRoot: path.join(workspaceRoot, "packages", "example"),
+    });
+
+    const outcome = await service.trace({
+      configuration: buildConfiguration(),
+      directories: [],
+      workspaceRoot,
+    });
+
+    expect(
+      outcome.projectLimits.byProject.get("packages/example")?.maximumDepth,
+    ).toBe(7);
+  });
+
   // 🧪 A project's own test files
 
   it("walks a project's test files when that project asked for them", async () => {

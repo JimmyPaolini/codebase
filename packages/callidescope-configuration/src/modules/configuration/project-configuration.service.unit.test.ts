@@ -18,6 +18,7 @@ import { ConfigurationService } from "./configuration.service";
 import { ProjectConfigurationService } from "./project-configuration.service";
 
 import type {
+  CallidescopeLimitOverrides,
   CallidescopeProjectConfiguration,
   ProjectLimitsLookup,
 } from "./configuration.types";
@@ -57,6 +58,7 @@ function completeConfiguration(
  */
 async function resolveWrittenLimits(args: {
   configurationService: ConfigurationService;
+  limitOverrides?: CallidescopeLimitOverrides | undefined;
   projects: readonly string[];
   service: ProjectConfigurationService;
   workspaceRoot: string;
@@ -75,6 +77,7 @@ async function resolveWrittenLimits(args: {
   });
 
   return args.service.resolveLimits({
+    limitOverrides: args.limitOverrides,
     projectConfigurations,
     projects: args.projects,
     workspaceAuthoredLimits: workspace.authored.limits,
@@ -643,6 +646,62 @@ describe(ProjectConfigurationService, () => {
     });
 
     expect(loaded).toStrictEqual([]);
+  });
+
+  // 🎛️ A command-line limit override, applied where a project declared one
+
+  it("judges a project by an overriding limit rather than by its own", async () => {
+    const workspaceRoot = await writeWorkspace({
+      ".": { limits: { maximumDepth: 6 } },
+      "packages/gated": completeConfiguration({
+        limits: { maximumBreadth: 5, maximumDepth: 4 },
+      }),
+    });
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      limitOverrides: { maximumBreadth: 9, maximumDepth: 2 },
+      projects: ["packages/gated"],
+      service,
+      workspaceRoot,
+    });
+
+    // The project's own file is still named: an override changes the number
+    // for one invocation and does not change where that number was written.
+    expect(limits.byProject.get("packages/gated")).toStrictEqual({
+      maximumBreadth: 9,
+      maximumDepth: 2,
+      path: path.join(
+        workspaceRoot,
+        "packages",
+        "gated",
+        CONFIGURATION_FILE_NAME,
+      ),
+    });
+  });
+
+  it("leaves a project that declared no breadth limit without one", async () => {
+    // The precedence rule where it is actually enforced: a flag overrides what
+    // a project chose and never chooses for a project that chose nothing, so
+    // `--maximum-breadth` cannot gate a project that opted out of breadth.
+    const workspaceRoot = await writeWorkspace({
+      ".": { limits: { maximumDepth: 6 } },
+      "packages/unbounded": completeConfiguration({
+        limits: { maximumBreadth: undefined, maximumDepth: 4 },
+      }),
+    });
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      limitOverrides: { maximumBreadth: 9 },
+      projects: ["packages/unbounded"],
+      service,
+      workspaceRoot,
+    });
+
+    expect(
+      limits.byProject.get("packages/unbounded")?.maximumBreadth,
+    ).toBeUndefined();
   });
 
   // 📏 Limits resolved per project

@@ -1,6 +1,6 @@
 ---
 name: callidescope-configure
-description: Tell callidescope what to do — the command-line flags (--check, --write, --addresses, --directories, --format, --config, --json, --markdown) and the callidescope.config.ts they read alongside, covering depth, breadth, and spread limits, declared and rule-based call-stack entry points, exclusions and ignored callees, the workspace's module layout, where a run writes its JSON, markdown, mermaid, and per-project reports, and the much smaller surface a project's own configuration file may set. Use when wiring a depth gate into CI or a commit hook, when a whole-workspace run is too slow, when choosing between --check and --write, when a repository has no callidescope configuration yet, when a project needs its own depth or breadth limit, when a package low in the graph measures nothing, when a trace judges code it should not be judging, when everything is reported as an orphan root, when reading callidescope limits, or when deciding where a committed report should live.
+description: Tell callidescope what to do — the command-line flags (--check, --write, --addresses, --config, --format, and an override for every configured field, from --directories and --exclude through --include-tests, --maximum-depth, --maximum-breadth, --json, --markdown, and --mermaid) and the callidescope.config.ts beside them, covering depth, breadth, and spread limits, entry points, exclusions and ignored callees, the module layout, where a run writes its JSON, markdown, mermaid, and per-project reports, and the smaller surface a project's own file may set. Use when wiring a depth gate into CI or a commit hook, when a whole-workspace run is too slow, when choosing between --check and --write, when a repository has no callidescope configuration yet, when a project needs its own depth or breadth limit, when a package low in the graph measures nothing, when a trace judges code it should not be judging, when everything is reported as an orphan root, or when deciding where a committed report should live.
 license: MIT
 ---
 
@@ -32,16 +32,19 @@ leaves every committed report exactly as it found it.
 | `-a, --addresses` | Comma-separated callable addresses, each `<file>#<qualified-name>`. `depth` and `breadth` only. Prompted for when omitted |
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |
 | `-d, --directories` | Comma-separated project directories to trace, each holding its own `tsconfig.json` |
+| `--entry-point-addresses`, `--entry-point-decorators`, `--include-exported-functions`, `--include-orphans`, `--include-tests` | Override the matching `entryPoints` field. The two lists are comma-separated; the three switches take `true` or `false`, or the bare flag for `true` |
+| `--exclude`, `--exclude-callees` | Comma-separated globs and callee patterns, overriding the **authored** field. The tool's own default exclusions are kept, exactly as they are under a configured `exclude` |
 | `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default. Anything else is refused rather than rewritten |
-| `--json` | Where the machine-readable report goes. Overrides the path of a declared `write.json`, and nothing else about it. Needs `--write` or `--check reports` |
-| `-m, --markdown` | Where the markdown block goes. Overrides the path of a declared `write.markdown`, and nothing else about it. Needs `--write` or `--check reports` |
-| `--check` | Fail on a comma-separated set drawn from `breadth`, `depth`, and `reports` |
-| `--write` | Write every configured destination |
+| `--json`, `-m, --markdown`, `--mermaid` | Where each report goes. Overrides the path of that declared `write` destination, and nothing else about it. Needs `--write` or `--check reports` |
+| `--maximum-depth`, `--maximum-breadth` | A number, overriding that limit wherever a project declared it. `--maximum-breadth` is refused against a configuration declaring none, breadth having no default to override |
+| `--check`, `--write` | The two decisions above: fail on a comma-separated set drawn from `breadth`, `depth`, and `reports`; write every configured destination |
 
-`--config`, `--directories`, and `--format` are the three that `depth` and
-`breadth` also take, and `--addresses` is theirs alone — it names what to
-report on, which a whole-workspace trace never needs. The rest belong to the
-whole-workspace command, which is the only one that writes or compares.
+**Every configured field has an overriding flag, save `excludeFrom`** — the
+ignore files a run _reads_, which is what the run is rather than a value it
+judges by. An override may change a declared value and may not supply one, so
+no flag makes an under-configured run legal, and a list written empty reads as
+absent. `depth` and `breadth` take every override above but the destinations
+and limits, plus `--config` and `--format`; `--addresses` is theirs alone.
 
 ### `--check` takes a set, and the set matters
 
@@ -54,9 +57,8 @@ whole-workspace command, which is the only one that writes or compares.
 Three refusals to expect, all deliberate:
 
 - **`--check` with no value is refused.** A set with nothing in it is
-  indistinguishable from the flag having been left off, so reading it as "gate
-  nothing" would produce a gate that cannot fail. `--check "$GATES"` with the
-  variable unset would then pass forever over a stack twice as deep as anything
+  indistinguishable from the flag left off, so `--check "$GATES"` with the
+  variable unset would pass forever over a stack twice as deep as anything
   allowed — worse than no gate, because it looks like protection.
 - **An unrecognized value is refused**, and the message lists what is accepted.
 - **`--check breadth` with no project in scope declaring `limits.maximumBreadth`
@@ -95,28 +97,26 @@ npx callidescope --write
 ```
 
 `--write --check reports` is **refused outright**: a report cannot be stale in
-the run that just wrote it, so asking for both misunderstands one of them and
-would pass whatever it was meant to catch.
+the run that just wrote it, so it would pass whatever it was meant to catch.
 
 Those two are the whole target set. If a task runner is in play, neither may be
-reachable from a composite task that forwards a configuration down its
-dependencies, or a `write` run from a branch publishes from a branch. Name the
-gate directly alongside whatever else gates, not off a lint-style aggregate.
+reachable from a composite task forwarding a configuration down its dependencies,
+or a `write` run from a branch publishes from a branch. Name the gate directly
+alongside whatever else gates, not off a lint-style aggregate.
 
 ### `--directories`, and why a run is slow without it
 
-This is the difference between a whole-workspace analysis and a check that
-finishes in seconds. Each directory named needs its own `tsconfig.json`, and
-the programs built are those plus every project they transitively import, so a
-call into a dependency still resolves to a real frame:
+The difference between a whole-workspace analysis and a check that finishes in
+seconds. Each directory named needs its own `tsconfig.json`, and the programs
+built are those plus every project they transitively import, so a call into a
+dependency still resolves to a real frame:
 
 ```bash
 npx callidescope -d packages/foo,packages/bar --check depth
 ```
 
 Omit it and callidescope walks the working directory for every `tsconfig.json`
-it finds. Reach for the wide run for the workspace-wide picture, not for an
-answer about one package.
+it finds — the workspace-wide picture, not an answer about one package.
 
 It takes **paths**, not project names: callidescope knows nothing of workspace
 tooling, and a directory holding a `tsconfig.json` is the whole contract. The

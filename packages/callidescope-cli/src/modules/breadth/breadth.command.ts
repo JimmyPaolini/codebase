@@ -220,6 +220,42 @@ export class BreadthCommand extends CommandRunner {
     return this.inputService.parseCommaDelimitedOption(value);
   }
 
+  /** Parses `--entry-point-addresses`, overriding `entryPoints.addresses`. */
+  @Option({
+    description: "Comma-separated callable addresses to root stacks at",
+    flags: "--entry-point-addresses [entryPointAddresses]",
+  })
+  public parseEntryPointAddresses(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Parses `--entry-point-decorators`, overriding `entryPoints.decorators`. */
+  @Option({
+    description: "Comma-separated decorators whose methods a framework invokes",
+    flags: "--entry-point-decorators [entryPointDecorators]",
+  })
+  public parseEntryPointDecorators(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Parses `--exclude`, overriding `exclude`. */
+  @Option({
+    description: "Comma-separated globs to leave untraced",
+    flags: "--exclude [exclude]",
+  })
+  public parseExclude(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Parses `--exclude-callees`, overriding `excludeCallees`. */
+  @Option({
+    description: "Comma-separated display-name globs to drop calls landing on",
+    flags: "--exclude-callees [excludeCallees]",
+  })
+  public parseExcludeCallees(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
   /**
    * Parses `--format`.
    *
@@ -232,6 +268,40 @@ export class BreadthCommand extends CommandRunner {
     flags: "-f, --format [format]",
   })
   public parseFormat(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /**
+   * Parses `--include-exported-functions`, overriding the entry-point rule.
+   *
+   * Carried through as written, like `--format`: the resolver that knows what
+   * a switch accepts is the one that refuses a value nobody recognizes.
+   */
+  @Option({
+    description: 'Treat every src/index.ts export as a root: "true" or "false"',
+    flags: "--include-exported-functions [includeExportedFunctions]",
+  })
+  public parseIncludeExportedFunctions(
+    value: string | undefined,
+  ): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /** Parses `--include-orphans`, overriding the entry-point rule. */
+  @Option({
+    description: 'Promote callables nothing calls: "true" or "false"',
+    flags: "--include-orphans [includeOrphans]",
+  })
+  public parseIncludeOrphans(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /** Parses `--include-tests`, overriding the entry-point rule. */
+  @Option({
+    description: 'Trace test files too: "true" or "false"',
+    flags: "--include-tests [includeTests]",
+  })
+  public parseIncludeTests(value: string | undefined): string | undefined {
     return this.inputService.parseOptionalOption(value);
   }
 

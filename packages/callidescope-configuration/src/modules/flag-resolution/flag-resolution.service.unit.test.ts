@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { DEFAULT_EXCLUDE_GLOBS } from "../configuration/configuration.constants";
 import { ConfigurationService } from "../configuration/configuration.service";
 
 import { FlagResolutionService } from "./flag-resolution.service";
@@ -28,10 +29,20 @@ describe(FlagResolutionService, () => {
     service = await module.resolve(FlagResolutionService);
   });
 
-  /** A configuration declaring every destination a flag may override. */
+  /** A configuration declaring every value a flag may override. */
   const fullyConfigured = (): ResolvedCallidescopeConfiguration =>
     configurationService.resolveConfiguration({
       directories: ["packages/one"],
+      entryPoints: {
+        addresses: ["src/main.ts#main"],
+        decorators: ["Command"],
+        includeExportedFunctions: true,
+        includeOrphans: true,
+        includeTests: false,
+      },
+      exclude: ["**/*.generated.ts"],
+      excludeCallees: ["LoggerService.*"],
+      limits: { maximumBreadth: 7, maximumDepth: 5 },
       write: {
         json: { indentation: 4, path: "output/report.json" },
         markdown: {
@@ -40,6 +51,10 @@ describe(FlagResolutionService, () => {
           heading: "## 🔭 Configured",
           path: "docs/report.md",
           startMarker: "<!-- START -->",
+        },
+        mermaid: {
+          heading: "## 🔭 Diagram",
+          path: "docs/diagram.md",
         },
       },
     });
@@ -139,6 +154,103 @@ describe(FlagResolutionService, () => {
     {
       expectation: (resolved): void => {
         expect(resolved.errors).toStrictEqual([]);
+        expect(resolved.configuration.write.mermaid).toStrictEqual({
+          ...fullyConfigured().write.mermaid,
+          path: "docs/elsewhere.md",
+        });
+      },
+      flag: "--mermaid, overriding the path and nothing else",
+      flags: { mermaid: "docs/elsewhere.md" },
+    },
+    {
+      expectation: (resolved): void => {
+        expect(resolved.errors).toStrictEqual([]);
+        expect(resolved.configuration.exclude).toStrictEqual([
+          ...DEFAULT_EXCLUDE_GLOBS,
+          "src/**",
+        ]);
+      },
+      flag: "--exclude, overriding the authored globs and keeping the defaults",
+      flags: { exclude: ["src/**"] },
+    },
+    {
+      expectation: (resolved): void => {
+        expect(resolved.errors).toStrictEqual([]);
+        expect(resolved.configuration.excludeCallees).toStrictEqual([
+          "TracerService.*",
+        ]);
+      },
+      flag: "--exclude-callees, overriding the configured globs",
+      flags: { excludeCallees: ["TracerService.*"] },
+    },
+    {
+      expectation: (resolved): void => {
+        expect(resolved.errors).toStrictEqual([]);
+        expect(resolved.configuration.entryPoints.addresses).toStrictEqual([
+          "src/other.ts#other",
+        ]);
+      },
+      flag: "--entry-point-addresses, overriding the declared roots",
+      flags: { entryPointAddresses: ["src/other.ts#other"] },
+    },
+    {
+      expectation: (resolved): void => {
+        expect(resolved.errors).toStrictEqual([]);
+        expect(resolved.configuration.entryPoints.decorators).toStrictEqual([
+          "Resolver",
+        ]);
+      },
+      flag: "--entry-point-decorators, overriding the declared decorators",
+      flags: { entryPointDecorators: ["Resolver"] },
+    },
+    {
+      expectation: (resolved): void => {
+        expect(resolved.errors).toStrictEqual([]);
+        expect(
+          resolved.configuration.entryPoints.includeExportedFunctions,
+        ).toBe(false);
+      },
+      flag: "--include-exported-functions, overriding the configured switch",
+      flags: { includeExportedFunctions: "false" },
+    },
+    {
+      expectation: (resolved): void => {
+        expect(resolved.errors).toStrictEqual([]);
+        expect(resolved.configuration.entryPoints.includeOrphans).toBe(false);
+      },
+      flag: "--include-orphans, overriding the configured switch",
+      flags: { includeOrphans: "false" },
+    },
+    {
+      expectation: (resolved): void => {
+        expect(resolved.errors).toStrictEqual([]);
+        expect(resolved.configuration.entryPoints.includeTests).toBe(true);
+      },
+      flag: "--include-tests, overriding the configured switch",
+      flags: { includeTests: "true" },
+    },
+    {
+      expectation: (resolved): void => {
+        expect(resolved.errors).toStrictEqual([]);
+        expect(resolved.configuration.limits.maximumDepth).toBe(9);
+        // The neighboring limit is left exactly as the configuration wrote it.
+        expect(resolved.configuration.limits.maximumBreadth).toBe(7);
+      },
+      flag: "--maximum-depth, overriding the configured limit",
+      flags: { maximumDepth: "9" },
+    },
+    {
+      expectation: (resolved): void => {
+        expect(resolved.errors).toStrictEqual([]);
+        expect(resolved.configuration.limits.maximumBreadth).toBe(12);
+        expect(resolved.configuration.limits.maximumDepth).toBe(5);
+      },
+      flag: "--maximum-breadth, overriding the configured limit",
+      flags: { maximumBreadth: "12" },
+    },
+    {
+      expectation: (resolved): void => {
+        expect(resolved.errors).toStrictEqual([]);
         expect(resolved.format).toBe("markdown");
         expect(resolved.configuration).toStrictEqual(fullyConfigured());
       },
@@ -158,6 +270,30 @@ describe(FlagResolutionService, () => {
     const resolved = resolve({ flags: { directories: [] } });
 
     expect(resolved.configuration.directories).toStrictEqual(["packages/one"]);
+  });
+
+  it("keeps the default exclusions through an exclude override", () => {
+    // The defect this exists for: `--exclude` replaced the resolved array,
+    // which is the authored globs *and* the six directories no repository
+    // wants traced, so narrowing the exclusions quietly started tracing
+    // `node_modules` and `dist`.
+    const resolved = resolve({ flags: { exclude: ["src/**"] } });
+
+    expect(resolved.configuration.exclude).toStrictEqual([
+      ...DEFAULT_EXCLUDE_GLOBS,
+      "src/**",
+    ]);
+  });
+
+  it("names a default exclusion once when the flag repeats it", () => {
+    const resolved = resolve({
+      flags: { exclude: ["**/dist/**", "src/**"] },
+    });
+
+    expect(resolved.configuration.exclude).toStrictEqual([
+      ...DEFAULT_EXCLUDE_GLOBS,
+      "src/**",
+    ]);
   });
 
   it("keeps a configured indentation through a JSON path override", () => {
@@ -209,6 +345,7 @@ describe(FlagResolutionService, () => {
   it.each<[string, CallidescopeRunFlags, string]>([
     ["--json", { json: "output/report.json" }, "write.json"],
     ["--markdown", { markdown: "docs/report.md" }, "write.markdown"],
+    ["--mermaid", { mermaid: "docs/diagram.md" }, "write.mermaid"],
   ])(
     "refuses %s when the configuration declares no such destination",
     (flag, flags, field) => {
@@ -228,6 +365,119 @@ describe(FlagResolutionService, () => {
     });
 
     expect(resolved.configuration.write.json).toBeUndefined();
+  });
+
+  it("refuses --maximum-breadth when the configuration declares no breadth limit", () => {
+    const resolved = resolve({
+      configuration: bare(),
+      flags: { maximumBreadth: "12" },
+    });
+
+    expect(resolved.errors).toStrictEqual([
+      "--maximum-breadth overrides a value the configuration does not declare. " +
+        "Add `limits.maximumBreadth` to the configuration this run reads, then use --maximum-breadth to change it.",
+    ]);
+  });
+
+  it("leaves an undeclared breadth limit undeclared rather than supplying one", () => {
+    const resolved = resolve({
+      configuration: bare(),
+      flags: { maximumBreadth: "12" },
+    });
+
+    expect(resolved.configuration.limits.maximumBreadth).toBeUndefined();
+  });
+
+  // 📏 A limit override is reported, because a limit is enforced per project
+
+  it("reports the limits a flag chose, so the override can reach each project", () => {
+    const resolved = resolve({
+      flags: { maximumBreadth: "12", maximumDepth: "9" },
+    });
+
+    expect(resolved.limitOverrides).toStrictEqual({
+      maximumBreadth: 12,
+      maximumDepth: 9,
+    });
+  });
+
+  it("reports no override when no limit flag was given", () => {
+    // Empty rather than the configured numbers: every project declares its
+    // own, and a run that reported the workspace's as overrides would quietly
+    // replace all thirty-seven of them with one.
+    expect(resolve({ flags: {} }).limitOverrides).toStrictEqual({});
+  });
+
+  it("reports no override for a limit flag it refused", () => {
+    const resolved = resolve({ flags: { maximumDepth: "deep" } });
+
+    expect(resolved.limitOverrides).toStrictEqual({});
+  });
+
+  // 🔢 A value nobody can read is refused rather than guessed at
+
+  it.each<[string, CallidescopeRunFlags]>([
+    ["--maximum-breadth", { maximumBreadth: "wide" }],
+    ["--maximum-depth", { maximumDepth: "deep" }],
+  ])("refuses %s when it was not given a whole number", (flag, flags) => {
+    const resolved = resolve({ flags });
+
+    expect(resolved.errors).toStrictEqual([
+      `${flag} does not accept "${flag === "--maximum-depth" ? "deep" : "wide"}". It takes a positive whole number.`,
+    ]);
+  });
+
+  it("keeps the configured limit while refusing the value it was given", () => {
+    const resolved = resolve({ flags: { maximumDepth: "deep" } });
+
+    expect(resolved.configuration.limits.maximumDepth).toBe(5);
+  });
+
+  it("reads a switch written with no value as asking for it", () => {
+    const resolved = resolve({ flags: { includeTests: true } });
+
+    expect(resolved.errors).toStrictEqual([]);
+    expect(resolved.configuration.entryPoints.includeTests).toBe(true);
+  });
+
+  it.each<[string, CallidescopeRunFlags]>([
+    ["--include-exported-functions", { includeExportedFunctions: "yes" }],
+    ["--include-orphans", { includeOrphans: "yes" }],
+    ["--include-tests", { includeTests: "yes" }],
+  ])("refuses %s when it was not given true or false", (flag, flags) => {
+    const resolved = resolve({ flags });
+
+    expect(resolved.errors).toStrictEqual([
+      `${flag} does not accept "yes". It takes "true" or "false", or the flag on its own for "true".`,
+    ]);
+  });
+
+  // 📃 An empty list flag is absent, the same rule --directories already obeys
+
+  it.each<
+    [string, CallidescopeRunFlags, keyof ResolvedCallidescopeConfiguration]
+  >([
+    ["--exclude", { exclude: [] }, "exclude"],
+    ["--exclude-callees", { excludeCallees: [] }, "excludeCallees"],
+  ])(
+    "treats an empty %s value as absent rather than as an empty list",
+    (_flag, flags, field) => {
+      const resolved = resolve({ flags });
+
+      expect(resolved.configuration[field]).toStrictEqual(
+        fullyConfigured()[field],
+      );
+    },
+  );
+
+  it("treats empty entry-point list flags as absent rather than as empty lists", () => {
+    const resolved = resolve({
+      flags: { entryPointAddresses: [], entryPointDecorators: [] },
+    });
+
+    expect(resolved.configuration.entryPoints).toStrictEqual(
+      fullyConfigured().entryPoints,
+    );
   });
 
   it("collects every complaint before reporting any of them", () => {

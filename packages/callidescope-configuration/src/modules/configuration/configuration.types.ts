@@ -73,6 +73,23 @@ export interface CallidescopeJsonOutputConfiguration {
 }
 
 /**
+ * The limits one command line overrode, and only those.
+ *
+ * Held apart from the resolved configuration because the two answer different
+ * questions. The configuration says what every limit is; this says which of
+ * them a flag chose, which is what lets the override reach the number each
+ * project is really gated by rather than stopping at the workspace file.
+ *
+ * A member is present only when a flag supplied it, so an override reaches a
+ * project's own declared limit without ever supplying one to a project that
+ * declared none.
+ */
+export interface CallidescopeLimitOverrides {
+  maximumBreadth?: number | undefined;
+  maximumDepth?: number | undefined;
+}
+
+/**
  * Thresholds that decide what a run reports.
  *
  * Two, and both per project: how deep a stack may run, and how widely one
@@ -427,6 +444,16 @@ export interface ResolvedCallidescopeWriteConfiguration {
 
 /** Arguments accepted by the per-project limit resolver. */
 export interface ResolveProjectLimitsArguments {
+  /**
+   * The limits this run's command line overrode, if any.
+   *
+   * Applied to every project that declared the limit being overridden, because
+   * a project's own number is the one its gate reads — an override that stopped
+   * at the workspace file would be a flag that changed nothing any gate looks
+   * at. A project that declared no breadth limit is left without one: the flag
+   * overrides, and never supplies.
+   */
+  limitOverrides?: CallidescopeLimitOverrides | undefined;
   /** The configuration files projects declared for themselves. */
   projectConfigurations: readonly LoadedProjectConfiguration[];
   /** Workspace-relative root of every project the run reached. */
