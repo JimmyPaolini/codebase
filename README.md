@@ -55,9 +55,9 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 - **🔭 callidescope** - Call stack tracing toolchain that follows control flow through injected dependencies and reports where a stack got too deep
   - **[callidescope-agents](packages/callidescope-agents)** - Agent skills for the callidescope toolchain, published and installed back from the lockfile like any other vendored skill
   - **[callidescope-cli](packages/callidescope-cli)** - Command-line host that builds the call graph with the TypeScript compiler API, resolves NestJS injected dependencies, and reports the deepest stack below every entry point
-  - **[callidescope-configuration](packages/callidescope-configuration)** - Reads `callidescope.config.ts` for entry-point rules, depth and cohesion limits, exclusion globs, and output destinations
+  - **[callidescope-configuration](packages/callidescope-configuration)** - Reads `callidescope.config.ts` for entry-point rules, depth and breadth limits, exclusion globs, and output destinations
   - **[callidescope-examples](packages/callidescope-examples)** - A small codebase built to be traced, carrying one worked example per rule, finding, and output the toolchain has
-  - **[callidescope-graph](packages/callidescope-graph)** - Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
+  - **[callidescope-graph](packages/callidescope-graph)** - Builds the call graph from traced TypeScript source and measures its depth and breadth
   - **[callidescope-nx](packages/callidescope-nx)** - Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets that follow the Nx dependency graph, keeping every Nx dependency out of the packages that trace
   - **[callidescope-output](packages/callidescope-output)** - Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **🕸️ codependix** - Dependency graph export toolchain that reads what each project depends on, renders it as JSON and Markdown diagrams, and gates the rules those graphs are judged against

@@ -2,7 +2,6 @@ import { ConfigurationModule } from "@callidescope/configuration";
 import {
   CallablesModule,
   ClassesModule,
-  CohesionModule,
   DocumentationModule,
   EdgesModule,
   EntriesModule,
@@ -28,7 +27,6 @@ import {
  */
 export const ANALYSIS_MODULES = [
   CallablesModule,
-  CohesionModule,
   ConfigurationModule,
   DocumentationModule,
   EdgesModule,

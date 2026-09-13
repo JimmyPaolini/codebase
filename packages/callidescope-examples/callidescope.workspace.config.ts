@@ -39,10 +39,9 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
  * root, and the two roles are read differently. A run resolves a configuration
  * beside every project it traces, and a project's own file may set only
  * `entryPoints`, `limits.maximumDepth`, `limits.maximumBreadth`, and `exclude`.
- * This one legitimately sets `output`, `workspaceStructure`, and
- * `limits.maximumImplementationCandidates`, every one of which only a workspace
- * configuration may set — so being discovered as this package's project
- * configuration would refuse the run outright.
+ * This one legitimately sets `output`, which only a workspace configuration may
+ * set — so being discovered as this package's project configuration would
+ * refuse the run outright.
  *
  * A run does skip the file it was handed by `--config`, on the ground that one
  * file holds one role per run. That is necessary but not sufficient here:
@@ -65,14 +64,6 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
 const callidescopeConfiguration: CallidescopeConfiguration = {
   limits: {
     /**
-     * Two, against three structural implementations of `LineSink`.
-     *
-     * The default is eight, and demonstrating the cap at that setting would
-     * need nine near-identical classes carrying no other meaning. Lowered here,
-     * one small module shows the same behavior.
-     */
-    maximumImplementationCandidates: 2,
-    /**
      * The tool's own default, so the deliberately deep fixtures are findings.
      *
      * Seven frames and up are reported; `DeepStackService` and
@@ -80,19 +71,6 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
      */
     maximumDepth: 6,
   },
-  /**
-   * Each directory under `examples/` is one module, which is what module spread
-   * and misplacement are measured against.
-   *
-   * The default segment is `src`, and by default a module is
-   * `src/modules/<name>`. Nothing here lives under either: the fixtures sit in
-   * `examples/<name>/`, one directory per example, so each is readable on its
-   * own. Naming `examples` as the root segment is what keeps
-   * `ModuleSpreadService.orchestrate` reaching five distinct modules instead of
-   * collapsing every fixture into one.
-   */
-  workspaceStructure: { rootModuleSegment: "examples" },
-
   output: {
     /** The whole run as JSON, which is the machine-readable shape. */
     json: { path: "packages/callidescope-examples/output/report.json" },

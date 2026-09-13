@@ -83,15 +83,11 @@ function buildArguments(depth: number): BuildProjectReportsArguments {
         {
           deepestSuccessor: undefined,
           depth: 1,
-          moduleIds: new Set<string>(),
           reachesUnresolved: false,
         },
       ],
     },
-    misplacedCallables: [],
-    moduleSpreads: [],
     projectNames: ["alpha", "beta"],
-    typeDepths: [],
   };
 }
 
@@ -140,7 +136,6 @@ function callable(args: {
       displayName: args.name,
       id: `${location.filePath}#0`,
       location,
-      moduleId: `${args.projectName}:modules/${args.name}`,
       projectName: args.projectName,
     }),
   ];
@@ -190,32 +185,6 @@ describe(ProjectReportsService, () => {
 
   it("reports the project's own file count rather than the run's", () => {
     expect(service.build(buildArguments(3))[0]?.summary.fileCount).toBe(3);
-  });
-
-  it("keeps only the type depths belonging to the project", () => {
-    const reports = service.build({
-      ...buildArguments(3),
-      typeDepths: [
-        {
-          maximumDepth: 4,
-          memberCount: 2,
-          minimumDepth: 1,
-          moduleId: "alpha:modules/alpha0",
-          typeName: "Alpha",
-        },
-        {
-          maximumDepth: 2,
-          memberCount: 1,
-          minimumDepth: 2,
-          moduleId: "beta:modules/beta0",
-          typeName: "Beta",
-        },
-      ],
-    });
-
-    expect(
-      reports[0]?.typeDepths.map((summary) => summary.moduleId),
-    ).toStrictEqual(["alpha:modules/alpha0"]);
   });
 
   // 📏 The depth gate
@@ -682,42 +651,5 @@ describe(ProjectReportsService, () => {
       service.build({ ...base, fileCountByProject: new Map() })[0]?.summary
         .fileCount,
     ).toBe(0);
-  });
-
-  // 📦 Findings scoped to their project
-
-  it("keeps only the findings belonging to the project", () => {
-    const base = buildArguments(3);
-    const [alphaId] = [...base.callablesById.keys()];
-    const reports = service.build({
-      ...base,
-      misplacedCallables: [
-        {
-          callerCount: 4,
-          displayName: "alpha0",
-          foreignCallerCount: 4,
-          homeModuleId: "alpha:modules/alpha0",
-          id: alphaId ?? "",
-          location: buildSourceLocation(),
-          suggestedModuleId: "beta:modules/beta0",
-        },
-      ],
-      moduleSpreads: [
-        {
-          depth: 3,
-          directModuleIds: ["alpha:modules/alpha0"],
-          displayName: "alpha0",
-          id: alphaId ?? "",
-          location: buildSourceLocation(),
-          statementCount: 8,
-          transitiveSpread: 5,
-        },
-      ],
-    });
-
-    expect(reports[0]?.misplacedCallables).toHaveLength(1);
-    expect(reports[0]?.moduleSpreads).toHaveLength(1);
-    expect(reports[1]?.misplacedCallables).toStrictEqual([]);
-    expect(reports[1]?.moduleSpreads).toStrictEqual([]);
   });
 });

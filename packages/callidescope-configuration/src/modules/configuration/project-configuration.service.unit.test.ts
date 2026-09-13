@@ -6,8 +6,8 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import {
+  DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_SPREAD_THRESHOLD,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
 } from "./configuration.constants";
@@ -168,9 +168,10 @@ describe(ProjectConfigurationService, () => {
     // `resolveLimits` — never by the project file spreading anything.
     expect(loaded?.authored.limits?.maximumDepth).toBe(3);
     expect(loaded?.authored.excludeFrom).toBeUndefined();
-    expect(loaded?.configuration.limits.spreadThreshold).toBe(
-      DEFAULT_SPREAD_THRESHOLD,
-    );
+    expect(loaded?.authored.exclude).toBeUndefined();
+    expect(loaded?.configuration.exclude).toStrictEqual([
+      ...DEFAULT_EXCLUDE_GLOBS,
+    ]);
   });
 
   it("keeps every limit a project declared for itself", async () => {
@@ -325,21 +326,8 @@ describe(ProjectConfigurationService, () => {
   it.each([
     ["directories", { directories: ["packages/other"] }],
     ["output", { output: { json: { path: "report.json" } } }],
-    [
-      "workspaceStructure",
-      { workspaceStructure: { rootModuleSegment: "app" } },
-    ],
     ["excludeFrom", { excludeFrom: [".callidescopeignore"] }],
     ["ignoreCallees", { ignoreCallees: ["Logger.log"] }],
-    ["allowSpreadFor", { allowSpreadFor: ["**/*.command.ts"] }],
-    ["limits.spreadThreshold", { limits: { spreadThreshold: 2 } }],
-    ["limits.directSpreadThreshold", { limits: { directSpreadThreshold: 2 } }],
-    ["limits.callerMajorityRatio", { limits: { callerMajorityRatio: 0.5 } }],
-    ["limits.minimumCallers", { limits: { minimumCallers: 3 } }],
-    [
-      "limits.maximumImplementationCandidates",
-      { limits: { maximumImplementationCandidates: 4 } },
-    ],
   ])(
     "refuses a project configuration that sets %s",
     async (field, configuration) => {
@@ -376,7 +364,7 @@ describe(ProjectConfigurationService, () => {
     ).rejects.toThrow(
       "packages/broken sets output, which only the workspace configuration " +
         "may set. A project configuration may set entryPoints, exclude, " +
-        "limits.maximumBreadth, and limits.maximumDepth.",
+        "and limits.",
     );
   });
 
@@ -431,9 +419,9 @@ describe(ProjectConfigurationService, () => {
   it("never refuses the run's own workspace configuration for the fields it legitimately sets", async () => {
     const workspaceRoot = await writeWorkspace({
       "packages/examples": JSON.stringify({
-        limits: { maximumImplementationCandidates: 4 },
+        directories: ["packages"],
+        excludeFrom: [".callidescopeignore"],
         output: { json: { path: "report.json" } },
-        workspaceStructure: { rootModuleSegment: "app" },
       }),
     });
 

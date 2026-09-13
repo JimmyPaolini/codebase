@@ -303,6 +303,12 @@ _This project has no internal file imports._
 
 <!-- CODE_STATISTICS_START -->
 
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs" -->
+_This project defines no NestJS modules to graph._
+<!-- codependix:end name="codependix-nestjs" -->
+
 ## ⏲️ Codometer
 
 ### Project

@@ -2,7 +2,6 @@ import { ProjectConfigurationService } from "@callidescope/configuration";
 import {
   CallablesService,
   ClassesService,
-  CohesionService,
   EntriesService,
   ExternalService,
   FileFilterService,
@@ -51,7 +50,6 @@ export class CallidescopeService {
   constructor(
     private readonly callablesService: CallablesService,
     private readonly classHierarchyService: ClassesService,
-    private readonly cohesionService: CohesionService,
     private readonly entryPointsService: EntriesService,
     private readonly externalService: ExternalService,
     private readonly fileFilterService: FileFilterService,
@@ -76,8 +74,8 @@ export class CallidescopeService {
    *
    * Shared by `trace`, which goes on to run the full analysis, and `locate`,
    * which only needs the collected callables and their graph to resolve one
-   * address — cohesion, entry points, and project reports are work `locate`'s
-   * callers never asked for. Both read the same declarations, because a
+   * address — entry points and project reports are work `locate`'s callers
+   * never asked for. Both read the same declarations, because a
    * project's own `exclude` decides which files exist to be collected at all,
    * and an address resolved against a different set of files from the one a
    * gated run measures would be an address about a different codebase.
@@ -103,11 +101,7 @@ export class CallidescopeService {
       ownedFilePaths: new Set(programSet.ownerByFilePath.keys()),
       workspaceRoot: args.workspaceRoot,
     });
-    this.classHierarchyService.build({
-      maximumCandidates:
-        args.configuration.limits.maximumImplementationCandidates,
-      programs: programSet.programs,
-    });
+    this.classHierarchyService.build({ programs: programSet.programs });
 
     const collection = this.callablesService.collect({
       fileFilter: this.fileFilterService.buildProjectFileFilter({
@@ -158,8 +152,6 @@ export class CallidescopeService {
     projects: WorkspaceProject[];
     startingProjects: WorkspaceProject[];
   } {
-    this.workspaceService.configure(args.configuration.workspaceStructure);
-
     const fileFilter = this.fileFilterService.buildFileFilter({
       exclude: args.configuration.exclude,
       excludeFrom: args.configuration.excludeFrom,
@@ -315,22 +307,6 @@ export class CallidescopeService {
       graph,
       workspaceRoot: args.workspaceRoot,
     });
-    const cohesionArguments = {
-      allowSpreadFor: args.configuration.allowSpreadFor,
-      callablesById: args.callablesById,
-      condensed,
-      graph,
-      limits: args.configuration.limits,
-      measurement,
-    };
-
-    const misplacedCallables =
-      this.cohesionService.findMisplacedCallables(cohesionArguments);
-    const moduleSpreads =
-      this.cohesionService.findModuleSpreads(cohesionArguments);
-    const typeDepths =
-      this.cohesionService.summarizeTypeDepths(cohesionArguments);
-
     const projects = this.projectReportsService.build({
       breadthMeasurement,
       callablesById: args.callablesById,
@@ -339,10 +315,7 @@ export class CallidescopeService {
       fileCountByProject: args.fileCountByProject,
       graph,
       measurement,
-      misplacedCallables,
-      moduleSpreads,
       projectNames: args.projectNames,
-      typeDepths,
     });
 
     const summary: CallGraphSummary = {
@@ -371,8 +344,6 @@ export class CallidescopeService {
       edgeCount: summary.edgeCount,
       entryPointCount: summary.entryPointCount,
       maximumDepthTraced: summary.maximumDepth,
-      misplacedCount: misplacedCallables.length,
-      spreadCount: moduleSpreads.length,
     });
 
     return {
@@ -382,11 +353,8 @@ export class CallidescopeService {
           limits: args.projectLimits,
           reports: projects,
         }),
-        misplacedCallables,
-        moduleSpreads,
         projects,
         summary,
-        typeDepths,
         wideCallables: this.projectReportsService.findWideCallables({
           limits: args.projectLimits,
           reports: projects,
@@ -402,7 +370,7 @@ export class CallidescopeService {
    *
    * For the `depth` and `breadth` commands, which resolve one address against
    * the collected callables and then walk the graph from it — neither needs
-   * cohesion, entry points, or project reports, all of which `analyze` builds
+   * entry points or project reports, both of which `analyze` builds
    * unconditionally.
    *
    * Asynchronous because discovery is: every project's own configuration is

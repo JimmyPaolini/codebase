@@ -10,7 +10,6 @@ import {
 import {
   AddressService,
   BreadthService,
-  CohesionService,
   ComponentsService,
   DocumentationService,
   EntriesService,
@@ -74,7 +73,6 @@ function buildConfiguration(
   overrides: Partial<ResolvedCallidescopeConfiguration> = {},
 ): ResolvedCallidescopeConfiguration {
   return {
-    allowSpreadFor: [],
     directories: [],
     entryPoints: {
       addresses: [],
@@ -87,12 +85,7 @@ function buildConfiguration(
     excludeFrom: [],
     ignoreCallees: [],
     limits: {
-      callerMajorityRatio: 0.8,
-      directSpreadThreshold: 2,
       maximumDepth: 2,
-      maximumImplementationCandidates: 8,
-      minimumCallers: 2,
-      spreadThreshold: 2,
     },
     output: {
       format: "markdown",
@@ -100,10 +93,6 @@ function buildConfiguration(
       markdown: undefined,
       mermaid: undefined,
       projectReadmes: undefined,
-    },
-    workspaceStructure: {
-      modulesDirectory: "modules",
-      rootModuleSegment: "src",
     },
     ...overrides,
   };
@@ -117,7 +106,6 @@ function buildSubject(args: {
   return new CallidescopeService(
     args.fixture.callables,
     args.fixture.hierarchy,
-    new CohesionService(),
     new EntriesService(new AddressService(), createMock<LoggerService>()),
     args.fixture.external,
     args.fixture.fileFilter,
@@ -212,8 +200,6 @@ describe(CallidescopeService, () => {
         edgeCount: 0,
         entryPointCount: 1,
         maximumDepthTraced: 1,
-        misplacedCount: 0,
-        spreadCount: 0,
       },
     );
   });
@@ -432,24 +418,6 @@ describe(CallidescopeService, () => {
     expect(result.summary.maximumDepth).toBe(3);
   });
 
-  it("summarizes the depth range of a class's members", () => {
-    const result = analyze({
-      files: {
-        "packages/example/src/index.ts": `
-          export class Service {
-            public shallow(): void {}
-            public deep(): void { this.shallow(); }
-          }
-        `,
-      },
-    });
-
-    expect(result.typeDepths[0]).toMatchObject({
-      maximumDepth: 2,
-      memberCount: 2,
-      minimumDepth: 1,
-    });
-  });
   // 📮 Roots a callable the configuration declared by address
 
   it("roots a callable the configuration declared as an entry point", () => {

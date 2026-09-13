@@ -50,7 +50,7 @@ function resolveFirstCall(source: string): ResolvedCallSite {
 
   const hierarchy = new ClassesService(external);
 
-  hierarchy.build({ maximumCandidates: 8, programs: [projectProgram] });
+  hierarchy.build({ programs: [projectProgram] });
 
   const subject = new SymbolResolutionService(hierarchy, external);
   const call = findNode(
@@ -140,7 +140,7 @@ describe(SymbolResolutionService, () => {
 
     const hierarchy = new ClassesService(external);
 
-    hierarchy.build({ maximumCandidates: 8, programs: [projectProgram] });
+    hierarchy.build({ programs: [projectProgram] });
 
     const subject = new SymbolResolutionService(hierarchy, external);
     const call = findNode(

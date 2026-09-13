@@ -43,9 +43,10 @@ Two questions this answers that reading code does not:
 - **How deep does this actually get?** Following an injected dependency by hand
   means opening the module, finding the provider, and opening that — for every
   hop. The tool does it with the type checker, which is what makes it exact.
-- **Is this function in the right place?** A function whose callers all live in
-  another module is usually in the wrong file, and nothing about reading it
-  would tell you so.
+- **How much does this one callable reach?** Breadth counts the distinct
+  callables a function calls directly, which no file-at-a-time reader can
+  resolve through an injected dependency or a structurally satisfied
+  interface.
 
 ## Usage
 
@@ -369,20 +370,15 @@ out of a package did before closures existed.
 
 A file is owned by the **deepest project root containing it**, whichever program
 pulled it in — not by whichever program happened to read it first. That is what
-makes two runs agree: the same callable sits in the same module and measures the
-same depth whether the run was scoped to its own project, scoped to something
-that depends on it, or scoped to nothing at all — provided each of those runs
-builds the project declaring it, which a refused destination's is not.
+makes two runs agree: the same callable measures the same depth whether the run
+was scoped to its own project, scoped to something that depends on it, or scoped
+to nothing at all — provided each of those runs builds the project declaring it,
+which a refused destination's is not.
 
-Both cross-project findings survive a downward-only scope, which is worth saying
-because it is not obvious:
-
-- **Module spread** folds over a callable's transitive **callees**, which run
-  downward — precisely what a closure holds in full.
-- **Possibly misplaced** compares a callable's callers **within its own
-  project**, which a run always has whole whatever its scope.
-
-Neither needs the dependents a scoped run leaves out.
+Both findings survive a downward-only scope, which is worth saying because it is
+not obvious: depth and breadth both fold over a callable's **callees**, which
+run downward — precisely what a closure holds in full. Neither needs the
+dependents a scoped run leaves out.
 
 **Publishing does not widen with measurement.** `projectReadmes` writes a
 section only for the projects a run was scoped to, so a scoped run never
@@ -431,13 +427,8 @@ did nothing without it.
 exceeds `maximumDepth`. Only one path per entry point is ever built — the deepest —
 so a wide graph costs no more than a narrow one.
 
-**Module spread.** A callable whose callees reach many unrelated modules, _and_
-which calls several of them directly. Both conditions matter: transitive reach
-alone flags every entry point, because an entry point legitimately reaches the
-whole program.
-
-**Possibly misplaced callables.** A callable whose callers nearly all sit in one
-other module of the same project. The output is a concrete move.
+**Wide callables.** A callable calling more distinct callables directly than
+`maximumBreadth` allows, reported per project the same way depth is.
 
 A depth printed as `≥ 10` is a floor rather than a measurement: something on
 that path could not be followed — a callback invoked through a parameter, a
@@ -495,7 +486,7 @@ carries the service's type, and the checker follows it.
 | ---------- | ----------- |
 | `helper()` | The symbol at the callee, unwrapped through import aliases |
 | `this.service.load()` | The symbol at the member name — the injected-dependency case |
-| `provider.ingest()` | Every class structurally satisfying the interface, capped by `maximumImplementationCandidates` |
+| `provider.ingest()` | Every class structurally satisfying the interface, capped by the implementation-candidate cap |
 | `super.run()` | The base declaration the checker resolves to |
 | `new Thing()` | The constructor, when it has a body |
 | `list.map(callback)` | The callback, as its own frame — `map` itself is external |
@@ -557,7 +548,7 @@ every resolver ends the same way. `jscpd` already covers real duplication.
 | ------- | ---- |
 | [`@callidescope/cli`](.) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
-| [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
+| [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth and breadth |
 | [`@callidescope/nx`](../callidescope-nx/README.md) | Nx plugin: per-project `trace`/`depth`/`breadth` targets, scoped through the Nx dependency graph |
 | [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
 | [`@callidescope/examples`](../callidescope-examples/README.md) | A traced fixture codebase carrying one worked example of everything above |
@@ -1015,7 +1006,6 @@ flowchart LR
   CallablesModule
   CallidescopeModule
   ClassesModule
-  CohesionModule
   ConfigModule([ConfigModule])
   ConfigurationModule
   DepthModule
@@ -1049,7 +1039,6 @@ flowchart LR
   CallablesModule --> WorkspaceModule
   CallidescopeModule --> CallablesModule
   CallidescopeModule --> ClassesModule
-  CallidescopeModule --> CohesionModule
   CallidescopeModule --> ConfigurationModule
   CallidescopeModule --> EdgesModule
   CallidescopeModule --> EntriesModule
@@ -1160,7 +1149,6 @@ graph LR
   file_testing_modules_ts["testing/modules.ts"]
   file_testing_programs_ts["testing/programs.ts"]
   file_testing_setup_ts["testing/setup.ts"]
-  file_testing_workspace_limits_integration_test_ts["testing/workspace-limits.integration.test.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_constants_ts

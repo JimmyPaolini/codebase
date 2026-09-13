@@ -17,6 +17,7 @@ export type {
   DescribeCallableArguments,
   DiscoveredCallable,
 } from "./modules/callables/callables.types";
+export { MAXIMUM_IMPLEMENTATION_CANDIDATES } from "./modules/classes/classes.constants";
 export { ClassesModule } from "./modules/classes/classes.module";
 export { ClassesService } from "./modules/classes/classes.service";
 export type {
@@ -24,12 +25,6 @@ export type {
   ImplementationLookup,
 } from "./modules/classes/classes.types";
 export { ExternalService } from "./modules/classes/external.service";
-export { CohesionModule } from "./modules/cohesion/cohesion.module";
-export { CohesionService } from "./modules/cohesion/cohesion.service";
-export type {
-  AnalyzeCohesionArguments,
-  CallerDistribution,
-} from "./modules/cohesion/cohesion.types";
 export { DEPRECATED_TAG } from "./modules/documentation/documentation.constants";
 export { DocumentationModule } from "./modules/documentation/documentation.module";
 export { DocumentationService } from "./modules/documentation/documentation.service";
@@ -116,8 +111,6 @@ export { SignaturesService } from "./modules/signatures/signatures.service";
 export type { ReadSignatureArguments } from "./modules/signatures/signatures.types";
 export { FileFilterService } from "./modules/workspace/file-filter.service";
 export {
-  DEFAULT_MODULES_DIRECTORY,
-  DEFAULT_ROOT_MODULE_SEGMENT,
   EXCLUDED_SCAN_DIRECTORY_NAMES,
   PROJECT_CONFIGURATION_NAME,
   TEST_DIRECTORY_SEGMENT,
@@ -131,5 +124,4 @@ export type {
   DiscoverProjectsArguments,
   FileFilter,
   WorkspaceProject,
-  WorkspaceStructure,
 } from "./modules/workspace/workspace.types";

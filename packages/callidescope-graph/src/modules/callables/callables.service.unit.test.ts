@@ -246,19 +246,6 @@ describe(CallablesService, () => {
     ).toStrictEqual(["a"]);
   });
 
-  it("names the module each callable belongs to", () => {
-    const collection = collect({
-      files: {
-        "packages/example/src/modules/discovery/discovery.service.ts":
-          "export function find(): void {}",
-      },
-    });
-
-    expect([...collection.byId.values()][0]?.node.moduleId).toBe(
-      "example:modules/discovery",
-    );
-  });
-
   it("names the project each callable belongs to", () => {
     const collection = collect({
       files: {

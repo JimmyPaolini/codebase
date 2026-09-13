@@ -332,45 +332,6 @@ describe(WorkspaceService, () => {
     ).toStrictEqual([]);
   });
 
-  // 🏷️ Module identity
-
-  it("names a module folder by its own directory", () => {
-    expect(
-      subject.resolveModuleId({
-        project: PROJECT,
-        workspaceRelativePath:
-          "packages/example/src/modules/discovery/discovery.service.ts",
-      }),
-    ).toBe("example:modules/discovery");
-  });
-
-  it("names another src subtree by its first directory", () => {
-    expect(
-      subject.resolveModuleId({
-        project: PROJECT,
-        workspaceRelativePath: "packages/example/src/routes/index.tsx",
-      }),
-    ).toBe("example:routes");
-  });
-
-  it("names a file directly under src by the src root", () => {
-    expect(
-      subject.resolveModuleId({
-        project: PROJECT,
-        workspaceRelativePath: "packages/example/src/main.ts",
-      }),
-    ).toBe("example:src");
-  });
-
-  it("names a file outside src by the src root", () => {
-    expect(
-      subject.resolveModuleId({
-        project: PROJECT,
-        workspaceRelativePath: "packages/example/scripts/build.ts",
-      }),
-    ).toBe("example:src");
-  });
-
   // 🎯 Ownership
 
   it("gives a file to the project whose root contains it", () => {
@@ -620,41 +581,6 @@ describe(WorkspaceService, () => {
     });
 
     expect(reached).toStrictEqual(["workspace-root"]);
-  });
-
-  // ⚙️ Configuration
-
-  it("names a module folder by a configured modules directory", () => {
-    const configured = new WorkspaceService(subjectLogger);
-
-    configured.configure({
-      modulesDirectory: "features",
-      rootModuleSegment: "lib",
-    });
-
-    expect(
-      configured.resolveModuleId({
-        project: PROJECT,
-        workspaceRelativePath:
-          "packages/example/lib/features/discovery/discovery.service.ts",
-      }),
-    ).toBe("example:features/discovery");
-  });
-
-  it("names a file directly under a configured root segment", () => {
-    const configured = new WorkspaceService(subjectLogger);
-
-    configured.configure({
-      modulesDirectory: "features",
-      rootModuleSegment: "lib",
-    });
-
-    expect(
-      configured.resolveModuleId({
-        project: PROJECT,
-        workspaceRelativePath: "packages/example/lib/main.ts",
-      }),
-    ).toBe("example:lib");
   });
 
   // 🧪 Test detection

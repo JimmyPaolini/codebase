@@ -115,9 +115,7 @@ export class WorkspaceReportService {
         headroom: limits.maximumDepth.value - deepest,
         isDeclared: limits.maximumDepth.origin === "declared",
         limit: limits.maximumDepth.value,
-        misplacedCount: report.misplacedCallables.length,
         projectName: report.projectName,
-        spreadCount: report.moduleSpreads.length,
         widest: this.widestBreadth(report),
       };
     });
@@ -189,7 +187,7 @@ export class WorkspaceReportService {
       MARKDOWN_PROJECT_INDEX_HEADER,
       ...rows.map(
         (row) =>
-          `| \`${row.projectName === "" ? ROOT_PROJECT_LABEL : row.projectName}\` | ${String(row.deepest)} | ${String(row.limit)} ${row.isDeclared ? "declared" : "inherited"} | ${String(row.headroom)} | ${String(row.widest)} | ${String(row.spreadCount)} | ${String(row.misplacedCount)} |`,
+          `| \`${row.projectName === "" ? ROOT_PROJECT_LABEL : row.projectName}\` | ${String(row.deepest)} | ${String(row.limit)} ${row.isDeclared ? "declared" : "inherited"} | ${String(row.headroom)} | ${String(row.widest)} |`,
       ),
     ].join("\n");
   }

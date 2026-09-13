@@ -28,7 +28,6 @@ export function buildCallableNode(
     kind: "method",
     location,
     memberName: "example",
-    moduleId: "example:modules/example",
     projectName: "example",
     statementCount: 1,
     ...overrides,

@@ -3,7 +3,6 @@
 import type {
   CallableId,
   CallEdge,
-  ModuleId,
   SourceLocation,
   UnresolvedCall,
 } from "@callidescope/configuration";
@@ -53,8 +52,6 @@ export interface ComponentDepth {
   /** The successor lying on the deepest path, for O(depth) reconstruction. */
   readonly deepestSuccessor: number | undefined;
   readonly depth: number;
-  /** Modules this component and everything below it touch. */
-  readonly moduleIds: ReadonlySet<ModuleId>;
   /** True when the deepest path runs through an unfollowable call. */
   readonly reachesUnresolved: boolean;
 }
@@ -71,7 +68,7 @@ export interface CondensedGraph {
   readonly successorsByComponent: readonly ReadonlySet<number>[];
 }
 
-/** Depth and spread for every component in the condensation. */
+/** Depth for every component in the condensation. */
 export interface DepthMeasurement {
   readonly byComponent: readonly ComponentDepth[];
 }
@@ -87,9 +84,8 @@ export interface MeasureBreadthArguments {
   readonly graph: CallGraph;
 }
 
-/** Arguments for measuring depth and module spread across the graph. */
+/** Arguments for measuring depth across the graph. */
 export interface MeasureDepthArguments {
   readonly condensed: CondensedGraph;
   readonly graph: CallGraph;
-  readonly moduleIdByCallable: ReadonlyMap<CallableId, ModuleId>;
 }

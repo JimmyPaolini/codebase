@@ -8,23 +8,15 @@ import { ZodError } from "zod";
 
 import {
   ConfigurationFileNotFoundError,
-  DEFAULT_ALLOW_SPREAD_FOR,
-  DEFAULT_CALLER_MAJORITY_RATIO,
-  DEFAULT_DIRECT_SPREAD_THRESHOLD,
   DEFAULT_ENTRY_POINT_DECORATORS,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
-  DEFAULT_MINIMUM_CALLERS,
-  DEFAULT_MODULES_DIRECTORY,
   DEFAULT_PREVIEW_COUNT,
   DEFAULT_PROJECT_README_HEADING,
-  DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_RUN_HEADING,
-  DEFAULT_SPREAD_THRESHOLD,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
@@ -78,9 +70,6 @@ describe(ConfigurationService, () => {
     expect(configuration.excludeFrom).toStrictEqual([]);
     expect(configuration.ignoreCallees).toStrictEqual([]);
     expect(configuration.directories).toStrictEqual([]);
-    expect(configuration.allowSpreadFor).toStrictEqual([
-      ...DEFAULT_ALLOW_SPREAD_FOR,
-    ]);
     expect(configuration.output.json).toBeUndefined();
     expect(configuration.output.markdown).toBeUndefined();
   });
@@ -89,14 +78,8 @@ describe(ConfigurationService, () => {
     const configuration = service.resolveConfiguration({});
 
     expect(configuration.limits).toStrictEqual({
-      callerMajorityRatio: DEFAULT_CALLER_MAJORITY_RATIO,
-      directSpreadThreshold: DEFAULT_DIRECT_SPREAD_THRESHOLD,
       maximumBreadth: undefined,
       maximumDepth: DEFAULT_MAXIMUM_DEPTH,
-      maximumImplementationCandidates:
-        DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
-      minimumCallers: DEFAULT_MINIMUM_CALLERS,
-      spreadThreshold: DEFAULT_SPREAD_THRESHOLD,
     });
   });
 
@@ -136,26 +119,6 @@ describe(ConfigurationService, () => {
     });
   });
 
-  it("applies every workspace-structure default", () => {
-    const configuration = service.resolveConfiguration({});
-
-    expect(configuration.workspaceStructure).toStrictEqual({
-      modulesDirectory: DEFAULT_MODULES_DIRECTORY,
-      rootModuleSegment: DEFAULT_ROOT_MODULE_SEGMENT,
-    });
-  });
-
-  it("keeps an authored workspace structure and defaults the rest", () => {
-    const configuration = service.resolveConfiguration({
-      workspaceStructure: { modulesDirectory: "features" },
-    });
-
-    expect(configuration.workspaceStructure).toStrictEqual({
-      modulesDirectory: "features",
-      rootModuleSegment: DEFAULT_ROOT_MODULE_SEGMENT,
-    });
-  });
-
   // 🎛️ Overrides
 
   it("keeps an authored limit and defaults the rest", () => {
@@ -164,7 +127,7 @@ describe(ConfigurationService, () => {
     });
 
     expect(configuration.limits.maximumDepth).toBe(12);
-    expect(configuration.limits.spreadThreshold).toBe(DEFAULT_SPREAD_THRESHOLD);
+    expect(configuration.limits.maximumBreadth).toBeUndefined();
   });
 
   it("keeps authored callee-ignore globs", () => {
@@ -214,14 +177,6 @@ describe(ConfigurationService, () => {
     );
 
     expect(occurrences).toHaveLength(1);
-  });
-
-  it("replaces the spread allowances rather than adding to them", () => {
-    const configuration = service.resolveConfiguration({
-      allowSpreadFor: ["**/*.resolver.ts"],
-    });
-
-    expect(configuration.allowSpreadFor).toStrictEqual(["**/*.resolver.ts"]);
   });
 
   // 📤 Output destinations
@@ -581,9 +536,15 @@ describe(ConfigurationService, () => {
     ).rejects.toThrow(ZodError);
   });
 
-  it("rejects a caller majority ratio above one", async () => {
+  it.each([
+    ["callerMajorityRatio", 0.8],
+    ["directSpreadThreshold", 3],
+    ["maximumImplementationCandidates", 8],
+    ["minimumCallers", 2],
+    ["spreadThreshold", 4],
+  ])("refuses the retired limit %s", async (limit, value) => {
     const configurationPath = await writeConfiguration({
-      limits: { callerMajorityRatio: 1.5 },
+      limits: { [limit]: value },
     });
 
     await expect(
@@ -591,26 +552,14 @@ describe(ConfigurationService, () => {
     ).rejects.toThrow(ZodError);
   });
 
-  it("rejects a caller majority ratio of zero", async () => {
+  it("refuses a limit nothing in the tool reads", async () => {
     const configurationPath = await writeConfiguration({
-      limits: { callerMajorityRatio: 0 },
+      limits: { maximumDepth: 6, maximumWidth: 3 },
     });
 
     await expect(
       service.loadConfiguration({ configurationPath }),
     ).rejects.toThrow(ZodError);
-  });
-
-  it("accepts a caller majority ratio of exactly one", async () => {
-    const configurationPath = await writeConfiguration({
-      limits: { callerMajorityRatio: 1 },
-    });
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.limits.callerMajorityRatio).toBe(1);
   });
 
   it("rejects a JSON output destination with no path", async () => {

@@ -68,7 +68,6 @@ async function addUnreadableProject(workspaceRoot: string): Promise<void> {
 /** Builds a resolved configuration for the fixture workspace. */
 function buildConfiguration(): ResolvedCallidescopeConfiguration {
   return {
-    allowSpreadFor: [],
     directories: [],
     entryPoints: {
       addresses: [],
@@ -81,12 +80,7 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
     excludeFrom: [],
     ignoreCallees: [],
     limits: {
-      callerMajorityRatio: 0.8,
-      directSpreadThreshold: 2,
       maximumDepth: 2,
-      maximumImplementationCandidates: 8,
-      minimumCallers: 2,
-      spreadThreshold: 2,
     },
     output: {
       format: "markdown",
@@ -94,10 +88,6 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       markdown: undefined,
       mermaid: undefined,
       projectReadmes: undefined,
-    },
-    workspaceStructure: {
-      modulesDirectory: "modules",
-      rootModuleSegment: "src",
     },
   };
 }
@@ -305,16 +295,17 @@ async function makeWorkspaceRoot(prefix: string): Promise<string> {
 /** The configuration file name a project declares itself through. */
 const PROJECT_CONFIGURATION = "callidescope.config.json";
 
-/** Reads the deepest depth a project's report measured for one type. */
-function readTypeDepth(args: {
+/** Reads the depth of the stack one project rooted at a named callable. */
+function readStackDepth(args: {
+  entryPointName: string;
   projectName: string;
   result: CallGraphResult;
-  typeName: string;
 }): number | undefined {
   return args.result.projects
     .find((report) => report.projectName === args.projectName)
-    ?.typeDepths.find((entry) => entry.typeName === args.typeName)
-    ?.maximumDepth;
+    ?.stacks.find(
+      (stack) => stack.frames[0]?.displayName === args.entryPointName,
+    )?.depth;
 }
 
 /**
@@ -752,10 +743,10 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
     it("measures the same depth as the run that traced everything", () => {
       const arguments_ = {
+        entryPointName: "ApplicationCommand.run",
         projectName: path.join("packages", "application"),
-        typeName: "ApplicationCommand",
       };
-      const scopedDepth = readTypeDepth({
+      const scopedDepth = readStackDepth({
         ...arguments_,
         result: scoped.result,
       });
@@ -765,7 +756,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
       // reported — and an equality on its own would call that agreement.
       expect(scopedDepth).toBe(SCOPED_COMMAND_DEPTH);
       expect(scopedDepth).toBe(
-        readTypeDepth({ ...arguments_, result: unscoped.result }),
+        readStackDepth({ ...arguments_, result: unscoped.result }),
       );
     });
 

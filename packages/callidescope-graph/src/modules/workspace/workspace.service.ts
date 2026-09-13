@@ -11,8 +11,6 @@ import {
 } from "../program/program.constants";
 
 import {
-  DEFAULT_MODULES_DIRECTORY,
-  DEFAULT_ROOT_MODULE_SEGMENT,
   EXCLUDED_SCAN_DIRECTORY_NAMES,
   PACKAGE_MANIFEST_NAME,
   PROJECT_CONFIGURATION_NAME,
@@ -25,19 +23,9 @@ import type {
   FileFilter,
   WalkImportedProjectClosureArguments,
   WorkspaceProject,
-  WorkspaceStructure,
 } from "./workspace.types";
-import type { ModuleId } from "@callidescope/configuration";
 
-/**
- * Finds the projects a run traces, and names the module every file belongs to.
- *
- * Module identity is derived from a configured directory layout rather than
- * guessed, which is what makes the cohesion findings mean something: two files
- * share a module identifier only when the structure says they are one unit.
- * The layout defaults to this repository's own, and `configure` points it at
- * another workspace's instead.
- */
+/** Finds the projects a run traces, and says which one owns a file. */
 @Injectable()
 export class WorkspaceService {
   // 🏗 Dependency Injection
@@ -47,10 +35,6 @@ export class WorkspaceService {
   }
 
   // 🔐 Private Fields
-
-  private modulesDirectory: string = DEFAULT_MODULES_DIRECTORY;
-
-  private rootModuleSegment: string = DEFAULT_ROOT_MODULE_SEGMENT;
 
   // 🔑 Public Fields
 
@@ -176,18 +160,6 @@ export class WorkspaceService {
   // 🌎 Public Methods
 
   /**
-   * Points module identity at a workspace's own layout.
-   *
-   * Defaults to this repository's own layout so a caller that never invokes
-   * this keeps today's behavior; a host embedding callidescope calls this
-   * once, before tracing, to describe its own repository instead.
-   */
-  public configure(structure: WorkspaceStructure): void {
-    this.modulesDirectory = structure.modulesDirectory;
-    this.rootModuleSegment = structure.rootModuleSegment;
-  }
-
-  /**
    * Resolves the project directories a run will trace.
    *
    * Each of `args.directories` is trusted as a project root outright rather
@@ -278,38 +250,6 @@ export class WorkspaceService {
       TEST_FILE_PATTERN.test(filePath) ||
       filePath.split("/").includes(TEST_DIRECTORY_SEGMENT)
     );
-  }
-
-  /**
-   * Names the module a file belongs to: `<project>:<subtree>`.
-   *
-   * A file under `<root>/<modules>/<name>/` is identified by that module.
-   * Anything else falls back to its first subdirectory under the source
-   * root, so routes and components still group into something a finding can
-   * name.
-   */
-  public resolveModuleId(args: {
-    project: WorkspaceProject;
-    workspaceRelativePath: string;
-  }): ModuleId {
-    const relative = path.posix.relative(
-      args.project.root,
-      args.workspaceRelativePath,
-    );
-    const segments = relative.split("/");
-    const [head, ...rest] = segments;
-
-    if (head !== this.rootModuleSegment || rest.length <= 1) {
-      return `${args.project.name}:${this.rootModuleSegment}`;
-    }
-
-    const [first, second] = rest;
-
-    if (first === this.modulesDirectory && second !== undefined) {
-      return `${args.project.name}:${this.modulesDirectory}/${second}`;
-    }
-
-    return `${args.project.name}:${first ?? this.rootModuleSegment}`;
   }
 
   /**
