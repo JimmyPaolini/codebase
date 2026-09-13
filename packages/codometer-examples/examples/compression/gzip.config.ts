@@ -1,7 +1,7 @@
 import type { CodometerConfiguration } from "@codometer/configuration";
 
 /**
- * The corpus measured at gzip, which is what a target compresses with by
+ * The corpus measured at gzip, which is what an input compresses with by
  * default. Level 9, stated rather than defaulted.
  *
  * Each file is compressed **on its own** and the results summed — never all of
@@ -11,12 +11,13 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * across files nobody downloads together.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/compression/gzip.config.ts
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../compression/gzip.config.ts
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
-  python: { command: "uv run python" },
-  targets: [
+  format: "markdown",
+  inputs: [
     {
       analyses: ["size"],
       compression: "gzip",
@@ -25,6 +26,7 @@ const codometerConfiguration: CodometerConfiguration = {
       name: "Compiled",
     },
   ],
+  python: { command: "uv run python" },
 };
 
 export default codometerConfiguration;

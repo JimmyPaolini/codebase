@@ -10,13 +10,13 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * gate nothing.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/limits/unreadable-unit.config.ts --check limits
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../limits/unreadable-unit.config.ts --check limits
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
-  limits: [{ metric: "Corpus.size", value: "8 K" }],
-  python: { command: "uv run python" },
-  targets: [
+  format: "markdown",
+  inputs: [
     {
       analyses: ["size"],
       compression: "gzip",
@@ -24,6 +24,8 @@ const codometerConfiguration: CodometerConfiguration = {
       name: "Corpus",
     },
   ],
+  limits: [{ metric: "Corpus.size", value: "8 K" }],
+  python: { command: "uv run python" },
 };
 
 export default codometerConfiguration;

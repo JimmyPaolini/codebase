@@ -54,9 +54,15 @@ const FIXTURE_FILES: Readonly<Record<string, string>> = {
  *
  * Every caller owes the tree a `removeFixtureTree` — a suite that forgets
  * leaves its trees behind in the system temporary directory for good.
+ *
+ * `parentDirectory` defaults to the system temporary directory; a caller that
+ * spawns a real process pointed at the tree — which measures wherever its own
+ * working directory is, with no flag to say otherwise — may need the tree
+ * somewhere the spawned process's own module resolution already reaches, and
+ * names that directory here instead.
  */
-export function createFixtureTree(): string {
-  const root = mkdtempSync(path.join(tmpdir(), "codometer-fixture-"));
+export function createFixtureTree(parentDirectory: string = tmpdir()): string {
+  const root = mkdtempSync(path.join(parentDirectory, "codometer-fixture-"));
 
   for (const [relativePath, contents] of Object.entries(FIXTURE_FILES)) {
     const absolutePath = path.join(root, relativePath);

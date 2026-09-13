@@ -1,32 +1,38 @@
 import type { CodometerConfiguration } from "@codometer/configuration";
 
 /**
- * A `render` that adds to the built-in report rather than replacing it.
+ * A `write` that adds to the built-in badge rendering rather than replacing
+ * it.
  *
  * `renderBadges()` is the default rendering of these same statistics, handed
- * to the renderer so adding a line above them costs one template literal
- * instead of rewriting every badge group by hand.
- *
- * Supplying `render` keeps the built-in `write`: the result is still spliced
- * between the markers, into the configured path. The two halves are replaceable
- * on their own, and supplying one never opts out of the other.
+ * to the writer so adding a line above them costs one template literal
+ * instead of rewriting every badge group by hand. `render` and `write` used to
+ * be two separate callbacks — one deciding what the markdown said, the other
+ * deciding where it landed — and are now one: this `write` builds the content
+ * itself and hands it to `anchors.syncAnchoredBlock`, which is the splice the
+ * built-in writer would have done anyway.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/output/custom-render.config.ts --write
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../output/custom-render.config.ts --output-markdown
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
-  output: {
-    markdown: {
+  format: "markdown",
+  outputs: [
+    {
       path: "statistics.md",
-      render: ({ renderBadges, statistics }) =>
-        [
-          `**${statistics.sourceFiles} source files**, `,
-          `${statistics.linesOfCode} lines of code.\n`,
-          renderBadges(),
-        ].join(""),
+      type: "markdown",
+      write: ({ anchors, renderBadges, statistics }) =>
+        anchors.syncAnchoredBlock({
+          content: [
+            `**${statistics.sourceFiles} source files**, `,
+            `${statistics.linesOfCode} lines of code.\n`,
+            renderBadges(),
+          ].join(""),
+        }),
     },
-  },
+  ],
   python: { command: "uv run python" },
 };
 

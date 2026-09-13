@@ -124,16 +124,16 @@ export class LimitsService {
   private findDefaultCandidate(
     args: ResolveMetricArguments,
   ): MetricBinding | undefined {
-    if (args.defaultTarget === undefined) {
+    if (args.defaultInput === undefined) {
       return undefined;
     }
 
-    const index = args.indexes.get(args.defaultTarget);
+    const index = args.indexes.get(args.defaultInput);
 
     if (index === undefined) {
       throw new UnboundMetricError(
         args.path,
-        `the configured default target "${args.defaultTarget}" was never measured. Measured targets: ${this.describeTargets(args.indexes)}.`,
+        `the configured default input "${args.defaultInput}" was never measured. Measured targets: ${this.describeTargets(args.indexes)}.`,
       );
     }
 
@@ -141,7 +141,7 @@ export class LimitsService {
       index,
       metricPath: args.path,
       path: args.path,
-      target: args.defaultTarget,
+      target: args.defaultInput,
     });
   }
 
@@ -160,7 +160,7 @@ export class LimitsService {
     if (binding === undefined) {
       throw new UnboundMetricError(
         args.path,
-        `nothing measured answers to it. Measured targets: ${this.describeTargets(args.indexes)}. Write the target's name in front of the metric path, or configure a default target.`,
+        `nothing measured answers to it. Measured targets: ${this.describeTargets(args.indexes)}. Write the target's name in front of the metric path, or configure a default input.`,
       );
     }
 
@@ -204,7 +204,7 @@ export class LimitsService {
     for (const limit of args.configuration.limits) {
       try {
         const binding = this.resolve({
-          defaultTarget: args.configuration.defaultTarget,
+          defaultInput: args.configuration.defaultInput,
           indexes: args.indexes,
           path: limit.metric,
         });

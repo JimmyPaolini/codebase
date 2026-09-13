@@ -10,6 +10,7 @@ import type {
   ConfiguredLimitRow,
   RenderConfigurationArguments,
 } from "./configuration.types";
+import type { ResolvedCodometerOutput } from "@codometer/configuration";
 
 /**
  * Turns a resolved configuration listing into the document a reader gets.
@@ -51,10 +52,9 @@ export class RenderConfigurationService {
       "",
       `Declared in \`${entry.path}\`.`,
       "",
-      `- Targets: ${this.renderNames(configuration.targets.map((target) => target.name))}`,
+      `- Inputs: ${this.renderNames(configuration.inputs.map((input) => input.name))}`,
       `- Limits: ${String(configuration.limits.length)}`,
-      `- Custom statistics: ${this.renderNames(configuration.statistics.map((statistic) => statistic.label))}`,
-      `- Documentation check: ${configuration.documentation === undefined ? "off" : "on"}`,
+      `- Custom statistics: ${this.renderNames(this.renderStatisticLabels(configuration.outputs))}`,
       `- Python command: \`${configuration.python.command}\``,
       `- Excluded globs: ${String(configuration.exclude.length)}`,
       `- Exclude files: ${this.renderNames(configuration.excludeFrom)}`,
@@ -88,9 +88,49 @@ export class RenderConfigurationService {
     return names.length === 0 ? "—" : names.join(", ");
   }
 
+  /**
+   * Renders why nothing answered for the walk root, when nothing did.
+   *
+   * Nothing at all otherwise, so the caller's line list is unchanged. Said at
+   * the top of the document rather than left out: every limit below is still
+   * real, but the walk that found them ran on the built-in exclusions rather
+   * than the ones this repository declares.
+   */
+  private renderRootError(rootError: string | undefined): string[] {
+    if (rootError === undefined) {
+      return [];
+    }
+
+    return [
+      `- ⚠️ Nothing answered for the walk root, so the built-in exclusions were used instead: ${rootError}`,
+      "",
+    ];
+  }
+
   /** Renders one markdown table row, escaping nothing a path may not hold. */
   private renderRow(cells: readonly string[]): string {
     return `| ${cells.join(" | ")} |`;
+  }
+
+  /**
+   * Every custom statistic label declared across every output, deduped.
+   *
+   * An output's own `custom` array says which counters it renders, not which
+   * counters exist for the configuration as a whole — the same union
+   * `MeasureService` builds before measuring, read here purely for display.
+   */
+  private renderStatisticLabels(
+    outputs: readonly ResolvedCodometerOutput[],
+  ): string[] {
+    const labels = new Set<string>();
+
+    for (const output of outputs) {
+      for (const statistic of output.custom) {
+        labels.add(statistic.label);
+      }
+    }
+
+    return [...labels];
   }
 
   // 🌎 Public Methods
@@ -100,8 +140,11 @@ export class RenderConfigurationService {
     if (args.format === "json") {
       return JSON.stringify(
         args.limitsOnly
-          ? { limits: args.limitRows }
-          : { configurations: args.described },
+          ? { limits: args.limitRows, rootError: args.rootError ?? null }
+          : {
+              configurations: args.described,
+              rootError: args.rootError ?? null,
+            },
         undefined,
         2,
       );
@@ -111,6 +154,7 @@ export class RenderConfigurationService {
       return [
         `${CONFIGURATION_HEADING}: Limits`,
         "",
+        ...this.renderRootError(args.rootError),
         this.renderLimitsTable(args.limitRows),
       ].join("\n");
     }
@@ -118,6 +162,7 @@ export class RenderConfigurationService {
     return [
       CONFIGURATION_HEADING,
       "",
+      ...this.renderRootError(args.rootError),
       ...args.described.map((entry) => this.renderDirectory(entry)),
       "",
       `${CONFIGURATION_HEADING}: Limits`.replace("# 🔧", "## 🔧"),

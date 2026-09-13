@@ -50,6 +50,24 @@ export class ConfigurationCommand extends CommandRunner {
 
   // 🌎 Public Methods
 
+  /**
+   * Parse the configuration file answering for the walk root.
+   *
+   * The exclusions the walk uses come from whatever configuration answers for
+   * the directory being listed, and a workspace stating its shared object
+   * somewhere every project spreads it from has nothing at its own root for
+   * the upward search to find — so it names that file here, the same way its
+   * measurement target already does.
+   */
+  @Option({
+    description:
+      "Path to the configuration file answering for the directory being listed",
+    flags: "--config [config]",
+  })
+  public parseConfig(value: string | undefined): string | undefined {
+    return value;
+  }
+
   /** Parse the directory to look for configuration files beneath. */
   @Option({
     description: "Directory to look for configuration files beneath",
@@ -100,8 +118,11 @@ export class ConfigurationCommand extends CommandRunner {
     }
 
     const workingDirectory = path.resolve(options.directory ?? process.cwd());
-    const described =
-      await this.configurationService.describeConfigurations(workingDirectory);
+    const { described, rootError } =
+      await this.configurationService.describeConfigurations({
+        configurationPath: options.config,
+        workingDirectory,
+      });
 
     this.logger.info("🔧 Listed the codometer configuration", undefined, {
       configurationCount: described.length,
@@ -109,11 +130,24 @@ export class ConfigurationCommand extends CommandRunner {
         .length,
     });
 
+    // The listing survives a walk root nothing answers for, but the run does
+    // not pass: a zero exit code would say the repository's configuration was
+    // read when the exclusions it declares were never consulted.
+    if (rootError !== undefined) {
+      this.logger.error(
+        "🔧 Found no configuration answering for the walk root",
+        undefined,
+        { reason: rootError },
+      );
+      process.exitCode = 1;
+    }
+
     const document = this.renderConfigurationService.render({
       described,
       format,
       limitRows: this.configurationService.toLimitRows(described),
       limitsOnly: options.limits === true,
+      rootError,
     });
 
     process.stdout.write(`${document}\n`);

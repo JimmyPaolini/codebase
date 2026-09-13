@@ -8,12 +8,13 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * are not served over a network at all.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/compression/none.config.ts
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../compression/none.config.ts
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
-  python: { command: "uv run python" },
-  targets: [
+  format: "markdown",
+  inputs: [
     {
       analyses: ["size"],
       compression: "none",
@@ -22,6 +23,7 @@ const codometerConfiguration: CodometerConfiguration = {
       name: "Compiled",
     },
   ],
+  python: { command: "uv run python" },
 };
 
 export default codometerConfiguration;

@@ -8,16 +8,17 @@ stable across machines.
 
 ```bash
 cp -R examples/corpus /tmp/stale
-codometer --directory /tmp/stale --config examples/staleness/codometer.config.ts --write
-codometer --directory /tmp/stale --config examples/staleness/codometer.config.ts --check reports
+cd /tmp/stale
+codometer --config <path-to>/examples/staleness/codometer.config.ts --output-json
+codometer --config <path-to>/examples/staleness/codometer.config.ts --check reports
 echo $?   # 0
 
 # Stand in for a different Node release's zlib. Nothing in the tree changes.
 jq '(.targets[].metrics[] | select(.path == "size") | .value) += 1' \
-  /tmp/stale/codometer-report.json > /tmp/stale/patched.json
-mv /tmp/stale/patched.json /tmp/stale/codometer-report.json
+  codometer-report.json > patched.json
+mv patched.json codometer-report.json
 
-codometer --directory /tmp/stale --config examples/staleness/codometer.config.ts --check reports
+codometer --config <path-to>/examples/staleness/codometer.config.ts --check reports
 echo $?   # 1 — "Found stale reports"
 ```
 

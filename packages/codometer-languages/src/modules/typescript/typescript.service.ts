@@ -4,7 +4,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import tsCompiler from "typescript";
 
-import { DocumentationMeasurementService } from "./documentation-measurement.service";
+import { DeclarationCommentsService } from "./declaration-comments.service";
 import {
   DOC_TAG_REGEX,
   EMPTY_TYPESCRIPT_RESULT,
@@ -14,6 +14,10 @@ import {
   TODO_REGEX,
 } from "./typescript.constants";
 
+import type {
+  CommentCounter,
+  CommentMeasurement,
+} from "../comments/comments.types";
 import type {
   AnalyzeTypescriptFileArguments,
   TypescriptInput,
@@ -30,7 +34,7 @@ export class TypescriptService {
 
   /** Creates the TypescriptService. */
   constructor(
-    private readonly documentationMeasurementService: DocumentationMeasurementService,
+    private readonly declarationComments: DeclarationCommentsService,
   ) {}
 
   // 🔐 Private Fields
@@ -92,7 +96,8 @@ export class TypescriptService {
 
   /** Read one source file, count its lines and comments, and walk its AST. */
   private analyzeFile(args: AnalyzeTypescriptFileArguments): void {
-    const { counters, documentation, filePath, stats, workingDirectory } = args;
+    const { commentCounters, counters, filePath, stats, workingDirectory } =
+      args;
     const content = readFileSync(
       path.resolve(workingDirectory, filePath),
       "utf8",
@@ -109,8 +114,8 @@ export class TypescriptService {
     stats.todos += (content.match(TODO_REGEX) ?? []).length;
     this.scanComments(content, stats);
     this.walkNode(sourceFile, {
+      commentCounters,
       counters,
-      documentation,
       filePath,
       insideClass: false,
       sourceFile,
@@ -119,13 +124,16 @@ export class TypescriptService {
   }
 
   /** Measure a documentable declaration's leading JSDoc comment, if it has one. */
-  private collectDocumentation(
+  private collectDeclarationComments(
     node: tsCompiler.Node,
     context: TypescriptWalkContext,
   ): void {
-    context.stats.documentation.push(
-      ...this.documentationMeasurementService.measure(node, context),
-    );
+    for (const { label, measurement } of this.declarationComments.measure(
+      node,
+      context,
+    )) {
+      (context.stats.declarationCommentCounts[label] ??= []).push(measurement);
+    }
   }
 
   /** Count a discovered comment and update the appropriate metrics. */
@@ -197,8 +205,10 @@ export class TypescriptService {
 
     return {
       ...EMPTY_TYPESCRIPT_RESULT,
+      declarationCommentCounts: this.seedDeclarationCommentCounts(
+        input.commentCounters,
+      ),
       docTags: { ...EMPTY_TYPESCRIPT_RESULT.docTags },
-      documentation: [],
       externalPackages: new Set<string>(),
       jsFiles: sourceFiles.filter((filePath) =>
         JS_EXTENSIONS.has(path.extname(filePath)),
@@ -421,13 +431,37 @@ export class TypescriptService {
     }
   }
 
+  /**
+   * Seed one empty list per counter this walk is the measurer for.
+   *
+   * A counter naming a `kind` is one of those, and a counter naming only a
+   * `language` is not: `kind` takes precedence, so a counter naming both is
+   * measured here and its `language` never read, which is the same tie-break
+   * `LanguageCommentsService` makes by skipping it. Written as a guarded loop
+   * rather than a filtered `Object.fromEntries`, which would spend two of
+   * `createEmptyResult`'s direct calls instead of one.
+   */
+  private seedDeclarationCommentCounts(
+    counters: readonly CommentCounter[],
+  ): Record<string, CommentMeasurement[]> {
+    const seeded: Record<string, CommentMeasurement[]> = {};
+
+    for (const counter of counters) {
+      if (counter.kind !== undefined) {
+        seeded[counter.label] = [];
+      }
+    }
+
+    return seeded;
+  }
+
   /** Recursively visits each AST node and dispatches to the appropriate handler. */
   private walkNode(
     node: tsCompiler.Node,
     context: TypescriptWalkContext,
   ): void {
     this.countSymbols(node, context);
-    this.collectDocumentation(node, context);
+    this.collectDeclarationComments(node, context);
 
     if (
       node.kind === tsCompiler.SyntaxKind.ClassDeclaration ||
@@ -453,8 +487,8 @@ export class TypescriptService {
 
     for (const filePath of input.sourceFiles) {
       this.analyzeFile({
+        commentCounters: input.commentCounters,
         counters: this.getCountersForFile(filePath, input.symbolCounters),
-        documentation: input.documentation,
         filePath,
         stats,
         workingDirectory: input.workingDirectory,

@@ -1,6 +1,6 @@
 ---
 name: codometer-configure
-description: Write or edit a codometer.config.ts, declaring targets, limits, comment and documentation budgets, custom convention counters, exclusions, or output destinations. Use when a repository has no codometer configuration yet, when adding a size or count limit, when bounding how long a comment block or a JSDoc comment may run, when declaring a target for compiled or generated output, when counting a naming convention no built-in analyzer knows about, when a limit fails to bind or a target matches no files, or when deciding whether one configuration can describe every project in a workspace.
+description: Write or edit a codometer.config.ts, declaring inputs, limits, custom convention counters, comment budgets, exclusions, or output destinations. Use when a repository has no codometer configuration yet, when adding a size or count limit, when bounding how long a comment block or a JSDoc comment may run, when declaring an input for compiled or generated output, when counting a naming convention no built-in analyzer knows about, when a limit fails to bind or an input matches no files, or when deciding whether one configuration can describe every project in a workspace.
 license: MIT
 ---
 
@@ -10,79 +10,40 @@ license: MIT
 being measured, or from any directory above it — the search walks upward and
 takes the **first** file found. The nearest configuration wins outright, and is
 never merged with one further up: a merged limit that never applied to this
-folder would look exactly like one that did. Every field is optional; a
-repository with none of these files is measured with the defaults.
+folder would look exactly like one that did. `format` is the one field every
+configuration must set — there is no code-level fallback for it — and every
+other field is optional.
 
 ```ts
 import { type CodometerConfiguration } from "@codometer/configuration";
 
 const codometerConfiguration: CodometerConfiguration = {
+  format: "markdown",
   exclude: ["notepads/**"],
   excludeFrom: ["configuration/.codometerignore"],
-  defaultTarget: "codebase",
+  defaultInput: "codebase",
   limits: [{ metric: "typescript.interfaces", severity: "warn", value: 500 }],
-  targets: [
+  inputs: [
     {
       analyses: ["size"],
       include: ["dist/**/*.js", "!dist/**/*.map.js"],
       name: "compiled",
     },
   ],
-  output: { markdown: { path: "README.md" } },
+  outputs: [{ path: "README.md", type: "markdown" }],
 };
 
 export default codometerConfiguration;
 ```
 
-Output paths resolve relative to the directory being **measured**, not to the
-configuration file, so a configuration kept in a `configuration/` folder still
-writes to the project root it describes.
-
-## One configuration for every folder in a workspace
-
-Export a **function** instead of an object to let one file at the top of a
-workspace describe every project beneath it:
-
-```ts
-import path from "node:path";
-
-import {
-  type CodometerConfiguration,
-  type CodometerConfigurationFactory,
-} from "@codometer/configuration";
-
-const codometerConfiguration: CodometerConfigurationFactory = (context) => {
-  const projectPath = path.relative(
-    context.configurationDirectory,
-    context.directory,
-  );
-
-  return {
-    targets: [
-      {
-        analyses: ["size"],
-        directory: path.relative(context.directory, context.configurationDirectory),
-        include: [`dist/${projectPath}/**/*.js`],
-        name: "compiled",
-      },
-    ],
-  } satisfies CodometerConfiguration;
-};
-
-export default codometerConfiguration;
-```
-
-The factory receives only two absolute directories — `directory` (what this
-run measures) and `configurationDirectory` (where this file lives) — and
-nothing about the run's flags, so the same configuration can never describe a
-different repository depending on whether the run writes or gates. Every
-per-project path convention — where build output lands, where a limit is
-declared per package — falls out of that one relationship. A factory may
-return a promise, so it can read a manifest before answering.
-
-A project measured under a shared factory still needs no configuration file of
-its own; a project that writes one replaces the shared answer entirely rather
-than adding to it.
+Output paths resolve relative to the process's own working directory, not to
+the configuration file, so a configuration kept in a `configuration/` folder
+still writes to wherever the run was invoked from. A configuration file is
+always read as a plain object — there is no config-as-function escape hatch,
+so one file cannot describe every project in a workspace on its own; a
+repository with many projects gives each its own `codometer.config.ts` and
+spreads a shared object across them, the way this repository's own
+`configuration/codometer.config.ts` does.
 
 ## Exclusions
 
@@ -101,37 +62,43 @@ because a formatter doesn't touch it will erase every markdown metric if
 codometer is pointed at the same file. A dedicated `.codometerignore` is
 usually the right answer instead of reaching for a file another tool owns.
 
-## Targets
+## Inputs
 
-A **target** is a named set of files matched by glob, with the analyses run
-over it. The measured directory is always a target of its own, named
-`codebase`; `targets` declares the others — most often build output that every
-`.gitignore` excludes, and that therefore needs a target rather than an
+An **input** is a named set of files matched by glob, with the analyses run
+over it. The measured directory is always an input of its own, named
+`codebase`; `inputs` declares the others — most often build output that every
+`.gitignore` excludes, and that therefore needs an input rather than an
 exclusion to reach at all.
 
 | Field | Required | Default | Meaning |
 | ----- | -------- | ------- | ------- |
-| `name` | yes | — | Unique name for this target |
+| `name` | yes | — | Unique name for this input |
 | `include` | yes | — | Globs that add files; at least one must add rather than only remove |
 | `exclude` | no | none | Globs that remove files |
 | `analyses` | yes | — | `"language"`, `"size"`, or both |
 | `compression` | no | `gzip` | `gzip`, `brotli`, or `none`, for `size` analysis |
-| `directory` | no | `.` | Where this target's globs start, relative to the measured directory |
+| `directory` | no | `.` | Where this input's globs start, relative to the process's working directory |
 
 A `!` prefix in `include` removes files; every negation across the array forms
-one set applied to the whole target, so reordering the array can never change
+one set applied to the whole input, so reordering the array can never change
 what it matches. `exclude` may not carry a `!` — it already removes, so there
 is nothing left to negate there. Ignore files are **not** consulted for a
-target, which is exactly what lets one match compiled output at all.
+declared input, which is exactly what lets one match compiled output at all.
+
+Naming an input `codebase` **replaces** the built-in whole-tree scan rather
+than adding beside it, and only its `compression` and `analyses` are read —
+its `include`/`exclude` are not consulted, because the whole-tree scan is
+discovered by walking ignore files rather than by matching globs. To measure a
+subset of the tree, declare an input under some other name instead.
 
 ## Limits
 
 A limit bounds how high one measured metric may go. Any metric can carry one —
-a compressed size, a line count, a declared counter — and a metric with no
-limit is measured and reported exactly as before, gated by nothing.
+a compressed size, a line count, a declared counter's count — and a metric
+with no limit is measured and reported exactly as before, gated by nothing.
 
 ```ts
-defaultTarget: "codebase",
+defaultInput: "codebase",
 limits: [
   { metric: "compiled.size", value: "8 KB" },
   { label: "Interfaces", metric: "typescript.interfaces", value: 500 },
@@ -146,17 +113,17 @@ limits: [
 | `severity` | no | `fail` | `fail` stops the run on a breach; `warn` only reports it |
 | `label` | no | the path | What the report calls this limit |
 
-A metric is addressed as its target's name followed by its path within that
-target. Setting `defaultTarget` lets an unprefixed path resolve to that
-target's metric, but only where no target of a competing name exists — write
-the target name in full wherever a target and a metric group could share one,
-because **an ambiguous path is refused outright, never guessed at**. The same
-refusal applies to a path naming no metric at all, or one from an analysis its
-target never ran.
+A metric is addressed as its input's name followed by its path within that
+input. Setting `defaultInput` lets an unprefixed path resolve to that input's
+metric, but only where no input of a competing name exists — write the input
+name in full wherever an input and a metric group could share one, because
+**an ambiguous path is refused outright, never guessed at**. The same refusal
+applies to a path naming no metric at all, or one from an analysis its input
+never ran.
 
 A string value's unit is decimal and its trailing `b` is required: `"8 KB"` is
 8000 bytes, `"1 MB"` is 1000000, and `"8 K"` is refused rather than read as
-anything. A target that matches no files only fails the run if a limit is
+anything. An input that matches no files only fails the run if a limit is
 written against it — declaring the limit is what asserts the files should be
 there.
 
@@ -170,58 +137,117 @@ making deliberately and explaining, not a number quietly bumped in the same
 change that broke it. For everything else a breach could mean, reach for the
 `codometer-triage` skill.
 
-## Comment and documentation budgets
+## Custom statistics
 
-`comments` bounds how long a comment block may run, in every language
-codometer measures comments in. `documentation` does the same for a documented
-declaration's JSDoc, and adds `kinds` to vary that budget per symbol kind.
+There is no longer one shared `statistics` array — each `outputs` entry
+carries its own `custom` list, so a JSON report and a markdown report may
+count entirely different things:
 
 ```ts
-comments: { maximumWords: 128 },
-shell: { comments: { maximumWords: 256 } },
-documentation: {
-  maximumWords: 64,
-  kinds: { interface: { maximumWords: 128 } },
-},
+outputs: [
+  {
+    custom: [
+      { label: "Service Files", patterns: ["**/*.service.ts"] },
+      { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
+      { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
+    ],
+    path: "codometer-report.json",
+    type: "json",
+  },
+],
 ```
 
-| Field | Meaning |
-| ----- | ------- |
-| `maximumCharacters` | Characters a block may hold, markers and newlines and all |
-| `maximumLines` | Lines a block may span |
-| `maximumWords` | Words of prose a block may hold, once markers are stripped |
-| `severity` | `fail` (the default) stops the run on a breach; `warn` only reports it |
-| `file` | On a language's own `comments` block: measures that file's comments together as well |
-| `kinds` | On `documentation` only: the same fields again, per symbol kind |
+Each entry renders as one badge, in configured order. `color` is a shields.io
+hexadecimal triplet; an entry that omits it takes the next color from a
+built-in palette per group, so a counter's color stays stable between runs. A
+counter selects what it counts with exactly one of three fields — `patterns`,
+`symbols`, or `comment` — and an entry naming none of them is rejected rather
+than reported as a permanent zero.
+
+### Counting declarations
+
+`symbols` counts declarations in TypeScript and JavaScript sources instead of
+files:
+
+```ts
+custom: [
+  { group: "typescript", label: "Static Methods", symbols: { kinds: ["method"], modifiers: ["static"] } },
+],
+```
+
+`kinds` is one or more of `class`, `enum`, `function`, `getter`, `interface`,
+`method`, `property`, `setter`; `modifiers` narrows to declarations carrying
+every named modifier from `abstract`, `async`, `export`, `override`, `private`,
+`protected`, `public`, `readonly`, `static`. Both are read literally from the
+syntax — a class member is a `method`, everything else callable is a
+`function` including an arrow, and a class field holding an arrow function is
+a `property` carrying none of the field's own modifiers.
+
+`patterns` on a symbol counter narrows **which files are searched** rather than
+being what is counted. `group` places the badge after a named group's
+built-ins — `conventions` by default, or one of the built-in language groups —
+and a name outside that set fails the configuration rather than rendering
+nowhere.
+
+### Selecting a comment budget
+
+`comment` selects a comment budget for a counter to measure, rather than
+counting files or declarations. There is no `comments`/`documentation`
+mechanism of its own any more: a comment budget is an ordinary custom
+statistic, and a `limits[]` entry against its `custom.<label>` metric is what
+turns the count into a gate — the same consolidation every other counter goes
+through.
+
+```ts
+custom: [
+  { comment: { language: "yaml", maximumWords: 128 }, label: "YAML Comment Budget" },
+  { comment: { kind: "class", maximumLines: 24 }, label: "Class Comment Budget" },
+],
+limits: [{ metric: "custom.YAML Comment Budget", value: 0 }],
+```
+
+| Field | Required | Default | Meaning |
+| ----- | -------- | ------- | ------- |
+| `language` | no | every language with comments | Narrows to one of `css`, `hcl`, `python`, `shell`, `sql`, `toml`, `typescript`, `yaml` |
+| `kind` | no | a plain comment block | Narrows to a documented declaration's JSDoc-style comment for this declaration kind |
+| `maximumCharacters` | no | — | Characters a block may hold, markers and newlines and all |
+| `maximumLines` | no | — | Lines a block may span |
+| `maximumWords` | no | — | Words of prose a block may hold, once markers are stripped |
+| `severity` | no | `fail` | `fail` stops the run on a breach; `warn` only reports it |
+
+Its count is how many blocks broke the selector's own maxima, and its
+`instances` names each breaching block's `file` and 1-indexed `line`, plus how
+much it measured. A block that stayed within budget contributes to neither.
+
+**A `comment` selector carries no inheritance.** There is no top-level default
+a per-language entry merges over, so "every language at 128 words except shell
+at 256" is written as one selector per language, not as a shared budget with
+an override — this repository's own `configuration/codometer.config.ts`
+derives that enumeration from `CODOMETER_COMMENT_LANGUAGES` and types it so a
+language added to the schema is a compile error there until this repository's
+list covers it. **A language codometer starts measuring comments in is not
+gated until that enumeration is updated to name it** — nothing about adding a
+language to the schema gates it automatically.
 
 **The three maxima are separate fields rather than one `maximum` steered by a
 `unit`, because they are not alternatives.** A block can sit inside a line
-budget and outside a word one. A field left out is not measured, a block is
-reported once per declared maximum, and **nothing is defaulted to a number** —
-a budget nobody wrote is one nobody chose.
+budget and outside a word one. A field left out is not measured, and
+**nothing is defaulted to a number** — a budget nobody wrote is one nobody
+chose.
 
 **The budget is per block, never file-wide.** A block is the run of comment
-lines a reader takes as one thought: a blank line ends one, a comment trailing a
-value is never part of the block above it, and a `#!` shebang is never a comment
-at all. A file holding forty well-sized comments is not the same problem as one
-holding a single essay, and a file-wide number cannot tell them apart. Add a
-`file` block beside the block maxima to measure both.
-
-**A language's `comments` is merged field by field over the top-level default**,
-so one budget can be written once and loosened for the one language that needs
-it — naming one maximum there never silently drops the others. `kinds` follows
-the same rule over `documentation`'s own maxima.
-
-**`comments` and `documentation` are configured apart on purpose.** The two are
-written by different hands for different readers — a JSDoc comment documents a
-declaration a caller will meet, a YAML comment explains a setting to whoever
-edits it next — so one number would have to be wrong for one of them, and
-enabling either check would otherwise silently enable the other. Setting
-`comments` alone is the common case.
+lines a reader takes as one thought: a blank line ends one, a comment trailing
+a value is never part of the block above it, and a `#!` shebang is never a
+comment at all. There is no file-wide counterpart to a `comment` selector — a
+file holding forty well-sized comments is not the same problem as one holding
+a single essay, but codometer has no way to measure the second kind today.
 
 Prefer a **word** budget over a character one where a linter already holds
-lines to a column limit: the character count would only restate what formatting
-already enforces, while words budget what the comment actually says.
+lines to a column limit: the character count would only restate what
+formatting already enforces, while words budget what the comment actually
+says. JSDoc is ungated by default — a `comment` selector with a `kind` reaches
+it, but declaring one is a deliberate choice, not something that happens by
+naming a language.
 
 ### What a breach means, and what it does not
 
@@ -242,60 +268,70 @@ Two accuracy caveats worth knowing before trusting a count:
   Python metric does. An interpreter codometer cannot run leaves them
   unmeasured rather than miscounted.
 
-## Custom statistics
-
-`statistics` counts a repository's own naming conventions — vocabulary no
-built-in language analyzer has any way to know about:
-
-```ts
-statistics: [
-  { label: "Service Files", patterns: ["**/*.service.ts"] },
-  { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
-  { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
-],
-```
-
-Each entry renders as one badge, in configured order. `color` is a shields.io
-hexadecimal triplet; an entry that omits it takes the next color from a
-built-in palette per group, so a counter's color stays stable between runs.
-
-A counter can also match **declarations** instead of files, by shape:
-
-```ts
-statistics: [
-  { group: "typescript", label: "Static Methods", symbols: { kinds: ["method"], modifiers: ["static"] } },
-],
-```
-
-`kinds` is one or more of `class`, `enum`, `function`, `getter`, `interface`,
-`method`, `property`, `setter`; `modifiers` narrows to declarations carrying
-every named modifier from `abstract`, `async`, `export`, `override`, `private`,
-`protected`, `public`, `readonly`, `static`. Both are read literally from the
-syntax — a class member is a `method`, everything else callable is a
-`function` including an arrow, and a class field holding an arrow function is
-a `property` carrying none of the field's own modifiers.
-
-`patterns` on a symbol counter narrows **which files are searched** rather than
-being what is counted, and an entry declaring neither `patterns` nor `symbols`
-is rejected rather than reported as a permanent zero. `group` places the badge
-after a named group's built-ins — `conventions` by default, or one of the
-built-in language groups — and a name outside that set fails the configuration
-rather than rendering nowhere.
+For what to do about a breach, reach for the `codometer-triage` skill.
 
 ## Output destinations
 
+`outputs` is an array of typed destinations — declare as many as you like, but
+**at most one entry per type**; a configuration naming two `json` outputs, or
+two `markdown` ones, is rejected at load time naming the duplicated type,
+because nothing on the command line could address the second.
+
 ```ts
-output: {
-  json: { indentation: 2, path: "output/codometer.json" },
-  markdown: { description: "Measured on every push.", path: "README.md" },
+outputs: [
+  { indentation: 2, path: "output/codometer.json", type: "json" },
+  {
+    description: "Measured on every push.",
+    path: "README.md",
+    type: "markdown",
+  },
+],
+```
+
+A JSON entry needs `path`; `indentation` defaults to `2`. A markdown entry
+needs a `path`, a `write` function, or both — a destination naming neither is
+rejected when the configuration loads.
+
+### Writing markdown
+
+`write` is the whole of the customizable behavior — it both decides what the
+report says and where it lands, replacing what used to be two separate
+`render` and `write` callbacks:
+
+```ts
+{
+  path: "README.md",
+  type: "markdown",
+  write: ({ anchors, renderBadges, statistics }) =>
+    anchors.syncAnchoredBlock({
+      content: `Lines of code: ${statistics.linesOfCode}\n\n${renderBadges()}`,
+    }),
 }
 ```
 
-A markdown destination needs a `path`, a `write` function, or both — one naming
-neither is rejected at load time. `render` and `write` are each independently
-replaceable: `render` turns statistics into markdown text (handed the built-in
-`renderBadges()` to extend rather than replace), and `write` decides which file
-that text lands in and how, handed `anchors.syncAnchoredBlock()` for the marker
-mechanics so a custom destination does not mean reimplementing the splice. A
-`write` function returning `false` marks that destination stale, which is what
-fails a `--check` run.
+| Argument | Meaning |
+| -------- | ------- |
+| `description` | The configured description, for a writer that wants to place it itself |
+| `renderBadges()` | The built-in badge rendering of these same statistics — call it to build the default content, or to add to it |
+| `statistics` | The measured statistics |
+| `check` | True when nothing may be written and the file is only being inspected |
+| `path` | The configured path, resolved against the process's working directory |
+| `anchors` | The marker mechanics — `syncAnchoredBlock`, `wrapInAnchors`, `startMarker`/`endMarker` — so choosing a different file does not mean reimplementing the splice |
+
+Leaving `write` unset keeps the built-in rendering and writing. A `write`
+function returns `false` to report its destination as stale, which is what
+fails a `--check reports` run; anything else counts as up to date.
+
+## Authoring says inputs, the report says targets
+
+`inputs` is what a configuration declares — this redesign renamed `targets` to
+`inputs` and `defaultTarget` to `defaultInput` on the authoring side — but the
+measured JSON report keeps its old vocabulary: `CodometerReport.targets`, and a
+metric is still addressed as `codebase.typescript.interfaces` or
+`Compiled JavaScript.size`, the input's name standing in for what the report
+calls a target. That split is deliberate rather than drift, kept because
+`CodometerReport.targets` predates this redesign and nothing downstream reading
+a report needed to change; the `Measured Targets` badge group carries its own
+code comment explaining why it keeps that name too. Write `inputs` in a
+configuration; read `targets` in a report, a `configuration --limits` listing,
+or a badge group heading.

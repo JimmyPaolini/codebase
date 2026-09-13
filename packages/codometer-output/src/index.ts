@@ -17,9 +17,7 @@ export { MissingMarkdownPathError } from "./modules/markdown/markdown.constants"
 export { MarkdownModule } from "./modules/markdown/markdown.module";
 export { MarkdownService } from "./modules/markdown/markdown.service";
 export type {
-  DocumentationBreach,
   MeasurementScope,
-  RenderDocumentationSectionArguments,
   TargetSize,
 } from "./modules/markdown/markdown.types";
 export {

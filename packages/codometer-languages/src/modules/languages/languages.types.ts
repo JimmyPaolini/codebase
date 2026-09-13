@@ -1,6 +1,9 @@
 // 🏷️ Types
 
-import type { CommentMeasurement } from "../comments/comments.types";
+import type {
+  CommentCounter,
+  CommentMeasurement,
+} from "../comments/comments.types";
 import type { CssResult } from "../css/css.types";
 import type { HclResult } from "../hcl/hcl.types";
 import type { JsonResult } from "../json/json.types";
@@ -19,6 +22,14 @@ import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 /** Arguments accepted when running every language analyzer. */
 export interface AnalyzeLanguagesArguments {
+  /**
+   * One `comment`-selector custom statistic's budget, per declared statistic.
+   *
+   * Every counter arrives in one list, and every measurer is handed all of
+   * them: a counter naming a `kind` is measured by the TypeScript walk, and
+   * every other one by the comment readers, each selecting for itself.
+   */
+  commentCounters: CommentCounter[];
   configuration: ResolvedCodometerConfiguration;
   discoveredFiles: DiscoveredLanguageFiles;
   /** Configured counters over declarations, tallied during the TypeScript walk. */
@@ -43,8 +54,8 @@ export interface DiscoveredLanguageFiles {
 
 /** What every language analyzer reported, keyed by language. */
 export interface LanguageResults {
-  /** Every measured comment block, across every language configured for one. */
-  comments: CommentMeasurement[];
+  /** One measurement list per configured comment counter, keyed by its label. */
+  commentCounts: Record<string, CommentMeasurement[]>;
   css: CssResult;
   hcl: HclResult;
   json: JsonResult;

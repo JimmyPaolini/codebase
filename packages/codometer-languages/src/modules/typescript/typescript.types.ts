@@ -1,32 +1,52 @@
 // 🏷️ Types
 
-import type { CommentMeasurement } from "../comments/comments.types";
+import type {
+  CommentCounter,
+  CommentMeasurement,
+} from "../comments/comments.types";
 import type {
   CodometerSymbolKind,
   CodometerSymbolModifier,
-  ResolvedCodometerDocumentationConfiguration,
 } from "@codometer/configuration";
 import type { SourceFile } from "typescript";
 
 /** Arguments for analyzing a single source file. */
 export interface AnalyzeTypescriptFileArguments {
+  commentCounters: CommentCounter[];
   counters: TypescriptSymbolCounter[];
-  documentation: ResolvedCodometerDocumentationConfiguration | undefined;
   filePath: string;
   stats: TypescriptResult;
   workingDirectory: string;
 }
 
+/** Everything one walk of one file's AST needs to carry down the tree. */
+/**
+ * Everything one node's JSDoc measurement needs, gathered before any counting.
+ *
+ * Exists so `DeclarationCommentsService.measure` can stay inside this
+ * repository's statement budget without putting a helper on the measuring path
+ * itself, where it would deepen the stack the depth gate holds.
+ */
+export interface PreparedDeclarationComment {
+  counters: CommentCounter[];
+  declaration: string;
+  kind: CodometerSymbolKind;
+  line: number;
+  prose: string;
+  source: string;
+}
+
 /** Input to the TypeScript/JavaScript AST analysis step. */
 export interface TypescriptInput {
   /**
-   * How long a documented declaration's JSDoc comment may run.
+   * Every `comment`-selector custom statistic's budget, per declared statistic.
    *
-   * Left undefined when the repository's configuration names no
-   * `documentation` block at all, which is what skips measurement entirely
-   * rather than measuring against a limit nobody chose.
+   * The whole list, not only the counters this walk measures: a counter naming
+   * a documentable `kind` is one of those and every other one is ignored here,
+   * which is what leaves a configuration declaring no such statistic measuring
+   * nothing rather than measuring against a limit nobody chose.
    */
-  documentation?: ResolvedCodometerDocumentationConfiguration | undefined;
+  commentCounters: CommentCounter[];
   sourceFiles: string[];
   /** Configured counters over declarations, tallied during the same walk. */
   symbolCounters: TypescriptSymbolCounter[];
@@ -41,11 +61,11 @@ export interface TypescriptResult {
   commentLines: number;
   comments: number;
   constants: number;
+  /** One measurement list per configured declaration-comment counter, keyed by its label. */
+  declarationCommentCounts: Record<string, CommentMeasurement[]>;
   decorators: number;
   docComments: number;
   docTags: Record<string, number>;
-  /** Every documented declaration, breached or not, in measurement order. */
-  documentation: CommentMeasurement[];
   enums: number;
   exported: number;
   externalPackages: Set<string>;
@@ -74,8 +94,14 @@ export interface TypescriptSymbolCounter {
   patterns: string[];
 }
 
-/** Everything one walk of one file's AST needs to carry down the tree. */
+/**
+ * What one file's AST walk carries with it, node to node.
+ *
+ * Narrowed once per file rather than rebuilt per node: which counters search a
+ * file depends on its path, and the path does not change as the walk descends.
+ */
 export interface TypescriptWalkContext {
+  commentCounters: CommentCounter[];
   /**
    * The symbol counters that apply to the file being walked.
    *
@@ -83,7 +109,6 @@ export interface TypescriptWalkContext {
    * depends on its path, which does not change as the walk descends.
    */
   counters: TypescriptSymbolCounter[];
-  documentation: ResolvedCodometerDocumentationConfiguration | undefined;
   filePath: string;
   insideClass: boolean;
   sourceFile: SourceFile;

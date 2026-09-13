@@ -26,13 +26,36 @@ import { YamlService } from "../yaml/yaml.service";
 
 import { LanguagesService } from "./languages.service";
 
+import type { CommentCounter } from "../comments/comments.types";
 import type { DiscoveredLanguageFiles } from "./languages.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 const configuration = createMock<ResolvedCodometerConfiguration>({
-  documentation: { maximumLines: 6 },
   python: { command: "uv run python" },
 });
+const declarationCounter: CommentCounter = {
+  budget: {
+    maximumCharacters: undefined,
+    maximumLines: 6,
+    maximumWords: undefined,
+    severity: "fail",
+  },
+  kind: "class",
+  label: "class-docs",
+  language: undefined,
+};
+const plainCounter: CommentCounter = {
+  budget: {
+    maximumCharacters: undefined,
+    maximumLines: 4,
+    maximumWords: undefined,
+    severity: "fail",
+  },
+  kind: undefined,
+  label: "yaml-comments",
+  language: "yaml",
+};
+const commentCounters: CommentCounter[] = [declarationCounter, plainCounter];
 
 const discoveredFiles: DiscoveredLanguageFiles = {
   cssFiles: ["src/styles.css"],
@@ -94,6 +117,7 @@ describe(LanguagesService, () => {
 
   beforeEach(() => {
     service.analyze({
+      commentCounters,
       configuration,
       discoveredFiles,
       symbolCounters: [],
@@ -130,7 +154,7 @@ describe(LanguagesService, () => {
     });
   });
 
-  it("passes the resolved documentation configuration through to typescript.analyze", async () => {
+  it("hands every counter to both the comment readers and typescript", async () => {
     const module = await Test.createTestingModule({
       providers: [
         LanguagesService,
@@ -156,9 +180,13 @@ describe(LanguagesService, () => {
     }).compile();
 
     const isolatedService = await module.resolve(LanguagesService);
+    const isolatedLanguageComments = await module.resolve(
+      LanguageCommentsService,
+    );
     const isolatedTypescriptService = await module.resolve(TypescriptService);
 
     isolatedService.analyze({
+      commentCounters,
       configuration,
       discoveredFiles,
       symbolCounters: [],
@@ -166,12 +194,16 @@ describe(LanguagesService, () => {
     });
 
     expect(isolatedTypescriptService.analyze).toHaveBeenCalledWith(
-      expect.objectContaining({ documentation: configuration.documentation }),
+      expect.objectContaining({ commentCounters }),
+    );
+    expect(isolatedLanguageComments.measure).toHaveBeenCalledWith(
+      expect.objectContaining({ counters: commentCounters }),
     );
   });
 
   it("reports one entry per language", () => {
     const results = service.analyze({
+      commentCounters,
       configuration,
       discoveredFiles,
       symbolCounters: [],
@@ -179,7 +211,7 @@ describe(LanguagesService, () => {
     });
 
     expect(Object.keys(results).toSorted()).toStrictEqual([
-      "comments",
+      "commentCounts",
       "css",
       "hcl",
       "json",

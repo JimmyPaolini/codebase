@@ -16,20 +16,16 @@ import {
 } from "./configuration.constants";
 
 import type { LoadedConfigurationModule } from "./configuration-loader.types";
-import type {
-  CodometerConfigurationFactory,
-  LoadConfigurationArguments,
-} from "./configuration.types";
+import type { LoadConfigurationArguments } from "./configuration.types";
 
 /**
- * Finds, reads, and runs a codometer configuration file.
+ * Finds and reads a codometer configuration file.
  *
  * Owns locating the file and turning whatever it exports into a plain,
- * unvalidated configuration object — running a factory export with its
- * context, parsing JSON/JSONC by hand, everything else through `jiti`. What
- * the object means is `ConfigurationService`'s to validate and resolve, kept
- * apart so a file finding no configuration reads exactly like one that found
- * an empty object.
+ * unvalidated configuration object — parsing JSON/JSONC by hand, everything
+ * else through `jiti`. What the object means is `ConfigurationService`'s to
+ * validate and resolve, kept apart so a file finding no configuration reads
+ * exactly like one that found an empty object.
  */
 @Injectable()
 export class ConfigurationLoaderService {
@@ -42,25 +38,6 @@ export class ConfigurationLoaderService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /**
-   * Calls a configuration file that was authored as a function.
-   *
-   * Anything else is already the configuration and is passed through. The
-   * context is built here rather than by the caller so that every reader of a
-   * configuration file — a command, a host embedding codometer — hands a
-   * factory the same two directories.
-   */
-  private async applyRunContext(
-    configurationExport: unknown,
-    context: { configurationDirectory: string; directory: string },
-  ): Promise<unknown> {
-    if (!this.isConfigurationFactory(configurationExport)) {
-      return configurationExport;
-    }
-
-    return configurationExport(context);
-  }
 
   /**
    * Walks upward from a directory looking for a configuration file.
@@ -122,18 +99,6 @@ export class ConfigurationLoaderService {
     }
   }
 
-  /**
-   * Whether a configuration file exported a function rather than an object.
-   *
-   * The only thing separating the two: what a function does with the context
-   * is the author's business, and no schema could inspect it anyway.
-   */
-  private isConfigurationFactory(
-    configurationExport: unknown,
-  ): configurationExport is CodometerConfigurationFactory {
-    return typeof configurationExport === "function";
-  }
-
   /** Loads a configuration module, choosing the reader by extension. */
   private async loadConfigurationModule(args: {
     configurationPath: string;
@@ -165,24 +130,18 @@ export class ConfigurationLoaderService {
   /**
    * Reads what a configuration module exported, through either interop shape.
    *
-   * A function survives as itself: a configuration file may be authored as one
-   * and calling it is what turns it into a configuration, which happens once
-   * the run context is known rather than here.
+   * Anything that is not a plain object — including a function, since a
+   * configuration file authored as one is no longer supported — falls back to
+   * an empty object, the same way a configuration file exporting `42` does:
+   * the schema then applies to that empty object exactly as it would to a
+   * genuinely empty configuration file.
    */
   private readDefaultExport(importedModule: unknown): unknown {
-    if (typeof importedModule === "function") {
-      return importedModule;
-    }
-
     if (typeof importedModule !== "object" || importedModule === null) {
       return {};
     }
 
     const defaultExport = (importedModule as { default?: unknown }).default;
-
-    if (typeof defaultExport === "function") {
-      return defaultExport;
-    }
 
     return typeof defaultExport === "object" && defaultExport !== null
       ? defaultExport
@@ -245,16 +204,10 @@ export class ConfigurationLoaderService {
       throw new UnknownConfigurationFileTypeError(resolvedPath);
     }
 
-    const configuration = await this.applyRunContext(
-      await this.loadConfigurationModule({
-        configurationPath: resolvedPath,
-        extension,
-      }),
-      {
-        configurationDirectory: path.dirname(resolvedPath),
-        directory: searchDirectory,
-      },
-    );
+    const configuration = await this.loadConfigurationModule({
+      configurationPath: resolvedPath,
+      extension,
+    });
 
     return { configuration, path: resolvedPath };
   }

@@ -16,25 +16,25 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * the other runtime would have produced:
  *
  * ```bash
- * codometer --directory copy --config examples/staleness/codometer.config.ts --write
+ * cd copy
+ * codometer --config ../examples/staleness/codometer.config.ts --output-json
  * # Stand in for a different Node release's zlib.
  * jq '(.targets[].metrics[] | select(.path == "size") | .value) += 1' \
- *   copy/codometer-report.json > copy/patched.json
- * mv copy/patched.json copy/codometer-report.json
- * codometer --directory copy --config examples/staleness/codometer.config.ts --check reports
+ *   codometer-report.json > patched.json
+ * mv patched.json codometer-report.json
+ * codometer --config ../examples/staleness/codometer.config.ts --check reports
  * echo $?   # 1 — and nothing in the tree changed
  * ```
  *
- * The target is size-only on purpose: every other metric here is a count, and
+ * The input is size-only on purpose: every other metric here is a count, and
  * counts do not move between runtimes. A repository that gates staleness on a
  * report carrying no size at all never meets this.
  */
 const codometerConfiguration: CodometerConfiguration = {
-  output: { json: { indentation: 2, path: "codometer-report.json" } },
-  python: { command: "uv run python" },
-  targets: [
+  format: "markdown",
+  inputs: [
     // Inside the measured directory on purpose, unlike the other size examples:
-    // this one is run against a scratch copy of the corpus, and a target
+    // this one is run against a scratch copy of the corpus, and an input
     // reaching `..` from there would be pointed at whatever else the temporary
     // directory happens to hold.
     {
@@ -44,6 +44,8 @@ const codometerConfiguration: CodometerConfiguration = {
       name: "Scripts",
     },
   ],
+  outputs: [{ indentation: 2, path: "codometer-report.json", type: "json" }],
+  python: { command: "uv run python" },
 };
 
 export default codometerConfiguration;

@@ -36,7 +36,7 @@ let corpusReport: CodometerReport;
 
 describe("the sample corpus and the counts its guides quote", () => {
   beforeAll(() => {
-    corpusReport = measure(["--directory", corpusDirectory]);
+    corpusReport = measure([], corpusDirectory);
   });
 
   describe("the sample corpus", () => {
@@ -117,7 +117,7 @@ describe("the sample corpus and the counts its guides quote", () => {
       // This package's own configuration gates a `Corpus` target declared as
       // `corpus/**`. It holds the 27 samples and not the `.gitignore` beside
       // them, while the codebase target above counts all 28.
-      const report = measure(["--directory", packageDirectory]);
+      const report = measure([], packageDirectory);
 
       expect(readTarget(report, "Corpus").files).toBe(27);
     });
@@ -194,18 +194,17 @@ describe("the sample corpus and the counts its guides quote", () => {
     });
 
     it("agrees with the default interpreter where python3 is adequate", () => {
-      const named = measure([
-        "--directory",
+      const named = measure(
+        ["--config", exampleConfiguration("python", "uv.config.ts")],
         corpusDirectory,
-        "--config",
-        exampleConfiguration("python", "uv.config.ts"),
-      ]);
-      const byDefault = measure([
-        "--directory",
+      );
+      const byDefault = measure(
+        [
+          "--config",
+          exampleConfiguration("python", "default-interpreter.config.ts"),
+        ],
         corpusDirectory,
-        "--config",
-        exampleConfiguration("python", "default-interpreter.config.ts"),
-      ]);
+      );
       const readPython = (
         report: ReturnType<typeof measure>,
       ): Record<string, number> =>
@@ -225,14 +224,15 @@ describe("the sample corpus and the counts its guides quote", () => {
     });
 
     it("reports a corpus with no Python when the interpreter is unreachable", () => {
-      const run = runCodometer([
-        "--directory",
+      const run = runCodometer(
+        [
+          "--config",
+          exampleConfiguration("python", "unreachable-interpreter.config.ts"),
+          "--format",
+          "json",
+        ],
         corpusDirectory,
-        "--config",
-        exampleConfiguration("python", "unreachable-interpreter.config.ts"),
-        "--format",
-        "json",
-      ]);
+      );
       const report = JSON.parse(run.standardOutput) as ReturnType<
         typeof measure
       >;
@@ -258,12 +258,13 @@ describe("the sample corpus and the counts its guides quote", () => {
 
     beforeAll(() => {
       counters = readCounters(
-        measure([
-          "--directory",
+        measure(
+          [
+            "--config",
+            exampleConfiguration("statistics", "codometer.config.ts"),
+          ],
           corpusDirectory,
-          "--config",
-          exampleConfiguration("statistics", "codometer.config.ts"),
-        ]),
+        ),
       );
     });
 

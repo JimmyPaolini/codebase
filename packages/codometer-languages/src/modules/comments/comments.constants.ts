@@ -11,12 +11,6 @@ export const COMMENT_EXCERPT_LENGTH = 48;
 /** What a measured comment block is called in a report. */
 export const COMMENT_KIND = "comment";
 
-/** What a whole file's comments, measured together, are called in a report. */
-export const FILE_COMMENT_KIND = "file comments";
-
-/** What a file-wide measurement carries where a block carries its excerpt. */
-export const FILE_COMMENT_DECLARATION = "every comment in the file";
-
 /** Matches an HCL `#` comment through to the end of its line. */
 export const HCL_HASH_LINE_COMMENT_PATTERN = /#[^\n]*/g;
 

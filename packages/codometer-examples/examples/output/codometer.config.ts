@@ -11,22 +11,26 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * appending a second one.
  *
  * ```bash
- * codometer --directory examples/corpus --config examples/output/codometer.config.ts --write
+ * cd packages/codometer-examples/examples/corpus
+ * codometer --config ../output/codometer.config.ts --output-json --output-markdown
  * ```
  *
- * Destinations are resolved against the **measured directory**, not against
- * this file — so `statistics.md` lands inside the corpus. That is deliberate
- * here: it is also what [self-excluded.config.ts](./self-excluded.config.ts)
- * demonstrates, since a file codometer would write is never a file it measures.
+ * Destinations are resolved against the process's working directory, not
+ * against this file — so `statistics.md` lands inside the corpus when the
+ * corpus is what the command was run from. That is deliberate here: it is
+ * also what [self-excluded.config.ts](./self-excluded.config.ts) demonstrates,
+ * since a file codometer would write is never a file it measures.
  */
 const codometerConfiguration: CodometerConfiguration = {
-  output: {
-    json: { indentation: 2, path: "codometer-report.json" },
-    markdown: {
+  format: "markdown",
+  outputs: [
+    { indentation: 2, path: "codometer-report.json", type: "json" },
+    {
       description: "Measured from the sample corpus.",
       path: "statistics.md",
+      type: "markdown",
     },
-  },
+  ],
   python: { command: "uv run python" },
 };
 

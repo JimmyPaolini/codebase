@@ -8,11 +8,11 @@ export type {
   WalkDirectoryArguments,
   WalkSubdirectoryArguments,
 } from "./modules/discovery/discovery.types";
-export { TargetOutsideRepositoryError } from "./modules/targets/targets.constants";
-export { TargetsModule } from "./modules/targets/targets.module";
-export { TargetsService } from "./modules/targets/targets.service";
+export { InputOutsideRepositoryError } from "./modules/inputs/inputs.constants";
+export { InputsModule } from "./modules/inputs/inputs.module";
+export { InputsService } from "./modules/inputs/inputs.service";
 export type {
-  MatchTargetFilesArguments,
-  TargetEntryKind,
-  WalkTargetArguments,
-} from "./modules/targets/targets.types";
+  InputEntryKind,
+  MatchInputFilesArguments,
+  WalkInputArguments,
+} from "./modules/inputs/inputs.types";

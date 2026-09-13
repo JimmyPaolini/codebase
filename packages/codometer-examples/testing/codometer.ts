@@ -46,6 +46,26 @@ const commandLineEntry = path.resolve(
   "main.ts",
 );
 
+/**
+ * Where a throwaway copy of the corpus is made, inside this package.
+ *
+ * Not `os.tmpdir()`, and the reason is the loader rather than tidiness. A
+ * measurement spawns the command line with its `cwd` set to the copy, and
+ * `@swc-node/register`'s ESM hook registers itself against that working
+ * directory — so a copy outside the workspace leaves the hook resolving
+ * `@swc-node/register` from a directory with no `node_modules` above it, and
+ * every spawn dies with `ERR_MODULE_NOT_FOUND` before codometer runs. It
+ * happened to work where the temporary directory sat beneath a
+ * `node_modules`, and failed on every Linux runner, whose `os.tmpdir()` is
+ * `/tmp`.
+ *
+ * `tmp/` is already ignored by `.gitignore` and by
+ * `configuration/codebase-structure.json`, so nothing has to be taught about
+ * it — the same arrangement `main.end-to-end.test.ts` uses for the same
+ * reason.
+ */
+const scratchDirectory = path.join(packageDirectory, "tmp");
+
 /** Everything this package ships to be run: one directory per example. */
 export const examplesDirectory = path.join(packageDirectory, "examples");
 
@@ -55,6 +75,25 @@ export const corpusDirectory = path.join(examplesDirectory, "corpus");
 /** Path of one shipped example configuration, from its segments. */
 export const exampleConfiguration = (...segments: readonly string[]): string =>
   path.join(examplesDirectory, ...segments);
+
+/**
+ * Where `swc-node` reads its own compiler configuration from.
+ *
+ * The command line has no `--directory` flag any more — a run always measures
+ * the process's own working directory — so a test that wants to measure the
+ * corpus spawns the command line **with its `cwd` set there** rather than
+ * naming the directory on the command line. `swc-node`'s tsconfig discovery
+ * would otherwise walk upward from that same `cwd` looking for a
+ * `tsconfig.json`, and none of the example directories carries one. Pinning
+ * `TS_NODE_PROJECT` decouples the two: the interpreter always finds the
+ * workspace's own compiler configuration — the same one it would have found
+ * by default when every spawn's `cwd` was the workspace root — regardless of
+ * which directory the measurement itself runs against.
+ */
+const typescriptConfigurationPath = path.resolve(
+  workspaceDirectory,
+  "tsconfig.json",
+);
 
 // 🏷️ Report shapes
 
@@ -75,12 +114,16 @@ export interface CodometerRun {
 }
 
 /**
- * One documented declaration, breached or not.
+ * One breaching instance a `comment` selector's counter found.
  *
  * Derived from the report rather than imported on its own, because the report
- * type is what `@codometer/cli` exports and this is the shape it holds.
+ * type is what `@codometer/cli` exports and this is the shape a comment-budget
+ * counter's `instances` holds — a metric that only counts leaves this `null`,
+ * so a comment-budget metric is the only one where indexing into it is safe.
  */
-export type ReportedDeclaration = CodometerReport["documentation"][number];
+export type ReportedDeclaration = NonNullable<
+  ReportMetric["instances"]
+>[number];
 
 // 🏃 Running
 
@@ -89,8 +132,17 @@ export type ReportedDeclaration = CodometerReport["documentation"][number];
  *
  * `NODE_OPTIONS` is emptied because the test runner sets its own, and they
  * reach a spawned Node that neither needs nor understands them.
+ *
+ * `cwd` is what a run measures: the command line carries no `--directory`
+ * flag of its own, so the directory a guide says to measure is the directory
+ * this spawns from, exactly as running the documented `cd` and `codometer`
+ * commands in a real shell would. Defaults to the workspace root, which is
+ * where a bare `codometer` measures the whole repository from.
  */
-export const runCodometer = (args: readonly string[]): CodometerRun => {
+export const runCodometer = (
+  args: readonly string[],
+  cwd: string = workspaceDirectory,
+): CodometerRun => {
   const result = spawnSync(
     process.execPath,
     [
@@ -101,9 +153,13 @@ export const runCodometer = (args: readonly string[]): CodometerRun => {
       ...args,
     ],
     {
-      cwd: workspaceDirectory,
+      cwd,
       encoding: "utf8",
-      env: { ...process.env, NODE_OPTIONS: "" },
+      env: {
+        ...process.env,
+        NODE_OPTIONS: "",
+        TS_NODE_PROJECT: typescriptConfigurationPath,
+      },
       maxBuffer: 32 * 1024 * 1024,
     },
   );
@@ -149,6 +205,7 @@ export const runCodometer = (args: readonly string[]): CodometerRun => {
 export const runPipeline = (
   args: readonly string[],
   readReport: string,
+  cwd: string = workspaceDirectory,
 ): CodometerRun => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "codometer-pipe-"));
   const downstream = path.join(directory, "downstream.mjs");
@@ -180,7 +237,7 @@ export const runPipeline = (
   );
 
   try {
-    const upstream = runCodometer(args);
+    const upstream = runCodometer(args, cwd);
     // Only what the run wrote to standard output crosses over. Its standard
     // error is held back deliberately: that separation is the property under
     // test, and merging the streams here would test nothing.
@@ -210,8 +267,11 @@ export const runPipeline = (
  * standard output carries the result and every diagnostic goes to standard
  * error, so a log line leaking into the data stream fails this outright.
  */
-export const measure = (args: readonly string[]): CodometerReport => {
-  const run = runCodometer([...args, "--format", "json"]);
+export const measure = (
+  args: readonly string[],
+  cwd: string = workspaceDirectory,
+): CodometerReport => {
+  const run = runCodometer([...args, "--format", "json"], cwd);
 
   return JSON.parse(run.standardOutput) as CodometerReport;
 };
@@ -264,6 +324,29 @@ export const readMetricLimits = (
   return metric.limits;
 };
 
+/**
+ * Reads one metric's breaching instances by its path within a target.
+ *
+ * `null` for a metric that only counts — a comment-budget counter is the one
+ * kind that ever returns something else, so a test reading this back is
+ * asserting it measured a `comment` selector rather than a plain count.
+ */
+export const readMetricInstances = (
+  report: CodometerReport,
+  targetName: string,
+  metricPath: string,
+): ReportMetric["instances"] => {
+  const metric = readTarget(report, targetName).metrics.find(
+    (candidate) => candidate.path === metricPath,
+  );
+
+  if (metric === undefined) {
+    throw new Error(`No metric "${metricPath}" on target "${targetName}".`);
+  }
+
+  return metric.instances;
+};
+
 /** Reads every custom counter from the codebase target, keyed by label. */
 export const readCounters = (
   report: CodometerReport,
@@ -291,7 +374,9 @@ export const readCounters = (
 export const withCorpusCopy = <Result>(
   body: (directory: string) => Result,
 ): Result => {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "codometer-corpus-"));
+  fs.mkdirSync(scratchDirectory, { recursive: true });
+
+  const directory = fs.mkdtempSync(path.join(scratchDirectory, "corpus-"));
 
   try {
     fs.cpSync(corpusDirectory, directory, { recursive: true });
