@@ -321,15 +321,14 @@ export class RunPlanService {
    * unlike depth, no *workspace* default exists for it either: a single
    * breadth number was never something anybody could pick for a whole
    * workspace, which is why breadth has no gate at all until some project
-   * picks its own. `origin === "declared"` on a project's own entry in
-   * `projectLimits.byProject` is read directly rather than re-derived, because
-   * that map already resolved every project's inheritance — asking it a
-   * second way is how a gate ends up reading two different numbers for the
-   * same run.
+   * picks its own. `projectLimits.byProject` is read directly rather than
+   * re-derived from the files, because that map is what the gate itself is
+   * judged against — asking a second way is how a run ends up reading two
+   * different numbers for the same project.
    *
-   * A project that declares no limit of its own is simply not asked about: it
-   * is neither the reason this refuses nor a reason a project that did
-   * declare one stops being gated.
+   * A project that wrote `maximumBreadth: undefined` is simply not asked
+   * about: it is neither the reason this refuses nor a reason a project that
+   * did pick a number stops being gated.
    */
   public validateProjectLimits(args: {
     mode: RunMode;
@@ -340,7 +339,7 @@ export class RunPlanService {
     }
 
     const declaresBreadth = [...args.projectLimits.byProject.values()].some(
-      (limits) => limits.maximumBreadth?.origin === "declared",
+      (limits) => limits.maximumBreadth !== undefined,
     );
 
     if (declaresBreadth) {

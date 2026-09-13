@@ -6,15 +6,50 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import {
+  CONFIGURATION_FILE_NAMES,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_MAXIMUM_DEPTH,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
+  ProjectConfigurationIncompleteError,
+  ProjectConfigurationMissingError,
 } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 import { ProjectConfigurationService } from "./project-configuration.service";
 
-import type { ProjectLimitsLookup } from "./configuration.types";
+import type {
+  CallidescopeProjectConfiguration,
+  ProjectLimitsLookup,
+} from "./configuration.types";
+
+/** The spelling `writeWorkspace` stages every configuration under. */
+const CONFIGURATION_FILE_NAME = CONFIGURATION_FILE_NAMES[3];
+
+/**
+ * A project configuration with every field a project must set.
+ *
+ * Every test staging a well-formed project file goes through here, so a field
+ * that becomes required is added in one place rather than in thirty — and a
+ * test asserting something other than completeness cannot accidentally stop
+ * asserting it.
+ */
+function completeConfiguration(
+  overrides: Partial<CallidescopeProjectConfiguration> = {},
+): CallidescopeProjectConfiguration {
+  return {
+    entryPoints: {
+      addresses: [],
+      decorators: [],
+      includeExportedFunctions: true,
+      includeOrphans: true,
+      includeTests: false,
+    },
+    exclude: [],
+    limits: { maximumBreadth: undefined, maximumDepth: 6 },
+    write: { markdown: undefined, mermaid: undefined },
+    ...overrides,
+  };
+}
 
 /**
  * Resolves a written-out workspace's limits through the whole path a run
@@ -28,7 +63,7 @@ async function resolveWrittenLimits(args: {
 }): Promise<ProjectLimitsLookup> {
   const workspaceConfigurationPath = path.join(
     args.workspaceRoot,
-    "callidescope.config.json",
+    CONFIGURATION_FILE_NAME,
   );
   const workspace = await args.configurationService.loadConfigurationFile({
     configurationPath: workspaceConfigurationPath,
@@ -49,13 +84,57 @@ async function resolveWrittenLimits(args: {
 }
 
 /**
+ * Writes an object as a JavaScript literal, `undefined` members included.
+ *
+ * `JSON.stringify` drops a key written as `undefined`, which is precisely the
+ * difference these tests are about: a project that wrote the member and a
+ * project that forgot it would stage the same file.
+ */
+function serialize(value: unknown): string {
+  if (Array.isArray(value)) {
+    const entries: readonly unknown[] = value;
+
+    return `[${entries.map((entry) => serialize(entry)).join(", ")}]`;
+  }
+
+  if (typeof value === "object" && value !== null) {
+    const members: Readonly<Record<string, unknown>> = { ...value };
+
+    return `{ ${Object.entries(members)
+      .map(([key, member]) => `${JSON.stringify(key)}: ${serialize(member)}`)
+      .join(", ")} }`;
+  }
+
+  return value === undefined ? "undefined" : JSON.stringify(value);
+}
+
+/**
+ * Copies an object without one key, staging the file a project forgot to
+ * finish.
+ *
+ * Rebuilt from its entries rather than copied and deleted from, because a
+ * dynamic `delete` is a lint error here — and a key whose value is `undefined`
+ * survives the rebuild, which is exactly the distinction these tests turn on.
+ */
+function withoutKey(
+  value: object,
+  key: string,
+): Readonly<Record<string, unknown>> {
+  return Object.fromEntries(
+    Object.entries(value).filter(([name]) => name !== key),
+  );
+}
+
+/**
  * Writes a fresh workspace holding one configuration file per named project.
  *
- * The contents are written verbatim, so staging a malformed file is as easy as
- * staging a well-formed one.
+ * An object is written as a JavaScript module and anything else verbatim, so
+ * staging a malformed file is as easy as staging a well-formed one. JavaScript
+ * rather than JSON because `undefined` is the value a complete configuration
+ * writes to gate no breadth or publish no diagram, and JSON cannot spell it.
  */
 async function writeWorkspace(
-  projects: Record<string, string>,
+  projects: Record<string, object | string>,
 ): Promise<string> {
   const workspaceRoot = await mkdtemp(
     path.join(tmpdir(), "callidescope-workspace-"),
@@ -66,8 +145,10 @@ async function writeWorkspace(
 
     await mkdir(projectRoot, { recursive: true });
     await writeFile(
-      path.join(projectRoot, "callidescope.config.json"),
-      contents,
+      path.join(projectRoot, CONFIGURATION_FILE_NAME),
+      typeof contents === "string"
+        ? contents
+        : `export default ${serialize(contents)};\n`,
       "utf8",
     );
   }
@@ -96,7 +177,9 @@ describe(ProjectConfigurationService, () => {
 
   it("resolves the configuration sitting at a project root", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/gated": JSON.stringify({ limits: { maximumDepth: 3 } }),
+      "packages/gated": completeConfiguration({
+        limits: { maximumBreadth: undefined, maximumDepth: 3 },
+      }),
     });
 
     const loaded = await service.loadProjectConfigurations({
@@ -107,68 +190,54 @@ describe(ProjectConfigurationService, () => {
     expect(loaded).toHaveLength(1);
     expect(loaded[0]?.project).toBe("packages/gated");
     expect(loaded[0]?.path).toBe(
-      path.join(workspaceRoot, "packages", "gated", "callidescope.config.json"),
+      path.join(workspaceRoot, "packages", "gated", CONFIGURATION_FILE_NAME),
     );
     expect(loaded[0]?.configuration.limits.maximumDepth).toBe(3);
   });
 
-  it("leaves a project holding no configuration file out of the result", async () => {
-    const workspaceRoot = await writeWorkspace({
-      "packages/gated": JSON.stringify({ limits: { maximumDepth: 3 } }),
-    });
-    await mkdir(path.join(workspaceRoot, "packages", "plain"), {
-      recursive: true,
-    });
-
-    const loaded = await service.loadProjectConfigurations({
-      projects: ["packages/gated", "packages/plain"],
-      workspaceRoot,
-    });
-
-    expect(loaded.map((entry) => entry.project)).toStrictEqual([
-      "packages/gated",
-    ]);
-  });
-
   it("never walks upward out of a project root", async () => {
     const workspaceRoot = await writeWorkspace({
-      ".": JSON.stringify({ limits: { maximumDepth: 17 } }),
+      ".": completeConfiguration(),
     });
     await mkdir(path.join(workspaceRoot, "packages", "plain"), {
       recursive: true,
     });
 
-    const loaded = await service.loadProjectConfigurations({
-      projects: ["packages/plain"],
-      workspaceRoot,
-    });
-
-    expect(loaded).toStrictEqual([]);
+    // A project holding no file of its own is refused rather than handed the
+    // one above it: walking up would give every project a copy of the
+    // workspace's, which is the resolution this arrangement exists to end.
+    await expect(
+      service.loadProjectConfigurations({
+        projects: ["packages/plain"],
+        workspaceRoot,
+      }),
+    ).rejects.toThrow(ProjectConfigurationMissingError);
   });
 
-  // 🧬 Inheritance
+  // 🧬 Defaults
 
   it("merges nothing into a project configuration", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/gated": JSON.stringify({ limits: { maximumDepth: 3 } }),
+      "packages/gated": completeConfiguration({
+        limits: { maximumBreadth: undefined, maximumDepth: 3 },
+      }),
     });
 
     const [loaded] = await service.loadProjectConfigurations({
       projects: ["packages/gated"],
       workspaceConfigurationPath: path.join(
         workspaceRoot,
-        "callidescope.config.json",
+        CONFIGURATION_FILE_NAME,
       ),
       workspaceRoot,
     });
 
-    // A field the project never wrote is absent from what it authored, and
-    // resolves to the tool's own default rather than to anything a workspace
-    // file said. Inheritance happens one limit at a time, later, in
-    // `resolveLimits` — never by the project file spreading anything.
+    // What a project takes from the workspace it takes by spreading
+    // `projectDefaults` into its own file, before the loader ever sees it.
+    // Nothing here reaches across to a second file, so a field the project
+    // never wrote is absent from what it authored.
     expect(loaded?.authored.limits?.maximumDepth).toBe(3);
     expect(loaded?.authored.excludeFrom).toBeUndefined();
-    expect(loaded?.authored.exclude).toBeUndefined();
     expect(loaded?.configuration.exclude).toStrictEqual([
       ...DEFAULT_EXCLUDE_GLOBS,
     ]);
@@ -176,7 +245,7 @@ describe(ProjectConfigurationService, () => {
 
   it("keeps every limit a project declared for itself", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/gated": JSON.stringify({
+      "packages/gated": completeConfiguration({
         limits: { maximumBreadth: 9, maximumDepth: 3 },
       }),
     });
@@ -193,9 +262,9 @@ describe(ProjectConfigurationService, () => {
 
   it("skips the file already loaded as the run's own configuration", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/examples": JSON.stringify({
+      "packages/examples": {
         write: { json: { path: "report.json" } },
-      }),
+      },
     });
 
     // Round-tripped through the loader rather than rebuilt by hand: the rule is
@@ -207,7 +276,7 @@ describe(ProjectConfigurationService, () => {
           workspaceRoot,
           "packages",
           "examples",
-          "callidescope.config.json",
+          CONFIGURATION_FILE_NAME,
         ),
       });
 
@@ -222,9 +291,9 @@ describe(ProjectConfigurationService, () => {
 
   it("skips the run's own configuration named relative to the workspace root", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/examples": JSON.stringify({
+      "packages/examples": {
         write: { json: { path: "report.json" } },
-      }),
+      },
     });
 
     // A command line names its configuration relative to the workspace root, so
@@ -235,7 +304,7 @@ describe(ProjectConfigurationService, () => {
       workspaceConfigurationPath: path.join(
         "packages",
         "examples",
-        "callidescope.config.json",
+        CONFIGURATION_FILE_NAME,
       ),
       workspaceRoot,
     });
@@ -245,10 +314,10 @@ describe(ProjectConfigurationService, () => {
 
   it("still resolves every other project's file alongside the skipped one", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/examples": JSON.stringify({
+      "packages/examples": {
         write: { json: { path: "report.json" } },
-      }),
-      "packages/gated": JSON.stringify({ limits: { maximumDepth: 3 } }),
+      },
+      "packages/gated": completeConfiguration(),
     });
 
     const loaded = await service.loadProjectConfigurations({
@@ -257,7 +326,7 @@ describe(ProjectConfigurationService, () => {
         workspaceRoot,
         "packages",
         "examples",
-        "callidescope.config.json",
+        CONFIGURATION_FILE_NAME,
       ),
       workspaceRoot,
     });
@@ -304,13 +373,15 @@ describe(ProjectConfigurationService, () => {
 
   it("names the project and the file when a configuration is refused", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/broken": JSON.stringify({ limits: { maximumDepth: 0 } }),
+      "packages/broken": completeConfiguration({
+        limits: { maximumBreadth: undefined, maximumDepth: 0 },
+      }),
     });
     const configurationPath = path.join(
       workspaceRoot,
       "packages",
       "broken",
-      "callidescope.config.json",
+      CONFIGURATION_FILE_NAME,
     );
 
     await expect(
@@ -321,19 +392,151 @@ describe(ProjectConfigurationService, () => {
     ).rejects.toThrow(`packages/broken at ${configurationPath}`);
   });
 
+  // 📋 Completeness
+
+  it("refuses a traced project that has no configuration file", async () => {
+    const workspaceRoot = await writeWorkspace({
+      "packages/gated": completeConfiguration(),
+    });
+    await mkdir(path.join(workspaceRoot, "packages", "plain"), {
+      recursive: true,
+    });
+
+    await expect(
+      service.loadProjectConfigurations({
+        projects: ["packages/gated", "packages/plain"],
+        workspaceRoot,
+      }),
+    ).rejects.toThrow(
+      "packages/plain is traced but has no callidescope.config.ts",
+    );
+  });
+
+  it.each(["entryPoints", "exclude", "limits", "write"])(
+    "refuses a project configuration that leaves %s out",
+    async (field) => {
+      const partial = withoutKey(completeConfiguration(), field);
+
+      const workspaceRoot = await writeWorkspace({
+        "packages/partial": partial,
+      });
+      const loading = service.loadProjectConfigurations({
+        projects: ["packages/partial"],
+        workspaceRoot,
+      });
+
+      await expect(loading).rejects.toThrow(
+        ProjectConfigurationIncompleteError,
+      );
+      await expect(loading).rejects.toThrow(`leaves ${field} out`);
+    },
+  );
+
+  it.each([
+    ["entryPoints.includeTests", "entryPoints", "includeTests"],
+    ["limits.maximumBreadth", "limits", "maximumBreadth"],
+    ["write.mermaid", "write", "mermaid"],
+  ])(
+    "refuses a project configuration that leaves %s out",
+    async (name, field, member) => {
+      const complete: Readonly<Record<string, unknown>> = {
+        ...completeConfiguration(),
+      };
+      const value = complete[field];
+      const partial = withoutKey(
+        typeof value === "object" && value !== null ? value : {},
+        member,
+      );
+
+      const workspaceRoot = await writeWorkspace({
+        "packages/partial": { ...complete, [field]: partial },
+      });
+
+      await expect(
+        service.loadProjectConfigurations({
+          projects: ["packages/partial"],
+          workspaceRoot,
+        }),
+      ).rejects.toThrow(`leaves ${name} out`);
+    },
+  );
+
+  it("refuses a field written as undefined, which says nothing about its members", async () => {
+    // `limits: undefined` is not the statement `maximumBreadth: undefined` is.
+    // A member written as undefined is a project saying it gates no breadth;
+    // the field written as undefined says nothing about either number, so it
+    // is the same gap as leaving the field out and is refused by that name.
+    const workspaceRoot = await writeWorkspace({
+      "packages/hollow": `export default {
+        entryPoints: {
+          addresses: [],
+          decorators: [],
+          includeExportedFunctions: true,
+          includeOrphans: true,
+          includeTests: false,
+        },
+        exclude: [],
+        limits: undefined,
+        write: { markdown: undefined, mermaid: undefined },
+      };\n`,
+    });
+    const loading = service.loadProjectConfigurations({
+      projects: ["packages/hollow"],
+      workspaceRoot,
+    });
+
+    await expect(loading).rejects.toThrow(ProjectConfigurationIncompleteError);
+    await expect(loading).rejects.toThrow("leaves limits out");
+  });
+
+  it("accepts a member written as undefined, which is a decision rather than a gap", async () => {
+    // `maximumBreadth: undefined` says this project gates depth and not
+    // breadth, and `mermaid: undefined` says it publishes no diagram. Both are
+    // written into the file rather than left out of it, which is the whole
+    // distinction completeness buys.
+    const workspaceRoot = await mkdtemp(
+      path.join(tmpdir(), "callidescope-workspace-"),
+    );
+    const projectRoot = path.join(workspaceRoot, "packages", "quiet");
+    await mkdir(projectRoot, { recursive: true });
+    await writeFile(
+      path.join(projectRoot, "callidescope.config.js"),
+      `export default {
+        entryPoints: {
+          addresses: [],
+          decorators: [],
+          includeExportedFunctions: true,
+          includeOrphans: true,
+          includeTests: false,
+        },
+        exclude: [],
+        limits: { maximumBreadth: undefined, maximumDepth: 4 },
+        write: { markdown: undefined, mermaid: undefined },
+      };\n`,
+      "utf8",
+    );
+
+    const loaded = await service.loadProjectConfigurations({
+      projects: ["packages/quiet"],
+      workspaceRoot,
+    });
+
+    expect(loaded).toHaveLength(1);
+    expect(loaded[0]?.configuration.limits.maximumBreadth).toBeUndefined();
+  });
+
   // 🔒 Permitted Fields
 
   it.each([
     ["directories", { directories: ["packages/other"] }],
     ["write.json", { write: { json: { path: "report.json" } } }],
-    ["write.projectReadmes", { write: { projectReadmes: {} } }],
     ["excludeFrom", { excludeFrom: [".callidescopeignore"] }],
     ["excludeCallees", { excludeCallees: ["Logger.log"] }],
   ])(
     "refuses a project configuration that sets %s",
     async (field, configuration) => {
       const workspaceRoot = await writeWorkspace({
-        "packages/broken": JSON.stringify(configuration),
+        "packages/broken": configuration,
       });
       const loading = service.loadProjectConfigurations({
         projects: ["packages/broken"],
@@ -352,9 +555,9 @@ describe(ProjectConfigurationService, () => {
 
   it("names the project, the field, and the fields a project may set", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/broken": JSON.stringify({
+      "packages/broken": {
         write: { json: { path: "report.json" } },
-      }),
+      },
     });
 
     await expect(
@@ -369,40 +572,9 @@ describe(ProjectConfigurationService, () => {
     );
   });
 
-  it.each([
-    ["entryPoints", { entryPoints: { includeTests: true } }],
-    [
-      "entryPoints.addresses",
-      {
-        entryPoints: {
-          addresses: ["packages/allowed/src/index.ts#publicApi"],
-        },
-      },
-    ],
-    ["limits.maximumDepth", { limits: { maximumDepth: 5 } }],
-    ["limits.maximumBreadth", { limits: { maximumBreadth: 10 } }],
-    ["exclude", { exclude: ["**/*.spec.ts"] }],
-    ["write.markdown", { write: { markdown: { path: "README.md" } } }],
-    ["write.mermaid", { write: { mermaid: { path: "DIAGRAM.md" } } }],
-  ])(
-    "accepts a project configuration that sets %s",
-    async (_field, configuration) => {
-      const workspaceRoot = await writeWorkspace({
-        "packages/allowed": JSON.stringify(configuration),
-      });
-
-      const loaded = await service.loadProjectConfigurations({
-        projects: ["packages/allowed"],
-        workspaceRoot,
-      });
-
-      expect(loaded).toHaveLength(1);
-    },
-  );
-
   it("resolves the written destinations a project declared for itself", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/published": JSON.stringify({
+      "packages/published": completeConfiguration({
         write: {
           markdown: { heading: "## 🔭 Callidescope", path: "README.md" },
           mermaid: { path: "docs/diagram.md" },
@@ -424,9 +596,13 @@ describe(ProjectConfigurationService, () => {
 
   it("resolves the addresses a project declared as its own entry points", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/allowed": JSON.stringify({
+      "packages/allowed": completeConfiguration({
         entryPoints: {
           addresses: ["packages/allowed/src/index.ts#publicApi"],
+          decorators: [],
+          includeExportedFunctions: true,
+          includeOrphans: true,
+          includeTests: false,
         },
       }),
     });
@@ -443,11 +619,11 @@ describe(ProjectConfigurationService, () => {
 
   it("never refuses the run's own workspace configuration for the fields it legitimately sets", async () => {
     const workspaceRoot = await writeWorkspace({
-      "packages/examples": JSON.stringify({
+      "packages/examples": {
         directories: ["packages"],
         excludeFrom: [".callidescopeignore"],
         write: { json: { path: "report.json" } },
-      }),
+      },
     });
 
     const { path: workspaceConfigurationPath } =
@@ -456,7 +632,7 @@ describe(ProjectConfigurationService, () => {
           workspaceRoot,
           "packages",
           "examples",
-          "callidescope.config.json",
+          CONFIGURATION_FILE_NAME,
         ),
       });
 
@@ -471,54 +647,12 @@ describe(ProjectConfigurationService, () => {
 
   // 📏 Limits resolved per project
 
-  it("hands a project declaring no limits the workspace's, marked inherited", async () => {
+  it("names the project's own file as the source of both its limits", async () => {
     const workspaceRoot = await writeWorkspace({
-      ".": JSON.stringify({ limits: { maximumDepth: 17 } }),
-      "packages/plain": JSON.stringify({ exclude: ["**/generated/**"] }),
-    });
-
-    const limits = await resolveWrittenLimits({
-      configurationService,
-      projects: ["packages/plain"],
-      service,
-      workspaceRoot,
-    });
-
-    expect(limits.byProject.get("packages/plain")?.maximumDepth).toStrictEqual({
-      origin: "inherited",
-      path: path.join(workspaceRoot, "callidescope.config.json"),
-      value: 17,
-    });
-  });
-
-  // The other half of the same rule the workspace's own row obeys: a number
-  // resolution manufactured is still the number every project is judged
-  // against, and still belongs to no file. Naming one here would tell a reader
-  // to go and change a line that is not written anywhere.
-  it("names no file for a limit the workspace file never wrote", async () => {
-    const workspaceRoot = await writeWorkspace({
-      ".": JSON.stringify({ exclude: ["**/generated/**"] }),
-      "packages/plain": JSON.stringify({ exclude: ["**/generated/**"] }),
-    });
-
-    const limits = await resolveWrittenLimits({
-      configurationService,
-      projects: ["packages/plain"],
-      service,
-      workspaceRoot,
-    });
-
-    expect(limits.byProject.get("packages/plain")?.maximumDepth).toStrictEqual({
-      origin: "inherited",
-      path: undefined,
-      value: DEFAULT_MAXIMUM_DEPTH,
-    });
-  });
-
-  it("names the project's own file as the source of a limit it declared", async () => {
-    const workspaceRoot = await writeWorkspace({
-      ".": JSON.stringify({ limits: { maximumDepth: 17 } }),
-      "packages/gated": JSON.stringify({ limits: { maximumDepth: 4 } }),
+      ".": { limits: { maximumDepth: 17 } },
+      "packages/gated": completeConfiguration({
+        limits: { maximumBreadth: 5, maximumDepth: 4 },
+      }),
     });
 
     const limits = await resolveWrittenLimits({
@@ -528,22 +662,24 @@ describe(ProjectConfigurationService, () => {
       workspaceRoot,
     });
 
-    expect(limits.byProject.get("packages/gated")?.maximumDepth).toStrictEqual({
-      origin: "declared",
+    expect(limits.byProject.get("packages/gated")).toStrictEqual({
+      maximumBreadth: 5,
+      maximumDepth: 4,
       path: path.join(
         workspaceRoot,
         "packages",
         "gated",
-        "callidescope.config.json",
+        CONFIGURATION_FILE_NAME,
       ),
-      value: 4,
     });
   });
 
   it("keeps a limit higher than the workspace's rather than clamping it", async () => {
     const workspaceRoot = await writeWorkspace({
-      ".": JSON.stringify({ limits: { maximumDepth: 6 } }),
-      "packages/deep": JSON.stringify({ limits: { maximumDepth: 12 } }),
+      ".": { limits: { maximumDepth: 6 } },
+      "packages/deep": completeConfiguration({
+        limits: { maximumBreadth: undefined, maximumDepth: 12 },
+      }),
     });
 
     const limits = await resolveWrittenLimits({
@@ -553,37 +689,20 @@ describe(ProjectConfigurationService, () => {
       workspaceRoot,
     });
 
-    expect(limits.byProject.get("packages/deep")?.maximumDepth.value).toBe(12);
+    expect(limits.byProject.get("packages/deep")?.maximumDepth).toBe(12);
   });
 
-  it("inherits the limit a project left alone while keeping the one it set", async () => {
+  it("never lets a project take the workspace's breadth limit", async () => {
+    // The one thing per-field fallback used to do that nothing does now: a
+    // project writing `maximumBreadth: undefined` gates no breadth, whatever
+    // the workspace declares, because its file is the whole statement.
     const workspaceRoot = await writeWorkspace({
-      ".": JSON.stringify({
+      ".": {
         limits: { maximumBreadth: 9, maximumDepth: 17 },
+      },
+      "packages/gated": completeConfiguration({
+        limits: { maximumBreadth: undefined, maximumDepth: 4 },
       }),
-      "packages/gated": JSON.stringify({ limits: { maximumDepth: 4 } }),
-    });
-
-    const limits = await resolveWrittenLimits({
-      configurationService,
-      projects: ["packages/gated"],
-      service,
-      workspaceRoot,
-    });
-
-    expect(
-      limits.byProject.get("packages/gated")?.maximumBreadth,
-    ).toStrictEqual({
-      origin: "inherited",
-      path: path.join(workspaceRoot, "callidescope.config.json"),
-      value: 9,
-    });
-  });
-
-  it("leaves breadth unset when neither the project nor the workspace set it", async () => {
-    const workspaceRoot = await writeWorkspace({
-      ".": JSON.stringify({ limits: { maximumDepth: 17 } }),
-      "packages/gated": JSON.stringify({ limits: { maximumDepth: 4 } }),
     });
 
     const limits = await resolveWrittenLimits({
@@ -598,13 +717,54 @@ describe(ProjectConfigurationService, () => {
     ).toBeUndefined();
   });
 
-  it("names every project the run reached, whether or not it declared a limit", async () => {
+  it("hands the project holding the run's own configuration the workspace's limits", async () => {
     const workspaceRoot = await writeWorkspace({
-      ".": JSON.stringify({ limits: { maximumDepth: 17 } }),
-      "packages/gated": JSON.stringify({ limits: { maximumDepth: 4 } }),
+      ".": { limits: { maximumDepth: 17 } },
     });
-    await mkdir(path.join(workspaceRoot, "packages", "plain"), {
-      recursive: true,
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      projects: [""],
+      service,
+      workspaceRoot,
+    });
+
+    expect(limits.byProject.get("")).toStrictEqual({
+      maximumBreadth: undefined,
+      maximumDepth: 17,
+      path: path.join(workspaceRoot, CONFIGURATION_FILE_NAME),
+    });
+  });
+
+  // The other half of the same rule: a number resolution manufactured is still
+  // the number that project is judged against, and still belongs to no file.
+  // Naming one would tell a reader to go and change a line nobody wrote.
+  it("names no file for a limit the workspace file never wrote", async () => {
+    const workspaceRoot = await writeWorkspace({
+      ".": { exclude: ["**/generated/**"] },
+    });
+
+    const limits = await resolveWrittenLimits({
+      configurationService,
+      projects: [""],
+      service,
+      workspaceRoot,
+    });
+
+    expect(limits.workspace).toStrictEqual({
+      maximumBreadth: undefined,
+      maximumDepth: DEFAULT_MAXIMUM_DEPTH,
+      path: undefined,
+    });
+  });
+
+  it("names every project the run reached", async () => {
+    const workspaceRoot = await writeWorkspace({
+      ".": { limits: { maximumDepth: 17 } },
+      "packages/gated": completeConfiguration({
+        limits: { maximumBreadth: undefined, maximumDepth: 4 },
+      }),
+      "packages/plain": completeConfiguration(),
     });
 
     const limits = await resolveWrittenLimits({
@@ -618,6 +778,6 @@ describe(ProjectConfigurationService, () => {
       "packages/gated",
       "packages/plain",
     ]);
-    expect(limits.workspace.maximumDepth.value).toBe(17);
+    expect(limits.workspace.maximumDepth).toBe(17);
   });
 });

@@ -11,7 +11,6 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { MarkdownReportService } from "./markdown-report.service";
 import {
-  LIMIT_ABSENT_LABEL,
   MARKDOWN_DEEP_STACKS_HEADING,
   MARKDOWN_PROJECT_LIMITS_HEADING,
   MARKDOWN_PROJECT_LIMITS_SUMMARY,
@@ -421,20 +420,13 @@ describe(MarkdownReportService, () => {
 
   // 🔭 A project's own limits
 
-  it("states both limits a project declared for itself, marked as its own", () => {
+  it("states both limits a project declared for itself", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       limits: limitsLookup({
-        maximumBreadth: {
-          origin: "declared",
-          path: "packages/example/callidescope.config.ts",
-          value: 7,
-        },
-        maximumDepth: {
-          origin: "declared",
-          path: "packages/example/callidescope.config.ts",
-          value: 4,
-        },
+        maximumBreadth: 7,
+        maximumDepth: 4,
+        path: "packages/example/callidescope.config.ts",
       }),
       previewCount: 3,
       rendering: "tree",
@@ -443,49 +435,27 @@ describe(MarkdownReportService, () => {
 
     expect(rendered).toContain(`### ${MARKDOWN_PROJECT_LIMITS_HEADING}`);
     expect(rendered).toContain(MARKDOWN_PROJECT_LIMITS_SUMMARY);
-    expect(rendered).toContain("| `maximumDepth` | 4 | declared |");
-    expect(rendered).toContain("| `maximumBreadth` | 7 | declared |");
+    expect(rendered).toContain("| `maximumDepth` | 4 |");
+    expect(rendered).toContain("| `maximumBreadth` | 7 |");
   });
 
-  it("marks a limit the project took from the workspace as inherited", () => {
-    // The distinction the column exists for: a declared number is a decision
-    // about this project, an inherited one is the default nobody picked for it.
-    const rendered = service.renderProjectSection({
-      heading: "## 🔭 Callidescope",
-      limits: limitsLookup({
-        maximumBreadth: undefined,
-        maximumDepth: {
-          origin: "inherited",
-          path: "configuration/callidescope.config.ts",
-          value: 17,
-        },
-      }),
-      previewCount: 3,
-      rendering: "tree",
-      report: report([]),
-    });
-
-    expect(rendered).toContain("| `maximumDepth` | 17 | inherited |");
-  });
-
-  it("says a limit nothing anywhere declares is none rather than a number", () => {
+  it("says a limit the project does not declare is none rather than a number", () => {
     // Breadth's usual case. Printing the workspace's number, or any number,
     // would claim a gate this project does not have.
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       limits: limitsLookup({
         maximumBreadth: undefined,
-        maximumDepth: { origin: "declared", path: undefined, value: 4 },
+        maximumDepth: 4,
+        path: "packages/example/callidescope.config.ts",
       }),
       previewCount: 3,
       rendering: "tree",
       report: report([]),
     });
 
-    expect(rendered).toContain(
-      `| \`maximumBreadth\` | ${NO_LIMIT_LABEL} | ${LIMIT_ABSENT_LABEL} |`,
-    );
-    expect(rendered).toContain("| `maximumDepth` | 4 | declared |");
+    expect(rendered).toContain(`| \`maximumBreadth\` | ${NO_LIMIT_LABEL} |`);
+    expect(rendered).toContain("| `maximumDepth` | 4 |");
   });
 
   it("reads the row for the project the section is about", () => {
@@ -502,7 +472,7 @@ describe(MarkdownReportService, () => {
       report: report([]),
     });
 
-    expect(rendered).toContain("| `maximumDepth` | 3 | declared |");
+    expect(rendered).toContain("| `maximumDepth` | 3 |");
   });
 
   // 📊 Finding tables

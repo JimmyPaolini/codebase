@@ -12,10 +12,8 @@ export {
 export { OutputMarkdownModule } from "./modules/output-markdown/output-markdown.module";
 export { OutputMarkdownService } from "./modules/output-markdown/output-markdown.service";
 export type {
-  ProjectSection,
   SyncAnchoredBlockArguments,
   SyncMarkdownArguments,
-  SyncProjectReadmesArguments,
   WrapInAnchorsArguments,
 } from "./modules/output-markdown/output-markdown.types";
 export { MINIMUM_STACK_FRAMES } from "./modules/project-reports/project-reports.constants";

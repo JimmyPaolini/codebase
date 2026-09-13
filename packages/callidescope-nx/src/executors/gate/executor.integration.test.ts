@@ -63,6 +63,9 @@ const BREACHING_ENTRY_POINT = "readBreachingEntryPoint";
  */
 const CONFIGURATION_FILE_NAME = "callidescope.config.json";
 
+/** The name a project declares itself through, which must spell `undefined`. */
+const PROJECT_CONFIGURATION_FILE_NAME = "callidescope.config.js";
+
 /** A three-frame stack, against a project limit of two. */
 const BREACHING_SOURCE = [
   "export function readBreachingEntryPoint(): string {",
@@ -220,12 +223,28 @@ function writeProject(args: {
   );
   writeFileSync(path.join(projectDirectory, "src", "index.ts"), args.source);
 
-  if (args.configuration !== undefined) {
-    writeFileSync(
-      path.join(projectDirectory, CONFIGURATION_FILE_NAME),
-      JSON.stringify(args.configuration),
-    );
-  }
+  // Every traced project declares a complete configuration or the run refuses
+  // to start, so a fixture project that overrides nothing still writes one.
+  // JavaScript rather than JSON, because `undefined` is what says "no breadth
+  // limit" and "no destination", and JSON cannot spell it.
+  writeFileSync(
+    path.join(projectDirectory, PROJECT_CONFIGURATION_FILE_NAME),
+    `export default {
+      entryPoints: {
+        addresses: [],
+        decorators: [],
+        includeExportedFunctions: true,
+        includeOrphans: true,
+        includeTests: false,
+      },
+      exclude: ${JSON.stringify(args.configuration?.exclude ?? [])},
+      limits: {
+        maximumBreadth: undefined,
+        maximumDepth: ${String(args.configuration?.limits?.maximumDepth ?? 99)},
+      },
+      write: { markdown: undefined, mermaid: undefined },
+    };\n`,
+  );
 }
 
 /**

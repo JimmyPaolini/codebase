@@ -88,10 +88,9 @@ export function buildDiscoveredCallable(
 /**
  * Builds the limits lookup a run hands the renderers.
  *
- * The workspace row is what an unlisted project falls back to, so a test that
- * cares about nothing but the number can pass `{ maximumDepth: 6 }` and leave
- * `byProject` empty — every project then resolves to that, which is exactly
- * what a workspace whose projects declare nothing does.
+ * The workspace row is what a project the lookup does not name resolves to, so
+ * a test that cares about nothing but the number can pass `{ maximumDepth: 6 }`
+ * and leave `byProject` empty.
  */
 export function buildProjectLimitsLookup(
   args: {
@@ -103,7 +102,8 @@ export function buildProjectLimitsLookup(
 
   const declared = (value: number): ProjectLimits => ({
     maximumBreadth: undefined,
-    maximumDepth: { origin: "declared", path: "callidescope.config.ts", value },
+    maximumDepth: value,
+    path: "callidescope.config.ts",
   });
 
   return {
@@ -115,11 +115,8 @@ export function buildProjectLimitsLookup(
     ),
     workspace: {
       maximumBreadth: undefined,
-      maximumDepth: {
-        origin: "inherited",
-        path: "configuration/callidescope.config.ts",
-        value: workspaceDepth,
-      },
+      maximumDepth: workspaceDepth,
+      path: "configuration/callidescope.config.ts",
     },
   };
 }

@@ -56,17 +56,19 @@ function buildDestination(
     endMarker: "<!-- END -->",
     heading: "## 🔭 Callidescope",
     path: destinationPath,
+    previewCount: 3,
     render: undefined,
     startMarker: "<!-- START -->",
     writeBlock: undefined,
   };
 }
 
-/** A project's own limits, inheriting depth and declaring no breadth. */
+/** A project's own limits, taking the default depth and declaring no breadth. */
 function buildProjectLimits(): ProjectLimits {
   return {
     maximumBreadth: undefined,
-    maximumDepth: { origin: "inherited", path: undefined, value: 6 },
+    maximumDepth: 6,
+    path: undefined,
   };
 }
 
@@ -102,7 +104,6 @@ function buildWrite(
     json: undefined,
     markdown: undefined,
     mermaid: undefined,
-    projectReadmes: undefined,
     ...overrides,
   };
 }
@@ -113,7 +114,7 @@ describe(WriteDestinationsService, () => {
   >;
   let service: WriteDestinationsService;
 
-  /** The whole-run fan-out, plus whatever the one traced project declared. */
+  /** The run's own destinations, plus whatever the one traced project declared. */
   function buildArguments(
     writeByProject: ReadonlyMap<
       string,
@@ -122,14 +123,7 @@ describe(WriteDestinationsService, () => {
   ): SyncDestinationsArguments {
     return {
       check: false,
-      configuration: buildConfiguration({
-        projectReadmes: {
-          endMarker: "<!-- END -->",
-          heading: "## 🔭 Callidescope",
-          previewCount: 3,
-          startMarker: "<!-- START -->",
-        },
-      }),
+      configuration: buildConfiguration(),
       projectLimits: buildProjectLimitsLookup(),
       result: buildCallGraphResult({
         projects: [buildProjectReport("packages/example")],
@@ -142,7 +136,6 @@ describe(WriteDestinationsService, () => {
   /** Points the markdown writer at a verdict, the way a real one returns one. */
   function stubWrites(current: boolean): void {
     outputMarkdownService.sync.mockReturnValue(current);
-    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
   }
 
   beforeAll(async () => {
@@ -215,44 +208,14 @@ describe(WriteDestinationsService, () => {
     ]);
   });
 
-  it("leaves a project that declared its own destinations out of the fan-out", () => {
-    stubWrites(true);
-    service.syncDestinations(
-      buildArguments(
-        new Map([
-          [
-            "packages/example",
-            buildWrite({ markdown: buildDestination("docs/CALLS.md") }),
-          ],
-        ]),
-      ),
-    );
-
-    const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
-
-    expect(sent?.sections).toStrictEqual([]);
-  });
-
   it("publishes nothing for a project whose declared destinations are both absent", () => {
+    // A project writing `markdown: undefined` has opted out in its own file,
+    // and there is no longer a workspace fan-out to reach it anyway.
     stubWrites(true);
     service.syncDestinations(
       buildArguments(new Map([["packages/example", buildWrite()]])),
     );
 
-    const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
-
     expect(outputMarkdownService.sync).not.toHaveBeenCalled();
-    expect(sent?.sections).toStrictEqual([]);
-  });
-
-  it("reaches a project that declared nothing through the fan-out", () => {
-    stubWrites(true);
-    service.syncDestinations(buildArguments());
-
-    const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
-
-    expect(sent?.sections.map((section) => section.path)).toStrictEqual([
-      path.join("packages/example", "README.md"),
-    ]);
   });
 });

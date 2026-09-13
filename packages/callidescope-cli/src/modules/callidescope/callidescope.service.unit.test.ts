@@ -91,7 +91,6 @@ function buildConfiguration(
       json: undefined,
       markdown: undefined,
       mermaid: undefined,
-      projectReadmes: undefined,
     },
     ...overrides,
   };

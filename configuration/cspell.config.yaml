@@ -36,6 +36,14 @@ ignorePaths:
   # siblings — which are coordinates in a parameter space rather than words.
   # `.codometerignore` and `.prettierignore` exclude the same directory.
   - "**/applications/meanderaw/output/**"
+  # cspell:ignore mermiad
+  # 🔭 Everything callidescope's examples run writes. The report carries each
+  # traced callable's own JSDoc summary verbatim, so a word a source file
+  # deliberately misspells — `mermiad`, the typo'd `--format` value the flag
+  # refusal is written around — arrives here stripped of the `cspell:ignore`
+  # comment that exempts it at the source, and JSON has nowhere to put one
+  # back. Spelling is checked where the prose is authored; this is a copy.
+  - "**/packages/callidescope-examples/output/**"
   # 🧩 Installed agent skills, one entry per skill in skills-lock.json. Owned
   # upstream rather than authored here, so their prose stays spelled the way
   # their sources spelled it. Listed individually rather than as

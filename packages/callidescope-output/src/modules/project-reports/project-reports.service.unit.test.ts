@@ -95,18 +95,12 @@ function buildArguments(depth: number): BuildProjectReportsArguments {
 function buildLimits(args: {
   breadth?: number | undefined;
   depth?: number | undefined;
-  origin?: "declared" | "inherited" | undefined;
   path?: string | undefined;
 }): ProjectLimits {
-  const origin = args.origin ?? "inherited";
-  const path = args.path ?? "callidescope.config.ts";
-
   return {
-    maximumBreadth:
-      args.breadth === undefined
-        ? undefined
-        : { origin, path, value: args.breadth },
-    maximumDepth: { origin, path, value: args.depth ?? Infinity },
+    maximumBreadth: args.breadth,
+    maximumDepth: args.depth ?? Infinity,
+    path: args.path ?? "callidescope.config.ts",
   };
 }
 
@@ -236,7 +230,7 @@ describe(ProjectReportsService, () => {
 
     const findings = service.findDeepStacks({
       limits: buildLookup({
-        byProject: { alpha: buildLimits({ depth: 2, origin: "declared" }) },
+        byProject: { alpha: buildLimits({ depth: 2 }) },
         workspace: buildLimits({ depth: 9 }),
       }),
       reports,
@@ -252,8 +246,8 @@ describe(ProjectReportsService, () => {
       service.findDeepStacks({
         limits: buildLookup({
           byProject: {
-            alpha: buildLimits({ depth: 3, origin: "declared" }),
-            beta: buildLimits({ depth: 1, origin: "declared" }),
+            alpha: buildLimits({ depth: 3 }),
+            beta: buildLimits({ depth: 1 }),
           },
           workspace: buildLimits({ depth: 3 }),
         }),
@@ -282,7 +276,7 @@ describe(ProjectReportsService, () => {
     expect(
       service.findDeepStacks({
         limits: buildLookup({
-          byProject: { alpha: buildLimits({ depth: 8, origin: "declared" }) },
+          byProject: { alpha: buildLimits({ depth: 8 }) },
           workspace: buildLimits({ depth: 1 }),
         }),
         reports,
@@ -434,7 +428,7 @@ describe(ProjectReportsService, () => {
 
     const findings = service.findWideCallables({
       limits: buildLookup({
-        byProject: { alpha: buildLimits({ breadth: 0, origin: "declared" }) },
+        byProject: { alpha: buildLimits({ breadth: 0 }) },
         workspace: buildLimits({ breadth: 9 }),
       }),
       reports,

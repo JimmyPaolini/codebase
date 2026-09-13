@@ -40,8 +40,6 @@ export interface MermaidDiagram {
 export interface ProjectIndexRow {
   readonly deepest: number;
   readonly headroom: number;
-  /** True when the project's own configuration set the limit it is judged by. */
-  readonly isDeclared: boolean;
   readonly limit: number;
   readonly projectName: string;
   readonly widest: number;

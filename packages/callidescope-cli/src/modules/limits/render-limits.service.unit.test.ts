@@ -8,7 +8,6 @@ import type { ProjectLimitRow } from "./limits.types";
 /** The workspace's own depth row, as the service resolves it. */
 const WORKSPACE_DEPTH_ROW: ProjectLimitRow = {
   limit: "maximumDepth",
-  origin: "declared",
   path: "configuration/callidescope.config.ts",
   project: undefined,
   value: 17,
@@ -17,7 +16,6 @@ const WORKSPACE_DEPTH_ROW: ProjectLimitRow = {
 /** A breadth row nothing anywhere declares, which is every project's today. */
 const UNDECLARED_BREADTH_ROW: ProjectLimitRow = {
   limit: "maximumBreadth",
-  origin: undefined,
   path: undefined,
   project: "packages/logger",
   value: undefined,
@@ -45,47 +43,42 @@ describe(RenderLimitsService, () => {
       "# 🔭 Callidescope Limits",
       "",
     ]);
-    expect(document).toContain(
-      "| Project | Limit | Value | Origin | Declared in |",
-    );
-    expect(document).toContain("| --- | --- | --- | --- | --- |");
+    expect(document).toContain("| Project | Limit | Value | Declared in |");
+    expect(document).toContain("| --- | --- | --- | --- |");
   });
 
   it("names the workspace row rather than leaving its project blank", () => {
     expect(service.render([WORKSPACE_DEPTH_ROW])).toContain(
-      "| workspace | `maximumDepth` | 17 | declared | `configuration/callidescope.config.ts` |",
+      "| workspace | `maximumDepth` | 17 | `configuration/callidescope.config.ts` |",
     );
   });
 
-  it("names the project a row belongs to, and how it came by the number", () => {
+  it("names the project a row belongs to, and the file its number is in", () => {
     const document = service.render([
       {
         limit: "maximumDepth",
-        origin: "inherited",
-        path: "configuration/callidescope.config.ts",
+        path: "packages/logger/callidescope.config.ts",
         project: "packages/logger",
-        value: 17,
+        value: 4,
       },
     ]);
 
     expect(document).toContain(
-      "| packages/logger | `maximumDepth` | 17 | inherited | `configuration/callidescope.config.ts` |",
+      "| packages/logger | `maximumDepth` | 4 | `packages/logger/callidescope.config.ts` |",
     );
   });
 
   it("names the project rooted at the workspace root rather than leaving it blank", () => {
-    const document = service.render([
-      { ...WORKSPACE_DEPTH_ROW, origin: "inherited", project: "" },
-    ]);
+    const document = service.render([{ ...WORKSPACE_DEPTH_ROW, project: "" }]);
 
     expect(document).toContain(
-      "| . | `maximumDepth` | 17 | inherited | `configuration/callidescope.config.ts` |",
+      "| . | `maximumDepth` | 17 | `configuration/callidescope.config.ts` |",
     );
   });
 
   it("says a limit nothing declares is none rather than inventing a number", () => {
     expect(service.render([UNDECLARED_BREADTH_ROW])).toContain(
-      "| packages/logger | `maximumBreadth` | none | — | — |",
+      "| packages/logger | `maximumBreadth` | none | — |",
     );
   });
 
@@ -103,9 +96,9 @@ describe(RenderLimitsService, () => {
     ).toStrictEqual(["| workspace", "| packages/logger"]);
   });
 
-  it("says what the two origins mean", () => {
+  it("says where the numbers are written", () => {
     expect(service.render([WORKSPACE_DEPTH_ROW])).toContain(
-      "`declared` is the project's own; `inherited` is the workspace default it falls back to.",
+      "the file each number is written in — which is that project's own `callidescope.config.ts`",
     );
   });
 });

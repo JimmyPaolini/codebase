@@ -29,7 +29,7 @@ export interface PreparedRun {
    *
    * Carried beside the resolved configuration because resolution manufactures
    * a default for every limit, so only this can say which numbers that file
-   * really chose — and an inherited limit names a file only when one did.
+   * really chose — and the workspace row names a file only when one did.
    */
   readonly authoredLimits: CallidescopeLimits | undefined;
   /**

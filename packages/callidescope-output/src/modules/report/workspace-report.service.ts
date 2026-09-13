@@ -112,9 +112,8 @@ export class WorkspaceReportService {
 
       return {
         deepest,
-        headroom: limits.maximumDepth.value - deepest,
-        isDeclared: limits.maximumDepth.origin === "declared",
-        limit: limits.maximumDepth.value,
+        headroom: limits.maximumDepth - deepest,
+        limit: limits.maximumDepth,
         projectName: report.projectName,
         widest: this.widestBreadth(report),
       };
@@ -171,10 +170,10 @@ export class WorkspaceReportService {
   /**
    * Renders one row per project: what it measured, and what it is held to.
    *
-   * `Limit` carries whether the number was declared or inherited, because the
-   * two are read differently. A declared limit is a decision somebody made
-   * about that project; an inherited one is the workspace default nobody has
-   * picked for it yet, and those are the rows where a ratchet has not started.
+   * `Limit` is a bare number now. It used to carry `declared` or `inherited`
+   * beside it, and with every traced project's configuration complete only one
+   * of those two is reachable — a column with one value in every row is worse
+   * than no column.
    */
   public renderProjectIndex(args: RenderProjectIndexArguments): string {
     const rows = this.buildRows(args);
@@ -187,7 +186,7 @@ export class WorkspaceReportService {
       MARKDOWN_PROJECT_INDEX_HEADER,
       ...rows.map(
         (row) =>
-          `| \`${row.projectName === "" ? ROOT_PROJECT_LABEL : row.projectName}\` | ${String(row.deepest)} | ${String(row.limit)} ${row.isDeclared ? "declared" : "inherited"} | ${String(row.headroom)} | ${String(row.widest)} |`,
+          `| \`${row.projectName === "" ? ROOT_PROJECT_LABEL : row.projectName}\` | ${String(row.deepest)} | ${String(row.limit)} | ${String(row.headroom)} | ${String(row.widest)} |`,
       ),
     ].join("\n");
   }

@@ -110,27 +110,25 @@ export const MARKDOWN_PROJECT_LIMITS_HEADING = "Limits";
 /**
  * Header of a project's own resolved-limits table.
  *
- * Three columns rather than the `limits` command's four: that listing spans
- * every project and has to name the file each number came from, where here the
- * origin already settles it. `declared` is the `callidescope.config.ts` beside
- * this very readme, and `inherited` is whatever the run supplies — so a fourth
- * column would repeat the third, and would have to carry an absolute path to
- * do it, which is not a thing a committed file can hold.
+ * Two columns rather than the `limits` command's three: that listing spans
+ * every project and has to name the file each number came from, where here
+ * there is only one file it could be — the `callidescope.config.ts` beside this
+ * very readme — and naming it would mean carrying an absolute path, which is
+ * not a thing a committed file can hold.
  */
 export const MARKDOWN_PROJECT_LIMITS_HEADER =
-  "| Limit | Value | Origin |\n| --- | --- | --- |";
+  "| Limit | Value |\n| --- | --- |";
 
 /**
- * States what the two origins mean, so the table needs no second reading.
+ * Says where the numbers come from, so the table needs no second reading.
  *
  * Worded as the `limits` command words it, because the two answer the same
  * question at two scopes — one project's block and the whole set — and a
  * reader who learns the vocabulary in one should not have to learn it again in
- * the other. "The run supplies" rather than "the workspace declares", since a
- * run with no configuration file of its own still supplies a depth limit.
+ * the other.
  */
 export const MARKDOWN_PROJECT_LIMITS_SUMMARY =
-  "What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.";
+  "What this project is judged against, as declared in its own `callidescope.config.ts`.";
 
 /**
  * The two gated limits, in the order a project's block prints them.
@@ -142,9 +140,6 @@ export const MARKDOWN_PROJECT_LIMIT_NAMES = [
   "maximumDepth",
   "maximumBreadth",
 ] as const;
-
-/** Stands in for a cell a limit left empty, so no cell is ever blank. */
-export const LIMIT_ABSENT_LABEL = "—";
 
 /**
  * What a value cell says when nothing anywhere declares the limit.

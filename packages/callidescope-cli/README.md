@@ -188,14 +188,18 @@ terminal, pastes into an issue, and is already what the files hold. `--format
 json` is for a machine reading standard output, and `--format mermaid` prints
 diagram source to paste somewhere that draws it.
 
-Four destinations, each independent:
+Three destinations, each independent:
 
-| `output` key | What it writes |
-| ------------ | -------------- |
+| `write` key | What it writes |
+| ----------- | -------------- |
 | `json` | The whole run as JSON, at one path |
 | `markdown` | The whole run, spliced between anchors in one file |
 | `mermaid` | The same report with its stacks drawn instead of printed |
-| `projectReadmes` | One section per project the run was scoped to, in that project's own `README.md` |
+
+A project's own section is not among them. Each project declares its own
+`write.markdown` in its own `callidescope.config.ts`, so where a section lands
+is that project's to say — see
+[Project Configuration](../callidescope-configuration/README.md#project-configuration).
 
 ### The diagram
 
@@ -236,16 +240,19 @@ would reach the 300 and leave 451 out. Neither set is drawn here — nothing in
 this workspace is over the depth limit — but they are the scale the cap is set
 against.
 
-`projectReadmes` is what puts a `## 🔭 Callidescope` section at the bottom of
-every package in this repository — every package, because the run that writes
-them names no directory, so every project is one the run was scoped to. Each
-section carries that project's stacks and findings rather than the workspace's,
-the first three stacks openly and the rest behind a disclosure. Setting it to
-`{}` accepts every default:
+The `## 🔭 Callidescope` section at the bottom of every package in this
+repository is that package's own declaration rather than anything the run fans
+out. Each project's file names the document its section lands in, and the run
+publishes what it finds declared:
 
 ```ts
-output: { projectReadmes: {} }
+write: { markdown: { heading: "## 🔭 Callidescope", path: "README.md" } }
 ```
+
+Each section carries that project's stacks and findings rather than the
+workspace's, the first three stacks openly and the rest behind a disclosure —
+`previewCount` on the destination is what decides how many, because it is a
+fact about the document rather than about the run.
 
 Under `--check reports` a stale section fails and names every file that drifted,
 rather than stopping at the first. This repository does not run that on a pull
@@ -380,11 +387,10 @@ not obvious: depth and breadth both fold over a callable's **callees**, which
 run downward — precisely what a closure holds in full. Neither needs the
 dependents a scoped run leaves out.
 
-**Publishing does not widen with measurement.** `projectReadmes` writes a
-section only for the projects a run was scoped to, so a scoped run never
-rewrites a section in a dependency it merely measured — and a whole-workspace
-run still publishes every project's, because a run naming no directory has every
-project as a scoped one.
+**Publishing does not widen with measurement.** A run publishes a section only
+for the projects it was scoped to, so a scoped run never rewrites a section in a
+dependency it merely measured — and a whole-workspace run still publishes every
+project's, because a run naming no directory has every project as a scoped one.
 
 [`dependency-closure`](../callidescope-examples/examples/dependency-closure/README.md)
 works all of this through on a real call that leaves its package, with the

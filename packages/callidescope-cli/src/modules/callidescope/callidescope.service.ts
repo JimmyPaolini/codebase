@@ -259,22 +259,15 @@ export class CallidescopeService {
         workspaceConfiguration: args.configuration,
         workspaceConfigurationPath: args.configurationPath,
       }),
-      // Keyed off the authored file rather than the resolved configuration,
-      // the same split the exclusions above make: resolution manufactures a
-      // `write` object for every project, so only the file as written can say
-      // whether this project spoke about its own destinations at all — which
-      // is the question that decides whether the workspace fan-out still
-      // reaches it.
+      // Every loaded project, unfiltered: a complete configuration always
+      // names both destinations, so a project publishing nothing wrote
+      // `markdown: undefined` rather than being absent here. There is no
+      // fan-out left for an absence to fall through to.
       writeByProject: new Map(
-        loaded
-          .filter(
-            (projectConfiguration) =>
-              projectConfiguration.authored.write !== undefined,
-          )
-          .map((projectConfiguration) => [
-            projectConfiguration.project,
-            projectConfiguration.configuration.write,
-          ]),
+        loaded.map((projectConfiguration) => [
+          projectConfiguration.project,
+          projectConfiguration.configuration.write,
+        ]),
       ),
     };
   }

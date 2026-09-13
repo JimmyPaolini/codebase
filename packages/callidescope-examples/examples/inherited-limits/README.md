@@ -1,6 +1,6 @@
-# 📜 Inherited limits
+# 📜 Spread defaults
 
-**A project with no configuration file at all, gated all the same.**
+**A project that overrides nothing, and writes that down anyway.**
 
 ## Run it
 
@@ -10,45 +10,46 @@ nx run callidescope-examples:examples
 
 This directory is its own project, so the run publishes a
 `## 🔭 Callidescope` section for it, and that section is
-[at the bottom of this guide](#-callidescope). There is no
-`callidescope.config.ts` beside this file and there is nothing to add — a
-project that declares nothing is configured entirely by the run, which is what
-every project did before per-project configuration existed and what most
-projects will keep doing.
+[at the bottom of this guide](#-callidescope). Beside this file sits a
+[`callidescope.config.ts`](callidescope.config.ts) whose every value is a
+default: the tool's own decorators, its entry-point switches, the depth the run
+supplies, and a section published into this guide.
 
-`InheritedLimitsService.request` heads seven frames. Six is the limit, written
-in [`callidescope.workspace.config.ts`](../../callidescope.workspace.config.ts)
-and inherited here, so the stack is a finding: look it up in
-[`output/report.json`](../../output/report.json) and it says `"limit": 6` —
-the number this project was handed rather than one it chose. Compare the entry
-below it, `ProjectDepthLimitService.judge`, which says `"limit": 5` because
-[the package around this one](../project-depth-limit/README.md) declared that
-for itself.
+`InheritedLimitsService.request` heads seven frames. Six is the limit, and it is
+written **here**, in this project's own file. Look the stack up in
+[`output/report.json`](../../output/report.json) and it says `"limit": 6`.
+Compare the entry below it, `ProjectDepthLimitService.judge`, which says
+`"limit": 5` because [the package around this one](../project-depth-limit/README.md)
+chose that for itself.
 
-## Inheritance is per limit, not per object
+## Writing a default down is not the same as inheriting it
 
-A project that names one limit keeps every other one it inherits, because the
-fallback happens a limit at a time. That is what makes
-`limits: { maximumDepth: 5 }` a complete override and a spread of the workspace
-limits both unnecessary and — since such an object carries workspace-only limits
-— refused.
+The directory is still called `inherited-limits`, which is what this fixture
+used to be about: there was no file here at all, and it was the example of a
+project configured entirely by the run. That is now a refusal: a traced project
+with no `callidescope.config.ts` ends the run naming the project, and so does a
+file that leaves a field out. See
+[ADR 0007](../../../../docs/adr/0007-complete-project-configurations.md) for the
+argument.
 
-This project shows the same rule with nothing on its side of it. It inherits
-`maximumDepth` as `6`, and it inherits `maximumBreadth` as nothing at all,
-because the configuration this run is handed declares none and inheritance has
-nowhere else to look — a project inherits from the run, never from a sibling
-that happened to declare one. A limit nobody sets stays unset: it is not
-defaulted to the depth limit, and not invented. Breadth therefore gates nothing
-here. `--check breadth` still runs over this report, because some project in
-scope has to declare a limit before it can and three do:
+What replaced inheritance is the spread. A real package writes
+`...projectDefaults` and overrides what it means to, so a complete file costs
+one line; this fixture spells the same statement out because the fields, and
+not the terseness, are what it is here to show. Either way the numbers a project
+is judged by are in the project's own file, and a reader who opens it is
+finished rather than sent to a second file to work out which one won.
+
+The two members written as `undefined` are the reason it is worth the line.
+`maximumBreadth: undefined` says this project gates depth and not breadth, and
+`mermaid: undefined` says it publishes no diagram. Both used to be sayable only
+by leaving the field out — which is also how a project that simply forgot
+looked. Breadth therefore gates nothing here, deliberately and in writing.
+`--check breadth` still runs over this report, because some project in scope has
+to declare a number before it can and three do:
 [`gated-leaf`](../gated-leaf/README.md) next door, and two of the real packages
 the closure reaches.
 
-## Three real packages inherited this same number, and no longer do
-
-Which is this example's argument having been acted on — the ratchet arriving —
-rather than an argument it has stopped needing to make. This fixture is now the
-only project in the run whose depth limit is a number somebody else wrote.
+## Three real packages once shared this number
 
 This run reaches `packages/callidescope-configuration`,
 `packages/codometer-configuration`, and `packages/logger` through its dependency
@@ -60,10 +61,10 @@ three real depth limits, where a moment ago there were none.
 
 The clearest thing that bought is a finding that stopped existing.
 `ConfigurationService.loadConfiguration` in `packages/codometer-configuration`
-heads eight frames. Held to the six this run defaults to, that was a finding
-about ordinary code which had done nothing wrong; held to the eight that package
-now declares for itself, it is silent. Nothing in the code moved — only which
-file the number was written in, which is the same sentence
+heads eight frames. Held to the six this run supplies, that was a finding about
+ordinary code which had done nothing wrong; held to the eight that package now
+declares for itself, it is silent. Nothing in the code moved — only which file
+the number was written in, which is the same sentence
 [`project-depth-limit`](../project-depth-limit/README.md) ends on, arrived at
 from the other direction.
 
@@ -78,9 +79,6 @@ says so beside it. **Do not restructure the logger to quiet this run**, and do
 not raise its four — that would buy headroom on the one gate that matters to
 tidy a fixture package.
 
-What is left inheriting is this fixture, which declares nothing because
-declaring nothing is what it is for.
-
 ## Next
 
 [gated leaf](../gated-leaf/README.md).
@@ -94,7 +92,7 @@ Call stacks traced through `packages/callidescope-examples/examples/inherited-li
 | Measure | Value |
 | --- | --- |
 | Callables | 5 |
-| Files | 2 |
+| Files | 3 |
 | Calls traced | 3 |
 | Call stacks | 1 |
 | Deepest stack | 7 |
@@ -103,12 +101,12 @@ Call stacks traced through `packages/callidescope-examples/examples/inherited-li
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 6 | inherited |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 6 |
+| `maximumBreadth` | none |
 
 ### Call stacks (depth)
 

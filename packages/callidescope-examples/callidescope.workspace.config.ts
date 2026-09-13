@@ -38,10 +38,10 @@ import type { CallidescopeConfiguration } from "@callidescope/configuration";
  * Because it is a *workspace* configuration that happens to sit at a project
  * root, and the two roles are read differently. A run resolves a configuration
  * beside every project it traces, and a project's own file may set only
- * `entryPoints`, `limits.maximumDepth`, `limits.maximumBreadth`, and `exclude`.
- * This one legitimately sets `write`, which only a workspace configuration may
- * set — so being discovered as this package's project configuration would
- * refuse the run outright.
+ * `entryPoints`, `exclude`, `limits`, and its own two markdown destinations.
+ * This one legitimately sets `write.json`, which only a workspace
+ * configuration may set — so being discovered as this package's project
+ * configuration would refuse the run outright.
  *
  * A run does skip the file it was handed by `--config`, on the ground that one
  * file holds one role per run. That is necessary but not sufficient here:
@@ -78,8 +78,6 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
     markdown: { path: "packages/callidescope-examples/output/report.md" },
     /** The same stacks drawn as one flowchart instead of printed. */
     mermaid: { path: "packages/callidescope-examples/output/diagram.md" },
-    /** The `## 🔭 Callidescope` section at the bottom of this README. */
-    projectReadmes: {},
   },
 };
 

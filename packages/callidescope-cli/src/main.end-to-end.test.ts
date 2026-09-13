@@ -83,6 +83,33 @@ function runCallidescope(workspaceRoot: string): {
   };
 }
 
+/**
+ * Writes one project's own complete configuration file.
+ *
+ * Every traced project declares one, so a fixture project without one is a
+ * refusal rather than a project judged by the run. JavaScript rather than
+ * JSON, because `undefined` is what a project writes to gate no breadth and
+ * publish nothing, and JSON cannot spell it.
+ */
+function writeProjectConfiguration(projectRoot: string): void {
+  writeFileSync(
+    path.join(projectRoot, "callidescope.config.js"),
+    `export default {
+      entryPoints: {
+        addresses: [],
+        decorators: [],
+        includeExportedFunctions: true,
+        includeOrphans: true,
+        includeTests: false,
+      },
+      exclude: [],
+      limits: { maximumBreadth: undefined, maximumDepth: 6 },
+      write: { markdown: undefined, mermaid: undefined },
+    };\n`,
+    "utf8",
+  );
+}
+
 /** Writes a project holding one traceable source file. */
 function writeReadableProject(workspaceRoot: string, name: string): void {
   const root = path.join(workspaceRoot, "packages", name);
@@ -101,6 +128,7 @@ function writeReadableProject(workspaceRoot: string, name: string): void {
     "export function entry(): void {}\n",
     "utf8",
   );
+  writeProjectConfiguration(root);
 }
 
 /**
@@ -127,6 +155,7 @@ function writeUnreadableProject(workspaceRoot: string, name: string): void {
     "export function broken(): void {}\n",
     "utf8",
   );
+  writeProjectConfiguration(root);
 }
 
 /**

@@ -7,16 +7,19 @@ import {
 } from "@callidescope/configuration";
 
 /**
- * What every project in this repository is held to unless it says otherwise.
+ * The starting point every project in this repository writes down and then
+ * overrides.
  *
- * **Defaults, never ceilings.** Each limit here is what a project falls back
- * to, and a project declaring a number *higher* than one of these keeps its
- * own — nothing clamps it. That has to be true for the numbers below to mean
+ * **Defaults, never ceilings, and never inheritance.** Nothing resolves a
+ * number out of this object at run time any more: a project's own file is the
+ * complete statement of how that project is traced and judged, and these
+ * numbers reach it by being spread into it, where a reader can see them. A
+ * project declaring a number *higher* than one of these keeps its own —
+ * nothing clamps it. That has to be true for the numbers below to mean
  * anything: a workspace limit is pinned by the single worst stack anywhere in
  * the repository, so reading it as a ceiling would hold every project to the
  * worst one's allowance, which is the arrangement the per-project gate exists
- * to replace. The gate a branch runs reads a project's own resolved limit and
- * never this object directly.
+ * to replace.
  *
  * A project's own `callidescope.config.ts` spreads `projectDefaults` — the
  * second export below — and declares `limits` explicitly beside it, both
@@ -27,11 +30,12 @@ import {
  * project's silence about breadth a decision written in its own file rather
  * than an absence a reader has to go verify — the [Callidescope](#callidescope)
  * section of this repository's `AGENTS.md` says which projects declare a real
- * number and why. `ProjectConfigurationService` still resolves each limit on
- * its own, falling back to the workspace's number per limit rather than per
- * object, so the spread and the explicit `limits` object are not doing the
- * same job: the spread carries `entryPoints`, `exclude`, and `write` forward
- * unchanged, and `limits` is what every migrated file overrides.
+ * number and why. The spread and the explicit `limits` object are not doing the
+ * same job: the spread carries `entryPoints`, `exclude`, `write`, and whatever
+ * `limits` a project does not restate forward unchanged, and `limits` is what
+ * a project overrides. Leaving a field out of either is a refusal naming the
+ * project and the field — see
+ * `docs/adr/0007-complete-project-configurations.md`.
  *
  * A project's file also carries no type annotation, and so no import of
  * `CallidescopeConfiguration`. An `import type` is still an Nx dependency
@@ -48,17 +52,18 @@ import {
  *
  * ## The projects that override nothing
  *
- * Thirty-two projects under `packages/` now declare their own measured depth.
- * There used to be a reason more inherited the number below, and
- * consolidating the conformetry Languages removed it: six leaf analyzers —
- * `conformetry-typescript`, `-json`, `-jupyter`, `-markdown`, `-python`,
- * `-text` — each held real code that rooted nothing, because every one of
- * them was entered
- * from above rather than directly, so each measured zero however much it did.
- * They are now modules of `conformetry-languages`, and what was a call
- * between packages is a call inside one, so a scoped run finally enters at a
- * surface of its own and measures four rather than zero. That package
- * declares four and gates like any other.
+ * Every traced project holds a complete file now — see
+ * `docs/adr/0007-complete-project-configurations.md`. There used to be a
+ * class of project that took the number below without a file of its own, and
+ * consolidating the conformetry Languages removed the last of it: six leaf
+ * analyzers — `conformetry-typescript`, `-json`, `-jupyter`, `-markdown`,
+ * `-python`, `-text` — each held real code that rooted nothing, because every
+ * one of them was entered from above rather than directly, so each measured
+ * zero however much it did. They are now modules of `conformetry-languages`,
+ * and what was a call between packages is a call inside one, so a scoped run
+ * finally enters at a surface of its own and measures four rather than zero.
+ * That package spreads `projectDefaults`, declares `limits.maximumDepth: 4`
+ * beside it, and gates like any other.
  *
  * The dependency closure a scoped run traces did fix this for
  * `codometer-changes`, which measured zero before it and ten after. The ten
@@ -68,8 +73,9 @@ import {
  *
  * ## The projects traced by nothing
  *
- * Seven projects are not measured at all, rather than inheriting the number
- * below. The four skill packages — `callidescope-agents`,
+ * Seven projects are not measured at all, rather than taking the number
+ * below — so they hold no configuration file either, being no project's file
+ * to write. The four skill packages — `callidescope-agents`,
  * `codependix-agents`, `codometer-agents`, `conformetry-agents` — hold barely
  * a callable between them, the same landmine a real project would avoid by
  * declaring its own number rather than being gated at zero, except these have
@@ -88,18 +94,21 @@ import {
  * workspace declares.
  *
  * Six projects under `applications/` and `tools/` declare their own measured
- * depth the same way, and none of them inherit — but two more things sit
- * outside what either task covers and still need writing down rather than
- * left implicit.
+ * depth the same way — but two more things sit outside what either task covers
+ * and still need writing down rather than left implicit.
  *
  * `configuration/` measures depth 3 and holds its own `tsconfig.json`, so it
- * appears as a traced root — but it is not an Nx project, so no target can
- * ever be inferred onto it, and it is gated by nothing. It keeps being traced
- * and published by the workspace `write` run.
+ * appears as a traced root — but it is not an Nx project, so no target can ever
+ * be inferred onto it, and it is gated by nothing. It is also the one traced
+ * project that writes no configuration of its own, this file being the file at
+ * its root: a run cannot read one file as both its own workspace configuration
+ * and a project's, and no second file may sit beside it under a name discovery
+ * would find. So it is judged by the limits below directly, and it keeps being
+ * traced and published by the workspace `write` run.
  *
  * `applications/JimmyPaolini` and `applications/affirmations` have no `gate`
- * target at all — a different fact from inheriting one. Inheriting means a
- * gate that runs and passes against the workspace number; these two have no
+ * target at all — a different fact from taking the default. Taking the default
+ * means a gate that runs and passes against the number below; these two have no
  * gate to pass. `JimmyPaolini` holds only a `package.json`, being the git
  * submodule this repository leaves deliberately uninitialized everywhere (see
  * `AGENTS.md`'s `### Git Worktrees`); `affirmations` is a Python Jupyter
@@ -112,8 +121,8 @@ import {
  */
 export const workspaceLimits = {
   /**
-   * The default a project that declares nothing is judged by — and no longer
-   * this repository's ratchet.
+   * The number `projectDefaults` carries into a project that overrides
+   * nothing — and no longer this repository's ratchet.
    *
    * **The ratchet is thirty-eight numbers now**, one per project that declares
    * its own, every one of them set from a boundary-tested run at its gate's own
@@ -126,15 +135,18 @@ export const workspaceLimits = {
    * configuration/callidescope.config.ts` prints the whole set and the file
    * each number is written in.
    *
-   * **Lowering this number is not how the ratchet descends.** It reaches only
-   * the projects that declare none of their own, and those are the ones with
-   * no stack to gate — the four skill packages and `codependix-examples` hold
-   * barely a callable between them. A number lowered here
-   * fires on the first stack any of them grows rather than on a regression, and
-   * the value it stands in for is exactly the one they cannot pick for
-   * themselves. To tighten a project, write the boundary-tested number in that
-   * project's own `callidescope.config.ts`; `## The projects that override
-   * nothing` above says which projects those are and why each one inherits.
+   * **Lowering this number is not how the ratchet descends.** Every traced
+   * project now writes its own complete file, with its own boundary-tested
+   * number beside the spread — the thirty-eight this section counts — so no
+   * traced project reads this value as the number it is judged by any more.
+   * The seven projects with no stack to gate are the ones `## The projects
+   * traced by nothing` above names, and they hold no configuration file to
+   * read a lowered number from either. What a number here still sets is the
+   * starting point `projectDefaults` hands a project that has not yet
+   * measured and declared its own — a new project, not an existing one, since
+   * every existing traced project's own file is what a gate reads. To tighten
+   * a project already declaring its own, write the boundary-tested number in
+   * that project's own `callidescope.config.ts` instead.
    *
    * The history is still worth keeping, because it is what the per-project
    * numbers were measured against. Set to the issue's suggested six, one
@@ -186,27 +198,23 @@ export const workspaceLimits = {
  * project's dependency graph — the same arrangement forty-nine
  * `codometer.config.ts` files in this repository already run on.
  *
- * **Every value here is the value a project already gets today.** The
- * decorators are the tool's own list, the entry-point switches are its own
- * defaults, `maximumDepth` is the workspace number a project that declares
- * nothing already falls back to, and the markdown destination is where the
- * README fan-out already puts that project's section. Spreading this is
- * therefore a no-op that makes the inheritance visible, which is the whole
- * point of the shape: what a project is held to becomes something a reader can
- * see in the project's own file rather than resolve across two.
+ * **Spreading this is what makes a complete file cheap.** A project's
+ * configuration must set every field — that is what lets it be read as the
+ * whole statement of how the project is traced and judged — and writing eleven
+ * members out by hand in forty-two files would be a tax nobody pays twice.
+ * The spread costs one line, and what a reader then sees in the project's own
+ * file is the complete set: the tool's own decorator list, its entry-point
+ * switches, the default depth, and a markdown destination pointing at that
+ * project's own README.
  *
- * Thirty-seven of the thirty-eight project files spread it now, each writing
- * its own `limits` explicitly beside the spread the way the example above
- * shows. `packages/callidescope-examples/callidescope.config.ts` is the
- * thirty-eighth and deliberately does not: it is the annotated worked example
- * this file already names above, standing alone with a full
- * `CallidescopeConfiguration` type import and its fields spelled out inline,
- * precisely so a reader can see every field a project may set without also
- * having to resolve this file's export. Spreading `projectDefaults` there
- * would trade being self-contained for terseness it does not need — the
- * package is excluded from workspace tracing by `.callidescopeignore` in the
- * first place, so this file is read as documentation far more often than it
- * is read by the loader.
+ * Every traced project spreads it, each writing its own `limits` beside the
+ * spread the way the example above shows.
+ * `packages/callidescope-examples/callidescope.config.ts` is outside that count
+ * altogether: the package is excluded from workspace tracing by
+ * `.callidescopeignore`, and its own file is the annotated worked example this
+ * file names above, standing alone with a full type import and its fields
+ * spelled out inline precisely so a reader can see every field a project must
+ * set without also having to resolve this file's export.
  */
 export const projectDefaults = {
   entryPoints: {
@@ -232,13 +240,13 @@ export const projectDefaults = {
   },
   write: {
     /**
-     * The block the README fan-out writes today, said by the project itself.
+     * The section a project publishes into its own README.
      *
-     * The path is read relative to the project's own root, so this is the same
-     * `<project>/README.md` the workspace declaration reaches — and a project
-     * moving its section somewhere else, or writing `undefined` to publish
-     * nothing at all, is now a one-line edit in the file that owns the
-     * document.
+     * The path is read relative to the project's own root, so this reaches
+     * `<project>/README.md` — and a project moving its section somewhere else,
+     * or writing `undefined` to publish nothing at all, is a one-line edit in
+     * the file that owns the document. There is no workspace declaration left
+     * that could reach the same file from the other direction.
      */
     markdown: {
       heading: DEFAULT_PROJECT_README_HEADING,
@@ -304,8 +312,8 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
     /**
      * The workspace-scope block in the repository's own README.
      *
-     * The root README used to carry a `projectReadmes` section like any other
-     * project's, because the workspace root holds a `tsconfig.json` and so was
+     * The root README used to carry a fanned-out project section like any
+     * other project's, because the root holds a `tsconfig.json` and so was
      * discovered as a project. What it described was the four loose
      * maintenance scripts that belonged to no other project — never the
      * workspace — and it was headed "Call stacks traced through ``", the
@@ -329,15 +337,6 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
       heading: "## 🔭 Callidescope",
       path: "README.md",
     },
-    /**
-     * A section in every traced project's own README.
-     *
-     * Published by `nx run codebase:callidescope:write` on main. Deliberately
-     * not checked on pull requests: the block moves whenever the call graph
-     * does, so gating on its freshness would fail branches for being out of
-     * date with `main` rather than for anything they did.
-     */
-    projectReadmes: {},
   },
 };
 

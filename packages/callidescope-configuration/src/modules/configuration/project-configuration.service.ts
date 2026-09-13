@@ -5,14 +5,16 @@ import { Injectable } from "@nestjs/common";
 import {
   PROJECT_CONFIGURATION_NESTED_FIELD_NAMES,
   PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES,
+  PROJECT_CONFIGURATION_REQUIRED_FIELDS,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
+  ProjectConfigurationIncompleteError,
+  ProjectConfigurationMissingError,
 } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 
 import type {
   CallidescopeConfiguration,
-  LimitProvenance,
   LoadedProjectConfiguration,
   LoadProjectConfigurationsArguments,
   ProjectLimits,
@@ -42,6 +44,29 @@ export class ProjectConfigurationService {
   // 🔏 Private Methods
 
   /**
+   * Refuses a project configuration that leaves any field out.
+   *
+   * Walked against `authored`, the file exactly as written, for the same reason
+   * the permission check is: resolution manufactures every field for every
+   * project, so asking the resolved object whether a field is missing can never
+   * say yes.
+   */
+  private assertComplete(
+    loadedConfiguration: LoadedProjectConfiguration,
+  ): void {
+    const field = this.findMissingField(loadedConfiguration.authored);
+
+    if (field === undefined) {
+      return;
+    }
+
+    throw new ProjectConfigurationIncompleteError({
+      field,
+      project: loadedConfiguration.project,
+    });
+  }
+
+  /**
    * Refuses a project configuration that sets a field only the workspace
    * configuration may set.
    */
@@ -61,79 +86,50 @@ export class ProjectConfigurationService {
   }
 
   /**
-   * Reads one project's own limits, falling back to what it inherits.
+   * Reads the limits one project's own configuration declares.
    *
-   * A project declaring neither is handed the inherited object itself rather
-   * than a copy of it, so the two can never come to disagree.
+   * The whole object comes from that one file, because completeness means both
+   * numbers were written in it. There is nothing left to fall back to and
+   * nothing to fall back per field: a project that declared no breadth limit
+   * wrote `maximumBreadth: undefined`, which is a decision rather than a gap.
    */
-  private buildProjectLimits(args: {
-    projectConfiguration: LoadedProjectConfiguration | undefined;
-    workspace: ProjectLimits;
-  }): ProjectLimits {
-    const { projectConfiguration } = args;
-
-    if (projectConfiguration === undefined) {
-      return args.workspace;
-    }
-
-    const { authored, configuration } = projectConfiguration;
-    const configurationPath = projectConfiguration.path;
+  private buildProjectLimits(
+    projectConfiguration: LoadedProjectConfiguration,
+  ): ProjectLimits {
+    const { limits } = projectConfiguration.configuration;
 
     return {
-      maximumBreadth:
-        this.readDeclaredLimit({
-          authored: authored.limits?.maximumBreadth,
-          path: configurationPath,
-          resolved: configuration.limits.maximumBreadth,
-        }) ?? args.workspace.maximumBreadth,
-      maximumDepth:
-        this.readDeclaredLimit({
-          authored: authored.limits?.maximumDepth,
-          path: configurationPath,
-          resolved: configuration.limits.maximumDepth,
-        }) ?? args.workspace.maximumDepth,
+      maximumBreadth: limits.maximumBreadth,
+      maximumDepth: limits.maximumDepth,
+      path: projectConfiguration.path,
     };
   }
 
   /**
-   * Reads the limits every project inherits when it declares none of its own.
+   * Reads the limits the workspace file itself declares.
    *
-   * Stamped `inherited` rather than `declared` because this object is read
-   * through a project: the workspace file is where the number is written, and
-   * the project is where it was not.
+   * These are the numbers `projectDefaults` carries into every project's file,
+   * and the ones the directory holding the workspace configuration is judged
+   * by — that being the one project which cannot write a file of its own.
    *
-   * The file is named only when it really wrote the number. `maximumDepth` is
-   * defaulted during resolution, so a path stamped unconditionally would tell
-   * every project it inherits a number from a file that never mentions it —
-   * the same lie `readDeclaredLimit` already refuses to tell about a project, told
-   * about the row every project's falls back to.
+   * The file is named only when it really wrote a limit. `maximumDepth` is
+   * defaulted during resolution, so a path stamped unconditionally would name a
+   * file for a number that file never mentions.
    */
   private buildWorkspaceLimits(
     args: ResolveProjectLimitsArguments,
   ): ProjectLimits {
     const { maximumBreadth, maximumDepth } = args.workspaceConfiguration.limits;
+
     const authored = args.workspaceAuthoredLimits;
+    const wroteALimit =
+      authored?.maximumBreadth !== undefined ||
+      authored?.maximumDepth !== undefined;
 
     return {
-      maximumBreadth:
-        maximumBreadth === undefined
-          ? undefined
-          : {
-              origin: "inherited",
-              path: this.readDeclaringPath({
-                authored: authored?.maximumBreadth,
-                path: args.workspaceConfigurationPath,
-              }),
-              value: maximumBreadth,
-            },
-      maximumDepth: {
-        origin: "inherited",
-        path: this.readDeclaringPath({
-          authored: authored?.maximumDepth,
-          path: args.workspaceConfigurationPath,
-        }),
-        value: maximumDepth,
-      },
+      maximumBreadth,
+      maximumDepth,
+      path: wroteALimit ? args.workspaceConfigurationPath : undefined,
     };
   }
 
@@ -217,6 +213,52 @@ export class ProjectConfigurationService {
   }
 
   /**
+   * Finds the first name a project's configuration leaves out.
+   *
+   * A field is checked for presence rather than for a value, so a project
+   * writing `maximumBreadth: undefined` or `mermaid: undefined` has spoken.
+   * Those two are the whole reason presence and value are kept apart: each is a
+   * project saying it gates no breadth, or publishes no diagram, and an absent
+   * field could never distinguish either from a project that forgot.
+   *
+   * A field present but not an object is reported under its own name, which is
+   * unreachable through the schema and is what makes the walk total.
+   */
+  private findMissingField(
+    authored: CallidescopeConfiguration,
+  ): string | undefined {
+    // Widened before it is walked, because the required names are strings and
+    // the interface has no index signature to read them through.
+    const fields: Readonly<Record<string, unknown>> = { ...authored };
+
+    for (const [field, members] of Object.entries(
+      PROJECT_CONFIGURATION_REQUIRED_FIELDS,
+    )) {
+      if (!(field in fields)) {
+        return field;
+      }
+
+      const value = fields[field];
+
+      if (members.length === 0) {
+        continue;
+      }
+
+      if (typeof value !== "object" || value === null) {
+        return field;
+      }
+
+      const missing = members.find((member) => !(member in value));
+
+      if (missing !== undefined) {
+        return `${field}.${missing}`;
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
    * Reads one project's configuration file.
    *
    * Every failure the read can produce — a file nothing can parse, a shape the
@@ -251,35 +293,6 @@ export class ProjectConfigurationService {
     }
   }
 
-  /**
-   * Reads one limit a project set for itself, or nothing when it set none.
-   *
-   * Presence is asked of the file as authored and the value is taken from the
-   * resolved configuration, which is the split every other reader here makes:
-   * resolution manufactures a default for every project, so only `authored` can
-   * say whether this project chose the number, and only the resolved
-   * configuration is guaranteed to have been through the schema.
-   */
-  private readDeclaredLimit(args: {
-    authored: number | undefined;
-    path: string;
-    resolved: number | undefined;
-  }): LimitProvenance | undefined {
-    if (args.authored === undefined || args.resolved === undefined) {
-      return undefined;
-    }
-
-    return { origin: "declared", path: args.path, value: args.resolved };
-  }
-
-  /** The file a number is written in, or nothing when no file wrote it. */
-  private readDeclaringPath(args: {
-    authored: number | undefined;
-    path: string | undefined;
-  }): string | undefined {
-    return args.authored === undefined ? undefined : args.path;
-  }
-
   /** The name of a whole field a project may not set, or nothing when it may. */
   private readForbiddenField(field: string): string | undefined {
     return PROJECT_CONFIGURATION_PERMITTED_FIELD_NAMES.has(field)
@@ -293,23 +306,26 @@ export class ProjectConfigurationService {
    * Resolves the configuration file sitting at each project's own root — the
    * directory holding the `tsconfig.json` that makes it a project.
    *
-   * A project with no file of its own is absent from the result rather than
-   * present with an empty one: it is configured entirely by the workspace file,
-   * which is the behavior every project has today.
+   * A traced project with no file of its own is refused. That is the whole
+   * point of the arrangement: what a project is judged by is written in that
+   * project's own file, so a project with no file has nothing written down and
+   * a reader has no second file to go and resolve it against.
    *
-   * Nothing is merged at the file level, and a project must **never** spread
-   * the workspace configuration into its own: such an object carries fields
-   * only the workspace may set, and `findForbiddenField` below refuses the file
-   * for the first one it finds. A project writes the overrides it wants and
-   * nothing else. Inheritance happens one limit at a time, in `resolveLimits`,
-   * so a project that declares `limits.maximumDepth` still takes every other
-   * limit from the run.
+   * The file must also be complete — every field present, `undefined` written
+   * where a project means to publish nothing or gate nothing. A project spreads
+   * the workspace's `projectDefaults` to get there in one line, which is what
+   * makes completeness cheap enough to require. What it may **not** spread is
+   * the workspace configuration itself: that object carries fields only the
+   * workspace may set, and `findForbiddenField` below refuses the file for the
+   * first one it finds.
    *
-   * The file a run was pointed at is skipped, because it is already serving as
-   * that run's workspace configuration. One file, one role per run — a package
-   * whose task names its own configuration and then traces itself would
-   * otherwise have that file read a second time and judged as a project's,
-   * which is a refusal for the workspace-only fields it legitimately sets.
+   * The file a run was pointed at is skipped, and the project holding it is
+   * exempt from the two rules above, because that file is already serving as
+   * the run's workspace configuration. One file, one role per run — reading it
+   * a second time as a project's would refuse it for the workspace-only fields
+   * it legitimately sets, and no second file can sit beside it under a name
+   * discovery would find. That project is judged by the workspace's own limits,
+   * which `resolveLimits` reports for it.
    */
   public async loadProjectConfigurations(
     args: LoadProjectConfigurationsArguments,
@@ -327,10 +343,11 @@ export class ProjectConfigurationService {
           path.resolve(args.workspaceRoot, project),
         );
 
-      if (
-        configurationPath === undefined ||
-        configurationPath === workspaceConfigurationPath
-      ) {
+      if (configurationPath === undefined) {
+        throw new ProjectConfigurationMissingError(project);
+      }
+
+      if (configurationPath === workspaceConfigurationPath) {
         continue;
       }
 
@@ -339,6 +356,7 @@ export class ProjectConfigurationService {
         project,
       });
       this.assertNoForbiddenFields(projectConfiguration);
+      this.assertComplete(projectConfiguration);
       loaded.push(projectConfiguration);
     }
 
@@ -349,23 +367,28 @@ export class ProjectConfigurationService {
    * Resolves the depth and breadth limits every traced project is judged
    * against, each carrying the file its number was written in.
    *
-   * The workspace value is a default rather than a ceiling: a project
-   * declaring a higher limit than the workspace keeps its own, because a
-   * workspace number pinned by the single worst stack anywhere in it gates
-   * nothing for the projects that are nowhere near it.
+   * Every number comes from the project's own file, because loading refuses a
+   * project whose file is absent or incomplete. Nothing is inherited and
+   * nothing is merged — the workspace's numbers reach a project by being
+   * spread into its file, where a reader can see them, rather than by being
+   * resolved behind one.
+   *
+   * The one project handed the workspace's own limits is the directory holding
+   * the workspace configuration, which cannot write a second file under a name
+   * discovery would find.
    *
    * One resolver rather than one per reader. A gate and a listing that each
-   * worked the inheritance out for themselves could disagree about the same
-   * number, and a limit two answers can be given for is worse than no limit.
+   * worked this out for themselves could disagree about the same number, and a
+   * limit two answers can be given for is worse than no limit.
    */
   public resolveLimits(
     args: ResolveProjectLimitsArguments,
   ): ProjectLimitsLookup {
     const workspace = this.buildWorkspaceLimits(args);
-    const configurationsByProject = new Map(
+    const limitsByProject = new Map(
       args.projectConfigurations.map((projectConfiguration) => [
         projectConfiguration.project,
-        projectConfiguration,
+        this.buildProjectLimits(projectConfiguration),
       ]),
     );
 
@@ -373,10 +396,7 @@ export class ProjectConfigurationService {
       byProject: new Map(
         args.projects.map((project) => [
           project,
-          this.buildProjectLimits({
-            projectConfiguration: configurationsByProject.get(project),
-            workspace,
-          }),
+          limitsByProject.get(project) ?? workspace,
         ]),
       ),
       workspace,

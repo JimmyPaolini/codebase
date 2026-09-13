@@ -5,6 +5,7 @@ import { CallidescopeService } from "@callidescope/cli";
 import {
   ConfigurationService,
   DEFAULT_OUTPUT_FORMAT,
+  DEFAULT_PREVIEW_COUNT,
   DEFAULT_RUN_HEADING,
 } from "@callidescope/configuration";
 import { FileFilterService } from "@callidescope/graph";
@@ -446,8 +447,9 @@ export class PluginService {
         this.explainVerdict(verdict) ??
         this.markdownReportService.renderFindings({
           ...verdict.findings,
-          previewCount:
-            this.runConfigurationService.readPreviewCount(configuration),
+          // Returned to an executor to print rather than spliced into a
+          // document, so no destination's count applies.
+          previewCount: DEFAULT_PREVIEW_COUNT,
         }),
     };
   }
@@ -495,8 +497,7 @@ export class PluginService {
       description: undefined,
       heading: DEFAULT_RUN_HEADING,
       limits: outcome.projectLimits,
-      previewCount:
-        this.runConfigurationService.readPreviewCount(configuration),
+      previewCount: DEFAULT_PREVIEW_COUNT,
       rendering: format === "mermaid" ? "diagram" : "tree",
       result: outcome.result,
     });

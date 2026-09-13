@@ -276,7 +276,7 @@ export class ProjectReportsService {
           limit: this.readProjectLimits({
             limits: args.limits,
             projectName: report.projectName,
-          }).maximumDepth.value,
+          }).maximumDepth,
           report,
         }),
       )
@@ -370,7 +370,7 @@ export class ProjectReportsService {
             this.readProjectLimits({
               limits: args.limits,
               projectName: report.projectName,
-            }).maximumBreadth?.value ?? Infinity,
+            }).maximumBreadth ?? Infinity,
           report,
         }),
       )
