@@ -1,12 +1,16 @@
 import path from "node:path";
 
-import { ConfigurationService } from "@codependix/configuration";
+import {
+  CODEPENDIX_GRAPH_TYPES,
+  ConfigurationService,
+} from "@codependix/configuration";
 import { NeighborhoodService } from "@codependix/nx-projects";
 import { Injectable } from "@nestjs/common";
 
 import type { CodependixRunMode } from "../delivery/delivery.types";
 import type { GraphRunContext, MapCommandOptions } from "../map/map.types";
 import type {
+  CodependixGraphType,
   CodependixProjectConfiguration,
   ResolvedCodependixConfiguration,
 } from "@codependix/configuration";
@@ -60,6 +64,25 @@ export class RunContextService {
     );
 
     return new Map(entries);
+  }
+
+  /**
+   * Reads the three graph-type toggle flags into the set of graph types this
+   * run builds, checks, and writes.
+   *
+   * A graph type is enabled unless its own `--no-*` flag disabled it —
+   * `--file-imports`/`--nestjs-modules`/`--nx-projects` exist only for
+   * symmetry with the negated form, matching every graph type's default of
+   * "on" when neither flag was given.
+   */
+  private resolveEnabledGraphTypes(
+    options: MapCommandOptions,
+  ): Set<CodependixGraphType> {
+    return new Set(
+      CODEPENDIX_GRAPH_TYPES.filter(
+        (graphType) => options[graphType] !== false,
+      ),
+    );
   }
 
   /**
@@ -120,6 +143,7 @@ export class RunContextService {
     const { mode, options, workingDirectory } = args;
     const configuration = await this.configurationService.loadConfiguration({
       configurationPath: options.config,
+      overrides: { exclude: options.exclude, include: options.include },
       searchDirectory: workingDirectory,
       selection: { projects: options.projects, tags: options.tags },
     });
@@ -138,6 +162,7 @@ export class RunContextService {
 
     return {
       configuration,
+      enabledGraphTypes: this.resolveEnabledGraphTypes(options),
       graph,
       mode,
       projectConfigurations,

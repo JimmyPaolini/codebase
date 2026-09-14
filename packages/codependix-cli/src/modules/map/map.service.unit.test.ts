@@ -92,6 +92,11 @@ describe(MapService, () => {
         selection: { projects: [], tags: [] },
         workspace: {},
       },
+      enabledGraphTypes: new Set([
+        "fileImports",
+        "nestjsModules",
+        "nxProjects",
+      ]),
       graph: { dependencies: {}, nodes: {} },
       mode: "write",
       projectConfigurations: new Map(),
@@ -967,6 +972,85 @@ describe(MapService, () => {
       await service.run(context);
 
       expect(runNxGraphsSpy.mock.calls[0]?.[0]).toBe(context);
+    });
+
+    // 🎛️ Graph-type toggles
+
+    it("skips the nx pass entirely when nxProjects is disabled", async () => {
+      vi.spyOn(service, "runNxGraphs").mockReturnValue({
+        failures: [],
+        results: [{ isCurrent: true, projectName: "b", stalePaths: [] }],
+      });
+      vi.spyOn(service, "runNestjsGraphs").mockResolvedValue({
+        failures: [],
+        results: [],
+      });
+      vi.spyOn(service, "runImportGraphs").mockReturnValue({
+        failures: [],
+        results: [],
+      });
+      vi.spyOn(service, "runPythonImportGraphs").mockReturnValue({
+        failures: [],
+        results: [],
+      });
+
+      const outcome = await service.run(
+        buildContext({
+          enabledGraphTypes: new Set(["fileImports", "nestjsModules"]),
+        }),
+      );
+
+      expect(service.runNxGraphs).not.toHaveBeenCalled();
+      expect(outcome).toStrictEqual({ failures: [], results: [] });
+    });
+
+    it("skips the nestjs pass entirely when nestjsModules is disabled", async () => {
+      vi.spyOn(service, "runNxGraphs").mockReturnValue({
+        failures: [],
+        results: [],
+      });
+      const runNestjsGraphsSpy = vi.spyOn(service, "runNestjsGraphs");
+      vi.spyOn(service, "runImportGraphs").mockReturnValue({
+        failures: [],
+        results: [],
+      });
+      vi.spyOn(service, "runPythonImportGraphs").mockReturnValue({
+        failures: [],
+        results: [],
+      });
+
+      await service.run(
+        buildContext({
+          enabledGraphTypes: new Set(["fileImports", "nxProjects"]),
+        }),
+      );
+
+      expect(runNestjsGraphsSpy).not.toHaveBeenCalled();
+    });
+
+    it("skips both import passes entirely when fileImports is disabled", async () => {
+      vi.spyOn(service, "runNxGraphs").mockReturnValue({
+        failures: [],
+        results: [],
+      });
+      vi.spyOn(service, "runNestjsGraphs").mockResolvedValue({
+        failures: [],
+        results: [],
+      });
+      const runImportGraphsSpy = vi.spyOn(service, "runImportGraphs");
+      const runPythonImportGraphsSpy = vi.spyOn(
+        service,
+        "runPythonImportGraphs",
+      );
+
+      await service.run(
+        buildContext({
+          enabledGraphTypes: new Set(["nestjsModules", "nxProjects"]),
+        }),
+      );
+
+      expect(runImportGraphsSpy).not.toHaveBeenCalled();
+      expect(runPythonImportGraphsSpy).not.toHaveBeenCalled();
     });
   });
 });

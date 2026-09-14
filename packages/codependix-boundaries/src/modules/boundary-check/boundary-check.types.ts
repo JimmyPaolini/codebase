@@ -6,6 +6,7 @@ import type {
 } from "../boundaries/boundaries.types";
 import type {
   CodependixBoundaryRule,
+  CodependixGraphType,
   ResolvedCodependixConfiguration,
 } from "@codependix/configuration";
 import type { NxProject, NxProjectGraph } from "@codependix/nx-projects";
@@ -21,6 +22,16 @@ import type { NxProject, NxProjectGraph } from "@codependix/nx-projects";
  */
 export interface BoundaryCheckContext {
   readonly configuration: ResolvedCodependixConfiguration;
+  /**
+   * The graph types this run judges.
+   *
+   * Read by `BoundaryCheckService.run` to skip every level under a disabled
+   * graph type before a single graph is built — see
+   * `codependix-cli`'s `RunContextService.resolveEnabledGraphTypes`, which is
+   * where a host resolves this from `--no-file-imports`,
+   * `--no-nestjs-modules`, and `--no-nx-projects`.
+   */
+  readonly enabledGraphTypes: ReadonlySet<CodependixGraphType>;
   readonly graph: NxProjectGraph;
   /** Every project the graph knows, apart from the workspace root. */
   readonly projects: NxProject[];

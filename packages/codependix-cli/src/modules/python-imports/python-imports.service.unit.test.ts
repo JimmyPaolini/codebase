@@ -50,6 +50,11 @@ describe(PythonImportsService, () => {
         selection: { projects: [], tags: [] },
         workspace: {},
       },
+      enabledGraphTypes: new Set([
+        "fileImports",
+        "nestjsModules",
+        "nxProjects",
+      ]),
       graph: { dependencies: {}, nodes: {} },
       mode: "write",
       projectConfigurations: new Map(),

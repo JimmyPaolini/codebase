@@ -106,6 +106,58 @@ describe(RunContextService, () => {
     );
   });
 
+  it("hands the command line's --include/--exclude overrides to the configuration loader", async () => {
+    await service.build({
+      mode: "write",
+      options: { exclude: ["fixtures-*"], include: ["applications/**"] },
+      workingDirectory: "/workspace",
+    });
+
+    expect(configurationService.loadConfiguration).toHaveBeenCalledWith(
+      expect.objectContaining({
+        overrides: { exclude: ["fixtures-*"], include: ["applications/**"] },
+      }),
+    );
+  });
+
+  // 🎛️ Graph-type toggles
+
+  it("enables every graph type when no toggle flag is given", async () => {
+    const context = await service.build({
+      mode: "write",
+      options: {},
+      workingDirectory: "/workspace",
+    });
+
+    expect([...context.enabledGraphTypes].toSorted()).toStrictEqual([
+      "fileImports",
+      "nestjsModules",
+      "nxProjects",
+    ]);
+  });
+
+  it("disables exactly the graph type its --no-* flag named", async () => {
+    const context = await service.build({
+      mode: "write",
+      options: { fileImports: false },
+      workingDirectory: "/workspace",
+    });
+
+    expect(context.enabledGraphTypes.has("fileImports")).toBe(false);
+    expect(context.enabledGraphTypes.has("nestjsModules")).toBe(true);
+    expect(context.enabledGraphTypes.has("nxProjects")).toBe(true);
+  });
+
+  it("disables every graph type its --no-* flag named at once", async () => {
+    const context = await service.build({
+      mode: "write",
+      options: { nestjsModules: false, nxProjects: false },
+      workingDirectory: "/workspace",
+    });
+
+    expect([...context.enabledGraphTypes]).toStrictEqual(["fileImports"]);
+  });
+
   it("reads the working directory's own graph when none is supplied", async () => {
     await service.build({
       mode: "write",

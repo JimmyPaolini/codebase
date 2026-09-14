@@ -4,7 +4,11 @@ import {
   BoundaryReportService,
   type BoundaryViolation,
 } from "@codependix/boundaries";
-import { InputService, missingInputError } from "@codependix/configuration";
+import {
+  InputError,
+  InputService,
+  missingInputError,
+} from "@codependix/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -85,6 +89,11 @@ describe(MapCommand, () => {
         selection: { projects: [], tags: [] },
         workspace: {},
       },
+      enabledGraphTypes: new Set([
+        "fileImports",
+        "nestjsModules",
+        "nxProjects",
+      ]),
       graph: { dependencies: {}, nodes: {} },
       mode: "write",
       projectConfigurations: new Map(),
@@ -549,5 +558,93 @@ describe(MapCommand, () => {
     expect(runPlanService.selectMode).toHaveBeenCalledWith({
       directory: "packages/logger",
     });
+  });
+
+  // 🚫 Strict override flags
+
+  it("delegates --include to the shared comma-delimited parser", () => {
+    vi.mocked(inputService.parseCommaDelimitedOption).mockReturnValue([
+      "applications/**",
+    ]);
+
+    expect(buildCommand().parseInclude("applications/**")).toStrictEqual([
+      "applications/**",
+    ]);
+    expect(inputService.parseCommaDelimitedOption).toHaveBeenCalledWith(
+      "applications/**",
+    );
+  });
+
+  it("delegates --exclude to the shared comma-delimited parser", () => {
+    vi.mocked(inputService.parseCommaDelimitedOption).mockReturnValue([
+      "fixtures-*",
+    ]);
+
+    expect(buildCommand().parseExclude("fixtures-*")).toStrictEqual([
+      "fixtures-*",
+    ]);
+    expect(inputService.parseCommaDelimitedOption).toHaveBeenCalledWith(
+      "fixtures-*",
+    );
+  });
+
+  // `ConfigurationService.loadConfiguration` is where `--include`/`--exclude`
+  // are actually refused for a target that never declared the field — see
+  // its own unit tests. This only asserts the refusal reaches the reader
+  // exactly the way every other rejected command line does, matching
+  // callidescope's `depth.command.unit.test.ts` "reports a refused command
+  // line instead of crashing".
+  it("reports an --include/--exclude refusal as a rejected command line", async () => {
+    const error = new InputError(
+      "--include overrides a value the configuration does not declare. Add `include` to the configuration this run reads, then use --include to change it.",
+    );
+
+    vi.mocked(runContextService.build).mockRejectedValue(error);
+
+    await run({ include: ["applications/**"], write: true });
+
+    expect(process.exitCode).toBe(1);
+    expect(codependixService.run).not.toHaveBeenCalled();
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🕸️ Rejected the command line",
+      undefined,
+      { reason: error.message },
+    );
+  });
+
+  // 🎛️ Graph-type toggles
+
+  it("delegates --file-imports to an unconditional true", () => {
+    expect(buildCommand().parseFileImports()).toBe(true);
+  });
+
+  it("delegates --no-file-imports to an unconditional false", () => {
+    expect(buildCommand().parseNoFileImports()).toBe(false);
+  });
+
+  it("delegates --nestjs-modules to an unconditional true", () => {
+    expect(buildCommand().parseNestjsModules()).toBe(true);
+  });
+
+  it("delegates --no-nestjs-modules to an unconditional false", () => {
+    expect(buildCommand().parseNoNestjsModules()).toBe(false);
+  });
+
+  it("delegates --nx-projects to an unconditional true", () => {
+    expect(buildCommand().parseNxProjects()).toBe(true);
+  });
+
+  it("delegates --no-nx-projects to an unconditional false", () => {
+    expect(buildCommand().parseNoNxProjects()).toBe(false);
+  });
+
+  it("hands the graph-type toggles to the run context builder", async () => {
+    await run({ fileImports: false, write: true });
+
+    expect(runContextService.build).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({ fileImports: false }) as unknown,
+      }),
+    );
   });
 });
