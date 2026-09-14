@@ -10,12 +10,7 @@ import { LoggerService } from "@codebase/logger";
 
 import { RunPlanService } from "./run-plan.service";
 
-import type { RunMode } from "./run-plan.types";
-import type {
-  ProjectLimits,
-  ProjectLimitsLookup,
-  ResolvedCallidescopeConfiguration,
-} from "@callidescope/configuration";
+import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
 
 // A deliberate misspelling: the example of a `--format` value nobody
 // recognizes, which is exactly what the refusal below is about.
@@ -52,36 +47,6 @@ function buildConfiguration(
     },
     ...overrides,
   };
-}
-
-/** A run mode with every gate off. */
-function buildMode(overrides: Partial<RunMode> = {}): RunMode {
-  return {
-    checksBreadth: false,
-    checksDepth: false,
-    checksReports: false,
-    writes: false,
-    ...overrides,
-  };
-}
-
-/** A project's own limits, taking the default depth and declaring no breadth. */
-function buildProjectLimits(
-  overrides: Partial<ProjectLimits> = {},
-): ProjectLimits {
-  return {
-    maximumBreadth: undefined,
-    maximumDepth: 6,
-    path: undefined,
-    ...overrides,
-  };
-}
-
-/** A lookup naming every project a run reached, declaring no breadth anywhere. */
-function buildProjectLimitsLookup(
-  byProject: ReadonlyMap<string, ProjectLimits> = new Map(),
-): ProjectLimitsLookup {
-  return { byProject, workspace: buildProjectLimits() };
 }
 
 describe(RunPlanService, () => {
@@ -336,78 +301,6 @@ describe(RunPlanService, () => {
       }),
     ).toBe(false);
   });
-
-  // 🌐 Validating the projects' own limits
-
-  it("passes when a project in scope declares its own breadth limit", () => {
-    expect(
-      service.validateProjectLimits({
-        mode: buildMode({ checksBreadth: true }),
-        projectLimits: buildProjectLimitsLookup(
-          new Map([
-            [
-              "packages/example",
-              buildProjectLimits({
-                maximumBreadth: 3,
-                path: "packages/example/callidescope.config.ts",
-              }),
-            ],
-          ]),
-        ),
-      }),
-    ).toStrictEqual([]);
-  });
-
-  it("passes no project declaring a breadth limit when breadth is not gated", () => {
-    expect(
-      service.validateProjectLimits({
-        mode: buildMode(),
-        projectLimits: buildProjectLimitsLookup(),
-      }),
-    ).toStrictEqual([]);
-  });
-
-  it("refuses to gate breadth when no project in scope declares a limit", () => {
-    expect(
-      service.validateProjectLimits({
-        mode: buildMode({ checksBreadth: true }),
-        projectLimits: buildProjectLimitsLookup(
-          new Map([["packages/example", buildProjectLimits()]]),
-        ),
-      }),
-    ).toStrictEqual([
-      "--check breadth requires at least one project in scope to declare limits.maximumBreadth. Add `limits: { maximumBreadth: <number> }` to that project's callidescope.config.ts before running --check breadth.",
-    ]);
-  });
-
-  it(
-    "does not let a project without a breadth limit block a project that " +
-      "has one",
-    () => {
-      // The easy way to get this subtly wrong: falling back to "does every
-      // project declare a limit" instead of "does any project declare one".
-      // A workspace is never all-or-nothing about this — a project that never
-      // picked a breadth number is simply not gated on it, and its absence
-      // must not silence the project that did pick one.
-      expect(
-        service.validateProjectLimits({
-          mode: buildMode({ checksBreadth: true }),
-          projectLimits: buildProjectLimitsLookup(
-            new Map([
-              [
-                "packages/declared",
-                buildProjectLimits({
-                  maximumBreadth: 5,
-                  path: "packages/declared/callidescope.config.ts",
-                }),
-              ],
-              ["packages/undeclared", buildProjectLimits()],
-            ]),
-          ),
-        }),
-      ).toStrictEqual([]);
-    },
-  );
 
   // 🔍 Lookup preparation
 

@@ -60,7 +60,7 @@ export class DeliveryService {
     }
 
     const badges = this.markdownService.renderBlock({
-      destination: args.destinations.markdown ?? DEFAULT_MARKDOWN_DESTINATION,
+      destination: args.consoleMarkdown ?? DEFAULT_MARKDOWN_DESTINATION,
       scope: args.scope,
       statistics: args.measurement.statistics,
       targets: this.readTargetSizes(args.measurement),

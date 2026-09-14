@@ -398,9 +398,9 @@ describe(MarkdownService, () => {
     expect(block).toContain("![Static Methods]");
   });
 
-  // `statistics.custom` carries every counter declared across every
-  // configured output, deduped by label — two destinations may declare
-  // entirely different counters, and each renders only its own.
+  // `statistics.custom` carries every counter the top-level `custom` array
+  // declares — two destinations may select entirely different labels back
+  // out of it, and each renders only its own.
   it("resolves a destination's own custom counters rather than every measured one", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md", {

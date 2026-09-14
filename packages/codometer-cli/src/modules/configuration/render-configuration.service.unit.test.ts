@@ -84,6 +84,15 @@ describe(RenderConfigurationService, () => {
       described: [
         {
           configuration: {
+            custom: [
+              {
+                color: "166534",
+                comment: undefined,
+                group: "typescript",
+                label: "Service Files",
+                patterns: ["**/*.service.ts"],
+              },
+            ],
             defaultInput: undefined,
             exclude: [],
             excludeFrom: [".codometerignore"],
