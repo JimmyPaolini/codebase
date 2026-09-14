@@ -80,7 +80,7 @@ export class BoundaryGraphService {
   public buildNestjsGraph(graph: NestjsModuleGraph): BoundaryGraph {
     return {
       edges: graph.edges,
-      level: "nestjs",
+      level: "nestjsModules",
       nodes: graph.moduleNames.map((moduleName) => ({ id: moduleName })),
       scope: graph.projectName,
     };
@@ -109,7 +109,7 @@ export class BoundaryGraphService {
 
     return {
       edges: args.workspaceGraph.edges,
-      level: "nx",
+      level: "nxProjects",
       nodes: args.workspaceGraph.projectNames.map((name) => ({
         id: name,
         path: this.resolveProjectRoot(
@@ -127,7 +127,7 @@ export class BoundaryGraphService {
   public buildPythonImportGraph(graph: PythonImportGraph): BoundaryGraph {
     return {
       edges: graph.edges,
-      level: "pythonImports",
+      level: "python",
       nodes: this.buildFileNodes({
         fileNames: graph.fileNames,
         projectName: graph.projectName,
@@ -142,7 +142,7 @@ export class BoundaryGraphService {
   ): BoundaryGraph {
     return {
       edges: graph.edges,
-      level: "imports",
+      level: "typescript",
       nodes: this.buildFileNodes({
         fileNames: graph.fileNames,
         projectName: graph.projectName,

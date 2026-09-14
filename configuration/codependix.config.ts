@@ -46,7 +46,7 @@ const codependixConfiguration: CodependixConfiguration = {
    * that arrives red is a backlog rather than a gate, and a red pipeline
    * nobody can act on teaches people to ignore it.
    *
-   * The `nx` block restates all 32 `depConstraints` from
+   * The `nxProjects` block restates all 32 `depConstraints` from
    * `configuration/eslint.config.ts`, translated mechanically:
    * `onlyDependOnLibsWithTags` is an `allow` rule, `notDependOnLibsWithTags`
    * is a `forbid` rule, and an empty `onlyDependOnLibsWithTags` — "may depend
@@ -77,40 +77,43 @@ const codependixConfiguration: CodependixConfiguration = {
    * than a layering mistake. Fourteen edges is a backlog, so it is written
    * here as a note instead of there as a rule.
    *
-   * No `pythonImports` rules yet, and that costs nothing:
+   * No Python rules yet under `fileImports`, and that costs nothing:
    * `BoundaryCheckService` never builds a level nothing judges, so a level
    * named here is the only kind that is ever built.
    *
-   * No `acyclic` rule at the `nestjs` level either, and the reason is the
-   * level itself rather than the workspace. `NestjsModuleGraph` identifies a
-   * module by its class name and nothing else, so two same-named modules in
-   * two different packages collapse into one node — `codometer-cli` draws
-   * `ChangesModule --> ChangesModule` and `ConfigurationModule -->
-   * ConfigurationModule` for exactly that reason. A cycle rule there reports
-   * those name collisions as self-loops, which is a backlog about the
-   * graph's identity model rather than a finding about the code. It can be
-   * seeded once `codependix-nestjs-modules` learns each module's declaring file.
+   * No `acyclic` rule at the `nestjsModules` level either, and the reason is
+   * the level itself rather than the workspace. `NestjsModuleGraph`
+   * identifies a module by its class name and nothing else, so two
+   * same-named modules in two different packages collapse into one node —
+   * `codometer-cli` draws `ChangesModule --> ChangesModule` and
+   * `ConfigurationModule --> ConfigurationModule` for exactly that reason. A
+   * cycle rule there reports those name collisions as self-loops, which is a
+   * backlog about the graph's identity model rather than a finding about the
+   * code. It can be seeded once `codependix-nestjs-modules` learns each
+   * module's declaring file.
    */
   boundaries: {
-    imports: [
-      {
-        from: { path: ["**/*.types.ts"] },
-        kind: "forbid",
-        message:
-          "A *.types.ts file must not import a service. Types are the leaf of a module: a service importing its own types is the direction that works, and the reverse is what makes a module impossible to read from its type declarations alone.",
-        name: "types-files-do-not-reach-services",
-        to: { path: ["**/*.service.ts"] },
-      },
-      {
-        from: { path: ["**/*.constants.ts"] },
-        kind: "forbid",
-        message:
-          "A *.constants.ts file must not import a service. A constant that needs a service is not a constant, and the module-file layering AGENTS.md declares under NestJS class file shape says so — enforced until now only as far as where a file sits, never what it may reach.",
-        name: "constants-files-do-not-reach-services",
-        to: { path: ["**/*.service.ts"] },
-      },
-    ],
-    nestjs: [
+    fileImports: {
+      typescript: [
+        {
+          from: { path: ["**/*.types.ts"] },
+          kind: "forbid",
+          message:
+            "A *.types.ts file must not import a service. Types are the leaf of a module: a service importing its own types is the direction that works, and the reverse is what makes a module impossible to read from its type declarations alone.",
+          name: "types-files-do-not-reach-services",
+          to: { path: ["**/*.service.ts"] },
+        },
+        {
+          from: { path: ["**/*.constants.ts"] },
+          kind: "forbid",
+          message:
+            "A *.constants.ts file must not import a service. A constant that needs a service is not a constant, and the module-file layering AGENTS.md declares under NestJS class file shape says so — enforced until now only as far as where a file sits, never what it may reach.",
+          name: "constants-files-do-not-reach-services",
+          to: { path: ["**/*.service.ts"] },
+        },
+      ],
+    },
+    nestjsModules: [
       {
         from: { id: ["*"] },
         kind: "forbid",
@@ -120,7 +123,7 @@ const codependixConfiguration: CodependixConfiguration = {
         to: { id: ["MainModule"] },
       },
     ],
-    nx: [
+    nxProjects: [
       {
         from: { tags: ["type:application"] },
         kind: "allow",
@@ -443,20 +446,26 @@ const codependixConfiguration: CodependixConfiguration = {
     ],
   },
   defaults: {
-    imports: {
-      markdown: { anchor: "codependix-file-imports" },
+    /**
+     * Shared by both languages `codependix-file-imports` builds.
+     *
+     * The anchor name is kept from before this graph type merged TypeScript
+     * and Python into one: a project is only ever one language, so the
+     * TypeScript and Python passes never both write to the same README, and
+     * renaming it here would orphan every already-spliced
+     * `codependix-imports` section across the workspace instead of updating
+     * it in place.
+     */
+    fileImports: {
+      markdown: { anchor: "codependix-imports" },
       target: "markdown",
     },
-    nestjs: {
-      markdown: { anchor: "codependix-nestjs-modules" },
+    nestjsModules: {
+      markdown: { anchor: "codependix-nestjs" },
       target: "markdown",
     },
-    nx: {
-      markdown: { anchor: "codependix-nx-projects" },
-      target: "markdown",
-    },
-    pythonImports: {
-      markdown: { anchor: "codependix-imports-python" },
+    nxProjects: {
+      markdown: { anchor: "codependix-nx" },
       target: "markdown",
     },
   },
@@ -471,7 +480,7 @@ const codependixConfiguration: CodependixConfiguration = {
    */
   include: ["**"],
   workspace: {
-    nx: {
+    nxProjects: {
       markdown: { anchor: "codependix-workspace" },
       target: "markdown",
     },

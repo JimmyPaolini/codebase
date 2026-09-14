@@ -17,6 +17,7 @@ import { BoundaryGraphService } from "./boundary-graph.service";
 import type {
   BoundaryGraph,
   BoundaryViolation,
+  CodependixBoundaryLevel,
 } from "../boundaries/boundaries.types";
 import type {
   BoundaryCheckContext,
@@ -26,7 +27,7 @@ import type {
 } from "./boundary-check.types";
 import type {
   CodependixBoundaryRule,
-  CodependixGraphType,
+  ResolvedCodependixBoundariesConfiguration,
 } from "@codependix/configuration";
 
 /**
@@ -75,27 +76,53 @@ export class BoundaryCheckService {
   }
 
   /**
+   * Resolves one level's declared rules out of the nested boundaries shape.
+   *
+   * A record keyed by level rather than a switch, the same reason `runLevel`
+   * is one: every `CodependixBoundaryLevel` must have an entry, so a fifth
+   * level added to that union fails to compile here instead of silently
+   * resolving to nothing.
+   */
+  private rulesForLevel(
+    boundaries: ResolvedCodependixBoundariesConfiguration,
+    level: CodependixBoundaryLevel,
+  ): readonly CodependixBoundaryRule[] {
+    const rulesByLevel: Record<
+      CodependixBoundaryLevel,
+      readonly CodependixBoundaryRule[]
+    > = {
+      nestjsModules: boundaries.nestjsModules,
+      nxProjects: boundaries.nxProjects,
+      python: boundaries.fileImports.python,
+      typescript: boundaries.fileImports.typescript,
+    };
+
+    return rulesByLevel[level];
+  }
+
+  /**
    * Judges one level, whichever of the four builders it needs.
    *
    * A record keyed by level rather than a switch: the record type requires
-   * every `CodependixGraphType` to have an entry, so a fifth level added to
-   * that union fails to compile here instead of silently going unchecked.
+   * every `CodependixBoundaryLevel` to have an entry, so a fifth level added
+   * to that union fails to compile here instead of silently going unchecked.
    */
   private async runLevel(
     args: LevelCheckArguments,
   ): Promise<BoundaryCheckOutcome> {
     const runners: Record<
-      CodependixGraphType,
+      CodependixBoundaryLevel,
       (
         levelArguments: LevelCheckArguments,
       ) => BoundaryCheckOutcome | Promise<BoundaryCheckOutcome>
     > = {
-      imports: async (levelArguments) =>
-        this.runTypescriptImportsLevel(levelArguments),
-      nestjs: async (levelArguments) => this.runNestjsLevel(levelArguments),
-      nx: (levelArguments) => this.runNxLevel(levelArguments),
-      pythonImports: async (levelArguments) =>
+      nestjsModules: async (levelArguments) =>
+        this.runNestjsLevel(levelArguments),
+      nxProjects: (levelArguments) => this.runNxLevel(levelArguments),
+      python: async (levelArguments) =>
         this.runPythonImportsLevel(levelArguments),
+      typescript: async (levelArguments) =>
+        this.runTypescriptImportsLevel(levelArguments),
     };
 
     return runners[args.level](args);
@@ -232,7 +259,7 @@ export class BoundaryCheckService {
     const outcomes: BoundaryCheckOutcome[] = [];
 
     for (const level of BOUNDARY_LEVEL_ORDER) {
-      const rules = boundaries[level];
+      const rules = this.rulesForLevel(boundaries, level);
 
       if (rules.length > 0) {
         outcomes.push(await this.runLevel({ context, level, rules }));

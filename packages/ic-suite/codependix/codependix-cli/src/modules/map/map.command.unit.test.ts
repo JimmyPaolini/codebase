@@ -34,7 +34,7 @@ function buildMode(overrides: Partial<RunMode> = {}): RunMode {
 
 const VIOLATION: BoundaryViolation = {
   cycle: undefined,
-  level: "nx",
+  level: "nxProjects",
   message: "layers: a must not depend on b.",
   rule: "layers",
   scope: "workspace",
@@ -74,7 +74,11 @@ describe(MapCommand, () => {
   function buildContextWithInclude(include: string[]): GraphRunContext {
     return {
       configuration: {
-        boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
+        boundaries: {
+          fileImports: { python: [], typescript: [] },
+          nestjsModules: [],
+          nxProjects: [],
+        },
         defaults: {},
         exclude: [],
         include,
@@ -432,7 +436,7 @@ describe(MapCommand, () => {
       undefined,
       {
         summary: "1 boundary violation across 1 rule.",
-        violations: ["nx workspace: layers: a must not depend on b."],
+        violations: ["nxProjects workspace: layers: a must not depend on b."],
       },
     );
   });

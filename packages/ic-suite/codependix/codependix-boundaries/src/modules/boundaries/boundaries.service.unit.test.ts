@@ -22,7 +22,7 @@ function buildGraph(args: {
 
   return {
     edges,
-    level: "nx",
+    level: "nxProjects",
     nodes: args.nodes ?? [...named].toSorted().map((id) => ({ id })),
     scope: "workspace",
   };
@@ -82,7 +82,7 @@ describe(BoundariesService, () => {
     expect(violations).toStrictEqual([
       {
         cycle: undefined,
-        level: "nx",
+        level: "nxProjects",
         message: "a-is-a-leaf: a must not depend on b.",
         rule: "a-is-a-leaf",
         scope: "workspace",
@@ -200,7 +200,7 @@ describe(BoundariesService, () => {
     const violations = service.evaluate({
       graph: {
         edges: [{ source: "a", target: "ghost" }],
-        level: "nx",
+        level: "nxProjects",
         nodes: [{ id: "a" }],
         scope: "workspace",
       },
@@ -226,7 +226,7 @@ describe(BoundariesService, () => {
           edges: [
             { source: "src/a.types.ts", target: "src/elsewhere.service.ts" },
           ],
-          level: "imports",
+          level: "typescript",
           nodes: [
             {
               id: "src/a.types.ts",
@@ -257,7 +257,7 @@ describe(BoundariesService, () => {
         { implicit: false, source: "a", target: "b" },
         { implicit: true, source: "a", target: "c" },
       ],
-      level: "nx",
+      level: "nxProjects",
       nodes: [{ id: "a" }, { id: "b" }, { id: "c" }],
       scope: "workspace",
     };
@@ -335,7 +335,7 @@ describe(BoundariesService, () => {
     expect(violations).toStrictEqual([
       {
         cycle: ["a", "b", "a"],
-        level: "nx",
+        level: "nxProjects",
         message: "no-cycles: a → b → a is a cycle.",
         rule: "no-cycles",
         scope: "workspace",

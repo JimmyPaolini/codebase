@@ -1,6 +1,6 @@
 {
   "defaults": {
-    "nx": {
+    "nxProjects": {
       "markdown": {
         "anchor": "example-nx-from-json"
       },
