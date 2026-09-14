@@ -115,7 +115,7 @@ catalog:
   commitlint-plugin-gitmoji: ^2.2.6
   commitlint-plugin-tense: ^1.0.10
   cspell: ^10.0.0
-  dependency-cruiser: ^17.4.2
+  dependency-cruiser: ^18.2.0
   domhandler: ^6.0.1
   embla-carousel-react: ^8.6.0
   eslint: ^10.4.0
