@@ -488,7 +488,23 @@ const codependixConfiguration: CodependixConfiguration = {
    * `projectDefaults` above.
    */
   include: ["**"],
+  /**
+   * All three graph types are exported once for the whole repository, each
+   * spliced into its own anchor under the root README's `## 🕸️ Codependix`
+   * heading — `fileImports` and `nestjsModules` following the same
+   * `target: "markdown"` `nxProjects` has always used for
+   * `codependix-workspace`. Each anchor name is new for these two graph
+   * types; `codependix-workspace` itself is unchanged.
+   */
   workspace: {
+    fileImports: {
+      markdown: { anchor: "codependix-workspace-file-imports" },
+      target: "markdown",
+    },
+    nestjsModules: {
+      markdown: { anchor: "codependix-workspace-nestjs-modules" },
+      target: "markdown",
+    },
     nxProjects: {
       markdown: { anchor: "codependix-workspace" },
       target: "markdown",

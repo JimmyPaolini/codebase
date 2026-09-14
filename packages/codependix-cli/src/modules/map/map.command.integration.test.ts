@@ -10,13 +10,23 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { Test } from "@nestjs/testing";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { MainModule } from "../../main.module";
 
 import { MapCommand } from "./map.command";
 
 import type { MapCommandOptions } from "./map.types";
+import type { MockInstance } from "vitest";
 
 /**
  * A fixture Nx project graph, standing in for `nx graph --file=graph.json` —
@@ -394,6 +404,218 @@ describe("map command", () => {
 
       expect(exitCode).toBe(0);
       expect(existsSync(widgetGraphPath)).toBe(true);
+    });
+  });
+
+  describe("combined output and format flags", () => {
+    let workingDirectory: string;
+    let originalWorkingDirectory: string;
+    let stdoutSpy: MockInstance<typeof process.stdout.write>;
+
+    /** Runs the map command with the process rooted at the fixture tree. */
+    async function run(
+      options: MapCommandOptions,
+    ): Promise<{ exitCode: number; printed: string }> {
+      process.chdir(workingDirectory);
+      process.exitCode = 0;
+      stdoutSpy.mockClear();
+
+      const module = await Test.createTestingModule({
+        imports: [MainModule],
+      }).compile();
+      const command = module.get(MapCommand, { strict: false });
+
+      await command.run([], options);
+
+      const exitCode = process.exitCode;
+      const printed = stdoutSpy.mock.calls
+        .map((call: unknown[]) => String(call[0]))
+        .join("");
+
+      process.exitCode = 0;
+      process.chdir(originalWorkingDirectory);
+
+      return {
+        exitCode: typeof exitCode === "string" ? Number(exitCode) : exitCode,
+        printed,
+      };
+    }
+
+    beforeAll(() => {
+      originalWorkingDirectory = process.cwd();
+      workingDirectory = mkdtempSync(
+        path.join(tmpdir(), "codependix-combined-output-"),
+      );
+
+      mkdirSync(path.join(workingDirectory, "packages/widget/src"), {
+        recursive: true,
+      });
+
+      writeFileSync(
+        path.join(workingDirectory, "codependix-graph.json"),
+        JSON.stringify({
+          dependencies: {},
+          nodes: {
+            widget: {
+              data: { root: "packages/widget" },
+              name: "widget",
+              type: "lib",
+            },
+          },
+        }),
+      );
+
+      // A real `tsconfig.json` and source file, so the fileImports pass has
+      // something to discover and build — `noLib`/`bundler` resolution keeps
+      // this from needing the real TypeScript standard library.
+      writeFileSync(
+        path.join(workingDirectory, "packages/widget/tsconfig.json"),
+        JSON.stringify({
+          compilerOptions: { moduleResolution: "bundler", noLib: true },
+          include: ["src/**/*.ts"],
+        }),
+      );
+      writeFileSync(
+        path.join(workingDirectory, "packages/widget/src/index.ts"),
+        "export function entry(): void {}\n",
+      );
+
+      // No per-project `codependix.config.ts` is written: combined output
+      // reads each active type's whole-workspace graph, built regardless of
+      // any project's own per-project export configuration — see
+      // `WorkspaceGraphsService`. The workspace-level destinations below
+      // exist only so each graph type actually gets built; this test's own
+      // assertions read `--json-output`/`--markdown-output`/`--format`
+      // instead.
+      writeFileSync(
+        path.join(workingDirectory, "codependix.config.ts"),
+        [
+          "export default {",
+          '  include: ["packages/*"],',
+          '  projectGraph: "codependix-graph.json",',
+          "  workspace: {",
+          '    fileImports: { json: { path: "workspace-file-imports.json" }, target: "json" },',
+          '    nxProjects: { json: { path: "workspace-nx.json" }, target: "json" },',
+          "  },",
+          "};",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    beforeEach(() => {
+      stdoutSpy = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+    });
+
+    afterEach(() => {
+      stdoutSpy.mockRestore();
+    });
+
+    afterAll(() => {
+      rmSync(workingDirectory, { force: true, recursive: true });
+    });
+
+    it("writes every active graph type's data combined into one JSON file, keyed by graph type", async () => {
+      const { exitCode } = await run({
+        directory: workingDirectory,
+        jsonOutput: "combined.json",
+        nestjsModules: false,
+        write: true,
+      });
+
+      expect(exitCode).toBe(0);
+
+      const combined = JSON.parse(
+        readFileSync(path.join(workingDirectory, "combined.json"), "utf8"),
+      ) as Record<string, unknown>;
+
+      expect(Object.keys(combined).toSorted()).toStrictEqual([
+        "fileImports",
+        "nxProjects",
+      ]);
+    });
+
+    it("writes every active graph type's own anchor-spliced section combined into one Markdown file", async () => {
+      const { exitCode } = await run({
+        directory: workingDirectory,
+        markdownOutput: "combined.md",
+        nestjsModules: false,
+        write: true,
+      });
+
+      expect(exitCode).toBe(0);
+
+      const written = readFileSync(
+        path.join(workingDirectory, "combined.md"),
+        "utf8",
+      );
+
+      expect(written).toContain("## 🕸️ Codependix");
+      expect(written).toContain('name="fileImports"');
+      expect(written).toContain('name="nxProjects"');
+    });
+
+    it("prints the resolved graphs as JSON to standard output with --format json", async () => {
+      const { exitCode, printed } = await run({
+        directory: workingDirectory,
+        format: "json",
+        nestjsModules: false,
+        write: true,
+      });
+
+      expect(exitCode).toBe(0);
+
+      const parsed = JSON.parse(printed) as Record<string, unknown>;
+
+      expect(Object.keys(parsed).toSorted()).toStrictEqual([
+        "fileImports",
+        "nxProjects",
+      ]);
+    });
+
+    it("prints the resolved graphs as Markdown to standard output by default", async () => {
+      const { exitCode, printed } = await run({
+        directory: workingDirectory,
+        nestjsModules: false,
+        write: true,
+      });
+
+      expect(exitCode).toBe(0);
+      expect(printed).toContain("## 🕸️ Codependix");
+    });
+
+    // `LoggerService` writes through pino's own raw file-descriptor
+    // destination rather than `process.stdout.write`, so `stdoutSpy` cannot
+    // literally interleave the two streams here. What this asserts instead
+    // is the mechanism `MapCommand.runMode` guarantees: the combined-output
+    // print and the normal export pass — which is what produces the log
+    // lines `ReportingService.reportSuccess` emits — both run to completion
+    // in the same invocation, neither short-circuiting the other.
+    it("prints the combined output without skipping the export pass's own work", async () => {
+      const { exitCode, printed } = await run({
+        directory: workingDirectory,
+        nestjsModules: false,
+        write: true,
+      });
+
+      expect(exitCode).toBe(0);
+      expect(printed).toContain("## 🕸️ Codependix");
+
+      const written = JSON.parse(
+        readFileSync(path.join(workingDirectory, "workspace-nx.json"), "utf8"),
+      ) as { projectNames: string[] };
+
+      expect(written.projectNames).toContain("widget");
+    });
+
+    it("rejects an unrecognized --format value", async () => {
+      const { exitCode } = await run({
+        directory: workingDirectory,
+        format: "yaml",
+        write: true,
+      });
+
+      expect(exitCode).toBe(1);
     });
   });
 });
