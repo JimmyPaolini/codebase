@@ -49,6 +49,7 @@ jobs:
           fetch-depth: 0
 
       - name: 🕋 Setup Codebase
+        id: setup
         uses: ./.github/actions/setup-codebase
 
       # `--configuration=coverage` is passed explicitly and must stay that way:
@@ -73,3 +74,11 @@ jobs:
             packages/**/coverage/
             tools/**/coverage/
           retention-days: 30
+
+      # Last, unconditionally: see 🧑‍💻 Lint Codebase for why a cold run's
+      # progress is worth saving even when the job itself does not finish.
+      - name: 🧹 Cleanup Codebase
+        if: always()
+        uses: ./.github/actions/cleanup-codebase
+        with:
+          nx-cache-primary-key: ${{ steps.setup.outputs.nx-cache-primary-key }}

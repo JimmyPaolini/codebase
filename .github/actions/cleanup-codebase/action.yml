@@ -1,0 +1,45 @@
+name: 🧹 Cleanup Codebase
+description: |
+  Saves whatever progress a job made, even one a timeout or a cancellation
+  cut short.
+
+  Call this as a job's last step with `if: always()`, passing the
+  `nx-cache-primary-key` `setup-codebase` output through. `setup-codebase`
+  only restores the Nx task cache now, never saves it — a job that skips this
+  action gets no save at all, clean exit or not, not only on a cancellation.
+
+inputs:
+  nx-cache:
+    description: Save the Nx task cache `setup-codebase` restored
+    default: "true"
+  nx-cache-primary-key:
+    description: |
+      The exact-match key from `setup-codebase`'s own `nx-cache-primary-key`
+      output. Required when `nx-cache` is "true"; saving is skipped, rather
+      than failing the job, when it is empty — the same job asked
+      `setup-codebase` to skip restoring, or restore itself never ran.
+
+runs:
+  using: composite
+  steps:
+    # `.nx/cache` and `.nx/workspace-data/*.db*` hold a result for every task
+    # that finished before a job was cut off, whether by a failure or a
+    # `timeout-minutes` cancellation — Nx writes each task's result as it
+    # completes rather than in one batch at the end. Saving that partial state
+    # means a retry of this commit, or a later commit's `restore-keys`
+    # fallback, starts from real progress instead of a cold run.
+
+    # `always()` here is redundant with the same condition on the calling
+    # step, but cheap insurance: GitHub re-evaluates `if` conditions per step
+    # on a cancellation, and there is no cost to a step that always runs
+    # asking again.
+    - name: ♻️ Save Nx Cache
+      if: |
+        always() && inputs.nx-cache == 'true' && inputs.nx-cache-primary-key
+        != ''
+      uses: actions/cache/save@v6
+      with:
+        path: |
+          .nx/cache
+          .nx/workspace-data/*.db*
+        key: ${{ inputs.nx-cache-primary-key }}
