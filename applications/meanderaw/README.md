@@ -2001,7 +2001,7 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 | Measure | Value |
 | --- | --- |
 | Callables | 325 |
-| Files | 100 |
+| Files | 101 |
 | Calls traced | 416 |
 | Call stacks | 33 |
 | Deepest stack | 16 |
@@ -2468,7 +2468,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MosaicNamingService.matching` | 3 | `MosaicNamingService.map(…)`, `MosaicNamingService.filter(…)`, `MosaicNamingService.rules` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:168` |
 | `MeanderClassificationService.matching` | 3 | `MeanderClassificationService.map(…)`, `MeanderClassificationService.filter(…)`, `MeanderClassificationService.rules` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:201` |
 | `LatticeIdentificationService.readTile` | 3 | `MosaicTileService.blankEdges`, `MosaicTileService.mark`, `MosaicTileService.build` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:237` |
-| `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:62` |
+| `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:76` |
 | `DrawCheckService.diff` | 3 | `DrawCheckService.index`, `DrawCheckService.findNewAndChanged`, `DrawCheckService.findMissing` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:196` |
 | `DrawIndexService.renderSection` | 3 | `DrawIndexService.escape`, `DrawIndexService.label`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:148` |
 | `DrawIndexService.render` | 3 | `DrawIndexService.groupByFamily`, `DrawIndexService.map(…)`, `DrawIndexService.renderContents` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:179` |
@@ -2626,14 +2626,14 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LatticeIdentificationService.flatMap(…)` | 1 | `LatticeIdentificationService.map(…)` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:161` |
 | `MeanderEnumerationService.map(…)` | 1 | `LatticeIdentificationService.identify` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:80` |
 | `MeanderEnumerationService.isAdmitted` | 1 | `MosaicTilesService.isAdmitted` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:88` |
+| `MeanderDriftDetectedError.constructor` | 1 | `MeanderDriftDetectedError.describe` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:70` |
+| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeNew` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:82` |
+| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeMissing` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:85` |
+| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeChanged` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:88` |
+| `MeanderDriftDetectedError.describeChanged` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:95` |
+| `MeanderDriftDetectedError.describeMissing` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:105` |
+| `MeanderDriftDetectedError.describeNew` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:110` |
 | `DrawEnumerationService.map(…)` | 1 | `DrawRecordService.record` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:75` |
-| `MeanderDriftDetectedError.constructor` | 1 | `MeanderDriftDetectedError.describe` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:56` |
-| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeNew` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:68` |
-| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeMissing` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:71` |
-| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeChanged` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:74` |
-| `MeanderDriftDetectedError.describeChanged` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:81` |
-| `MeanderDriftDetectedError.describeMissing` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:91` |
-| `MeanderDriftDetectedError.describeNew` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:96` |
 | `DrawCheckService.differingColumns` | 1 | `DrawCheckService.filter(…)` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:61` |
 | `DrawCheckService.findMissing` | 1 | `DrawCheckService.summarize` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:71` |
 | `DrawCheckService.index` | 1 | `DrawCheckService.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:122` |
@@ -2651,7 +2651,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ## 🕸️ Codependix
 
-Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/codependix-cli), regenerated by `nx run codebase:codependix:write`.
+Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli), regenerated by `nx run codebase:codependix:write`.
 
 ### Nx Neighborhood
 

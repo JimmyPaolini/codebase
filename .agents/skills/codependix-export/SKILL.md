@@ -125,7 +125,7 @@ A Markdown destination writes a Mermaid diagram. In anchor mode the diagram is
 spliced between two HTML comment markers naming the anchor:
 
 ````markdown
-<!-- codependix:start name="codependix-nx" -->
+<!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
   widgets["widgets"]
@@ -134,7 +134,7 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class widgets subject
 ```
-<!-- codependix:end name="codependix-nx" -->
+<!-- codependix:end name="codependix-nx-projects" -->
 ````
 
 The highlighted `subject` node is the project the Neighborhood is centered on.

@@ -1,0 +1,71 @@
+{
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "name": "conformetry-nx",
+  "projectType": "library",
+  "sourceRoot": "packages/ic-suite/conformetry/conformetry-nx",
+  "tags": [
+    "framework:nestjs",
+    "generator:nestjs-service-project",
+    "language:typescript",
+    "name:conformetry-nx",
+    "type:package"
+  ],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/ic-suite/conformetry/conformetry-nx",
+            "output": "."
+          },
+          {
+            "glob": "executors.json",
+            "input": "packages/ic-suite/conformetry/conformetry-nx",
+            "output": "."
+          },
+          {
+            "glob": "generators.json",
+            "input": "packages/ic-suite/conformetry/conformetry-nx",
+            "output": "."
+          },
+          {
+            "glob": "src/executors/**/schema.json",
+            "input": "packages/ic-suite/conformetry/conformetry-nx",
+            "output": "."
+          },
+          {
+            "glob": "src/generators/**/schema.json",
+            "input": "packages/ic-suite/conformetry/conformetry-nx",
+            "output": "."
+          },
+          {
+            "glob": "src/index.cjs",
+            "input": "packages/ic-suite/conformetry/conformetry-nx",
+            "output": "."
+          }
+        ],
+        "generatePackageJson": false,
+        "main": "packages/ic-suite/conformetry/conformetry-nx/src/index.ts",
+        "outputPath": "packages/ic-suite/conformetry/conformetry-nx/dist",
+        "tsConfig": "packages/ic-suite/conformetry/conformetry-nx/tsconfig.build.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "codometer": {},
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "make-projects": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

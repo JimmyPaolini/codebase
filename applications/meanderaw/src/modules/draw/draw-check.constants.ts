@@ -8,6 +8,20 @@ import type {
 } from "./draw-check.types";
 
 /**
+ * The TypeORM connection name `DrawCheckSweepModule`'s throwaway
+ * `TypeOrmModule.forRoot()` registers under, and the name
+ * `DrawCheckService.check` reads its regenerated repository back with.
+ *
+ * Without this, both the throwaway context and the already-open committed
+ * connection register under TypeORM's default name in the same process,
+ * which `DataSourceNameRegistry` only warns about rather than refusing —
+ * the two connections are alive simultaneously for the whole of `check()`,
+ * and the collision intermittently crashes `NestFactory.createApplicationContext`
+ * outright under load instead of merely producing a wrong result.
+ */
+export const DRAW_CHECK_SWEEP_CONNECTION_NAME = "draw-check-sweep";
+
+/**
  * Every column `DrawCheckService.diff` compares between a regenerated row and
  * its committed counterpart, besides the three that already form the
  * lattice address (`code`, `columns`, `rows`) and the database's own

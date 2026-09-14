@@ -102,6 +102,43 @@ describe(ReadmeProjectsService, () => {
         [],
       );
     });
+
+    it("finds a project nested under a grouping folder that has no package.json of its own", () => {
+      expect.hasAssertions();
+
+      existingPaths.add("/workspace/packages");
+      scopeChildren.set("/workspace/packages", ["ic-suite"]);
+
+      existingPaths.add("/workspace/packages/ic-suite");
+      scopeChildren.set("/workspace/packages/ic-suite", ["callidescope"]);
+
+      existingPaths.add("/workspace/packages/ic-suite/callidescope");
+      scopeChildren.set("/workspace/packages/ic-suite/callidescope", [
+        "callidescope-cli",
+      ]);
+
+      existingPaths.add(
+        "/workspace/packages/ic-suite/callidescope/callidescope-cli/package.json",
+      );
+
+      expect(service.resolveWorkspaceProjectPaths("/workspace")).toStrictEqual([
+        "packages/ic-suite/callidescope/callidescope-cli",
+      ]);
+    });
+
+    it("does not descend into a project's own subfolders looking for more projects", () => {
+      expect.hasAssertions();
+
+      existingPaths.add("/workspace/packages");
+      scopeChildren.set("/workspace/packages", ["logger"]);
+
+      existingPaths.add("/workspace/packages/logger/package.json");
+      scopeChildren.set("/workspace/packages/logger", ["src"]);
+
+      expect(service.resolveWorkspaceProjectPaths("/workspace")).toStrictEqual([
+        "packages/logger",
+      ]);
+    });
   });
 
   describe("readRootReadme", () => {

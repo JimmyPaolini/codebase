@@ -534,6 +534,43 @@
       {
         "children": [
           {
+            "children": [
+              {
+                "children": [
+                  {
+                    "ruleId": "codebase-project"
+                  }
+                ],
+                "name": "callidescope"
+              },
+              {
+                "children": [
+                  {
+                    "ruleId": "codebase-project"
+                  }
+                ],
+                "name": "codependix"
+              },
+              {
+                "children": [
+                  {
+                    "ruleId": "codebase-project"
+                  }
+                ],
+                "name": "codometer"
+              },
+              {
+                "children": [
+                  {
+                    "ruleId": "codebase-project"
+                  }
+                ],
+                "name": "conformetry"
+              }
+            ],
+            "name": "ic-suite"
+          },
+          {
             "ruleId": "codebase-project"
           }
         ],

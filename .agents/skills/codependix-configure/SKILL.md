@@ -17,9 +17,9 @@ import { type CodependixConfiguration } from "@codependix/configuration";
 
 const codependixConfiguration: CodependixConfiguration = {
   defaults: {
-    imports: { markdown: { anchor: "codependix-imports" }, target: "markdown" },
-    nestjs: { markdown: { anchor: "codependix-nestjs" }, target: "markdown" },
-    nx: { markdown: { anchor: "codependix-nx" }, target: "markdown" },
+    imports: { markdown: { anchor: "codependix-file-imports" }, target: "markdown" },
+    nestjs: { markdown: { anchor: "codependix-nestjs-modules" }, target: "markdown" },
+    nx: { markdown: { anchor: "codependix-nx-projects" }, target: "markdown" },
   },
   exclude: ["fixtures/**"],
   include: ["**"],
@@ -27,7 +27,7 @@ const codependixConfiguration: CodependixConfiguration = {
     widgets: {
       nx: {
         json: { path: "output/nx-graph.json" },
-        markdown: { anchor: "codependix-nx", path: "docs/architecture.md" },
+        markdown: { anchor: "codependix-nx-projects", path: "docs/architecture.md" },
         target: "both",
       },
     },
@@ -91,10 +91,10 @@ ignored:
 
 ```ts
 // Anchor mode — spliced into a named block inside an existing file.
-{ markdown: { anchor: "codependix-nx" }, target: "markdown" }
+{ markdown: { anchor: "codependix-nx-projects" }, target: "markdown" }
 
 // Anchor mode, in a file other than the default README.md.
-{ markdown: { anchor: "codependix-nx", path: "docs/graphs.md" }, target: "markdown" }
+{ markdown: { anchor: "codependix-nx-projects", path: "docs/graphs.md" }, target: "markdown" }
 
 // Standalone mode — the export is the whole contents of the file.
 { markdown: { path: "output/graph.md" }, target: "markdown" }
@@ -146,7 +146,7 @@ still wants, including the `target`.
 
 ```ts
 {
-  defaults: { nx: { markdown: { anchor: "codependix-nx" }, target: "markdown" } },
+  defaults: { nx: { markdown: { anchor: "codependix-nx-projects" }, target: "markdown" } },
   projects: {
     // Loses the Markdown export entirely — this is the whole nx entry now.
     widgets: { nx: { json: { path: "graph.json" }, target: "json" } },
@@ -154,7 +154,7 @@ still wants, including the `target`.
     gadgets: {
       nx: {
         json: { path: "graph.json" },
-        markdown: { anchor: "codependix-nx" },
+        markdown: { anchor: "codependix-nx-projects" },
         target: "both",
       },
     },

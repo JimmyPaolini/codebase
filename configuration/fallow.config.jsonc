@@ -21,47 +21,47 @@
   "entry": [
     "**/scripts/**/*.{js,mjs,ts,sh}",
     ".pnpmfile.mjs",
-    "{applications,packages,tools}/*/src/index.ts",
-    "{applications,packages,tools}/*/src/main.ts",
-    "{applications,packages,tools}/*/src/modules/**/*.module.ts",
+    "{applications,packages,tools}/**/src/index.ts",
+    "{applications,packages,tools}/**/src/main.ts",
+    "{applications,packages,tools}/**/src/modules/**/*.module.ts",
     // Nx resolves these from executors.json and generators.json, which is not
     // an import, so nothing reaches them through the module graph.
-    "{applications,packages,tools}/*/src/executors/**/executor.ts",
-    "{applications,packages,tools}/*/src/generators/**/generator.ts",
-    "{applications,packages,tools}/*/src/generators.ts",
-    "{applications,packages,tools}/*/src/repl.ts",
-    "{applications,packages,tools}/*/testing/**/*.ts",
+    "{applications,packages,tools}/**/src/executors/**/executor.ts",
+    "{applications,packages,tools}/**/src/generators/**/generator.ts",
+    "{applications,packages,tools}/**/src/generators.ts",
+    "{applications,packages,tools}/**/src/repl.ts",
+    "{applications,packages,tools}/**/testing/**/*.ts",
     // conformetry-examples: every example is read and run rather than imported,
     // so nothing in the module graph reaches one. knip names the same paths in
     // its own entry list for the same reason.
-    "packages/conformetry-examples/examples/*/*.ts",
+    "packages/ic-suite/conformetry/conformetry-examples/examples/*/*.ts",
     // codometer finds these by walking up from the project it is measuring,
     // never by importing them, so nothing in the module graph reaches one.
     // knip names the root file in its own entry list for the same reason.
-    "{applications,packages,tools}/*/codometer.config.cjs",
-    "{applications,packages,tools}/*/codometer.config.ts",
+    "{applications,packages,tools}/**/codometer.config.cjs",
+    "{applications,packages,tools}/**/codometer.config.ts",
     "codometer.config.ts",
     // Read by the codometer command line, one per documented behavior, and
     // reached by nothing in the module graph for the same reason.
-    "packages/codometer-examples/examples/**/*.config.ts",
+    "packages/ic-suite/codometer/codometer-examples/examples/**/*.config.ts",
     // A project's own callidescope configuration, found the same way: a run
     // resolves one beside every project it traces, by name, never by import.
     // The workspace file this repository passes with `--config` sits under
     // `configuration/` and is already covered by the entry below.
-    "{applications,packages,tools}/*/callidescope.config.ts",
+    "{applications,packages,tools}/**/callidescope.config.ts",
     // A project's own codependix configuration, found the same way: a run
     // resolves one beside every project it maps, by name, never by import.
     // The workspace file this repository passes with `--config` sits under
     // `configuration/` and is already covered by the entry below.
-    "{applications,packages,tools}/*/codependix.config.ts",
+    "{applications,packages,tools}/**/codependix.config.ts",
     "configuration/**",
     // Every fixture in the callidescope examples package exists to be traced,
     // not imported — an orphan-root fixture is *defined* by having no caller.
     // Declared as entry points rather than excluded, exactly as
     // `configuration/knip.config.ts` declares the same files, so what they
     // import stays in the module graph instead of reading as unreachable too.
-    "packages/callidescope-examples/examples/**/*.ts",
-    "packages/callidescope-examples/src/**/*.ts",
+    "packages/ic-suite/callidescope/callidescope-examples/examples/**/*.ts",
+    "packages/ic-suite/callidescope/callidescope-examples/src/**/*.ts",
     // lexico names its client entry and generated route tree in
     // vite.config.mts rather than importing them, and both sit under
     // src/lib/ because a src/ root only admits entry-point names. The
@@ -159,6 +159,10 @@
     // invokes its `tsc` binary directly; nothing imports it, and
     // typescript-eslint and @swc-node/register still require TypeScript 6.
     "typescript-7",
+    // Imported by configuration/conformetry.config.ts to validate generator
+    // inputs — root-level workspace configuration read by CLI tooling at
+    // build/lint time, not code this repository ships or runs in production.
+    "zod",
   ],
   "ignoreExports": [
     {
@@ -192,6 +196,12 @@
   ],
   "ignoreExportsUsedInFile": true,
   "ignorePatterns": [
+    // pnpm-workspace.yaml's `packages/*` glob matches every direct child of
+    // `packages/`, including the pure grouping folder `packages/ic-suite`
+    // that holds no package.json of its own — it exists only to nest the four
+    // IC-suite toolchains one level deeper, at `packages/ic-suite/*/*`, which
+    // is a separate, already-matched pattern.
+    "packages/ic-suite",
     "**/*.min.js",
     "**/.agents/skills/**/scripts/**",
     "**/.claude/skills/**/scripts/**",
@@ -210,7 +220,7 @@
     // entry point by construction. One carries a `tsconfig.json` the compiler is
     // meant to refuse, and another a module that throws the moment it is
     // imported, so neither belongs in a module graph of this repository's code.
-    "**/packages/codependix-examples/examples/*/*/**",
+    "**/packages/ic-suite/codependix/codependix-examples/examples/*/*/**",
     "**/coverage/**",
     "**/data/library/**",
     "**/data/wikipedia/**",
@@ -219,10 +229,10 @@
     "**/helm/**/templates/**",
     "**/library.json",
     "**/node_modules/**",
-    "**/packages/codometer-examples/examples/compiled/**",
-    "**/packages/codometer-examples/examples/corpus/**",
-    "**/packages/conformetry-examples/examples/*/instances/**",
-    "**/packages/conformetry-examples/examples/*/templates/**",
+    "**/packages/ic-suite/codometer/codometer-examples/examples/compiled/**",
+    "**/packages/ic-suite/codometer/codometer-examples/examples/corpus/**",
+    "**/packages/ic-suite/conformetry/conformetry-examples/examples/*/instances/**",
+    "**/packages/ic-suite/conformetry/conformetry-examples/examples/*/templates/**",
     "**/pnpm-lock.yaml",
     "**/src/lib/database.types.ts",
     "**/routeTree.gen.ts",

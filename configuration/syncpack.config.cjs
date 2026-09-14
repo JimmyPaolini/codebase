@@ -13,6 +13,7 @@ module.exports = {
     "package.json",
     "applications/*/package.json",
     "packages/*/package.json",
+    "packages/ic-suite/*/*/package.json",
     "tools/*/package.json",
   ],
 

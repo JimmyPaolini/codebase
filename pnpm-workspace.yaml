@@ -1,10 +1,15 @@
 packages:
   - applications/*
   - packages/*
+  - packages/ic-suite/callidescope/*
+  - packages/ic-suite/codependix/*
+  - packages/ic-suite/codometer/*
+  - packages/ic-suite/conformetry/*
+  - "!packages/ic-suite"
   - tools/*
 allowBuilds:
-  "@nestjs/core": true
-  "@swc/core": true
+  '@nestjs/core': true
+  '@swc/core': true
   better-sqlite3: true
   cpu-features: true
   esbuild: true

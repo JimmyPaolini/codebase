@@ -29,8 +29,8 @@ import type {
  * per-command declaration to select against.
  *
  * `nestjs-module-graphs` and `nx-project-graphs` are absent from this
- * aggregate because they no longer exist at all: `packages/codependix-nx-projects`
- * and `packages/codependix-nestjs-modules` now produce the same graphs through their own
+ * aggregate because they no longer exist at all: `packages/ic-suite/codependix/codependix-nx-projects`
+ * and `packages/ic-suite/codependix/codependix-nestjs-modules` now produce the same graphs through their own
  * anchor blocks, per issue #296, so both commands and their Nx targets were
  * removed outright rather than merely dropped from this list. Run
  * `nx run codebase:codependix` for what replaced them — there is nothing left

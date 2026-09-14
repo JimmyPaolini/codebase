@@ -32,6 +32,37 @@ export class ReadmeProjectsService {
 
   // 🌎 Public Methods
 
+  /**
+   * Every project path nested under `directoryPath`, at any depth. A
+   * directory with its own `package.json` is a project and is not descended
+   * into further; a directory without one is a grouping folder and is
+   * searched recursively.
+   */
+  private findProjectPaths(
+    workspaceRoot: string,
+    directoryPath: string,
+  ): string[] {
+    const projectPaths: string[] = [];
+
+    for (const child of readdirSync(directoryPath, { withFileTypes: true })) {
+      if (!child.isDirectory()) {
+        continue;
+      }
+
+      const childPath = path.join(directoryPath, child.name);
+      const manifestPath = path.join(childPath, "package.json");
+
+      if (existsSync(manifestPath)) {
+        projectPaths.push(path.relative(workspaceRoot, childPath));
+        continue;
+      }
+
+      projectPaths.push(...this.findProjectPaths(workspaceRoot, childPath));
+    }
+
+    return projectPaths;
+  }
+
   /** Every project path the README does not link to. */
   public findUndocumentedProjectPaths(
     projectPaths: string[],
@@ -58,23 +89,7 @@ export class ReadmeProjectsService {
         continue;
       }
 
-      for (const scopeChild of readdirSync(scopePath, {
-        withFileTypes: true,
-      })) {
-        if (!scopeChild.isDirectory()) {
-          continue;
-        }
-
-        const manifestPath = path.join(
-          scopePath,
-          scopeChild.name,
-          "package.json",
-        );
-
-        if (existsSync(manifestPath)) {
-          projectPaths.push(`${scope}/${scopeChild.name}`);
-        }
-      }
+      projectPaths.push(...this.findProjectPaths(workspaceRoot, scopePath));
     }
 
     return projectPaths;

@@ -330,27 +330,27 @@ project's `codometer-report.json` is subtracted from its own.
 
 ### Quality Tools
 
-| Tool            | Description                                           | Config                                                          | Docs                                                             |
-| --------------- | ----------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`                                 | [docs](https://oxc.rs/docs/guide/usage/formatter.html)           |
-| `sqlfluff`      | Formats and lints SQL files                           | root `pyproject.toml`                                           | [docs](https://docs.sqlfluff.com/)                               |
-| `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`                              | [docs](https://prettier.io/docs/)                                |
-| `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`                                      | [docs](https://eslint.org/docs/latest/)                          |
-| `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`                                | [docs](https://oxc.rs/docs/guide/usage/linter.html)              |
-| `ruff`          | Formats and lints Python files                        | root `pyproject.toml`                                           | [docs](https://docs.astral.sh/ruff/)                             |
-| `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                                         | [docs](https://www.typescriptlang.org/docs/)                     |
-| `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                                            | [docs](https://github.com/plantain-00/type-coverage)             |
-| `pyright`       | Performs static Python type checking                  | root `pyproject.toml`                                           | [docs](https://github.com/microsoft/pyright)                     |
-| `ty`            | Performs additional Python type checking              | root `pyproject.toml`                                           | [docs](https://docs.astral.sh/ty/)                               |
-| `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`                                  | [docs](https://knip.dev/)                                        |
-| `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`                            | [docs](https://github.com/jendrikseipp/vulture)                  |
-| `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`                             | [docs](https://docs.fallow.tools/)                               |
-| `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`                               | [docs](https://jscpd.dev/)                                       |
-| `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`, plus each project's own | [docs](packages/callidescope-cli/README.md), [skills](#ic-suite) |
-| `codependix`    | Exports dependency graphs and gates rules over them   | `configuration/codependix.config.ts`                            | [docs](packages/codependix-cli/README.md), [skills](#ic-suite)   |
-| `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`                              | [docs](https://cspell.org/)                                      |
-| `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc`                        | [docs](https://github.com/DavidAnson/markdownlint-cli2)          |
-| `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`                                   | [docs](https://yamllint.readthedocs.io/)                         |
+| Tool            | Description                                           | Config                                                          | Docs                                                                                   |
+| --------------- | ----------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`                                 | [docs](https://oxc.rs/docs/guide/usage/formatter.html)                                 |
+| `sqlfluff`      | Formats and lints SQL files                           | root `pyproject.toml`                                           | [docs](https://docs.sqlfluff.com/)                                                     |
+| `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`                              | [docs](https://prettier.io/docs/)                                                      |
+| `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`                                      | [docs](https://eslint.org/docs/latest/)                                                |
+| `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`                                | [docs](https://oxc.rs/docs/guide/usage/linter.html)                                    |
+| `ruff`          | Formats and lints Python files                        | root `pyproject.toml`                                           | [docs](https://docs.astral.sh/ruff/)                                                   |
+| `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                                         | [docs](https://www.typescriptlang.org/docs/)                                           |
+| `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                                            | [docs](https://github.com/plantain-00/type-coverage)                                   |
+| `pyright`       | Performs static Python type checking                  | root `pyproject.toml`                                           | [docs](https://github.com/microsoft/pyright)                                           |
+| `ty`            | Performs additional Python type checking              | root `pyproject.toml`                                           | [docs](https://docs.astral.sh/ty/)                                                     |
+| `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`                                  | [docs](https://knip.dev/)                                                              |
+| `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`                            | [docs](https://github.com/jendrikseipp/vulture)                                        |
+| `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`                             | [docs](https://docs.fallow.tools/)                                                     |
+| `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`                               | [docs](https://jscpd.dev/)                                                             |
+| `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`, plus each project's own | [docs](packages/ic-suite/callidescope/callidescope-cli/README.md), [skills](#ic-suite) |
+| `codependix`    | Exports dependency graphs and gates rules over them   | `configuration/codependix.config.ts`                            | [docs](packages/ic-suite/codependix/codependix-cli/README.md), [skills](#ic-suite)     |
+| `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`                              | [docs](https://cspell.org/)                                                            |
+| `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc`                        | [docs](https://github.com/DavidAnson/markdownlint-cli2)                                |
+| `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`                                   | [docs](https://yamllint.readthedocs.io/)                                               |
 
 ### IC-Suite
 
@@ -361,9 +361,9 @@ only what is true of this workspace in particular.
 
 | Toolchain | Gates | Branch gate | Skills |
 | --------- | ----- | ----------- | ------ |
-| [callidescope](packages/callidescope-cli/README.md) | Call-stack depth, breadth | each project's `gate` | [trace](packages/callidescope-agents/skills/callidescope-trace/SKILL.md) · [configure](packages/callidescope-agents/skills/callidescope-configure/SKILL.md) · [triage](packages/callidescope-agents/skills/callidescope-triage/SKILL.md) |
-| [codependix](packages/codependix-cli/README.md) | Dependency-graph boundary rules | `codebase:codependix:check` | [export](packages/codependix-agents/skills/codependix-export/SKILL.md) · [configure](packages/codependix-agents/skills/codependix-configure/SKILL.md) · [triage](packages/codependix-agents/skills/codependix-triage/SKILL.md) · [navigate](packages/codependix-agents/skills/codependix-navigate/SKILL.md) |
-| [codometer](packages/codometer-cli/README.md) | Sizes, counts, comment-block length | `codebase:codometer` and each project's `codometer` | [measure](packages/codometer-agents/skills/codometer-measure/SKILL.md) · [configure](packages/codometer-agents/skills/codometer-configure/SKILL.md) · [triage](packages/codometer-agents/skills/codometer-triage/SKILL.md) |
+| [callidescope](packages/ic-suite/callidescope/callidescope-cli/README.md) | Call-stack depth, breadth | each project's `gate` | [trace](packages/ic-suite/callidescope/callidescope-agents/skills/callidescope-trace/SKILL.md) · [configure](packages/ic-suite/callidescope/callidescope-agents/skills/callidescope-configure/SKILL.md) · [triage](packages/ic-suite/callidescope/callidescope-agents/skills/callidescope-triage/SKILL.md) |
+| [codependix](packages/ic-suite/codependix/codependix-cli/README.md) | Dependency-graph boundary rules | `codebase:codependix:check` | [export](packages/ic-suite/codependix/codependix-agents/skills/codependix-export/SKILL.md) · [configure](packages/ic-suite/codependix/codependix-agents/skills/codependix-configure/SKILL.md) · [triage](packages/ic-suite/codependix/codependix-agents/skills/codependix-triage/SKILL.md) · [navigate](packages/ic-suite/codependix/codependix-agents/skills/codependix-navigate/SKILL.md) |
+| [codometer](packages/ic-suite/codometer/codometer-cli/README.md) | Sizes, counts, comment-block length | `codebase:codometer` and each project's `codometer` | [measure](packages/ic-suite/codometer/codometer-agents/skills/codometer-measure/SKILL.md) · [configure](packages/ic-suite/codometer/codometer-agents/skills/codometer-configure/SKILL.md) · [triage](packages/ic-suite/codometer/codometer-agents/skills/codometer-triage/SKILL.md) |
 | conformetry | Generated code against its template | `conformetry-validate` | [generate](.agents/skills/conformetry-generate/SKILL.md) · [configure](.agents/skills/conformetry-configure/SKILL.md) · [validate](.agents/skills/conformetry-validate/SKILL.md) |
 
 - **Generate rather than hand-craft.** `nx g conformetry:<generator>` scaffolds a
@@ -680,7 +680,7 @@ declared, and a rule about the shape of the graph rather than about one edge.
 The two do not overlap and neither replaces the other: ESLint reports at the
 import site with a line number, which a graph-level report cannot match. See
 [IC-Suite](#ic-suite) and
-[`packages/codependix-boundaries`](packages/codependix-boundaries).
+[`packages/ic-suite/codependix/codependix-boundaries`](packages/ic-suite/codependix/codependix-boundaries).
 
 `@nx/dependency-checks` additionally requires that every imported package is declared in that project's own `package.json`. Add it with `pnpm add --filter <project> <package>` rather than editing `package.json` by hand.
 
