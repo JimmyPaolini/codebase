@@ -1,9 +1,6 @@
 // 🏷️ Types
 
-import type {
-  CodependixBoundaryRule,
-  CodependixGraphType,
-} from "@codependix/configuration";
+import type { CodependixBoundaryRule } from "@codependix/configuration";
 
 /**
  * One cycle found in a graph.
@@ -48,7 +45,7 @@ export interface BoundaryEdge {
 export interface BoundaryGraph {
   readonly edges: readonly BoundaryEdge[];
   /** Which of codependix's four levels this graph was built at. */
-  readonly level: CodependixGraphType;
+  readonly level: CodependixBoundaryLevel;
   readonly nodes: readonly BoundaryNode[];
   /**
    * What the graph covers: an Nx project name, or the workspace itself.
@@ -89,7 +86,7 @@ export interface BoundaryViolation {
    * report.
    */
   readonly cycle: readonly string[] | undefined;
-  readonly level: CodependixGraphType;
+  readonly level: CodependixBoundaryLevel;
   /** The sentence reported, whether the rule's own or the generated one. */
   readonly message: string;
   /** The `name` of the rule that reported it. */
@@ -98,6 +95,21 @@ export interface BoundaryViolation {
   readonly source: string;
   readonly target: string;
 }
+
+/**
+ * The level a boundary graph was built at, or a violation was found at.
+ *
+ * Finer-grained than `CodependixGraphType`: `fileImports` builds one merged
+ * graph type per project, but `boundaries.fileImports` still nests rules by
+ * language, and a violation has to say which language's graph it came from.
+ * `nestjsModules` and `nxProjects` match `CodependixGraphType` one for one,
+ * since those two levels carry no such split.
+ */
+export type CodependixBoundaryLevel =
+  | "nestjsModules"
+  | "nxProjects"
+  | "python"
+  | "typescript";
 
 /**
  * The bookkeeping one depth-first cycle walk carries.

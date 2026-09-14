@@ -17,10 +17,9 @@ export class UnknownConfigurationFileTypeError extends Error {
 
 /** Graph levels codependix can build. */
 export const CODEPENDIX_GRAPH_TYPES = [
-  "imports",
-  "nestjs",
-  "nx",
-  "pythonImports",
+  "fileImports",
+  "nestjsModules",
+  "nxProjects",
 ] as const satisfies readonly CodependixGraphType[];
 
 /** Export targets a graph type may be configured with, per project. */
@@ -131,12 +130,24 @@ const boundaryRuleSchema = z.union([
   }),
 ]);
 
+/**
+ * Validates `boundaries.fileImports`'s rules, nested by language.
+ *
+ * Cross-language edges cannot exist — a Python file cannot import a
+ * TypeScript file or vice versa — so rule authoring stays language-scoped
+ * even though `codependix-file-imports` builds and exports both as one graph
+ * type.
+ */
+const fileImportsBoundariesConfigurationSchema = z.object({
+  python: z.array(boundaryRuleSchema).optional(),
+  typescript: z.array(boundaryRuleSchema).optional(),
+});
+
 /** Validates every declared boundary rule, keyed by graph level. */
 const boundariesConfigurationSchema = z.object({
-  imports: z.array(boundaryRuleSchema).optional(),
-  nestjs: z.array(boundaryRuleSchema).optional(),
-  nx: z.array(boundaryRuleSchema).optional(),
-  pythonImports: z.array(boundaryRuleSchema).optional(),
+  fileImports: fileImportsBoundariesConfigurationSchema.optional(),
+  nestjsModules: z.array(boundaryRuleSchema).optional(),
+  nxProjects: z.array(boundaryRuleSchema).optional(),
 });
 
 /** Validates one graph type's export configuration. */
@@ -185,20 +196,20 @@ const graphOutputSchema = z
 
 /** Validates a project's export configuration, keyed by graph type. */
 const projectConfigurationSchema = z.object({
-  imports: graphOutputSchema.optional(),
-  nestjs: graphOutputSchema.optional(),
-  nx: graphOutputSchema.optional(),
-  pythonImports: graphOutputSchema.optional(),
+  fileImports: graphOutputSchema.optional(),
+  nestjsModules: graphOutputSchema.optional(),
+  nxProjects: graphOutputSchema.optional(),
 });
 
 /**
  * Validates the Workspace Graph's export configuration.
  *
- * Only `nx` is accepted: the Workspace Graph is a whole-repository Nx project
- * graph, so it has no `nestjs` or `imports` counterpart to configure.
+ * Only `nxProjects` is accepted: the Workspace Graph is a whole-repository Nx
+ * project graph, so it has no `nestjsModules` or `fileImports` counterpart to
+ * configure.
  */
 const workspaceConfigurationSchema = z.object({
-  nx: graphOutputSchema.optional(),
+  nxProjects: graphOutputSchema.optional(),
 });
 
 /**

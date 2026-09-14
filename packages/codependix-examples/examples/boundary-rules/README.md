@@ -27,7 +27,7 @@ The mirror image of `forbid`: every edge leaving `atlas-service` for anywhere ou
 
 ```text
 1 boundary violation across 1 rule.
-nx workspace: atlas-service-reaches-core-only: atlas-service may not depend on atlas-tooling, which the rule's allowed targets do not cover. The service composes the core and nothing else.
+nxProjects workspace: atlas-service-reaches-core-only: atlas-service may not depend on atlas-tooling, which the rule's allowed targets do not cover. The service composes the core and nothing else.
 ```
 
 ## `acyclic` — a shape rather than an edge
@@ -36,7 +36,7 @@ The whole path is named, not only the edge that closed it, and one tangle is rep
 
 ```text
 1 boundary violation across 1 rule.
-nx workspace: no-project-cycles: atlas-service → atlas-core → atlas-service is a cycle. Two projects that depend on each other cannot be built apart.
+nxProjects workspace: no-project-cycles: atlas-service → atlas-core → atlas-service is a cycle. Two projects that depend on each other cannot be built apart.
 ```
 
 ## A rule's `message` is appended, never substituted
@@ -45,7 +45,7 @@ The generated half names the rule and both endpoints; the configured half says w
 
 ```text
 1 boundary violation across 1 rule.
-imports atlas-service: types-files-do-not-reach-services: src/catalog.types.ts must not depend on src/settings.service.ts. Types are the leaf of a module.
+typescript atlas-service: types-files-do-not-reach-services: src/catalog.types.ts must not depend on src/settings.service.ts. Types are the leaf of a module.
 ```
 
 ## A selector's fields narrow each other

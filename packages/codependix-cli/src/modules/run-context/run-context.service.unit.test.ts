@@ -50,7 +50,11 @@ describe(RunContextService, () => {
     });
     vi.mocked(neighborhoodService.readProjects).mockReturnValue(PROJECTS);
     vi.mocked(configurationService.loadConfiguration).mockResolvedValue({
-      boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
+      boundaries: {
+        fileImports: { python: [], typescript: [] },
+        nestjsModules: [],
+        nxProjects: [],
+      },
       defaults: {},
       exclude: [],
       include: ["**"],
@@ -117,7 +121,11 @@ describe(RunContextService, () => {
   // in. Its path resolves against the same root every export path does.
   it("resolves a supplied graph's path against the workspace root", async () => {
     vi.mocked(configurationService.loadConfiguration).mockResolvedValue({
-      boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
+      boundaries: {
+        fileImports: { python: [], typescript: [] },
+        nestjsModules: [],
+        nxProjects: [],
+      },
       defaults: {},
       exclude: [],
       include: ["**"],
