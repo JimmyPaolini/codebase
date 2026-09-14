@@ -3241,6 +3241,7 @@ flowchart LR
   DiscoveryModule
   DrawModule
   GridGeometryModule
+  HardcodedMeandersModule
   LatticeIdentificationModule
   LoggerModule([LoggerModule])
   MainModule
@@ -3270,6 +3271,7 @@ flowchart LR
   ChainMotifModule --> MotifTransformsModule
   ChainMotifModule --> SnakeMotifModule
   CrossMotifModule --> GridGeometryModule
+  DrawModule --> HardcodedMeandersModule
   DrawModule --> LatticeIdentificationModule
   DrawModule --> MeanderCharacteristicsModule
   DrawModule --> MeanderClassificationModule
@@ -3280,6 +3282,10 @@ flowchart LR
   DrawModule --> MeanderRenderingModule
   DrawModule --> MosaicNamingModule
   DrawModule --> ParallelMotifModule
+  HardcodedMeandersModule --> MeanderCharacteristicsModule
+  HardcodedMeandersModule --> MeanderDatabaseModule
+  HardcodedMeandersModule --> MeanderDecodingModule
+  HardcodedMeandersModule --> MeanderRenderingModule
   LatticeIdentificationModule --> MeanderLatticeModule
   LatticeIdentificationModule --> MosaicNamingModule
   LatticeIdentificationModule --> MosaicTileModule
@@ -3334,6 +3340,7 @@ graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
+  file_scripts_generate_hardcoded_corpus_ts["scripts/generate-hardcoded-corpus.ts"]
   file_src_constants_ts["src/constants.ts"]
   file_src_main_end_to_end_test_ts["src/main.end-to-end.test.ts"]
   file_src_main_module_ts["src/main.module.ts"]
@@ -3390,6 +3397,27 @@ graph LR
   file_src_modules_grid_geometry_grid_geometry_service_ts["src/modules/grid-geometry/grid-geometry.service.ts"]
   file_src_modules_grid_geometry_grid_geometry_service_unit_test_ts["src/modules/grid-geometry/grid-geometry.service.unit.test.ts"]
   file_src_modules_grid_geometry_grid_geometry_types_ts["src/modules/grid-geometry/grid-geometry.types.ts"]
+  file_src_modules_hardcoded_meanders_boxes_constants_ts["src/modules/hardcoded-meanders/boxes.constants.ts"]
+  file_src_modules_hardcoded_meanders_branch_constants_ts["src/modules/hardcoded-meanders/branch.constants.ts"]
+  file_src_modules_hardcoded_meanders_chain_constants_ts["src/modules/hardcoded-meanders/chain.constants.ts"]
+  file_src_modules_hardcoded_meanders_cross_constants_ts["src/modules/hardcoded-meanders/cross.constants.ts"]
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts["src/modules/hardcoded-meanders/hardcoded-ingestion.command.integration.test.ts"]
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts["src/modules/hardcoded-meanders/hardcoded-meanders.constants.ts"]
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts["src/modules/hardcoded-meanders/hardcoded-meanders.module.ts"]
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts["src/modules/hardcoded-meanders/hardcoded-meanders.service.ts"]
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts["src/modules/hardcoded-meanders/hardcoded-meanders.service.unit.test.ts"]
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts["src/modules/hardcoded-meanders/hardcoded-meanders.types.ts"]
+  file_src_modules_hardcoded_meanders_negative_constants_ts["src/modules/hardcoded-meanders/negative.constants.ts"]
+  file_src_modules_hardcoded_meanders_parallel_1_constants_ts["src/modules/hardcoded-meanders/parallel-1.constants.ts"]
+  file_src_modules_hardcoded_meanders_parallel_2_constants_ts["src/modules/hardcoded-meanders/parallel-2.constants.ts"]
+  file_src_modules_hardcoded_meanders_parallel_3_constants_ts["src/modules/hardcoded-meanders/parallel-3.constants.ts"]
+  file_src_modules_hardcoded_meanders_parallel_4_constants_ts["src/modules/hardcoded-meanders/parallel-4.constants.ts"]
+  file_src_modules_hardcoded_meanders_parallel_5_constants_ts["src/modules/hardcoded-meanders/parallel-5.constants.ts"]
+  file_src_modules_hardcoded_meanders_parallel_6_constants_ts["src/modules/hardcoded-meanders/parallel-6.constants.ts"]
+  file_src_modules_hardcoded_meanders_parallel_constants_ts["src/modules/hardcoded-meanders/parallel.constants.ts"]
+  file_src_modules_hardcoded_meanders_snake_constants_ts["src/modules/hardcoded-meanders/snake.constants.ts"]
+  file_src_modules_hardcoded_meanders_swirl_constants_ts["src/modules/hardcoded-meanders/swirl.constants.ts"]
+  file_src_modules_hardcoded_meanders_whirl_constants_ts["src/modules/hardcoded-meanders/whirl.constants.ts"]
   file_src_modules_lattice_identification_lattice_identification_constants_ts["src/modules/lattice-identification/lattice-identification.constants.ts"]
   file_src_modules_lattice_identification_lattice_identification_module_ts["src/modules/lattice-identification/lattice-identification.module.ts"]
   file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts["src/modules/lattice-identification/lattice-identification.service.integration.test.ts"]
@@ -3523,11 +3551,17 @@ graph LR
   file_src_modules_whirl_motif_whirl_motif_service_unit_test_ts["src/modules/whirl-motif/whirl-motif.service.unit.test.ts"]
   file_src_modules_whirl_motif_whirl_motif_types_ts["src/modules/whirl-motif/whirl-motif.types.ts"]
   file_src_repl_ts["src/repl.ts"]
+  file_testing_hardcoded_corpus_integration_test_ts["testing/hardcoded-corpus.integration.test.ts"]
+  file_testing_hardcoded_corpus_constants_ts["testing/hardcoded-corpus/constants.ts"]
+  file_testing_hardcoded_corpus_corpus_ts["testing/hardcoded-corpus/corpus.ts"]
+  file_testing_hardcoded_corpus_types_ts["testing/hardcoded-corpus/types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_mosaic_tiles_ts["testing/mosaic-tiles.ts"]
   file_testing_path_data_ts["testing/path-data.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
+  file_scripts_generate_hardcoded_corpus_ts --> file_testing_hardcoded_corpus_corpus_ts
+  file_scripts_generate_hardcoded_corpus_ts --> file_testing_hardcoded_corpus_types_ts
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_modules_draw_draw_module_ts
@@ -3804,6 +3838,7 @@ graph LR
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_rendering_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_characteristics_meander_connectivity_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_classification_meander_classification_service_ts
@@ -3828,6 +3863,8 @@ graph LR
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_rendering_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_types_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
@@ -3845,9 +3882,11 @@ graph LR
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_module_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_generation_meander_generation_module_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_generation_motif_pitch_service_ts
@@ -3876,6 +3915,7 @@ graph LR
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_rendering_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_command_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_lattice_identification_lattice_identification_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_classification_meander_classification_module_ts
@@ -3893,6 +3933,78 @@ graph LR
   file_src_modules_grid_geometry_grid_geometry_service_ts --> file_src_modules_grid_geometry_grid_geometry_constants_ts
   file_src_modules_grid_geometry_grid_geometry_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
   file_src_modules_grid_geometry_grid_geometry_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_hardcoded_meanders_boxes_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_branch_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_chain_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_cross_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_combinations_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_negative_permutations_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_parameters_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_permutations_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_rendering_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_meander_database_meander_database_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
+  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_boxes_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_branch_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_chain_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_cross_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_negative_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_parallel_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_snake_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_swirl_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_whirl_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts --> file_src_modules_meander_database_meander_database_module_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_meander_database_meander_database_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_meander_rendering_meander_rendering_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_types_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_types_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_rendering_meander_rendering_service_ts
+  file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
+  file_src_modules_hardcoded_meanders_negative_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_parallel_1_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_parallel_2_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_parallel_3_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_parallel_4_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_parallel_5_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_parallel_6_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_1_constants_ts
+  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_2_constants_ts
+  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_3_constants_ts
+  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_4_constants_ts
+  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_5_constants_ts
+  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_6_constants_ts
+  file_src_modules_hardcoded_meanders_snake_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_swirl_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
+  file_src_modules_hardcoded_meanders_whirl_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
   file_src_modules_lattice_identification_lattice_identification_module_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
   file_src_modules_lattice_identification_lattice_identification_module_ts --> file_src_modules_meander_lattice_meander_lattice_module_ts
   file_src_modules_lattice_identification_lattice_identification_module_ts --> file_src_modules_mosaic_naming_mosaic_naming_module_ts
@@ -4509,6 +4621,19 @@ graph LR
   file_src_modules_whirl_motif_whirl_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
   file_src_modules_whirl_motif_whirl_motif_service_unit_test_ts --> file_testing_path_data_ts
   file_src_repl_ts --> file_src_main_module_ts
+  file_testing_hardcoded_corpus_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
+  file_testing_hardcoded_corpus_integration_test_ts --> file_testing_hardcoded_corpus_corpus_ts
+  file_testing_hardcoded_corpus_integration_test_ts --> file_testing_hardcoded_corpus_types_ts
+  file_testing_hardcoded_corpus_corpus_ts --> file_src_main_module_ts
+  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_draw_draw_combinations_service_ts
+  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
+  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
+  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_meander_generation_meander_generation_utilities_ts
+  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_meander_generation_motif_pitch_service_ts
+  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_svg_rendering_output_path_service_ts
+  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_svg_rendering_svg_rendering_constants_ts
+  file_testing_hardcoded_corpus_corpus_ts --> file_testing_hardcoded_corpus_constants_ts
+  file_testing_hardcoded_corpus_corpus_ts --> file_testing_hardcoded_corpus_types_ts
   file_testing_mosaic_tiles_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
   file_testing_mosaic_tiles_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
 ```
@@ -4520,40 +4645,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-30371-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-18.02_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-148-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-197-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-34009-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-18.19_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-151-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-223-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-181.69_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-205.35_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-197-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-82-0ea5e9?style=flat-square)
-![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-223-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-84-0ea5e9?style=flat-square)
+![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-2-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-207-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-624-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-214-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-664-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-59-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-14-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-104-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-1421-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-520-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-1789-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-152-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-1410-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-1229-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-278-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-1524-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-6111-475569?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-62-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-15-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-107-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-1498-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-522-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-1839-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-181-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-1517-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-1343-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-306-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-1656-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-6559-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -4664,15 +4789,15 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-26-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-47-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-27-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-48-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-1-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-26-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-25-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-42-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-26-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-1-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-1-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-50-ca8a04?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-8-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-51-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-10-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
 ![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)

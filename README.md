@@ -332,9 +332,9 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-279376-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-15.39_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-625-4a4a4a?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-279162-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-15.33_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-620-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-2177-3178c6?style=flat-square)
 
 ### TypeScript
@@ -344,7 +344,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-35-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-1197-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-6105-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-6104-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-16-166534?style=flat-square)
 
 ### JavaScript
@@ -353,15 +353,15 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ![Test Files](https://img.shields.io/badge/Test_Files-523-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-118-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-743-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-11405-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-4078-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-12990-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-11403-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-4077-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-12987-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-2493-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-14396-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-14394-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-9266-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2825-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-12723-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-31761-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-12717-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-31751-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-29-ca8a04?style=flat-square)
 
 ### Python
@@ -382,27 +382,27 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-216-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-22654-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-4101-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1536-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-13074-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-8560-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-22468-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-4078-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1523-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-13027-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-8454-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1008-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1675-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1673-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-3597-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-16880-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-3500-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-16736-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-27-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-3414-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-3409-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-27-f97316?style=flat-square)
 ![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-431-7c3aed?style=flat-square)
 ![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-98-8b5cf6?style=flat-square)
 ![YAML Keys](https://img.shields.io/badge/YAML_Keys-1440-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2943-16a34a?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2938-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
 ![YAML Comments](https://img.shields.io/badge/YAML_Comments-970-64748b?style=flat-square)
@@ -517,7 +517,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-268-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-75953-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-76076-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-256-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-1753-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-2064-a78bfa?style=flat-square)
@@ -529,11 +529,11 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ![List Items](https://img.shields.io/badge/List_Items-5526-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-643-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-6871-0ea5e9?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-6870-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-1868-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-7469-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-2082-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-30957-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-30954-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-38-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
@@ -546,9 +546,9 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5162 |
+| Callables | 5161 |
 | Files | 1371 |
-| Calls traced | 5872 |
+| Calls traced | 5870 |
 | Call stacks | 1331 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
