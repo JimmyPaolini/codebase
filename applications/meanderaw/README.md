@@ -7,33 +7,22 @@ nx run meanderaw:start
 ## 🖌️ One Command
 
 Meanderaw has one command, `draw`, and it is the default — so the target above runs it
-with no arguments. What it draws is decided by whether a drawing was named, not by which
-sub-command was picked:
+with no arguments. What it draws is decided by whether a Code was named:
 
 | Invocation | What it draws |
 | ---------- | ------------- |
-| `nx run meanderaw:start` | Every meander the application can draw, beneath an index page listing them all |
-| `nx run meanderaw:start --args="--type <family> --rows <n>"` | That one, into the same tree |
+| `nx run meanderaw:start` | Every meander the application can draw, as rows in `output/meanders.sqlite` |
+| `nx run meanderaw:start --args="--rows <n> --columns <n> --code <code>"` | That one, as a single row in the same database |
 
-`--type` and `--rows` go together: one without the other is refused rather than treated
-as a sweep, since neither flag can be declared `required` when passing neither is how the
-sweep is asked for. Every other flag — `--modifier` and the parameters it carries
-(`--strands`, `--branches`, `--direction`, and `serpentine`'s optional `--flip` and
-`--offset`),
-`--sub-family`, `--repeat-count`, `--output-directory` — narrows the one drawing. A modifier
-that requires a parameter is refused without it, rather than defaulted; `--direction` is
-exempt, because the direction it names is the one every `rung` drawing carried before the
-other three were reachable, so leaving it off draws that one rather than nothing.
+The three flags of the single-drawing mode go together: `--code` is what selects that
+mode over the sweep, and it is refused without both `--rows` and `--columns`, since
+passing none of the three is how the sweep is asked for.
 
-`--sub-family` is the one flag that narrows a drawing without adjusting a repeat unit: it
-names a member of a family's own unit space. For `mosaic` it is **required**, because that
-family draws no repeat unit of its own — `--type mosaic --rows 5` alone is refused, with
-the sub-families to choose from named in the message. See "The mosaic family draws no
-motif" below.
-
-This used to be two commands, `start` and `generate`. They are one because the option set
-is one: every flag either names a drawing or says where drawings go, and the sub-command
-boundary between them only decided which half of that set was legal.
+**There is nothing else to pass.** `--type`, `--modifier` and the parameters it carried
+(`--strands`, `--branches`, `--direction`, `--flip`, `--offset`), `--sub-family`,
+`--repeat-count`, and `--output-directory` are all retired with the per-family procedural
+generation they named a drawing in. A meander is addressed by its lattice address — its
+Code, its rows, and its columns — and by nothing else.
 
 ## Test
 
@@ -43,100 +32,48 @@ nx run meanderaw:vitest
 
 ## 🗂️ Output Layout
 
-`nx run meanderaw:start` runs the one command this application has — `draw` — which
-with no arguments writes every drawing it can under `output/`, beneath one `index.html`
-listing them all.
-
-Every attribute a drawing was generated from is a directory, and only what is left
-over is its filename:
-
 ```text
 output/
-  index.html                                        every drawing, linked and captioned
-  meanders.sqlite                                   every drawing, as a committed database row
-  <family>/
-    <rows>-rows/
-      <variant>-<repeatCount>-repeats-<address>.svg `plain` where there is no modifier
-      <columns>-columns/                            `mosaic`'s tiles, all it draws
-
-        <identifier>[-<name>].svg
-      permutations/                                 `negative` only
-        <columns>-columns/
-          <identifier>[-<name>].svg
+  meanders.sqlite   every meander, one row each
 ```
 
-So `output/chain/7-rows/edge-flip-6-repeats-7r14c.svg`,
-`output/mosaic/6-rows/1-columns/00000-dots.svg`, and
-`output/negative/6-rows/permutations/1-columns/030303-ruled.svg`.
+That is the whole of it, and the shrinking is the point of this design rather than a side
+effect of it. `output/` used to hold 9,877 committed SVG files under ten family
+directories, plus a 2 MB `index.html` linking them and a 9,883-line
+`output/lattice-addresses.md` recording each drawing's Code — because several families'
+full Codes run past the 255-byte limit a filesystem imposes on one path component, which
+forced six of the ten into a "shape-only" filename that dropped the Code entirely and
+left the address table as the only place it survived. A database row has no such limit,
+so the constraint is gone rather than worked around.
 
-**That trailing `<address>` is where the drawing sits on the lattice**, read off the
-finished ink rather than off the parameters, so a drawing that changed shape cannot keep
-the name it had. It comes in two spellings, and which one a family uses is declared once
-per family by `FILENAME_ADDRESS_CONVENTION` rather than chosen per drawing:
+**Every row is reproducible from its own Code.** `svg` is a cache of a pure function of
+`code`, `rows`, and `columns` — the generic, family-agnostic renderer both halves of the
+sweep draw through — so the column can be regenerated rather than trusted.
 
-- **The full address** — the row-and-span shape, then one hexadecimal character per
-  addressed lattice point: `7r3c-444cccccccccccc888`. `branch`, `cross`, and `negative`
-  carry it, and so a filename alone says everything about which pattern was drawn.
-- **The shape alone** — `7r14c`, and no identifier. `boxes`, `chain`, `parallel`,
-  `snake`, `swirl`, and `whirl` carry this, because their widest repeat spans enough
-  lattice points that a full address would put the filename past the 255-byte limit
-  filesystems impose on one path component: 566 bytes for `parallel` at twelve strands,
-  515 for `boxes` at twelve rows, 295 for `chain`. Two drawings of one family at one row
-  count and one span can therefore share a filename shape, and the 🗺️ Lattice
-  Addresses table below is where the identifier that separates them is written down.
+**Two provenances fill the table, and they partition the corpus rather than overlapping.**
 
-`mosaic` is spelled by neither rule. Every drawing it files is one enumerated tile, so its
-filename is that tile's identifier from the start — `00000-dots.svg` — with no variant or
-repeat count in front of it to append anything to.
+- **Enumerated** — every structurally distinct repeat the lattice's edge budget admits,
+  at each of the fourteen shapes it admits one at: 30,279 meanders, found by walking the
+  space rather than by drawing a family. A row's `family` is read off its own structure
+  by `MeanderClassificationService`, and is null where the structure satisfies no
+  family's defining combination.
+- **Hardcoded** — the 965 meanders of the historical corpus that lie _beyond_ that
+  budget, preserved as Codes extracted once from the retired file tree. Their family and
+  sub-family are carried over as trusted metadata rather than re-derived. See
+  `HARDCODED_MEANDERS_BY_FAMILY` for exactly where the boundary sits and why the filter
+  is by shape rather than by Code.
 
-`mosaic` has no `permutations/` level, and nothing beside those `<columns>-columns/`
-directories either. That level separated an enumerated half from a named one, and for
-this family there is no named half left to separate from: see "The mosaic family draws no
-motif" below. `negative` keeps its own, because there the two halves really are
-different: its named half draws ten sources built by rule, and its
-enumerated half inverts `mosaic` tiles. A modifier carrying a
+A duplicate lattice address across the two is a build failure rather than a convention
+nobody checks: the unique index over `(code, rows, columns)` refuses the second insert,
+and the sweep runs the enumerated half first so the refusal names the hardcoded entry
+that caused it.
 
-parameter puts it in the variant too, or two of its own drawings would collide on one
-path: `output/branch/7-rows/stagger-branches-4-6-repeats-7r3c-444cccccccccccc888.svg`
-and
-`output/branch/7-rows/stagger-branches-5-6-repeats-7r4c-4444cccccccccccccccc8888.svg`.
-A directory listing is
-then the parameter space it enumerates, and the 8,759 enumerated tiles — which would be
-unreadable as one flat directory — sit under the row count and column span that produced
-them, named by nothing but the hexadecimal string that distinguishes them, with the handful whose
-structure earns a name carrying that name after it.
+`output/index.html` is regenerated from this database rather than from a tree of files,
+which is issue #821's work; until then the sweep writes no page.
 
-**Two families have a permutation half, and they enumerate different things.**
-`mosaic`'s is its whole unit space at every column span its edge budget admits, 8,551
-tiles across 3 through 6 rows. `negative`'s is its **one-column source space** — the
-`ruled` domain, since a one-column source has no southward edge for a second column to
-stagger against — 208 sources across 3 through 6 rows, the corner-and-run part of that
-space rather than all of it, since a source carrying a junction can wall a cell on every
-side and leave the negative with nothing to ink. Both stop at the same 6, which is the whole `mosaic`
-family's ceiling and the only row range in this repository that is not the command
-line's: see "Neither permutation half followed" below. The absent
-`negative/<rows>-rows/permutations/2-columns/` is a statement too — the two-column source
-space is a different shape of pattern rather than a deeper cut of this one, and the three
-members of it this repository draws are named in the sweep's other half.
-
-Naming one drawing writes into the same tree, through the same `OutputPathService`, so a
-single drawing lands beside its siblings rather than loose at the top:
-
-```bash
-nx run meanderaw:start --args="--type chain --rows 7 --modifier edge-flip"
-```
-
-The SVGs are committed, and so is `output/index.html`. It lays the families out in the
-order `SUPPORTED_TYPES` declares them — a reading order rather than an alphabetical one,
-running from the single-line motifs through the four that break a negotiable invariant
-and ending at `mosaic`, whose enumerated tiles outnumber every other family together. It
-links each drawing rather than inlining it, so it duplicates nothing, and it sits at the
-root of the tree it indexes rather than beside it — every link it writes is a path down
-from its own directory, and the two move together. Committed, it opens straight from a
-checkout with nothing run first, and a regeneration that changes the drawings shows the
-index changing with them. `.gitattributes` marks the whole of `output/` as generated, so
-neither the drawings nor the index page counts toward this repository's language bar, and
-`.codometerignore`, `.prettierignore`, and `cspell` all leave the directory alone.
+`.gitattributes` marks the whole of `output/` as generated, so the database does not count
+toward this repository's language bar, and `.codometerignore`, `.prettierignore`, and
+`cspell` all leave the directory alone.
 
 ## 🏛️ Meander Charter
 

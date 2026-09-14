@@ -16,13 +16,13 @@ export interface HardcodedMeanderEntry {
 }
 
 /**
- * The nine named types the historical corpus's Hardcoded constants cover —
- * every `MeanderType` except `mosaic`, which already draws from an
- * enumerated unit space today rather than from per-family procedural motif
- * logic. See `HARDCODED_MEANDERS_BY_FAMILY`'s own doc comment, in
- * `hardcoded-meanders.constants.ts`, for why `mosaic` and `negative`'s
- * enumerated `permutations/` subtree are both left to ticket #817's
- * generalized Enumerated pass instead.
+ * The nine families the historical corpus's Hardcoded constants cover —
+ * every `MeanderType` except `mosaic`, whose committed corpus was already
+ * drawn from an enumerated unit space and so is reproduced by
+ * `MeanderEnumerationService` rather than preserved as constants. See
+ * `HARDCODED_MEANDERS_BY_FAMILY`'s own doc comment, in
+ * `hardcoded-meanders.constants.ts`, for where the boundary between the
+ * enumerated and hardcoded halves is drawn.
  */
 export type HardcodedMeanderFamily =
   | "boxes"

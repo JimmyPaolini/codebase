@@ -3,14 +3,12 @@
 import type { HardcodedMeanderEntry } from "./hardcoded-meanders.types";
 
 /**
- * Part of `boxes`'s committed corpus, extracted once by
- * `scripts/generate-hardcoded-corpus.ts` from `output/boxes/**\/*.svg`
- * through `LatticeIdentificationService.identifyDocument` — see that
- * script's own doc comment for the extraction this file's contents were
- * generated from, and `HardcodedMeandersService` for how it is ingested.
- * Split across several files the same way, at
- * `MAXIMUM_ENTRIES_PER_CHUNK`, to stay under the 512-line-per-file cap
- * once oxfmt has broken every long Code onto its own lines.
+ * Part of `boxes`'s committed corpus: the meanders of that family that lie
+ * beyond the reach of `MeanderEnumerationService`, preserved as Codes
+ * extracted once from the drawings this repository used to commit as files.
+ * See `HARDCODED_MEANDERS_BY_FAMILY` for how the boundary against the
+ * enumerated half is drawn, and `HardcodedMeandersService` for how these are
+ * ingested.
  */
 // 🎯 Hexadecimal lattice Codes rather than words, so the dictionaries are
 // turned off across them — a run of hexadecimal digits occasionally spells one.
@@ -61,10 +59,8 @@ export const BOXES_HARDCODED_MEANDERS: readonly HardcodedMeanderEntry[] = [
     columns: 44,
     rows: 12,
   },
-  { code: "2529", columns: 2, rows: 3 },
   { code: "44616525a9a18829", columns: 8, rows: 3 },
   { code: "6561442588a1a929", columns: 8, rows: 3 },
-  { code: "23561ca39", columns: 3, rows: 4 },
   { code: "654635635235c8cc29c4c61ca39a318a9a39", columns: 12, rows: 4 },
   { code: "635631465635c4cc25c8ca1ca98a39a39239", columns: 12, rows: 4 },
   { code: "2335635cc29ca339", columns: 4, rows: 5 },

@@ -15,186 +15,89 @@ nx run meanderaw:start
 
 ## 🏛️ Before You Change a Meander
 
+**A meander is a row in `output/meanders.sqlite`, addressed by its lattice address — its
+Code, its rows, and its columns — and nothing else.** There is no `output/<family>/*.svg`
+tree, no per-family procedural motif service, and no `--type`/`--modifier` command line.
+Generation is lattice-first for every family: a budgeted enumeration produces every
+structurally distinct repeat within reach, one generic family-agnostic renderer draws each
+one from its decoded Code, and a family is _read off_ the result rather than chosen before
+it. See "One Command" and "Output Layout" in [README.md](./README.md).
+
+**The corpus is two provenances that partition it, and the partition is load-bearing.**
+`enumerated` holds the 30,279 meanders `MeanderEnumerationService` walks — the fourteen
+shapes the edge budget admits. `hardcoded` holds the 965 meanders of the historical corpus
+that lie beyond that budget, extracted once as Codes from the retired file tree.
+`HARDCODED_MEANDERS_BY_FAMILY` carries the filter and why it is by shape rather than by
+Code: the enumeration applies no degree ceiling and no family filter, so at an admitted
+shape _every_ structurally distinct meander is already a row before ingestion begins.
+**Raising `MOSAIC_TILE_EDGE_BUDGET` without re-filtering that corpus is how the two halves
+collide** — `draw-sweep.command.integration.test.ts` is what catches it.
+
+**What bounds the enumeration is one edge budget, not a column cap.** A repeat is a
+`columns` by `rows - 1` grid of lattice points, each carrying four direction bits, and its
+edges are its only degrees of freedom — so a shape holds `2 ** (columns * (2 * rows - 3))`
+repeats and rows and columns are not independent knobs.
+`MOSAIC_TILE_EDGE_BUDGET` caps that edge count at 16, and
+`MEANDER_ENUMERATION_MINIMUM_ROWS` sets the floor at 3, which between them admit fourteen
+shapes: 3×1 through 3×5, 4×1 through 4×3, 5×1, 5×2, and 6×1 through 9×1. A shape past the
+budget is refused rather than enumerated slowly. Raising it is a one-line change with a
+visible effect on counts `mosaic-tiles.service.unit.test.ts` asserts — which is the point
+of it being one number.
+
+**A family is a combination of Characteristics, not a label a generator attached.**
+`MeanderClassificationService` holds one predicate per family, read off a decoded grid's
+measured Characteristics and its shape; a meander matching none is recorded with a null
+`family`, which is most of the enumerated space and is the design rather than a gap.
+Adding a family means adding a rule there, never a motif service. The same is true one
+level down: `mosaic-naming` holds one predicate per sub-family, and **unbroken or broken
+is a question about edges, not points** — `lines` and `dashes` differ on it, and so do
+`bars` and `diamond`.
+
+**A hardcoded row's `family` and `subFamily` are trusted, not classified.** Spec #813 puts
+reclassifying the historical corpus through the new predicates explicitly out of scope, so
+`HardcodedMeandersService` carries that metadata over rather than re-deriving it. Do not
+"fix" a hardcoded row whose structure would classify differently.
+
+**A duplicate lattice address is a build failure.** The unique index over
+`(code, rows, columns)` refuses the second insert, and the sweep runs the enumerated half
+first so the refusal names the hardcoded entry that caused it. Do not soften that into an
+upsert.
+
+**Every row's `svg` is a cache of a pure function** of its Code, rows, and columns. If a
+renderer change makes a committed row's SVG wrong, the fix is to regenerate the database,
+never to hand-edit a row.
+
+### The charter, and what became of its gate
+
 Meander geometry is governed by a charter of seven invariants, five of which are fixed.
-They are measured against all 9,877 committed SVGs, not read off the code, so
-they are facts about the output rather than intentions in the source. The full charter,
-with the measurements behind it, is in [README.md](./README.md), under "Meander Charter".
+They were extracted by measuring the 9,877 SVG files this repository used to commit, so
+they are facts about output rather than intentions in source. The full charter, with the
+measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
-**The named half of the sweep runs to `FAMILY_MAXIMUM_ROWS`,** the same record
-`MeanderGenerationService.generate` validates `rows` against — so every drawing the command
-line can be asked for is one this repository commits and the charter gates, 1,118 named
+**The property test that gated them is gone with the corpus it swept.** It measured every
+drawing the per-family sweep produced, and that sweep no longer exists; the structural
+facts it asserted are now computed per row by `MeanderCharacteristicsService` and stored as
+columns, so they are queryable rather than gated. Rebuilding a gate over the database is
+open work, not something this project claims to have.
 
-patterns, each family from its own structural minimum through its own ceiling. It stopped
-at 8 for every family alike until
-[#507](https://github.com/JimmyPaolini/codebase/issues/507), which lived in the four row
-counts between, so do not give that half a sweep maximum of its own again.
-
-**Nine of the ten ceilings are the shared `MAXIMUM_VALUE` of 12. `mosaic`'s is 6,** because
-it is the family whose space is enumerated exhaustively rather than sampled — 8,551 tiles
-across 3 through 6 rows. The cap is on the whole family rather than on the enumeration
-alone, so `--type mosaic --rows 7` is refused: a budget that stopped at the sweep would
-leave those row counts reachable and uncommitted, which is the shape #507 had. See
-`MOSAIC_TILE_MAXIMUM_ROWS`.
-
-**What bounds `mosaic` is one edge budget, not a column cap.** A tile is a `columns` by
-`rows - 1` grid of lattice points, each carrying four direction bits, and its edges are its
-only degrees of freedom — so a shape holds `2 ** (columns * (2 * rows - 3))` tiles and rows
-and columns are not independent knobs. `MOSAIC_TILE_EDGE_BUDGET` caps that edge count at
-16, which admits eleven shapes: 3×1 through 3×5, 4×1 through 4×3, 5×1, 5×2, and 6×1. A
-shape past it is refused rather than enumerated slowly. Raising it is a one-line change
-with a visible effect on counts `mosaic-tiles.service.unit.test.ts` asserts — which is the
-point of it being one number. See "Families, Sub-families, and Tiles" in
-[README.md](./README.md).
-
-**`mosaic` draws no motif, and so has no named half at all.** It has no `permutations/`
-level and nothing beside its `<columns>-columns/` directories: every drawing it has is a
-member of the enumerated space, addressed by naming that member. Its three modifiers —
-`alternated`, `dot`, and `split` — produced 24 drawings, 19 of which were tiles the
-enumeration already commits up to the symmetry it folds by, and they are gone with
-`MosaicMotifService`. Five were not redundant, all of them at column spans
-`MOSAIC_TILE_EDGE_BUDGET` refuses (six columns at six rows is 54 edges against a budget
-of 16), and losing those five was the decided cost. See "The mosaic family draws no
-motif" in [README.md](./README.md).
-
-**`--type mosaic` on its own is refused,** by `MissingSubFamilyError`, and the refusal is
-the design rather than a gap: `--sub-family` is how a member of the space is named, and
-the message lists the eight to choose from. Do not give the family a default drawing —
-the default it used to have was the `bars` sub-family under a second name. `TILE_DRAWN_TYPES`
-is the one place that decision is written down, and `MotifDrawnType` is what makes a
-motif lookup for this family a type error rather than an `undefined`.
-
-**The module is `mosaic-tile`, not `mosaic-motif`.** It was renamed with the motif that
-left it: conformetry's `nestjs-service-module` template requires a folder's namesake
-service, and `MosaicTileService` — the tile vocabulary every other service reads a tile
-through — is what the folder is named for now.
-
-**`negative` has a permutation half too,** and it enumerates its one-column source space —
-the `ruled` domain — at 208 sources across 3 through 6 rows. Those are the `mosaic` tiles
-it can invert rather than all of them: a source point carrying more than
-`NEGATIVE_SOURCE_MAXIMUM_DEGREE` bits can wall a cell on every side, and a cell with no
-corridor leaves the negative with a lattice point nothing paints — charter invariant 2
-broken, measured over the corpus at 599 drawings. Do not widen it without giving this
-family a rule for what to draw there. It stops at the same
-`MOSAIC_TILE_MAXIMUM_ROWS` the `mosaic` half does, so its deepest row count inverts a
-seven-row source that is enumerable but no longer committed: the corridor-identity gate
-covers rows 3 through 5 of the half and the charter sweep covers the rest. `negative` as a
-named family keeps its ceiling of 12.
-
-Every change to a family's row range or mode set moves most of the published counts —
-widening the sweep to the command line's own range, giving every `branch` mode a parameter,
-growing `negative` from three sources to ten, capping `mosaic` at 6 rows, and replacing
-that family's matching rule with an edge budget over a lattice have each done it in turn. So a figure below that disagrees with a measurement is more likely stale than
-wrong.
-
-The three that most often catch a change:
+The three invariants that most often catch a change:
 
 - **Space-filling.** Every interior white channel is exactly one stroke width — which
   equals half a grid unit. `GridGeometryService` derives stroke width and offset from the
-  grid unit for this reason; setting either independently breaks the invariant silently,
-  because nothing currently fails when it does. The stroke is `unit / 2` in every document
-  the project writes, `parallel` at every ply included — a family that draws more strands
-  does not draw thinner ones, and `strokeWidth = unit / (2N)` is a discarded proposal
-  rather than an unimplemented one. See "The Parallel Family" in [README.md](./README.md).
-- **No branching and no crossing.** Ink has zero T-junctions everywhere except `negative`
-  and `branch`, the two families added to branch; `parallel`, which started branching when
-  both of its band borders were ruled; and `chain`/`snake` under `edge`/`edge-flip`, which
-  branch where their zigzag lands mid-border — 22,918 junctions across 848 of the 1,118
-  named patterns, 17,374 of them `parallel`'s, 3,054 `negative`'s, 2,130 `branch`'s, and
-  360 `chain`'s and `snake`'s.
-
-  It has zero X-junctions everywhere except `cross` drawn solid — 12 per document at every
-  one of its seven row counts, and none under its `interrupted` modifier, where the break
-  takes the junction out of the ink graph — and `negative` under `brick-straight`,
-  `brick-upright`, and `grid`, which carry 705 between their thirty documents.
-  These two are the charter's negotiable invariants, so a family may break them — but only
-  deliberately, and never as a side effect of a geometry fix. Both counts are measured by
-  `MeanderTopologyService` and gated by the charter property test, which asserts a declared
-  relaxation is _present_ as well as an undeclared one absent. Declare a relaxation in that
-  test's `RELAXED_INVARIANTS` rather than editing its assertions — including the two
-  exceptions the `negative` entry now carries, since `ruled-closed` is the one mode of a
-  branching family that branches nowhere and the three crossing modes are named one by one
-  rather than forgiven wholesale.
+  grid unit for this reason; setting either independently breaks the invariant silently.
+- **No branching and no crossing.** These are the charter's two negotiable invariants, and
+  the lattice-first corpus relaxes both wholesale: the enumerated space is every subset of
+  a repeat's edges, junctions and crossings included. `hasBranching` and `hasCrossing`, and
+  the four raw junction counts behind them, are recorded per row rather than forbidden.
 - **Band, not field.** Canvas height is fixed and `rows` sets density, not size. These
   patterns are meant for borders.
 
-Three things that look like defects and are not:
+Two things that look like defects and are not:
 
 - **Gaps wider than one stroke where a band terminates** are expected, and owned by
   [#338](https://github.com/JimmyPaolini/codebase/issues/338). Do not chase them.
-- **`--type` disagreeing with the glossary's "family"** is a deliberate divergence, not a
-  stale name. Renaming the flag is a breaking CLI change.
-- **`dot` and `split` were modifiers and are gone; `dots` and `diamond` are sub-families
-  and are not.** The pairs were one letter and one role apart, which is why the README
-  spends a section on each. `--sub-family dot` is still refused, and `diamond` still names
-  the shape `split` used to construct — see "Naming a Mosaic Sub-family" in
-  [README.md](./README.md).
-
-- **A `mosaic` name is a rule, not a label.** `mosaic-naming` holds one predicate per
-  name, read off a tile's direction bits; a tile matching none keeps its identifier and
-  stays unnamed, and one matching two is a defect the unit test catches over the whole
-  space. Adding a name to the family means adding a rule there, never a motif service.
-  **Unbroken or broken is a question about edges, not points** — `lines` and `dashes`
-  differ on it, and so do `bars` and `diamond` — which is what an earlier rule set got
-  wrong when it called a solid vertical bar a `diamond`.
-- **A `mosaic` tile branching or crossing** is declared, not a regression. Its enumerated
-  space — which is all of it — does both, which the charter test's `RELAXED_INVARIANTS`
-  records with a `permutations` flag and then asserts is really present in committed
-  output. Editing that declaration is how the permission moves — never the assertions.
-
-- **`parallel` being a family rather than a modifier** is a correction, not an oversight.
-  [#340](https://github.com/JimmyPaolini/codebase/issues/340) models it as the one modifier
-  compatible with every family; `N` strands cannot trace the path one strand traces, so
-  there is no existing repeat unit for a modifier to construct, and it ships as a family
-  whose ply is chosen by its own modifiers — `plied`, `aligned`, and `serpentine`, which
-  all carry the same `strands` count and differ only in what those strands trace. Only
-  `aligned` sweeps a ply of one, because at one strand there is nothing left to ply or
-  serpentine and the four names drew one figure — `NAMES_WITHOUT_A_ONE_STRAND_DRAWING` is
-  where that floor lives. It is
-  also the one family that commits no unmodified drawing: `plied` at two strands _is_ that
-  drawing, so it carries it rather than the sweep writing the same bytes twice. Do not
-  list `parallel` in `COMPATIBLE_MODIFIERS`. See "The Parallel Family" in
-  [README.md](./README.md).
-- **`negative` and `branch` both branching** is not one family under two names. Both relax
-  invariant 3 and both come off the same survey shortlist; **they differ in loops, and for
-  one commit they did not.** `negative` inks a whole corridor graph and carries up to 65
-  cycles per drawing on one to thirteen components; `branch` is acyclic in every mode at
-  every row count, a forest of two or three pieces — its figure inset by one lattice row
-  from each rule beside it, so no rule touches the ink. It carried 5 to 29 cycles for the
-  one commit in which both borders were ruled directly onto the figure, which also
-  collapsed every `stagger` drawing to the plain comb. The crossing tells them apart too,
-  and `negative` relaxes it in three of its ten modes where `branch` relaxes it in none.
-  **No committed document is a tree any more** — `branch`'s 88 stopped being trees when
-  that border was ruled and are now forests of many pieces instead, and dropping the
-  one-strand `parallel` duplicates took the 22 `serpentine` paths. Those cycle counts and
-  the absence of any tree are asserted in
-  `meander-topology.service.integration.test.ts`, not merely stated here. See "The
-  Branching Family" in [README.md](./README.md) and
-  `docs/adr/0006-close-both-band-borders-in-branch-and-parallel.md`.
-- **`parallel` branching** is declared, not a regression, and its declaration is the one
-  narrowed by a **structural condition** rather than by modifier names. A border rule meets
-  a strand's rising end with three arms of ink, so 642 of its 786 drawings fork; the other
-  144 are the `serpentine` stacks whose first and last strips are each one lattice row
-  deep, where the flat ribbon is the rule and nothing rises to meet it. Change the
-  condition in `RELAXED_INVARIANTS` — `border-strip-has-depth`, answered from
-  `ParallelSerpentineService.strips` — never the assertions, and do not flatten it to a
-  bare row: the sweep asserts in both directions and a bare row fails on those 144. See
-  "The Parallel Family" in [README.md](./README.md).
-- **A `negative` mode that crosses** is deliberate, not a geometry bug. Two corridors
-  stacked in one lattice column is an X-junction, so a source whose openings sit side by
-  side cannot avoid crossing — `brick-straight` is stack bond, `grid` inverts the `dots`
-  sub-family, and `brick-upright` inverts `diamond`. The survey found 3,070 of the 3,179
-  `mosaic` tiles it measured have a crossing negative, so these three are the norm of that
-  space rather than an escape from the charter. See "The Negative Space Family" in
-  [README.md](./README.md).
-- **`brick-staggered` and `brick-straight`** are two bonds of one wall, not a rename and a
-  stray. Running bond alternates the anchor column by course and branches; stack bond
-  anchors every course in the same column and crosses. `brick` on its own is the old name
-  of the staggered one and no longer exists.
-
-When adding a family, prefer extending an existing family's unit space over hand-writing a
-new motif service — see
-"Families, Sub-families, and Tiles" in [README.md](./README.md), and the
-candidate backlog in [#340](https://github.com/JimmyPaolini/codebase/issues/340).
+- **Most enumerated rows carrying no family at all** is the design. Enumeration produces
+  every structurally distinct repeat within budget, and membership is decided afterwards.
 
 ## Architecture Overview
 
@@ -279,17 +182,17 @@ nx run meanderaw:oxfmt           # Formatting
 ```
 
 This application has **one command, `draw`**, and it is the default — so `start` runs it.
-With no arguments it writes every drawing under `output/<family>/<rows>-rows/`, nests the
-enumerated `mosaic` tiles a `<columns>-columns/` deeper, and writes one
-`output/index.html` listing them all. With `--type` and `--rows` it draws that
-one into the same tree:
+With no arguments it sweeps every meander the application can draw into
+`output/meanders.sqlite`: the whole lattice's unit space, enumerated and classified, then
+the historical corpus's hardcoded Codes beyond that budget. With `--rows`, `--columns`,
+and `--code` it decodes, renders, and persists that one:
 
 ```bash
-nx run meanderaw:start --args="--type chain --rows 7 --modifier edge-flip"
+nx run meanderaw:start --args="--rows 3 --columns 2 --code 3c9a"
 ```
 
-There is deliberately no second command — see "One Command" and "Output Layout" in
-[README.md](./README.md).
+There is deliberately no second command, and no other flag — see "One Command" and
+"Output Layout" in [README.md](./README.md).
 
 ### Testing
 

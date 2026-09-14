@@ -3,14 +3,12 @@
 import type { HardcodedMeanderEntry } from "./hardcoded-meanders.types";
 
 /**
- * Part of `negative`'s committed corpus, extracted once by
- * `scripts/generate-hardcoded-corpus.ts` from `output/negative/**\/*.svg`
- * through `LatticeIdentificationService.identifyDocument` — see that
- * script's own doc comment for the extraction this file's contents were
- * generated from, and `HardcodedMeandersService` for how it is ingested.
- * Split across several files the same way, at
- * `MAXIMUM_ENTRIES_PER_CHUNK`, to stay under the 512-line-per-file cap
- * once oxfmt has broken every long Code onto its own lines.
+ * Part of `negative`'s committed corpus: the meanders of that family that lie
+ * beyond the reach of `MeanderEnumerationService`, preserved as Codes
+ * extracted once from the drawings this repository used to commit as files.
+ * See `HARDCODED_MEANDERS_BY_FAMILY` for how the boundary against the
+ * enumerated half is drawn, and `HardcodedMeandersService` for how these are
+ * ingested.
  */
 // 🎯 Hexadecimal lattice Codes rather than words, so the dictionaries are
 // turned off across them — a run of hexadecimal digits occasionally spells one.
@@ -46,71 +44,17 @@ export const NEGATIVE_HARDCODED_MEANDERS: readonly HardcodedMeanderEntry[] = [
   { code: "7b7b7b7b7b3", columns: 1, rows: 12 },
   { code: "337b37b37b3", columns: 1, rows: 12 },
   { code: "7cb7cb7cb78", columns: 1, rows: 12 },
-  { code: "73b3", columns: 2, rows: 3 },
-  { code: "373b", columns: 2, rows: 3 },
-  { code: "4b", columns: 1, rows: 3 },
-  { code: "7b", columns: 1, rows: 3, subFamily: "mesh" },
-  { code: "56a9", columns: 2, rows: 3, subFamily: "zigzag" },
-  { code: "33", columns: 1, rows: 3, subFamily: "lines" },
-  { code: "78", columns: 1, rows: 3 },
-  { code: "73b73b", columns: 2, rows: 4 },
-  { code: "373f3b", columns: 2, rows: 4 },
-  { code: "4f8", columns: 1, rows: 4 },
-  { code: "7fb", columns: 1, rows: 4, subFamily: "mesh" },
-  { code: "56ed9a", columns: 2, rows: 4 },
-  { code: "37b", columns: 1, rows: 4 },
-  { code: "333", columns: 1, rows: 4, subFamily: "lines" },
-  { code: "7b3", columns: 1, rows: 4 },
-  { code: "7cb", columns: 1, rows: 4 },
-  { code: "73b77bb3", columns: 2, rows: 5 },
-  { code: "373f3f3b", columns: 2, rows: 5 },
-  { code: "4fcb", columns: 1, rows: 5 },
-  { code: "7ffb", columns: 1, rows: 5, subFamily: "mesh" },
-  { code: "56eddea9", columns: 2, rows: 5 },
-  { code: "37b3", columns: 1, rows: 5 },
-  { code: "3333", columns: 1, rows: 5, subFamily: "lines" },
-  { code: "7b7b", columns: 1, rows: 5 },
-  { code: "337b", columns: 1, rows: 5 },
-  { code: "7cb3", columns: 1, rows: 5 },
   { code: "73b77bb73b", columns: 2, rows: 6 },
   { code: "373f3f3f3b", columns: 2, rows: 6 },
-  { code: "4fcf8", columns: 1, rows: 6 },
-  { code: "7fffb", columns: 1, rows: 6, subFamily: "mesh" },
   { code: "56eddeed9a", columns: 2, rows: 6 },
-  { code: "37b7b", columns: 1, rows: 6 },
-  { code: "33333", columns: 1, rows: 6, subFamily: "lines" },
-  { code: "7b7b3", columns: 1, rows: 6 },
-  { code: "337b3", columns: 1, rows: 6 },
-  { code: "7cb78", columns: 1, rows: 6 },
   { code: "73b77bb77bb3", columns: 2, rows: 7 },
   { code: "373f3f3f3f3b", columns: 2, rows: 7 },
-  { code: "4fcfcb", columns: 1, rows: 7 },
-  { code: "7ffffb", columns: 1, rows: 7, subFamily: "mesh" },
   { code: "56eddeeddea9", columns: 2, rows: 7 },
-  { code: "37b7b3", columns: 1, rows: 7 },
-  { code: "333333", columns: 1, rows: 7, subFamily: "lines" },
-  { code: "7b7b7b", columns: 1, rows: 7 },
-  { code: "337b33", columns: 1, rows: 7 },
-  { code: "7cb7cb", columns: 1, rows: 7 },
   { code: "73b77bb77bb73b", columns: 2, rows: 8 },
   { code: "373f3f3f3f3f3b", columns: 2, rows: 8 },
-  { code: "4fcfcf8", columns: 1, rows: 8 },
-  { code: "7fffffb", columns: 1, rows: 8, subFamily: "mesh" },
   { code: "56eddeeddeed9a", columns: 2, rows: 8 },
-  { code: "37b7b7b", columns: 1, rows: 8 },
-  { code: "3333333", columns: 1, rows: 8, subFamily: "lines" },
-  { code: "7b7b7b3", columns: 1, rows: 8 },
-  { code: "337b37b", columns: 1, rows: 8 },
-  { code: "7cb7cb3", columns: 1, rows: 8 },
   { code: "73b77bb77bb77bb3", columns: 2, rows: 9 },
   { code: "373f3f3f3f3f3f3b", columns: 2, rows: 9 },
-  { code: "4fcfcfcb", columns: 1, rows: 9 },
-  { code: "7ffffffb", columns: 1, rows: 9, subFamily: "mesh" },
   { code: "56eddeeddeeddea9", columns: 2, rows: 9 },
-  { code: "37b7b7b3", columns: 1, rows: 9 },
-  { code: "33333333", columns: 1, rows: 9, subFamily: "lines" },
-  { code: "7b7b7b7b", columns: 1, rows: 9 },
-  { code: "337b37b3", columns: 1, rows: 9 },
-  { code: "7cb7cb78", columns: 1, rows: 9 },
 ];
 /* cspell:enable */

@@ -1,99 +1,58 @@
 import { Module } from "@nestjs/common";
 
 import { HardcodedMeandersModule } from "../hardcoded-meanders/hardcoded-meanders.module";
-import { LatticeIdentificationModule } from "../lattice-identification/lattice-identification.module";
 import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
 import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
 import { MeanderDatabaseModule } from "../meander-database/meander-database.module";
 import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
 import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumeration.module";
-import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
-import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
-import { ParallelMotifModule } from "../parallel-motif/parallel-motif.module";
 
 import { DrawCodeService } from "./draw-code.service";
-import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
-import { DrawIndexService } from "./draw-index.service";
-import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
-import { DrawParametersService } from "./draw-parameters.service";
-import { DrawPermutationsService } from "./draw-permutations.service";
 import { DrawRecordService } from "./draw-record.service";
-import { DrawRenderingService } from "./draw-rendering.service";
 import { DrawCommand } from "./draw.command";
 
 /**
  * Registers the `draw` CLI command — the application's only command — the
- * service enumerating the space its sweep covers, the two services rendering
- * its permutation halves — one per family that has one — the service
- * rendering the index page all of them are looked through, the service that
- * turns its options into generation parameters, and the service that renders
- * one set of those parameters into a document and the addressed path it is
- * written to.
+ * service that enumerates the whole unit space its sweep covers, the service
+ * that persists the one meander a `--code` drawing names, and the one place
+ * either of them builds a database row.
  *
- * `DrawCombinationsService` is exported because the meander charter's
- * property test sweeps the same enumeration, so the corpus written here and
- * the corpus gated there cannot drift apart.
+ * Every import here serves the one lattice-first pipeline both paths share:
+ * `MeanderDecodingModule` and `MeanderRenderingModule` are the generic
+ * decoder and renderer every family's Code is drawn through,
+ * `MeanderCharacteristicsModule` measures that same decoded grid,
+ * `MeanderClassificationModule` reads a family off those Characteristics,
+ * `MeanderEnumerationModule` walks the space the sweep covers, and
+ * `MeanderDatabaseModule` is the committed sqlite database all of it
+ * persists to. `HardcodedMeandersModule` wraps the same decoder, renderer,
+ * and Characteristic computation beneath one service `DrawCommand` calls
+ * once per sweep with the historical corpus, trusting its family/subFamily
+ * rather than classifying them.
  *
- * It imports `LatticeIdentificationModule` and `MosaicNamingModule` for the
- * two halves of a permutation's filename: the first spells the tile out, and
- * the second supplies the name its structure earns where it earns one — a
- * rule read off the tile rather than a label the tile carries, which is why
- * naming is a module the sweep asks rather than something the enumeration
- * hands over.
- *
- * It imports `ParallelMotifModule` for one reason: `serpentine`'s variant
- * space is not a cross product of its axes, and which rotations and flips
- * are distinct at a given ply is a fact about the geometry rather than about
- * the sweep. Asking `ParallelSerpentineService` is what keeps the corpus
- * from carrying the same drawing under several filenames.
- *
- * It also imports `MeanderCharacteristicsModule`, `MeanderClassificationModule`,
- * `MeanderDatabaseModule`, `MeanderDecodingModule`, `MeanderEnumerationModule`,
- * `MeanderRenderingModule`, and `HardcodedMeandersModule` for the three
- * lattice-first paths `DrawRecordService` and its siblings build rows for:
- * the generic decoder and renderer every family's Code is now drawn through,
- * the Characteristic computation that measures the same decoded grid, the
- * family classifier that reads a family off those Characteristics, the
- * enumeration of the whole unit space the sweep now walks, and the committed
- * sqlite database every one of these paths persists to, in place of the file
- * `--type`/`--rows` still writes. `HardcodedMeandersModule` wraps the same
- * generic decoder, renderer, and Characteristic computation beneath one
- * service `DrawCommand` calls once per sweep with the whole historical
- * corpus, trusting its family/subFamily rather than classifying them.
  * `MeanderDatabaseModule` always opens the one committed database file — a
- * test exercising `DrawCodeService`, `DrawEnumerationService`, or
- * `HardcodedMeandersService` builds its own `TestingModule` against a
+ * test exercising `DrawCommand`, `DrawCodeService`, `DrawEnumerationService`,
+ * or `HardcodedMeandersService` builds its own `TestingModule` against a
  * temporary or in-memory connection instead of importing this module.
  */
 @Module({
   controllers: [],
-  exports: [DrawCombinationsService, DrawCommand],
+  exports: [DrawCommand],
   imports: [
     HardcodedMeandersModule,
-    LatticeIdentificationModule,
     MeanderCharacteristicsModule,
     MeanderClassificationModule,
     MeanderDatabaseModule,
     MeanderDecodingModule,
     MeanderEnumerationModule,
-    MeanderGenerationModule,
     MeanderRenderingModule,
-    MosaicNamingModule,
-    ParallelMotifModule,
   ],
   providers: [
     DrawCodeService,
-    DrawCombinationsService,
     DrawCommand,
     DrawEnumerationService,
-    DrawIndexService,
-    DrawNegativePermutationsService,
-    DrawParametersService,
-    DrawPermutationsService,
     DrawRecordService,
-    DrawRenderingService,
   ],
 })
 export class DrawModule {}

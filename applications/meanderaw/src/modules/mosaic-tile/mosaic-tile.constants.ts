@@ -126,6 +126,22 @@ export const MOSAIC_TILE_EDGE_BUDGET = 16;
 export const MOSAIC_TILE_MAXIMUM_ROWS = 6;
 
 /**
+ * The highest `rows` or `repeatCount` value {@link MosaicTileGenerationService}
+ * draws a whole tiled document at.
+ *
+ * Twelve, and it moved here from the retired `meander-generation` module,
+ * where it was the shared ceiling every family's command-line `--rows` and
+ * `--repeat-count` were validated against. That command line is gone with
+ * the per-family procedural pipeline, and this is the one bound left reading
+ * it — so it lives beside the service that reads it rather than in a module
+ * kept alive to hold it.
+ */
+export const MOSAIC_TILE_MAXIMUM_VALUE = 12;
+
+/** The lowest `repeatCount` {@link MosaicTileGenerationService} draws a document at: at least one unit must be drawn. */
+export const MOSAIC_TILE_MINIMUM_REPEAT_COUNT = 1;
+
+/**
  * The smallest `rows` value a `mosaic` tile is worth enumerating at.
  *
  * Three, where a tile's interior is two grid levels — enough for a southward
@@ -157,6 +173,24 @@ export const SUPPORTED_SUB_FAMILIES: readonly string[] = Object.keys(
 );
 
 // 🚨 Errors
+
+/** Thrown when `repeatCount` falls outside {@link MOSAIC_TILE_MINIMUM_REPEAT_COUNT} and {@link MOSAIC_TILE_MAXIMUM_VALUE}. */
+export class InvalidMosaicRepeatCountError extends Error {
+  constructor(repeatCount: number, minimum: number, maximum: number) {
+    super(
+      `repeatCount must be between ${minimum} and ${maximum}, received ${repeatCount}`,
+    );
+    this.name = "InvalidMosaicRepeatCountError";
+  }
+}
+
+/** Thrown when `rows` falls outside the `mosaic` family's own structural minimum or {@link MOSAIC_TILE_MAXIMUM_VALUE}. */
+export class InvalidMosaicRowsError extends Error {
+  constructor(rows: number, minimum: number, maximum: number) {
+    super(`rows must be between ${minimum} and ${maximum}, received ${rows}`);
+    this.name = "InvalidMosaicRowsError";
+  }
+}
 
 /**
  * Thrown when a grid of direction bits is not a tile: two adjoining points

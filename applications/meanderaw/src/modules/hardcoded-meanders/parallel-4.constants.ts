@@ -3,14 +3,15 @@
 import type { HardcodedMeanderEntry } from "./hardcoded-meanders.types";
 
 /**
- * Part of `parallel`'s committed corpus, extracted once by
- * `scripts/generate-hardcoded-corpus.ts` from `output/parallel/**\/*.svg`
- * through `LatticeIdentificationService.identifyDocument` — see that
- * script's own doc comment for the extraction this file's contents were
- * generated from, and `HardcodedMeandersService` for how it is ingested.
- * Split across several files the same way, at
- * `MAXIMUM_ENTRIES_PER_CHUNK`, to stay under the 512-line-per-file cap
- * once oxfmt has broken every long Code onto its own lines.
+ * Part of `parallel`'s committed corpus: the meanders of that family that lie
+ * beyond the reach of `MeanderEnumerationService`, preserved as Codes
+ * extracted once from the drawings this repository used to commit as files.
+ * See `HARDCODED_MEANDERS_BY_FAMILY` for how the boundary against the
+ * enumerated half is drawn, and `HardcodedMeandersService` for how these are
+ * ingested.
+ * Split across several files at `MAXIMUM_ENTRIES_PER_CHUNK` entries, to
+ * stay under the 512-line-per-file cap once oxfmt has broken every long
+ * Code onto its own lines.
  */
 // 🎯 Hexadecimal lattice Codes rather than words, so the dictionaries are
 // turned off across them — a run of hexadecimal digits occasionally spells one.
@@ -18,16 +19,9 @@ import type { HardcodedMeanderEntry } from "./hardcoded-meanders.types";
 export const PARALLEL_HARDCODED_MEANDERS_4: readonly HardcodedMeanderEntry[] = [
   { code: "12", columns: 2, rows: 2, subFamily: "dashes" },
   { code: "21", columns: 2, rows: 2, subFamily: "dashes" },
-  { code: "44448a98", columns: 4, rows: 3 },
   { code: "4421448a3398", columns: 6, rows: 3 },
   { code: "4654444488888a98", columns: 8, rows: 3 },
   { code: "4633544421448821888a3398", columns: 12, rows: 3 },
-  { code: "2112", columns: 2, rows: 3, subFamily: "dashes" },
-  { code: "2121", columns: 2, rows: 3, subFamily: "dashes" },
-  { code: "3312", columns: 2, rows: 3, subFamily: "dashes" },
-  { code: "659a", columns: 2, rows: 3, subFamily: "zigzag" },
-  { code: "3321", columns: 2, rows: 3, subFamily: "dashes" },
-  { code: "2133", columns: 2, rows: 3, subFamily: "dashes" },
   { code: "4444cccc8a98", columns: 4, rows: 4 },
   { code: "444444cca9cc8a3398", columns: 6, rows: 4 },
   { code: "44421444cca339cc8a333398", columns: 8, rows: 4 },
@@ -38,23 +32,6 @@ export const PARALLEL_HARDCODED_MEANDERS_4: readonly HardcodedMeanderEntry[] = [
     columns: 16,
     rows: 4,
   },
-  { code: "215688", columns: 2, rows: 4 },
-  { code: "216588", columns: 2, rows: 4 },
-  { code: "44a921", columns: 2, rows: 4 },
-  { code: "44a912", columns: 2, rows: 4 },
-  { code: "56a912", columns: 2, rows: 4 },
-  { code: "659a12", columns: 2, rows: 4 },
-  { code: "21659a", columns: 2, rows: 4 },
-  { code: "56a921", columns: 2, rows: 4 },
-  { code: "213321", columns: 2, rows: 4, subFamily: "dashes" },
-  { code: "2156a9", columns: 2, rows: 4 },
-  { code: "213312", columns: 2, rows: 4, subFamily: "dashes" },
-  { code: "333312", columns: 2, rows: 4, subFamily: "dashes" },
-  { code: "333321", columns: 2, rows: 4, subFamily: "dashes" },
-  { code: "659a33", columns: 2, rows: 4 },
-  { code: "3356a9", columns: 2, rows: 4 },
-  { code: "56a933", columns: 2, rows: 4 },
-  { code: "213333", columns: 2, rows: 4, subFamily: "dashes" },
   { code: "4444cccccccc8a98", columns: 4, rows: 5 },
   { code: "444444cccccccca9cc8a3398", columns: 6, rows: 5 },
   { code: "44444444ccca9ccccca339cc8a333398", columns: 8, rows: 5 },
@@ -75,23 +52,6 @@ export const PARALLEL_HARDCODED_MEANDERS_4: readonly HardcodedMeanderEntry[] = [
     columns: 20,
     rows: 5,
   },
-  { code: "44a95688", columns: 2, rows: 5 },
-  { code: "44a96588", columns: 2, rows: 5 },
-  { code: "2156a912", columns: 2, rows: 5 },
-  { code: "21659a12", columns: 2, rows: 5 },
-  { code: "2156a921", columns: 2, rows: 5 },
-  { code: "56a93312", columns: 2, rows: 5 },
-  { code: "659a3321", columns: 2, rows: 5 },
-  { code: "56a93321", columns: 2, rows: 5 },
-  { code: "213356a9", columns: 2, rows: 5 },
-  { code: "33333312", columns: 2, rows: 5, subFamily: "dashes" },
-  { code: "3333659a", columns: 2, rows: 5 },
-  { code: "659a3333", columns: 2, rows: 5 },
-  { code: "33333321", columns: 2, rows: 5, subFamily: "dashes" },
-  { code: "333356a9", columns: 2, rows: 5 },
-  { code: "3356a933", columns: 2, rows: 5 },
-  { code: "56a93333", columns: 2, rows: 5 },
-  { code: "21333333", columns: 2, rows: 5, subFamily: "dashes" },
   { code: "4444cccccccccccc8a98", columns: 4, rows: 6 },
   { code: "444444cccccccccccccca9cc8a3398", columns: 6, rows: 6 },
   { code: "44444444ccccccccccca9ccccca339cc8a333398", columns: 8, rows: 6 },
@@ -246,5 +206,94 @@ export const PARALLEL_HARDCODED_MEANDERS_4: readonly HardcodedMeanderEntry[] = [
   { code: "56a956a93312", columns: 2, rows: 7 },
   { code: "2156a93356a9", columns: 2, rows: 7 },
   { code: "213356a93312", columns: 2, rows: 7 },
+  { code: "3356a9333312", columns: 2, rows: 7 },
+  { code: "3356a9333321", columns: 2, rows: 7 },
+  { code: "659a333356a9", columns: 2, rows: 7 },
+  { code: "213333659a33", columns: 2, rows: 7 },
+  { code: "56a9333356a9", columns: 2, rows: 7 },
+  { code: "21333356a933", columns: 2, rows: 7 },
+  { code: "333333333312", columns: 2, rows: 7, subFamily: "dashes" },
+  { code: "33333333659a", columns: 2, rows: 7 },
+  { code: "3333659a3333", columns: 2, rows: 7 },
+  { code: "659a33333333", columns: 2, rows: 7 },
+  { code: "333333333321", columns: 2, rows: 7, subFamily: "dashes" },
+  { code: "3333333356a9", columns: 2, rows: 7 },
+  { code: "33333356a933", columns: 2, rows: 7 },
+  { code: "333356a93333", columns: 2, rows: 7 },
+  { code: "3356a9333333", columns: 2, rows: 7 },
+  { code: "56a933333333", columns: 2, rows: 7 },
+  { code: "213333333333", columns: 2, rows: 7, subFamily: "dashes" },
+  { code: "4444cccccccccccccccccccc8a98", columns: 4, rows: 8 },
+  { code: "444444cccccccccccccccccccccccccca9cc8a3398", columns: 6, rows: 8 },
+  {
+    code: "44444444ccccccccccccccccccccccccccca9ccccca339cc8a333398",
+    columns: 8,
+    rows: 8,
+  },
+  {
+    code: "4444444444cccccccccccccccccccccccca9ccccccca339ccccca33339cc8a33333398",
+    columns: 10,
+    rows: 8,
+  },
+  {
+    code: "444444444444ccccccccccccccccca9ccccccccca339ccccccca33339ccccca3333339cc8a3333333398",
+    columns: 12,
+    rows: 8,
+  },
+  {
+    code: "44444444444444cccccca9ccccccccccca339ccccccccca33339ccccccca3333339ccccca333333339cc8a333333333398",
+    columns: 14,
+    rows: 8,
+  },
+  {
+    code: "4444444214444444cccccca339ccccccccccca33339ccccccccca3333339ccccccca333333339ccccca33333333339cc8a33333333333398",
+    columns: 16,
+    rows: 8,
+  },
+  {
+    code: "46544444cccccccccccccccccccccccccccccccccccccccc88888a98",
+    columns: 8,
+    rows: 8,
+  },
+  {
+    code: "463354444444cc65cccccccccccccccccccccccccccccccccccccccccccccccccccca9cc8888888a3398",
+    columns: 12,
+    rows: 8,
+  },
+  {
+    code: "4633335444444444cc6335ccccccccccccc65cccccccccccccccccccccccccccccccccccccca9ccccccccccccca339cc888888888a333398",
+    columns: 16,
+    rows: 8,
+  },
+  {
+    code: "46333333544444444444cc633335ccccccccccccccc6335ccccccccccccccccc65cccccccca9ccccccccccccccccca339ccccccccccccccca33339cc88888888888a33333398",
+    columns: 20,
+    rows: 8,
+  },
+  {
+    code: "463333333354444444444444cc63333335ccccccccccccccccc633335cccccccca9ccccccccc6335cccccccca339ccccccccc65cccccccca33339ccccccccccccccccca3333339cc8888888888888a3333333398",
+    columns: 24,
+    rows: 8,
+  },
+  {
+    code: "4633333333335444444444444444cc6333333335cccccccca9ccccccccc63333335cccccccca339ccccccccc633335cccccccca33339ccccccccc6335cccccccca3333339ccccccccc65cccccccca333333339cc888888888888888a333333333398",
+    columns: 28,
+    rows: 8,
+  },
+  {
+    code: "46333333333333544444444214444444cc633333333335cccccccca339ccccccccc6333333335cccccccca33339ccccccccc63333335cccccccca3333339ccccccccc633335cccccccca333333339ccccccccc6335cccccccca33333333339cc88888882188888888a33333333333398",
+    columns: 32,
+    rows: 8,
+  },
+  { code: "44cca956cccc88", columns: 2, rows: 8 },
+  { code: "44cca965cccc88", columns: 2, rows: 8 },
+  { code: "44cccca965cc88", columns: 2, rows: 8 },
+  { code: "44cccca956cc88", columns: 2, rows: 8 },
+  { code: "44a956cca95688", columns: 2, rows: 8 },
+  { code: "44a965cc9a5688", columns: 2, rows: 8 },
+  { code: "44a956cca96588", columns: 2, rows: 8 },
+  { code: "2156a956a95688", columns: 2, rows: 8 },
+  { code: "21659a56a96588", columns: 2, rows: 8 },
+  { code: "21659a56cca921", columns: 2, rows: 8 },
 ];
 /* cspell:enable */
