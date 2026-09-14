@@ -1,5 +1,5 @@
 {
-  "defaults": {
+  "workspace": {
     "nxProjects": {
       "markdown": {
         "anchor": "example-nx-from-json"

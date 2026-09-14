@@ -8,6 +8,7 @@ import { createJiti } from "jiti";
 
 import {
   codependixConfigurationSchema,
+  codependixProjectConfigurationSchema,
   CONFIGURATION_FILE_NAMES,
   ConfigurationFileNotFoundError,
   DEFAULT_EXPORT_TARGET,
@@ -23,8 +24,10 @@ import type {
   CodependixBoundariesConfiguration,
   CodependixConfiguration,
   CodependixGraphOutput,
+  CodependixProjectConfiguration,
   CodependixSelectionArguments,
   LoadConfigurationArguments,
+  LoadProjectConfigurationArguments,
   ProjectSelectionArguments,
   ResolvedCodependixBoundariesConfiguration,
   ResolvedCodependixConfiguration,
@@ -82,6 +85,28 @@ export class ConfigurationService {
 
       candidateDirectory = parentDirectory;
     }
+  }
+
+  /**
+   * Looks for a project's own configuration file, exactly at its root.
+   *
+   * Unlike `findConfigurationFile`, this never walks upward: a project's own
+   * file must be colocated with it, and walking upward would find the
+   * workspace root's configuration — or another project's, in a nested
+   * layout — instead of correctly reporting that this project has none.
+   */
+  private findProjectConfigurationFile(
+    projectRoot: string,
+  ): string | undefined {
+    for (const fileName of CONFIGURATION_FILE_NAMES) {
+      const candidatePath = path.join(projectRoot, fileName);
+
+      if (existsSync(candidatePath)) {
+        return candidatePath;
+      }
+    }
+
+    return undefined;
   }
 
   /**
@@ -356,6 +381,40 @@ export class ConfigurationService {
   }
 
   /**
+   * Loads and validates one project's own `codependix.config.ts`, or
+   * `undefined` when it has none.
+   *
+   * Searched for exactly at `projectRoot` — see `findProjectConfigurationFile`
+   * — rather than the upward search `loadConfiguration` performs for the
+   * workspace root's own file: a project's file is either colocated with it
+   * or it does not exist, and a project with none produces no per-project
+   * output rather than inheriting one from a parent directory.
+   */
+  public async loadProjectConfiguration(
+    args: LoadProjectConfigurationArguments,
+  ): Promise<CodependixProjectConfiguration | undefined> {
+    const projectRoot = path.resolve(args.projectRoot);
+    const resolvedPath = this.findProjectConfigurationFile(projectRoot);
+
+    if (resolvedPath === undefined) {
+      return undefined;
+    }
+
+    const extension = path.extname(resolvedPath).toLowerCase();
+
+    if (!SUPPORTED_CONFIGURATION_EXTENSIONS.has(extension)) {
+      throw new UnknownConfigurationFileTypeError(resolvedPath);
+    }
+
+    const configurationModule = await this.loadConfigurationModule({
+      configurationPath: resolvedPath,
+      extension,
+    });
+
+    return codependixProjectConfigurationSchema.parse(configurationModule);
+  }
+
+  /**
    * Fills in every field a configuration file may leave out.
    *
    * Exposed so a host embedding codependix can hand over a configuration
@@ -368,11 +427,9 @@ export class ConfigurationService {
   ): ResolvedCodependixConfiguration {
     return {
       boundaries: this.resolveBoundaries(configuration.boundaries),
-      defaults: configuration.defaults ?? {},
       exclude: configuration.exclude ?? [],
       include: configuration.include ?? [...DEFAULT_INCLUDE_GLOBS],
       projectGraph: configuration.projectGraph,
-      projects: configuration.projects ?? {},
       selection: this.resolveSelection(selection),
       workspace: configuration.workspace ?? {},
     };
@@ -381,20 +438,28 @@ export class ConfigurationService {
   /**
    * Resolves one project's export configuration for one graph type.
    *
-   * A project's own override, when it names one for this graph type, replaces
-   * the default outright rather than being merged field by field with it — a
-   * project turning its Markdown export off by omitting `markdown` should not
-   * have the default's `markdown` destination resurface underneath it. A
-   * project excluded by the configured globs always resolves to
-   * `target: "none"`, regardless of what either configuration would otherwise
-   * say, since a project excluded from graph export should not need every
-   * override it might otherwise inherit rewritten to `"none"` by hand.
+   * A project's own `codependix.config.ts`, when it has one, is read exactly
+   * as loaded — no merge against a workspace-wide default happens here, since
+   * spreading the root-exported `projectDefaults` already happened when the
+   * project's own file was authored. A project excluded by the configured
+   * `include`/`exclude` globs, or one that has no configuration file of its
+   * own at all, always resolves to `target: "none"`: the former because a
+   * project excluded from graph export should not need every field rewritten
+   * to `"none"` by hand, the latter because a project matched by `include`
+   * with no file of its own has nothing to export, even though it still
+   * contributes to the Workspace Graph and is judged by boundary rules.
    */
   public resolveForProject(
     args: ResolveForProjectArguments,
   ): ResolvedCodependixGraphOutput {
-    const { configuration, graphType, projectName, projectRoot, projectTags } =
-      args;
+    const {
+      configuration,
+      graphType,
+      projectConfiguration,
+      projectName,
+      projectRoot,
+      projectTags,
+    } = args;
 
     if (
       !this.isProjectIncluded({
@@ -407,10 +472,11 @@ export class ConfigurationService {
       return { json: undefined, markdown: undefined, target: "none" };
     }
 
-    const projectOutput = configuration.projects[projectName]?.[graphType];
-    const defaultOutput = configuration.defaults[graphType];
+    if (projectConfiguration === undefined) {
+      return { json: undefined, markdown: undefined, target: "none" };
+    }
 
-    return this.resolveGraphOutput(projectOutput ?? defaultOutput);
+    return this.resolveGraphOutput(projectConfiguration[graphType]);
   }
 
   /**

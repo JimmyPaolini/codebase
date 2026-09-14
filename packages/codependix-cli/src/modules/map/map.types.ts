@@ -1,7 +1,10 @@
 // 🏷️ Types
 
 import type { CodependixRunMode } from "../delivery/delivery.types";
-import type { ResolvedCodependixConfiguration } from "@codependix/configuration";
+import type {
+  CodependixProjectConfiguration,
+  ResolvedCodependixConfiguration,
+} from "@codependix/configuration";
 import type {
   PythonImportGraph,
   TypescriptImportGraph,
@@ -22,6 +25,19 @@ export interface GraphRunContext {
   configuration: ResolvedCodependixConfiguration;
   graph: NxProjectGraph;
   mode: CodependixRunMode;
+  /**
+   * Every project's own `codependix.config.ts`, keyed by project name — or
+   * `undefined` for a project naming none of its own.
+   *
+   * Loaded once per run, alongside `projects`, so every pass reads the same
+   * snapshot rather than each re-reading the filesystem for every graph type
+   * it resolves. Read as-is by `ConfigurationService.resolveForProject` — see
+   * that method for why no further merge happens here.
+   */
+  projectConfigurations: Map<
+    string,
+    CodependixProjectConfiguration | undefined
+  >;
   /** Every project the graph knows, apart from the workspace root. */
   projects: NxProject[];
   /**

@@ -85,6 +85,7 @@ export class PythonImportsService {
     return this.configurationService.resolveForProject({
       configuration: context.configuration,
       graphType: FILE_IMPORTS_GRAPH_TYPE,
+      projectConfiguration: context.projectConfigurations.get(project.name),
       projectName: project.name,
       projectRoot: path.relative(
         context.workingDirectory,

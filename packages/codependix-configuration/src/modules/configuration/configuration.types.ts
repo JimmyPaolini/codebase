@@ -148,20 +148,12 @@ export interface CodependixConfiguration {
   /**
    * Rules every built graph is judged against, keyed by graph level.
    *
-   * Separate from `defaults`/`projects`, which say where an export is
-   * written: a rule has no destination, and a violation is reported to the
-   * console and the exit code rather than published anywhere.
+   * Separate from a project's own `codependix.config.ts`, which says where
+   * that project's export is written: a rule has no destination, and a
+   * violation is reported to the console and the exit code rather than
+   * published anywhere.
    */
   boundaries?: CodependixBoundariesConfiguration | undefined;
-  /**
-   * Export configuration applied to a project naming no override of its own.
-   *
-   * Named `defaults` rather than `default`: a configuration module's default
-   * export is unwrapped by name during loading (see
-   * `ConfigurationService.readDefaultExport`), and a field also called
-   * `default` would collide with that unwrapping.
-   */
-  defaults?: CodependixProjectConfiguration | undefined;
   /** Project names or roots excluded from every graph, as globs. */
   exclude?: string[] | undefined;
   /** Project names or roots participating in graph export, as globs. */
@@ -180,8 +172,6 @@ export interface CodependixConfiguration {
    * the same root every export path does.
    */
   projectGraph?: string | undefined;
-  /** Per-project overrides, keyed by the Nx project name. */
-  projects?: Record<string, CodependixProjectConfiguration> | undefined;
   /**
    * Export configuration for the whole-workspace Workspace Graph.
    *
@@ -295,6 +285,12 @@ export interface LoadConfigurationArguments {
   selection?: CodependixSelectionArguments | undefined;
 }
 
+/** Arguments accepted when loading one project's own configuration file. */
+export interface LoadProjectConfigurationArguments {
+  /** The project's root, absolute or resolved against the process cwd. */
+  projectRoot: string;
+}
+
 /** Arguments accepted when resolving one project's export configuration. */
 export interface ProjectSelectionArguments {
   configuration: ResolvedCodependixConfiguration;
@@ -331,19 +327,18 @@ export interface ResolvedCodependixBoundariesConfiguration {
 /**
  * Configuration with every default applied.
  *
- * `projects` is kept in its authored, unresolved shape: a project's actual
- * export configuration is produced on demand by
- * `ConfigurationService.resolveForProject`, which is also where include and
- * exclude globs are applied.
+ * Carries no per-project state at all: a project's own export configuration
+ * lives in its own colocated `codependix.config.ts`, loaded on demand by
+ * `ConfigurationService.loadProjectConfiguration` and handed to
+ * `resolveForProject` — which is also where `include` and `exclude` globs
+ * are applied.
  */
 export interface ResolvedCodependixConfiguration {
   boundaries: ResolvedCodependixBoundariesConfiguration;
-  defaults: CodependixProjectConfiguration;
   exclude: string[];
   include: string[];
   /** A project graph to read instead of the working directory's, if named. */
   projectGraph: string | undefined;
-  projects: Record<string, CodependixProjectConfiguration>;
   /**
    * What `--projects` and `--tags` named, resolved.
    *
@@ -396,4 +391,16 @@ export interface ResolvedCodependixSelection {
 /** Arguments for resolving one project's export configuration. */
 export interface ResolveForProjectArguments extends ProjectSelectionArguments {
   graphType: CodependixGraphType;
+  /**
+   * The project's own loaded `codependix.config.ts`, or `undefined` when it
+   * has none — see `ConfigurationService.loadProjectConfiguration`.
+   *
+   * Read as-is rather than merged with anything else: a project's own file
+   * already spreads the root-exported `projectDefaults` at authoring time, so
+   * whatever `loadProjectConfiguration` returns is the complete statement of
+   * that project's export configuration. A project naming no file of its own
+   * resolves to `target: "none"` regardless of `include`/`exclude` — it
+   * simply has nothing to export.
+   */
+  projectConfiguration: CodependixProjectConfiguration | undefined;
 }

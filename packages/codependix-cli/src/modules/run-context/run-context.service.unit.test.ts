@@ -55,15 +55,16 @@ describe(RunContextService, () => {
         nestjsModules: [],
         nxProjects: [],
       },
-      defaults: {},
       exclude: [],
       include: ["**"],
       projectGraph: undefined,
-      projects: {},
       selection: { projects: [], tags: [] },
       workspace: {},
     });
     vi.mocked(configurationService.isProjectSelected).mockReturnValue(true);
+    vi.mocked(configurationService.loadProjectConfiguration).mockResolvedValue(
+      undefined,
+    );
   });
 
   it("is defined", () => {
@@ -126,11 +127,9 @@ describe(RunContextService, () => {
         nestjsModules: [],
         nxProjects: [],
       },
-      defaults: {},
       exclude: [],
       include: ["**"],
       projectGraph: "artifacts/graph.json",
-      projects: {},
       selection: { projects: [], tags: [] },
       workspace: {},
     });
@@ -189,5 +188,32 @@ describe(RunContextService, () => {
         projectTags: ["language:python"],
       }),
     );
+  });
+
+  it("loads every project's own configuration file, keyed by name", async () => {
+    // Called once per project, in `context.projects` order — widgets, then
+    // reporting — so two queued resolutions line up with the two calls.
+    vi.mocked(configurationService.loadProjectConfiguration)
+      .mockResolvedValueOnce({
+        nxProjects: { markdown: { anchor: "widgets" }, target: "markdown" },
+      })
+      .mockResolvedValueOnce(undefined);
+
+    const context = await service.build({
+      mode: "write",
+      options: {},
+      workingDirectory: "/workspace",
+    });
+
+    expect(context.projectConfigurations.get("widgets")).toStrictEqual({
+      nxProjects: { markdown: { anchor: "widgets" }, target: "markdown" },
+    });
+    expect(context.projectConfigurations.get("reporting")).toBeUndefined();
+    expect(configurationService.loadProjectConfiguration).toHaveBeenCalledWith({
+      projectRoot: "/workspace/packages/widgets",
+    });
+    expect(configurationService.loadProjectConfiguration).toHaveBeenCalledWith({
+      projectRoot: "/workspace/tools/reporting",
+    });
   });
 });

@@ -1,37 +1,67 @@
-import { type CodependixConfiguration } from "@codependix/configuration";
+import {
+  type CodependixConfiguration,
+  type CodependixProjectConfiguration,
+} from "@codependix/configuration";
 
 /**
- * Every project in the workspace — and the workspace root itself — gets a
- * Markdown export of its own Nx Neighborhood, NestJS module graph, and
- * file-level import graph, spliced into its `README.md` via codependix's
- * anchor-comment mechanism. That whole-repository coverage is declared, in
- * the one `include` line below, rather than assumed: `include` defaults to
- * nothing, so a configuration naming no project exports for none. No JSON
- * output is produced by default at all.
+ * What a project's own `codependix.config.ts` spreads, and then overrides.
  *
- * Markdown used to be the opt-in exception here, because `AnchorsService`
- * treated a missing anchor block as an error rather than creating one — a
- * deliberate choice so that placing a Markdown export stayed something a
- * human did once, by hand, rather than codependix guessing where in a
- * document it belonged. That could not scale to every project in the
- * workspace, since nobody has hand-placed anchor blocks everywhere. Now
- * `DeliveryService` auto-creates a missing `## 🕸️ Codependix` section on
- * `--write` — appending it to the end of the file, or inserting a new
- * `### <Subheading>` under an existing section — and only a project with no
- * `README.md` at all still fails outright. A `--check` run against a project
- * that has never had codependix output simply reports it as stale, the same
- * as any other drift this tool reports.
+ * Mirrors `configuration/callidescope.config.ts`'s `projectDefaults` export:
+ * a project gets its own dependency graph spliced into its own `README.md`
+ * only by writing a file that spreads this object — `include`/`exclude`
+ * below still scope which projects contribute to the workspace-level graphs
+ * and get judged by `boundaries`, but no longer imply per-project output on
+ * their own. A project with no file of its own participates in both of
+ * those, and produces no export of its own.
+ *
+ * ```ts
+ * import { projectDefaults } from "../../configuration/codependix.config.js";
+ *
+ * export default {
+ *   ...projectDefaults,
+ * };
+ * ```
+ *
+ * A relative import resolved by the configuration loader when it reads the
+ * file, rather than a package dependency, so spreading this adds no edge to
+ * a project's dependency graph.
+ */
+export const projectDefaults = {
+  /**
+   * Shared by both languages `codependix-file-imports` builds.
+   *
+   * The anchor name is kept from before this graph type merged TypeScript
+   * and Python into one: a project is only ever one language, so the
+   * TypeScript and Python passes never both write to the same README, and
+   * renaming it here would orphan every already-spliced
+   * `codependix-imports` section across the workspace instead of updating
+   * it in place.
+   */
+  fileImports: {
+    markdown: { anchor: "codependix-imports" },
+    target: "markdown",
+  },
+  nestjsModules: {
+    markdown: { anchor: "codependix-nestjs" },
+    target: "markdown",
+  },
+  nxProjects: {
+    markdown: { anchor: "codependix-nx" },
+    target: "markdown",
+  },
+} satisfies CodependixProjectConfiguration;
+
+/**
+ * `include`/`exclude` scope which projects contribute to the workspace-level
+ * graphs below and get judged by `boundaries` — unrelated to per-project
+ * output, which a project now opts into by writing its own
+ * `codependix.config.ts` spreading `projectDefaults` above.
  *
  * Every field below, and every refusal a configuration can be rejected with, is
  * resolved by the real loader and rendered as a worked example in
  * `packages/codependix-examples` — see its `README.md`, and the
  * `configuration-resolution` and `refusals` examples in particular. This file is the only production configuration
  * codependix has; those are where the shape is explained.
- *
- * `target: "markdown"` here costs nothing for a project a given graph type
- * does not apply to: a project that is not a NestJS project or carries no
- * `tsconfig.json` simply never appears in that graph type's results (see
- * `NestjsProjectService` and `TypescriptProjectService`).
  */
 const codependixConfiguration: CodependixConfiguration = {
   /**
@@ -445,38 +475,17 @@ const codependixConfiguration: CodependixConfiguration = {
       },
     ],
   },
-  defaults: {
-    /**
-     * Shared by both languages `codependix-file-imports` builds.
-     *
-     * The anchor name is kept from before this graph type merged TypeScript
-     * and Python into one: a project is only ever one language, so the
-     * TypeScript and Python passes never both write to the same README, and
-     * renaming it here would orphan every already-spliced
-     * `codependix-imports` section across the workspace instead of updating
-     * it in place.
-     */
-    fileImports: {
-      markdown: { anchor: "codependix-imports" },
-      target: "markdown",
-    },
-    nestjsModules: {
-      markdown: { anchor: "codependix-nestjs" },
-      target: "markdown",
-    },
-    nxProjects: {
-      markdown: { anchor: "codependix-nx" },
-      target: "markdown",
-    },
-  },
   /**
-   * Every project participates, stated rather than assumed.
+   * Every project participates in the workspace-level graphs and boundary
+   * checking, stated rather than assumed.
    *
    * `include` defaults to nothing so that participation is always declared —
-   * see `DEFAULT_INCLUDE_GLOBS`. Dropping this line does not fall back to
-   * whole-workspace coverage; it stops every export instead, and quietly,
-   * since `--check boundaries` judges every project regardless and stays
-   * green. `codependix --write` warns when it happens.
+   * see `DEFAULT_INCLUDE_GLOBS`. This no longer implies per-project README
+   * output on its own: a project matched here that carries no
+   * `codependix.config.ts` of its own contributes to the workspace-level
+   * graphs below and is judged by `boundaries`, but produces no export of
+   * its own. Getting one requires the project's own file, spreading
+   * `projectDefaults` above.
    */
   include: ["**"],
   workspace: {
