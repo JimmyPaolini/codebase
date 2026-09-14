@@ -196,7 +196,7 @@ runs:
 
     - name: 🌌 Setup uv
       if: inputs.uv == 'true'
-      uses: astral-sh/setup-uv@v10.0.1
+      uses: astral-sh/setup-uv@v10.1.0
       with:
         enable-cache: true
         cache-dependency-glob: uv.lock

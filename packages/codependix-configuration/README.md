@@ -98,12 +98,12 @@ Call stacks traced through `packages/codependix-configuration`, deepest first. E
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 6 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 6 |
+| `maximumBreadth` | 5 |
 
 ### Call stacks (depth)
 
@@ -113,10 +113,6 @@ What this project is judged against. `declared` is the number in this project's 
 🚀 refine(…)(…): boolean [packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:104]
   └─> some(…)(value: string[] | undefined): value is string[] [packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:104]
 ```
-
-### Module spread
-
-None.
 
 ### Breadth
 
@@ -150,10 +146,6 @@ None.
 | `InputService.parsePathOption` | 1 | `InputService.parseOptionalOption` | `packages/codependix-configuration/src/modules/input/input.service.ts:70` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 <!-- CODE_STATISTICS_START -->

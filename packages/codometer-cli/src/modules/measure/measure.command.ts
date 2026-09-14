@@ -267,7 +267,13 @@ export class MeasureCommand extends CommandRunner {
       return undefined;
     }
 
-    return { configuration, destinations, format, mode };
+    const consoleMarkdown = this.runPlanService.resolveConsoleMarkdown({
+      configuration,
+      options,
+      workingDirectory,
+    });
+
+    return { configuration, consoleMarkdown, destinations, format, mode };
   }
 
   /**
@@ -401,7 +407,7 @@ export class MeasureCommand extends CommandRunner {
       return;
     }
 
-    const { configuration, destinations, format, mode } = plan;
+    const { configuration, consoleMarkdown, destinations, format, mode } = plan;
     const outputPaths = this.runPlanService.listOutputPaths({
       destinations,
       workingDirectory,
@@ -416,6 +422,7 @@ export class MeasureCommand extends CommandRunner {
     });
     const report = this.reportService.build(measurement);
     const stalePaths = this.deliveryService.deliver({
+      consoleMarkdown,
       destinations,
       format,
       measurement,

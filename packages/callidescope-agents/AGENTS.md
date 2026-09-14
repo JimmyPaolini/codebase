@@ -79,7 +79,8 @@ reading the graph instead of splitting that trigger surface in two.
 `depth` and `breadth` accept.** A flag is a way of telling callidescope what to
 do whichever command carries it, and `--check`, `--write`, and `--directories`
 cannot be explained without the configuration fields they read — `--check
-breadth` is refused outright without `limits.maximumBreadth`. Splitting flags
+breadth` weighs each project against its own declared `limits.maximumBreadth`.
+Splitting flags
 from the file they layer over would mean neither half was usable alone.
 
 ## Validating

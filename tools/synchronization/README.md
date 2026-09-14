@@ -201,12 +201,12 @@ Call stacks traced through `tools/synchronization`, deepest first. Each frame sh
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 10 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 10 |
+| `maximumBreadth` | 9 |
 
 ### Call stacks (depth)
 
@@ -299,11 +299,11 @@ What this project is judged against. `declared` is the number in this project's 
 **5. `ConformetryGeneratorsCommand.run`** — depth ≥ 6 · decorated-method
 
 ```text
-🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:181]
+🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:188]
    ↳ Runs the conformetry-generators sync command in check or write mode.
-  └─> ConformetryGeneratorsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:199]
+  └─> ConformetryGeneratorsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:206]
      ↳ Synchronizes the generators table and reports success without exiting.
-    └─> ConformetryGeneratorsCommand.readGenerators(): Promise<ConformetryGeneratorMetadata[]> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:104]
+    └─> ConformetryGeneratorsCommand.readGenerators(): Promise<ConformetryGeneratorMetadata[]> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:111]
        ↳ Reads configuration/conformetry.config.ts and returns the list of generator metadata.
       └─> ConfigurationService.loadConformetryConfiguration(configurationPath: string): Promise<ConformetryConfiguration> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:169]
          ↳ Loads, validates, and normalizes a conformetry configuration file.
@@ -384,10 +384,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -413,7 +409,7 @@ None.
 | `PullRequestLabelsCommand.synchronize` | 4 | `PullRequestLabelsCommand.reconcile`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.mirrorToStepSummary` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:300` |
 | `PullRequestTemplateCommand.synchronize` | 4 | `PullRequestTemplateCommand.map(…)`, `PullRequestTemplateCommand.loadTemplate`, `PullRequestTemplateCommand.handleCheckMode`, `PullRequestTemplateCommand.handleWriteMode` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:221` |
 | `IssueLabelsCommand.run` | 3 | `IssueLabelsCommand.resolvePlan`, `IssueLabelsGithubService.isAvailable`, `IssueLabelsCommand.addLabel` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:158` |
-| `ConformetryGeneratorsCommand.synchronize` | 3 | `ConformetryGeneratorsCommand.readGenerators`, `ConformetryGeneratorsCommand.checkSync`, `ConformetryGeneratorsCommand.writeSync` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:199` |
+| `ConformetryGeneratorsCommand.synchronize` | 3 | `ConformetryGeneratorsCommand.readGenerators`, `ConformetryGeneratorsCommand.checkSync`, `ConformetryGeneratorsCommand.writeSync` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:206` |
 | `ConventionalConfigIoService.writeIssueTemplateSync` | 3 | `ConventionalConfigIoService.writeIssueTemplateDropdown`, `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:258` |
 | `ConventionalConfigValidatorsService.checkMarkerSync` | 3 | `ConventionalConfigValidatorsService.readMarkerValues`, `ConventionalConfigValidatorsService.getSourceValuesForMarker`, `ConventionalConfigValidatorsService.validateMarkerValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41` |
 | `ConventionalConfigValidatorsService.checkIssueTemplateSync` | 3 | `ConventionalConfigValidatorsService.getSourceValuesForMarker`, `ConventionalConfigIoService.parseIssueTemplateDropdown`, `ConventionalConfigValidatorsService.validateMarkerValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:185` |
@@ -427,10 +423,10 @@ None.
 | `IssueLabelsCommand.addLabel` | 2 | `IssueLabelsGithubService.run`, `IssueLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:57` |
 | `IssueLabelsCommand.readLabelNames` | 2 | `IssueLabelsCommand.filter(…)`, `IssueLabelsCommand.map(…)` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:118` |
 | `SynchronizationService.resolveSynchronizationModeOrExit` | 2 | `SynchronizationService.resolveModeValue`, `SynchronizationService.exitInvalidMode` | `tools/synchronization/src/modules/synchronization/synchronization.service.ts:59` |
-| `ConformetryGeneratorsCommand.checkSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.filter(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:57` |
-| `ConformetryGeneratorsCommand.readGenerators` | 2 | `ConfigurationService.loadConformetryConfiguration`, `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:104` |
-| `ConformetryGeneratorsCommand.writeSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.readMarkedFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:159` |
-| `ConformetryGeneratorsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `ConformetryGeneratorsCommand.synchronize` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:181` |
+| `ConformetryGeneratorsCommand.checkSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.filter(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:64` |
+| `ConformetryGeneratorsCommand.readGenerators` | 2 | `ConfigurationService.loadConformetryConfiguration`, `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:111` |
+| `ConformetryGeneratorsCommand.writeSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.readMarkedFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:166` |
+| `ConformetryGeneratorsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `ConformetryGeneratorsCommand.synchronize` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:188` |
 | `ConventionalConfigIoService.map(…)` | 2 | `ConventionalConfigIoService.find(…)`, `ConventionalConfigIoService.capitalize` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:93` |
 | `ConventionalConfigIoService.getReleaseRulesTypes` | 2 | `ConventionalConfigIoService.filter(…)`, `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:184` |
 | `ConventionalConfigValidatorsService.getSourceValuesForMarker` | 2 | `ConventionalConfigValidatorsService.map(…)`, `ConventionalConfigValidatorsService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:64` |
@@ -458,8 +454,8 @@ None.
 | `IssueLabelsCommand.readExistingLabelNames` | 1 | `IssueLabelsCommand.readLabelNames` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:94` |
 | `IssueLabelsCommand.map(…)` | 1 | `IssueLabelsCommand.nameOf` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:120` |
 | `SynchronizationService.resolveModeValue` | 1 | `SynchronizationService.isSynchronizationMode` | `tools/synchronization/src/modules/synchronization/synchronization.service.ts:40` |
-| `ConformetryGeneratorsCommand.filter(…)` | 1 | `ConformetryGeneratorsCommand.readMarkedFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:59` |
-| `ConformetryGeneratorsCommand.generateGeneratorsTable` | 1 | `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:91` |
+| `ConformetryGeneratorsCommand.filter(…)` | 1 | `ConformetryGeneratorsCommand.readMarkedFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:66` |
+| `ConformetryGeneratorsCommand.generateGeneratorsTable` | 1 | `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:98` |
 | `ConventionalConfigIoService.writeIssueTemplateDropdown` | 1 | `ConventionalConfigIoService.generateYamlDropdownOptions` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:62` |
 | `ConventionalConfigIoService.appendToPresetTypes` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:86` |
 | `ConventionalConfigIoService.appendToReleaseRules` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:110` |
@@ -490,10 +486,6 @@ None.
 | `SynchronizationMarkersService.replaceContent` | 1 | `SynchronizationMarkersService.locateMarkers` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix

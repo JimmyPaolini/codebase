@@ -495,12 +495,12 @@ Call stacks traced through `packages/codependix-boundaries`, deepest first. Each
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 12 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 12 |
+| `maximumBreadth` | 5 |
 
 ### Call stacks (depth)
 
@@ -654,10 +654,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -707,10 +703,4 @@ None.
 | `BoundaryCheckService.pythonImports` | 1 | `BoundaryCheckService.runPythonImportsLevel` | `packages/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:94` |
 
 </details>
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `BoundariesService.evaluate` | `packages/codependix-boundaries:modules/boundaries` | `packages/codependix-boundaries:modules/boundary-check` | 2/2 |
 <!-- CALL_STACKS_END -->

@@ -65,18 +65,14 @@ Call stacks traced through `packages/conformetry-files`, deepest first. Each fra
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 9 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 9 |
+| `maximumBreadth` | 3 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -87,10 +83,6 @@ None.
 | `FilesService.checkInstanceFiles` | 3 | `InstanceDiscoveryService.resolveInstanceFiles`, `FilesService.buildMissingDifference`, `FilesService.countExpectedFiles` | `packages/conformetry-files/src/modules/files/files.service.ts:95` |
 | `FilesService.buildMissingDifference` | 2 | `DifferencesService.buildMissingFileDifference`, `DifferencesService.buildMissingDirectoryDifference` | `packages/conformetry-files/src/modules/files/files.service.ts:51` |
 | `FilesService.countExpectedFiles` | 1 | `FilesService.filter(…)` | `packages/conformetry-files/src/modules/files/files.service.ts:77` |
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
