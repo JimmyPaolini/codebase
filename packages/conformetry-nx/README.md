@@ -150,12 +150,12 @@ Call stacks traced through `packages/conformetry-nx`, deepest first. Each frame 
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 14 | declared |
-| `maximumBreadth` | 9 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 14 |
+| `maximumBreadth` | 9 |
 
 ### Call stacks (depth)
 
@@ -314,15 +314,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `PluginService.runValidation` | 17 | `packages/conformetry-core:modules/reporting`, `packages/conformetry-nx:modules/instances`, `packages/conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:395` |
-| `PluginService.runGenerator` | 12 | `packages/conformetry-configuration:modules/configuration`, `packages/conformetry-generation:modules/generation`, `packages/conformetry-nx:modules/adapter`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:334` |
-| `syncGenerator` | 7 | `packages/conformetry-nx:modules/generator`, `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
-| `bootstrapPlugin` | 6 | `packages/conformetry-nx:modules/options`, `packages/conformetry-nx:modules/plugin`, `packages/conformetry-nx:modules/projects` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:39` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -393,10 +384,6 @@ What this project is judged against. `declared` is the number in this project's 
 | `linkPlugin` | 1 | `leadsTo` | `packages/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:116` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
@@ -699,8 +686,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5744-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-200.00_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5747-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-200.06_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-15-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-61-3178c6?style=flat-square)
 
@@ -729,10 +716,10 @@ graph LR
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-205-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-135-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-255-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-254-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-255-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-76-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-324-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-712-475569?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-711-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -853,6 +840,14 @@ graph LR
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-13-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 

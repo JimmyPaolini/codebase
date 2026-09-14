@@ -904,25 +904,6 @@
         "cwd": "{projectRoot}"
       }
     },
-    "upgrade-dependencies": {
-      "cache": false,
-      "configurations": {
-        "check": {
-          "command": "pnpm outdated --recursive"
-        },
-        "write": {
-          "commands": [
-            "pnpm update --latest --recursive \"!typescript\"",
-            "pnpm dedupe"
-          ],
-          "parallel": false
-        }
-      },
-      "defaultConfiguration": "check",
-      "description": "Check for dependency updates (check) or upgrade every dependency to its latest version and dedupe the lockfile (write). `write` holds typescript back, because typescript 7 removed the JavaScript compiler API that nx, typescript-eslint, knip and type-coverage all read: crossing that major is a deliberate migration, not a weekly bump. `check` deliberately still reports typescript as outdated, so the hold stays visible. See .github/workflows/upgrade-dependencies.yml for the full reasoning behind both the hold and the dedupe.",
-      "executor": "nx:run-commands",
-      "options": {}
-    },
     "validate-branch-name": {
       "cache": false,
       "description": "Validate the current branch name against the configured naming convention. The pre-push hook calls the binary directly to avoid a project graph build; this target is for manual use.",

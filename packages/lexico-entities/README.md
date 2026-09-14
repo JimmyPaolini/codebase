@@ -120,12 +120,12 @@ Call stacks traced through `packages/lexico-entities`, deepest first. Each frame
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 3 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 3 |
+| `maximumBreadth` | none |
 
 ### Call stacks (depth)
 
@@ -157,10 +157,6 @@ What this project is judged against. `declared` is the number in this project's 
      ↳ Extract sql from method.
 ```
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -179,10 +175,6 @@ None.
 | `processMigrationFile` | 1 | `extractSqlFromMigration` | `packages/lexico-entities/scripts/extract-migration-sql.ts:198` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
@@ -398,8 +390,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5239-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-213.19_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5250-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-213.58_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-57-3178c6?style=flat-square)
 
@@ -414,7 +406,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-2-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-271-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-91-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-92-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -428,10 +420,10 @@ graph LR
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-255-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-25-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-175-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-212-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-213-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-115-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-112-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-201-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-113-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-205-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
@@ -552,6 +544,14 @@ graph LR
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-4-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 
