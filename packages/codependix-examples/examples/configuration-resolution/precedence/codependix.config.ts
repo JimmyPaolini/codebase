@@ -3,8 +3,8 @@
  * because `CONFIGURATION_FILE_NAMES` searches for it first.
  */
 export default {
-  defaults: {
+  include: ["packages/*", "codependix-*"],
+  workspace: {
     nxProjects: { markdown: { anchor: "example-nx" }, target: "markdown" },
   },
-  include: ["packages/*", "codependix-*"],
 };

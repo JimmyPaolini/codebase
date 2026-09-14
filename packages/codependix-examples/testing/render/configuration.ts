@@ -10,6 +10,7 @@ import { resolveExample } from "./paths";
 import type { ExampleDocument, ExampleSection } from "./types";
 import type {
   CodependixGraphType,
+  CodependixProjectConfiguration,
   ResolvedCodependixConfiguration,
 } from "@codependix/configuration";
 
@@ -42,6 +43,9 @@ const NESTED_PROJECT_SEGMENT = "packages/atlas-service";
 /** Configuration file name that does not exist, for the explicit-path refusal. */
 const MISSING_CONFIGURATION_FILE = "codependix.config.missing.ts";
 
+/** Workspace demonstrating the per-project-file resolution model. */
+const PER_PROJECT_FILES = "per-project-files";
+
 /**
  * The refusals a configuration file can be rejected with.
  *
@@ -50,28 +54,28 @@ const MISSING_CONFIGURATION_FILE = "codependix.config.missing.ts";
  */
 const REFUSED_CONFIGURATIONS = [
   {
-    configuration: { defaults: { nxProjects: { target: "both" } } },
+    configuration: { workspace: { nxProjects: { target: "both" } } },
     title: "A `both` target with no `json` destination",
   },
   {
-    configuration: { defaults: { nxProjects: { target: "json" } } },
+    configuration: { workspace: { nxProjects: { target: "json" } } },
     title: "A `json` target with no `json` destination",
   },
   {
     configuration: {
-      defaults: {
+      workspace: {
         nxProjects: { json: { path: "graph.json" }, target: "both" },
       },
     },
     title: "A `both` target with no `markdown` destination",
   },
   {
-    configuration: { defaults: { nxProjects: { target: "markdown" } } },
+    configuration: { workspace: { nxProjects: { target: "markdown" } } },
     title: "A `markdown` target with no `markdown` destination",
   },
   {
     configuration: {
-      defaults: { nxProjects: { markdown: {}, target: "markdown" } },
+      workspace: { nxProjects: { markdown: {}, target: "markdown" } },
     },
     title: "A `markdown` destination naming neither an anchor nor a path",
   },
@@ -88,7 +92,7 @@ export async function buildConfigurationDocuments(): Promise<
       id: "configuration-resolution",
       jsonExports: [],
       sections: [
-        ...buildResolutionSections(),
+        ...(await buildResolutionSections()),
         ...(await buildDiscoverySections()),
       ],
       summary:
@@ -219,20 +223,21 @@ async function buildDiscoverySections(): Promise<ExampleSection[]> {
 
   return [
     {
-      body: fenceJson(precedence.defaults),
+      body: fenceJson(precedence.workspace),
       heading: "A workspace carrying two configuration files",
       note: "`examples/configuration/precedence/` holds both a `codependix.config.ts` and a `codependix.config.json`. `CONFIGURATION_FILE_NAMES` is searched in order, so the TypeScript one wins — the anchor here is the one it declares.",
     },
     {
-      body: fenceJson(nested.projects),
+      body: fenceJson(nested.workspace),
       heading: "The upward search reaches past a nested `package.json`",
-      note: "The search started inside `packages/atlas-service/`, which carries its own `package.json`, and still found the configuration at the workspace root — the root every path in that configuration was written relative to.",
+      note: "The search started inside `packages/atlas-service/`, which carries its own `package.json`, and still found the configuration at the workspace root — the root every path in that configuration was written relative to. A project's own `codependix.config.ts` is searched for differently — see the next section — and never walks upward this way.",
     },
     {
       body: fenceJson(
         configurationService.resolveForProject({
           configuration: absent,
           graphType: "nxProjects",
+          projectConfiguration: undefined,
           projectName: "atlas-service",
         }),
       ),
@@ -240,7 +245,7 @@ async function buildDiscoverySections(): Promise<ExampleSection[]> {
       note: 'A workspace that never wrote one resolves every graph to `target: "none"` and produces nothing, rather than being told to write one. The absence of an unnamed configuration file is legal.',
     },
     {
-      body: fenceJson(unknownFields.defaults),
+      body: fenceJson(unknownFields.workspace),
       heading: "An unknown field is stripped, not rejected",
       note: "The configuration declares a `graphqlSchemas` field no codependix has an opinion about. Zod strips unknown keys, so a configuration written for a newer codependix still loads under an older one.",
     },
@@ -267,27 +272,61 @@ async function buildPathRefusalSections(): Promise<ExampleSection[]> {
   ];
 }
 
-/** Builds the sections covering `defaults`, overrides, and globs. */
-function buildResolutionSections(): ExampleSection[] {
+/**
+ * Builds the sections covering a project's own file, no file at all, and the
+ * two glob lists.
+ */
+async function buildResolutionSections(): Promise<ExampleSection[]> {
   const configuration = buildSampleConfiguration();
+  const atlasCoreProjectConfiguration =
+    await loadExampleProjectConfiguration("atlas-core");
+  const atlasServiceProjectConfiguration =
+    await loadExampleProjectConfiguration("atlas-service");
 
   return [
     {
       body: table(
-        ["Project", "Root", "Resolved target", "Destination"],
+        ["Project", "Own file?", "Resolved target", "Destination"],
         [
-          resolveRow(configuration, "atlas-service", "packages/atlas-service"),
-          resolveRow(configuration, "atlas-core", "packages/atlas-core"),
-          resolveRow(
+          resolveRow({
             configuration,
-            "atlas-application",
-            "applications/atlas-application",
-          ),
-          resolveRow(configuration, "unrelated", "tools/unrelated"),
+            projectConfiguration: atlasCoreProjectConfiguration,
+            projectName: "atlas-core",
+            projectRoot: "packages/atlas-core",
+          }),
+          resolveRow({
+            configuration,
+            projectConfiguration: atlasServiceProjectConfiguration,
+            projectName: "atlas-service",
+            projectRoot: "packages/atlas-service",
+          }),
+          resolveRow({
+            configuration,
+            projectConfiguration: undefined,
+            projectName: "atlas-application",
+            projectRoot: "applications/atlas-application",
+          }),
+          resolveRow({
+            configuration,
+            projectConfiguration: undefined,
+            projectName: "unrelated",
+            projectRoot: "tools/unrelated",
+          }),
         ],
       ),
-      heading: "`defaults`, a per-project override, and the two glob lists",
-      note: "`atlas-core` names an `nxProjects` override, and it **replaces** the default outright rather than merging into it — its `markdown` destination is gone, not inherited. `atlas-application` matches `exclude`, so it resolves to `none` no matter what either configuration would otherwise say. `unrelated` matches no `include` glob at all.",
+      heading:
+        "A project's own file, an included project with no file, and the two glob lists",
+      note: '`atlas-core` carries its own `codependix.config.ts` — see the next section for how it spreads `projectDefaults` — and is read exactly as loaded, with no further merge. `atlas-service` names no file of its own, and resolves to `"none"` even though `include` matches it: a project matched by `include` with no file of its own produces no per-project output. `atlas-application` matches `exclude`, so it resolves to `"none"` no matter what its own file would otherwise say. `unrelated` matches no `include` glob at all.',
+    },
+    {
+      body: fenceJson({
+        atlasCore: atlasCoreProjectConfiguration,
+        // `undefined` would be dropped entirely by `JSON.stringify` — `null`
+        // is what makes "no file at all" visible in the rendered example.
+        atlasService: atlasServiceProjectConfiguration ?? null,
+      }),
+      heading: "`projectDefaults`, spread and then overridden",
+      note: "`examples/configuration-resolution/per-project-files/codependix.config.ts` exports `projectDefaults`. Its `packages/atlas-core/codependix.config.ts` spreads it and overrides `nxProjects` outright — the spread's `markdown` destination is gone, not merged with the `json` one that replaced it. `packages/atlas-service/` carries no `codependix.config.ts` at all, so `loadProjectConfiguration` resolves it to `undefined` rather than falling back to `projectDefaults` on its own — a project opts in by writing the file.",
     },
     {
       body: renderInclusion(configuration),
@@ -299,33 +338,34 @@ function buildResolutionSections(): ExampleSection[] {
       heading: "The Workspace Graph ignores both glob lists",
       note: "It is exported once for the repository rather than once per project, so it carries no per-project override and `include`/`exclude` never apply to it. `--projects` and `--tags` are the exception: they narrow which projects are **nodes** in it, while its destination is still read from `workspace.nxProjects`.",
     },
-    {
-      body: "`ConfigurationService.readDefaultExport` unwraps a configuration module's default export **by name**. A configuration field also called `default` would collide with that unwrapping, which is why the field is `defaults`.",
-      heading: "Why the field is `defaults` and not `default`",
-      note: "The one naming decision in the whole configuration surface that looks arbitrary and is not.",
-    },
   ];
 }
 
 /** The configuration every resolution row is resolved against. */
 function buildSampleConfiguration(): ResolvedCodependixConfiguration {
   return configurationService.resolveConfiguration({
-    defaults: {
-      nxProjects: { markdown: { anchor: "example-nx" }, target: "markdown" },
-    },
     exclude: ["applications/*"],
     include: ["packages/*", "codependix-*"],
-    projects: {
-      "atlas-core": {
-        nxProjects: { json: { path: "graph.json" }, target: "json" },
-      },
-    },
     workspace: {
       nxProjects: {
         markdown: { anchor: "example-workspace" },
         target: "markdown",
       },
     },
+  });
+}
+
+/** Loads one `per-project-files` example project's own configuration file. */
+async function loadExampleProjectConfiguration(
+  projectName: string,
+): Promise<CodependixProjectConfiguration | undefined> {
+  return configurationService.loadProjectConfiguration({
+    projectRoot: resolveExample(
+      CONFIGURATION_SEGMENT,
+      PER_PROJECT_FILES,
+      "packages",
+      projectName,
+    ),
   });
 }
 
@@ -354,22 +394,26 @@ function renderInclusion(
 }
 
 /** Resolves one project's `nxProjects` output and describes it as a table row. */
-function resolveRow(
-  configuration: ResolvedCodependixConfiguration,
-  projectName: string,
-  projectRoot: string,
-): string[] {
+function resolveRow(args: {
+  configuration: ResolvedCodependixConfiguration;
+  projectConfiguration: CodependixProjectConfiguration | undefined;
+  projectName: string;
+  projectRoot: string;
+}): string[] {
+  const { configuration, projectConfiguration, projectName, projectRoot } =
+    args;
   const graphType: CodependixGraphType = "nxProjects";
   const resolved = configurationService.resolveForProject({
     configuration,
     graphType,
+    projectConfiguration,
     projectName,
     projectRoot,
   });
 
   return [
     `\`${projectName}\``,
-    `\`${projectRoot}\``,
+    projectConfiguration === undefined ? "no" : "yes",
     `\`${resolved.target}\``,
     describeDestination(resolved),
   ];

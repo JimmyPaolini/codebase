@@ -1,4 +1,4 @@
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -15,6 +15,7 @@ import { ConfigurationService } from "./configuration.service";
 
 import type {
   CodependixBoundaryRule,
+  CodependixProjectConfiguration,
   ResolvedCodependixConfiguration,
 } from "./configuration.types";
 
@@ -66,8 +67,6 @@ describe(ConfigurationService, () => {
 
       expect(configuration.include).toStrictEqual([...DEFAULT_INCLUDE_GLOBS]);
       expect(configuration.exclude).toStrictEqual([]);
-      expect(configuration.defaults).toStrictEqual({});
-      expect(configuration.projects).toStrictEqual({});
     });
 
     it("discovers a configuration file in the search directory", async () => {
@@ -194,7 +193,7 @@ describe(ConfigurationService, () => {
 
     it("rejects a graph output naming a json target with no json destination", async () => {
       const configurationPath = await writeConfiguration({
-        defaults: { nxProjects: { target: "json" } },
+        workspace: { nxProjects: { target: "json" } },
       });
 
       await expect(
@@ -204,7 +203,7 @@ describe(ConfigurationService, () => {
 
     it("rejects a graph output naming a markdown target with no markdown destination", async () => {
       const configurationPath = await writeConfiguration({
-        defaults: { nxProjects: { target: "markdown" } },
+        workspace: { nxProjects: { target: "markdown" } },
       });
 
       await expect(
@@ -214,7 +213,7 @@ describe(ConfigurationService, () => {
 
     it("rejects a both target missing either destination", async () => {
       const configurationPath = await writeConfiguration({
-        defaults: {
+        workspace: {
           nxProjects: { json: { path: "codependix-nx.json" }, target: "both" },
         },
       });
@@ -226,7 +225,7 @@ describe(ConfigurationService, () => {
 
     it("rejects a markdown destination naming neither an anchor nor a path", async () => {
       const configurationPath = await writeConfiguration({
-        defaults: { nxProjects: { markdown: {}, target: "markdown" } },
+        workspace: { nxProjects: { markdown: {}, target: "markdown" } },
       });
 
       await expect(
@@ -236,7 +235,7 @@ describe(ConfigurationService, () => {
 
     it("accepts a fully configured graph output", async () => {
       const configurationPath = await writeConfiguration({
-        defaults: {
+        workspace: {
           nxProjects: {
             json: { path: "codependix-nx.json" },
             markdown: { anchor: "codependix-nx" },
@@ -249,7 +248,7 @@ describe(ConfigurationService, () => {
         configurationPath,
       });
 
-      expect(configuration.defaults.nxProjects?.target).toBe("both");
+      expect(configuration.workspace.nxProjects?.target).toBe("both");
     });
   });
 
@@ -400,47 +399,65 @@ describe(ConfigurationService, () => {
   });
 
   describe("resolveForProject", () => {
-    // Participation is declared: naming `defaults` alone selects nothing.
+    /** A project's own loaded `codependix.config.ts`, for these tests. */
+    const ownFile: CodependixProjectConfiguration = {
+      nxProjects: { markdown: { anchor: "nx" }, target: "markdown" },
+    };
+
+    // Participation is declared: naming an own file alone selects nothing.
     it("resolves to none for a configuration naming no include", () => {
-      const configuration = service.resolveConfiguration({
-        defaults: {
-          nxProjects: { markdown: { anchor: "nx" }, target: "markdown" },
-        },
-      });
+      const configuration = service.resolveConfiguration({});
 
       expect(configuration.include).toStrictEqual([]);
       expect(
         service.resolveForProject({
           configuration,
           graphType: "nxProjects",
+          projectConfiguration: ownFile,
           projectName: "codependix-nx",
         }),
       ).toStrictEqual({ json: undefined, markdown: undefined, target: "none" });
     });
 
-    it("resolves to none when nothing configures the graph type", () => {
-      const configuration = service.resolveConfiguration({});
+    it("resolves to none for an included project with no configuration file of its own", () => {
+      const configuration = service.resolveConfiguration({
+        include: ["**"],
+      });
 
       expect(
         service.resolveForProject({
           configuration,
           graphType: "nxProjects",
+          projectConfiguration: undefined,
           projectName: "codependix-nx",
         }),
       ).toStrictEqual({ json: undefined, markdown: undefined, target: "none" });
     });
 
-    it("falls back to the global default for a project naming no override", () => {
+    it("resolves to none when the project's own file names no override for the graph type", () => {
       const configuration = service.resolveConfiguration({
-        defaults: {
-          nxProjects: { markdown: { anchor: "nx" }, target: "markdown" },
-        },
+        include: ["**"],
+      });
+
+      expect(
+        service.resolveForProject({
+          configuration,
+          graphType: "fileImports",
+          projectConfiguration: ownFile,
+          projectName: "codependix-nx",
+        }),
+      ).toStrictEqual({ json: undefined, markdown: undefined, target: "none" });
+    });
+
+    it("resolves an included project's own file for the graph type it declares", () => {
+      const configuration = service.resolveConfiguration({
         include: ["**"],
       });
 
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nxProjects",
+        projectConfiguration: ownFile,
         projectName: "codependix-nx",
       });
 
@@ -451,22 +468,18 @@ describe(ConfigurationService, () => {
       });
     });
 
-    it("lets a project's own override replace the default outright", () => {
+    it("reads a project's own file as-is, with no merge against anything else", () => {
       const configuration = service.resolveConfiguration({
-        defaults: {
-          nxProjects: { markdown: { anchor: "nx" }, target: "markdown" },
-        },
         include: ["**"],
-        projects: {
-          "codependix-nx": {
-            nxProjects: { json: { path: "graph.json" }, target: "json" },
-          },
-        },
       });
+      const projectConfiguration: CodependixProjectConfiguration = {
+        nxProjects: { json: { path: "graph.json" }, target: "json" },
+      };
 
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nxProjects",
+        projectConfiguration,
         projectName: "codependix-nx",
       });
 
@@ -479,15 +492,13 @@ describe(ConfigurationService, () => {
 
     it("defaults an anchor destination's markdown path to README.md", () => {
       const configuration = service.resolveConfiguration({
-        defaults: {
-          nxProjects: { markdown: { anchor: "nx" }, target: "markdown" },
-        },
         include: ["**"],
       });
 
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nxProjects",
+        projectConfiguration: ownFile,
         projectName: "any-project",
       });
 
@@ -496,18 +507,19 @@ describe(ConfigurationService, () => {
 
     it("keeps a standalone markdown path a project names for itself", () => {
       const configuration = service.resolveConfiguration({
-        defaults: {
-          nxProjects: {
-            markdown: { path: "docs/dependency-graph.md" },
-            target: "markdown",
-          },
-        },
         include: ["**"],
       });
+      const projectConfiguration: CodependixProjectConfiguration = {
+        nxProjects: {
+          markdown: { path: "docs/dependency-graph.md" },
+          target: "markdown",
+        },
+      };
 
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nxProjects",
+        projectConfiguration,
         projectName: "any-project",
       });
 
@@ -517,17 +529,16 @@ describe(ConfigurationService, () => {
       });
     });
 
-    it("excludes a project matching an exclude glob even with a default target", () => {
+    it("excludes a project matching an exclude glob even with its own configuration file", () => {
       const configuration = service.resolveConfiguration({
-        defaults: {
-          nxProjects: { markdown: { anchor: "nx" }, target: "markdown" },
-        },
         exclude: ["excluded-*"],
+        include: ["**"],
       });
 
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nxProjects",
+        projectConfiguration: ownFile,
         projectName: "excluded-project",
       });
 
@@ -536,15 +547,13 @@ describe(ConfigurationService, () => {
 
     it("excludes a project matching no include glob", () => {
       const configuration = service.resolveConfiguration({
-        defaults: {
-          nxProjects: { markdown: { anchor: "nx" }, target: "markdown" },
-        },
         include: ["packages/*"],
       });
 
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nxProjects",
+        projectConfiguration: ownFile,
         projectName: "tools-something",
       });
 
@@ -553,9 +562,6 @@ describe(ConfigurationService, () => {
 
     it("includes a project matching the configured include glob", () => {
       const configuration = service.resolveConfiguration({
-        defaults: {
-          nxProjects: { markdown: { anchor: "nx" }, target: "markdown" },
-        },
         include: ["packages/*"],
       });
 
@@ -569,13 +575,16 @@ describe(ConfigurationService, () => {
 
     it("includes a project whose root matches an include glob its name does not", () => {
       const configuration = service.resolveConfiguration({
-        defaults: { nxProjects: { target: "json" } },
         include: ["packages/*"],
       });
+      const projectConfiguration: CodependixProjectConfiguration = {
+        nxProjects: { target: "json" },
+      };
 
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nxProjects",
+        projectConfiguration,
         projectName: "codependix-nx",
         projectRoot: "packages/codependix-nx",
       });
@@ -586,16 +595,85 @@ describe(ConfigurationService, () => {
     it("excludes a project whose root matches an exclude glob its name does not", () => {
       const configuration = service.resolveConfiguration({
         exclude: ["packages/excluded-*"],
+        include: ["**"],
       });
 
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nxProjects",
+        projectConfiguration: ownFile,
         projectName: "kept-name",
         projectRoot: "packages/excluded-project",
       });
 
       expect(resolved.target).toBe("none");
+    });
+  });
+
+  describe("loadProjectConfiguration", () => {
+    it("returns undefined when a project has no configuration file of its own", async () => {
+      const projectRoot = await mkdtemp(
+        path.join(tmpdir(), "codependix-project-none-"),
+      );
+
+      await expect(
+        service.loadProjectConfiguration({ projectRoot }),
+      ).resolves.toBeUndefined();
+    });
+
+    it("loads and validates a project's own configuration file", async () => {
+      const configurationPath = await writeConfiguration({
+        nxProjects: { markdown: { anchor: "example" }, target: "markdown" },
+      });
+
+      const projectConfiguration = await service.loadProjectConfiguration({
+        projectRoot: path.dirname(configurationPath),
+      });
+
+      expect(projectConfiguration).toStrictEqual({
+        nxProjects: { markdown: { anchor: "example" }, target: "markdown" },
+      });
+    });
+
+    it("never walks upward past the project's own root", async () => {
+      const workspaceConfigurationPath = await writeConfiguration({
+        nxProjects: { markdown: { anchor: "workspace" }, target: "markdown" },
+      });
+      const projectRoot = path.join(
+        path.dirname(workspaceConfigurationPath),
+        "nested-project",
+      );
+
+      await mkdir(projectRoot, { recursive: true });
+
+      await expect(
+        service.loadProjectConfiguration({ projectRoot }),
+      ).resolves.toBeUndefined();
+    });
+
+    it("rejects a project configuration file naming an unknown graph type", async () => {
+      const configurationPath = await writeConfiguration({
+        notAGraphType: { target: "markdown" },
+      });
+
+      const projectConfiguration = await service.loadProjectConfiguration({
+        projectRoot: path.dirname(configurationPath),
+      });
+
+      // Zod strips unknown keys, matching root configuration parsing.
+      expect(projectConfiguration).toStrictEqual({});
+    });
+
+    it("rejects a malformed project configuration file", async () => {
+      const configurationPath = await writeConfiguration({
+        nxProjects: { target: "not-a-target" },
+      });
+
+      await expect(
+        service.loadProjectConfiguration({
+          projectRoot: path.dirname(configurationPath),
+        }),
+      ).rejects.toBeInstanceOf(ZodError);
     });
   });
 
@@ -626,12 +704,7 @@ describe(ConfigurationService, () => {
       selection: { projects?: string; tags?: string } = {},
     ): ResolvedCodependixConfiguration {
       return service.resolveConfiguration(
-        {
-          defaults: {
-            nxProjects: { markdown: { anchor: "nx" }, target: "markdown" },
-          },
-          include: ["packages/*"],
-        },
+        { include: ["packages/*"] },
         selection,
       );
     }

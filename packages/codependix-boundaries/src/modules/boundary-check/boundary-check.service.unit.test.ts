@@ -90,11 +90,9 @@ describe(BoundaryCheckService, () => {
     return {
       configuration: {
         boundaries: buildBoundaries(boundaries),
-        defaults: {},
         exclude: [],
         include: ["**"],
         projectGraph: undefined,
-        projects: {},
         selection: { projects: [], tags: [] },
         workspace: {},
       },
