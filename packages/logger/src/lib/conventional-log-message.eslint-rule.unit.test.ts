@@ -18,7 +18,7 @@ ruleTester.run("conventional-log-message", conventionalLogMessageRule, {
   invalid: [
     {
       // One of two real violations a prior audit found in
-      // packages/callidescope-cli/src/modules/workspace/workspace.service.ts —
+      // packages/ic-suite/callidescope/callidescope-cli/src/modules/workspace/workspace.service.ts —
       // "Could" is not a conventional verb.
       code: 'logger.error("🔭 Could not apply ignore file: x");',
       errors: [{ data: { word: "Could" }, messageId: "nonConventionalVerb" }],

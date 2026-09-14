@@ -12,7 +12,7 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
  * That exclusion is also what makes it four rather than five: it cuts the edge
  * from `LoggerService.log` to the assertion beneath it. So a run configured
  * without it measures five and reports this package —
- * `packages/callidescope-examples` is the one that does, deliberately, and its
+ * `packages/ic-suite/callidescope/callidescope-examples` is the one that does, deliberately, and its
  * committed report carries the finding. Four is still the right number here,
  * because the gate is run with the workspace configuration and nothing else
  * is.

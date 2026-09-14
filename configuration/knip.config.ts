@@ -111,8 +111,8 @@ const config: KnipConfig = {
         "applications/JimmyPaolini/**",
         "pnpm-workspace.yaml", // Catalog dependencies are shared across workspace; knip would flag all as unused in root
         "configuration/conformetry-templates/**", // Generator templates are placeholder files, not executable workspace code
-        "packages/codometer-examples/examples/compiled/**", // Stand-in build output, committed so a target example has something to measure
-        "packages/codometer-examples/examples/corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
+        "packages/ic-suite/codometer/codometer-examples/examples/compiled/**", // Stand-in build output, committed so a target example has something to measure
+        "packages/ic-suite/codometer/codometer-examples/examples/corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
         // Skill scripts are invoked by the skill framework, not imported in code
         "**/.agents/skills/**",
         "**/.claude/skills/**",
@@ -159,7 +159,7 @@ const config: KnipConfig = {
     // codometer command line and the corpus exists to be counted — so knip is
     // told where the entry points really are rather than left to conclude the
     // whole package is dead.
-    "packages/codometer-examples": {
+    "packages/ic-suite/codometer/codometer-examples": {
       entry: [
         "codometer.config.ts",
         "examples/**/*.config.ts",
@@ -243,12 +243,12 @@ const config: KnipConfig = {
 
     // callidescope packages: the call-stack linting CLI and the configuration
     // it reads.
-    "packages/callidescope-cli": {
+    "packages/ic-suite/callidescope/callidescope-cli": {
       entry: ["src/main.ts", "src/repl.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/callidescope-configuration": {
+    "packages/ic-suite/callidescope/callidescope-configuration": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
@@ -262,7 +262,7 @@ const config: KnipConfig = {
     // it declares has stopped being used. Ignoring `examples/` instead would
     // leave every dependency looking unused, and `knip --fix` would delete
     // them.
-    "packages/callidescope-examples": {
+    "packages/ic-suite/callidescope/callidescope-examples": {
       entry: [
         "callidescope.workspace.config.ts",
         "examples/**/*.ts",
@@ -276,12 +276,12 @@ const config: KnipConfig = {
       project:
         "{callidescope.workspace.config.ts,examples/**/*.ts,src/**/*.ts,testing/**/*.ts}",
     },
-    "packages/callidescope-graph": {
+    "packages/ic-suite/callidescope/callidescope-graph": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/callidescope-nx": {
+    "packages/ic-suite/callidescope/callidescope-nx": {
       // An Nx plugin is loaded by name, never imported: the CommonJS shim, the
       // plugin entry it requires, and every executor Nx resolves from
       // `executors.json` are all roots nothing in this workspace references.
@@ -289,18 +289,18 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/callidescope-output": {
+    "packages/ic-suite/callidescope/callidescope-output": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
     // codometer packages: the measurement CLI and the configuration it reads
-    "packages/codometer-cli": {
+    "packages/ic-suite/codometer/codometer-cli": {
       entry: ["src/main.ts", "src/repl.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/codometer-configuration": {
+    "packages/ic-suite/codometer/codometer-configuration": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
@@ -309,7 +309,7 @@ const config: KnipConfig = {
     // codependix packages: the examples package, whose `examples/` directory
     // holds subjects to be graphed and the guides rendered from them, neither of
     // which anything imports.
-    "packages/codependix-examples": {
+    "packages/ic-suite/codependix/codependix-examples": {
       entry: ["testing/render-examples.ts", "testing/**/*.test.ts"],
       ignoreDependencies: [
         // Imported by the example NestJS containers under `examples/`, which are
@@ -322,21 +322,21 @@ const config: KnipConfig = {
     },
 
     // conformetry packages: NestJS service/command application scaffolds
-    "packages/conformetry-cli": {
+    "packages/ic-suite/conformetry/conformetry-cli": {
       entry: ["src/main.ts", "src/repl.ts"],
       project: "src/**/*.ts",
     },
-    "packages/conformetry-core": {
+    "packages/ic-suite/conformetry/conformetry-core": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/conformetry-files": {
+    "packages/ic-suite/conformetry/conformetry-files": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/conformetry-configuration": {
+    "packages/ic-suite/conformetry/conformetry-configuration": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
@@ -346,27 +346,27 @@ const config: KnipConfig = {
     // point in its own right — without saying so, knip reports the whole
     // package as unused. The fixture trees are excluded because a template
     // file is not valid TypeScript until it has been rendered.
-    "packages/conformetry-examples": {
+    "packages/ic-suite/conformetry/conformetry-examples": {
       entry: ["examples/*/conformetry.config.ts", "examples/*/*.ts"],
       ignore: ["examples/*/instances/**", "examples/*/templates/**"],
       project: "examples/**/*.ts",
     },
-    "packages/conformetry-generation": {
+    "packages/ic-suite/conformetry/conformetry-generation": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/conformetry-languages": {
+    "packages/ic-suite/conformetry/conformetry-languages": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/conformetry-nx": {
+    "packages/ic-suite/conformetry/conformetry-nx": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/conformetry-validation": {
+    "packages/ic-suite/conformetry/conformetry-validation": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",

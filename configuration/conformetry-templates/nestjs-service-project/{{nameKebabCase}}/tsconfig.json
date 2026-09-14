@@ -11,15 +11,15 @@
       "@golevelup/ts-vitest": [
         "./node_modules/@golevelup/ts-vitest/lib/index.d.ts"
       ],
-      "codebase/configuration/*": ["../../configuration/*"],
+      "codebase/configuration/*": ["{{workspaceRelativePrefix}}configuration/*"],
       "eslint-plugin-better-max-params": [
-        "../../configuration/types/eslint-plugin-better-max-params/index.d.ts"
+        "{{workspaceRelativePrefix}}configuration/types/eslint-plugin-better-max-params/index.d.ts"
       ]
     },
     "target": "esnext",
     "types": ["node", "vitest/globals"]
   },
   "exclude": ["dist", "node_modules", "output"],
-  "extends": "../../configuration/tsconfig.json",
+  "extends": "{{workspaceRelativePrefix}}configuration/tsconfig.json",
   "include": ["codometer.config.ts", "eslint.config.ts", "scripts/**/*.ts", "src/**/*.ts", "src/**/*.tsx", "testing/**/*.ts", "vitest.config.ts"]
 }

@@ -235,7 +235,7 @@ testing/                            # Shared test utilities
 ### Module Graph
 
 The modules this project defines and the imports between them are exported by
-[codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/codependix-cli)
+[codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli)
 into the `## 🕸️ Codependix` section of [README.md](README.md), alongside this
 project's Nx neighborhood and its file-level import graph. Regenerate all three
 with:

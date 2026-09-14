@@ -55,10 +55,56 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     inputs: defineInputs({
       name: z.string().describe("Project name (kebab-case)"),
       type: z
-        .enum(["applications", "packages", "tools"])
-        .describe("Project type directory (applications, packages, or tools)"),
+        .string()
+        .describe(
+          "Project type directory (applications, packages, or tools), or a deeper packages/ nesting such as packages/ic-suite/callidescope",
+        ),
+      workspaceRelativePrefix: z
+        .string()
+        .describe(
+          "Relative climb from the project root back to the workspace root, e.g. ../.. two directories down or ../../../../ four directories down",
+        ),
     }),
-    instances: [{ patterns: ["."], tags: ["framework:nest-commander"] }],
+    instances: [
+      // Conformetry instance groups match first-match-wins, the opposite of
+      // Nx's targetDefaults arrays, so the four literal, deeper-nested
+      // overrides below must precede the generic tag-based catch-all — every
+      // one of them also carries the `framework:nest-commander` tag, and
+      // listed after the catch-all they would never be reached.
+      {
+        patterns: ["packages/ic-suite/callidescope/callidescope-cli"],
+        substitutions: {
+          type: "packages/ic-suite/callidescope",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
+      {
+        patterns: ["packages/ic-suite/codependix/codependix-cli"],
+        substitutions: {
+          type: "packages/ic-suite/codependix",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
+      {
+        patterns: ["packages/ic-suite/codometer/codometer-cli"],
+        substitutions: {
+          type: "packages/ic-suite/codometer",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
+      {
+        patterns: ["packages/ic-suite/conformetry/conformetry-cli"],
+        substitutions: {
+          type: "packages/ic-suite/conformetry",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
+      {
+        patterns: ["."],
+        substitutions: { workspaceRelativePrefix: "../../" },
+        tags: ["framework:nest-commander"],
+      },
+    ],
     name: "nestjs-command-project",
     templatePath: "configuration/conformetry-templates/nestjs-command-project",
   },
@@ -79,19 +125,44 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     inputs: defineInputs({
       name: z.string().describe("Project name (kebab-case)"),
       type: z
-        .enum(["applications", "packages", "tools"])
-        .describe("Project type directory (applications, packages, or tools)"),
+        .string()
+        .describe(
+          "Project type directory (applications, packages, or tools), or a deeper packages/ nesting such as packages/ic-suite/callidescope",
+        ),
+      workspaceRelativePrefix: z
+        .string()
+        .describe(
+          "Relative climb from the project root back to the workspace root, e.g. ../.. two directories down or ../../../../ four directories down",
+        ),
     }),
     instances: [
       {
         patterns: [
-          "packages/callidescope-configuration",
-          "packages/callidescope-nx",
-          "packages/callidescope-graph",
-          "packages/callidescope-output",
-          "packages/codometer-configuration",
-          "packages/conformetry-{configuration,core,files,generation,languages,validation,nx}",
+          "packages/ic-suite/callidescope/callidescope-configuration",
+          "packages/ic-suite/callidescope/callidescope-nx",
+          "packages/ic-suite/callidescope/callidescope-graph",
+          "packages/ic-suite/callidescope/callidescope-output",
         ],
+        substitutions: {
+          type: "packages/ic-suite/callidescope",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
+      {
+        patterns: ["packages/ic-suite/codometer/codometer-configuration"],
+        substitutions: {
+          type: "packages/ic-suite/codometer",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
+      {
+        patterns: [
+          "packages/ic-suite/conformetry/conformetry-{configuration,core,files,generation,languages,validation,nx}",
+        ],
+        substitutions: {
+          type: "packages/ic-suite/conformetry",
+          workspaceRelativePrefix: "../../../../",
+        },
       },
     ],
     name: "nestjs-service-project",

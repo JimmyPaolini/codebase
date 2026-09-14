@@ -33,8 +33,8 @@ yarn.lock
 # 👔 Conformetry example fixtures
 # Templates hold mustache where identifiers belong; instances are drifted on
 # purpose. Each example's own conformetry.config.ts is formatted normally.
-**/packages/conformetry-examples/examples/*/instances/**
-**/packages/conformetry-examples/examples/*/templates/**
+**/packages/ic-suite/conformetry/conformetry-examples/examples/*/instances/**
+**/packages/ic-suite/conformetry/conformetry-examples/examples/*/templates/**
 
 # 🧪 Coverage
 **/coverage
@@ -141,7 +141,7 @@ projectStructure.cache.json
 # Callidescope writes this report and then checks the file back against what a
 # fresh run would produce, byte for byte. Reformatting it reports it stale the
 # moment a format run touches it.
-**/packages/callidescope-examples/output/**
+**/packages/ic-suite/callidescope/callidescope-examples/output/**
 
 # 🕸️ Every dependency graph codependix writes as JSON. It renders them with
 # `JSON.stringify(…, 2)`, which puts one array element per line; oxfmt collapses

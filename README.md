@@ -55,56 +55,56 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 - <details>
   <summary>**🔭 callidescope** - Call stack tracing toolchain that follows control flow through injected dependencies and reports where a stack got too deep</summary>
 
-  - **[callidescope-agents](packages/callidescope-agents)** - Agent skills for the callidescope toolchain, published and installed back from the lockfile like any other vendored skill
-  - **[callidescope-cli](packages/callidescope-cli)** - Command-line host that builds the call graph with the TypeScript compiler API, resolves NestJS injected dependencies, and reports the deepest stack below every entry point
-  - **[callidescope-configuration](packages/callidescope-configuration)** - Reads `callidescope.config.ts` for entry-point rules, depth and breadth limits, exclusion globs, and output destinations
-  - **[callidescope-examples](packages/callidescope-examples)** - A small codebase built to be traced, carrying one worked example per rule, finding, and output the toolchain has
-  - **[callidescope-graph](packages/callidescope-graph)** - Builds the call graph from traced TypeScript source and measures its depth and breadth
-  - **[callidescope-nx](packages/callidescope-nx)** - Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets that follow the Nx dependency graph, keeping every Nx dependency out of the packages that trace
-  - **[callidescope-output](packages/callidescope-output)** - Renders call-graph findings into markdown, mermaid, and JSON output formats
+  - **[callidescope-agents](packages/ic-suite/callidescope/callidescope-agents)** - Agent skills for the callidescope toolchain, published and installed back from the lockfile like any other vendored skill
+  - **[callidescope-cli](packages/ic-suite/callidescope/callidescope-cli)** - Command-line host that builds the call graph with the TypeScript compiler API, resolves NestJS injected dependencies, and reports the deepest stack below every entry point
+  - **[callidescope-configuration](packages/ic-suite/callidescope/callidescope-configuration)** - Reads `callidescope.config.ts` for entry-point rules, depth and breadth limits, exclusion globs, and output destinations
+  - **[callidescope-examples](packages/ic-suite/callidescope/callidescope-examples)** - A small codebase built to be traced, carrying one worked example per rule, finding, and output the toolchain has
+  - **[callidescope-graph](packages/ic-suite/callidescope/callidescope-graph)** - Builds the call graph from traced TypeScript source and measures its depth and breadth
+  - **[callidescope-nx](packages/ic-suite/callidescope/callidescope-nx)** - Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets that follow the Nx dependency graph, keeping every Nx dependency out of the packages that trace
+  - **[callidescope-output](packages/ic-suite/callidescope/callidescope-output)** - Renders call-graph findings into markdown, mermaid, and JSON output formats
 
   </details>
 - <details>
   <summary>**🕸️ codependix** - Dependency graph export toolchain that reads what each project depends on, renders it as JSON and Markdown diagrams, and gates the rules those graphs are judged against</summary>
 
-  - **[codependix-agents](packages/codependix-agents)** - Agent skills for the codependix toolchain, installable by any workspace that uses codependix
-  - **[codependix-boundaries](packages/codependix-boundaries)** - Builds each level's graph for a workspace, judges it against the declared rules, and reports the edges and cycles that break them
-  - **[codependix-cli](packages/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks, and gates the rules over them
-  - **[codependix-configuration](packages/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules
-  - **[codependix-examples](packages/codependix-examples)** - Sixteen subjects built to be graphed, each carrying the guide codependix renders from it
-  - **[codependix-imports](packages/codependix-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
-  - **[codependix-nestjs](packages/codependix-nestjs)** - Explores a NestJS project's container and builds its module graph
-  - **[codependix-nx](packages/codependix-nx)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
+  - **[codependix-agents](packages/ic-suite/codependix/codependix-agents)** - Agent skills for the codependix toolchain, installable by any workspace that uses codependix
+  - **[codependix-boundaries](packages/ic-suite/codependix/codependix-boundaries)** - Builds each level's graph for a workspace, judges it against the declared rules, and reports the edges and cycles that break them
+  - **[codependix-cli](packages/ic-suite/codependix/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks, and gates the rules over them
+  - **[codependix-configuration](packages/ic-suite/codependix/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules
+  - **[codependix-examples](packages/ic-suite/codependix/codependix-examples)** - Sixteen subjects built to be graphed, each carrying the guide codependix renders from it
+  - **[codependix-imports](packages/ic-suite/codependix/codependix-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
+  - **[codependix-nestjs](packages/ic-suite/codependix/codependix-nestjs)** - Explores a NestJS project's container and builds its module graph
+  - **[codependix-nx](packages/ic-suite/codependix/codependix-nx)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
 
   </details>
 - <details>
   <summary>**⏲️ codometer** - Repository measurement toolchain that counts a codebase and reports what it found</summary>
 
-  - **[codometer-agents](packages/codometer-agents)** - Agent skills for the codometer toolchain, published and installed back from the lockfile like any other vendored skill
-  - **[codometer-changes](packages/codometer-changes)** - Diffs codometer reports against a baseline snapshot
-  - **[codometer-cli](packages/codometer-cli)** - Command-line host that measures TypeScript, JavaScript, Python, JSON, markdown, and Jupyter notebooks, then writes the badge block in this README, a JSON report, or both
-  - **[codometer-configuration](packages/codometer-configuration)** - Reads `codometer.config.ts` for exclusion globs, output destinations and their render/write callbacks, and the Python interpreter
-  - **[codometer-customization](packages/codometer-customization)** - Evaluates codometer's configured custom counters
-  - **[codometer-discovery](packages/codometer-discovery)** - Glob matching and gitignore-aware file walking, plus resolving configured measurement targets to file sets
-  - **[codometer-examples](packages/codometer-examples)** - A sample corpus with known contents and one runnable example per thing codometer does, with tests that assert every number the guides quote
-  - **[codometer-languages](packages/codometer-languages)** - Every input language analyzer codometer measures, behind one `analyze()` call
-  - **[codometer-output](packages/codometer-output)** - Every codometer output format - JSON reports, README badges, and the pull request change report
-  - **[codometer-size](packages/codometer-size)** - Compresses a target's matched files and measures their size
+  - **[codometer-agents](packages/ic-suite/codometer/codometer-agents)** - Agent skills for the codometer toolchain, published and installed back from the lockfile like any other vendored skill
+  - **[codometer-changes](packages/ic-suite/codometer/codometer-changes)** - Diffs codometer reports against a baseline snapshot
+  - **[codometer-cli](packages/ic-suite/codometer/codometer-cli)** - Command-line host that measures TypeScript, JavaScript, Python, JSON, markdown, and Jupyter notebooks, then writes the badge block in this README, a JSON report, or both
+  - **[codometer-configuration](packages/ic-suite/codometer/codometer-configuration)** - Reads `codometer.config.ts` for exclusion globs, output destinations and their render/write callbacks, and the Python interpreter
+  - **[codometer-customization](packages/ic-suite/codometer/codometer-customization)** - Evaluates codometer's configured custom counters
+  - **[codometer-discovery](packages/ic-suite/codometer/codometer-discovery)** - Glob matching and gitignore-aware file walking, plus resolving configured measurement targets to file sets
+  - **[codometer-examples](packages/ic-suite/codometer/codometer-examples)** - A sample corpus with known contents and one runnable example per thing codometer does, with tests that assert every number the guides quote
+  - **[codometer-languages](packages/ic-suite/codometer/codometer-languages)** - Every input language analyzer codometer measures, behind one `analyze()` call
+  - **[codometer-output](packages/ic-suite/codometer/codometer-output)** - Every codometer output format - JSON reports, README badges, and the pull request change report
+  - **[codometer-size](packages/ic-suite/codometer/codometer-size)** - Compresses a target's matched files and measures their size
 
   </details>
 - <details>
   <summary>**👔 conformetry** - Template-driven code generation and conformance validation toolchain</summary>
 
-  - **[conformetry-agents](packages/conformetry-agents)** - Agent skills for the conformetry toolchain, published and installed back from the lockfile like any other vendored skill
-  - **[conformetry-cli](packages/conformetry-cli)** - Command-line host that expands globs, prompts for inputs, and runs generation and validation
-  - **[conformetry-configuration](packages/conformetry-configuration)** - Configuration loading, template discovery, and generator input resolution
-  - **[conformetry-core](packages/conformetry-core)** - Shared error types, language validator contracts, and finding reporting
-  - **[conformetry-examples](packages/conformetry-examples)** - Eleven runnable examples of the toolchain, each with its own configuration, template, instances, and guide, executed by CI so the guides cannot rot
-  - **[conformetry-files](packages/conformetry-files)** - Checks that every file a template declares exists, whatever its extension
-  - **[conformetry-generation](packages/conformetry-generation)** - Mustache template rendering and scaffold file generation
-  - **[conformetry-languages](packages/conformetry-languages)** - Every language conformetry compares files with, as modules of one package, plus the resolution that picks them and the text fallback
-  - **[conformetry-nx](packages/conformetry-nx)** - Nx plugin host with generators, executors, and the emitted-plugin bootstrap
-  - **[conformetry-validation](packages/conformetry-validation)** - Validation orchestration, language routing, and finding deduplication
+  - **[conformetry-agents](packages/ic-suite/conformetry/conformetry-agents)** - Agent skills for the conformetry toolchain, published and installed back from the lockfile like any other vendored skill
+  - **[conformetry-cli](packages/ic-suite/conformetry/conformetry-cli)** - Command-line host that expands globs, prompts for inputs, and runs generation and validation
+  - **[conformetry-configuration](packages/ic-suite/conformetry/conformetry-configuration)** - Configuration loading, template discovery, and generator input resolution
+  - **[conformetry-core](packages/ic-suite/conformetry/conformetry-core)** - Shared error types, language validator contracts, and finding reporting
+  - **[conformetry-examples](packages/ic-suite/conformetry/conformetry-examples)** - Eleven runnable examples of the toolchain, each with its own configuration, template, instances, and guide, executed by CI so the guides cannot rot
+  - **[conformetry-files](packages/ic-suite/conformetry/conformetry-files)** - Checks that every file a template declares exists, whatever its extension
+  - **[conformetry-generation](packages/ic-suite/conformetry/conformetry-generation)** - Mustache template rendering and scaffold file generation
+  - **[conformetry-languages](packages/ic-suite/conformetry/conformetry-languages)** - Every language conformetry compares files with, as modules of one package, plus the resolution that picks them and the text fallback
+  - **[conformetry-nx](packages/ic-suite/conformetry/conformetry-nx)** - Nx plugin host with generators, executors, and the emitted-plugin bootstrap
+  - **[conformetry-validation](packages/ic-suite/conformetry/conformetry-validation)** - Validation orchestration, language routing, and finding deduplication
 
   </details>
 - **[infrastructure](infrastructure)** - Helm charts, Terraform, Kubernetes infrastructure
@@ -175,7 +175,7 @@ Template-driven code generation and conformance validation, templates synced fro
 
 ## 🕸️ Codependix
 
-The workspace's dependency graph, exported by [codependix](packages/codependix-cli), regenerated by `nx run codebase:codependix:write`.
+The workspace's dependency graph, exported by [codependix](packages/ic-suite/codependix/codependix-cli), regenerated by `nx run codebase:codependix:write`.
 
 <!-- codependix:start name="codependix-workspace" -->
 ```mermaid
@@ -323,7 +323,7 @@ _Dashed edges are dependencies Nx inferred from configuration rather than from c
 
 ## ⏲️ Codometer
 
-Repository statistics measured by [codometer](packages/codometer-cli), regenerated by `nx run codebase:codometer`.
+Repository statistics measured by [codometer](packages/ic-suite/codometer/codometer-cli), regenerated by `nx run codebase:codometer`.
 
 ### Repository
 
@@ -537,7 +537,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ## 🔭 Callidescope
 
-The workspace's call graph, traced by [callidescope](packages/callidescope-cli), regenerated by `nx run codebase:callidescope:write`. Projects are listed tightest-first: the rows at the top are the ones a ratchet cannot descend past.
+The workspace's call graph, traced by [callidescope](packages/ic-suite/callidescope/callidescope-cli), regenerated by `nx run codebase:callidescope:write`. Projects are listed tightest-first: the rows at the top are the ones a ratchet cannot descend past.
 
 | Measure | Value |
 | --- | --- |
@@ -553,42 +553,42 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 
 | Project | Deepest | Limit | Headroom | Widest |
 | --- | --- | --- | --- | --- |
-| `packages/conformetry-languages` | 13 | 4 | -9 | 11 |
+| `packages/ic-suite/conformetry/conformetry-languages` | 13 | 4 | -9 | 11 |
 | `applications/caelundas` | 16 | 16 | 0 | 12 |
 | `applications/lexico` | 9 | 9 | 0 | 9 |
 | `applications/lexico-ingestion` | 17 | 17 | 0 | 8 |
 | `applications/meanderaw` | 16 | 16 | 0 | 14 |
-| `packages/callidescope-cli` | 15 | 15 | 0 | 9 |
-| `packages/callidescope-nx` | 17 | 17 | 0 | 7 |
-| `packages/codependix-boundaries` | 12 | 12 | 0 | 5 |
-| `packages/codependix-cli` | 15 | 15 | 0 | 7 |
-| `packages/conformetry-cli` | 14 | 14 | 0 | 9 |
-| `packages/conformetry-nx` | 14 | 14 | 0 | 9 |
+| `packages/ic-suite/callidescope/callidescope-cli` | 15 | 15 | 0 | 9 |
+| `packages/ic-suite/callidescope/callidescope-nx` | 17 | 17 | 0 | 7 |
+| `packages/ic-suite/codependix/codependix-boundaries` | 12 | 12 | 0 | 5 |
+| `packages/ic-suite/codependix/codependix-cli` | 15 | 15 | 0 | 7 |
+| `packages/ic-suite/conformetry/conformetry-cli` | 14 | 14 | 0 | 9 |
+| `packages/ic-suite/conformetry/conformetry-nx` | 14 | 14 | 0 | 9 |
 | `packages/lexico-components` | 3 | 3 | 0 | 7 |
 | `packages/lexico-entities` | 3 | 3 | 0 | 3 |
 | `packages/logger` | 4 | 4 | 0 | 2 |
 | `tools/synchronization` | 10 | 10 | 0 | 9 |
 | `tools/validation` | 8 | 8 | 0 | 9 |
-| `packages/callidescope-configuration` | 5 | 6 | 1 | 7 |
-| `packages/codometer-cli` | 15 | 16 | 1 | 10 |
-| `packages/codometer-size` | 0 | 3 | 3 | 2 |
-| `packages/conformetry-configuration` | 10 | 13 | 3 | 5 |
-| `packages/codependix-configuration` | 2 | 6 | 4 | 5 |
-| `packages/codependix-nx` | 0 | 4 | 4 | 8 |
-| `packages/codependix-nestjs` | 0 | 5 | 5 | 5 |
-| `packages/codometer-configuration` | 3 | 8 | 5 | 4 |
-| `packages/codometer-customization` | 0 | 5 | 5 | 2 |
-| `packages/conformetry-generation` | 2 | 7 | 5 | 4 |
-| `packages/callidescope-graph` | 5 | 11 | 6 | 8 |
-| `packages/callidescope-output` | 4 | 10 | 6 | 7 |
-| `packages/codometer-languages` | 5 | 11 | 6 | 12 |
-| `packages/conformetry-core` | 0 | 6 | 6 | 4 |
-| `packages/codometer-discovery` | 0 | 7 | 7 | 7 |
-| `packages/codometer-output` | 4 | 11 | 7 | 16 |
-| `packages/codependix-imports` | 0 | 8 | 8 | 8 |
-| `packages/conformetry-files` | 0 | 9 | 9 | 3 |
-| `packages/codometer-changes` | 0 | 10 | 10 | 7 |
-| `packages/conformetry-validation` | 0 | 12 | 12 | 10 |
+| `packages/ic-suite/callidescope/callidescope-configuration` | 5 | 6 | 1 | 7 |
+| `packages/ic-suite/codometer/codometer-cli` | 15 | 16 | 1 | 10 |
+| `packages/ic-suite/codometer/codometer-size` | 0 | 3 | 3 | 2 |
+| `packages/ic-suite/conformetry/conformetry-configuration` | 10 | 13 | 3 | 5 |
+| `packages/ic-suite/codependix/codependix-configuration` | 2 | 6 | 4 | 5 |
+| `packages/ic-suite/codependix/codependix-nx` | 0 | 4 | 4 | 8 |
+| `packages/ic-suite/codependix/codependix-nestjs` | 0 | 5 | 5 | 5 |
+| `packages/ic-suite/codometer/codometer-configuration` | 3 | 8 | 5 | 4 |
+| `packages/ic-suite/codometer/codometer-customization` | 0 | 5 | 5 | 2 |
+| `packages/ic-suite/conformetry/conformetry-generation` | 2 | 7 | 5 | 4 |
+| `packages/ic-suite/callidescope/callidescope-graph` | 5 | 11 | 6 | 8 |
+| `packages/ic-suite/callidescope/callidescope-output` | 4 | 10 | 6 | 7 |
+| `packages/ic-suite/codometer/codometer-languages` | 5 | 11 | 6 | 12 |
+| `packages/ic-suite/conformetry/conformetry-core` | 0 | 6 | 6 | 4 |
+| `packages/ic-suite/codometer/codometer-discovery` | 0 | 7 | 7 | 7 |
+| `packages/ic-suite/codometer/codometer-output` | 4 | 11 | 7 | 16 |
+| `packages/ic-suite/codependix/codependix-imports` | 0 | 8 | 8 | 8 |
+| `packages/ic-suite/conformetry/conformetry-files` | 0 | 9 | 9 | 3 |
+| `packages/ic-suite/codometer/codometer-changes` | 0 | 10 | 10 | 7 |
+| `packages/ic-suite/conformetry/conformetry-validation` | 0 | 12 | 12 | 10 |
 | `configuration` | 3 | 17 | 14 | 2 |
 
 ### Depth headroom
@@ -607,78 +607,78 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 **1. `JupyterService.validateDocument`** — depth 13 · orphan-root
 
 ```text
-🚀 JupyterService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-languages/src/modules/jupyter/jupyter.service.ts:153]
+🚀 JupyterService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:153]
    ↳ Reports every notebook difference: envelope, missing cells, cell contents.
-  └─> JupyterService.map(…)(…): { error: { differenceType: "code"; expected: string; fix: string; language: "python"; message: string; weight: number; }; weight: number; } [packages/conformetry-languages/src/modules/jupyter/jupyter.service.ts:173]
-    └─> JupyterService.weighMissingCell(args: { cell: PairedCells; document: PreparedValidationDocument; }): number [packages/conformetry-languages/src/modules/jupyter/jupyter.service.ts:140]
+  └─> JupyterService.map(…)(…): { error: { differenceType: "code"; expected: string; fix: string; language: "python"; message: string; weight: number; }; weight: number; } [packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:173]
+    └─> JupyterService.weighMissingCell(args: { cell: PairedCells; document: PreparedValidationDocument; }): number [packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:140]
        ↳ Weighs a cell the notebook does not have.
-      └─> JupyterService.validateCell(…): DocumentValidationResult [packages/conformetry-languages/src/modules/jupyter/jupyter.service.ts:90]
+      └─> JupyterService.validateCell(…): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:90]
          ↳ Validates one paired cell with the validator matching its kind.
-        └─> MarkdownService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-languages/src/modules/markdown/markdown.service.ts:48]
+        └─> MarkdownService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown.service.ts:48]
            ↳ Reports every markdown structure the template requires and the file lacks.
-          └─> MarkdownTreeService.compareContainer(args: CompareNodeArguments): CompareNodeResult (cycle) [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:64]
+          └─> MarkdownTreeService.compareContainer(args: CompareNodeArguments): CompareNodeResult (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:64]
              ↳ Matches a container node, then descends into it.
-            └─> MarkdownTreeService.map(…)(…): { differences: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:90]
-              └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:146]
+            └─> MarkdownTreeService.map(…)(…): { differences: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:90]
+              └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:146]
                  ↳ Compares one level of two trees, descending into containers.
-                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:114]
+                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:114]
                    ↳ Matches a leaf node on its own identity, without descending.
-                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:134]
+                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:134]
                      ↳ Finds every instance sibling satisfying the template node.
-                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:135]
-                      └─> MarkdownNodesService.matches(args: { instanceNode: MarkdownNode; templateNode: MarkdownNode; }): boolean [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:140]
+                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:135]
+                      └─> MarkdownNodesService.matches(args: { instanceNode: MarkdownNode; templateNode: MarkdownNode; }): boolean [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:140]
                          ↳ Returns whether an instance node satisfies a template node.
-                        └─> MarkdownNodesService.readText(node: MarkdownNode): string [packages/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:163]
+                        └─> MarkdownNodesService.readText(node: MarkdownNode): string [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:163]
                            ↳ Reads a node's rendered plain text.
 ```
 
 **2. `JsonService.validateDocument`** — depth 12 · orphan-root
 
 ```text
-🚀 JsonService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-languages/src/modules/json/json.service.ts:39]
+🚀 JsonService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json.service.ts:39]
    ↳ Reports every key or value the template requires and the instance lacks.
-  └─> JsonComparisonService.compareArrayItem(…): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:79]
+  └─> JsonComparisonService.compareArrayItem(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:79]
      ↳ Matches one required array entry against the instance array.
-    └─> JsonComparisonService.map(…)(instanceItem: JsonValue, index: number): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:122]
-      └─> JsonComparisonService.compare(args: CompareJsonArguments): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:268]
+    └─> JsonComparisonService.map(…)(instanceItem: JsonValue, index: number): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:122]
+      └─> JsonComparisonService.compare(args: CompareJsonArguments): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:268]
          ↳ Compares a template value against an instance value, returning every way the instance fails to contain what the…
-        └─> JsonComparisonService.compareArrays(…): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:141]
+        └─> JsonComparisonService.compareArrays(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:141]
            ↳ Compares two arrays.
-          └─> JsonComparisonService.map(…)(templateItem: JsonValue): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:148]
-            └─> JsonComparisonService.compareObjects(…): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:155]
+          └─> JsonComparisonService.map(…)(templateItem: JsonValue): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:148]
+            └─> JsonComparisonService.compareObjects(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:155]
                ↳ Compares two objects, requiring every template key to be present.
-              └─> JsonComparisonService.map(…)([key, templateValue]: [string, JsonValue]): JsonComparison (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:164]
-                └─> JsonComparisonService.countNodes(value: JsonValue): number (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:207]
+              └─> JsonComparisonService.map(…)([key, templateValue]: [string, JsonValue]): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:164]
+                └─> JsonComparisonService.countNodes(value: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:207]
                    ↳ Counts a JSON value and every value nested inside it.
-                  └─> JsonComparisonService.reduce(…)(total: number, item: JsonValue): number (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:209]
-                    └─> JsonComparisonService.reduce(…)(total: number, nested: JsonValue): number (cycle) [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:215]
-                      └─> JsonComparisonService.isJsonObject(value: JsonValue): value is Record<string, JsonValue> [packages/conformetry-languages/src/modules/json/json-comparison.service.ts:235]
+                  └─> JsonComparisonService.reduce(…)(total: number, item: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:209]
+                    └─> JsonComparisonService.reduce(…)(total: number, nested: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:215]
+                      └─> JsonComparisonService.isJsonObject(value: JsonValue): value is Record<string, JsonValue> [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:235]
                          ↳ Returns whether a value is a plain JSON object.
 ```
 
 **3. `TypescriptService.validateDocument`** — depth 12 · orphan-root
 
 ```text
-🚀 TypescriptService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-languages/src/modules/typescript/typescript.service.ts:164]
+🚀 TypescriptService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript.service.ts:164]
    ↳ Reports every declaration and comment the template requires.
-  └─> TypescriptService.validateStructure(…): DocumentValidationResult [packages/conformetry-languages/src/modules/typescript/typescript.service.ts:107]
+  └─> TypescriptService.validateStructure(…): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript.service.ts:107]
      ↳ Compares the syntax trees and describes each missing declaration.
-    └─> TypescriptTreeService.compareBestCandidate(args: { candidates: Node[]; templateChild: Node; }): TreeComparison (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:67]
+    └─> TypescriptTreeService.compareBestCandidate(args: { candidates: Node[]; templateChild: Node; }): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:67]
        ↳ Descends into whichever candidate explains the template best.
-      └─> TypescriptTreeService.map(…)(candidate: Node): TreeComparison (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:72]
-        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TreeComparison (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:126]
+      └─> TypescriptTreeService.map(…)(candidate: Node): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:72]
+        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:126]
            ↳ Compares one level of two trees, descending into every match.
-          └─> TypescriptTreeService.map(…)(templateChild: Node): TreeComparison (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:133]
-            └─> TypescriptTreeService.compareChild(…): TreeComparison (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:87]
+          └─> TypescriptTreeService.map(…)(templateChild: Node): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:133]
+            └─> TypescriptTreeService.compareChild(…): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:87]
                ↳ Matches one template child against the instance's children.
-              └─> TypescriptTreeService.buildError(…): TypescriptComparisonError [packages/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:42]
+              └─> TypescriptTreeService.buildError(…): TypescriptComparisonError [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:42]
                  ↳ Describes a template node with no instance counterpart.
-                └─> TypescriptNodesService.countSubtree(node: Node): number (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:176]
+                └─> TypescriptNodesService.countSubtree(node: Node): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:176]
                    ↳ Counts a node and everything beneath it.
-                  └─> TypescriptNodesService.reduce(…)(total: number, child: Node): number (cycle) [packages/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:177]
-                    └─> TypescriptNodesService.readChildren(node: Node): Node[] [packages/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:183]
+                  └─> TypescriptNodesService.reduce(…)(total: number, child: Node): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:177]
+                    └─> TypescriptNodesService.readChildren(node: Node): Node[] [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:183]
                        ↳ Reads a node's direct children, skipping the end-of-file token.
-                      └─> TypescriptNodesService.forEachChild(…)(childNode: Node): undefined [packages/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:186]
+                      └─> TypescriptNodesService.forEachChild(…)(childNode: Node): undefined [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:186]
 ```
 
 <details>
@@ -687,16 +687,16 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 **4. `PythonService.validateDocument`** — depth 6 · orphan-root
 
 ```text
-🚀 PythonService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-languages/src/modules/python/python.service.ts:38]
+🚀 PythonService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python.service.ts:38]
    ↳ Reports every declaration and comment the template requires.
-  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/conformetry-languages/src/modules/python/python-bridge.service.ts:160]
+  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:160]
      ↳ Compares one Python source against its rendered template.
-    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryDifference [packages/conformetry-languages/src/modules/python/python-bridge.service.ts:185]
-      └─> PythonBridgeService.toConformetryDifference(error: PythonBridgeError): ConformetryDifference [packages/conformetry-languages/src/modules/python/python-bridge.service.ts:132]
+    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryDifference [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:185]
+      └─> PythonBridgeService.toConformetryDifference(error: PythonBridgeError): ConformetryDifference [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:132]
          ↳ Maps one snake_case bridge error onto the shared error shape.
-        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryDifference> [packages/conformetry-languages/src/modules/python/python-bridge.service.ts:121]
+        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryDifference> [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:121]
            ↳ Reads the optional expected and actual values.
-          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/conformetry-languages/src/modules/python/python-bridge.service.ts:111]
+          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:111]
              ↳ Narrows an untrusted string field from the bridge payload.
 ```
 

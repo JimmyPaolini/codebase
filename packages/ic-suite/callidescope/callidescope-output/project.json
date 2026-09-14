@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "name": "callidescope-output",
+  "projectType": "library",
+  "sourceRoot": "packages/ic-suite/callidescope/callidescope-output",
+  "tags": [
+    "framework:nestjs",
+    "generator:nestjs-service-project",
+    "language:typescript",
+    "name:callidescope-output",
+    "type:package"
+  ],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/ic-suite/callidescope/callidescope-output",
+            "output": "."
+          }
+        ],
+        "generatePackageJson": false,
+        "main": "packages/ic-suite/callidescope/callidescope-output/src/index.ts",
+        "outputPath": "packages/ic-suite/callidescope/callidescope-output/dist",
+        "tsConfig": "packages/ic-suite/callidescope/callidescope-output/tsconfig.build.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "codometer": {},
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "make-projects": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

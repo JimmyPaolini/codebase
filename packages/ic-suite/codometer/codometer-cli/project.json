@@ -1,0 +1,58 @@
+{
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "name": "codometer-cli",
+  "projectType": "library",
+  "sourceRoot": "packages/ic-suite/codometer/codometer-cli",
+  "tags": [
+    "framework:nest-commander",
+    "framework:nestjs",
+    "generator:nestjs-command-project",
+    "language:typescript",
+    "name:codometer-cli",
+    "type:package"
+  ],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/ic-suite/codometer/codometer-cli",
+            "output": "."
+          }
+        ],
+        "generatePackageJson": false,
+        "main": "packages/ic-suite/codometer/codometer-cli/src/main.ts",
+        "outputPath": "packages/ic-suite/codometer/codometer-cli/dist",
+        "tsConfig": "packages/ic-suite/codometer/codometer-cli/tsconfig.build.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "codometer": {},
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "make-projects": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "start": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register packages/ic-suite/codometer/codometer-cli/src/main.ts",
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "SWC_NODE_PROJECT": "packages/ic-suite/codometer/codometer-cli/tsconfig.json"
+        }
+      }
+    },
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}
