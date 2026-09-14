@@ -9,6 +9,18 @@ import type {
 import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types";
 
 /**
+ * What `DrawCodeService.draw` needs to decode, render, and persist one
+ * meander: `--rows`, `--columns`, and `--code` all present together, which
+ * `DrawCommand` checks before narrowing {@link DrawCommandOptions}'s
+ * optional fields into this.
+ */
+export interface CodeDrawingOptions {
+  readonly code: string;
+  readonly columns: number;
+  readonly rows: number;
+}
+
+/**
  * Parsed `draw` options, in the shape nest-commander leaves them.
  *
  * Everything but `outputDirectory` and `repeatCount` is optional, and that is
@@ -32,6 +44,8 @@ import type { MosaicBuildableSubFamily } from "../mosaic-tile/mosaic-tile.types"
  */
 export interface DrawCommandOptions {
   branches?: number;
+  code?: string;
+  columns?: number;
   direction?: RungDirection;
   flip?: SerpentineFlip;
   modifier?: Modifier["name"];

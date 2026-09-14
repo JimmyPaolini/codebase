@@ -28,6 +28,7 @@ import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine
 import { OutputPathService } from "../svg-rendering/output-path.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
+import { DrawCodeService } from "./draw-code.service";
 import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
@@ -106,6 +107,10 @@ describe(DrawCommand, () => {
       providers: [
         DrawCommand,
         {
+          provide: DrawCodeService,
+          useValue: createMock<DrawCodeService>(),
+        },
+        {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
         },
@@ -182,6 +187,10 @@ describe(DrawCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         DrawCommand,
+        {
+          provide: DrawCodeService,
+          useValue: createMock<DrawCodeService>(),
+        },
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
@@ -430,6 +439,10 @@ describe(DrawCommand, () => {
       const module = await Test.createTestingModule({
         providers: [
           DrawCommand,
+          {
+            provide: DrawCodeService,
+            useValue: createMock<DrawCodeService>(),
+          },
           {
             provide: LoggerService,
             useValue: createMock<LoggerService>(),
@@ -729,6 +742,10 @@ describe(DrawCommand, () => {
           DrawNegativePermutationsService,
           DrawPermutationsService,
           DrawRenderingService,
+          {
+            provide: DrawCodeService,
+            useValue: createMock<DrawCodeService>(),
+          },
           {
             provide: LoggerService,
             useValue: createMock<LoggerService>(),

@@ -13,12 +13,13 @@ export default mergeConfig(
       /**
        * A minute per `beforeAll` too, for {@link testTimeout}'s reason.
        *
-       * `testTimeout` does not reach a hook, and the address-table sweep does
-       * its work in one: a single `beforeAll` boots the container and
-       * addresses all 9,863 committed drawings so that the suite's assertions
-       * share one reading of the corpus. That takes eight to ten seconds
-       * beside seven other workers, which the shared ten-second default turns
-       * into a flake that skips the whole suite rather than failing it.
+       * `testTimeout` does not reach a hook, and several of this project's
+       * integration suites do their heaviest work in one: a single
+       * `beforeAll` boots the real container and reads or addresses the
+       * committed corpus so the suite's assertions share one reading of it.
+       * That takes several seconds beside seven other workers, which the
+       * shared ten-second default turns into a flake that skips the whole
+       * suite rather than failing it.
        */
       hookTimeout: 60_000,
       /**

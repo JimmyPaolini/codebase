@@ -117,6 +117,21 @@ export class CollidingPathsError extends Error {
 }
 
 /**
+ * Thrown when `--code` is given without both `--rows` and `--columns`.
+ *
+ * `--code` alone is what selects this mode over the sweep and the
+ * `--type`-driven single drawing, so it cannot be `required` alongside the
+ * other two the way `--type` and `--rows` gate each other — the pair still
+ * has to be checked once `--code` says which mode is meant.
+ */
+export class IncompleteCodeDrawingError extends Error {
+  constructor() {
+    super("drawing one meander by code needs both --rows and --columns");
+    this.name = "IncompleteCodeDrawingError";
+  }
+}
+
+/**
  * Thrown when only one of `--type` and `--rows` is given.
  *
  * Neither flag can be `required`, because passing neither is how the whole
