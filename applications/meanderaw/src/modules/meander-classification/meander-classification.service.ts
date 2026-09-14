@@ -1,17 +1,18 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { STRUCTURAL_MINIMUM_ROWS } from "../meander-generation/meander-generation.constants";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+
+import { STRUCTURAL_MINIMUM_ROWS } from "./meander-classification.constants";
 
 import type { MeanderCharacteristics } from "../meander-characteristics/meander-characteristics.types";
 import type { MeanderPointGrid } from "../meander-decoding/meander-decoding.types";
-import type { MeanderType } from "../meander-generation/meander-generation.types";
 import type { MosaicSubFamily } from "../mosaic-tile/mosaic-tile.types";
 import type {
   MeanderClassification,
   MeanderFamilyRule,
   MeanderShape,
   MeanderStructure,
+  MeanderType,
 } from "./meander-classification.types";
 
 /**

@@ -1,7 +1,6 @@
 // 🏷️ Types
 
 import type { MeanderCharacteristics } from "../meander-characteristics/meander-characteristics.types";
-import type { MeanderType } from "../meander-generation/meander-generation.types";
 import type { MosaicSubFamily } from "../mosaic-tile/mosaic-tile.types";
 
 /** What one tile's structure earns: the family it belongs to and the named region of the space it sits in, each `undefined` where it earns none. */
@@ -45,3 +44,26 @@ export interface MeanderStructure extends MeanderShape {
   readonly characteristics: MeanderCharacteristics;
   readonly subFamily?: MosaicSubFamily | undefined;
 }
+
+/**
+ * A meander's family.
+ *
+ * It lives here, beside the rules that decide it, because deciding it is now
+ * all a family is. The ten names were once the dispatch key of nine
+ * per-family procedural motif services plus `mosaic`'s enumerated tiles, and
+ * they lived in the module that did that dispatching; with those retired, a
+ * family is a combination of Characteristics a meander's own structure
+ * either satisfies or does not — see {@link MeanderFamilyRule} — and a
+ * meander that satisfies none carries no family at all.
+ */
+export type MeanderType =
+  | "boxes"
+  | "branch"
+  | "chain"
+  | "cross"
+  | "mosaic"
+  | "negative"
+  | "parallel"
+  | "snake"
+  | "swirl"
+  | "whirl";

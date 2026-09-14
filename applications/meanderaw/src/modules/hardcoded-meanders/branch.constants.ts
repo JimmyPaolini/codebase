@@ -3,14 +3,12 @@
 import type { HardcodedMeanderEntry } from "./hardcoded-meanders.types";
 
 /**
- * Part of `branch`'s committed corpus, extracted once by
- * `scripts/generate-hardcoded-corpus.ts` from `output/branch/**\/*.svg`
- * through `LatticeIdentificationService.identifyDocument` — see that
- * script's own doc comment for the extraction this file's contents were
- * generated from, and `HardcodedMeandersService` for how it is ingested.
- * Split across several files the same way, at
- * `MAXIMUM_ENTRIES_PER_CHUNK`, to stay under the 512-line-per-file cap
- * once oxfmt has broken every long Code onto its own lines.
+ * Part of `branch`'s committed corpus: the meanders of that family that lie
+ * beyond the reach of `MeanderEnumerationService`, preserved as Codes
+ * extracted once from the drawings this repository used to commit as files.
+ * See `HARDCODED_MEANDERS_BY_FAMILY` for how the boundary against the
+ * enumerated half is drawn, and `HardcodedMeandersService` for how these are
+ * ingested.
  */
 // 🎯 Hexadecimal lattice Codes rather than words, so the dictionaries are
 // turned off across them — a run of hexadecimal digits occasionally spells one.
@@ -70,20 +68,12 @@ export const BRANCH_HARDCODED_MEANDERS: readonly HardcodedMeanderEntry[] = [
     columns: 10,
     rows: 12,
   },
-  { code: "4488", columns: 2, rows: 3, subFamily: "bars" },
-  { code: "61a1", columns: 2, rows: 3 },
   { code: "544677abb988", columns: 6, rows: 3 },
   { code: "54446777abbb9888", columns: 8, rows: 3 },
   { code: "5444467777abbbb98888", columns: 10, rows: 3 },
-  { code: "44cc88", columns: 2, rows: 4, subFamily: "bars" },
-  { code: "61e1a1", columns: 2, rows: 4 },
-  { code: "252d29", columns: 2, rows: 4 },
   { code: "544677ccccccabb988", columns: 6, rows: 4 },
   { code: "54446777ccccccccabbb9888", columns: 8, rows: 4 },
   { code: "5444467777ccccccccccabbbb98888", columns: 10, rows: 4 },
-  { code: "44cccc88", columns: 2, rows: 5, subFamily: "bars" },
-  { code: "61e1e1a1", columns: 2, rows: 5 },
-  { code: "252d2d29", columns: 2, rows: 5 },
   { code: "544677ccccccccccccabb988", columns: 6, rows: 5 },
   { code: "54446777ccccccccccccccccabbb9888", columns: 8, rows: 5 },
   { code: "5444467777ccccccccccccccccccccabbbb98888", columns: 10, rows: 5 },

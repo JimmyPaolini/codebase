@@ -3,17 +3,17 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { mosaicTile } from "../../../testing/mosaic-tiles";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import {
-  InvalidRepeatCountError,
-  InvalidRowsError,
-  MAXIMUM_VALUE,
-} from "../meander-generation/meander-generation.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { MosaicSymmetryService } from "./mosaic-symmetry.service";
 import { MosaicTileGenerationService } from "./mosaic-tile-generation.service";
 import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
-import { MOSAIC_TILE_MAXIMUM_ROWS } from "./mosaic-tile.constants";
+import {
+  InvalidMosaicRepeatCountError,
+  InvalidMosaicRowsError,
+  MOSAIC_TILE_MAXIMUM_ROWS,
+  MOSAIC_TILE_MAXIMUM_VALUE,
+} from "./mosaic-tile.constants";
 import { MosaicTileService } from "./mosaic-tile.service";
 import { MosaicTilesService } from "./mosaic-tiles.service";
 
@@ -141,17 +141,17 @@ describe(MosaicTileGenerationService, () => {
 
     it("throws below the mosaic's own minimum rows", () => {
       expect(() => service.generate(mosaicTile(["."]), 6)).toThrow(
-        InvalidRowsError,
+        InvalidMosaicRowsError,
       );
     });
 
     // 🎯 Both row bounds are the family's own rather than the command
     // line's. The ceiling is `MOSAIC_TILE_MAXIMUM_ROWS` — six, where the
-    // shared `MAXIMUM_VALUE` is twelve — so a tile one row past the deepest
+    // shared `MOSAIC_TILE_MAXIMUM_VALUE` is twelve — so a tile one row past the deepest
     // band this family is drawn in is refused here rather than drawn
     // outside the corpus the charter gates.
     it("throws above the mosaic's own maximum rows, well inside the shared maximum", () => {
-      expect(MOSAIC_TILE_MAXIMUM_ROWS).toBeLessThan(MAXIMUM_VALUE);
+      expect(MOSAIC_TILE_MAXIMUM_ROWS).toBeLessThan(MOSAIC_TILE_MAXIMUM_VALUE);
       expect(() =>
         service.generate(
           mosaicTile(
@@ -159,12 +159,16 @@ describe(MosaicTileGenerationService, () => {
           ),
           6,
         ),
-      ).toThrow(InvalidRowsError);
+      ).toThrow(InvalidMosaicRowsError);
     });
 
     it("throws when the repeat count falls outside the shared bounds", () => {
-      expect(() => service.generate(dots, 0)).toThrow(InvalidRepeatCountError);
-      expect(() => service.generate(dots, 13)).toThrow(InvalidRepeatCountError);
+      expect(() => service.generate(dots, 0)).toThrow(
+        InvalidMosaicRepeatCountError,
+      );
+      expect(() => service.generate(dots, 13)).toThrow(
+        InvalidMosaicRepeatCountError,
+      );
     });
 
     it.each([3, 4, 5, 6])(

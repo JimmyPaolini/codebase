@@ -1,17 +1,15 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import {
-  InvalidRepeatCountError,
-  InvalidRowsError,
-  MAXIMUM_VALUE,
-  MINIMUM_REPEAT_COUNT,
-} from "../meander-generation/meander-generation.constants";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { MosaicTileMotifService } from "./mosaic-tile-motif.service";
 import {
+  InvalidMosaicRepeatCountError,
+  InvalidMosaicRowsError,
   MOSAIC_TILE_MAXIMUM_ROWS,
+  MOSAIC_TILE_MAXIMUM_VALUE,
+  MOSAIC_TILE_MINIMUM_REPEAT_COUNT,
   MOSAIC_TILE_MINIMUM_ROWS,
 } from "./mosaic-tile.constants";
 
@@ -53,7 +51,7 @@ export class MosaicTileGenerationService {
    * {@link MOSAIC_TILE_MINIMUM_ROWS} has nothing to permute, and one above
    * {@link MOSAIC_TILE_MAXIMUM_ROWS} is outside the band this family is
    * drawn in at all. The repeat count keeps the shared
-   * {@link MAXIMUM_VALUE}, which is a property of the canvas rather than of
+   * {@link MOSAIC_TILE_MAXIMUM_VALUE}, which is a property of the canvas rather than of
    * the family.
    */
   generate(tile: MosaicTile, repeatCount: number): string {
@@ -62,7 +60,7 @@ export class MosaicTileGenerationService {
       tile.rows < MOSAIC_TILE_MINIMUM_ROWS ||
       tile.rows > MOSAIC_TILE_MAXIMUM_ROWS
     ) {
-      throw new InvalidRowsError(
+      throw new InvalidMosaicRowsError(
         tile.rows,
         MOSAIC_TILE_MINIMUM_ROWS,
         MOSAIC_TILE_MAXIMUM_ROWS,
@@ -71,13 +69,13 @@ export class MosaicTileGenerationService {
 
     if (
       !Number.isInteger(repeatCount) ||
-      repeatCount < MINIMUM_REPEAT_COUNT ||
-      repeatCount > MAXIMUM_VALUE
+      repeatCount < MOSAIC_TILE_MINIMUM_REPEAT_COUNT ||
+      repeatCount > MOSAIC_TILE_MAXIMUM_VALUE
     ) {
-      throw new InvalidRepeatCountError(
+      throw new InvalidMosaicRepeatCountError(
         repeatCount,
-        MINIMUM_REPEAT_COUNT,
-        MAXIMUM_VALUE,
+        MOSAIC_TILE_MINIMUM_REPEAT_COUNT,
+        MOSAIC_TILE_MAXIMUM_VALUE,
       );
     }
 

@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { MeanderType } from "../meander-generation/meander-generation.types";
+import type { MeanderType } from "../meander-classification/meander-classification.types";
 import type { MosaicSubFamily } from "../mosaic-tile/mosaic-tile.types";
 import type { MEANDER_PROVENANCES } from "./meander-database.constants";
 

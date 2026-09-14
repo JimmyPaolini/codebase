@@ -1,197 +1,79 @@
-import path from "node:path";
-
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type Mock,
+  vi,
+} from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SUPPORTED_RUNG_DIRECTIONS } from "../branch-motif/branch-motif.constants";
-import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
-import { LatticeIdentificationModule } from "../lattice-identification/lattice-identification.module";
-import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
-import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
-import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
-import { MotifPitchService } from "../meander-generation/motif-pitch.service";
-import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
-import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
-import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
-import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
-import { MosaicTileGenerationService } from "../mosaic-tile/mosaic-tile-generation.service";
-import { MosaicTileMotifService } from "../mosaic-tile/mosaic-tile-motif.service";
-import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
-import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
-import { NegativeMotifService } from "../negative-motif/negative-motif.service";
-import { NegativeSourceService } from "../negative-motif/negative-source.service";
-import { NegativeTileGenerationService } from "../negative-motif/negative-tile-generation.service";
-import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine.service";
-import { OutputPathService } from "../svg-rendering/output-path.service";
-import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { DrawCodeService } from "./draw-code.service";
-import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
-import { DrawIndexService } from "./draw-index.service";
-import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
-import { DrawParametersService } from "./draw-parameters.service";
-import { DrawPermutationsService } from "./draw-permutations.service";
-import { DrawRenderingService } from "./draw-rendering.service";
 import { DrawCommand } from "./draw.command";
-import { COLUMN_SPAN_PATTERN } from "./draw.constants";
 
-import type { LatticeAddress } from "../lattice-identification/lattice-identification.types";
 import type { Meander } from "../meander-database/entities/Meander.entity";
 
-const { mockMkdir, mockWriteFile } = vi.hoisted(() => ({
-  mockMkdir: vi
-    .fn<
-      (directoryPath: string, options: { recursive: boolean }) => Promise<void>
-    >()
-    .mockResolvedValue(undefined),
-  mockWriteFile: vi
-    .fn<(filePath: string, data: string) => Promise<void>>()
-    .mockResolvedValue(undefined),
-}));
-
-vi.mock("node:fs/promises", () => ({
-  mkdir: mockMkdir,
-  writeFile: mockWriteFile,
-}));
-
 /**
- * How long the assertions that drive a whole sweep are given.
+ * Covers what `DrawCommand` decides rather than what it produces: which of
+ * its two modes an option set selects, and how each flag is parsed.
  *
- * `mosaic`'s enumerated half is 8,551 tiles and `negative`'s a further 208,
- * each of them really rendered, so this is real work rather than a hang —
- * declared rather than left to the default five seconds, the same way the
- * charter measurement declares its own.
+ * Everything the command actually writes is asserted against a real database
+ * instead — `draw-sweep.command.integration.test.ts` for the sweep and
+ * `draw.command.integration.test.ts` for the `--code` path — per spec #813's
+ * Testing Decisions. This file used to mock `node:fs/promises` and assert on
+ * the `output/<family>` tree the per-family procedural pipeline wrote; there
+ * is no tree left to assert on, and a persisted row is a better witness than
+ * an intercepted write ever was.
  */
-const FULL_SWEEP_TIMEOUT_MILLISECONDS = 120_000;
-
-/**
- * A fixed lattice address stood in for real identification everywhere below
- * but "real generation integration": `meanderGenerationService.generate` is
- * mocked to the same fixture text for every combination there, which no row
- * count could really be read at, so `identifyDocument` is spied to return
- * this instead of parsing it. Real identification is exercised by "real
- * generation integration" against real, per-combination documents.
- */
-const MOCKED_ADDRESS: LatticeAddress = {
-  address: "3r2c-56a9",
-  canonicalIdentifier: "56a9",
-  identifier: "56a9",
-  rows: 3,
-  span: 2,
-};
-
-/**
- * The suffix `MOCKED_ADDRESS` carries in a shape-only family's filename —
- * every named-type combination this suite asserts an exact filename for is
- * one, so the full-address spelling is exercised only by "real generation
- * integration" and by `output-path.service.unit.test.ts`.
- */
-const MOCKED_SHAPE_SUFFIX = "-3r2c";
-
-/** The pitch `MotifPitchService` is stood in with, matching `MOCKED_ADDRESS`'s one-pitch span. */
-const MOCKED_PITCH = 2;
-
-/** A drawing width wide enough to address at `MOCKED_PITCH`, whatever combination is being drawn. */
-const MOCKED_COLUMN_COUNT = 512;
-
 describe(DrawCommand, () => {
   let command: DrawCommand;
-  let drawEnumerationService: DrawEnumerationService;
-  let latticeIdentificationService: LatticeIdentificationService;
-  let meanderGenerationService: MeanderGenerationService;
-  let motifPitchService: MotifPitchService;
+  let draw: Mock<() => Promise<Meander>>;
+  let ingest: Mock<() => Promise<Meander[]>>;
+  let sweep: Mock<() => Promise<number>>;
 
   beforeAll(async () => {
+    draw = vi
+      .fn<() => Promise<Meander>>()
+      .mockResolvedValue(createMock<Meander>({ id: 1 }));
+    ingest = vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]);
+    sweep = vi.fn<() => Promise<number>>().mockResolvedValue(30_279);
+
     const module = await Test.createTestingModule({
       providers: [
         DrawCommand,
         {
           provide: DrawCodeService,
-          useValue: createMock<DrawCodeService>(),
+          useValue: createMock<DrawCodeService>({ draw }),
         },
         {
           provide: DrawEnumerationService,
-          useValue: createMock<DrawEnumerationService>(),
+          useValue: createMock<DrawEnumerationService>({ sweep }),
         },
         {
           provide: HardcodedMeandersService,
-          useValue: createMock<HardcodedMeandersService>({
-            ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
-          }),
+          useValue: createMock<HardcodedMeandersService>({ ingest }),
         },
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
         },
-        {
-          provide: MeanderGenerationService,
-          useValue: createMock<MeanderGenerationService>(),
-        },
-        {
-          provide: MotifPitchService,
-          useValue: createMock<MotifPitchService>(),
-        },
-        OutputPathService,
-        GridGeometryService,
-        MosaicNamingService,
-        MosaicTileGenerationService,
-        MosaicTileMotifService,
-        MosaicTileService,
-        MeanderLatticeService,
-        LatticeIdentificationService,
-        MosaicSymmetryService,
-        MosaicTilesService,
-        NegativeMotifService,
-        NegativeSourceService,
-        NegativeTileGenerationService,
-        DrawCombinationsService,
-        ParallelSerpentineService,
-        DrawIndexService,
-        DrawParametersService,
-        DrawNegativePermutationsService,
-        DrawPermutationsService,
-        DrawRenderingService,
-        SvgRenderingService,
       ],
     }).compile();
 
     command = await module.resolve(DrawCommand);
-    drawEnumerationService = await module.resolve(DrawEnumerationService);
-    latticeIdentificationService = await module.resolve(
-      LatticeIdentificationService,
-    );
-    meanderGenerationService = await module.resolve(MeanderGenerationService);
-    motifPitchService = await module.resolve(MotifPitchService);
   });
 
   beforeEach(() => {
-    mockMkdir.mockClear();
-    mockWriteFile.mockClear();
-    vi.mocked(meanderGenerationService.generate).mockReturnValue(
-      "<svg>fixture</svg>\n",
-    );
-    // 🎯 The fixture above is not a document any row count could really be
-    // read at, so identification is stood in for rather than exercised —
-    // see `MOCKED_ADDRESS`.
-    vi.spyOn(latticeIdentificationService, "identifyDocument").mockReturnValue(
-      MOCKED_ADDRESS,
-    );
-    // 🎯 The mocked pitch is what `DrawRenderingService` measures the
-    // drawing's width against before addressing it, and the width below is
-    // wide enough for any of them — the refusal that check exists for is
-    // driven against real geometry under "real generation integration".
-    vi.mocked(motifPitchService.columnCount).mockReturnValue(
-      MOCKED_COLUMN_COUNT,
-    );
-    vi.mocked(motifPitchService.columnPitch).mockReturnValue(MOCKED_PITCH);
-    vi.mocked(motifPitchService.columnSpan).mockReturnValue(
-      MOCKED_ADDRESS.span,
-    );
+    draw.mockClear();
+    ingest.mockClear();
+    sweep.mockClear();
   });
 
   it("is defined", () => {
@@ -212,687 +94,59 @@ describe(DrawCommand, () => {
         },
         {
           provide: HardcodedMeandersService,
-          useValue: createMock<HardcodedMeandersService>({
-            ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
-          }),
+          useValue: createMock<HardcodedMeandersService>(),
         },
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
         },
-        {
-          provide: MeanderGenerationService,
-          useValue: createMock<MeanderGenerationService>(),
-        },
-        {
-          provide: MotifPitchService,
-          useValue: createMock<MotifPitchService>(),
-        },
-        OutputPathService,
-        GridGeometryService,
-        MosaicNamingService,
-        MosaicTileGenerationService,
-        MosaicTileMotifService,
-        MosaicTileService,
-        MeanderLatticeService,
-        LatticeIdentificationService,
-        MosaicSymmetryService,
-        MosaicTilesService,
-        NegativeMotifService,
-        NegativeSourceService,
-        NegativeTileGenerationService,
-        DrawCombinationsService,
-        ParallelSerpentineService,
-        DrawIndexService,
-        DrawParametersService,
-        DrawNegativePermutationsService,
-        DrawPermutationsService,
-        DrawRenderingService,
-        SvgRenderingService,
       ],
     }).compile();
+
+    await module.resolve(DrawCommand);
 
     const logger = await module.resolve(LoggerService);
 
     expect(logger.setContext).toHaveBeenCalledWith("DrawCommand");
   });
 
-  describe("run", () => {
-    it(
-      "writes the expected number of files across all nine motif-drawn types, with no path collisions",
+  it("sweeps both halves of the corpus when no Code is named", async () => {
+    await command.run([], {});
 
-      async () => {
-        await command.run([], { outputDirectory: "output", repeatCount: 6 });
-
-        expect(mockMkdir).toHaveBeenCalledWith("output/boxes/3-rows", {
-          recursive: true,
-        });
-
-        // 🎯 rows sweep runs from each type's own structural minimum to its
-        // own `FAMILY_MAXIMUM_ROWS`: 2..12 (branch, parallel), 3..12 (boxes,
-        // negative), 4..12 (chain, snake, swirl, whirl), or 6..12 (cross),
-        // crossed with "no modifier" plus every compatible modifier (rung
-        // expands to 2 representative values, stagger to 3):
-
-        // `mosaic` contributes nothing. It is drawn from its enumerated
-        // space rather than from a motif — see `TILE_DRAWN_TYPES` — so
-        // every one of its drawings is counted in the permutation half
-        // below instead. It used to contribute 24 here.
-
-        // boxes: 10 rows * (1 + 1 + 1) modifiers = 30
-
-        // chain: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
-        // snake: 9 rows * (1 + 1 + 1 + 1) modifiers = 36
-        // swirl: 9 rows * (1 + 1) modifiers = 18
-        // whirl: 9 rows * (1 + 1) modifiers = 18
-        // cross: 7 rows * (1 + 1) modifiers = 14
-        // negative: 10 rows * (1 + 9) modifiers = 100
-        // branch: 11 rows * (1 + 2 + 3) modifiers = 66
-
-        // `parallel` is the one family whose modifiers do not expand to a
-        // fixed number of values, so it is the one row here that is neither a
-        // multiplication nor a single literal. It has no unmodified entry —
-        // `plied` names that drawing — and `aligned` sweeps 1..rows while
-        // `plied` sweeps 2..rows, which is the `2 * rows - 1` term: at one
-        // strand there is nothing to ply, so only `aligned` still draws it.
-
-        // `serpentine` sweeps every
-        // *distinct* rotation and flip of each of those plies, and distinct
-        // is the operative word: rotating a partition whose strips are all the
-        // same depth changes nothing, `alternating` and `one` name the same
-        // ribbon below three strands, and flipping a strip with no depth is a
-        // no-op. Its one-strand ply is dropped for the same reason `plied`'s
-        // is, which is why every per-row count here is two lower than it
-        // used to be. So its per-row counts are written out rather than
-        // derived — they are what `ParallelSerpentineService.variants`
-        // deduplicates down to, and a change in that deduplication should
-        // fail here rather than quietly committing the same drawing twice.
-        const serpentinePerRow: Record<number, number> = {
-          2: 3,
-          3: 7,
-          4: 17,
-          5: 17,
-          6: 42,
-          7: 43,
-          8: 63,
-          9: 64,
-          10: 124,
-          11: 83,
-          12: 180,
-        };
-        const expectedParallelCount = [
-          2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-        ].reduce(
-          (total, rows) => total + 2 * rows - 1 + (serpentinePerRow[rows] ?? 0),
-          0,
-        );
-        const expectedNamedTypeCount =
-          30 + 36 + 36 + 18 + 18 + 14 + 100 + 80 + expectedParallelCount;
-
-        const writtenFileNames = vi
-          .mocked(mockWriteFile)
-          .mock.calls.map(([filePath]) => filePath);
-        const namedTypeFiles = writtenFileNames.filter(
-          (filePath) =>
-            filePath.endsWith(".svg") && !COLUMN_SPAN_PATTERN.test(filePath),
-        );
-
-        expect(namedTypeFiles).toHaveLength(expectedNamedTypeCount);
-        expect(new Set(writtenFileNames).size).toBe(writtenFileNames.length);
-      },
-      FULL_SWEEP_TIMEOUT_MILLISECONDS,
-    );
-
-    it("nests each permutation half under the row count and column span that produced it", async () => {
-      await command.run([], { outputDirectory: "output", repeatCount: 6 });
-
-      const writtenFileNames = vi
-        .mocked(mockWriteFile)
-        .mock.calls.map(([filePath]) => filePath);
-      // 🎯 An enumerated tile is one filed under a column span, whichever
-      // family wrote it. Only `negative` still nests its enumerated half
-      // under a `permutations/` level; `mosaic` files its directly beside
-      // the named drawings, since every tile it draws is a member of one
-      // space.
-      const permutations = writtenFileNames.filter((filePath) =>
-        COLUMN_SPAN_PATTERN.test(filePath),
-      );
-
-      expect(mockMkdir).toHaveBeenCalledWith("output/mosaic/4-rows/1-columns", {
-        recursive: true,
-      });
-      expect(mockMkdir).toHaveBeenCalledWith(
-        "output/negative/3-rows/permutations/1-columns",
-        { recursive: true },
-      );
-      // Every distinct `mosaic` tile at 4 through 6 rows and every distinct
-      // one-column `negative` source at 3 through 6, and nothing else. Both
-      // halves stop at `MOSAIC_TILE_MAXIMUM_ROWS` where the
-      // named-type half runs on to `MAXIMUM_VALUE` for nine of its ten
-      // families, because both of these enumerate their space exhaustively
-      // rather than sampling it.
-      expect(permutations).toHaveLength(8551 + 208);
-      expect(permutations).toContain(
-        "output/mosaic/6-rows/1-columns/00000-dots.svg",
-      );
-      expect(permutations).toContain(
-        "output/negative/6-rows/permutations/1-columns/030303-ruled.svg",
-      );
-    });
-
-    it("writes one index page at the root of the output directory, listing every drawing", async () => {
-      await command.run([], { outputDirectory: "output", repeatCount: 6 });
-
-      const index = vi
-        .mocked(mockWriteFile)
-        .mock.calls.find(([filePath]) => filePath === "output/index.html");
-
-      expect(index).toBeDefined();
-      expect(index?.[1]).toContain("<title>Meanderaw</title>");
-      expect(index?.[1]).toContain("9877 drawings");
-
-      expect(index?.[1]).toContain(
-        'src="mosaic/6-rows/1-columns/00000-dots.svg"',
-      );
-      expect(index?.[1]).toContain(
-        `src="boxes/3-rows/spin-8-repeats${MOCKED_SHAPE_SUFFIX}.svg"`,
-      );
-    });
-
-    it("generates every combination through the shared generation service", async () => {
-      await command.run([], { outputDirectory: "output", repeatCount: 6 });
-
-      expect(
-        vi.mocked(meanderGenerationService.generate).mock.calls,
-      ).toContainEqual([{ repeatCount: 6, rows: 3, type: "boxes" }]);
-      expect(
-        vi.mocked(meanderGenerationService.generate).mock.calls,
-      ).toContainEqual([
-        { modifier: { name: "spin" }, repeatCount: 8, rows: 3, type: "boxes" },
-      ]);
-      expect(
-        vi.mocked(meanderGenerationService.generate).mock.calls,
-      ).toContainEqual([
-        {
-          modifier: { branches: 4, name: "stagger" },
-          repeatCount: 6,
-          rows: 3,
-          type: "branch",
-        },
-      ]);
-
-      // 🎯 The tile-drawn family reaches disk through
-      // `DrawPermutationsService` rather than this service, so the sweep
-      // asks it for no `mosaic` at all.
-      expect(
-        vi
-          .mocked(meanderGenerationService.generate)
-          .mock.calls.filter(([parameters]) => parameters.type === "mosaic"),
-      ).toStrictEqual([]);
-      expect(
-        vi.mocked(meanderGenerationService.generate).mock.calls,
-      ).toContainEqual([
-        {
-          modifier: { name: "edge-flip" },
-          repeatCount: 6,
-          rows: 4,
-          type: "chain",
-        },
-      ]);
-    });
-
-    // 🎯 The sweep's lattice-first half runs beside the file-writing ones
-    // rather than in place of them, which is the whole shape of this
-    // migration's middle: two corpora side by side until the hardcoded one
-    // is ingested and issue #819 retires the files. So both are asserted in
-    // one test — a sweep that stopped doing either is a sweep that stopped
-    // doing what it says.
-    it("enumerates every family's unit space into the database beside writing the old corpus to disk", async () => {
-      await command.run([], { outputDirectory: "output", repeatCount: 6 });
-
-      expect(drawEnumerationService.sweep).toHaveBeenCalledWith();
-      expect(vi.mocked(mockWriteFile).mock.calls.length).toBeGreaterThan(0);
-    });
-
-    it("writes each combination's path under the requested output directory", async () => {
-      await command.run([], {
-        outputDirectory: "custom-batch-output",
-        repeatCount: 6,
-      });
-
-      const writtenFilePaths = vi
-        .mocked(mockWriteFile)
-        .mock.calls.map(([filePath]) => filePath);
-
-      expect(writtenFilePaths).toContainEqual(
-        `custom-batch-output/boxes/3-rows/plain-6-repeats${MOCKED_SHAPE_SUFFIX}.svg`,
-      );
-      expect(writtenFilePaths).toContainEqual(
-        `custom-batch-output/boxes/3-rows/spin-8-repeats${MOCKED_SHAPE_SUFFIX}.svg`,
-      );
-    });
-
-    it("throws when two combinations would collide on path", async () => {
-      const collidingPath = "boxes/3-rows/plain-6-repeats.svg";
-      const module = await Test.createTestingModule({
-        providers: [
-          DrawCommand,
-          {
-            provide: DrawCodeService,
-            useValue: createMock<DrawCodeService>(),
-          },
-          {
-            provide: DrawEnumerationService,
-            useValue: createMock<DrawEnumerationService>(),
-          },
-          {
-            provide: HardcodedMeandersService,
-            useValue: createMock<HardcodedMeandersService>({
-              ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
-            }),
-          },
-          {
-            provide: LoggerService,
-            useValue: createMock<LoggerService>(),
-          },
-          {
-            provide: DrawRenderingService,
-            useValue: createMock<DrawRenderingService>({
-              render: () => ({
-                directory: path.posix.dirname(collidingPath),
-                fileName: path.posix.basename(collidingPath),
-                svg: "<svg>fixture</svg>\n",
-              }),
-            }),
-          },
-          DrawCombinationsService,
-          GridGeometryService,
-          ParallelSerpentineService,
-          DrawParametersService,
-          {
-            provide: DrawIndexService,
-            useValue: createMock<DrawIndexService>(),
-          },
-          {
-            provide: DrawNegativePermutationsService,
-            useValue: createMock<DrawNegativePermutationsService>(),
-          },
-          {
-            provide: DrawPermutationsService,
-            useValue: createMock<DrawPermutationsService>(),
-          },
-        ],
-      }).compile();
-      const collidingCommand = await module.resolve(DrawCommand);
-
-      await expect(
-        collidingCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
-      ).rejects.toThrow(/colliding output paths/i);
-    });
+    expect(sweep).toHaveBeenCalledTimes(1);
+    expect(ingest).toHaveBeenCalledTimes(1);
+    expect(draw).not.toHaveBeenCalled();
   });
 
-  describe("run, drawing one meander", () => {
-    it("draws the named meander to the same path the sweep would have written it to", async () => {
-      await command.run([], {
-        outputDirectory: "output",
-        repeatCount: 8,
-        rows: 5,
-        type: "boxes",
-      });
+  it("enumerates before ingesting, so a hardcoded collision is refused rather than overwriting", async () => {
+    await command.run([], {});
 
-      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
-        repeatCount: 8,
-        rows: 5,
-        type: "boxes",
-      });
-      expect(mockMkdir).toHaveBeenCalledWith("output/boxes/5-rows", {
-        recursive: true,
-      });
-      expect(mockWriteFile).toHaveBeenCalledWith(
-        `output/boxes/5-rows/plain-8-repeats${MOCKED_SHAPE_SUFFIX}.svg`,
-        "<svg>fixture</svg>\n",
-      );
-    });
+    const [enumerated] = sweep.mock.invocationCallOrder;
+    const [hardcoded] = ingest.mock.invocationCallOrder;
 
-    it("draws one meander and nothing else — no sweep, and no index page", async () => {
-      await command.run([], {
-        outputDirectory: "output",
-        repeatCount: 8,
-        rows: 5,
-        type: "boxes",
-      });
-
-      expect(mockWriteFile).toHaveBeenCalledTimes(1);
-    });
-
-    // 🎯 Eight repeats rather than four, because four is a drawing the real
-    // command cannot write: `boxes spin` at five rows spans four pitches, so
-    // it needs six of them clear of both band terminations — see
-    // `NarrowRepeatCountError`, driven under "real generation
-    // integration". A mocked filename for a drawing nothing can produce is
-    // what let that refusal go unnoticed.
-    it("names the file after the modifier and forwards it to the generation service", async () => {
-      await command.run([], {
-        modifier: "spin",
-        outputDirectory: "output",
-        repeatCount: 8,
-        rows: 5,
-        type: "boxes",
-      });
-
-      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
-        modifier: { name: "spin" },
-        repeatCount: 8,
-        rows: 5,
-        type: "boxes",
-      });
-      expect(mockWriteFile).toHaveBeenCalledWith(
-        `output/boxes/5-rows/spin-8-repeats${MOCKED_SHAPE_SUFFIX}.svg`,
-        "<svg>fixture</svg>\n",
-      );
-    });
-
-    it("forwards the sub-family to the generation service and names the file after it", async () => {
-      await command.run([], {
-        outputDirectory: "output",
-        repeatCount: 6,
-        rows: 6,
-        subFamily: "dots",
-        type: "mosaic",
-      });
-
-      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
-        repeatCount: 6,
-        rows: 6,
-        subFamily: "dots",
-        type: "mosaic",
-      });
-      expect(mockWriteFile).toHaveBeenCalledWith(
-        "output/mosaic/6-rows/dots-6-repeats.svg",
-        "<svg>fixture</svg>\n",
-      );
-    });
-
-    it("forwards the parallel ply to the generation service and encodes it in the filename", async () => {
-      await command.run([], {
-        modifier: "plied",
-        outputDirectory: "output",
-        repeatCount: 6,
-        rows: 6,
-        strands: 3,
-        type: "parallel",
-      });
-
-      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
-        modifier: { name: "plied", strands: 3 },
-        repeatCount: 6,
-        rows: 6,
-        type: "parallel",
-      });
-      expect(mockWriteFile).toHaveBeenCalledWith(
-        `output/parallel/6-rows/plied-strands-3-6-repeats${MOCKED_SHAPE_SUFFIX}.svg`,
-        "<svg>fixture</svg>\n",
-      );
-    });
-
-    it("forwards the sub-family to the generation service and encodes it in the filename", async () => {
-      await command.run([], {
-        outputDirectory: "output",
-        repeatCount: 6,
-        rows: 6,
-        subFamily: "dots",
-        type: "mosaic",
-      });
-
-      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
-        repeatCount: 6,
-        rows: 6,
-        subFamily: "dots",
-        type: "mosaic",
-      });
-      expect(mockWriteFile).toHaveBeenCalledWith(
-        "output/mosaic/6-rows/dots-6-repeats.svg",
-        "<svg>fixture</svg>\n",
-      );
-    });
-
-    // 🎯 Neither flag can be `required`, since passing neither is how the
-    // sweep is asked for — so this is the only thing standing between "one
-    // without the other" and a sweep nobody asked for.
-    it.each([
-      { label: "--type without --rows", options: { type: "boxes" as const } },
-      { label: "--rows without --type", options: { rows: 5 } },
-    ])(
-      "refuses $label rather than sweeping everything",
-      async ({ options }) => {
-        await expect(
-          command.run([], {
-            outputDirectory: "output",
-            repeatCount: 6,
-            ...options,
-          }),
-        ).rejects.toThrow(/needs both --type and --rows/);
-
-        expect(mockWriteFile).not.toHaveBeenCalled();
-      },
-    );
-
-    it.each([
-      {
-        flag: "--strands",
-        modifier: "plied" as const,
-        type: "parallel" as const,
-      },
-      {
-        flag: "--branches",
-        modifier: "stagger" as const,
-        type: "branch" as const,
-      },
-    ])(
-      "refuses $modifier without $flag rather than guessing one",
-      async ({ flag, modifier, type }) => {
-        await expect(
-          command.run([], {
-            modifier,
-            outputDirectory: "output",
-            repeatCount: 6,
-            rows: 6,
-            type,
-          }),
-        ).rejects.toThrow(new RegExp(`requires ${flag}`));
-      },
-    );
+    expect(enumerated).toBeLessThan(hardcoded ?? 0);
   });
 
-  describe("option parsing", () => {
-    it("passes a supported type through unchanged", () => {
-      expect(command.parseType("boxes")).toBe("boxes");
-    });
+  it("draws the one meander a Code names, sweeping nothing", async () => {
+    await command.run([], { code: "3c9a", columns: 2, rows: 3 });
 
-    it("rejects an unsupported type", () => {
-      expect(() => command.parseType("triangles")).toThrow(/unsupported type/i);
-    });
-
-    it("passes a supported modifier name through unchanged", () => {
-      expect(command.parseModifier("spin-flip")).toBe("spin-flip");
-    });
-
-    it("rejects an unsupported modifier name", () => {
-      expect(() => command.parseModifier("bogus")).toThrow(
-        /unsupported modifier/i,
-      );
-    });
-
-    it("passes a supported sub-family through unchanged", () => {
-      expect(command.parseSubFamily("dots")).toBe("dots");
-    });
-
-    it("rejects a name that is no sub-family, including the singular the dots one sounds like", () => {
-      expect(() => command.parseSubFamily("dot")).toThrow(
-        /unsupported sub-family/i,
-      );
-    });
-
-    it.each([
-      { method: "parseBranches" as const, value: "2" },
-      { method: "parseRepeatCount" as const, value: "2" },
-      { method: "parseRows" as const, value: "2" },
-      { method: "parseStrands" as const, value: "2" },
-    ])("parses $method's numeric string as an integer", ({ method, value }) => {
-      expect(command[method](value)).toBe(2);
-    });
-
-    // 🎯 Every direction the `rung` mode draws, each passed through the
-    // flag that names it. A boolean carried two of them and could not carry
-    // four, and it could not tell a flag left off from one passed `false`
-    // either — so this is where the four are proved reachable from the
-    // command line rather than only from the sweep.
-    it.each(SUPPORTED_RUNG_DIRECTIONS)(
-      "passes --direction %s through unchanged",
-      (direction) => {
-        expect(command.parseDirection(direction)).toBe(direction);
-      },
-    );
-
-    // 🎯 The refusal `--flip` already makes for `serpentine`: a value
-    // outside the supported set is rejected with the whole set named, so a
-    // near miss says what was expected of it.
-    it("rejects an unsupported direction, naming the four it takes", () => {
-      expect(() => command.parseDirection("north")).toThrow(
-        /unsupported direction "north"; supported: northeast, northwest, southeast, southwest/iu,
-      );
-    });
-
-    it("passes the output directory through unchanged", () => {
-      expect(command.parseOutputDirectory("./custom-output")).toBe(
-        "./custom-output",
-      );
-    });
+    expect(draw).toHaveBeenCalledWith({ code: "3c9a", columns: 2, rows: 3 });
+    expect(sweep).not.toHaveBeenCalled();
   });
 
-  describe("real generation integration", () => {
-    let realCommand: DrawCommand;
-
-    beforeAll(async () => {
-      const module = await Test.createTestingModule({
-        imports: [
-          LatticeIdentificationModule,
-          MeanderGenerationModule,
-          MosaicNamingModule,
-        ],
-        providers: [
-          DrawCombinationsService,
-          GridGeometryService,
-          ParallelSerpentineService,
-          DrawCommand,
-          DrawIndexService,
-          DrawParametersService,
-          DrawNegativePermutationsService,
-          DrawPermutationsService,
-          DrawRenderingService,
-          {
-            provide: DrawCodeService,
-            useValue: createMock<DrawCodeService>(),
-          },
-          {
-            provide: DrawEnumerationService,
-            useValue: createMock<DrawEnumerationService>(),
-          },
-          {
-            provide: HardcodedMeandersService,
-            useValue: createMock<HardcodedMeandersService>({
-              ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
-            }),
-          },
-          {
-            provide: LoggerService,
-            useValue: createMock<LoggerService>(),
-          },
-        ],
-      }).compile();
-
-      realCommand = await module.resolve(DrawCommand);
-    });
-
-    beforeEach(() => {
-      mockMkdir.mockClear();
-      mockWriteFile.mockClear();
-    });
-
-    // 🎯 The single-drawing path is the one that accepts any
-    // `--repeat-count` down to `MINIMUM_REPEAT_COUNT`, and the mocked suite
-    // above cannot see what those narrow counts do: it stands
-    // `identifyDocument` in for the real one, so every count addresses
-    // successfully there. These drive the real identification the command
-    // really runs.
-    it.each([
-      { minimum: 3, options: { repeatCount: 1, rows: 5, type: "chain" } },
-      { minimum: 3, options: { repeatCount: 2, rows: 5, type: "chain" } },
-      { minimum: 4, options: { repeatCount: 1, rows: 5, type: "boxes" } },
-      { minimum: 4, options: { repeatCount: 3, rows: 5, type: "boxes" } },
-      {
-        minimum: 8,
-        options: {
-          modifier: "spin",
-          repeatCount: 4,
-          rows: 5,
-          type: "boxes",
-        },
-      },
-    ] as const)(
-      "refuses $options.type at $options.repeatCount repeats, naming the $minimum it needs, rather than failing on a span",
-      async ({ minimum, options }) => {
-        await expect(
-          realCommand.run([], { outputDirectory: "output", ...options }),
-        ).rejects.toThrow(new RegExp(`at least ${minimum} repeat`, "u"));
-
-        expect(mockWriteFile).not.toHaveBeenCalled();
-      },
+  it("refuses a Code given without both --rows and --columns", async () => {
+    await expect(command.run([], { code: "0", rows: 2 })).rejects.toThrow(
+      /needs both --rows and --columns/,
     );
-
-    it.each([
-      { fileName: "plain-3-repeats-5r4c.svg", repeatCount: 3, type: "chain" },
-      { fileName: "plain-4-repeats-5r4c.svg", repeatCount: 4, type: "boxes" },
-      {
-        fileName: "spin-8-repeats-5r16c.svg",
-        modifier: "spin",
-        repeatCount: 8,
-        type: "boxes",
-      },
-    ] as const)(
-      "draws $type at $repeatCount repeats to $fileName, addressed by the real identification",
-      async ({ fileName, ...options }) => {
-        await realCommand.run([], {
-          outputDirectory: "output",
-          rows: 5,
-          ...options,
-        });
-
-        expect(mockWriteFile).toHaveBeenCalledTimes(1);
-        expect(mockWriteFile).toHaveBeenCalledWith(
-          `output/${options.type}/5-rows/${fileName}`,
-          expect.stringContaining("<svg"),
-        );
-      },
+    await expect(command.run([], { code: "0", columns: 1 })).rejects.toThrow(
+      /needs both --rows and --columns/,
     );
+    expect(draw).not.toHaveBeenCalled();
+  });
 
-    it(
-      "generates every enumerated combination through the real generation service without throwing",
-      async () => {
-        await expect(
-          realCommand.run([], { outputDirectory: "output", repeatCount: 6 }),
-        ).resolves.toBeUndefined();
-
-        // 🎯 every one of the 1,118 enumerated named-type combinations, every
-        // one of the 8,551 mosaic tiles, and every one of the 208 one-column
-        // negative sources, reached its real generation
-        // service and real validators without throwing — this is the
-        // regression guard the mocked tests above can't provide, since they
-        // replace the generation services entirely. The extra file is the
-        // single index page listing all of them.
-        expect(mockWriteFile).toHaveBeenCalledTimes(1118 + 8551 + 208 + 1);
-      },
-      FULL_SWEEP_TIMEOUT_MILLISECONDS,
-    );
+  it("parses each option the command still takes", () => {
+    expect(command.parseCode("3c9a")).toBe("3c9a");
+    expect(command.parseColumns("2")).toBe(2);
+    expect(command.parseRows("3")).toBe(3);
   });
 });

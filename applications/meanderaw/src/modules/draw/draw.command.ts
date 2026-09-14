@@ -1,103 +1,52 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
-
 import { Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SUPPORTED_RUNG_DIRECTIONS } from "../branch-motif/branch-motif.constants";
 import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
 import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
-import {
-  DEFAULT_OUTPUT_DIRECTORY,
-  DEFAULT_REPEAT_COUNT,
-  SUPPORTED_MODIFIER_NAMES,
-  SUPPORTED_TYPES,
-} from "../meander-generation/meander-generation.constants";
-import { SUPPORTED_SUB_FAMILIES } from "../mosaic-tile/mosaic-tile.constants";
-import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
 
 import { DrawCodeService } from "./draw-code.service";
-import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
-import { DrawIndexService } from "./draw-index.service";
-import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
-import { DrawParametersService } from "./draw-parameters.service";
-import { DrawPermutationsService } from "./draw-permutations.service";
-import { DrawRenderingService } from "./draw-rendering.service";
-import {
-  CollidingPathsError,
-  IncompleteCodeDrawingError,
-  INDEX_FILE_NAME,
-} from "./draw.constants";
+import { IncompleteCodeDrawingError } from "./draw.constants";
 
-import type { RungDirection } from "../branch-motif/branch-motif.types";
-import type {
-  MeanderType,
-  Modifier,
-  SerpentineFlip,
-} from "../meander-generation/meander-generation.types";
-import type { MosaicSubFamily } from "../mosaic-tile/mosaic-tile.types";
-import type {
-  DrawCommandOptions,
-  OutputDocument,
-  RenderedDocument,
-} from "./draw.types";
+import type { DrawCommandOptions } from "./draw.types";
 
 /**
- * Draws meanders. It is the application's only command, and its default, so
- * running it with no arguments at all runs this.
+ * Draws meanders into the committed sqlite database. It is the
+ * application's only command, and its default, so running it with no
+ * arguments at all runs this.
  *
- * What it draws is decided by whether a drawing was named:
+ * What it draws is decided by whether a Code was named:
  *
- * - **`draw`** sweeps everything. The whole lattice's unit space,
- *   enumerated by {@link DrawEnumerationService} and written to the
- *   database — every family's space rather than only `mosaic`'s, with each
- *   meander's family read off its own structure — beside a bounded,
- *   representative sample of the
- *   named families' parameter space, enumerated by
- *   {@link DrawCombinationsService} — which the meander charter's property
- *   test also sweeps, so the corpus this writes and the corpus that is gated
- *   are the same space by construction rather than by coincidence — beside
- *   two exhaustive enumerations, of the `mosaic` family's tiles — which is
- *   the whole of what that family draws — and of the
- *   `negative` family's one-column sources. Those run to thousands of files
- *   and so are written one row count at a time. An index page listing every
- *   drawing is written at the root of the output directory. Alongside the
- *   file tree, the sweep also ingests the historical corpus's hardcoded Code
- *   constants into the committed database through
- *   {@link HardcodedMeandersService} — see that service's own doc comment
- *   for why the nine named types are preserved this way rather than
- *   redrawn, and `hardcoded-meanders.constants.ts` for the boundary it draws
- *   against `mosaic` and `negative`'s own enumerated halves.
- * - **`draw --type <family> --rows <n>`** draws that one, to the same path
- *   the sweep would have written it to.
+ * - **`draw`** sweeps everything, in two halves that between them are the
+ *   whole corpus. {@link DrawEnumerationService} walks the lattice's unit
+ *   space — every shape the edge budget admits, every structurally distinct
+ *   repeat within each — and writes a row per meander found, its family read
+ *   off its own structure rather than off whichever generator drew it. Then
+ *   {@link HardcodedMeandersService} ingests the historical corpus's
+ *   hardcoded Code constants, which are exactly the meanders that lie
+ *   *beyond* that budget — see `hardcoded-meanders.constants.ts` for how that
+ *   boundary is drawn and why it has to be.
+ * - **`draw --rows <n> --columns <n> --code <code>`** decodes, renders, and
+ *   persists that one meander, through the same generic pipeline both halves
+ *   of the sweep use.
  *
- * The two used to be separate `start` and `generate` commands. They are one
- * because the option set is one: every flag below either names a drawing or
- * says where drawings go, and a sub-command boundary between them only
- * decided which half of that set was legal.
+ * **Nothing here writes a file any more.** The nine per-family procedural
+ * motif services, the `output/<family>/*.svg` tree they wrote, and the
+ * `--type`/`--modifier` flags that named one are all retired: a meander is a
+ * database row, and a row has no path-length limit for a Code to outgrow.
+ * `output/index.html` is rebuilt from the database rather than from a tree
+ * of files, which is issue #821's work.
  *
- * Three of those flags belong to one modifier each — `--strands`,
- * `--branches`, and `--direction` — and are
- * recombined with `--modifier` by {@link DrawParametersService.modifier},
- * since nest-commander parses each one through a method that cannot see the
- * others.
- *
- * `--sub-family` is the one flag that is neither: it names a member of a
- * family's own unit space rather than adjusting a repeat unit, and for
- * `mosaic` it is required, since that family has no repeat unit of its own
- * for `--type` alone to draw.
- *
- * Both halves are written through the same {@link writeDocuments}, so
- * "somewhere under the output directory" is the only thing this command knows
- * about either one's layout. Where each document actually lands is decided by
- * {@link OutputPathService} and by the permutation sweep.
+ * The enumerated half runs first, so a sweep that cannot decode or render
+ * something it found fails before the corpus is ingested behind it — and so
+ * that a hardcoded entry claiming an address the enumeration already holds
+ * fails loudly rather than silently replacing it.
  */
 @Command({
   description:
-    "Draw meanders: with no drawing named, sweep every one the application can draw (the whole lattice's unit space enumerated into the database, classified into a family by each meander's own structure; plus each named family from its own structural minimum through its own maximum rows, with every compatible modifier, and exhaustive enumerations of the mosaic family's tiles and the negative family's one-column sources, beneath an index page listing them all); with --type and --rows, draw that one",
+    "Draw meanders into the committed sqlite database: with no Code named, sweep every one the application can draw (the whole lattice's unit space, enumerated and classified into a family by each meander's own structure, plus the historical corpus's hardcoded constants beyond the enumeration's budget); with --rows, --columns, and --code, draw that one",
   name: "draw",
   options: { isDefault: true },
 })
@@ -109,20 +58,8 @@ export class DrawCommand extends CommandRunner {
     private readonly logger: LoggerService,
     @Inject(DrawCodeService)
     private readonly drawCodeService: DrawCodeService,
-    @Inject(DrawCombinationsService)
-    private readonly drawCombinationsService: DrawCombinationsService,
     @Inject(DrawEnumerationService)
     private readonly drawEnumerationService: DrawEnumerationService,
-    @Inject(DrawIndexService)
-    private readonly drawIndexService: DrawIndexService,
-    @Inject(DrawParametersService)
-    private readonly drawParametersService: DrawParametersService,
-    @Inject(DrawNegativePermutationsService)
-    private readonly drawNegativePermutationsService: DrawNegativePermutationsService,
-    @Inject(DrawPermutationsService)
-    private readonly drawPermutationsService: DrawPermutationsService,
-    @Inject(DrawRenderingService)
-    private readonly drawRenderingService: DrawRenderingService,
     @Inject(HardcodedMeandersService)
     private readonly hardcodedMeandersService: HardcodedMeandersService,
   ) {
@@ -135,31 +72,6 @@ export class DrawCommand extends CommandRunner {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /** Throws when two combinations in the sweep would write the same path. */
-  private assertNoPathCollisions(documents: readonly OutputDocument[]): void {
-    const paths = documents.map(
-      (document) => `${document.directory}/${document.fileName}`,
-    );
-
-    if (new Set(paths).size !== paths.length) {
-      throw new CollidingPathsError();
-    }
-  }
-
-  /** Renders the drawing `options` names, beside the path it is written to. */
-  private render(options: DrawCommandOptions): RenderedDocument {
-    return this.drawRenderingService.render(
-      this.drawParametersService.single(options),
-    );
-  }
-
-  /** Renders the named-family half of the sweep. */
-  private renderCombinations(): RenderedDocument[] {
-    return this.drawCombinationsService
-      .enumerate()
-      .map((parameters) => this.drawRenderingService.render(parameters));
-  }
 
   /**
    * Decodes, renders, and persists the one meander `--rows`, `--columns`,
@@ -188,109 +100,35 @@ export class DrawCommand extends CommandRunner {
   }
 
   /**
-   * Draws every meander the application can draw, and indexes them all in
-   * one page.
+   * Draws every meander the application can draw, as rows in the committed
+   * database.
    *
-   * Two corpora, side by side. The lattice-first half enumerates the whole
-   * unit space and writes a database row per meander found — every family's
-   * space now, not only `mosaic`'s, with family membership decided from each
-   * meander's own structure rather than from whichever generator drew it.
-   * The file-writing halves below it are unchanged, and stay that way until
-   * the hardcoded corpus is ingested and issue #819 retires them; the index
-   * page still lists only what they wrote, since nothing yet reads the
-   * database back.
-   *
-   * The enumerated half runs first, so a sweep that cannot decode or render
-   * something it found fails before thousands of files are written.
+   * Two provenances, one corpus and one unique index over a meander's
+   * lattice address. The enumerated half is written first and the hardcoded
+   * half second, so the two are ordered rather than racing: an entry that
+   * claimed an address the enumeration already holds is refused by the index
+   * rather than overwriting it, which is spec #813's thirty-second story
+   * enforced by the schema rather than by a convention nobody checks.
    */
-  private async sweep(outputDirectory: string): Promise<void> {
+  private async sweep(): Promise<void> {
     const enumerated = await this.drawEnumerationService.sweep();
 
     this.logger.log("✨ Enumerated every family's unit space", undefined, {
       enumerated,
     });
 
-    const combinations = this.renderCombinations();
-
-    this.assertNoPathCollisions(combinations);
-
-    const documents = await this.writeDocuments(outputDirectory, combinations);
-
-    for (const rows of this.drawPermutationsService.rowsSweep()) {
-      documents.push(
-        ...(await this.writeDocuments(
-          outputDirectory,
-          this.drawPermutationsService.render(rows),
-        )),
-      );
-    }
-
-    for (const rows of this.drawNegativePermutationsService.rowsSweep()) {
-      documents.push(
-        ...(await this.writeDocuments(
-          outputDirectory,
-          this.drawNegativePermutationsService.render(rows),
-        )),
-      );
-    }
-
-    const hardcodedMeanders = await this.hardcodedMeandersService.ingest(
+    const hardcoded = await this.hardcodedMeandersService.ingest(
       HARDCODED_MEANDERS_BY_FAMILY,
     );
 
-    const indexPath = path.join(outputDirectory, INDEX_FILE_NAME);
-
-    await writeFile(indexPath, this.drawIndexService.render(documents));
-
     this.logger.log("✨ Generated every meander", undefined, {
-      count: documents.length,
-      hardcodedCount: hardcodedMeanders.length,
-      indexPath,
-      outputDirectory,
-      permutations: documents.length - combinations.length,
+      enumerated,
+      hardcoded: hardcoded.length,
+      total: enumerated + hardcoded.length,
     });
   }
 
-  /** Creates every directory one batch of drawings needs, then writes the batch into them. */
-  private async writeDocuments(
-    outputDirectory: string,
-    documents: readonly RenderedDocument[],
-  ): Promise<OutputDocument[]> {
-    const directories = new Set(
-      documents.map((document) => document.directory),
-    );
-
-    await Promise.all(
-      [...directories].map(async (directory) =>
-        mkdir(path.join(outputDirectory, directory), { recursive: true }),
-      ),
-    );
-    await Promise.all(
-      documents.map(async (document) =>
-        writeFile(
-          path.join(outputDirectory, document.directory, document.fileName),
-          document.svg,
-        ),
-      ),
-    );
-
-    return documents.map(({ directory, fileName }) => ({
-      directory,
-      fileName,
-    }));
-  }
-
   // 🌎 Public Methods
-
-  /** Parses `--branches` as an integer, used only with `--modifier stagger`. */
-  @Option({
-    description:
-      "Branches one crenel's rail joins before it changes side, for --modifier stagger",
-    flags: "-b, --branches <branches>",
-  })
-  parseBranches(value: string): number {
-    return Number.parseInt(value, 10);
-  }
 
   /**
    * Parses `--code`, passed through unchanged: the hexadecimal digits a
@@ -301,7 +139,7 @@ export class DrawCommand extends CommandRunner {
    */
   @Option({
     description:
-      "Hexadecimal Code a meander's per-point direction bits are decoded from, one character per interior lattice point — draws that one meander and writes it to the database, in place of --type/--rows",
+      "Hexadecimal Code a meander's per-point direction bits are decoded from, one character per interior lattice point — draws that one meander and writes it to the database",
     flags: "--code <code>",
   })
   parseCode(value: string): string {
@@ -317,141 +155,26 @@ export class DrawCommand extends CommandRunner {
     return Number.parseInt(value, 10);
   }
 
-  /**
-   * Parses `--direction`, rejecting any value outside the supported set.
-   * Used only with `--modifier rung`. Absent, `rung` faces
-   * `DEFAULT_RUNG_DIRECTION`, which is the one direction it drew before the
-   * other three were reachable.
-   */
+  /** Parses `--rows` as an integer, used only with `--code`. Optional, since a sweep names no row count. */
   @Option({
-    description: `Which border the rail runs along and which way the rungs face, for --modifier rung (${SUPPORTED_RUNG_DIRECTIONS.join(", ")})`,
-    flags: "-d, --direction <direction>",
-  })
-  parseDirection(value: string): RungDirection {
-    return this.drawParametersService.rungDirection(value);
-  }
-
-  /** Parses `--flip`, rejecting any value outside the supported set. Used only with `--modifier serpentine`. */
-  @Option({
-    description: `Which ribbons are turned upside down, for --modifier serpentine (${SUPPORTED_SERPENTINE_FLIPS.join(", ")})`,
-    flags: "--flip <flip>",
-  })
-  parseFlip(value: string): SerpentineFlip {
-    return this.drawParametersService.serpentineFlip(value);
-  }
-
-  /** Parses `--modifier`, rejecting any name outside the supported set. Omitted entirely when no modifier is requested. */
-  @Option({
-    description: `Modifier applied to the motif (${SUPPORTED_MODIFIER_NAMES.join(", ")})`,
-    flags: "-m, --modifier <modifier>",
-  })
-  parseModifier(value: string): Modifier["name"] {
-    return this.drawParametersService.modifierName(value);
-  }
-
-  /** Parses `--offset` as an integer, used only with `--modifier serpentine`. */
-  @Option({
-    description:
-      "How far the strip depths are rotated, for --modifier serpentine",
-    flags: "--offset <offset>",
-  })
-  parseOffset(value: string): number {
-    return Number.parseInt(value, 10);
-  }
-
-  /** Registers `--output-directory`; nest-commander requires a parser method per option even when no transformation is needed. */
-  @Option({
-    defaultValue: DEFAULT_OUTPUT_DIRECTORY,
-    description: "Directory the drawings are written to",
-    flags: "-o, --output-directory <outputDirectory>",
-  })
-  parseOutputDirectory(value: string): string {
-    return value;
-  }
-
-  /** Parses `--repeat-count` as an integer
-, defaulting to a sensible repeat count. */
-  @Option({
-    defaultValue: DEFAULT_REPEAT_COUNT,
-    description: "Number of times the motif repeats horizontally",
-    flags: "-c, --repeat-count <repeatCount>",
-  })
-  parseRepeatCount(value: string): number {
-    return Number.parseInt(value, 10);
-  }
-
-  /** Parses `--rows` as an integer. Optional, since a sweep names no row count; required alongside `--type`. */
-  @Option({
-    description: "Row count of one drawing, controlling grid density",
+    description: "Row count of one --code drawing, controlling grid density",
     flags: "-r, --rows <rows>",
   })
   parseRows(value: string): number {
     return Number.parseInt(value, 10);
   }
 
-  /** Parses `--strands` as an integer
-, used only with `--modifier plied`. */
-  @Option({
-    description: "Number of strands in one bundle, for --modifier plied",
-    flags: "-n, --strands <strands>",
-  })
-  parseStrands(value: string): number {
-    return Number.parseInt(value, 10);
-  }
-
-  /** Parses `--sub-family`, rejecting any name outside the set of recognized sub-families. */
-  @Option({
-    description: `Named region of the family's unit space (${SUPPORTED_SUB_FAMILIES.join(", ")}), for --type mosaic`,
-    flags: "-f, --sub-family <subFamily>",
-  })
-  parseSubFamily(value: string): MosaicSubFamily {
-    return this.drawParametersService.subFamily(value);
-  }
-
-  /** Parses `--type`, rejecting any value outside the supported set. Optional, since a sweep names no family. */
-  @Option({
-    description: `Family of one drawing (${SUPPORTED_TYPES.join(", ")})`,
-    flags: "-t, --type <type>",
-  })
-  parseType(value: string): MeanderType {
-    return this.drawParametersService.type(value);
-  }
-
-  /**
-   * Sweeps every meander, draws the one `--code` names, or draws the one
-   * `--type` and `--rows` name.
-   *
-   * `--code` is checked first because it selects a mode `--type`/`--rows`
-   * cannot: those two either name a family's own drawing together or, both
-   * absent, ask for the sweep, and neither reading has room left for a bare
-   * Code with no family behind it at all.
-   */
+  /** Sweeps every meander into the database, or draws the one `--code` names. */
   async run(
     _passedParameters: string[],
     options: DrawCommandOptions,
   ): Promise<void> {
-    if (options.code !== undefined) {
-      await this.runCodeDrawing(options.code, options.rows, options.columns);
+    if (options.code === undefined) {
+      await this.sweep();
 
       return;
     }
 
-    if (options.rows === undefined && options.type === undefined) {
-      await this.sweep(options.outputDirectory);
-
-      return;
-    }
-
-    const document = this.render(options);
-    const filePath = path.join(
-      options.outputDirectory,
-      document.directory,
-      document.fileName,
-    );
-
-    await mkdir(path.dirname(filePath), { recursive: true });
-    await writeFile(filePath, document.svg);
-
-    this.logger.log("✨ Generated a meander", undefined, { filePath });
+    await this.runCodeDrawing(options.code, options.rows, options.columns);
   }
 }

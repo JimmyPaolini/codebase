@@ -50,7 +50,7 @@
     "spell-check": {},
     "start": {
       "cache": false,
-      "description": "Run the Meanderaw application. With no arguments it draws every meander into output/ beneath an index page listing them all; with --args=\"--type <family> --rows <n>\" it draws that one into the same tree. `build` compiles this project rather than drawing anything, so writing SVGs is this target's job.",
+      "description": "Run the Meanderaw application. With no arguments it sweeps every meander into output/meanders.sqlite — the whole lattice's unit space, enumerated and classified, then the historical corpus's hardcoded Codes beyond that budget; with --args=\"--rows <n> --columns <n> --code <code>\" it writes that one row. `build` compiles this project rather than drawing anything, so populating the database is this target's job.",
       "executor": "nx:run-commands",
       "options": {
         "command": "node --import @swc-node/register/esm-register src/main.ts {args}",
