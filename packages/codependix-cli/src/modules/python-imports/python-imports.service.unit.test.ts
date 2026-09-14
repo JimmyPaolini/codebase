@@ -39,7 +39,11 @@ describe(PythonImportsService, () => {
 
     return {
       configuration: {
-        boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
+        boundaries: {
+          fileImports: { python: [], typescript: [] },
+          nestjsModules: [],
+          nxProjects: [],
+        },
         defaults: {},
         exclude: [],
         include: ["**"],

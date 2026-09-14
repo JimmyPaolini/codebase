@@ -45,7 +45,7 @@ describe(BoundaryGraphService, () => {
       edges: [
         { implicit: false, source: "codependix-cli", target: "codependix-nx" },
       ],
-      level: "nx",
+      level: "nxProjects",
       nodes: [
         {
           id: "codependix-cli",
@@ -85,7 +85,7 @@ describe(BoundaryGraphService, () => {
 
     expect(graph).toStrictEqual({
       edges: [{ source: "MapModule", target: "DeliveryModule" }],
-      level: "nestjs",
+      level: "nestjsModules",
       nodes: [{ id: "DeliveryModule" }, { id: "MapModule" }],
       scope: "codependix-cli",
     });
@@ -101,7 +101,7 @@ describe(BoundaryGraphService, () => {
 
     expect(graph).toStrictEqual({
       edges: [{ source: "src/a.ts", target: "src/b.ts" }],
-      level: "imports",
+      level: "typescript",
       nodes: [
         { id: "src/a.ts", path: "src/a.ts", project: "codependix-cli" },
         { id: "src/b.ts", path: "src/b.ts", project: "codependix-cli" },
@@ -118,7 +118,7 @@ describe(BoundaryGraphService, () => {
       projectName: "affirmations",
     });
 
-    expect(graph.level).toBe("pythonImports");
+    expect(graph.level).toBe("python");
     expect(graph.nodes).toStrictEqual([
       { id: "main.py", path: "main.py", project: "affirmations" },
     ]);

@@ -12,12 +12,17 @@
  * A flat array with a `graph` discriminant would also work, and was rejected:
  * it forces a reader to know which selector keys are legal at which level,
  * which the key already says.
+ *
+ * `fileImports` nests by language rather than flattening to one rule array:
+ * a Python file cannot import a TypeScript file or vice versa, so no edge
+ * ever crosses languages, and the rule vocabularies genuinely differ (a
+ * `*.types.ts` naming convention has no Python equivalent). `nestjsModules`
+ * and `nxProjects` keep the flat shape every other level always had.
  */
 export interface CodependixBoundariesConfiguration {
-  imports?: CodependixBoundaryRule[] | undefined;
-  nestjs?: CodependixBoundaryRule[] | undefined;
-  nx?: CodependixBoundaryRule[] | undefined;
-  pythonImports?: CodependixBoundaryRule[] | undefined;
+  fileImports?: CodependixFileImportsBoundariesConfiguration | undefined;
+  nestjsModules?: CodependixBoundaryRule[] | undefined;
+  nxProjects?: CodependixBoundaryRule[] | undefined;
 }
 
 /**
@@ -201,6 +206,18 @@ export interface CodependixConfiguration {
  */
 export type CodependixExportTarget = "both" | "json" | "markdown" | "none";
 
+/**
+ * `boundaries.fileImports`'s rules, nested by language.
+ *
+ * Separate from `CodependixBoundariesConfiguration` so both the authored and
+ * resolved shapes (see `ResolvedCodependixFileImportsBoundariesConfiguration`)
+ * can name it once rather than repeating the two-field object inline.
+ */
+export interface CodependixFileImportsBoundariesConfiguration {
+  python?: CodependixBoundaryRule[] | undefined;
+  typescript?: CodependixBoundaryRule[] | undefined;
+}
+
 /** How one graph type's export is configured for a project. */
 export interface CodependixGraphOutput {
   json?: CodependixJsonOutput | undefined;
@@ -209,7 +226,10 @@ export interface CodependixGraphOutput {
 }
 
 /** A level of dependency graph codependix can build. */
-export type CodependixGraphType = "imports" | "nestjs" | "nx" | "pythonImports";
+export type CodependixGraphType =
+  | "fileImports"
+  | "nestjsModules"
+  | "nxProjects";
 
 /** Where a graph's JSON export is written. */
 export interface CodependixJsonOutput {
@@ -239,10 +259,9 @@ export interface CodependixMarkdownOutput {
  * "unset" value every default-resolution path needs to assign.
  */
 export interface CodependixProjectConfiguration {
-  imports?: CodependixGraphOutput | undefined;
-  nestjs?: CodependixGraphOutput | undefined;
-  nx?: CodependixGraphOutput | undefined;
-  pythonImports?: CodependixGraphOutput | undefined;
+  fileImports?: CodependixGraphOutput | undefined;
+  nestjsModules?: CodependixGraphOutput | undefined;
+  nxProjects?: CodependixGraphOutput | undefined;
 }
 
 /**
@@ -260,12 +279,12 @@ export interface CodependixSelectionArguments {
 /**
  * The Workspace Graph's export configuration, keyed by graph type.
  *
- * Only `nx` is declared: the Workspace Graph is a whole-repository Nx project
- * graph, and neither `codependix-nestjs-modules` nor `codependix-file-imports`
- * builds a workspace-wide graph of its own.
+ * Only `nxProjects` is declared: the Workspace Graph is a whole-repository Nx
+ * project graph, and neither `codependix-nestjs-modules` nor
+ * `codependix-file-imports` builds a workspace-wide graph of its own.
  */
 export interface CodependixWorkspaceConfiguration {
-  nx?: CodependixGraphOutput | undefined;
+  nxProjects?: CodependixGraphOutput | undefined;
 }
 
 /** Arguments accepted when loading a configuration file. */
@@ -300,14 +319,13 @@ export interface ProjectSelectionArguments {
 
 /**
  * Every graph level's declared rules, with a level naming none resolved to an
- * empty list rather than left unset — so a caller iterates the four levels
+ * empty list rather than left unset — so a caller iterates every level
  * without asking whether each one was configured.
  */
 export interface ResolvedCodependixBoundariesConfiguration {
-  imports: CodependixBoundaryRule[];
-  nestjs: CodependixBoundaryRule[];
-  nx: CodependixBoundaryRule[];
-  pythonImports: CodependixBoundaryRule[];
+  fileImports: ResolvedCodependixFileImportsBoundariesConfiguration;
+  nestjsModules: CodependixBoundaryRule[];
+  nxProjects: CodependixBoundaryRule[];
 }
 
 /**
@@ -336,6 +354,12 @@ export interface ResolvedCodependixConfiguration {
    */
   selection: ResolvedCodependixSelection;
   workspace: CodependixWorkspaceConfiguration;
+}
+
+/** `fileImports`'s rules, resolved so both languages always resolve to a list. */
+export interface ResolvedCodependixFileImportsBoundariesConfiguration {
+  python: CodependixBoundaryRule[];
+  typescript: CodependixBoundaryRule[];
 }
 
 /** A graph type's export configuration with every default applied. */

@@ -81,7 +81,11 @@ describe(MapService, () => {
 
     return {
       configuration: {
-        boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
+        boundaries: {
+          fileImports: { python: [], typescript: [] },
+          nestjsModules: [],
+          nxProjects: [],
+        },
         defaults: {},
         exclude: [],
         include: ["**"],
@@ -134,7 +138,11 @@ describe(MapService, () => {
     projectRoot = await mkdtemp(path.join(tmpdir(), "codependix-service-"));
 
     vi.mocked(configurationService.loadConfiguration).mockResolvedValue({
-      boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
+      boundaries: {
+        fileImports: { python: [], typescript: [] },
+        nestjsModules: [],
+        nxProjects: [],
+      },
       defaults: {},
       exclude: [],
       include: ["**"],

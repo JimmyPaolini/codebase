@@ -179,20 +179,23 @@ export class ConfigurationService {
   }
 
   /**
-   * Fills in the four graph levels a `boundaries` block may leave out.
+   * Fills in every graph level a `boundaries` block may leave out.
    *
    * Every level resolves to a list rather than to `undefined`, so a caller
-   * walks all four without asking which ones were configured — the same
-   * reason `include` resolves to a list nobody wrote.
+   * walks all of them without asking which ones were configured — the same
+   * reason `include` resolves to a list nobody wrote. `fileImports` resolves
+   * both of its languages the same way, one level deeper.
    */
   private resolveBoundaries(
     boundaries: CodependixBoundariesConfiguration | undefined,
   ): ResolvedCodependixBoundariesConfiguration {
     return {
-      imports: boundaries?.imports ?? [],
-      nestjs: boundaries?.nestjs ?? [],
-      nx: boundaries?.nx ?? [],
-      pythonImports: boundaries?.pythonImports ?? [],
+      fileImports: {
+        python: boundaries?.fileImports?.python ?? [],
+        typescript: boundaries?.fileImports?.typescript ?? [],
+      },
+      nestjsModules: boundaries?.nestjsModules ?? [],
+      nxProjects: boundaries?.nxProjects ?? [],
     };
   }
 
@@ -419,11 +422,12 @@ export class ConfigurationService {
    *
    * `--projects` and `--tags` do reach it, through the node set rather than
    * through this: a run naming a selection draws the graph over the projects
-   * it named. Where that graph lands is still read from `workspace.nx`.
+   * it named. Where that graph lands is still read from
+   * `workspace.nxProjects`.
    */
   public resolveForWorkspace(
     configuration: ResolvedCodependixConfiguration,
   ): ResolvedCodependixGraphOutput {
-    return this.resolveGraphOutput(configuration.workspace.nx);
+    return this.resolveGraphOutput(configuration.workspace.nxProjects);
   }
 }

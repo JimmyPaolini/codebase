@@ -2,10 +2,11 @@
 
 **Evaluates declared rules against a graph codependix already built, and reports the edges and cycles that break them.**
 
-Codependix draws four graphs and says nothing about whether their shape is
-allowed. This turns it from a documentation tool into a gate, at all four
-levels — Nx project edges, NestJS module edges, and file-level TypeScript and
-Python import edges.
+Codependix draws graphs at three levels and says nothing about whether their
+shape is allowed. This turns it from a documentation tool into a gate, at all
+three levels — Nx project edges, NestJS module edges, and file-level import
+edges, judged separately per language even though TypeScript and Python are
+exported together as one `fileImports` graph type.
 
 ```bash
 codependix map --check boundaries
@@ -49,10 +50,11 @@ answer.
 ## The rule model
 
 Rules are declared in `codependix.config.ts`, keyed by the graph level that
-judges them — `imports`, `nestjs`, `nx`, `pythonImports` — the same keys the
-export configuration already uses. A level declaring no rule is never built at
-all, which is what keeps the gate affordable: judging the NestJS level means
-booting every container in preview mode.
+judges them — `nestjsModules`, `nxProjects`, and `fileImports`, which nests by
+language as `{ typescript, python }` since no edge ever crosses the two. A
+level declaring no rule is never built at all, which is what keeps the gate
+affordable: judging the NestJS level means booting every container in
+preview mode.
 
 Two shapes and three kinds — an access rule, written as `from`/`to` with the
 verdict running one way or the other, and an `acyclic` rule scoped by `nodes`:
@@ -88,9 +90,9 @@ matched with `path.matchesGlob`:
 | Field | Matches | Available at |
 | ----- | ------- | ------------ |
 | `id` | The node's identifier — a project name, a file path, or a module class name | every level |
-| `path` | A workspace-relative project root, or a project-relative file path | `nx`, `imports`, `pythonImports` |
-| `project` | The Nx project a node belongs to | `nx`, `imports`, `pythonImports` |
-| `tags` | The node's Nx tags; one tag matching is enough | `nx` |
+| `path` | A workspace-relative project root, or a project-relative file path | `nxProjects`, `fileImports.typescript`, `fileImports.python` |
+| `project` | The Nx project a node belongs to | `nxProjects`, `fileImports.typescript`, `fileImports.python` |
+| `tags` | The node's Nx tags; one tag matching is enough | `nxProjects` |
 
 Every field a selector states must match — the fields narrow each other.
 Within one field, one glob matching is enough. A selector naming a field its
