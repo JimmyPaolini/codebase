@@ -313,6 +313,12 @@ graph LR
 ```
 <!-- codependix:end name="codependix-imports" -->
 
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs" -->
+_This project defines no NestJS modules to graph._
+<!-- codependix:end name="codependix-nestjs" -->
+
 <!-- CODE_STATISTICS_START -->
 
 ## ⏲️ Codometer

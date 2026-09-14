@@ -118,6 +118,10 @@ export interface RunMode {
  */
 export interface RunPlan {
   configuration: ResolvedCodometerConfiguration;
+  /** Where the console's own badge block comes from, resolved independently
+   * of `destinations.markdown` so it never depends on which `--output-*` flag
+   * was passed. */
+  consoleMarkdown: ResolvedMarkdownDestination | undefined;
   destinations: RunDestinations;
   format: MeasureFormat | undefined;
   mode: RunMode;

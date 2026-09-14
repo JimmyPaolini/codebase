@@ -353,6 +353,44 @@ describe(RunPlanService, () => {
     });
   });
 
+  describe("what the console renders", () => {
+    // The regression this exists for: `--output-json` alone used to make the
+    // console fall back to the empty default, silently dropping every
+    // configured custom counter even though a markdown output was declared.
+    it("resolves the configured markdown destination even when only --output-json was passed", () => {
+      const consoleMarkdown = service.resolveConsoleMarkdown({
+        configuration: buildConfiguration([markdownOutput]),
+        options: { outputJson: true },
+        workingDirectory: "/repo",
+      });
+
+      expect(consoleMarkdown).toStrictEqual({
+        ...markdownOutput,
+        path: "/repo/README.md",
+      });
+    });
+
+    it("resolves nothing when the configuration names no markdown output", () => {
+      const consoleMarkdown = service.resolveConsoleMarkdown({
+        configuration: buildConfiguration(),
+        options: { outputJson: true },
+        workingDirectory: "/repo",
+      });
+
+      expect(consoleMarkdown).toBeUndefined();
+    });
+
+    it("still honors an explicit --output-markdown path", () => {
+      const consoleMarkdown = service.resolveConsoleMarkdown({
+        configuration: buildConfiguration([markdownOutput]),
+        options: { outputMarkdown: "docs/statistics.md" },
+        workingDirectory: "/repo",
+      });
+
+      expect(consoleMarkdown?.path).toBe("/repo/docs/statistics.md");
+    });
+  });
+
   describe("what it excludes from measurement", () => {
     it("lists every file the run writes, relative to the directory", () => {
       const { destinations } = resolve(

@@ -301,6 +301,12 @@ _Dashed edges are dependencies Nx inferred from configuration rather than from c
 _This project has no internal file imports._
 <!-- codependix:end name="codependix-imports" -->
 
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs" -->
+_This project defines no NestJS modules to graph._
+<!-- codependix:end name="codependix-nestjs" -->
+
 <!-- CODE_STATISTICS_START -->
 
 ## ⏲️ Codometer
