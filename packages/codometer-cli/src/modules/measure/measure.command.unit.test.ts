@@ -90,6 +90,14 @@ const jsonOutput = {
   type: "json" as const,
 };
 
+const customStatistic = {
+  color: "7c3aed",
+  comment: undefined,
+  group: "conventions" as const,
+  label: "Comment Budget",
+  patterns: [],
+};
+
 describe(MeasureCommand, () => {
   let command: MeasureCommand;
   let configurationService: ConfigurationService;
@@ -385,6 +393,30 @@ describe(MeasureCommand, () => {
         expect.objectContaining({ indentation: 2 }),
       );
       expect(markdownService.sync).not.toHaveBeenCalled();
+    });
+
+    // The regression this exists for: `--output-json` alone used to make the
+    // console fall back to the empty default markdown destination, silently
+    // dropping every configured custom counter's badge and instance section.
+    it("keeps a configured custom counter in the console badges when only --output-json was passed", async () => {
+      vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
+        buildConfiguration([
+          jsonOutput,
+          { ...markdownOutput, custom: [customStatistic] },
+        ]),
+      );
+
+      await run({ outputJson: true });
+
+      expect(markdownService.renderBlock).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining<
+          Partial<Parameters<MarkdownService["renderBlock"]>[0]>
+        >({
+          destination: expect.objectContaining<
+            Partial<ResolvedMarkdownDestination>
+          >({ custom: [customStatistic] }),
+        }),
+      );
     });
 
     it("names a stale report the run was checking", async () => {
