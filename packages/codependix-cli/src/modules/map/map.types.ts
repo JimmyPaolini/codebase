@@ -3,16 +3,29 @@
 import type { CodependixRunMode } from "../delivery/delivery.types";
 import type { ResolvedCodependixConfiguration } from "@codependix/configuration";
 import type {
+  FileImportsWorkspaceGraph,
   PythonImportGraph,
   TypescriptImportGraph,
 } from "@codependix/file-imports";
-import type { NestjsModuleGraph } from "@codependix/nestjs-modules";
+import type {
+  NestjsModuleGraph,
+  NestjsModulesWorkspaceGraph,
+} from "@codependix/nestjs-modules";
 import type {
   Neighborhood,
   NxProject,
   NxProjectGraph,
   WorkspaceGraph,
 } from "@codependix/nx-projects";
+
+/**
+ * The JSON shape the whole-workspace file-level import graph export is
+ * written as.
+ *
+ * Identical in shape to `FileImportsWorkspaceGraph` itself, kept as its own
+ * named type for the same reason `NxWorkspaceGraphExport` is.
+ */
+export type FileImportsWorkspaceGraphExport = FileImportsWorkspaceGraph;
 
 /**
  * Everything every graph-type pass reads, resolved once per run rather than
@@ -68,6 +81,15 @@ export interface MapCommandOptions {
  * `NxWorkspaceGraphExport` follows for the Nx Workspace Graph.
  */
 export type NestjsModuleGraphExport = NestjsModuleGraph;
+
+/**
+ * The JSON shape the whole-workspace NestJS module graph export is written
+ * as.
+ *
+ * Identical in shape to `NestjsModulesWorkspaceGraph` itself, kept as its own
+ * named type for the same reason `NxWorkspaceGraphExport` is.
+ */
+export type NestjsModulesWorkspaceGraphExport = NestjsModulesWorkspaceGraph;
 
 /** The JSON shape a single project's Nx neighborhood export is written as. */
 export interface NxNeighborhoodExport {

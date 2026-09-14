@@ -21,6 +21,7 @@ import { LoggerService } from "@codebase/logger";
 import { AnchorsService } from "../anchors/anchors.service";
 import { DeliveryService } from "../delivery/delivery.service";
 import { PythonImportsService } from "../python-imports/python-imports.service";
+import { WorkspaceGraphsService } from "../workspace-graphs/workspace-graphs.service";
 
 import { MapService } from "./map.service";
 
@@ -64,6 +65,7 @@ describe(MapService, () => {
   let pythonImportsService: PythonImportsService;
   let typescriptService: TypescriptService;
   let workspaceGraphService: WorkspaceGraphService;
+  let workspaceGraphsService: WorkspaceGraphsService;
   let projectRoot: string;
 
   /**
@@ -111,6 +113,7 @@ describe(MapService, () => {
     pythonImportsService = createMock<PythonImportsService>();
     typescriptService = createMock<TypescriptService>();
     workspaceGraphService = createMock<WorkspaceGraphService>();
+    workspaceGraphsService = createMock<WorkspaceGraphsService>();
 
     const module = await Test.createTestingModule({
       providers: [
@@ -128,6 +131,7 @@ describe(MapService, () => {
         { provide: PythonImportsService, useValue: pythonImportsService },
         { provide: TypescriptService, useValue: typescriptService },
         { provide: WorkspaceGraphService, useValue: workspaceGraphService },
+        { provide: WorkspaceGraphsService, useValue: workspaceGraphsService },
       ],
     }).compile();
 
@@ -176,6 +180,12 @@ describe(MapService, () => {
     vi.mocked(workspaceGraphService.renderMermaid).mockReturnValue(
       "```mermaid\ngraph LR\n```",
     );
+    vi.mocked(
+      workspaceGraphsService.runFileImportsWorkspaceGraph,
+    ).mockReturnValue(undefined);
+    vi.mocked(
+      workspaceGraphsService.runNestjsModulesWorkspaceGraph,
+    ).mockResolvedValue(undefined);
     vi.mocked(nestjsProjectService.discoverProjects).mockReturnValue([
       {
         absoluteRoot: projectRoot,
@@ -666,6 +676,63 @@ describe(MapService, () => {
         },
       ]);
     });
+
+    describe("workspace graph", () => {
+      beforeEach(() => {
+        vi.mocked(configurationService.resolveForProject).mockReturnValue({
+          json: undefined,
+          markdown: undefined,
+          target: "none",
+        });
+      });
+
+      // The graph itself — discovery, combining, rendering — is
+      // `WorkspaceGraphsService`'s own responsibility and tested there;
+      // `MapService` only has to fold whatever it returns into the outcome.
+      it("delegates to WorkspaceGraphsService and folds its result in", async () => {
+        vi.mocked(
+          workspaceGraphsService.runNestjsModulesWorkspaceGraph,
+        ).mockResolvedValue({
+          isCurrent: true,
+          projectName: "workspace",
+          stalePaths: [],
+        });
+
+        const outcome = await service.runNestjsGraphs(buildNestjsContext());
+
+        expect(
+          workspaceGraphsService.runNestjsModulesWorkspaceGraph,
+        ).toHaveBeenCalledWith(buildNestjsContext());
+        expect(outcome).toStrictEqual({
+          failures: [],
+          results: [
+            { isCurrent: true, projectName: "workspace", stalePaths: [] },
+          ],
+        });
+      });
+
+      it("leaves the workspace graph out of the results when it resolves to undefined", async () => {
+        const outcome = await service.runNestjsGraphs(buildNestjsContext());
+
+        expect(outcome).toStrictEqual({ failures: [], results: [] });
+      });
+
+      it("records a failure building the workspace graph without losing the project results", async () => {
+        vi.mocked(
+          workspaceGraphsService.runNestjsModulesWorkspaceGraph,
+        ).mockRejectedValue(new Error("failed to boot container"));
+
+        const outcome = await service.runNestjsGraphs(buildNestjsContext());
+
+        expect(outcome.results).toStrictEqual([]);
+        expect(outcome.failures).toStrictEqual([
+          {
+            error: "failed to boot container",
+            projectName: "workspace",
+          },
+        ]);
+      });
+    });
   });
 
   describe("runImportGraphs", () => {
@@ -884,6 +951,62 @@ describe(MapService, () => {
       expect(outcome.failures).toStrictEqual([
         { error: "boom", projectName: "codependix-imports" },
       ]);
+    });
+
+    describe("workspace graph", () => {
+      beforeEach(() => {
+        vi.mocked(configurationService.resolveForProject).mockReturnValue({
+          json: undefined,
+          markdown: undefined,
+          target: "none",
+        });
+      });
+
+      // The graph itself — discovery, combining, rendering — is
+      // `WorkspaceGraphsService`'s own responsibility and tested there;
+      // `MapService` only has to fold whatever it returns into the outcome.
+      it("delegates to WorkspaceGraphsService and folds its result in", () => {
+        vi.mocked(
+          workspaceGraphsService.runFileImportsWorkspaceGraph,
+        ).mockReturnValue({
+          isCurrent: true,
+          projectName: "workspace",
+          stalePaths: [],
+        });
+
+        const outcome = service.runImportGraphs(buildImportsContext());
+
+        expect(
+          workspaceGraphsService.runFileImportsWorkspaceGraph,
+        ).toHaveBeenCalledWith(buildImportsContext());
+        expect(outcome).toStrictEqual({
+          failures: [],
+          results: [
+            { isCurrent: true, projectName: "workspace", stalePaths: [] },
+          ],
+        });
+      });
+
+      it("leaves the workspace graph out of the results when it resolves to undefined", () => {
+        const outcome = service.runImportGraphs(buildImportsContext());
+
+        expect(outcome).toStrictEqual({ failures: [], results: [] });
+      });
+
+      it("records a failure building the workspace graph without losing the project results", () => {
+        vi.mocked(
+          workspaceGraphsService.runFileImportsWorkspaceGraph,
+        ).mockImplementation(() => {
+          throw new Error("failed to build program");
+        });
+
+        const outcome = service.runImportGraphs(buildImportsContext());
+
+        expect(outcome.results).toStrictEqual([]);
+        expect(outcome.failures).toStrictEqual([
+          { error: "failed to build program", projectName: "workspace" },
+        ]);
+      });
     });
   });
 

@@ -295,7 +295,9 @@ function buildResolutionSections(): ExampleSection[] {
       note: "Both lists are matched against a project's name **and** its workspace-relative root. `atlas-service` matches no glob by name and matches `packages/*` by root, so a caller that knows the root gets a different answer from one that does not — which is why `projectRoot` is optional rather than absent.",
     },
     {
-      body: fenceJson(configurationService.resolveForWorkspace(configuration)),
+      body: fenceJson(
+        configurationService.resolveForWorkspace(configuration, "nxProjects"),
+      ),
       heading: "The Workspace Graph ignores both glob lists",
       note: "It is exported once for the repository rather than once per project, so it carries no per-project override and `include`/`exclude` never apply to it. `--projects` and `--tags` are the exception: they narrow which projects are **nodes** in it, while its destination is still read from `workspace.nxProjects`.",
     },

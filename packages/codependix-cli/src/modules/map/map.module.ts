@@ -15,6 +15,7 @@ import { DeliveryModule } from "../delivery/delivery.module";
 import { PythonImportsModule } from "../python-imports/python-imports.module";
 import { RunContextModule } from "../run-context/run-context.module";
 import { RunPlanModule } from "../run-plan/run-plan.module";
+import { WorkspaceGraphsModule } from "../workspace-graphs/workspace-graphs.module";
 
 import { MapCommand } from "./map.command";
 import { MapService } from "./map.service";
@@ -36,6 +37,7 @@ import { MapService } from "./map.service";
     RunPlanModule,
     TypescriptModule,
     WorkspaceGraphModule,
+    WorkspaceGraphsModule,
   ],
   providers: [MapCommand, MapService],
 })

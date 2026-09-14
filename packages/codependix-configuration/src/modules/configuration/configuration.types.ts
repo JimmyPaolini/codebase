@@ -279,11 +279,14 @@ export interface CodependixSelectionArguments {
 /**
  * The Workspace Graph's export configuration, keyed by graph type.
  *
- * Only `nxProjects` is declared: the Workspace Graph is a whole-repository Nx
- * project graph, and neither `codependix-nestjs-modules` nor
- * `codependix-file-imports` builds a workspace-wide graph of its own.
+ * All three graph types are declared: `codependix-file-imports` and
+ * `codependix-nestjs-modules` each build a whole-workspace aggregate graph the
+ * same way `codependix-nx-projects` always has, spanning every project rather
+ * than one — see each package's own `workspace-graph` module.
  */
 export interface CodependixWorkspaceConfiguration {
+  fileImports?: CodependixGraphOutput | undefined;
+  nestjsModules?: CodependixGraphOutput | undefined;
   nxProjects?: CodependixGraphOutput | undefined;
 }
 

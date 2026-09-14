@@ -620,6 +620,54 @@ describe(ConfigurationService, () => {
     });
   });
 
+  describe("workspace", () => {
+    it("accepts a fileImports workspace section, the same CodependixGraphOutput shape as nxProjects", () => {
+      const parsed = codependixConfigurationSchema.safeParse({
+        workspace: {
+          fileImports: {
+            markdown: { anchor: "codependix-workspace-file-imports" },
+            target: "markdown",
+          },
+        },
+      });
+
+      expect(parsed.success).toBe(true);
+    });
+
+    it("accepts a nestjsModules workspace section, the same CodependixGraphOutput shape as nxProjects", () => {
+      const parsed = codependixConfigurationSchema.safeParse({
+        workspace: {
+          nestjsModules: {
+            markdown: { anchor: "codependix-workspace-nestjs-modules" },
+            target: "markdown",
+          },
+        },
+      });
+
+      expect(parsed.success).toBe(true);
+    });
+
+    it("accepts all three workspace graph types declared together", () => {
+      const parsed = codependixConfigurationSchema.safeParse({
+        workspace: {
+          fileImports: { markdown: { anchor: "workspace-file-imports" } },
+          nestjsModules: { markdown: { anchor: "workspace-nestjs-modules" } },
+          nxProjects: { markdown: { anchor: "workspace" } },
+        },
+      });
+
+      expect(parsed.success).toBe(true);
+    });
+
+    it("refuses a fileImports workspace section missing its markdown destination for a markdown target", () => {
+      const parsed = codependixConfigurationSchema.safeParse({
+        workspace: { fileImports: { target: "markdown" } },
+      });
+
+      expect(parsed.success).toBe(false);
+    });
+  });
+
   describe("a command-line selection", () => {
     /** Resolves a configuration whose only include glob is `packages/*`. */
     function buildConfiguration(
@@ -753,7 +801,9 @@ describe(ConfigurationService, () => {
     it("resolves to none when the configuration names no workspace section", () => {
       const configuration = service.resolveConfiguration({});
 
-      expect(service.resolveForWorkspace(configuration)).toStrictEqual({
+      expect(
+        service.resolveForWorkspace(configuration, "nxProjects"),
+      ).toStrictEqual({
         json: undefined,
         markdown: undefined,
         target: "none",
@@ -771,11 +821,74 @@ describe(ConfigurationService, () => {
         },
       });
 
-      expect(service.resolveForWorkspace(configuration)).toStrictEqual({
+      expect(
+        service.resolveForWorkspace(configuration, "nxProjects"),
+      ).toStrictEqual({
         json: { path: "codependix-workspace-graph.json" },
         markdown: { anchor: "workspace", path: "README.md" },
         target: "both",
       });
+    });
+
+    it("reads the workspace section's fileImports export configuration", () => {
+      const configuration = service.resolveConfiguration({
+        workspace: {
+          fileImports: {
+            markdown: { anchor: "codependix-workspace-file-imports" },
+            target: "markdown",
+          },
+        },
+      });
+
+      expect(
+        service.resolveForWorkspace(configuration, "fileImports"),
+      ).toStrictEqual({
+        json: undefined,
+        markdown: {
+          anchor: "codependix-workspace-file-imports",
+          path: "README.md",
+        },
+        target: "markdown",
+      });
+    });
+
+    it("reads the workspace section's nestjsModules export configuration", () => {
+      const configuration = service.resolveConfiguration({
+        workspace: {
+          nestjsModules: {
+            markdown: { anchor: "codependix-workspace-nestjs-modules" },
+            target: "markdown",
+          },
+        },
+      });
+
+      expect(
+        service.resolveForWorkspace(configuration, "nestjsModules"),
+      ).toStrictEqual({
+        json: undefined,
+        markdown: {
+          anchor: "codependix-workspace-nestjs-modules",
+          path: "README.md",
+        },
+        target: "markdown",
+      });
+    });
+
+    // Each graph type's workspace destination is independent: naming one
+    // never resolves another that was never declared.
+    it("resolves each graph type's workspace section independently", () => {
+      const configuration = service.resolveConfiguration({
+        workspace: {
+          nxProjects: { markdown: { anchor: "workspace" }, target: "markdown" },
+        },
+      });
+
+      expect(
+        service.resolveForWorkspace(configuration, "fileImports"),
+      ).toStrictEqual({ json: undefined, markdown: undefined, target: "none" });
+      expect(
+        service.resolveForWorkspace(configuration, "nestjsModules"),
+      ).toStrictEqual({ json: undefined, markdown: undefined, target: "none" });
     });
 
     it("is unaffected by include and exclude globs", () => {
@@ -787,9 +900,9 @@ describe(ConfigurationService, () => {
         },
       });
 
-      expect(service.resolveForWorkspace(configuration).target).toBe(
-        "markdown",
-      );
+      expect(
+        service.resolveForWorkspace(configuration, "nxProjects").target,
+      ).toBe("markdown");
     });
 
     it("resolves an explicit workspace configuration built without loading a file", async () => {
@@ -803,7 +916,9 @@ describe(ConfigurationService, () => {
         configurationPath,
       });
 
-      expect(service.resolveForWorkspace(configuration)).toStrictEqual({
+      expect(
+        service.resolveForWorkspace(configuration, "nxProjects"),
+      ).toStrictEqual({
         json: { path: "graph.json" },
         markdown: undefined,
         target: "json",
