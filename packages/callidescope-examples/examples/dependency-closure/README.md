@@ -46,14 +46,13 @@ code a run can see, so a run that cannot see a dependency reports a stack that
 ends where the package does — an answer that is not wrong so much as scoped, and
 scoped in a way nothing in the report said out loud.
 
-Six projects are traced when this run starts here. Three of them are named as
+Five projects are traced when this run starts here. Two of them are named as
 starting roots and three arrive through the closure:
 
 | Project | Reached because |
 | ------- | --------------- |
 | `packages/callidescope-examples` | Named — the directory the run was pointed at |
 | `.../examples/gated-leaf` | Named — a nested project [`gated-leaf`](../gated-leaf/README.md) explains, and says why it is named rather than reached |
-| `.../examples/inherited-limits` | Named, for the same reason |
 | `packages/callidescope-configuration` | The fixture above imports it, and [`callidescope.workspace.config.ts`](../../callidescope.workspace.config.ts) imports a type from it |
 | `packages/codometer-configuration` | Reached through the shared `configuration/codometer.config.ts` that this package's own [`codometer.config.ts`](../../codometer.config.ts) spreads |
 | `packages/logger` | Reached through the shared `configuration/eslint.config.ts`, which imports `@codebase/logger/eslint` |

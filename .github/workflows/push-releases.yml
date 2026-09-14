@@ -75,19 +75,18 @@ jobs:
     needs: check-supersession
     if: needs.check-supersession.outputs.superseded != 'true'
     runs-on: ubuntu-latest
-    # Two populations of run hide behind one average. Most pushes to main
-    # release nothing — semantic-release returns in about 3 seconds and the job
-    # finishes in 6–7 minutes. A push that does release spends 8–10 minutes in
-    # that step, because `@semantic-release/git` makes the version commit with a
-    # plain `git commit` and the pre-commit hook runs the whole `lint-codebase`
-    # gate over it. Measured end to end, releasing runs have taken 14m24s to
-    # 16m18s.
+    # Two populations of run hide behind one average. Most pushes release
+    # nothing and finish in 6–7 minutes. A releasing push spends 8–10 minutes
+    # in the pre-commit hook's `lint-codebase` gate over the version commit;
+    # measured end to end, 14m24s to 16m18s against 18 minutes left only 2–4
+    # minutes of slack.
     #
-    # So 12 minutes is not available, however comfortably the common run fits
-    # inside it: it would pass every no-op and kill every real release, inside
-    # the publish step — precisely what the concurrency note above exists to
-    # prevent. 18 leaves roughly 10% over the slowest release yet seen.
-    timeout-minutes: 18
+    # That slack vanishes for the rarer release whose merge is itself a
+    # workspace-wide callidescope/codometer/codependix config change (`#660`,
+    # `#583`, `#774`): every project's `README.md`/`AGENTS.md` gets a genuinely
+    # new section, invalidating `eslint`'s per-project cache for all of them at
+    # once. `#774`'s release timed out this way. 24 covers both populations.
+    timeout-minutes: 24
 
     steps:
       - name: 📥 Checkout Repository

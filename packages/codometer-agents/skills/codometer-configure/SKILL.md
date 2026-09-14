@@ -139,30 +139,41 @@ change that broke it. For everything else a breach could mean, reach for the
 
 ## Custom statistics
 
-There is no longer one shared `statistics` array — each `outputs` entry
-carries its own `custom` list, so a JSON report and a markdown report may
-count entirely different things:
+The top-level `custom` array is what **measures** a counter — declaring it
+there is what computes it, regardless of whether, or where, any output
+renders it:
 
 ```ts
-outputs: [
-  {
-    custom: [
-      { label: "Service Files", patterns: ["**/*.service.ts"] },
-      { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
-      { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
-    ],
-    path: "codometer-report.json",
-    type: "json",
-  },
+custom: [
+  { label: "Service Files", patterns: ["**/*.service.ts"] },
+  { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
+  { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
 ],
 ```
 
-Each entry renders as one badge, in configured order. `color` is a shields.io
-hexadecimal triplet; an entry that omits it takes the next color from a
-built-in palette per group, so a counter's color stays stable between runs. A
-counter selects what it counts with exactly one of three fields — `patterns`,
-`symbols`, or `comment` — and an entry naming none of them is rejected rather
-than reported as a permanent zero.
+Each entry renders as one badge everywhere it is selected, in configured
+order. `color` is a shields.io hexadecimal triplet; an entry that omits it
+takes the next color from a built-in palette per group, so a counter's color
+stays stable between runs. A counter selects what it counts with exactly one
+of three fields — `patterns`, `symbols`, or `comment` — and an entry naming
+none of them is rejected rather than reported as a permanent zero.
+
+An `outputs` entry's own `custom` array is a separate, later concern: it
+**selects**, by label, which of the top-level counters that destination
+renders — it never declares a counter of its own, so a JSON report and a
+markdown report may still select entirely different labels:
+
+```ts
+outputs: [
+  { custom: ["Service Files"], path: "codometer-report.json", type: "json" },
+  { custom: ["Unit Tests"], path: "README.md", type: "markdown" },
+],
+```
+
+A label an output selects that the top-level `custom` never declared is
+refused when the configuration loads — selection cannot conjure a counter that
+was never measured. A counter `custom` declares but no output selects is still
+measured and still gates a limit; it simply renders nowhere.
 
 ### Counting declarations
 

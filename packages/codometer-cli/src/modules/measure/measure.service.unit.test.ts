@@ -28,7 +28,16 @@ const codebaseInput: ResolvedCodometerInput = {
   name: "codebase",
 };
 
+const customStatistic = {
+  color: "7c3aed",
+  comment: undefined,
+  group: "conventions" as const,
+  label: "Service Files",
+  patterns: ["**/*.service.ts"],
+};
+
 const configuration: ResolvedCodometerConfiguration = {
+  custom: [customStatistic],
   defaultInput: undefined,
   exclude: ["**/node_modules/**"],
   excludeFrom: [],
@@ -37,15 +46,7 @@ const configuration: ResolvedCodometerConfiguration = {
   limits: [],
   outputs: [
     {
-      custom: [
-        {
-          color: "7c3aed",
-          comment: undefined,
-          group: "conventions",
-          label: "Service Files",
-          patterns: ["**/*.service.ts"],
-        },
-      ],
+      custom: [customStatistic],
       indentation: 2,
       path: "codometer-report.json",
       type: "json",
@@ -224,7 +225,7 @@ describe(MeasureService, () => {
     });
   });
 
-  it("counts the union of every output's custom statistics over the tracked files", () => {
+  it("measures every top-level custom statistic over the tracked files", () => {
     const result = buildService().measure({
       configuration,
       outputPaths: [],
@@ -234,7 +235,7 @@ describe(MeasureService, () => {
     expect(customizationService.analyze).toHaveBeenCalledExactlyOnceWith({
       commentCounts: {},
       files: discoveredFiles.files,
-      statistics: configuration.outputs[0]?.custom,
+      statistics: configuration.custom,
       symbolCounts: {},
     });
     expect(result.statistics.custom).toStrictEqual([

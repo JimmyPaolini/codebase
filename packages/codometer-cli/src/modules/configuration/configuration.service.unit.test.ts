@@ -20,6 +20,7 @@ function buildConfiguration(
   overrides: Partial<ResolvedCodometerConfiguration> = {},
 ): ResolvedCodometerConfiguration {
   return {
+    custom: [],
     defaultInput: undefined,
     exclude: [],
     excludeFrom: [],

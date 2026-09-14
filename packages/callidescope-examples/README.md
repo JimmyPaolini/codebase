@@ -54,15 +54,14 @@ Each directory under [`examples/`](examples) is one example, carries its own
 **The package is traced as one unit, together with its dependency closure.**
 Almost every example directory carries no `tsconfig.json` of its own, so it
 cannot be traced alone — which is why every example's `## Run it` names the same
-command and then says where in the committed output to look. The two exceptions
-are deliberate: [gated-leaf](examples/gated-leaf/README.md) and
-[inherited-limits](examples/inherited-limits/README.md) _are_ projects of their
-own, because what they demonstrate is per-project configuration and a limit
+command and then says where in the committed output to look. The one exception
+is deliberate: [gated-leaf](examples/gated-leaf/README.md) _is_ a project of its
+own, because what it demonstrates is per-project configuration and a limit
 resolves per project. The run reaches beyond this package in the other
 direction, too: a project's own `tsconfig.json` never lists the packages it
 imports, so a scoped run also traces every project its imports transitively
 reach — otherwise a call leaving the package would land in code no traced
-project owned. Six projects are traced here, and
+project owned. Five projects are traced here, and
 [dependency-closure](examples/dependency-closure/README.md) is where that is
 worked through. Read them in the order below for a walkthrough:
 [plain-call](examples/plain-call/README.md) →
@@ -80,7 +79,6 @@ worked through. Read them in the order below for a walkthrough:
 [deep-stack](examples/deep-stack/README.md) →
 [forwarding-stack](examples/forwarding-stack/README.md) →
 [project-depth-limit](examples/project-depth-limit/README.md) →
-[inherited-limits](examples/inherited-limits/README.md) →
 [gated-leaf](examples/gated-leaf/README.md) →
 [shared-tail](examples/shared-tail/README.md) →
 [frame-annotations](examples/frame-annotations/README.md).
@@ -119,14 +117,13 @@ as `injected-dependency` and lands in a different package —
 traces the projects that directory's imports transitively reach, rather than the
 directory alone.
 
-Pointed at this package, the run builds a program for six projects — three it
+Pointed at this package, the run builds a program for five projects — two it
 was named at, and three its imports reached:
 
 | Project | Reached because |
 | ------- | --------------- |
 | `packages/callidescope-examples` | Named — the directory the run was pointed at |
 | `.../examples/gated-leaf` | Named — a nested project, for the reason [gated-leaf](examples/gated-leaf/README.md) gives |
-| `.../examples/inherited-limits` | Named, for the same reason |
 | `packages/callidescope-configuration` | Imported by the fixture, and by [`callidescope.workspace.config.ts`](callidescope.workspace.config.ts) |
 | `packages/codometer-configuration` | Reached through the shared configuration [`codometer.config.ts`](codometer.config.ts) spreads |
 | `packages/logger` | Reached through the shared `configuration/eslint.config.ts` |
@@ -211,15 +208,14 @@ same file is the example working, not a lint failure to chase.
 ### Per-project configuration
 
 Every limit callidescope gates on belongs to a **project** rather than to a run,
-and a project is a directory holding a `tsconfig.json`. Four examples cover what
-a project may say about itself and what happens when it says nothing:
+and a project is a directory holding a `tsconfig.json`. Three examples cover
+what a project may say about itself:
 
 | Example | What it declares | What that changed |
 | ------- | ---------------- | ----------------- |
 | [`declared-entry-points`](examples/declared-entry-points) | `entryPoints.addresses`, in [`callidescope.config.ts`](callidescope.config.ts) at this package's root | A callable with a caller heads a stack of its own, under the `declared` kind |
 | [`project-depth-limit`](examples/project-depth-limit) | `limits.maximumDepth`, in the same file | A six-frame chain is a finding at five and would pass at the six the run supplies |
-| [`inherited-limits`](examples/inherited-limits) | Every field, all of them the default | Seven frames are a finding against the six written in its own file, and `maximumBreadth: undefined` gates breadth not at all |
-| [`gated-leaf`](examples/gated-leaf) | Both fields, plus `limits.maximumBreadth` and `exclude`, in its own nested project | Four frames and three direct callees become findings that no limit above them would ever have reported, and one generated file goes untraced while its twin next door does not |
+| [`gated-leaf`](examples/gated-leaf) | Both fields, plus `limits.maximumBreadth` and `exclude`, in its own nested project | Four frames and three direct callees become findings that no limit above them would ever have reported, and one generated file goes untraced |
 
 They sit in the reading order above in that order, and one rule does all the
 work: **the workspace number is a default, not a ceiling, and not
@@ -243,7 +239,7 @@ holding one is refused before anything is traced. Nothing is lost: `maximumDepth
 and `maximumBreadth` are the only two a project may set, so a spread would supply
 the field being overridden plus the one that gets the file rejected.
 
-Two of the four are projects nested inside this one, the way
+One of the three is a project nested inside this one, the way
 [`codependix-examples`](../codependix-examples) nests the workspaces it graphs.
 That is what makes a per-project limit demonstrable at all: a limit belongs to a
 project, so a report showing three different ones takes more than one project to
@@ -261,16 +257,16 @@ committed:
 | `markdown` | [`output/report.md`](output/report.md) — the printed trees, between anchors |
 | `mermaid` | [`output/diagram.md`](output/diagram.md) — the same stacks, drawn |
 
-Beside those three, each of the three projects here declares a `write.markdown`
+Beside those three, each of the two projects here declares a `write.markdown`
 of its own, which is what puts
-[the section at the bottom of this file](#-callidescope) and one in each of the
-two nested projects' guides. No workspace declaration fans those out — a
+[the section at the bottom of this file](#-callidescope) and one in the
+nested project's guide. No workspace declaration fans those out — a
 project's section is that project's own to declare, or not to.
 
 A run publishes a section only for a **scoped** project — the projects a run
 was pointed at, not the ones its closure reached. This run is scoped to this
-package and to the two nested projects under `examples/`, so it writes three
-sections and no more, even though it measures six projects. That is the rule the
+package and to the one nested project under `examples/`, so it writes two
+sections and no more, even though it measures five projects. That is the rule the
 closure is read against: **measurement reaches into a package's dependencies,
 publishing does not.** A scoped run that also published would rewrite the
 section in three sibling packages that never asked for it, and fight
@@ -422,11 +418,11 @@ Four decisions are worth making deliberately:
 4. **Which of your projects say something for themselves.** The workspace number
    is a default rather than a ceiling, so a project low in your call graph can
    carry a limit that describes it instead of one picked for the code above it.
-   Start with none: a project with no file of its own keeps working, which is
-   what [`inherited-limits`](examples/inherited-limits) is. Add one where the
-   default is telling you nothing, which is what
-   [`gated-leaf`](examples/gated-leaf) is. Write only the limits you override,
-   and never spread the workspace limits into a project file — see
+   Every traced project needs a complete `callidescope.config.ts` of its own —
+   spread `projectDefaults` and keep the defaults you mean to keep, override
+   what you don't. Add one where the default is telling you nothing, which is
+   what [`gated-leaf`](examples/gated-leaf) is. Write only the limits you
+   override, and never spread the workspace limits into a project file — see
    [`project-depth-limit`](examples/project-depth-limit) for why that is refused.
 
 ## Why this package is shaped the way it is
@@ -442,7 +438,7 @@ whose entire content is deliberately-shaped fixture code. The answers:
 | `knip` and `fallow` | Every fixture is declared an entry point rather than ignored, so both keep checking dependencies while the orphan-root fixture stops being a finding |
 | `jscpd` | Scoped for this project. The resolution-table fixtures are near-identical by design |
 | `codometer` | No declared size limit: the package is private and never built, so there is no bundle to gate |
-| Nested projects | Two example directories hold a `tsconfig.json` and no `package.json`. The first is what makes them projects with limits of their own; the second is deliberate — Nx infers a project from a nested `package.json`, and the fixtures then fail `@nx/enforce-module-boundaries` for importing one another. They are named in the run's `--directories` instead |
+| Nested projects | One example directory, `gated-leaf`, holds a `tsconfig.json` and no `package.json`. The first is what makes it a project with limits of its own; the second is deliberate — Nx infers a project from a nested `package.json`, and a `tsconfig.json` and a `package.json` nested one directory apart would collide with `@nx/enforce-module-boundaries`. It is named in the run's `--directories` instead |
 | Nx tags | `type:package`, `framework:nestjs`, `language:typescript`, `name:callidescope-examples`. The NestJS dependency is real — `injected-dependency` is the headline case |
 | Project layout | An `examples/` directory rather than `src/modules/`, matching the other `*-examples` packages. `configuration/codebase-structure.json` declares it |
 | `conformetry` | Not an instance of any template, and nothing had to be suppressed to keep it that way — see below |
@@ -470,13 +466,9 @@ callidescope-examples/
 │   ├── <name>/
 │   │   ├── README.md                  the guide for this example
 │   │   └── *.ts                       the fixture callables
-│   ├── gated-leaf/                    a nested project, with its own limits
-│   │   ├── callidescope.config.ts     what that project declares about itself
-│   │   ├── *.generated.ts             the file this project's own exclude drops
-│   │   ├── tsconfig.json              what makes the directory a project
-│   │   └── README.md                  the guide, holding that project's own section
-│   └── inherited-limits/              a nested project overriding nothing
-│       ├── *.generated.ts             its twin, which nothing excludes
+│   └── gated-leaf/                    a nested project, with its own limits
+│       ├── callidescope.config.ts     what that project declares about itself
+│       ├── *.generated.ts             the file this project's own exclude drops
 │       ├── tsconfig.json              what makes the directory a project
 │       └── README.md                  the guide, holding that project's own section
 ├── output/
@@ -908,8 +900,6 @@ graph LR
   file_examples_implementation_fan_out_queue_sink_ts["examples/implementation-fan-out/queue-sink.ts"]
   file_examples_implementation_fan_out_stream_sink_ts["examples/implementation-fan-out/stream-sink.ts"]
   file_examples_implementation_fan_out_telemetry_sink_ts["examples/implementation-fan-out/telemetry-sink.ts"]
-  file_examples_inherited_limits_inherited_limits_generated_ts["examples/inherited-limits/inherited-limits.generated.ts"]
-  file_examples_inherited_limits_inherited_limits_ts["examples/inherited-limits/inherited-limits.ts"]
   file_examples_injected_dependency_injected_dependency_module_ts["examples/injected-dependency/injected-dependency.module.ts"]
   file_examples_injected_dependency_inventory_ts["examples/injected-dependency/inventory.ts"]
   file_examples_injected_dependency_orders_ts["examples/injected-dependency/orders.ts"]
@@ -929,7 +919,6 @@ graph LR
   file_examples_constructed_class_constructed_class_ts --> file_examples_constructed_class_parser_ts
   file_examples_deep_stack_deep_stack_ts --> file_examples_shared_tail_round_to_cents_ts
   file_examples_forwarding_stack_forwarding_stack_ts --> file_examples_shared_tail_round_to_cents_ts
-  file_examples_inherited_limits_inherited_limits_ts --> file_examples_gated_leaf_gated_leaf_ts
   file_examples_injected_dependency_injected_dependency_module_ts --> file_examples_injected_dependency_inventory_ts
   file_examples_injected_dependency_injected_dependency_module_ts --> file_examples_injected_dependency_orders_ts
   file_examples_injected_dependency_orders_ts --> file_examples_injected_dependency_inventory_ts
@@ -948,9 +937,9 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2416-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-587.53_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-27-4a4a4a?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2258-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-557.04_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-22-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-44-3178c6?style=flat-square)
 
 ### TypeScript
@@ -959,8 +948,8 @@ graph LR
 ![Interfaces](https://img.shields.io/badge/Interfaces-4-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-30-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-130-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-32-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-134-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -968,16 +957,16 @@ graph LR
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-1-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-8-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-29-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-122-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-77-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-199-4ade80?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-31-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-113-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-76-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-189-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-0-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-58-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-68-0284c7?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-53-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-62-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-39-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-191-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-603-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-193-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-537-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -997,17 +986,17 @@ graph LR
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-6-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-10866-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-1949-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-756-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-7325-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-3315-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1190-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1206-0ea5e9?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-5-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-10318-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-1882-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-738-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-6917-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-3176-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-929-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1208-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-1085-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-8416-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-1011-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-7933-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
@@ -1098,6 +1087,14 @@ graph LR
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-0-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 
@@ -1124,24 +1121,24 @@ graph LR
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-26-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1880-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-26-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-89-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-10-a78bfa?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-21-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1514-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-21-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-70-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-3-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-238-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-192-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-7-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-28-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-29-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-155-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-144-059669?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-19-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-118-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-119-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-55-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-531-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-46-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-433-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

@@ -276,6 +276,24 @@ export class RunPlanService {
   }
 
   /**
+   * Which markdown destination the console renders.
+   *
+   * Resolved from the configuration alone, never gated by whether
+   * `--output-markdown` — or any other `--output-*` flag — was passed: the
+   * printed badge block must carry every configured custom counter whether or
+   * not this run also writes a markdown file, so it is resolved as though no
+   * other output flag were on the command line. An explicit `--output-markdown
+   * <path>` is still honored, exactly as it would be for the write
+   * destination. Nothing here is written to disk; `resolveDestinations`
+   * decides that separately.
+   */
+  resolveConsoleMarkdown(
+    args: ResolveDestinationsArguments,
+  ): ResolvedMarkdownDestination | undefined {
+    return this.resolveMarkdown(args, false, []);
+  }
+
+  /**
    * Resolves which files the run writes, and refuses a destination this run
    * has no way to have produced.
    *

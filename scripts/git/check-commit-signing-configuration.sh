@@ -24,6 +24,39 @@ if ! gpg --list-secret-keys --keyid-format=long "$signing_key" | grep -q '^sec';
   exit 1
 fi
 
+# A key that exists and can sign is not necessarily the committer's own key. A
+# developer with several GPG identities (work, personal) can end up with
+# user.signingkey resolved to someone else's key — for example by a setup
+# script that picks whichever secret key gpg happens to list first — and every
+# check above still passes, so the resulting commits carry someone else's
+# signature while showing this developer as the author. This is skipped in CI,
+# where the committer identity is a bot/service account rather than a personal
+# git user.email, and is driven by imported secrets rather than a local
+# multi-identity keyring.
+if [[ -z "${CI:-}" && -z "${GITHUB_ACTIONS:-}" ]]; then
+  git_email="$(git config --get user.email || true)"
+  if [[ -z "$git_email" ]]; then
+    echo "❌ Git user.email is required to verify the signing key's identity." >&2
+    exit 1
+  fi
+
+  key_uid_emails="$(
+    gpg --with-colons --list-secret-keys "$signing_key" 2> /dev/null \
+      | awk -F: '$1 == "uid" { print $10 }' \
+      | grep -oE '<[^>]+>' \
+      | tr -d '<>'
+  )"
+
+  if ! grep -qxF "$git_email" <<< "$key_uid_emails"; then
+    echo "❌ Signing key user.signingkey=$signing_key does not belong to $git_email." >&2
+    echo "   Its GPG identity is: $(echo "$key_uid_emails" | paste -sd', ' -)" >&2
+    echo "   Set a signing key for $git_email, scoped to this repository:" >&2
+    echo "     gpg --list-secret-keys --keyid-format=long $git_email" >&2
+    echo "     git config user.signingkey <key-id>   # no --global: keep other repos untouched" >&2
+    exit 1
+  fi
+fi
+
 if [[ "${SKIP_GPG_SIGNING_SMOKE_TEST:-}" == "true" ]]; then
   exit 0
 fi

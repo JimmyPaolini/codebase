@@ -49,9 +49,9 @@ const commentSelectorSchema = z.object({
 /**
  * One configured counter: `patterns`, `symbols`, `comment`, or any mix.
  *
- * Reused wherever a `custom` list is declared — currently every output
- * destination — so a JSON entry and a markdown entry validate their counters
- * identically.
+ * Used for the top-level `custom` array, which is the only place a counter
+ * is declared — an output's own `custom` selects labels from it rather than
+ * declaring counters of its own.
  */
 const customStatisticSchema = z
   .object({
@@ -115,18 +115,18 @@ const inputSchema = z
     }
   });
 
-/** The JSON output destination: a required path, and its own counters. */
+/** The JSON output destination: a required path, and its own counter selection. */
 const jsonOutputSchema = z.object({
-  custom: z.array(customStatisticSchema).optional(),
+  custom: z.array(z.string().min(1)).optional(),
   indentation: z.number().int().min(0).optional(),
   path: z.string(),
   type: z.literal("json"),
 });
 
-/** The markdown output destination: everything `write` needs, and its own counters. */
+/** The markdown output destination: everything `write` needs, and its own counter selection. */
 const markdownOutputSchema = z
   .object({
-    custom: z.array(customStatisticSchema).optional(),
+    custom: z.array(z.string().min(1)).optional(),
     description: z.string().optional(),
     endMarker: z.string().optional(),
     // Optional because a `write` function may name the file itself; a
@@ -154,57 +154,87 @@ const markdownOutputSchema = z
  * silently absent from the resolved configuration rather than a validation
  * error.
  */
-export const codometerConfigurationSchema = z.object({
-  defaultInput: z.string().min(1).optional(),
-  exclude: z.array(z.string()).optional(),
-  excludeFrom: z.array(z.string()).optional(),
-  format: z.enum(CODOMETER_FORMATS, { error: MISSING_FORMAT_MESSAGE }),
-  inputs: z
-    .array(inputSchema)
-    // An input is addressed by its own name, so two sharing one would make
-    // every limit on either of them ambiguous — and would leave it unclear
-    // which one replaces the built-in `codebase` entry, if either does.
-    .refine(
-      (inputs) =>
-        new Set(inputs.map((input) => input.name)).size === inputs.length,
-      { message: "Every input needs its own name." },
-    )
-    .optional(),
-  // Two limits may name one metric on purpose — a `warn` short of a `fail` is
-  // how a repository sees a number coming before it stops a change — so
-  // nothing here asks the paths to be distinct.
-  limits: z
-    .array(
-      z.object({
-        label: z.string().min(1).optional(),
-        metric: z.string().min(1),
-        severity: z.enum(CODOMETER_SEVERITIES).optional(),
-        // Read rather than validated here: what a unit means is the
-        // configuration service's to say, and saying it twice is how the two
-        // answers drift apart.
-        value: z.union([z.number(), z.string()]),
-      }),
-    )
-    .optional(),
-  // At most one destination per type: `--output-json [path]` and
-  // `--output-markdown [path]` each name one path, so nothing on the command
-  // line could ever address a second destination of a kind, and a run would
-  // write one of the two while looking like it had obeyed.
-  outputs: z
-    .array(z.union([jsonOutputSchema, markdownOutputSchema]))
-    .superRefine((outputs, context) => {
-      const duplicated = outputs.find(
-        (output, index) =>
-          outputs.findIndex((other) => other.type === output.type) < index,
-      );
+export const codometerConfigurationSchema = z
+  .object({
+    // A counter is addressed by its own label, so two sharing one would make
+    // every `outputs[].custom` selection of either ambiguous.
+    custom: z
+      .array(customStatisticSchema)
+      .refine(
+        (statistics) =>
+          new Set(statistics.map((statistic) => statistic.label)).size ===
+          statistics.length,
+        { message: "Every custom statistic needs its own label." },
+      )
+      .optional(),
+    defaultInput: z.string().min(1).optional(),
+    exclude: z.array(z.string()).optional(),
+    excludeFrom: z.array(z.string()).optional(),
+    format: z.enum(CODOMETER_FORMATS, { error: MISSING_FORMAT_MESSAGE }),
+    inputs: z
+      .array(inputSchema)
+      // An input is addressed by its own name, so two sharing one would make
+      // every limit on either of them ambiguous — and would leave it unclear
+      // which one replaces the built-in `codebase` entry, if either does.
+      .refine(
+        (inputs) =>
+          new Set(inputs.map((input) => input.name)).size === inputs.length,
+        { message: "Every input needs its own name." },
+      )
+      .optional(),
+    // Two limits may name one metric on purpose — a `warn` short of a `fail` is
+    // how a repository sees a number coming before it stops a change — so
+    // nothing here asks the paths to be distinct.
+    limits: z
+      .array(
+        z.object({
+          label: z.string().min(1).optional(),
+          metric: z.string().min(1),
+          severity: z.enum(CODOMETER_SEVERITIES).optional(),
+          // Read rather than validated here: what a unit means is the
+          // configuration service's to say, and saying it twice is how the two
+          // answers drift apart.
+          value: z.union([z.number(), z.string()]),
+        }),
+      )
+      .optional(),
+    // At most one destination per type: `--output-json [path]` and
+    // `--output-markdown [path]` each name one path, so nothing on the command
+    // line could ever address a second destination of a kind, and a run would
+    // write one of the two while looking like it had obeyed.
+    outputs: z
+      .array(z.union([jsonOutputSchema, markdownOutputSchema]))
+      .superRefine((outputs, context) => {
+        const duplicated = outputs.find(
+          (output, index) =>
+            outputs.findIndex((other) => other.type === output.type) < index,
+        );
 
-      if (duplicated !== undefined) {
-        context.addIssue({
-          code: "custom",
-          message: `A configuration may declare at most one output per type, and this one declares more than one "${duplicated.type}" output. Nothing on the command line could address the second, so write the one destination this repository means.`,
-        });
+        if (duplicated !== undefined) {
+          context.addIssue({
+            code: "custom",
+            message: `A configuration may declare at most one output per type, and this one declares more than one "${duplicated.type}" output. Nothing on the command line could address the second, so write the one destination this repository means.`,
+          });
+        }
+      })
+      .optional(),
+    python: z.object({ command: z.string().optional() }).optional(),
+  })
+  // An output's `custom` selects labels the top-level `custom` declared —
+  // selection cannot conjure a counter that was never measured.
+  .superRefine((configuration, context) => {
+    const declaredLabels = new Set(
+      (configuration.custom ?? []).map((statistic) => statistic.label),
+    );
+
+    for (const output of configuration.outputs ?? []) {
+      for (const label of output.custom ?? []) {
+        if (!declaredLabels.has(label)) {
+          context.addIssue({
+            code: "custom",
+            message: `The "${output.type}" output selects the custom statistic "${label}", but no top-level "custom" entry declares that label. Declare it in "custom", or select a label that is.`,
+          });
+        }
       }
-    })
-    .optional(),
-  python: z.object({ command: z.string().optional() }).optional(),
-});
+    }
+  });
