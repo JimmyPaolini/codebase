@@ -125,7 +125,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | Limit | Value |
 | --- | --- |
 | `maximumDepth` | 3 |
-| `maximumBreadth` | none |
+| `maximumBreadth` | 3 |
 
 ### Call stacks (depth)
 
@@ -390,8 +390,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5250-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-213.58_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5245-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-213.19_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-57-3178c6?style=flat-square)
 
@@ -423,7 +423,7 @@ graph LR
 ![Imports](https://img.shields.io/badge/Imports-213-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-115-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-113-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-205-475569?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-200-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
