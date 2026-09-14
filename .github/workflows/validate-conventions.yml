@@ -86,18 +86,14 @@ jobs:
     steps:
       # `gh pr create --label a --label b --assignee @me` fires `opened` plus
       # one `labeled` event per label plus `assigned`, all within a second or
-      # two of each other — every one of them a `pull_request` trigger above.
-      # The workflow-level `concurrency` block only queues one pending run
-      # behind whatever is in progress, but GitHub does not serialize a burst
-      # like this perfectly: two runs from the same burst have been observed
-      # both reaching `in_progress` and completing, and a stale `cancelled`
-      # conclusion can land after a later `success` with no further event left
-      # to replace it — the required check then sits stuck until someone
-      # pushes or edits the pull request. Deciding this in-job rather than
-      # trusting GitHub's queue ordering is what makes it deterministic: ask
-      # whether a newer run of this workflow already exists for this pull
-      # request's branch, and if so, let that one be authoritative and stop
-      # here rather than race it.
+      # two — each one a `pull_request` trigger above. The `concurrency`
+      # block below only queues one pending run behind whatever is in
+      # progress; it does not serialize a burst like this reliably, and a
+      # stale `cancelled` conclusion can land after a later `success` with no
+      # further event left to replace it, leaving the required check stuck.
+      # Deciding this in-job rather than trusting GitHub's queue ordering
+      # makes it deterministic: bail out if a newer run of this workflow
+      # already exists for this branch.
       - name: 🚦 Skip If Superseded
         id: supersession
         env:
