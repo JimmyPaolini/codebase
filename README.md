@@ -546,13 +546,13 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5161 |
-| Files | 1371 |
-| Calls traced | 5870 |
-| Call stacks | 1331 |
+| Callables | 4821 |
+| Files | 1310 |
+| Calls traced | 5407 |
+| Call stacks | 1273 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 367 |
+| Unfollowable calls | 333 |
 
 ### Projects
 
@@ -562,7 +562,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `applications/caelundas` | 16 | 16 | 0 | 12 |
 | `applications/lexico` | 9 | 9 | 0 | 9 |
 | `applications/lexico-ingestion` | 17 | 17 | 0 | 8 |
-| `applications/meanderaw` | 16 | 16 | 0 | 14 |
+| `applications/meanderaw` | 16 | 16 | 0 | 8 |
 | `packages/ic-suite/callidescope/callidescope-cli` | 15 | 15 | 0 | 9 |
 | `packages/ic-suite/callidescope/callidescope-nx` | 17 | 17 | 0 | 7 |
 | `packages/ic-suite/codependix/codependix-boundaries` | 12 | 12 | 0 | 5 |
