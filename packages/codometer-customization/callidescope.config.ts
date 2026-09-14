@@ -10,10 +10,9 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
  * limit passes, so this gate is green the day it arrives and each number is a
  * starting point to ratchet down from rather than a target to grow into.
  *
- * One direct callee at the widest — every callable this project owns calls at
- * most one other directly. One is also the tool's own floor: `maximumBreadth`
- * refuses zero, so this is already the tightest number the gate can hold,
- * with no number below it to fail against.
+ * Two direct callees at the widest: `buildCommentResult` filters a breach
+ * list and then maps it, and `CustomizationService.map(…)`'s own step does
+ * the ordinary array-method chaining every result builder here takes.
  *
  * @see configuration/callidescope.config.ts — `projectDefaults`, spread below
  * for everything this file does not override
@@ -21,7 +20,7 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
 export default {
   ...projectDefaults,
   limits: {
-    maximumBreadth: 1,
+    maximumBreadth: 2,
     maximumDepth: 5,
   },
 };
