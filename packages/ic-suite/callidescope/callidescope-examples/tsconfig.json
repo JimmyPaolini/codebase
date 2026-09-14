@@ -24,6 +24,7 @@
   "include": [
     "callidescope.config.ts",
     "callidescope.workspace.config.ts",
+    "codependix.config.ts",
     "codometer.config.ts",
     "eslint.config.ts",
     "examples/**/*.ts",

@@ -4,13 +4,13 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 245 |
-| Files | 89 |
-| Calls traced | 211 |
-| Call stacks | 77 |
+| Callables | 303 |
+| Files | 115 |
+| Calls traced | 264 |
+| Call stacks | 94 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
-| Unfollowable calls | 14 |
+| Unfollowable calls | 17 |
 
 ## Projects
 
@@ -20,6 +20,7 @@
 | `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 | -1 | 3 |
 | `packages/logger` | 5 | 4 | -1 | 2 |
 | `packages/callidescope-configuration` | 6 | 6 | 0 | 7 |
+| `packages/codependix-configuration` | 6 | 6 | 0 | 4 |
 | `packages/codometer-configuration` | 8 | 8 | 0 | 4 |
 
 ## Depth headroom
@@ -27,7 +28,7 @@
 | Headroom | Projects |
 | --- | --- |
 | over limit | 3 |
-| 0 — at limit | 2 |
+| 0 — at limit | 3 |
 | 1 | 0 |
 | 2–3 | 0 |
 | 4+ | 0 |

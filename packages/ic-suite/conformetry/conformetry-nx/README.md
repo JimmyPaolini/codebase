@@ -141,7 +141,7 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-nx`, deepe
 | Measure | Value |
 | --- | --- |
 | Callables | 113 |
-| Files | 44 |
+| Files | 45 |
 | Calls traced | 136 |
 | Call stacks | 8 |
 | Deepest stack | 14 |
@@ -509,6 +509,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_executors_validate_executor_ts["src/executors/validate/executor.ts"]

@@ -197,6 +197,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
@@ -249,6 +250,7 @@ graph LR
   file_src_modules_boundaries_boundary_selector_service_ts --> file_src_modules_boundaries_boundaries_types_ts
   file_src_modules_boundaries_boundary_selector_service_unit_test_ts --> file_src_modules_boundaries_boundaries_types_ts
   file_src_modules_boundaries_boundary_selector_service_unit_test_ts --> file_src_modules_boundaries_boundary_selector_service_ts
+  file_src_modules_boundary_check_boundary_check_constants_ts --> file_src_modules_boundaries_boundaries_types_ts
   file_src_modules_boundary_check_boundary_check_module_ts --> file_src_modules_boundaries_boundaries_module_ts
   file_src_modules_boundary_check_boundary_check_module_ts --> file_src_modules_boundary_check_boundary_check_service_ts
   file_src_modules_boundary_check_boundary_check_module_ts --> file_src_modules_boundary_check_boundary_graph_service_ts
@@ -277,14 +279,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2696-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-94.30_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2913-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-102.07_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-27-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-12.88_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-13.44_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -293,7 +295,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-8-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-74-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-80-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -302,15 +304,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-8-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-8-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-107-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-57-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-136-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-28-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-92-dc2626?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-116-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-59-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-140-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-35-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-97-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-102-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-28-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-132-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-405-475569?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-29-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-143-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-448-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -496,7 +498,7 @@ Call stacks traced through `packages/ic-suite/codependix/codependix-boundaries`,
 | Measure | Value |
 | --- | --- |
 | Callables | 68 |
-| Files | 17 |
+| Files | 18 |
 | Calls traced | 71 |
 | Call stacks | 7 |
 | Deepest stack | 12 |

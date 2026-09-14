@@ -621,7 +621,7 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-cli`, deepest 
 | Measure | Value |
 | --- | --- |
 | Callables | 139 |
-| Files | 42 |
+| Files | 43 |
 | Calls traced | 166 |
 | Call stacks | 11 |
 | Deepest stack | 15 |
@@ -1011,6 +1011,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_constants_ts["src/constants.ts"]

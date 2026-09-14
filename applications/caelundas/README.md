@@ -145,7 +145,7 @@ Call stacks traced through `applications/caelundas`, deepest first. Each frame s
 | Measure | Value |
 | --- | --- |
 | Callables | 837 |
-| Files | 158 |
+| Files | 159 |
 | Calls traced | 1038 |
 | Call stacks | 96 |
 | Deepest stack | 16 |
@@ -1993,6 +1993,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_scripts_download_ephemeris_ts["scripts/download-ephemeris.ts"]

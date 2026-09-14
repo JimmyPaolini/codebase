@@ -111,7 +111,7 @@ Call stacks traced through `packages/lexico-entities`, deepest first. Each frame
 | Measure | Value |
 | --- | --- |
 | Callables | 93 |
-| Files | 48 |
+| Files | 49 |
 | Calls traced | 9 |
 | Call stacks | 3 |
 | Deepest stack | 3 |
@@ -212,6 +212,7 @@ flowchart LR
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_scripts_extract_migration_sql_ts["scripts/extract-migration-sql.ts"]

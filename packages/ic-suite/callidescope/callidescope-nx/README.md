@@ -420,6 +420,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_executors_address_types_ts["src/executors/address.types.ts"]
@@ -790,7 +791,7 @@ Call stacks traced through `packages/ic-suite/callidescope/callidescope-nx`, dee
 | Measure | Value |
 | --- | --- |
 | Callables | 78 |
-| Files | 36 |
+| Files | 37 |
 | Calls traced | 109 |
 | Call stacks | 6 |
 | Deepest stack | 17 |

@@ -100,7 +100,7 @@ Call stacks traced through `applications/lexico`, deepest first. Each frame show
 | Measure | Value |
 | --- | --- |
 | Callables | 211 |
-| Files | 36 |
+| Files | 37 |
 | Calls traced | 129 |
 | Call stacks | 24 |
 | Deepest stack | 9 |
@@ -489,6 +489,7 @@ graph LR
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_components_entry_adjective_forms_table_tsx["src/components/entry/adjective-forms-table.tsx"]

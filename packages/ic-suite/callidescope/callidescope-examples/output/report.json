@@ -3632,7 +3632,7 @@
         "cyclicComponentCount": 0,
         "edgeCount": 88,
         "entryPointCount": 11,
-        "fileCount": 19,
+        "fileCount": 20,
         "maximumDepth": 6,
         "projectCount": 1,
         "unresolvedCallCount": 7
@@ -7225,7 +7225,7 @@
         "cyclicComponentCount": 1,
         "edgeCount": 54,
         "entryPointCount": 19,
-        "fileCount": 39,
+        "fileCount": 40,
         "maximumDepth": 8,
         "projectCount": 1,
         "unresolvedCallCount": 2
@@ -7461,6 +7461,1742 @@
           "breadth": 4,
           "callees": [
             {
+              "displayName": "InputService.assertCanPrompt",
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#1136"
+            },
+            {
+              "displayName": "InputService.map(…)",
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#3207"
+            },
+            {
+              "displayName": "promptCancelledError",
+              "id": "packages/codependix-configuration/src/modules/input/input.constants.ts#1389"
+            },
+            {
+              "displayName": "InputService.find(…)",
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#3504"
+            }
+          ],
+          "displayName": "InputService.promptForSelect",
+          "id": "packages/codependix-configuration/src/modules/input/input.service.ts#2929",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/input/input.service.ts",
+            "line": 92
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ choices: readonly Choice[]; message: string; subject: string; }"
+              }
+            ],
+            "returnType": "Promise<Choice>",
+            "text": "<Choice extends string>(args: { choices: readonly Choice[]; message: string; subject: string; }): Promise<Choice>"
+          }
+        },
+        {
+          "breadth": 3,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.findConfigurationFile",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#1844"
+            },
+            {
+              "displayName": "ConfigurationLoaderService.resolveConfigurationPath",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#5808"
+            },
+            {
+              "displayName": "ConfigurationLoaderService.parseConfigurationFile",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#4577"
+            }
+          ],
+          "displayName": "ConfigurationLoaderService.readAuthoredConfiguration",
+          "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#5161",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+            "line": 169
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configurationPath?: string | undefined; searchDirectory?: string | undefined; }"
+              }
+            ],
+            "returnType": "Promise<CodependixConfiguration>",
+            "text": "(args: { configurationPath?: string | undefined; searchDirectory?: string | undefined; }): Promise<CodependixConfiguration>"
+          }
+        },
+        {
+          "breadth": 3,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.readAuthoredConfiguration",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#5161"
+            },
+            {
+              "displayName": "OverrideResolutionService.applyOverrides",
+              "id": "packages/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts#2411"
+            },
+            {
+              "displayName": "ConfigurationService.resolveConfiguration",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#9266"
+            }
+          ],
+          "displayName": "ConfigurationService.loadConfiguration",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#7254",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 214
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "args",
+                "type": "LoadConfigurationArguments"
+              }
+            ],
+            "returnType": "Promise<ResolvedCodependixConfiguration>",
+            "text": "(args?: LoadConfigurationArguments): Promise<ResolvedCodependixConfiguration>"
+          }
+        },
+        {
+          "breadth": 3,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.findProjectConfigurationFile",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#2809"
+            },
+            {
+              "displayName": "UnknownConfigurationFileTypeError.constructor",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.constants.ts#282"
+            },
+            {
+              "displayName": "ConfigurationLoaderService.loadConfigurationModule",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#4084"
+            }
+          ],
+          "displayName": "ConfigurationService.loadProjectConfiguration",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#8192",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 238
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "LoadProjectConfigurationArguments"
+              }
+            ],
+            "returnType": "Promise<CodependixProjectConfiguration | undefined>",
+            "text": "(args: LoadProjectConfigurationArguments): Promise<CodependixProjectConfiguration | undefined>"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "UnknownConfigurationFileTypeError.constructor",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.constants.ts#282"
+            },
+            {
+              "displayName": "ConfigurationLoaderService.loadConfigurationModule",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#4084"
+            }
+          ],
+          "displayName": "ConfigurationLoaderService.parseConfigurationFile",
+          "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#4577",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+            "line": 151
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "resolvedPath",
+                "type": "string"
+              }
+            ],
+            "returnType": "Promise<CodependixConfiguration>",
+            "text": "(resolvedPath: string): Promise<CodependixConfiguration>"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.findWorkspaceRoot",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#3449"
+            },
+            {
+              "displayName": "ConfigurationFileNotFoundError.constructor",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.constants.ts#7911"
+            }
+          ],
+          "displayName": "ConfigurationLoaderService.resolveConfigurationPath",
+          "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#5808",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+            "line": 187
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configurationPath",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(configurationPath: string): string"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "InputError.constructor",
+              "id": "packages/codependix-configuration/src/modules/input/input.constants.ts#596"
+            },
+            {
+              "displayName": "buildUndeclaredOverrideMessage",
+              "id": "packages/codependix-configuration/src/modules/override-resolution/override-resolution.constants.ts#553"
+            }
+          ],
+          "displayName": "OverrideResolutionService.resolveOverride",
+          "id": "packages/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts#1795",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts",
+            "line": 48
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ authored: string[] | undefined; configured: string[]; field: string; flag: string; override: string[] | undefined; }"
+              }
+            ],
+            "returnType": "string[]",
+            "text": "(args: { authored: string[] | undefined; configured: string[]; field: string; flag: string; override: string[] | undefined; }): string[]"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.matchesAnyName",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2552"
+            },
+            {
+              "displayName": "ConfigurationService.some(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2202"
+            }
+          ],
+          "displayName": "ConfigurationService.isProjectNamedOnCommandLine",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#1905",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 61
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "ProjectSelectionArguments"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(args: ProjectSelectionArguments): boolean"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.filter(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#5005"
+            },
+            {
+              "displayName": "ConfigurationService.map(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#4966"
+            }
+          ],
+          "displayName": "ConfigurationService.splitSelectionArgument",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#4820",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 151
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "argument",
+                "type": "string | undefined"
+              }
+            ],
+            "returnType": "string[]",
+            "text": "(argument: string | undefined): string[]"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.matchesAnyName",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2552"
+            },
+            {
+              "displayName": "ConfigurationService.isProjectNamedOnCommandLine",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#1905"
+            }
+          ],
+          "displayName": "ConfigurationService.isProjectIncluded",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#5661",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 171
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "ProjectSelectionArguments"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(args: ProjectSelectionArguments): boolean"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.resolveBoundaries",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#3201"
+            },
+            {
+              "displayName": "ConfigurationService.resolveSelection",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#4475"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveConfiguration",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#9266",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 271
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configuration",
+                "type": "CodependixConfiguration"
+              },
+              {
+                "isOptional": true,
+                "isRest": false,
+                "name": "selection",
+                "type": "CodependixSelectionArguments | undefined"
+              }
+            ],
+            "returnType": "ResolvedCodependixConfiguration",
+            "text": "(configuration: CodependixConfiguration, selection?: CodependixSelectionArguments): ResolvedCodependixConfiguration"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.isProjectIncluded",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#5661"
+            },
+            {
+              "displayName": "ConfigurationService.resolveGraphOutput",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#3685"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveForProject",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#10625",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 299
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "ResolveForProjectArguments"
+              }
+            ],
+            "returnType": "ResolvedCodependixGraphOutput",
+            "text": "(args: ResolveForProjectArguments): ResolvedCodependixGraphOutput"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "some(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.constants.ts#3259"
+            }
+          ],
+          "displayName": "refine(…)",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.constants.ts#3216",
+          "location": {
+            "column": 5,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.constants.ts",
+            "line": 103
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "selector",
+                "type": "{ id?: string[] | undefined; path?: string[] | undefined; project?: string[] | undefined; tags?: string[] | undefined; }"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(selector: { id?: string[] | undefined; path?: string[] | undefined; project?: string[] | undefined; tags?: string[] | undefined; }): boolean"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.some(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#3666"
+            }
+          ],
+          "displayName": "ConfigurationLoaderService.findWorkspaceRoot",
+          "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#3449",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+            "line": 111
+          },
+          "signature": {
+            "parameters": [],
+            "returnType": "string | undefined",
+            "text": "(): string | undefined"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationLoaderService.readDefaultExport",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#1145"
+            }
+          ],
+          "displayName": "ConfigurationLoaderService.loadConfigurationModule",
+          "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#4084",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+            "line": 135
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "{ configurationPath: string; extension: string; }"
+              }
+            ],
+            "returnType": "Promise<unknown>",
+            "text": "(args: { configurationPath: string; extension: string; }): Promise<unknown>"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InputError.constructor",
+              "id": "packages/codependix-configuration/src/modules/input/input.constants.ts#596"
+            }
+          ],
+          "displayName": "missingInputError",
+          "id": "packages/codependix-configuration/src/modules/input/input.constants.ts#976",
+          "location": {
+            "column": 34,
+            "filePath": "packages/codependix-configuration/src/modules/input/input.constants.ts",
+            "line": 29
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "subject",
+                "type": "string"
+              }
+            ],
+            "returnType": "InputError",
+            "text": "(subject: string): InputError"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InputError.constructor",
+              "id": "packages/codependix-configuration/src/modules/input/input.constants.ts#596"
+            }
+          ],
+          "displayName": "promptCancelledError",
+          "id": "packages/codependix-configuration/src/modules/input/input.constants.ts#1389",
+          "location": {
+            "column": 37,
+            "filePath": "packages/codependix-configuration/src/modules/input/input.constants.ts",
+            "line": 41
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "subject",
+                "type": "string"
+              }
+            ],
+            "returnType": "InputError",
+            "text": "(subject: string): InputError"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "OverrideResolutionService.resolveOverride",
+              "id": "packages/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts#1795"
+            }
+          ],
+          "displayName": "OverrideResolutionService.applyOverrides",
+          "id": "packages/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts#2411",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts",
+            "line": 74
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "ApplyOverridesArguments"
+              }
+            ],
+            "returnType": "ResolvedCodependixConfiguration",
+            "text": "(args: ApplyOverridesArguments): ResolvedCodependixConfiguration"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.some(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2424"
+            }
+          ],
+          "displayName": "ConfigurationService.matchesAnyGlob",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2330",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 76
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "projectName",
+                "type": "string"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "globs",
+                "type": "string[]"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(projectName: string, globs: string[]): boolean"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.matchesAnyGlob",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2330"
+            }
+          ],
+          "displayName": "ConfigurationService.matchesAnyName",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2552",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 81
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "projectName",
+                "type": "string"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "projectRoot",
+                "type": "string | undefined"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "globs",
+                "type": "string[]"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(projectName: string, projectRoot: string | undefined, globs: string[]): boolean"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.splitSelectionArgument",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#4820"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveSelection",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#4475",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 141
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "selection",
+                "type": "CodependixSelectionArguments | undefined"
+              }
+            ],
+            "returnType": "ResolvedCodependixSelection",
+            "text": "(selection: CodependixSelectionArguments | undefined): ResolvedCodependixSelection"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.isProjectNamedOnCommandLine",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#1905"
+            }
+          ],
+          "displayName": "ConfigurationService.isProjectSelected",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#6626",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 196
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "args",
+                "type": "ProjectSelectionArguments"
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(args: ProjectSelectionArguments): boolean"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.resolveGraphOutput",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#3685"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveForWorkspace",
+          "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#11876",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 341
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configuration",
+                "type": "ResolvedCodependixConfiguration"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "graphType",
+                "type": "CodependixGraphType"
+              }
+            ],
+            "returnType": "ResolvedCodependixGraphOutput",
+            "text": "(configuration: ResolvedCodependixConfiguration, graphType: CodependixGraphType): ResolvedCodependixGraphOutput"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "missingInputError",
+              "id": "packages/codependix-configuration/src/modules/input/input.constants.ts#976"
+            }
+          ],
+          "displayName": "InputService.assertCanPrompt",
+          "id": "packages/codependix-configuration/src/modules/input/input.service.ts#1136",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/input/input.service.ts",
+            "line": 38
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "subject",
+                "type": "string"
+              }
+            ],
+            "returnType": "void",
+            "text": "(subject: string): void"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InputService.map(…)",
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#1808"
+            }
+          ],
+          "displayName": "InputService.parseCommaDelimitedOption",
+          "id": "packages/codependix-configuration/src/modules/input/input.service.ts#1643",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/input/input.service.ts",
+            "line": 54
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "string | undefined"
+              }
+            ],
+            "returnType": "string[]",
+            "text": "(value: string | undefined): string[]"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InputService.parseOptionalOption",
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#2309"
+            }
+          ],
+          "displayName": "InputService.parsePathOption",
+          "id": "packages/codependix-configuration/src/modules/input/input.service.ts#2739",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codependix-configuration/src/modules/input/input.service.ts",
+            "line": 87
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "string | undefined"
+              }
+            ],
+            "returnType": "string",
+            "text": "(value: string | undefined): string"
+          }
+        }
+      ],
+      "projectName": "packages/codependix-configuration",
+      "stacks": [
+        {
+          "depth": 6,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ConfigurationService.resolveForProject",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Resolves one project's export configuration for one graph type. A project's own `codependix.config.ts`, when it has one, is read exactly as loaded — no merge against a workspace-wide default happens here, since spreading the root-exported `projectDefaults` already happened when the project's own file was authored. A project excluded by the configured `include`/`exclude` globs, or one that has no configuration file of its own at all, always resolves to `target: \"none\"`: the former because a project excluded from graph export should not need every field rewritten to `\"none\"` by hand, the latter because a project matched by `include` with no file of its own has nothing to export, even though it still contributes to the Workspace Graph and is judged by boundary rules.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#10625",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 299
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "ResolveForProjectArguments"
+                  }
+                ],
+                "returnType": "ResolvedCodependixGraphOutput",
+                "text": "(args: ResolveForProjectArguments): ResolvedCodependixGraphOutput"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.isProjectIncluded",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a project participates in graph export at all. A project matches when something claims it — an `include` glob, a `--projects` glob, or a `--tags` tag — and no `exclude` glob claims its name or root. The command line **widens** what the configuration already selects rather than replacing it; `exclude` wins over all three, because a flag that could resurrect an excluded project would make `exclude` advisory. `projectRoot` and `projectTags` are optional: a caller with neither handy still resolves against globs written against project names.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#5661",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 171
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "ProjectSelectionArguments"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(args: ProjectSelectionArguments): boolean"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.isProjectNamedOnCommandLine",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether `--projects` or `--tags` names a project.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#1905",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 61
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "ProjectSelectionArguments"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(args: ProjectSelectionArguments): boolean"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.matchesAnyName",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a project's name or its root matches at least one glob.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2552",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 81
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "projectName",
+                    "type": "string"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "projectRoot",
+                    "type": "string | undefined"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "globs",
+                    "type": "string[]"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(projectName: string, projectRoot: string | undefined, globs: string[]): boolean"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.matchesAnyGlob",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a project's name matches at least one of a list of globs.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2330",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 76
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "projectName",
+                    "type": "string"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "globs",
+                    "type": "string[]"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(projectName: string, globs: string[]): boolean"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.some(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2424",
+              "isCycle": false,
+              "location": {
+                "column": 23,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 77
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "glob",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(glob: string): boolean"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 5,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ConfigurationService.isProjectSelected",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a project is in the set a run's command line narrowed to. A run naming no selection selects **everything**, which is what keeps the whole-workspace graph and the boundary gate judging every project by default. Naming one narrows both to what it named. This is where `--projects`/`--tags` differ from `include`: `include` is about which projects have exports written for them, and never reaches the workspace graph or the gate. A selection reaches all three.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#6626",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 196
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "ProjectSelectionArguments"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(args: ProjectSelectionArguments): boolean"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.isProjectNamedOnCommandLine",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether `--projects` or `--tags` names a project.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#1905",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 61
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "ProjectSelectionArguments"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(args: ProjectSelectionArguments): boolean"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.matchesAnyName",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a project's name or its root matches at least one glob.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2552",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 81
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "projectName",
+                    "type": "string"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "projectRoot",
+                    "type": "string | undefined"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "globs",
+                    "type": "string[]"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(projectName: string, projectRoot: string | undefined, globs: string[]): boolean"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.matchesAnyGlob",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Whether a project's name matches at least one of a list of globs.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2330",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 76
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "projectName",
+                    "type": "string"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "globs",
+                    "type": "string[]"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(projectName: string, globs: string[]): boolean"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.some(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#2424",
+              "isCycle": false,
+              "location": {
+                "column": 23,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 77
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "glob",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(glob: string): boolean"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 5,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ConfigurationService.loadConfiguration",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Loads and validates a codependix configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly resolving every graph to `target: \"none\"`. A path that was not named is searched for from the search directory upward, and its absence is legal.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#7254",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 214
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": true,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "LoadConfigurationArguments"
+                  }
+                ],
+                "returnType": "Promise<ResolvedCodependixConfiguration>",
+                "text": "(args?: LoadConfigurationArguments): Promise<ResolvedCodependixConfiguration>"
+              }
+            },
+            {
+              "displayName": "ConfigurationLoaderService.readAuthoredConfiguration",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads the root configuration file, or `{}` when none is found.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#5161",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+                "line": 169
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ configurationPath?: string | undefined; searchDirectory?: string | undefined; }"
+                  }
+                ],
+                "returnType": "Promise<CodependixConfiguration>",
+                "text": "(args: { configurationPath?: string | undefined; searchDirectory?: string | undefined; }): Promise<CodependixConfiguration>"
+              }
+            },
+            {
+              "displayName": "ConfigurationLoaderService.resolveConfigurationPath",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Resolves a configuration path against the cwd, then the workspace root.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#5808",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+                "line": 187
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "configurationPath",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(configurationPath: string): string"
+              }
+            },
+            {
+              "displayName": "ConfigurationLoaderService.findWorkspaceRoot",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Walks upward from the process cwd looking for the workspace root. Used to resolve a configuration path given relative to that root even when the command was invoked from a nested directory, which is what a task runner does whenever it sets the cwd to a project rather than the workspace.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#3449",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+                "line": 111
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "string | undefined",
+                "text": "(): string | undefined"
+              }
+            },
+            {
+              "displayName": "ConfigurationLoaderService.some(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#3666",
+              "isCycle": false,
+              "location": {
+                "column": 51,
+                "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+                "line": 116
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "marker",
+                    "type": "\".git\" | \"pnpm-workspace.yaml\""
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(marker: \".git\" | \"pnpm-workspace.yaml\"): boolean"
+              }
+            }
+          ],
+          "isLowerBound": true
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "InputService.promptForSelect",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Prompts for one value out of a fixed set of choices.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#2929",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/input/input.service.ts",
+                "line": 92
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ choices: readonly Choice[]; message: string; subject: string; }"
+                  }
+                ],
+                "returnType": "Promise<Choice>",
+                "text": "<Choice extends string>(args: { choices: readonly Choice[]; message: string; subject: string; }): Promise<Choice>"
+              }
+            },
+            {
+              "displayName": "InputService.assertCanPrompt",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Refuses to draw a prompt nobody can answer. `prompts` does not fail on a non-terminal stdin — it renders the menu, never resolves, and lets the process exit 0, so a run that did nothing reads as one that succeeded. `isTTY` is read as falsy rather than coerced: `@types/node` calls it a `boolean`, so lint rejects a coercion.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#1136",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/input/input.service.ts",
+                "line": 38
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "subject",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "void",
+                "text": "(subject: string): void"
+              }
+            },
+            {
+              "displayName": "missingInputError",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "A required value that cannot be asked for, because stdin is not a terminal. `prompts` does not fail there — it draws its menu, never resolves, and the process exits 0 having done nothing. This refuses to become that silent green no-op.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/input/input.constants.ts#976",
+              "isCycle": false,
+              "location": {
+                "column": 34,
+                "filePath": "packages/codependix-configuration/src/modules/input/input.constants.ts",
+                "line": 29
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "subject",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "InputError",
+                "text": "(subject: string): InputError"
+              }
+            },
+            {
+              "displayName": "InputError.constructor",
+              "id": "packages/codependix-configuration/src/modules/input/input.constants.ts#596",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/input/input.constants.ts",
+                "line": 16
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "message",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "InputError",
+                "text": "(message: string): InputError"
+              }
+            }
+          ],
+          "isLowerBound": true
+        },
+        {
+          "depth": 3,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ConfigurationService.loadProjectConfiguration",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Loads and validates one project's own `codependix.config.ts`, or `undefined` when it has none. Searched for exactly at `projectRoot` — see `ConfigurationLoaderService.findProjectConfigurationFile` — rather than the upward search `loadConfiguration` performs for the workspace root's own file: a project's file is either colocated with it or it does not exist, and a project with none produces no per-project output rather than inheriting one from a parent directory.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#8192",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 238
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "LoadProjectConfigurationArguments"
+                  }
+                ],
+                "returnType": "Promise<CodependixProjectConfiguration | undefined>",
+                "text": "(args: LoadProjectConfigurationArguments): Promise<CodependixProjectConfiguration | undefined>"
+              }
+            },
+            {
+              "displayName": "ConfigurationLoaderService.loadConfigurationModule",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Loads a configuration module, choosing the reader by extension.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#4084",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+                "line": 135
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "args",
+                    "type": "{ configurationPath: string; extension: string; }"
+                  }
+                ],
+                "returnType": "Promise<unknown>",
+                "text": "(args: { configurationPath: string; extension: string; }): Promise<unknown>"
+              }
+            },
+            {
+              "displayName": "ConfigurationLoaderService.readDefaultExport",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads what a configuration module exported, through either interop shape.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts#1145",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts",
+                "line": 40
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "importedModule",
+                    "type": "unknown"
+                  }
+                ],
+                "returnType": "unknown",
+                "text": "(importedModule: unknown): unknown"
+              }
+            }
+          ],
+          "isLowerBound": true
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "refine(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.constants.ts#3216",
+              "isCycle": false,
+              "location": {
+                "column": 5,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 103
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "selector",
+                    "type": "{ id?: string[] | undefined; path?: string[] | undefined; project?: string[] | undefined; tags?: string[] | undefined; }"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(selector: { id?: string[] | undefined; path?: string[] | undefined; project?: string[] | undefined; tags?: string[] | undefined; }): boolean"
+              }
+            },
+            {
+              "displayName": "some(…)",
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.constants.ts#3259",
+              "isCycle": false,
+              "location": {
+                "column": 48,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.constants.ts",
+                "line": 103
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "string[] | undefined"
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(value: string[] | undefined): value is string[]"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ConfigurationService.resolveForWorkspace",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Resolves the Workspace Graph's export configuration for one graph type. A Workspace Graph is exported once for the whole repository rather than once per project, so it has no per-project override and is unaffected by `include`/`exclude` — those two apply only to `resolveForProject`. `--projects` and `--tags` do reach it, through the node set rather than through this: a run naming a selection draws the graph over the projects it named. Where that graph lands is still read from `workspace`, keyed by `graphType`.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#11876",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 341
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "configuration",
+                    "type": "ResolvedCodependixConfiguration"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "graphType",
+                    "type": "CodependixGraphType"
+                  }
+                ],
+                "returnType": "ResolvedCodependixGraphOutput",
+                "text": "(configuration: ResolvedCodependixConfiguration, graphType: CodependixGraphType): ResolvedCodependixGraphOutput"
+              }
+            },
+            {
+              "displayName": "ConfigurationService.resolveGraphOutput",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Applies defaults to one graph type's export configuration.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts#3685",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/configuration/configuration.service.ts",
+                "line": 114
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "output",
+                    "type": "CodependixGraphOutput | undefined"
+                  }
+                ],
+                "returnType": "ResolvedCodependixGraphOutput",
+                "text": "(output: CodependixGraphOutput | undefined): ResolvedCodependixGraphOutput"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "InputService.parseCommaDelimitedOption",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Parses a comma-separated list option, dropping blank entries. Mirrors `@callidescope/configuration`'s `InputService` exactly: an absent flag resolves to an empty list rather than `undefined`, so a caller overriding a configured list treats \"the flag was left off\" and \"the flag named nothing\" the same way.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#1643",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/input/input.service.ts",
+                "line": 54
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "string | undefined"
+                  }
+                ],
+                "returnType": "string[]",
+                "text": "(value: string | undefined): string[]"
+              }
+            },
+            {
+              "displayName": "InputService.map(…)",
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#1808",
+              "isCycle": false,
+              "location": {
+                "column": 16,
+                "filePath": "packages/codependix-configuration/src/modules/input/input.service.ts",
+                "line": 59
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entry",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entry: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "InputService.parsePathOption",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Parses a path option that falls back to the working directory. Left unresolved: the caller resolves it against its own root, and resolving twice makes a relative path ambiguous about which it meant.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#2739",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/input/input.service.ts",
+                "line": 87
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "string | undefined"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(value: string | undefined): string"
+              }
+            },
+            {
+              "displayName": "InputService.parseOptionalOption",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Trims an optional string option, treating blank as absent.",
+                "tags": []
+              },
+              "id": "packages/codependix-configuration/src/modules/input/input.service.ts#2309",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/codependix-configuration/src/modules/input/input.service.ts",
+                "line": 75
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "string | undefined"
+                  }
+                ],
+                "returnType": "string | undefined",
+                "text": "(value: string | undefined): string | undefined"
+              }
+            }
+          ],
+          "isLowerBound": false
+        }
+      ],
+      "summary": {
+        "callableCount": 51,
+        "cyclicComponentCount": 0,
+        "edgeCount": 48,
+        "entryPointCount": 9,
+        "fileCount": 22,
+        "maximumDepth": 6,
+        "projectCount": 1,
+        "unresolvedCallCount": 3
+      }
+    },
+    {
+      "callableBreadths": [
+        {
+          "breadth": 4,
+          "callees": [
+            {
               "displayName": "ConfigurationLoaderService.findConfigurationFile",
               "id": "packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts#1543"
             },
@@ -7498,27 +9234,67 @@
           }
         },
         {
+          "breadth": 4,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.resolveCustomStatistics",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#5008"
+            },
+            {
+              "displayName": "ConfigurationService.resolveInputs",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7666"
+            },
+            {
+              "displayName": "ConfigurationService.resolveLimits",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8781"
+            },
+            {
+              "displayName": "ConfigurationService.resolveOutputs",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9897"
+            }
+          ],
+          "displayName": "ConfigurationService.resolveConfiguration",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#13501",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 385
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configuration",
+                "type": "CodometerConfiguration"
+              }
+            ],
+            "returnType": "ResolvedCodometerConfiguration",
+            "text": "(configuration: CodometerConfiguration): ResolvedCodometerConfiguration"
+          }
+        },
+        {
           "breadth": 3,
           "callees": [
             {
               "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6854"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7068"
             },
             {
               "displayName": "ConfigurationService.filter(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6787"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7001"
             },
             {
               "displayName": "ConfigurationService.filter(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7009"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7223"
             }
           ],
           "displayName": "ConfigurationService.resolveInput",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6454",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6668",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 192
+            "line": 196
           },
           "signature": {
             "parameters": [
@@ -7542,7 +9318,7 @@
             },
             {
               "displayName": "ConfigurationService.resolveConfiguration",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12182"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#13501"
             },
             {
               "displayName": "ConfigurationService.parseConfiguration",
@@ -7550,11 +9326,11 @@
             }
           ],
           "displayName": "ConfigurationService.loadConfigurationFile",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#11144",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12463",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 324
+            "line": 355
           },
           "signature": {
             "parameters": [
@@ -7567,42 +9343,6 @@
             ],
             "returnType": "Promise<LoadedConfiguration>",
             "text": "(args?: LoadConfigurationArguments): Promise<LoadedConfiguration>"
-          }
-        },
-        {
-          "breadth": 3,
-          "callees": [
-            {
-              "displayName": "ConfigurationService.resolveInputs",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7452"
-            },
-            {
-              "displayName": "ConfigurationService.resolveLimits",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8483"
-            },
-            {
-              "displayName": "ConfigurationService.resolveOutputs",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9515"
-            }
-          ],
-          "displayName": "ConfigurationService.resolveConfiguration",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12182",
-          "location": {
-            "column": 3,
-            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 354
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "configuration",
-                "type": "CodometerConfiguration"
-              }
-            ],
-            "returnType": "ResolvedCodometerConfiguration",
-            "text": "(configuration: CodometerConfiguration): ResolvedCodometerConfiguration"
           }
         },
         {
@@ -7706,19 +9446,19 @@
           "callees": [
             {
               "displayName": "ConfigurationService.some(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7634"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7848"
             },
             {
               "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7816"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8030"
             }
           ],
           "displayName": "ConfigurationService.resolveInputs",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7452",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7666",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 220
+            "line": 224
           },
           "signature": {
             "parameters": [
@@ -7738,19 +9478,19 @@
           "callees": [
             {
               "displayName": "ConfigurationService.resolveJsonOutput",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7919"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8133"
             },
             {
               "displayName": "ConfigurationService.resolveMarkdownOutput",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8856"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9154"
             }
           ],
           "displayName": "ConfigurationService.map(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9647",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10096",
           "location": {
             "column": 32,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 285
+            "line": 292
           },
           "signature": {
             "parameters": [
@@ -7763,6 +9503,44 @@
             ],
             "returnType": "ResolvedCodometerJsonOutput | ResolvedCodometerMarkdownOutput",
             "text": "(output: CodometerOutput): ResolvedCodometerJsonOutput | ResolvedCodometerMarkdownOutput"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "ConfigurationService.map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10890"
+            },
+            {
+              "displayName": "ConfigurationService.flatMap(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10978"
+            }
+          ],
+          "displayName": "ConfigurationService.selectCustomStatistics",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10659",
+          "location": {
+            "column": 3,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
+            "line": 308
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "labels",
+                "type": "string[] | undefined"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "customStatistics",
+                "type": "readonly ResolvedCodometerCustomStatistic[]"
+              }
+            ],
+            "returnType": "ResolvedCodometerCustomStatistic[]",
+            "text": "(labels: string[] | undefined, customStatistics: readonly ResolvedCodometerCustomStatistic[]): ResolvedCodometerCustomStatistic[]"
           }
         },
         {
@@ -7791,11 +9569,11 @@
           "callees": [
             {
               "displayName": "some(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#3931"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#3952"
             }
           ],
           "displayName": "superRefine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#3861",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#3882",
           "location": {
             "column": 16,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
@@ -7825,15 +9603,43 @@
           "callees": [
             {
               "displayName": "map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6360"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6130"
             }
           ],
           "displayName": "refine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6321",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6081",
           "location": {
-            "column": 7,
+            "column": 9,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
-            "line": 168
+            "line": 164
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "statistics",
+                "type": "{ label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; language?: \"css\" | ... 7 more ... | undefined; maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | unde..."
+              }
+            ],
+            "returnType": "boolean",
+            "text": "(statistics: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; language?: \"css\" | ... 7 more ... | undefined; maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | undefined; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }[]): boolean"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6847"
+            }
+          ],
+          "displayName": "refine(…)",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6806",
+          "location": {
+            "column": 9,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
+            "line": 180
           },
           "signature": {
             "parameters": [
@@ -7853,15 +9659,15 @@
           "callees": [
             {
               "displayName": "find(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#7572"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8115"
             }
           ],
           "displayName": "superRefine(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#7501",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8040",
           "location": {
-            "column": 18,
+            "column": 20,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
-            "line": 195
+            "line": 207
           },
           "signature": {
             "parameters": [
@@ -7869,17 +9675,17 @@
                 "isOptional": false,
                 "isRest": false,
                 "name": "outputs",
-                "type": "({ type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefin..."
+                "type": "({ type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; })[]"
               },
               {
                 "isOptional": false,
                 "isRest": false,
                 "name": "context",
-                "type": "$RefinementCtx<({ type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 mor..."
+                "type": "$RefinementCtx<({ type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; })[]>"
               }
             ],
             "returnType": "void",
-            "text": "(outputs: ({ type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }[] | undefined; ... 4 more ...; write?: WriteMarkdownOutput | undefined; } | { ...; })[], context: z.core.$RefinementCtx<...>): void"
+            "text": "(outputs: ({ type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; })[], context: z.core.$RefinementCtx<...>): void"
           }
         },
         {
@@ -7887,15 +9693,15 @@
           "callees": [
             {
               "displayName": "findIndex(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#7619"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8164"
             }
           ],
           "displayName": "find(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#7572",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8115",
           "location": {
-            "column": 9,
+            "column": 11,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
-            "line": 197
+            "line": 209
           },
           "signature": {
             "parameters": [
@@ -7903,7 +9709,7 @@
                 "isOptional": false,
                 "isRest": false,
                 "name": "output",
-                "type": "{ type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefine..."
+                "type": "{ type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; }"
               },
               {
                 "isOptional": false,
@@ -7913,7 +9719,41 @@
               }
             ],
             "returnType": "boolean",
-            "text": "(output: { type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }[] | undefined; ... 4 more ...; write?: WriteMarkdownOutput | undefined; } | { ...; }, index: number): boolean"
+            "text": "(output: { type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; }, index: number): boolean"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8959"
+            }
+          ],
+          "displayName": "superRefine(…)",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8854",
+          "location": {
+            "column": 16,
+            "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
+            "line": 225
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "configuration",
+                "type": "{ format: \"json\" | \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ......"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "context",
+                "type": "$RefinementCtx<{ format: \"json\" | \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ..."
+              }
+            ],
+            "returnType": "void",
+            "text": "(configuration: { format: \"json\" | \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }[] | undefined; ... 6 more ...; python?: { ...; } | undefined; }, context: z.core.$RefinementCtx<...>): void"
           }
         },
         {
@@ -8004,15 +9844,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#5033"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#5247"
             }
           ],
           "displayName": "ConfigurationService.resolveCustomStatistics",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4794",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#5008",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 146
+            "line": 150
           },
           "signature": {
             "parameters": [
@@ -8032,15 +9872,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.resolveInput",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6454"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#6668"
             }
           ],
           "displayName": "ConfigurationService.map(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7816",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8030",
           "location": {
             "column": 26,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 231
+            "line": 235
           },
           "signature": {
             "parameters": [
@@ -8059,16 +9899,16 @@
           "breadth": 1,
           "callees": [
             {
-              "displayName": "ConfigurationService.resolveCustomStatistics",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4794"
+              "displayName": "ConfigurationService.selectCustomStatistics",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10659"
             }
           ],
           "displayName": "ConfigurationService.resolveJsonOutput",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#7919",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8133",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 235
+            "line": 239
           },
           "signature": {
             "parameters": [
@@ -8077,10 +9917,16 @@
                 "isRest": false,
                 "name": "output",
                 "type": "CodometerJsonOutput"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "customStatistics",
+                "type": "readonly ResolvedCodometerCustomStatistic[]"
               }
             ],
             "returnType": "ResolvedCodometerJsonOutput",
-            "text": "(output: CodometerJsonOutput): ResolvedCodometerJsonOutput"
+            "text": "(output: CodometerJsonOutput, customStatistics: readonly ResolvedCodometerCustomStatistic[]): ResolvedCodometerJsonOutput"
           }
         },
         {
@@ -8088,15 +9934,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8610"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8908"
             }
           ],
           "displayName": "ConfigurationService.resolveLimits",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8483",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8781",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 253
+            "line": 258
           },
           "signature": {
             "parameters": [
@@ -8120,11 +9966,11 @@
             }
           ],
           "displayName": "ConfigurationService.map(…)",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8610",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8908",
           "location": {
             "column": 31,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 256
+            "line": 261
           },
           "signature": {
             "parameters": [
@@ -8143,16 +9989,16 @@
           "breadth": 1,
           "callees": [
             {
-              "displayName": "ConfigurationService.resolveCustomStatistics",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#4794"
+              "displayName": "ConfigurationService.selectCustomStatistics",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10659"
             }
           ],
           "displayName": "ConfigurationService.resolveMarkdownOutput",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8856",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9154",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 265
+            "line": 270
           },
           "signature": {
             "parameters": [
@@ -8161,10 +10007,16 @@
                 "isRest": false,
                 "name": "output",
                 "type": "CodometerMarkdownOutput"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "customStatistics",
+                "type": "readonly ResolvedCodometerCustomStatistic[]"
               }
             ],
             "returnType": "ResolvedCodometerMarkdownOutput",
-            "text": "(output: CodometerMarkdownOutput): ResolvedCodometerMarkdownOutput"
+            "text": "(output: CodometerMarkdownOutput, customStatistics: readonly ResolvedCodometerCustomStatistic[]): ResolvedCodometerMarkdownOutput"
           }
         },
         {
@@ -8172,15 +10024,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9647"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10096"
             }
           ],
           "displayName": "ConfigurationService.resolveOutputs",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9515",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#9897",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 282
+            "line": 288
           },
           "signature": {
             "parameters": [
@@ -8189,10 +10041,16 @@
                 "isRest": false,
                 "name": "outputs",
                 "type": "CodometerOutput[] | undefined"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "customStatistics",
+                "type": "readonly ResolvedCodometerCustomStatistic[]"
               }
             ],
             "returnType": "ResolvedCodometerOutput[]",
-            "text": "(outputs: CodometerOutput[] | undefined): ResolvedCodometerOutput[]"
+            "text": "(outputs: CodometerOutput[] | undefined, customStatistics: readonly ResolvedCodometerCustomStatistic[]): ResolvedCodometerOutput[]"
           }
         },
         {
@@ -8200,15 +10058,15 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#11144"
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12463"
             }
           ],
           "displayName": "ConfigurationService.loadConfiguration",
-          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10492",
+          "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#11811",
           "location": {
             "column": 3,
             "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 307
+            "line": 338
           },
           "signature": {
             "parameters": [
@@ -8299,12 +10157,12 @@
                 "summary": "Loads and validates a codometer configuration file. A path that was named explicitly must exist — a typo in a task runner's arguments should fail rather than quietly measure the repository with defaults it never asked for. A path that was not named is searched for from the measured directory upward, and its absence is legal. The nearest configuration file wins outright: nothing from a further ancestor is folded into it. Merging the two would leave a limit that never applied looking exactly like one that did, and the only way to tell them apart would be to know which of several files each field came from.",
                 "tags": []
               },
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#10492",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#11811",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 307
+                "line": 338
               },
               "signature": {
                 "parameters": [
@@ -8326,12 +10184,12 @@
                 "summary": "Loads a configuration and says which file answered. The same work as `loadConfiguration`, keeping the path the upward walk settled on. A caller measuring one directory has no use for it — the configuration is the whole answer — but one listing what a repository configures has to attribute each answer to the file that gave it, and nothing downstream of the walk can still tell.",
                 "tags": []
               },
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#11144",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12463",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 324
+                "line": 355
               },
               "signature": {
                 "parameters": [
@@ -8353,12 +10211,12 @@
                 "summary": "Fills in every field a configuration file may leave out. Exposed so a host embedding codometer can hand over a configuration object it assembled itself and get the same shape a configuration file produces.",
                 "tags": []
               },
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#12182",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#13501",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 354
+                "line": 385
               },
               "signature": {
                 "parameters": [
@@ -8380,12 +10238,12 @@
                 "summary": "Gives every limit its severity and a value read as a number. Which metric a limit lands on is decided where the measurement is, since nothing here knows what was measured — the only thing settled at this point is what the limit says.",
                 "tags": []
               },
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8483",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8781",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 253
+                "line": 258
               },
               "signature": {
                 "parameters": [
@@ -8402,12 +10260,12 @@
             },
             {
               "displayName": "ConfigurationService.map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8610",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts#8908",
               "isCycle": false,
               "location": {
                 "column": 31,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 256
+                "line": 261
               },
               "signature": {
                 "parameters": [
@@ -8519,12 +10377,12 @@
           "frames": [
             {
               "displayName": "superRefine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#7501",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8040",
               "isCycle": false,
               "location": {
-                "column": 18,
+                "column": 20,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
-                "line": 195
+                "line": 207
               },
               "signature": {
                 "parameters": [
@@ -8532,27 +10390,27 @@
                     "isOptional": false,
                     "isRest": false,
                     "name": "outputs",
-                    "type": "({ type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefin..."
+                    "type": "({ type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; })[]"
                   },
                   {
                     "isOptional": false,
                     "isRest": false,
                     "name": "context",
-                    "type": "$RefinementCtx<({ type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 mor..."
+                    "type": "$RefinementCtx<({ type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; })[]>"
                   }
                 ],
                 "returnType": "void",
-                "text": "(outputs: ({ type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }[] | undefined; ... 4 more ...; write?: WriteMarkdownOutput | undefined; } | { ...; })[], context: z.core.$RefinementCtx<...>): void"
+                "text": "(outputs: ({ type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; })[], context: z.core.$RefinementCtx<...>): void"
               }
             },
             {
               "displayName": "find(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#7572",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8115",
               "isCycle": false,
               "location": {
-                "column": 9,
+                "column": 11,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
-                "line": 197
+                "line": 209
               },
               "signature": {
                 "parameters": [
@@ -8560,7 +10418,7 @@
                     "isOptional": false,
                     "isRest": false,
                     "name": "output",
-                    "type": "{ type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefine..."
+                    "type": "{ type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; }"
                   },
                   {
                     "isOptional": false,
@@ -8570,17 +10428,17 @@
                   }
                 ],
                 "returnType": "boolean",
-                "text": "(output: { type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }[] | undefined; ... 4 more ...; write?: WriteMarkdownOutput | undefined; } | { ...; }, index: number): boolean"
+                "text": "(output: { type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; }, index: number): boolean"
               }
             },
             {
               "displayName": "findIndex(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#7619",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8164",
               "isCycle": false,
               "location": {
-                "column": 29,
+                "column": 31,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
-                "line": 198
+                "line": 210
               },
               "signature": {
                 "parameters": [
@@ -8588,11 +10446,11 @@
                     "isOptional": false,
                     "isRest": false,
                     "name": "other",
-                    "type": "{ type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefine..."
+                    "type": "{ type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; }"
                   }
                 ],
                 "returnType": "boolean",
-                "text": "(other: { type: \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }[] | undefined; ... 4 more ...; write?: WriteMarkdownOutput | undefined; } | { ...; }): boolean"
+                "text": "(other: { type: \"markdown\"; custom?: string[] | undefined; description?: string | undefined; endMarker?: string | undefined; path?: string | undefined; startMarker?: string | undefined; write?: WriteMarkdownOutput | undefined; } | { ...; }): boolean"
               }
             }
           ],
@@ -8747,7 +10605,7 @@
           "frames": [
             {
               "displayName": "superRefine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#3861",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#3882",
               "isCycle": false,
               "location": {
                 "column": 16,
@@ -8775,7 +10633,7 @@
             },
             {
               "displayName": "some(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#3931",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#3952",
               "isCycle": false,
               "location": {
                 "column": 7,
@@ -8804,12 +10662,63 @@
           "frames": [
             {
               "displayName": "refine(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6321",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6081",
               "isCycle": false,
               "location": {
-                "column": 7,
+                "column": 9,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
-                "line": 168
+                "line": 164
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "statistics",
+                    "type": "{ label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; language?: \"css\" | ... 7 more ... | undefined; maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | unde..."
+                  }
+                ],
+                "returnType": "boolean",
+                "text": "(statistics: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; language?: \"css\" | ... 7 more ... | undefined; maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | undefined; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }[]): boolean"
+              }
+            },
+            {
+              "displayName": "map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6130",
+              "isCycle": false,
+              "location": {
+                "column": 34,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
+                "line": 165
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "statistic",
+                    "type": "{ label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; language?: \"css\" | ... 7 more ... | undefined; maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | unde..."
+                  }
+                ],
+                "returnType": "string",
+                "text": "(statistic: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; language?: \"css\" | ... 7 more ... | undefined; maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | undefined; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "refine(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6806",
+              "isCycle": false,
+              "location": {
+                "column": 9,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
+                "line": 180
               },
               "signature": {
                 "parameters": [
@@ -8826,12 +10735,12 @@
             },
             {
               "displayName": "map(…)",
-              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6360",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#6847",
               "isCycle": false,
               "location": {
-                "column": 28,
+                "column": 30,
                 "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
-                "line": 169
+                "line": 181
               },
               "signature": {
                 "parameters": [
@@ -8848,14 +10757,71 @@
             }
           ],
           "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "superRefine(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8854",
+              "isCycle": false,
+              "location": {
+                "column": 16,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
+                "line": 225
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "configuration",
+                    "type": "{ format: \"json\" | \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ......"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "context",
+                    "type": "$RefinementCtx<{ format: \"json\" | \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ..."
+                  }
+                ],
+                "returnType": "void",
+                "text": "(configuration: { format: \"json\" | \"markdown\"; custom?: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; ... 4 more ...; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }[] | undefined; ... 6 more ...; python?: { ...; } | undefined; }, context: z.core.$RefinementCtx<...>): void"
+              }
+            },
+            {
+              "displayName": "map(…)",
+              "id": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts#8959",
+              "isCycle": false,
+              "location": {
+                "column": 40,
+                "filePath": "packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts",
+                "line": 227
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "statistic",
+                    "type": "{ label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; language?: \"css\" | ... 7 more ... | undefined; maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | unde..."
+                  }
+                ],
+                "returnType": "string",
+                "text": "(statistic: { label: string; color?: string | undefined; comment?: { kind?: \"function\" | \"enum\" | \"class\" | \"getter\" | \"interface\" | \"method\" | \"property\" | \"setter\" | undefined; language?: \"css\" | ... 7 more ... | undefined; maximumCharacters?: number | undefined; maximumLines?: number | undefined; maximumWords?: number | undefined; severity?: \"fail\" | ... 1 more ... | undefined; } | undefined; group?: \"css\" | ... 12 more ... | undefined; patterns?: string[] | undefined; symbols?: { ...; } | undefined; }): string"
+              }
+            }
+          ],
+          "isLowerBound": false
         }
       ],
       "summary": {
-        "callableCount": 51,
+        "callableCount": 58,
         "cyclicComponentCount": 0,
-        "edgeCount": 45,
-        "entryPointCount": 6,
-        "fileCount": 19,
+        "edgeCount": 50,
+        "entryPointCount": 8,
+        "fileCount": 20,
         "maximumDepth": 8,
         "projectCount": 1,
         "unresolvedCallCount": 4
@@ -10132,7 +12098,7 @@
         "cyclicComponentCount": 0,
         "edgeCount": 19,
         "entryPointCount": 7,
-        "fileCount": 10,
+        "fileCount": 11,
         "maximumDepth": 5,
         "projectCount": 1,
         "unresolvedCallCount": 1
@@ -10140,14 +12106,14 @@
     }
   ],
   "summary": {
-    "callableCount": 245,
+    "callableCount": 303,
     "cyclicComponentCount": 1,
-    "edgeCount": 211,
-    "entryPointCount": 77,
-    "fileCount": 89,
+    "edgeCount": 264,
+    "entryPointCount": 94,
+    "fileCount": 115,
     "maximumDepth": 8,
-    "projectCount": 5,
-    "unresolvedCallCount": 14
+    "projectCount": 6,
+    "unresolvedCallCount": 17
   },
   "wideCallables": [
     {
