@@ -53,6 +53,7 @@ function buildConfiguration(
   defaultInput?: string,
 ): ResolvedCodometerConfiguration {
   return {
+    custom: [],
     defaultInput,
     exclude: [],
     excludeFrom: [],

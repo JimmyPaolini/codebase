@@ -463,6 +463,12 @@ describe(ConfigurationService, () => {
 
   // 📤 Outputs
 
+  it("defaults the top-level custom statistics to none", () => {
+    expect(
+      service.resolveConfiguration(BASE_CONFIGURATION).custom,
+    ).toStrictEqual([]);
+  });
+
   it("defaults the outputs to none", () => {
     expect(
       service.resolveConfiguration(BASE_CONFIGURATION).outputs,
@@ -641,16 +647,20 @@ describe(ConfigurationService, () => {
     ).rejects.toBeInstanceOf(InvalidConfigurationError);
   });
 
-  it("gives each output its own custom counters", async () => {
+  it("gives each output its own selection of custom counters", async () => {
     const configurationPath = await writeConfiguration({
+      custom: [
+        { label: "Services", patterns: ["**/*.service.ts"] },
+        { label: "Modules", patterns: ["**/*.module.ts"] },
+      ],
       outputs: [
         {
-          custom: [{ label: "Services", patterns: ["**/*.service.ts"] }],
+          custom: ["Services"],
           path: "codometer.json",
           type: "json",
         },
         {
-          custom: [{ label: "Modules", patterns: ["**/*.module.ts"] }],
+          custom: ["Modules"],
           path: "README.md",
           type: "markdown",
         },
@@ -670,20 +680,66 @@ describe(ConfigurationService, () => {
     ]);
   });
 
+  it("measures a top-level counter no output selects", async () => {
+    const configurationPath = await writeConfiguration({
+      custom: [{ label: "Services", patterns: ["**/*.service.ts"] }],
+      outputs: [{ path: "codometer.json", type: "json" }],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(
+      configuration.custom.map((statistic) => statistic.label),
+    ).toStrictEqual(["Services"]);
+    expect(configuration.outputs[0]?.custom).toStrictEqual([]);
+  });
+
+  it("rejects an output selecting a label the top level never declared", async () => {
+    const configurationPath = await writeConfiguration({
+      outputs: [
+        {
+          custom: ["Services"],
+          path: "codometer.json",
+          type: "json",
+        },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toThrow(/Services/);
+  });
+
+  it("rejects two top-level custom statistics sharing a label", async () => {
+    const configurationPath = await writeConfiguration({
+      custom: [
+        { label: "Services", patterns: ["**/*.service.ts"] },
+        { label: "Services", patterns: ["**/*.module.ts"] },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(InvalidConfigurationError);
+  });
+
   // 🏷️ Custom statistics
 
   it("gives every configured counter a color from the palette", async () => {
     const configurationPath = await writeConfiguration({
+      custom: [
+        { label: "Services", patterns: ["**/*.service.ts"] },
+        {
+          color: "ff0000",
+          label: "Modules",
+          patterns: ["**/*.module.ts"],
+        },
+      ],
       outputs: [
         {
-          custom: [
-            { label: "Services", patterns: ["**/*.service.ts"] },
-            {
-              color: "ff0000",
-              label: "Modules",
-              patterns: ["**/*.module.ts"],
-            },
-          ],
+          custom: ["Services", "Modules"],
           path: "codometer.json",
           type: "json",
         },
@@ -720,17 +776,18 @@ describe(ConfigurationService, () => {
   it("starts the palette over for each group", () => {
     const configuration = service.resolveConfiguration({
       ...BASE_CONFIGURATION,
+      custom: [
+        { label: "Services", patterns: ["**/*.service.ts"] },
+        { label: "Modules", patterns: ["**/*.module.ts"] },
+        {
+          group: "typescript",
+          label: "Classes",
+          symbols: { kinds: ["class"] },
+        },
+      ],
       outputs: [
         {
-          custom: [
-            { label: "Services", patterns: ["**/*.service.ts"] },
-            { label: "Modules", patterns: ["**/*.module.ts"] },
-            {
-              group: "typescript",
-              label: "Classes",
-              symbols: { kinds: ["class"] },
-            },
-          ],
+          custom: ["Services", "Modules", "Classes"],
           path: "codometer.json",
           type: "json",
         },
@@ -748,15 +805,16 @@ describe(ConfigurationService, () => {
   it("keeps a symbol counter's matcher and defaults its patterns to none", () => {
     const configuration = service.resolveConfiguration({
       ...BASE_CONFIGURATION,
+      custom: [
+        {
+          group: "typescript",
+          label: "Static Methods",
+          symbols: { kinds: ["method"], modifiers: ["static"] },
+        },
+      ],
       outputs: [
         {
-          custom: [
-            {
-              group: "typescript",
-              label: "Static Methods",
-              symbols: { kinds: ["method"], modifiers: ["static"] },
-            },
-          ],
+          custom: ["Static Methods"],
           path: "codometer.json",
           type: "json",
         },
@@ -776,13 +834,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a counter with no patterns", async () => {
     const configurationPath = await writeConfiguration({
-      outputs: [
-        {
-          custom: [{ label: "Nothing", patterns: [] }],
-          path: "codometer.json",
-          type: "json",
-        },
-      ],
+      custom: [{ label: "Nothing", patterns: [] }],
     });
 
     await expect(
@@ -794,13 +846,7 @@ describe(ConfigurationService, () => {
   // rather than rendering as though it had been measured.
   it("rejects a counter that matches nothing at all", async () => {
     const configurationPath = await writeConfiguration({
-      outputs: [
-        {
-          custom: [{ label: "Nothing" }],
-          path: "codometer.json",
-          type: "json",
-        },
-      ],
+      custom: [{ label: "Nothing" }],
     });
 
     await expect(
@@ -810,15 +856,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a counter naming a group that is never rendered", async () => {
     const configurationPath = await writeConfiguration({
-      outputs: [
-        {
-          custom: [
-            { group: "notebooks", label: "Classes", patterns: ["**/*.ts"] },
-          ],
-          path: "codometer.json",
-          type: "json",
-        },
-      ],
+      custom: [{ group: "notebooks", label: "Classes", patterns: ["**/*.ts"] }],
     });
 
     await expect(
@@ -828,13 +866,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a symbol matcher asking for an unknown declaration kind", async () => {
     const configurationPath = await writeConfiguration({
-      outputs: [
-        {
-          custom: [{ label: "Sigils", symbols: { kinds: ["sigil"] } }],
-          path: "codometer.json",
-          type: "json",
-        },
-      ],
+      custom: [{ label: "Sigils", symbols: { kinds: ["sigil"] } }],
     });
 
     await expect(
@@ -846,14 +878,15 @@ describe(ConfigurationService, () => {
 
   it("round-trips a comment selector through the schema", async () => {
     const configurationPath = await writeConfiguration({
+      custom: [
+        {
+          comment: { language: "yaml", maximumWords: 128 },
+          label: "YAML Comment Budget",
+        },
+      ],
       outputs: [
         {
-          custom: [
-            {
-              comment: { language: "yaml", maximumWords: 128 },
-              label: "YAML Comment Budget",
-            },
-          ],
+          custom: ["YAML Comment Budget"],
           path: "codometer.json",
           type: "json",
         },
@@ -878,14 +911,15 @@ describe(ConfigurationService, () => {
   it("accepts a comment selector naming a documentation kind and no language", () => {
     const configuration = service.resolveConfiguration({
       ...BASE_CONFIGURATION,
+      custom: [
+        {
+          comment: { kind: "class", maximumLines: 24, severity: "warn" },
+          label: "Class Comment Budget",
+        },
+      ],
       outputs: [
         {
-          custom: [
-            {
-              comment: { kind: "class", maximumLines: 24, severity: "warn" },
-              label: "Class Comment Budget",
-            },
-          ],
+          custom: ["Class Comment Budget"],
           path: "codometer.json",
           type: "json",
         },
@@ -906,9 +940,10 @@ describe(ConfigurationService, () => {
   it("leaves comment undefined for a counter naming none", () => {
     const configuration = service.resolveConfiguration({
       ...BASE_CONFIGURATION,
+      custom: [{ label: "Services", patterns: ["**/*.service.ts"] }],
       outputs: [
         {
-          custom: [{ label: "Services", patterns: ["**/*.service.ts"] }],
+          custom: ["Services"],
           path: "codometer.json",
           type: "json",
         },
@@ -921,15 +956,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a comment selector naming an unknown language", async () => {
     const configurationPath = await writeConfiguration({
-      outputs: [
-        {
-          custom: [
-            { comment: { language: "rust" }, label: "Rust Comment Budget" },
-          ],
-          path: "codometer.json",
-          type: "json",
-        },
-      ],
+      custom: [{ comment: { language: "rust" }, label: "Rust Comment Budget" }],
     });
 
     await expect(
@@ -939,15 +966,7 @@ describe(ConfigurationService, () => {
 
   it("rejects a comment selector naming an unknown declaration kind", async () => {
     const configurationPath = await writeConfiguration({
-      outputs: [
-        {
-          custom: [
-            { comment: { kind: "sigil" }, label: "Sigil Comment Budget" },
-          ],
-          path: "codometer.json",
-          type: "json",
-        },
-      ],
+      custom: [{ comment: { kind: "sigil" }, label: "Sigil Comment Budget" }],
     });
 
     await expect(
