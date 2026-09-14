@@ -546,13 +546,13 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 4822 |
-| Files | 1310 |
-| Calls traced | 5408 |
-| Call stacks | 1273 |
+| Callables | 4847 |
+| Files | 1313 |
+| Calls traced | 5437 |
+| Call stacks | 1275 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 333 |
+| Unfollowable calls | 334 |
 
 ### Projects
 

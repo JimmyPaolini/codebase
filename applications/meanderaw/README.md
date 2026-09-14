@@ -2000,13 +2000,13 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 282 |
-| Files | 93 |
-| Calls traced | 366 |
+| Callables | 303 |
+| Files | 96 |
+| Calls traced | 389 |
 | Call stacks | 33 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 20 |
+| Unfollowable calls | 21 |
 
 ### Limits
 
@@ -2022,10 +2022,10 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `DrawCommand.run`** — depth ≥ 16 · decorated-method
 
 ```text
-🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:168]
+🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:190]
    ↳ Sweeps every meander into the database, or draws the one `--code` names.
-  └─> DrawCommand.sweep(): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:113]
-     ↳ Draws every meander the application can draw, as rows in the committed database.
+  └─> DrawCommand.sweep(): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:127]
+     ↳ Draws every meander the application can draw, as rows in the committed database, then rebuilds `output/index.html` from…
     └─> DrawEnumerationService.sweep(): Promise<number> [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:81]
        ↳ Every shape the budget admits, swept and written — which is what `draw` with no drawing named now does.
       └─> DrawEnumerationService.persist(shapes: readonly MeanderShape[]): Promise<number> [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:61]
@@ -2441,7 +2441,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MeanderLatticeService.build` | 6 | `MeanderLatticeService.strokeWidth`, `MeanderLatticeService.pathData`, `MeanderLatticeService.trace`, `MeanderLatticeService.commands`, `MeanderLatticeService.snap`, `MeanderLatticeService.dimension` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:233` |
 
 <details>
-<summary>172 more callables</summary>
+<summary>185 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -2467,6 +2467,9 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MosaicNamingService.matching` | 3 | `MosaicNamingService.map(…)`, `MosaicNamingService.filter(…)`, `MosaicNamingService.rules` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:168` |
 | `MeanderClassificationService.matching` | 3 | `MeanderClassificationService.map(…)`, `MeanderClassificationService.filter(…)`, `MeanderClassificationService.rules` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:201` |
 | `LatticeIdentificationService.readTile` | 3 | `MosaicTileService.blankEdges`, `MosaicTileService.mark`, `MosaicTileService.build` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:237` |
+| `DrawIndexService.renderSection` | 3 | `DrawIndexService.escape`, `DrawIndexService.label`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:148` |
+| `DrawIndexService.render` | 3 | `DrawIndexService.groupByFamily`, `DrawIndexService.map(…)`, `DrawIndexService.renderContents` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:179` |
+| `DrawCommand.sweep` | 3 | `DrawEnumerationService.sweep`, `HardcodedMeandersService.ingest`, `DrawIndexService.build` | `applications/meanderaw/src/modules/draw/draw.command.ts:127` |
 | `MeanderLatticeService.commands` | 2 | `MeanderLatticeService.map(…)`, `MeanderLatticeService.groups` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:120` |
 | `MeanderLatticeService.groups` | 2 | `UnsupportedPathCommandError.constructor`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:138` |
 | `MeanderLatticeService.strokeWidth` | 2 | `MeanderLatticeService.map(…)`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:186` |
@@ -2515,9 +2518,12 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawEnumerationService.persist` | 2 | `MeanderDatabaseService.saveAll`, `DrawEnumerationService.records` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:61` |
 | `DrawEnumerationService.records` | 2 | `DrawEnumerationService.map(…)`, `MeanderEnumerationService.enumerate` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:72` |
 | `DrawEnumerationService.sweep` | 2 | `DrawEnumerationService.persist`, `MeanderEnumerationService.shapes` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:81` |
-| `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:86` |
-| `DrawCommand.sweep` | 2 | `DrawEnumerationService.sweep`, `HardcodedMeandersService.ingest` | `applications/meanderaw/src/modules/draw/draw.command.ts:113` |
-| `DrawCommand.run` | 2 | `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:168` |
+| `DrawIndexService.groupByFamily` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:98` |
+| `DrawIndexService.map(…)` | 2 | `DrawIndexService.escape`, `DrawIndexService.label` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:132` |
+| `DrawIndexService.renderFigure` | 2 | `DrawIndexService.assertWellFormedSvg`, `DrawIndexService.caption` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:141` |
+| `DrawIndexService.build` | 2 | `DrawIndexService.render`, `MeanderDatabaseService.findAll` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:166` |
+| `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:96` |
+| `DrawCommand.run` | 2 | `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:190` |
 | `MeanderLatticeService.addHorizontal` | 1 | `MeanderLatticeService.key` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:55` |
 | `MeanderLatticeService.addVertical` | 1 | `MeanderLatticeService.key` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:73` |
 | `MeanderLatticeService.command` | 1 | `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:91` |
@@ -2541,7 +2547,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MeanderCharacteristicsService.hasNorthCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:87` |
 | `MeanderCharacteristicsService.hasSouthCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:96` |
 | `MeanderCharacteristicsService.hasWestCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:107` |
-| `MeanderDatabaseService.saveAll` | 1 | `MeanderDatabaseService.transaction(…)` | `applications/meanderaw/src/modules/meander-database/meander-database.service.ts:75` |
+| `MeanderDatabaseService.saveAll` | 1 | `MeanderDatabaseService.transaction(…)` | `applications/meanderaw/src/modules/meander-database/meander-database.service.ts:87` |
 | `MeanderDecodingService.point` | 1 | `InvalidCodeCharacterError.constructor` | `applications/meanderaw/src/modules/meander-decoding/meander-decoding.service.ts:43` |
 | `MeanderDecodingService.from(…)` | 1 | `MeanderDecodingService.point` | `applications/meanderaw/src/modules/meander-decoding/meander-decoding.service.ts:72` |
 | `GridGeometryService.borderPath` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:41` |
@@ -2617,6 +2623,13 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MeanderEnumerationService.map(…)` | 1 | `LatticeIdentificationService.identify` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:80` |
 | `MeanderEnumerationService.isAdmitted` | 1 | `MosaicTilesService.isAdmitted` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:88` |
 | `DrawEnumerationService.map(…)` | 1 | `DrawRecordService.record` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:75` |
+| `DrawIndexService.assertWellFormedSvg` | 1 | `MalformedMeanderSvgError.constructor` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:63` |
+| `DrawIndexService.caption` | 1 | `DrawIndexService.escape` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:72` |
+| `DrawIndexService.map(…)` | 1 | `DrawIndexService.toSorted(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:109` |
+| `DrawIndexService.toSorted(…)` | 1 | `DrawIndexService.familyRank` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:119` |
+| `DrawIndexService.renderContents` | 1 | `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:130` |
+| `DrawIndexService.map(…)` | 1 | `DrawIndexService.renderFigure` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:151` |
+| `DrawIndexService.map(…)` | 1 | `DrawIndexService.renderSection` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:182` |
 
 </details>
 <!-- CALL_STACKS_END -->
