@@ -541,9 +541,9 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5045 |
+| Callables | 5043 |
 | Files | 1322 |
-| Calls traced | 5736 |
+| Calls traced | 5733 |
 | Call stacks | 1302 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
@@ -558,7 +558,7 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 | `applications/lexico` | 9 | 9 | 0 | 9 |
 | `applications/lexico-ingestion` | 17 | 17 | 0 | 8 |
 | `applications/meanderaw` | 16 | 16 | 0 | 14 |
-| `packages/callidescope-cli` | 15 | 15 | 0 | 11 |
+| `packages/callidescope-cli` | 15 | 15 | 0 | 9 |
 | `packages/callidescope-nx` | 17 | 17 | 0 | 7 |
 | `packages/codependix-boundaries` | 12 | 12 | 0 | 5 |
 | `packages/codependix-cli` | 15 | 15 | 0 | 7 |
