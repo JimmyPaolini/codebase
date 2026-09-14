@@ -397,15 +397,15 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-27-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-3413-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-3408-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-27-f97316?style=flat-square)
 ![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-431-7c3aed?style=flat-square)
 ![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-98-8b5cf6?style=flat-square)
 ![YAML Keys](https://img.shields.io/badge/YAML_Keys-1439-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2948-16a34a?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2936-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
-![YAML Comments](https://img.shields.io/badge/YAML_Comments-963-64748b?style=flat-square)
+![YAML Comments](https://img.shields.io/badge/YAML_Comments-970-64748b?style=flat-square)
 ![YAML Max Depth](https://img.shields.io/badge/YAML_Max_Depth-7-ea580c?style=flat-square)
 
 ### TOML
@@ -517,23 +517,23 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-268-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-75578-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-75595-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-256-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-1754-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-2064-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-98-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-10958-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-10960-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-1205-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-5526-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-643-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-6804-0ea5e9?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-6807-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-1871-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-7469-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-2070-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-30700-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-2072-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-30712-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-38-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
@@ -546,10 +546,10 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5044 |
+| Callables | 5052 |
 | Files | 1322 |
-| Calls traced | 5735 |
-| Call stacks | 1302 |
+| Calls traced | 5740 |
+| Call stacks | 1305 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
 | Unfollowable calls | 361 |
@@ -575,7 +575,7 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 | `tools/synchronization` | 10 | 10 | 0 | 9 |
 | `tools/validation` | 8 | 8 | 0 | 9 |
 | `packages/callidescope-configuration` | 5 | 6 | 1 | 7 |
-| `packages/codometer-cli` | 15 | 16 | 1 | 10 |
+| `packages/codometer-cli` | 15 | 16 | 1 | 9 |
 | `packages/codometer-size` | 0 | 3 | 3 | 2 |
 | `packages/conformetry-configuration` | 10 | 13 | 3 | 5 |
 | `packages/codependix-configuration` | 2 | 6 | 4 | 5 |

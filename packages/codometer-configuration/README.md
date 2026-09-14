@@ -448,10 +448,10 @@ Call stacks traced through `packages/codometer-configuration`, deepest first. Ea
 
 | Measure | Value |
 | --- | --- |
-| Callables | 51 |
+| Callables | 58 |
 | Files | 19 |
-| Calls traced | 45 |
-| Call stacks | 4 |
+| Calls traced | 50 |
+| Call stacks | 6 |
 | Deepest stack | 3 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 4 |
@@ -470,9 +470,9 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `superRefine(…)`** — depth 3 · orphan-root
 
 ```text
-🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:195]
-  └─> find(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:197]
-    └─> findIndex(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:198]
+🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:207]
+  └─> find(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:209]
+    └─> findIndex(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:210]
 ```
 
 **2. `callbackSchema`** — depth 2 · orphan-root
@@ -491,13 +491,27 @@ What this project is judged against, as declared in its own `callidescope.config
 ```
 
 <details>
-<summary>1 more call stacks</summary>
+<summary>3 more call stacks</summary>
 
 **4. `refine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:168]
-  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:169]
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:164]
+  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:165]
+```
+
+**5. `refine(…)`** — depth 2 · orphan-root
+
+```text
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:180]
+  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:181]
+```
+
+**6. `superRefine(…)`** — depth 2 · orphan-root
+
+```text
+🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:225]
+  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:227]
 ```
 
 </details>
@@ -507,36 +521,39 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `ConfigurationLoaderService.load` | 4 | `ConfigurationLoaderService.findConfigurationFile`, `ConfigurationLoaderService.resolveConfigurationPath`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:188` |
-| `ConfigurationService.resolveInput` | 3 | `ConfigurationService.map(…)`, `ConfigurationService.filter(…)`, `ConfigurationService.filter(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:192` |
-| `ConfigurationService.loadConfigurationFile` | 3 | `ConfigurationLoaderService.load`, `ConfigurationService.resolveConfiguration`, `ConfigurationService.parseConfiguration` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:324` |
+| `ConfigurationService.resolveConfiguration` | 4 | `ConfigurationService.resolveCustomStatistics`, `ConfigurationService.resolveInputs`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveOutputs` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:385` |
+| `ConfigurationService.resolveInput` | 3 | `ConfigurationService.map(…)`, `ConfigurationService.filter(…)`, `ConfigurationService.filter(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:196` |
 
 <details>
-<summary>24 more callables</summary>
+<summary>27 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.resolveConfiguration` | 3 | `ConfigurationService.resolveInputs`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveOutputs` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:354` |
+| `ConfigurationService.loadConfigurationFile` | 3 | `ConfigurationLoaderService.load`, `ConfigurationService.resolveConfiguration`, `ConfigurationService.parseConfiguration` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:355` |
 | `ConfigurationLoaderService.loadConfigurationModule` | 2 | `ConfigurationLoaderService.loadJsonConfiguration`, `ConfigurationLoaderService.readDefaultExport` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:103` |
 | `ConfigurationLoaderService.resolveConfigurationPath` | 2 | `ConfigurationLoaderService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:154` |
 | `ConfigurationService.parseLimitValue` | 2 | `ConfigurationService.parseLimitValueText`, `InvalidLimitValueError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:94` |
-| `ConfigurationService.resolveInputs` | 2 | `ConfigurationService.some(…)`, `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:220` |
-| `ConfigurationService.map(…)` | 2 | `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownOutput` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:285` |
+| `ConfigurationService.resolveInputs` | 2 | `ConfigurationService.some(…)`, `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:224` |
+| `ConfigurationService.map(…)` | 2 | `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownOutput` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:292` |
+| `ConfigurationService.selectCustomStatistics` | 2 | `ConfigurationService.map(…)`, `ConfigurationService.flatMap(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:308` |
 | `callbackSchema` | 1 | `custom(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:34` |
 | `superRefine(…)` | 1 | `some(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:105` |
-| `refine(…)` | 1 | `map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:168` |
-| `superRefine(…)` | 1 | `find(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:195` |
-| `find(…)` | 1 | `findIndex(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:197` |
+| `refine(…)` | 1 | `map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:164` |
+| `refine(…)` | 1 | `map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:180` |
+| `superRefine(…)` | 1 | `find(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:207` |
+| `find(…)` | 1 | `findIndex(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:209` |
+| `superRefine(…)` | 1 | `map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:225` |
 | `ConfigurationLoaderService.findRepositoryRoot` | 1 | `ConfigurationLoaderService.some(…)` | `packages/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:79` |
 | `ConfigurationService.parseConfiguration` | 1 | `InvalidConfigurationError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:77` |
 | `ConfigurationService.parseLimitValueText` | 1 | `InvalidLimitValueError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:114` |
-| `ConfigurationService.resolveCustomStatistics` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:146` |
-| `ConfigurationService.map(…)` | 1 | `ConfigurationService.resolveInput` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:231` |
-| `ConfigurationService.resolveJsonOutput` | 1 | `ConfigurationService.resolveCustomStatistics` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:235` |
-| `ConfigurationService.resolveLimits` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:253` |
-| `ConfigurationService.map(…)` | 1 | `ConfigurationService.parseLimitValue` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:256` |
-| `ConfigurationService.resolveMarkdownOutput` | 1 | `ConfigurationService.resolveCustomStatistics` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:265` |
-| `ConfigurationService.resolveOutputs` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:282` |
-| `ConfigurationService.loadConfiguration` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:307` |
+| `ConfigurationService.resolveCustomStatistics` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:150` |
+| `ConfigurationService.map(…)` | 1 | `ConfigurationService.resolveInput` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:235` |
+| `ConfigurationService.resolveJsonOutput` | 1 | `ConfigurationService.selectCustomStatistics` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:239` |
+| `ConfigurationService.resolveLimits` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:258` |
+| `ConfigurationService.map(…)` | 1 | `ConfigurationService.parseLimitValue` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:261` |
+| `ConfigurationService.resolveMarkdownOutput` | 1 | `ConfigurationService.selectCustomStatistics` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:270` |
+| `ConfigurationService.resolveOutputs` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:288` |
+| `ConfigurationService.loadConfiguration` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:338` |
 | `InputService.parseDefaultedOption` | 1 | `InputService.parseOptionalOption` | `packages/codometer-configuration/src/modules/input/input.service.ts:41` |
 | `InputService.parseDirectoryOption` | 1 | `InputService.parseDefaultedOption` | `packages/codometer-configuration/src/modules/input/input.service.ts:52` |
 
@@ -656,13 +673,13 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4156-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-145.26_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-145.20_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-26-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-16.86_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-16.77_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
