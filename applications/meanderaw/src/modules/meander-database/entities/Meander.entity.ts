@@ -31,6 +31,13 @@ import type { MeanderProvenance } from "../meander-database.types";
  * recorded `"hardcoded"` too: a Code typed at the command line is authored
  * the same way a corpus constant is, named by a person rather than found by
  * a search.
+ *
+ * `inkTJunctions`, `inkXJunctions`, `negativeTJunctions`, and
+ * `negativeXJunctions` are the raw junction counts
+ * `MeanderCharacteristicsService.compute` derives directly from the row's
+ * decoded grid, and `hasBranching`/`hasCrossing` are the first two of a
+ * growing set of boolean Characteristic columns built from them — see that
+ * service's own doc comment for what each one means.
  */
 @Entity({ name: "meanders" })
 export class Meander {
@@ -40,8 +47,26 @@ export class Meander {
   @Column({ type: "int" })
   columns!: number;
 
+  @Column({ type: "boolean" })
+  hasBranching!: boolean;
+
+  @Column({ type: "boolean" })
+  hasCrossing!: boolean;
+
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @Column({ type: "int" })
+  inkTJunctions!: number;
+
+  @Column({ type: "int" })
+  inkXJunctions!: number;
+
+  @Column({ type: "int" })
+  negativeTJunctions!: number;
+
+  @Column({ type: "int" })
+  negativeXJunctions!: number;
 
   @Column({ type: "int" })
   pitch!: number;

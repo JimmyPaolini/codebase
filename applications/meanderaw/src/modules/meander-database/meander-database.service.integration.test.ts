@@ -6,6 +6,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { Meander } from "./entities/Meander.entity";
 import { MeanderDatabaseService } from "./meander-database.service";
 
+import type { MeanderRecord } from "./meander-database.types";
+
 // 🧪 Tests
 
 /**
@@ -51,11 +53,35 @@ describe(MeanderDatabaseService, () => {
     expect(service).toBeDefined();
   });
 
+  /** Every field besides `code` a fixture row does not care about, defaulted so a case only spells out what it means to test. */
+  const record = (
+    overrides: Partial<MeanderRecord> & Pick<MeanderRecord, "code">,
+  ): MeanderRecord => ({
+    columns: 1,
+    hasBranching: false,
+    hasCrossing: false,
+    inkTJunctions: 0,
+    inkXJunctions: 0,
+    negativeTJunctions: 0,
+    negativeXJunctions: 0,
+    pitch: 1,
+    provenance: "hardcoded",
+    rows: 2,
+    svg: "<svg>fixture</svg>\n",
+    ...overrides,
+  });
+
   describe("save", () => {
     it("persists a meander row with every field it was given", async () => {
       const saved = await service.save({
         code: "3c9a",
         columns: 2,
+        hasBranching: true,
+        hasCrossing: false,
+        inkTJunctions: 1,
+        inkXJunctions: 0,
+        negativeTJunctions: 0,
+        negativeXJunctions: 0,
         pitch: 2,
         provenance: "hardcoded",
         rows: 3,
@@ -67,6 +93,12 @@ describe(MeanderDatabaseService, () => {
       expect(row).toMatchObject({
         code: "3c9a",
         columns: 2,
+        hasBranching: true,
+        hasCrossing: false,
+        inkTJunctions: 1,
+        inkXJunctions: 0,
+        negativeTJunctions: 0,
+        negativeXJunctions: 0,
         pitch: 2,
         provenance: "hardcoded",
         rows: 3,
@@ -75,46 +107,31 @@ describe(MeanderDatabaseService, () => {
     });
 
     it("assigns each saved row its own auto-generated id", async () => {
-      const first = await service.save({
-        code: "0",
-        columns: 1,
-        pitch: 1,
-        provenance: "hardcoded",
-        rows: 2,
-        svg: "<svg>a</svg>\n",
-      });
-      const second = await service.save({
-        code: "f",
-        columns: 1,
-        pitch: 1,
-        provenance: "hardcoded",
-        rows: 2,
-        svg: "<svg>b</svg>\n",
-      });
+      const first = await service.save(record({ code: "0" }));
+      const second = await service.save(record({ code: "f" }));
 
       expect(second.id).not.toBe(first.id);
     });
 
     it("refuses a second row with a code already committed, since code is the meander's whole identity", async () => {
-      await service.save({
-        code: "duplicate-code",
-        columns: 1,
-        pitch: 1,
-        provenance: "hardcoded",
-        rows: 2,
-        svg: "<svg>first</svg>\n",
-      });
+      await service.save(record({ code: "duplicate-code" }));
 
       await expect(
-        service.save({
-          code: "duplicate-code",
-          columns: 1,
-          pitch: 1,
-          provenance: "hardcoded",
-          rows: 2,
-          svg: "<svg>second</svg>\n",
-        }),
+        service.save(record({ code: "duplicate-code" })),
       ).rejects.toThrow(/UNIQUE constraint/i);
+    });
+  });
+
+  describe("characteristic columns", () => {
+    it("is queryable by a boolean Characteristic column, per spec #813's acceptance criteria", async () => {
+      await service.save(record({ code: "crossing-row", hasCrossing: true }));
+      await service.save(record({ code: "plain-row" }));
+
+      const crossingRows = await repository.findBy({ hasCrossing: true });
+
+      expect(crossingRows.map((row) => row.code)).toStrictEqual([
+        "crossing-row",
+      ]);
     });
   });
 });

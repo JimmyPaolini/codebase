@@ -12,6 +12,12 @@ export type MeanderProvenance = (typeof MEANDER_PROVENANCES)[number];
 export interface MeanderRecord {
   readonly code: string;
   readonly columns: number;
+  readonly hasBranching: boolean;
+  readonly hasCrossing: boolean;
+  readonly inkTJunctions: number;
+  readonly inkXJunctions: number;
+  readonly negativeTJunctions: number;
+  readonly negativeXJunctions: number;
   readonly pitch: number;
   readonly provenance: MeanderProvenance;
   readonly rows: number;

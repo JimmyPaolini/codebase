@@ -18,6 +18,12 @@ describe(MeanderDatabaseService, () => {
   const record: MeanderRecord = {
     code: "3c9a",
     columns: 2,
+    hasBranching: false,
+    hasCrossing: false,
+    inkTJunctions: 0,
+    inkXJunctions: 0,
+    negativeTJunctions: 0,
+    negativeXJunctions: 0,
     pitch: 2,
     provenance: "hardcoded",
     rows: 3,
