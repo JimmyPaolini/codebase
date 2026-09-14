@@ -32,6 +32,7 @@
   "extends": "../../configuration/tsconfig.json",
   "include": [
     "callidescope.config.ts",
+    "codependix.config.ts",
     "codometer.config.ts",
     "eslint.config.ts",
     "src/**/*.js",

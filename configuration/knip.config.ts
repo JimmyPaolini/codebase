@@ -10,10 +10,13 @@ const config: KnipConfig = {
   // about eslint and none that knows about codometer, so it is named here. A
   // project's callidescope.config.ts is found the same way — resolved by name
   // beside every project a trace reaches, never imported — so it is named here
-  // for the same reason.
+  // for the same reason. A project's own codependix.config.ts is optional and
+  // resolved the same way — beside every project a run maps, never imported —
+  // so it is named here too.
   ignore: [
     "**/*.test.ts",
     "**/callidescope.config.ts",
+    "**/codependix.config.ts",
     "**/codometer.config.ts",
     "notepads/**",
   ],
