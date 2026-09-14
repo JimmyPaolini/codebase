@@ -7,8 +7,8 @@
  * Shaped identically to the `typescript` module's `TypescriptImportGraph`,
  * kept as its own type rather than shared: the two modules build the same
  * kind of graph from entirely different sources — a `ts.Program` versus a
- * hand-rolled statement parser — the same independence `codependix-nx` and
- * `codependix-nestjs` already keep from each other and from
+ * hand-rolled statement parser — the same independence `codependix-nx-projects` and
+ * `codependix-nestjs-modules` already keep from each other and from
  * `codependix-file-imports`.
  */
 export interface PythonImportGraph {
@@ -30,7 +30,7 @@ export interface PythonImportGraphEdge {
 
 /**
  * A workspace project tagged `language:python`, discovered from the Nx
- * project graph the same way `codependix-nestjs`'s `NestjsProject` is —
+ * project graph the same way `codependix-nestjs-modules`'s `NestjsProject` is —
  * Python has no per-project marker file as reliable as a NestJS project's
  * root module, since every Python project shares one workspace-root
  * `pyproject.toml` (see the `write-python` skill) even when it also carries

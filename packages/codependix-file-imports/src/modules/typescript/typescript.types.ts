@@ -31,7 +31,7 @@ export interface TypescriptImportGraphEdge {
 /**
  * A workspace project whose own `tsconfig.json` can be turned into a program.
  *
- * Every workspace project is a candidate, unlike `codependix-nestjs`'s
+ * Every workspace project is a candidate, unlike `codependix-nestjs-modules`'s
  * `NestjsProject`, which is gated to projects tagged `framework:nestjs` — a
  * file-level import graph is meaningful for any TypeScript project.
  */

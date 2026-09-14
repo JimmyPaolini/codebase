@@ -68,7 +68,7 @@ vi.mock("nestjs-spelunker", () => ({
 }));
 
 /** Builds a project graph node with the given tags. */
-/** One discovered project, as `codependix-nx` hands it over. */
+/** One discovered project, as `codependix-nx-projects` hands it over. */
 function buildTaggedProject(
   name: string,
   tags: string[],

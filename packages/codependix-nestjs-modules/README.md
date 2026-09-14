@@ -1,7 +1,7 @@
 ## Test
 
 ```bash
-nx run codependix-nestjs:vitest
+nx run codependix-nestjs-modules:vitest
 ```
 
 ## 🕸️ Codependix

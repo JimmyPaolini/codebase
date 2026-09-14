@@ -1,4 +1,4 @@
-# CodependixNx: NestJS Service Application
+# CodependixNxProjects: NestJS Service Application
 
 ## Quick Start
 

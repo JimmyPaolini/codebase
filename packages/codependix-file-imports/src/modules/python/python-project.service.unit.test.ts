@@ -26,7 +26,7 @@ async function buildProject(
   return { absoluteRoot: workspaceRoot };
 }
 
-/** One discovered project, as `codependix-nx` hands it over. */
+/** One discovered project, as `codependix-nx-projects` hands it over. */
 function buildTaggedProject(
   name: string,
   tags: string[],

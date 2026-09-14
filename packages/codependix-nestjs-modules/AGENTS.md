@@ -1,4 +1,4 @@
-# CodependixNestjs: NestJS Service Application
+# CodependixNestjsModules: NestJS Service Application
 
 ## Quick Start
 

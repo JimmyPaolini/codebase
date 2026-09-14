@@ -16,7 +16,7 @@ import type { PythonProject } from "./python.types";
  * files.
  *
  * Discovery reads each project's own `language:python` tag, the same
- * way `codependix-nestjs`'s `NestjsProjectService` reads `framework:nestjs` —
+ * way `codependix-nestjs-modules`'s `NestjsProjectService` reads `framework:nestjs` —
  * rather than probing for a marker file, since a Python project's own
  * `pyproject.toml` is optional (every project is already a member of the
  * workspace root's, per the `write-python` skill).

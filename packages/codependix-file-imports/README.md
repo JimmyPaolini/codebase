@@ -1,7 +1,7 @@
 ## Test
 
 ```bash
-nx run codependix-imports:vitest
+nx run codependix-file-imports:vitest
 ```
 
 ## 🕸️ Codependix

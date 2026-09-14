@@ -19,7 +19,7 @@ import type {
  * for each one.
  *
  * Every project carrying its own `tsconfig.json` is a candidate — unlike
- * `codependix-nestjs`'s `NestjsProjectService`, discovery reads no Nx tag,
+ * `codependix-nestjs-modules`'s `NestjsProjectService`, discovery reads no Nx tag,
  * since a file-level import graph is meaningful for any TypeScript project.
  * `ts.createProgram` is built the same way `callidescope-cli`'s
  * `ProgramService` builds one: reading and fully resolving the project's own
@@ -101,7 +101,7 @@ export class TypescriptProjectService {
    * their own `tsconfig.json`, and describes each one.
    *
    * Projects are returned in the order they were given, which callers keep
-   * sorted by name — the same order `codependix-nx`'s `NeighborhoodService`
+   * sorted by name — the same order `codependix-nx-projects`'s `NeighborhoodService`
    * reads the Nx project graph's own projects in.
    */
   discoverProjects(
