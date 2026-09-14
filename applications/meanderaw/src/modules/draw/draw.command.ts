@@ -16,13 +16,18 @@ import {
 import { SUPPORTED_SUB_FAMILIES } from "../mosaic-tile/mosaic-tile.constants";
 import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
 
+import { DrawCodeService } from "./draw-code.service";
 import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
 import { DrawRenderingService } from "./draw-rendering.service";
-import { CollidingPathsError, INDEX_FILE_NAME } from "./draw.constants";
+import {
+  CollidingPathsError,
+  IncompleteCodeDrawingError,
+  INDEX_FILE_NAME,
+} from "./draw.constants";
 
 import type { RungDirection } from "../branch-motif/branch-motif.types";
 import type {
@@ -89,6 +94,8 @@ export class DrawCommand extends CommandRunner {
 
   constructor(
     private readonly logger: LoggerService,
+    @Inject(DrawCodeService)
+    private readonly drawCodeService: DrawCodeService,
     @Inject(DrawCombinationsService)
     private readonly drawCombinationsService: DrawCombinationsService,
     @Inject(DrawIndexService)
@@ -135,6 +142,32 @@ export class DrawCommand extends CommandRunner {
     return this.drawCombinationsService
       .enumerate()
       .map((parameters) => this.drawRenderingService.render(parameters));
+  }
+
+  /**
+   * Decodes, renders, and persists the one meander `--rows`, `--columns`,
+   * and `--code` name, refusing the request when `--rows` or `--columns` is
+   * missing.
+   *
+   * Takes the three already-narrowed values rather than the whole options
+   * object, so the `rows` and `columns` presence check below is what
+   * TypeScript itself trusts, rather than a check the compiler cannot see
+   * through a wider type.
+   */
+  private async runCodeDrawing(
+    code: string,
+    rows: number | undefined,
+    columns: number | undefined,
+  ): Promise<void> {
+    if (rows === undefined || columns === undefined) {
+      throw new IncompleteCodeDrawingError();
+    }
+
+    const meander = await this.drawCodeService.draw({ code, columns, rows });
+
+    this.logger.log("✨ Generated a meander by code", undefined, {
+      id: meander.id,
+    });
   }
 
   /** Draws every meander the application can draw, and indexes them all in one page. */
@@ -213,6 +246,31 @@ export class DrawCommand extends CommandRunner {
     flags: "-b, --branches <branches>",
   })
   parseBranches(value: string): number {
+    return Number.parseInt(value, 10);
+  }
+
+  /**
+   * Parses `--code`, passed through unchanged: the hexadecimal digits a
+   * decoded grid's own points are read from, one character per interior
+   * lattice point. `MeanderDecodingService.decode` is what refuses a
+   * non-hexadecimal character or a length `--rows`/`--columns` disagree
+   * with, so nothing is validated here.
+   */
+  @Option({
+    description:
+      "Hexadecimal Code a meander's per-point direction bits are decoded from, one character per interior lattice point — draws that one meander and writes it to the database, in place of --type/--rows",
+    flags: "--code <code>",
+  })
+  parseCode(value: string): string {
+    return value;
+  }
+
+  /** Parses `--columns` as an integer, used only with `--code`. */
+  @Option({
+    description: "Column count of one --code drawing",
+    flags: "--columns <columns>",
+  })
+  parseColumns(value: string): number {
     return Number.parseInt(value, 10);
   }
 
@@ -316,11 +374,25 @@ export class DrawCommand extends CommandRunner {
     return this.drawParametersService.type(value);
   }
 
-  /** Sweeps every meander, or draws the one `--type` and `--rows` name. */
+  /**
+   * Sweeps every meander, draws the one `--code` names, or draws the one
+   * `--type` and `--rows` name.
+   *
+   * `--code` is checked first because it selects a mode `--type`/`--rows`
+   * cannot: those two either name a family's own drawing together or, both
+   * absent, ask for the sweep, and neither reading has room left for a bare
+   * Code with no family behind it at all.
+   */
   async run(
     _passedParameters: string[],
     options: DrawCommandOptions,
   ): Promise<void> {
+    if (options.code !== undefined) {
+      await this.runCodeDrawing(options.code, options.rows, options.columns);
+
+      return;
+    }
+
     if (options.rows === undefined && options.type === undefined) {
       await this.sweep(options.outputDirectory);
 
