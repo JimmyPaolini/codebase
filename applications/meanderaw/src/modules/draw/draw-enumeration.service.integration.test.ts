@@ -140,27 +140,16 @@ describe(DrawEnumerationService, () => {
       ).resolves.toBe(0);
     });
 
-    // 🎯 Family membership decided by structure rather than by which
-    // generator drew something, which is the whole of what this ticket adds.
-    // The histogram is the finding, so it is pinned rather than described:
-    //
-    // - **3,656 meanders belong to no family at all**, which spec #813 asks
-    //   for outright rather than filtering them out of the enumeration. It
-    //   is the second largest group and it should be: a family that
-    //   everything belonged to would say nothing.
-    // - **`negative` takes 23,735 of them**, because its combination — ink
-    //   that forks and closes a loop — is the least constrained of the ten,
-    //   and most of a space that admits every direction-bit assignment does
-    //   both. That is a statement about the space rather than about the
-    //   rule: the corpus's own `negative` drawings measure one to thirteen
-    //   pieces with up to 65 loops among them, which is the widest structural
-    //   range any family claims.
-    // - **`chain`, `swirl` and `whirl` claim nothing**, and cannot. `chain`
-    //   shares its whole combination with `boxes`, which is tried first —
-    //   the 14 meanders earning both are counted below. `swirl` and `whirl`
-    //   need a repeat `2 × rows - 3` or `rows` wide at four rows and up,
-    //   which is 25 and 20 edges against a budget of 16, so no shape the
-    //   sweep walks could hold one.
+    // 🎯 Family is decided by structure, not by which generator drew
+    // something — the whole point of this ticket. The histogram is pinned
+    // rather than described: 3,656 meanders belong to no family, which spec
+    // #813 asks for outright rather than filtering them from the sweep.
+    // `negative` claims 23,735 because its combination — ink that forks and
+    // closes a loop — is the least constrained of the ten. `chain`, `swirl`,
+    // and `whirl` claim nothing: `chain` shares its whole combination with
+    // `boxes`, tried first (the 14 meanders earning both are counted below);
+    // `swirl` and `whirl` need 25 and 20 edges at four rows, over the
+    // budget of 16, so no shape the sweep walks admits one.
     it("classifies each meander into a family by its own structure, leaving 3,656 of them in none", async () => {
       const counted = await repository
         .createQueryBuilder("meander")
