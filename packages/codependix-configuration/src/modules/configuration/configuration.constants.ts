@@ -211,11 +211,13 @@ export const codependixProjectConfigurationSchema = z.object({
 /**
  * Validates the Workspace Graph's export configuration.
  *
- * Only `nxProjects` is accepted: the Workspace Graph is a whole-repository Nx
- * project graph, so it has no `nestjsModules` or `fileImports` counterpart to
- * configure.
+ * All three graph types are accepted: `fileImports` and `nestjsModules` each
+ * build a whole-workspace aggregate graph the same way `nxProjects` always
+ * has.
  */
 const workspaceConfigurationSchema = z.object({
+  fileImports: graphOutputSchema.optional(),
+  nestjsModules: graphOutputSchema.optional(),
   nxProjects: graphOutputSchema.optional(),
 });
 

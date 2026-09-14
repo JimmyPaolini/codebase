@@ -12,6 +12,16 @@ export type {
   NestjsModuleGraphEdge,
 } from "./modules/module-graph/module-graph.types";
 export {
+  NESTJS_MODULES_WORKSPACE_GRAPH_MERMAID_HEADER,
+  NESTJS_MODULES_WORKSPACE_GRAPH_UNCONNECTED,
+} from "./modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.constants";
+export { NestjsModulesWorkspaceGraphModule } from "./modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.module";
+export { NestjsModulesWorkspaceGraphService } from "./modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service";
+export type {
+  NestjsModulesWorkspaceGraph,
+  NestjsModulesWorkspaceGraphEdge,
+} from "./modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.types";
+export {
   NESTJS_PROJECT_IGNORED_MODULES,
   NESTJS_PROJECT_MODULE_FILE_SUFFIX,
   NESTJS_PROJECT_ROOT_MODULE_EXPORT,

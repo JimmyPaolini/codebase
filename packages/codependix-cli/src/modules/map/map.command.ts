@@ -1,25 +1,32 @@
 import path from "node:path";
 
-import {
-  BoundaryCheckService,
-  BoundaryReportService,
-} from "@codependix/boundaries";
-import { InputError, InputService } from "@codependix/configuration";
+import { BoundaryCheckService } from "@codependix/boundaries";
+import { InputService } from "@codependix/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import {
+  FORMAT_MARKDOWN,
+  FORMAT_NAMES,
+} from "../combined-output/combined-output.constants";
+import { CombinedOutputService } from "../combined-output/combined-output.service";
+import { ReportingService } from "../reporting/reporting.service";
 import { RunContextService } from "../run-context/run-context.service";
 import { CHECK_NAMES } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { MapService } from "./map.service";
 
-import type { GraphRunOutcome } from "../delivery/delivery.types";
+import type { CombinedOutputFormat } from "../combined-output/combined-output.types";
 import type { RunMode } from "../run-plan/run-plan.types";
-import type { GraphRunContext, MapCommandOptions } from "./map.types";
-import type { BoundaryCheckOutcome } from "@codependix/boundaries";
+import type {
+  CombinedGraphExports,
+  GraphRunContext,
+  MapCommandOptions,
+  MapRunResult,
+} from "./map.types";
 
 /**
  * CLI entry point for the codependix dependency graph workflow.
@@ -49,9 +56,10 @@ export class MapCommand extends CommandRunner {
   constructor(
     private readonly mapService: MapService,
     private readonly boundaryCheckService: BoundaryCheckService,
-    private readonly boundaryReportService: BoundaryReportService,
+    private readonly combinedOutputService: CombinedOutputService,
     private readonly inputService: InputService,
     private readonly logger: LoggerService,
+    private readonly reportingService: ReportingService,
     private readonly runContextService: RunContextService,
     private readonly runPlanService: RunPlanService,
   ) {
@@ -66,116 +74,40 @@ export class MapCommand extends CommandRunner {
   // 🔏 Private Methods
 
   /**
-   * Logs a boundary pass's violations and failures, and reports whether the
-   * run as a whole should fail.
+   * Prints and writes every active graph type's combined output, when the
+   * export pass ran at all.
    *
-   * Violations go to the console and the exit code and nowhere else: a list of
-   * things currently wrong is not a document worth publishing on the default
-   * branch, and not one worth checking for staleness either.
+   * A `--check boundaries`-only run never reaches this: nothing was built to
+   * combine, so `--format`/`--json-output`/`--markdown-output` are silently
+   * inert on a run that touched no export at all — the same way `--write`
+   * and `--check reports` are inert on one that never named a destination.
    */
-  private reportBoundaries(outcome: BoundaryCheckOutcome): boolean {
-    if (outcome.failures.length > 0) {
-      this.logger.error("💥 Failed running codependix", undefined, {
-        failures: outcome.failures,
-      });
-    }
+  private runCombinedOutput(args: {
+    combinedGraphs: CombinedGraphExports | undefined;
+    format: CombinedOutputFormat;
+    options: MapCommandOptions;
+    workingDirectory: string;
+  }): void {
+    if (args.combinedGraphs === undefined) return;
 
-    if (outcome.violations.length > 0) {
-      this.logger.error("🕸️ Found codependix boundary violations", undefined, {
-        summary: this.boundaryReportService.renderSummary(outcome.violations),
-        violations: this.boundaryReportService.renderViolations(
-          outcome.violations,
-        ),
-      });
-    }
-
-    return outcome.failures.length === 0 && outcome.violations.length === 0;
-  }
-
-  /**
-   * Warns when nothing in the configuration selects a single project.
-   *
-   * `include` defaults to nothing, so a configuration naming only `defaults`
-   * exports for no project at all — a run that writes nothing and still exits
-   * zero. Nothing else catches it: `--check boundaries` judges every project
-   * regardless of `include`, so a workspace whose exports have gone silent
-   * still has a green gate.
-   */
-  private reportEmptySelection(include: string[]): void {
-    if (include.length > 0) return;
-
-    this.logger.warn("🕸️ Selected no project to export", undefined, {
-      hint: "name the projects that participate in the configuration's include list",
+    this.combinedOutputService.run({
+      format: args.format,
+      graphs: args.combinedGraphs,
+      jsonOutputPath: args.options.jsonOutput,
+      markdownOutputPath: args.options.markdownOutput,
+      workingDirectory: args.workingDirectory,
     });
   }
 
   /**
-   * Logs why a run ended before it started, and fails it.
+   * Runs the export pass, warning first when it can select nothing.
    *
-   * A command line the input service refused — two modes named, none named
-   * with no terminal to ask at, or a question walked away from — is reported
-   * as a rejected command line rather than as a crash. Nothing was
-   * attempted, and the reader's next move is to retype the flags, not to
-   * read a stack trace.
+   * Returns both the usual delivery outcome and every active graph type's
+   * whole-workspace data, so `runMode` can hand the latter to
+   * `CombinedOutputService` without running the export pass a second time.
    */
-  private reportFailure(error: unknown): void {
-    this.logger.error(
-      error instanceof InputError
-        ? "🕸️ Rejected the command line"
-        : "💥 Failed running codependix",
-      undefined,
-      { reason: error instanceof Error ? error.message : String(error) },
-    );
-
-    process.exitCode = 1;
-  }
-  /**
-   * Logs an outcome's failures and stale exports, and reports whether the run
-   * as a whole should fail.
-   *
-   * Both are reported together rather than the first one short-circuiting the
-   * other, since `MapService.run` already attempted every project
-   * regardless of an earlier one's failure.
-   */
-  private reportOutcome(outcome: GraphRunOutcome): boolean {
-    const staleProjects = outcome.results.filter((result) => !result.isCurrent);
-
-    if (outcome.failures.length > 0) {
-      this.logger.error("💥 Failed running codependix", undefined, {
-        failures: outcome.failures,
-      });
-    }
-
-    if (staleProjects.length > 0) {
-      this.logger.error("🕸️ Found stale codependix exports", undefined, {
-        projects: staleProjects.map((result) => result.projectName),
-      });
-    }
-
-    return outcome.failures.length === 0 && staleProjects.length === 0;
-  }
-
-  /** Logs what each pass that ran verified, and nothing for one that did not. */
-  private reportSuccess(args: {
-    boundaryOutcome: BoundaryCheckOutcome | undefined;
-    exportOutcome: GraphRunOutcome | undefined;
-  }): void {
-    if (args.exportOutcome !== undefined) {
-      this.logger.info(
-        "🕸️ Verified every configured codependix export is current",
-        undefined,
-        { projects: args.exportOutcome.results.length },
-      );
-    }
-
-    if (args.boundaryOutcome !== undefined) {
-      this.logger.info("🕸️ Verified every declared codependix boundary holds");
-    }
-  }
-
-  /** Runs the export pass, warning first when it can select nothing. */
-  private async runExports(context: GraphRunContext): Promise<GraphRunOutcome> {
-    this.reportEmptySelection(context.configuration.include);
+  private async runExports(context: GraphRunContext): Promise<MapRunResult> {
+    this.reportingService.reportEmptySelection(context.configuration.include);
 
     return this.mapService.run(context);
   }
@@ -184,35 +116,47 @@ export class MapCommand extends CommandRunner {
    * Runs the passes a resolved mode selected, and reports what they found.
    *
    * Split from `run` so the command line's own rejection path stays a
-   * handful of lines: everything below here has a mode to act on.
+   * handful of lines: everything below here has a mode to act on. Both
+   * passes are run directly here, rather than through a further-nested
+   * helper, to keep `MapCommand.run`'s own call stack inside this project's
+   * callidescope depth limit — see `packages/codependix-cli/callidescope.config.ts`.
    */
   private async runMode(args: {
+    format: CombinedOutputFormat;
     mode: RunMode;
     options: MapCommandOptions;
   }): Promise<void> {
-    const { mode, options } = args;
+    const { format, mode, options } = args;
     const context = await this.runContextService.build({
       mode: mode.writes ? "write" : "check",
       options,
       workingDirectory: path.resolve(options.directory ?? process.cwd()),
     });
-    const exportOutcome = this.runPlanService.touchesFiles(mode)
+    const exportRun = this.runPlanService.touchesFiles(mode)
       ? await this.runExports(context)
       : undefined;
     const boundaryOutcome = mode.checksBoundaries
       ? await this.boundaryCheckService.run(context)
       : undefined;
-    const exportsPassed =
-      exportOutcome === undefined || this.reportOutcome(exportOutcome);
-    const boundariesPassed =
-      boundaryOutcome === undefined || this.reportBoundaries(boundaryOutcome);
 
-    if (!exportsPassed || !boundariesPassed) {
+    this.runCombinedOutput({
+      combinedGraphs: exportRun?.combinedGraphs,
+      format,
+      options,
+      workingDirectory: context.workingDirectory,
+    });
+
+    if (
+      !this.reportingService.reportPassOutcomes({ boundaryOutcome, exportRun })
+    ) {
       process.exitCode = 1;
       return;
     }
 
-    this.reportSuccess({ boundaryOutcome, exportOutcome });
+    this.reportingService.reportSuccess({
+      boundaryOutcome,
+      exportOutcome: exportRun?.outcome,
+    });
   }
 
   // 🌎 Public Methods
@@ -278,6 +222,20 @@ export class MapCommand extends CommandRunner {
   }
 
   /**
+   * Parses what `--format` prints to standard output.
+   *
+   * Defaults to Markdown when the flag was left off entirely — see
+   * `MapCommand.resolveFormat`, which validates the value this returns.
+   */
+  @Option({
+    description: `What to print to standard output, one of ${FORMAT_NAMES.join(" and ")} (default: ${FORMAT_MARKDOWN}). A graph type prints only when this run also configured a workspace destination for it, even if its own toggle flag enabled it`,
+    flags: "-f, --format [format]",
+  })
+  public parseFormat(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /**
    * Parses `--include`, a comma-separated list of globs overriding the
    * configured `include`.
    *
@@ -291,6 +249,32 @@ export class MapCommand extends CommandRunner {
   })
   public parseInclude(value: string | undefined): string[] {
     return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /**
+   * Parses `--json-output`, the path to write every active graph type's
+   * combined JSON data to, keyed by graph type name.
+   */
+  @Option({
+    description:
+      "Write every active graph type's data, combined into one JSON file at this path, keyed by graph type name. A type appears only when this run also configured a workspace destination for it",
+    flags: "--json-output [jsonOutput]",
+  })
+  public parseJsonOutput(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /**
+   * Parses `--markdown-output`, the path to write every active graph type's
+   * combined, anchor-spliced Markdown diagram to.
+   */
+  @Option({
+    description:
+      "Write every active graph type's rendered diagram, combined into one Markdown file at this path. A type appears only when this run also configured a workspace destination for it",
+    flags: "--markdown-output [markdownOutput]",
+  })
+  public parseMarkdownOutput(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Enables the `nestjsModules` graph type for this run. */
@@ -395,18 +379,21 @@ export class MapCommand extends CommandRunner {
   ): Promise<void> {
     try {
       const { errors, mode } = await this.runPlanService.selectMode(options);
+      const { errors: formatErrors, format } =
+        this.combinedOutputService.resolveFormat(options.format);
+      const rejections = [...errors, ...formatErrors];
 
-      if (errors.length > 0) {
+      if (rejections.length > 0) {
         this.logger.error("🕸️ Rejected the command line", undefined, {
-          reasons: errors,
+          reasons: rejections,
         });
         process.exitCode = 1;
         return;
       }
 
-      await this.runMode({ mode, options });
+      await this.runMode({ format, mode, options });
     } catch (error) {
-      this.reportFailure(error);
+      this.reportingService.reportFailure(error);
     }
   }
 }

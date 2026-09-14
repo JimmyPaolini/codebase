@@ -1,96 +1,59 @@
-import path from "node:path";
-
-import { ConfigurationService } from "@codependix/configuration";
-import { TypescriptService } from "@codependix/file-imports";
-import {
-  ModuleGraphService,
-  NestjsProjectService,
-} from "@codependix/nestjs-modules";
-import {
-  NeighborhoodService,
-  WorkspaceGraphService,
-} from "@codependix/nx-projects";
+import { NeighborhoodService } from "@codependix/nx-projects";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import { DeliveryService } from "../delivery/delivery.service";
+import { ProjectGraphsService } from "../project-graphs/project-graphs.service";
 import { PythonImportsService } from "../python-imports/python-imports.service";
+import { WorkspaceGraphsService } from "../workspace-graphs/workspace-graphs.service";
 
 import {
   EMPTY_GRAPH_RUN_OUTCOME,
+  EMPTY_GRAPH_TYPE_PASS_OUTCOME,
   FILE_IMPORTS_GRAPH_TYPE,
-  FILE_IMPORTS_MARKDOWN_SUBHEADING,
-  MARKDOWN_SECTION_INTRO_LINE,
   NESTJS_MODULES_GRAPH_TYPE,
-  NESTJS_MODULES_MARKDOWN_SUBHEADING,
   NX_PROJECTS_GRAPH_TYPE,
-  NX_PROJECTS_MARKDOWN_SUBHEADING,
   WORKSPACE_GRAPH_PROJECT_NAME,
 } from "./map.constants";
 
 import type {
-  CodependixRunMode,
   GraphRunOutcome,
-  MarkdownSectionArguments,
   ProjectRunFailure,
-  ProjectRunResult,
 } from "../delivery/delivery.types";
+import type { WorkspaceGraphRunOutcome } from "../workspace-graphs/workspace-graphs.types";
 import type {
+  CombinedGraphExports,
   GraphRunContext,
-  NestjsModuleGraphExport,
-  NxNeighborhoodExport,
-  NxWorkspaceGraphExport,
-  TypescriptImportGraphExport,
+  GraphTypePassOutcome,
+  MapRunResult,
 } from "./map.types";
-import type {
-  CodependixGraphType,
-  ResolvedCodependixGraphOutput,
-} from "@codependix/configuration";
-import type { TypescriptProject } from "@codependix/file-imports";
-import type { NestjsProject } from "@codependix/nestjs-modules";
-import type {
-  Neighborhood,
-  NxProject,
-  WorkspaceGraph,
-} from "@codependix/nx-projects";
 
 /**
- * Builds and delivers every configured graph export.
+ * Orchestrates every configured graph export, one pass per graph type.
  *
- * Orchestrates collaborators that each know nothing about the others:
- * `NeighborhoodService`/`WorkspaceGraphService` read the Nx project graph and
- * render Nx diagrams, `NestjsProjectService`/`ModuleGraphService` explore a
- * NestJS project's container and render its module diagram,
- * `ConfigurationService` resolves what each project wants exported and where,
- * and `DeliveryService` turns a resolved export configuration into file I/O.
- * This service is the only place that knows how those pieces fit together —
- * it renders each graph type's own JSON and diagram content and hands it to
- * `DeliveryService`, which knows nothing about Nx or NestJS at all.
+ * Owns none of the per-project or per-workspace rendering itself:
+ * `ProjectGraphsService` builds, renders, and delivers each included
+ * project's own graph, and `WorkspaceGraphsService` does the same for each
+ * type's whole-workspace graph. This service's own job is deciding which
+ * types are active, running both passes for each, combining their outcomes,
+ * and collecting each active type's whole-workspace data into a
+ * `CombinedGraphExports` map — for `CombinedOutputService` to print and
+ * write, see `MapCommand`.
  *
- * `run` resolves the configuration and reads the Nx project graph exactly
- * once, then hands both down to the four passes as a `GraphRunContext` —
- * each of them previously loaded the configuration and re-read the graph
- * itself. Every pass also isolates one project's failure from the rest: a
- * missing anchor or a NestJS project that fails to boot its container is
- * collected as a `ProjectRunFailure` rather than aborting the loop, so
- * `--write` either fully succeeds or reports exactly which projects failed
- * while still completing every other one.
+ * Every pass isolates one project's failure from the rest: a missing anchor
+ * or a NestJS project that fails to boot its container is collected as a
+ * `ProjectRunFailure` rather than aborting the loop.
  */
 @Injectable()
 export class MapService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly configurationService: ConfigurationService,
-    private readonly deliveryService: DeliveryService,
     private readonly logger: LoggerService,
-    private readonly moduleGraphService: ModuleGraphService,
     private readonly neighborhoodService: NeighborhoodService,
-    private readonly nestjsProjectService: NestjsProjectService,
+    private readonly projectGraphsService: ProjectGraphsService,
     private readonly pythonImportsService: PythonImportsService,
-    private readonly typescriptService: TypescriptService,
-    private readonly workspaceGraphService: WorkspaceGraphService,
+    private readonly workspaceGraphsService: WorkspaceGraphsService,
   ) {
     this.logger.setContext(MapService.name);
   }
@@ -102,27 +65,31 @@ export class MapService {
   // 🔏 Private Methods
 
   /**
-   * Builds the section heading a graph type's anchored Markdown destination
-   * auto-creates when it is missing.
-   *
-   * `subheading` is `undefined` only for the Workspace Graph: its anchor sits
-   * directly under the `## 🕸️ Codependix` heading in the root README, since
-   * that file carries no other graph type's section to disambiguate from.
+   * Collects every active graph type's whole-workspace data into the map
+   * `CombinedOutputService` reads from, dropping a type this run built no
+   * whole-workspace graph for at all — see `GraphTypePassOutcome`.
    */
-  private buildMarkdownSection(subheading?: string): MarkdownSectionArguments {
-    return { introLine: MARKDOWN_SECTION_INTRO_LINE, subheading };
-  }
+  private collectCombinedGraphs(args: {
+    importsOutcome: GraphTypePassOutcome;
+    nestjsOutcome: GraphTypePassOutcome;
+    nxOutcome: GraphTypePassOutcome;
+  }): CombinedGraphExports {
+    const { importsOutcome, nestjsOutcome, nxOutcome } = args;
+    const combinedGraphs: CombinedGraphExports = {};
 
-  /** Turns a neighborhood into the JSON shape it is exported as. */
-  private buildNeighborhoodJsonExport(
-    neighborhood: Neighborhood,
-  ): NxNeighborhoodExport {
-    return {
-      dependencies: neighborhood.dependencies,
-      dependents: neighborhood.dependents,
-      edges: neighborhood.edges,
-      projectName: neighborhood.projectName,
-    };
+    if (nxOutcome.workspaceEntry !== undefined) {
+      combinedGraphs.nxProjects = nxOutcome.workspaceEntry;
+    }
+
+    if (importsOutcome.workspaceEntry !== undefined) {
+      combinedGraphs.fileImports = importsOutcome.workspaceEntry;
+    }
+
+    if (nestjsOutcome.workspaceEntry !== undefined) {
+      combinedGraphs.nestjsModules = nestjsOutcome.workspaceEntry;
+    }
+
+    return combinedGraphs;
   }
 
   /** Turns a raised error into a `ProjectRunFailure` for the given project. */
@@ -137,200 +104,33 @@ export class MapService {
   }
 
   /**
-   * Resolves one project's export target for a graph type.
+   * Runs one synchronous whole-workspace graph builder, pushes its delivery
+   * outcome when it produced one, and returns its combined-output entry.
    *
-   * Carries the project's workspace-relative root and its Nx tags, so an
-   * `include`/`exclude` glob may match either name or root and a `--tags`
-   * entry reaches the tags. The tags are looked up rather than carried on the
-   * described project: what each graph type describes — a `NestjsProject`, a
-   * `TypescriptProject` — knows its root and its name and nothing else.
+   * Shared by `runNxGraphs` and `runImportGraphs`, whose own
+   * `WorkspaceGraphsService` calls are both synchronous;
+   * `runNestjsGraphs`'s own call is asynchronous and keeps its own inline
+   * `try`/`catch` rather than sharing this one.
    */
-  private resolveProjectOutput(args: {
-    context: GraphRunContext;
-    graphType: CodependixGraphType;
-    project: { absoluteRoot: string; name: string };
-  }): ResolvedCodependixGraphOutput {
-    const { context, graphType, project } = args;
+  private collectWorkspaceOutcome(args: {
+    build: () => WorkspaceGraphRunOutcome;
+    failures: ProjectRunFailure[];
+    results: GraphRunOutcome["results"];
+  }): GraphTypePassOutcome["workspaceEntry"] {
+    try {
+      const outcome = args.build();
 
-    return this.configurationService.resolveForProject({
-      configuration: context.configuration,
-      graphType,
-      projectConfiguration: context.projectConfigurations.get(project.name),
-      projectName: project.name,
-      projectRoot: path.relative(
-        context.workingDirectory,
-        project.absoluteRoot,
-      ),
-      projectTags: context.projects.find(
-        (candidate) => candidate.name === project.name,
-      )?.tags,
-    });
-  }
-
-  /** Builds, renders, and delivers one project's file-level import Graph. */
-  private runImportProject(args: {
-    mode: CodependixRunMode;
-    project: TypescriptProject;
-    resolvedOutput: ResolvedCodependixGraphOutput;
-  }): ProjectRunResult {
-    const { mode, project, resolvedOutput } = args;
-    const projectProgram = this.typescriptService.buildProgram(project);
-    const importGraph = this.typescriptService.buildGraph(projectProgram);
-    const jsonExport: TypescriptImportGraphExport = importGraph;
-
-    return this.deliveryService.deliverGraphOutput({
-      jsonContent:
-        resolvedOutput.json === undefined
-          ? undefined
-          : this.deliveryService.renderJson(jsonExport),
-      markdownContent:
-        resolvedOutput.markdown === undefined
-          ? undefined
-          : this.typescriptService.renderMermaid(importGraph),
-      markdownSection: this.buildMarkdownSection(
-        FILE_IMPORTS_MARKDOWN_SUBHEADING,
-      ),
-      mode,
-      project,
-      resolvedOutput,
-    });
-  }
-
-  /** Explores, renders, and delivers one NestJS project's module graph. */
-  private async runNestjsProject(args: {
-    mode: CodependixRunMode;
-    project: NestjsProject;
-    resolvedOutput: ResolvedCodependixGraphOutput;
-  }): Promise<ProjectRunResult> {
-    const { mode, project, resolvedOutput } = args;
-    const tree = await this.nestjsProjectService.exploreProject(project);
-    const moduleGraph = this.moduleGraphService.buildGraph(tree, project.name);
-    const jsonExport: NestjsModuleGraphExport = moduleGraph;
-
-    return this.deliveryService.deliverGraphOutput({
-      jsonContent:
-        resolvedOutput.json === undefined
-          ? undefined
-          : this.deliveryService.renderJson(jsonExport),
-      markdownContent:
-        resolvedOutput.markdown === undefined
-          ? undefined
-          : this.moduleGraphService.renderMermaid(moduleGraph),
-      markdownSection: this.buildMarkdownSection(
-        NESTJS_MODULES_MARKDOWN_SUBHEADING,
-      ),
-      mode,
-      project,
-      resolvedOutput,
-    });
-  }
-
-  /** Renders and delivers one project's Nx Neighborhood. */
-  private runNxProject(args: {
-    mode: CodependixRunMode;
-    neighborhood: Neighborhood;
-    project: NxProject;
-    resolvedOutput: ResolvedCodependixGraphOutput;
-  }): ProjectRunResult {
-    const { mode, neighborhood, project, resolvedOutput } = args;
-
-    return this.deliveryService.deliverGraphOutput({
-      jsonContent:
-        resolvedOutput.json === undefined
-          ? undefined
-          : this.deliveryService.renderJson(
-              this.buildNeighborhoodJsonExport(neighborhood),
-            ),
-      markdownContent:
-        resolvedOutput.markdown === undefined
-          ? undefined
-          : this.neighborhoodService.renderMermaid(neighborhood),
-      markdownSection: this.buildMarkdownSection(
-        NX_PROJECTS_MARKDOWN_SUBHEADING,
-      ),
-      mode,
-      project,
-      resolvedOutput,
-    });
-  }
-
-  /**
-   * Renders and delivers every included project's Nx Neighborhood, isolating
-   * one project's failure from the rest — see `runNxGraphs`.
-   */
-  private runNxProjects(args: {
-    context: GraphRunContext;
-    neighborhoods: Map<string, Neighborhood>;
-  }): GraphRunOutcome {
-    const { context, neighborhoods } = args;
-    const results: GraphRunOutcome["results"] = [];
-    const failures: ProjectRunFailure[] = [];
-
-    for (const project of context.projects) {
-      const neighborhood = neighborhoods.get(project.name);
-      const resolvedOutput = this.resolveProjectOutput({
-        context,
-        graphType: NX_PROJECTS_GRAPH_TYPE,
-        project,
-      });
-
-      if (neighborhood === undefined || resolvedOutput.target === "none") {
-        continue;
+      if (outcome.result !== undefined) {
+        args.results.push(outcome.result);
       }
 
-      try {
-        results.push(
-          this.runNxProject({
-            mode: context.mode,
-            neighborhood,
-            project,
-            resolvedOutput,
-          }),
-        );
-      } catch (error) {
-        failures.push(this.collectProjectFailure(project.name, error));
-      }
-    }
-
-    return { failures, results };
-  }
-
-  /** Renders and delivers the Workspace Graph's configured destinations. */
-  private runWorkspaceGraph(
-    context: GraphRunContext,
-  ): ProjectRunResult | undefined {
-    const { configuration, graph, mode, workingDirectory } = context;
-    const resolvedOutput =
-      this.configurationService.resolveForWorkspace(configuration);
-
-    if (resolvedOutput.target === "none") {
+      return outcome.entry;
+    } catch (error) {
+      args.failures.push(
+        this.collectProjectFailure(WORKSPACE_GRAPH_PROJECT_NAME, error),
+      );
       return undefined;
     }
-
-    const workspaceGraph: WorkspaceGraph =
-      this.workspaceGraphService.buildWorkspaceGraph(
-        graph,
-        context.selectedProjects,
-      );
-    const jsonExport: NxWorkspaceGraphExport = workspaceGraph;
-
-    return this.deliveryService.deliverGraphOutput({
-      jsonContent:
-        resolvedOutput.json === undefined
-          ? undefined
-          : this.deliveryService.renderJson(jsonExport),
-      markdownContent:
-        resolvedOutput.markdown === undefined
-          ? undefined
-          : this.workspaceGraphService.renderMermaid(workspaceGraph),
-      markdownSection: this.buildMarkdownSection(),
-      mode,
-      project: {
-        absoluteRoot: workingDirectory,
-        name: WORKSPACE_GRAPH_PROJECT_NAME,
-      },
-      resolvedOutput,
-    });
   }
 
   // 🌎 Public Methods
@@ -340,153 +140,91 @@ export class MapService {
    *
    * Every pass is attempted regardless of an earlier failure: the four graph
    * types are independent. A type `context.enabledGraphTypes` excludes is
-   * skipped entirely, so `--no-nestjs-modules` never boots a container.
+   * skipped entirely, so `--no-nestjs-modules` never boots a container. Also
+   * returns `combinedGraphs` — every active type's whole-workspace data,
+   * collected for `MapCommand` to hand to `CombinedOutputService`.
    */
-  async run(context: GraphRunContext): Promise<GraphRunOutcome> {
+  async run(context: GraphRunContext): Promise<MapRunResult> {
     const { enabledGraphTypes } = context;
     const nxOutcome = enabledGraphTypes.has(NX_PROJECTS_GRAPH_TYPE)
       ? this.runNxGraphs(context)
-      : EMPTY_GRAPH_RUN_OUTCOME;
+      : EMPTY_GRAPH_TYPE_PASS_OUTCOME;
     const nestjsOutcome = enabledGraphTypes.has(NESTJS_MODULES_GRAPH_TYPE)
       ? await this.runNestjsGraphs(context)
-      : EMPTY_GRAPH_RUN_OUTCOME;
+      : EMPTY_GRAPH_TYPE_PASS_OUTCOME;
     const importsOutcome = enabledGraphTypes.has(FILE_IMPORTS_GRAPH_TYPE)
       ? this.runImportGraphs(context)
-      : EMPTY_GRAPH_RUN_OUTCOME;
+      : EMPTY_GRAPH_TYPE_PASS_OUTCOME;
     const pythonImportsOutcome = enabledGraphTypes.has(FILE_IMPORTS_GRAPH_TYPE)
       ? this.runPythonImportGraphs(context)
       : EMPTY_GRAPH_RUN_OUTCOME;
 
     return {
-      failures: [
-        ...nxOutcome.failures,
-        ...nestjsOutcome.failures,
-        ...importsOutcome.failures,
-        ...pythonImportsOutcome.failures,
-      ],
-      results: [
-        ...nxOutcome.results,
-        ...nestjsOutcome.results,
-        ...importsOutcome.results,
-        ...pythonImportsOutcome.results,
-      ],
+      combinedGraphs: this.collectCombinedGraphs({
+        importsOutcome,
+        nestjsOutcome,
+        nxOutcome,
+      }),
+      outcome: {
+        failures: [
+          ...nxOutcome.failures,
+          ...nestjsOutcome.failures,
+          ...importsOutcome.failures,
+          ...pythonImportsOutcome.failures,
+        ],
+        results: [
+          ...nxOutcome.results,
+          ...nestjsOutcome.results,
+          ...importsOutcome.results,
+          ...pythonImportsOutcome.results,
+        ],
+      },
     };
   }
 
   /**
-   * Builds and delivers every configured file-level import graph export.
-   *
-   * Every project carrying its own `tsconfig.json` participates — see
-   * `TypescriptService` — rather than only those tagged for a
-   * particular framework, since a file-level import graph is meaningful for
-   * any TypeScript project. A project that raises while its own export is
-   * being resolved is recorded as a failure rather than aborting the pass, so
-   * every other project still gets attempted.
+   * Builds and delivers every configured file-level import graph export —
+   * each included project's own graph, from `ProjectGraphsService`, and the
+   * whole-workspace file-imports graph `WorkspaceGraphsService` combines
+   * from every TypeScript and Python project.
    */
-  runImportGraphs(context: GraphRunContext): GraphRunOutcome {
-    const typescriptProjects = this.typescriptService.discoverProjects(
-      context.projects,
-    );
-    const results: GraphRunOutcome["results"] = [];
-    const failures: ProjectRunFailure[] = [];
-
-    for (const project of typescriptProjects) {
-      const resolvedOutput = this.resolveProjectOutput({
-        context,
-        graphType: FILE_IMPORTS_GRAPH_TYPE,
-        project,
-      });
-
-      if (resolvedOutput.target === "none") {
-        continue;
-      }
-
-      try {
-        results.push(
-          this.runImportProject({
-            mode: context.mode,
-            project,
-            resolvedOutput,
-          }),
-        );
-      } catch (error) {
-        failures.push(this.collectProjectFailure(project.name, error));
-      }
-    }
-
-    return { failures, results };
-  }
-
-  /**
-   * Builds and delivers every configured NestJS module graph export.
-   *
-   * Only `framework:nestjs`-tagged projects participate, discovered from the
-   * tags `context.projects` carry — see `NestjsProjectService`. A project that fails
-   * to boot its container is recorded as a failure rather than aborting the
-   * pass.
-   */
-  async runNestjsGraphs(context: GraphRunContext): Promise<GraphRunOutcome> {
-    const nestjsProjects = this.nestjsProjectService.discoverProjects(
-      context.projects,
-    );
-    const results: GraphRunOutcome["results"] = [];
-    const failures: ProjectRunFailure[] = [];
-
-    for (const project of nestjsProjects) {
-      const resolvedOutput = this.resolveProjectOutput({
-        context,
-        graphType: NESTJS_MODULES_GRAPH_TYPE,
-        project,
-      });
-
-      if (resolvedOutput.target === "none") {
-        continue;
-      }
-
-      try {
-        results.push(
-          await this.runNestjsProject({
-            mode: context.mode,
-            project,
-            resolvedOutput,
-          }),
-        );
-      } catch (error) {
-        failures.push(this.collectProjectFailure(project.name, error));
-      }
-    }
-
-    return { failures, results };
-  }
-
-  /**
-   * Builds and delivers every configured Nx graph export — each included
-   * project's Neighborhood, and the whole-workspace Workspace Graph.
-   *
-   * A project whose resolved export target is `"none"` — because it named no
-   * override, matched no include glob, or matched an exclude glob — is left
-   * out of the result entirely rather than reported as up to date, so a
-   * `--check` run's exit code depends only on exports codependix was actually
-   * configured to produce. The Workspace Graph follows the same rule, and a
-   * failure building or delivering it is recorded under
-   * `WORKSPACE_GRAPH_PROJECT_NAME` rather than aborting the per-project loop
-   * that already ran.
-   */
-  runNxGraphs(context: GraphRunContext): GraphRunOutcome {
-    const neighborhoods = this.neighborhoodService.buildNeighborhoods(
-      context.graph,
-      context.projects,
-    );
-    const { failures, results } = this.runNxProjects({
-      context,
-      neighborhoods,
+  runImportGraphs(context: GraphRunContext): GraphTypePassOutcome {
+    const { failures, results } =
+      this.projectGraphsService.runFileImportsProjects(context);
+    const workspaceEntry = this.collectWorkspaceOutcome({
+      build: () =>
+        this.workspaceGraphsService.runFileImportsWorkspaceGraph(context),
+      failures,
+      results,
     });
 
-    try {
-      const workspaceResult = this.runWorkspaceGraph(context);
+    return { failures, results, workspaceEntry };
+  }
 
-      if (workspaceResult !== undefined) {
-        results.push(workspaceResult);
+  /**
+   * Builds and delivers every configured NestJS module graph export — each
+   * included project's own graph, from `ProjectGraphsService`, and the
+   * whole-workspace NestJS module graph `WorkspaceGraphsService` combines
+   * from every NestJS project.
+   */
+  async runNestjsGraphs(
+    context: GraphRunContext,
+  ): Promise<GraphTypePassOutcome> {
+    const { failures, results } =
+      await this.projectGraphsService.runNestjsModulesProjects(context);
+
+    let workspaceEntry: GraphTypePassOutcome["workspaceEntry"];
+
+    try {
+      const workspaceOutcome =
+        await this.workspaceGraphsService.runNestjsModulesWorkspaceGraph(
+          context,
+        );
+
+      workspaceEntry = workspaceOutcome.entry;
+
+      if (workspaceOutcome.result !== undefined) {
+        results.push(workspaceOutcome.result);
       }
     } catch (error) {
       failures.push(
@@ -494,16 +232,39 @@ export class MapService {
       );
     }
 
-    return { failures, results };
+    return { failures, results, workspaceEntry };
+  }
+
+  /**
+   * Builds and delivers every configured Nx graph export — each included
+   * project's Neighborhood, from `ProjectGraphsService`, and the
+   * whole-workspace Workspace Graph, from `WorkspaceGraphsService`.
+   */
+  runNxGraphs(context: GraphRunContext): GraphTypePassOutcome {
+    const neighborhoods = this.neighborhoodService.buildNeighborhoods(
+      context.graph,
+      context.projects,
+    );
+    const { failures, results } = this.projectGraphsService.runNxProjectsGraphs(
+      { context, neighborhoods },
+    );
+    const workspaceEntry = this.collectWorkspaceOutcome({
+      build: () => this.workspaceGraphsService.runNxWorkspaceGraph(context),
+      failures,
+      results,
+    });
+
+    return { failures, results, workspaceEntry };
   }
 
   /**
    * Builds and delivers every configured Python file-level import graph
    * export.
    *
-   * Delegates to `PythonImportsService` — the pass itself follows
-   * `runImportGraphs` exactly, but lives in its own file so this one stays
-   * under the repository's per-file line limit.
+   * Delegates to `PythonImportsService`. Reports no whole-workspace data of
+   * its own: the Python graphs it builds are already folded into the
+   * `fileImports` combined entry `runImportGraphs` reports — see
+   * `WorkspaceGraphsService.runFileImportsWorkspaceGraph`.
    */
   runPythonImportGraphs(context: GraphRunContext): GraphRunOutcome {
     return this.pythonImportsService.runGraphs(context);
