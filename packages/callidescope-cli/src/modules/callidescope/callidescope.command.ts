@@ -21,7 +21,6 @@ import {
   buildUnknownCommandMessage,
   readRefusalHeadline,
   REJECTED_COMMAND_LINE,
-  REJECTED_CONFIGURATION,
   UnresolvedEntryPointAddressError,
 } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
@@ -207,23 +206,6 @@ export class CallidescopeCommand extends CommandRunner {
       limitOverrides,
       workspaceRoot,
     });
-
-    // Checked only now, and not inside `prepareRun`: whether any project in
-    // scope declared `limits.maximumBreadth` is a question the trace above
-    // just answered, and `prepareRun` runs before a single project has been
-    // reached.
-    const projectLimitErrors = this.runPlanService.validateProjectLimits({
-      mode,
-      projectLimits: outcome.projectLimits,
-    });
-
-    if (projectLimitErrors.length > 0) {
-      this.reject(REJECTED_CONFIGURATION, {
-        reasons: projectLimitErrors,
-        workspaceRoot,
-      });
-      return;
-    }
 
     // Checked before anything is printed or written, like every other refusal.
     if (outcome.unresolvedAddresses.length > 0) {

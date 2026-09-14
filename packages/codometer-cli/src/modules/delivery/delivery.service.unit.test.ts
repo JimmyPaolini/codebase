@@ -102,6 +102,7 @@ describe(DeliveryService, () => {
 
   it("produces nothing for a run declaring no destinations", () => {
     const stalePaths = service.deliver({
+      consoleMarkdown: undefined,
       destinations: { json: undefined, markdown: undefined },
       format: undefined,
       measurement: buildMeasurement(),
@@ -117,6 +118,7 @@ describe(DeliveryService, () => {
 
   it("writes the JSON report where a path was resolved and the run writes", () => {
     service.deliver({
+      consoleMarkdown: undefined,
       destinations: {
         json: { custom: [], indentation: 2, path: "output/codometer.json" },
         markdown: undefined,
@@ -140,6 +142,7 @@ describe(DeliveryService, () => {
     vi.mocked(jsonService.sync).mockReturnValue(false);
 
     const stalePaths = service.deliver({
+      consoleMarkdown: undefined,
       destinations: {
         json: { custom: [], indentation: 2, path: "output/codometer.json" },
         markdown: undefined,
@@ -156,6 +159,7 @@ describe(DeliveryService, () => {
 
   it("does not write the JSON report when the run neither writes nor checks it", () => {
     service.deliver({
+      consoleMarkdown: undefined,
       destinations: {
         json: { custom: [], indentation: 2, path: "output/codometer.json" },
         markdown: undefined,
@@ -172,6 +176,7 @@ describe(DeliveryService, () => {
 
   it("splices the badge block into its file when the run writes", () => {
     service.deliver({
+      consoleMarkdown: undefined,
       destinations: {
         json: undefined,
         markdown: markdownDestination,
@@ -196,6 +201,7 @@ describe(DeliveryService, () => {
     vi.mocked(markdownService.sync).mockReturnValue(false);
 
     const stalePaths = service.deliver({
+      consoleMarkdown: undefined,
       destinations: { json: undefined, markdown: markdownDestination },
       format: undefined,
       measurement: buildMeasurement(),
@@ -211,6 +217,7 @@ describe(DeliveryService, () => {
     vi.mocked(markdownService.sync).mockReturnValue(false);
 
     const stalePaths = service.deliver({
+      consoleMarkdown: undefined,
       destinations: {
         json: undefined,
         markdown: { ...markdownDestination, path: undefined },
@@ -227,6 +234,7 @@ describe(DeliveryService, () => {
 
   it("hands the renderer the size of every input it measured, none for an empty one", () => {
     service.deliver({
+      consoleMarkdown: undefined,
       destinations: {
         json: undefined,
         markdown: { ...markdownDestination, path: "docs/metrics.md" },
@@ -268,6 +276,7 @@ describe(DeliveryService, () => {
 
   it("prints the report when --format json asked for it", () => {
     service.deliver({
+      consoleMarkdown: undefined,
       destinations: { json: undefined, markdown: undefined },
       format: "json",
       measurement: buildMeasurement(),
@@ -285,6 +294,7 @@ describe(DeliveryService, () => {
 
   it("prints the badges when --format markdown asked for them", () => {
     service.deliver({
+      consoleMarkdown: undefined,
       destinations: { json: undefined, markdown: undefined },
       format: "markdown",
       measurement: buildMeasurement(),
@@ -296,10 +306,34 @@ describe(DeliveryService, () => {
     expect(standardOutput).toHaveBeenCalledWith("block\n");
   });
 
+  // The regression this exists for: the console used to render whatever
+  // `destinations.markdown` resolved to, which is `undefined` for a run that
+  // named some other output flag but not `--output-markdown`. `consoleMarkdown`
+  // is resolved independently of that, so it is what the console must render.
+  it("renders the console from consoleMarkdown, not from destinations.markdown", () => {
+    service.deliver({
+      consoleMarkdown: markdownDestination,
+      destinations: { json: undefined, markdown: undefined },
+      format: "markdown",
+      measurement: buildMeasurement(),
+      mode: buildMode({ writesJson: true }),
+      report,
+      scope: "project",
+    });
+
+    expect(markdownService.renderBlock).toHaveBeenCalledExactlyOnceWith({
+      destination: markdownDestination,
+      scope: "project",
+      statistics,
+      targets: [],
+    });
+  });
+
   // The one writer of standard output. A file sink printing as well is how one
   // run put two documents on the stream a pipeline was parsing.
   it("prints nothing when no format was asked for, even writing a file", () => {
     service.deliver({
+      consoleMarkdown: undefined,
       destinations: {
         json: { custom: [], indentation: 2, path: "output/codometer.json" },
         markdown: undefined,
@@ -316,6 +350,7 @@ describe(DeliveryService, () => {
 
   it("prints and writes in the same run when both were asked for", () => {
     service.deliver({
+      consoleMarkdown: undefined,
       destinations: {
         json: { custom: [], indentation: 2, path: "output/codometer.json" },
         markdown: undefined,

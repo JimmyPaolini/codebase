@@ -160,15 +160,15 @@ export class MarkdownService {
   }
 
   /**
-   * Narrow the measured statistics to one destination's own configured
+   * Narrow the measured statistics to one destination's own selected
    * counters.
    *
-   * `statistics.custom` is the union of every counter declared across every
-   * configured output, deduped by label — `MeasureService.collectStatistics`
-   * measures it once for the whole run. Two destinations may declare entirely
-   * different counters, so each has to pick its own subset back out by label
-   * before rendering, or one destination's badges would carry another's
-   * counters too.
+   * `statistics.custom` is every counter the configuration's top-level
+   * `custom` array declares, measured once for the whole run regardless of
+   * which output — if any — renders each one. Two destinations may select
+   * entirely different labels back out of it, so each has to pick its own
+   * subset before rendering, or one destination's badges would carry
+   * another's counters too.
    */
   private scopeCustomStatistics(
     statistics: CodeStatisticsResult,
@@ -276,9 +276,9 @@ export class MarkdownService {
    * the document a whole-file destination writes. Both are the same markdown,
    * which is why the two sinks never disagree about a number.
    *
-   * `statistics.custom` carries every counter declared across every
-   * configured output; this destination's own `custom` list says which of
-   * them belong to it, so it is scoped down before rendering.
+   * `statistics.custom` carries every counter the top-level `custom` array
+   * declares; this destination's own `custom` list says which of them it
+   * selected, so it is scoped down before rendering.
    */
   renderBadges(args: RenderBadgesArguments): string {
     return this.renderDocument({

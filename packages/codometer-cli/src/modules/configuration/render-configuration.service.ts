@@ -10,7 +10,6 @@ import type {
   ConfiguredLimitRow,
   RenderConfigurationArguments,
 } from "./configuration.types";
-import type { ResolvedCodometerOutput } from "@codometer/configuration";
 
 /**
  * Turns a resolved configuration listing into the document a reader gets.
@@ -54,7 +53,7 @@ export class RenderConfigurationService {
       "",
       `- Inputs: ${this.renderNames(configuration.inputs.map((input) => input.name))}`,
       `- Limits: ${String(configuration.limits.length)}`,
-      `- Custom statistics: ${this.renderNames(this.renderStatisticLabels(configuration.outputs))}`,
+      `- Custom statistics: ${this.renderNames(configuration.custom.map((statistic) => statistic.label))}`,
       `- Python command: \`${configuration.python.command}\``,
       `- Excluded globs: ${String(configuration.exclude.length)}`,
       `- Exclude files: ${this.renderNames(configuration.excludeFrom)}`,
@@ -110,27 +109,6 @@ export class RenderConfigurationService {
   /** Renders one markdown table row, escaping nothing a path may not hold. */
   private renderRow(cells: readonly string[]): string {
     return `| ${cells.join(" | ")} |`;
-  }
-
-  /**
-   * Every custom statistic label declared across every output, deduped.
-   *
-   * An output's own `custom` array says which counters it renders, not which
-   * counters exist for the configuration as a whole — the same union
-   * `MeasureService` builds before measuring, read here purely for display.
-   */
-  private renderStatisticLabels(
-    outputs: readonly ResolvedCodometerOutput[],
-  ): string[] {
-    const labels = new Set<string>();
-
-    for (const output of outputs) {
-      for (const statistic of output.custom) {
-        labels.add(statistic.label);
-      }
-    }
-
-    return [...labels];
   }
 
   // 🌎 Public Methods

@@ -1,6 +1,6 @@
 services:
   devcontainer:
-    image: mcr.microsoft.com/devcontainers/typescript-node:22-bookworm
+    image: mcr.microsoft.com/devcontainers/typescript-node:24-bookworm
     container_name: codebase-devcontainer
     privileged: true
     volumes:

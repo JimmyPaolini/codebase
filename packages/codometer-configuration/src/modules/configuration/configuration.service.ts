@@ -139,9 +139,13 @@ export class ConfigurationService {
    * whole list, so adding a counter to one group does not recolor the badges
    * of another — which would rewrite a report that had not otherwise changed.
    * A `comment` selector's own defaulting is inlined here rather than given
-   * its own method: this list already runs one call deep inside its output
-   * destination's own resolution, and a further call would push the whole
-   * chain past what this package's callidescope gate allows.
+   * its own method: this list already runs one call deep inside
+   * `resolveConfiguration`, and a further call would push the whole chain
+   * past what this package's callidescope gate allows.
+   *
+   * Runs once, over the top-level `custom` declaration — never per output.
+   * An output only selects labels back out of what this resolves, so a
+   * counter is never resolved twice just because two outputs both render it.
    */
   private resolveCustomStatistics(
     statistics: CodometerCustomStatistic[] | undefined,
@@ -234,9 +238,10 @@ export class ConfigurationService {
   /** Applies defaults to one JSON output destination. */
   private resolveJsonOutput(
     output: CodometerJsonOutput,
+    customStatistics: readonly ResolvedCodometerCustomStatistic[],
   ): ResolvedCodometerJsonOutput {
     return {
-      custom: this.resolveCustomStatistics(output.custom),
+      custom: this.selectCustomStatistics(output.custom, customStatistics),
       indentation: output.indentation ?? DEFAULT_JSON_INDENTATION,
       path: output.path,
       type: "json",
@@ -264,9 +269,10 @@ export class ConfigurationService {
   /** Applies defaults to one markdown output destination. */
   private resolveMarkdownOutput(
     output: CodometerMarkdownOutput,
+    customStatistics: readonly ResolvedCodometerCustomStatistic[],
   ): ResolvedCodometerMarkdownOutput {
     return {
-      custom: this.resolveCustomStatistics(output.custom),
+      custom: this.selectCustomStatistics(output.custom, customStatistics),
       description: output.description,
       endMarker: output.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
       path: output.path,
@@ -281,12 +287,37 @@ export class ConfigurationService {
   /** Applies defaults to every declared output destination. */
   private resolveOutputs(
     outputs: CodometerOutput[] | undefined,
+    customStatistics: readonly ResolvedCodometerCustomStatistic[],
   ): ResolvedCodometerOutput[] {
     return (outputs ?? []).map((output) =>
       output.type === "json"
-        ? this.resolveJsonOutput(output)
-        : this.resolveMarkdownOutput(output),
+        ? this.resolveJsonOutput(output, customStatistics)
+        : this.resolveMarkdownOutput(output, customStatistics),
     );
+  }
+
+  /**
+   * Picks out the top-level custom statistics an output's own `custom` array
+   * selected, by label.
+   *
+   * The schema already refuses a label naming no top-level declaration, so a
+   * label failing to resolve here is dropped rather than treated as another
+   * way to fail: this method's job is the lookup, not re-validating what the
+   * schema already guarantees.
+   */
+  private selectCustomStatistics(
+    labels: string[] | undefined,
+    customStatistics: readonly ResolvedCodometerCustomStatistic[],
+  ): ResolvedCodometerCustomStatistic[] {
+    const byLabel = new Map(
+      customStatistics.map((statistic) => [statistic.label, statistic]),
+    );
+
+    return (labels ?? []).flatMap((label) => {
+      const statistic = byLabel.get(label);
+
+      return statistic === undefined ? [] : [statistic];
+    });
   }
 
   // 🌎 Public Methods
@@ -354,7 +385,10 @@ export class ConfigurationService {
   public resolveConfiguration(
     configuration: CodometerConfiguration,
   ): ResolvedCodometerConfiguration {
+    const custom = this.resolveCustomStatistics(configuration.custom);
+
     return {
+      custom,
       defaultInput: configuration.defaultInput,
       // Additive rather than a replacement: the defaults are directories no
       // repository wants counted, so a configuration naming its own noise
@@ -369,7 +403,7 @@ export class ConfigurationService {
       format: configuration.format,
       inputs: this.resolveInputs(configuration.inputs),
       limits: this.resolveLimits(configuration.limits),
-      outputs: this.resolveOutputs(configuration.outputs),
+      outputs: this.resolveOutputs(configuration.outputs, custom),
       python: {
         command: configuration.python?.command ?? DEFAULT_PYTHON_COMMAND,
       },

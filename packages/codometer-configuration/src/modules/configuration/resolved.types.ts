@@ -45,6 +45,8 @@ export interface ResolvedCodometerCommentSelector {
  * to know which fields a configuration file may omit.
  */
 export interface ResolvedCodometerConfiguration {
+  /** Every counter this configuration measures, with defaults applied. */
+  custom: ResolvedCodometerCustomStatistic[];
   /** Stays `undefined` when nothing named one, so every path must qualify. */
   defaultInput: string | undefined;
   exclude: string[];
