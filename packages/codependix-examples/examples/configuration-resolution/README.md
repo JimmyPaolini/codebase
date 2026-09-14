@@ -15,7 +15,7 @@ drifted; `:write` regenerates it.
 
 ## `defaults`, a per-project override, and the two glob lists
 
-`atlas-core` names an `nx` override, and it **replaces** the default outright rather than merging into it — its `markdown` destination is gone, not inherited. `atlas-application` matches `exclude`, so it resolves to `none` no matter what either configuration would otherwise say. `unrelated` matches no `include` glob at all.
+`atlas-core` names an `nxProjects` override, and it **replaces** the default outright rather than merging into it — its `markdown` destination is gone, not inherited. `atlas-application` matches `exclude`, so it resolves to `none` no matter what either configuration would otherwise say. `unrelated` matches no `include` glob at all.
 
 | Project | Root | Resolved target | Destination |
 | ------- | ---- | --------------- | ----------- |
@@ -38,7 +38,7 @@ codependix-examples, name only                  → true
 
 ## The Workspace Graph ignores both glob lists
 
-It is exported once for the repository rather than once per project, so it carries no per-project override and `include`/`exclude` never apply to it. `--projects` and `--tags` are the exception: they narrow which projects are **nodes** in it, while its destination is still read from `workspace.nx`.
+It is exported once for the repository rather than once per project, so it carries no per-project override and `include`/`exclude` never apply to it. `--projects` and `--tags` are the exception: they narrow which projects are **nodes** in it, while its destination is still read from `workspace.nxProjects`.
 
 ```json
 {
@@ -62,7 +62,7 @@ The one naming decision in the whole configuration surface that looks arbitrary 
 
 ```json
 {
-  "nx": {
+  "nxProjects": {
     "markdown": {
       "anchor": "example-nx"
     },
@@ -78,7 +78,7 @@ The search started inside `packages/atlas-service/`, which carries its own `pack
 ```json
 {
   "atlas-service": {
-    "nx": {
+    "nxProjects": {
       "json": {
         "path": "codependix-nx-graph.json"
       },
@@ -104,7 +104,7 @@ The configuration declares a `graphqlSchemas` field no codependix has an opinion
 
 ```json
 {
-  "nx": {
+  "nxProjects": {
     "markdown": {
       "anchor": "example-nx"
     },

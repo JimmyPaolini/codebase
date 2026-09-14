@@ -18,13 +18,13 @@ import { DeliveryService } from "../delivery/delivery.service";
 import { PythonImportsService } from "../python-imports/python-imports.service";
 
 import {
-  IMPORTS_GRAPH_TYPE,
-  IMPORTS_MARKDOWN_SUBHEADING,
+  FILE_IMPORTS_GRAPH_TYPE,
+  FILE_IMPORTS_MARKDOWN_SUBHEADING,
   MARKDOWN_SECTION_INTRO_LINE,
-  NESTJS_GRAPH_TYPE,
-  NESTJS_MARKDOWN_SUBHEADING,
-  NX_GRAPH_TYPE,
-  NX_MARKDOWN_SUBHEADING,
+  NESTJS_MODULES_GRAPH_TYPE,
+  NESTJS_MODULES_MARKDOWN_SUBHEADING,
+  NX_PROJECTS_GRAPH_TYPE,
+  NX_PROJECTS_MARKDOWN_SUBHEADING,
   WORKSPACE_GRAPH_PROJECT_NAME,
 } from "./map.constants";
 
@@ -185,7 +185,9 @@ export class MapService {
         resolvedOutput.markdown === undefined
           ? undefined
           : this.typescriptService.renderMermaid(importGraph),
-      markdownSection: this.buildMarkdownSection(IMPORTS_MARKDOWN_SUBHEADING),
+      markdownSection: this.buildMarkdownSection(
+        FILE_IMPORTS_MARKDOWN_SUBHEADING,
+      ),
       mode,
       project,
       resolvedOutput,
@@ -212,7 +214,9 @@ export class MapService {
         resolvedOutput.markdown === undefined
           ? undefined
           : this.moduleGraphService.renderMermaid(moduleGraph),
-      markdownSection: this.buildMarkdownSection(NESTJS_MARKDOWN_SUBHEADING),
+      markdownSection: this.buildMarkdownSection(
+        NESTJS_MODULES_MARKDOWN_SUBHEADING,
+      ),
       mode,
       project,
       resolvedOutput,
@@ -239,7 +243,9 @@ export class MapService {
         resolvedOutput.markdown === undefined
           ? undefined
           : this.neighborhoodService.renderMermaid(neighborhood),
-      markdownSection: this.buildMarkdownSection(NX_MARKDOWN_SUBHEADING),
+      markdownSection: this.buildMarkdownSection(
+        NX_PROJECTS_MARKDOWN_SUBHEADING,
+      ),
       mode,
       project,
       resolvedOutput,
@@ -262,7 +268,7 @@ export class MapService {
       const neighborhood = neighborhoods.get(project.name);
       const resolvedOutput = this.resolveProjectOutput({
         context,
-        graphType: NX_GRAPH_TYPE,
+        graphType: NX_PROJECTS_GRAPH_TYPE,
         project,
       });
 
@@ -377,7 +383,7 @@ export class MapService {
     for (const project of typescriptProjects) {
       const resolvedOutput = this.resolveProjectOutput({
         context,
-        graphType: IMPORTS_GRAPH_TYPE,
+        graphType: FILE_IMPORTS_GRAPH_TYPE,
         project,
       });
 
@@ -419,7 +425,7 @@ export class MapService {
     for (const project of nestjsProjects) {
       const resolvedOutput = this.resolveProjectOutput({
         context,
-        graphType: NESTJS_GRAPH_TYPE,
+        graphType: NESTJS_MODULES_GRAPH_TYPE,
         project,
       });
 

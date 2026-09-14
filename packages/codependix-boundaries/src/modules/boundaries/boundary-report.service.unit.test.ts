@@ -11,7 +11,7 @@ function buildViolation(
 ): BoundaryViolation {
   return {
     cycle: undefined,
-    level: "nx",
+    level: "nxProjects",
     message: "layers: a must not depend on b.",
     rule: "layers",
     scope: "workspace",
@@ -59,10 +59,10 @@ describe(BoundaryReportService, () => {
   it("names the level and the scope in front of each message", () => {
     expect(
       service.renderViolations([
-        buildViolation({ level: "imports", scope: "codependix-cli" }),
+        buildViolation({ level: "typescript", scope: "codependix-cli" }),
       ]),
     ).toStrictEqual([
-      "imports codependix-cli: layers: a must not depend on b.",
+      "typescript codependix-cli: layers: a must not depend on b.",
     ]);
   });
 

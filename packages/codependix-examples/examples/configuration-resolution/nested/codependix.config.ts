@@ -4,11 +4,14 @@
  */
 export default {
   defaults: {
-    nx: { markdown: { anchor: "example-nx" }, target: "markdown" },
+    nxProjects: { markdown: { anchor: "example-nx" }, target: "markdown" },
   },
   projects: {
     "atlas-service": {
-      nx: { json: { path: "codependix-nx-graph.json" }, target: "json" },
+      nxProjects: {
+        json: { path: "codependix-nx-graph.json" },
+        target: "json",
+      },
     },
   },
 };

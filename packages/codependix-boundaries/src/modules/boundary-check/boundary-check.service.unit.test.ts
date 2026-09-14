@@ -34,7 +34,7 @@ const RULE_LIST: CodependixBoundaryRule[] = [RULE];
 
 const VIOLATION: BoundaryViolation = {
   cycle: undefined,
-  level: "nx",
+  level: "nxProjects",
   message: "layers: a must not depend on b.",
   rule: "layers",
   scope: "workspace",
@@ -46,6 +46,30 @@ const VIOLATION: BoundaryViolation = {
 const PROJECTS = [
   { absoluteRoot: "/workspace/packages/a", name: "a", tags: [] },
 ];
+
+/** Boundaries overrides a test may pass, `fileImports` narrowed per language. */
+type BoundariesOverrides = Omit<
+  Partial<ResolvedCodependixBoundariesConfiguration>,
+  "fileImports"
+> & {
+  fileImports?: Partial<
+    ResolvedCodependixBoundariesConfiguration["fileImports"]
+  >;
+};
+
+/** Builds a boundaries configuration, defaulting every level to empty. */
+function buildBoundaries(
+  overrides: BoundariesOverrides = {},
+): ResolvedCodependixBoundariesConfiguration {
+  const { fileImports, ...rest } = overrides;
+
+  return {
+    fileImports: { python: [], typescript: [], ...fileImports },
+    nestjsModules: [],
+    nxProjects: [],
+    ...rest,
+  };
+}
 
 describe(BoundaryCheckService, () => {
   let boundariesService: BoundariesService;
@@ -61,17 +85,11 @@ describe(BoundaryCheckService, () => {
 
   /** Builds a context whose configuration declares the given rules. */
   function buildContext(
-    boundaries: Partial<ResolvedCodependixBoundariesConfiguration> = {},
+    boundaries: BoundariesOverrides = {},
   ): BoundaryCheckContext {
     return {
       configuration: {
-        boundaries: {
-          imports: [],
-          nestjs: [],
-          nx: [],
-          pythonImports: [],
-          ...boundaries,
-        },
+        boundaries: buildBoundaries(boundaries),
         defaults: {},
         exclude: [],
         include: ["**"],
@@ -141,7 +159,7 @@ describe(BoundaryCheckService, () => {
   // run sees fewer edges than a whole-workspace one.
   it("judges the selected projects rather than every project", async () => {
     const context = buildContext({
-      nx: [{ kind: "acyclic", name: "no-cycles" }],
+      nxProjects: [{ kind: "acyclic", name: "no-cycles" }],
     });
 
     await service.run({
@@ -172,10 +190,10 @@ describe(BoundaryCheckService, () => {
   it("judges the Nx level and reports what it found", async () => {
     reportedViolations.push(VIOLATION);
 
-    const outcome = await service.run(buildContext({ nx: RULE_LIST }));
+    const outcome = await service.run(buildContext({ nxProjects: RULE_LIST }));
 
     expect(outcome.violations).toStrictEqual([VIOLATION]);
-    expect(evaluatedGraphs[0]?.level).toBe("nx");
+    expect(evaluatedGraphs[0]?.level).toBe("nxProjects");
     expect(evaluatedGraphs[0]?.scope).toBe("workspace");
     expect(evaluatedRules[0]).toBe(RULE_LIST);
   });
@@ -187,7 +205,7 @@ describe(BoundaryCheckService, () => {
       },
     );
 
-    const outcome = await service.run(buildContext({ nx: RULE_LIST }));
+    const outcome = await service.run(buildContext({ nxProjects: RULE_LIST }));
 
     expect(outcome.failures).toStrictEqual([
       { error: "boom", projectName: "workspace" },
@@ -210,9 +228,9 @@ describe(BoundaryCheckService, () => {
       projectName: "a",
     });
 
-    await service.run(buildContext({ nestjs: RULE_LIST }));
+    await service.run(buildContext({ nestjsModules: RULE_LIST }));
 
-    expect(evaluatedGraphs[0]?.level).toBe("nestjs");
+    expect(evaluatedGraphs[0]?.level).toBe("nestjsModules");
     expect(evaluatedGraphs[0]?.scope).toBe("a");
   });
 
@@ -240,7 +258,9 @@ describe(BoundaryCheckService, () => {
       projectName: "b",
     });
 
-    const outcome = await service.run(buildContext({ nestjs: RULE_LIST }));
+    const outcome = await service.run(
+      buildContext({ nestjsModules: RULE_LIST }),
+    );
 
     expect(outcome.failures).toStrictEqual([
       { error: "boom", projectName: "a" },
@@ -263,7 +283,9 @@ describe(BoundaryCheckService, () => {
       "boom",
     );
 
-    const outcome = await service.run(buildContext({ nestjs: RULE_LIST }));
+    const outcome = await service.run(
+      buildContext({ nestjsModules: RULE_LIST }),
+    );
 
     expect(outcome.failures).toStrictEqual([
       { error: "boom", projectName: "a" },
@@ -285,9 +307,9 @@ describe(BoundaryCheckService, () => {
       projectName: "a",
     });
 
-    await service.run(buildContext({ imports: RULE_LIST }));
+    await service.run(buildContext({ fileImports: { typescript: RULE_LIST } }));
 
-    expect(evaluatedGraphs[0]?.level).toBe("imports");
+    expect(evaluatedGraphs[0]?.level).toBe("typescript");
     expect(evaluatedGraphs[0]?.scope).toBe("a");
   });
 
@@ -303,7 +325,9 @@ describe(BoundaryCheckService, () => {
       throw new Error("boom");
     });
 
-    const outcome = await service.run(buildContext({ imports: RULE_LIST }));
+    const outcome = await service.run(
+      buildContext({ fileImports: { typescript: RULE_LIST } }),
+    );
 
     expect(outcome.failures).toStrictEqual([
       { error: "boom", projectName: "a" },
@@ -321,9 +345,9 @@ describe(BoundaryCheckService, () => {
       projectName: "a",
     });
 
-    await service.run(buildContext({ pythonImports: RULE_LIST }));
+    await service.run(buildContext({ fileImports: { python: RULE_LIST } }));
 
-    expect(evaluatedGraphs[0]?.level).toBe("pythonImports");
+    expect(evaluatedGraphs[0]?.level).toBe("python");
     expect(evaluatedGraphs[0]?.scope).toBe("a");
   });
 
@@ -336,7 +360,7 @@ describe(BoundaryCheckService, () => {
     });
 
     const outcome = await service.run(
-      buildContext({ pythonImports: RULE_LIST }),
+      buildContext({ fileImports: { python: RULE_LIST } }),
     );
 
     expect(outcome.failures).toStrictEqual([
@@ -347,10 +371,9 @@ describe(BoundaryCheckService, () => {
   it("judges every level a rule was declared for, in one run", async () => {
     await service.run(
       buildContext({
-        imports: [RULE],
-        nestjs: [RULE],
-        nx: [RULE],
-        pythonImports: [RULE],
+        fileImports: { python: [RULE], typescript: [RULE] },
+        nestjsModules: [RULE],
+        nxProjects: [RULE],
       }),
     );
 
@@ -358,5 +381,60 @@ describe(BoundaryCheckService, () => {
     expect(nestjsProjectService.discoverProjects).toHaveBeenCalledTimes(1);
     expect(typescriptService.discoverProjects).toHaveBeenCalledTimes(1);
     expect(pythonService.discoverProjects).toHaveBeenCalledTimes(1);
+  });
+
+  // boundaries.fileImports nests by language: a rule declared for one
+  // language must not reach the other's builder at all.
+  it("judges only the TypeScript level when fileImports declares no Python rules", async () => {
+    await service.run(buildContext({ fileImports: { typescript: RULE_LIST } }));
+
+    expect(typescriptService.discoverProjects).toHaveBeenCalledTimes(1);
+    expect(pythonService.discoverProjects).not.toHaveBeenCalled();
+  });
+
+  it("judges only the Python level when fileImports declares no TypeScript rules", async () => {
+    await service.run(buildContext({ fileImports: { python: RULE_LIST } }));
+
+    expect(pythonService.discoverProjects).toHaveBeenCalledTimes(1);
+    expect(typescriptService.discoverProjects).not.toHaveBeenCalled();
+  });
+
+  it("judges both fileImports languages independently in one run", async () => {
+    vi.mocked(typescriptService.discoverProjects).mockReturnValue([
+      {
+        absoluteRoot: "/workspace/packages/a",
+        name: "a",
+        tsconfigPath: "/workspace/packages/a/tsconfig.json",
+      },
+    ]);
+    // An earlier test permanently overrides `buildProgram` to throw; reset it
+    // back to createMock's default rather than throwing here too.
+    vi.mocked(typescriptService.buildProgram).mockReset();
+    vi.mocked(typescriptService.buildGraph).mockReturnValue({
+      edges: [],
+      fileNames: ["src/index.ts"],
+      isolatedFileNames: [],
+      projectName: "a",
+    });
+    vi.mocked(pythonService.discoverProjects).mockReturnValue([
+      { absoluteRoot: "/workspace/applications/a", name: "a" },
+    ]);
+    vi.mocked(pythonService.buildGraph).mockReturnValue({
+      edges: [],
+      fileNames: ["main.py"],
+      isolatedFileNames: ["main.py"],
+      projectName: "a",
+    });
+
+    await service.run(
+      buildContext({
+        fileImports: { python: RULE_LIST, typescript: RULE_LIST },
+      }),
+    );
+
+    expect(evaluatedGraphs.map((graph) => graph.level)).toStrictEqual([
+      "typescript",
+      "python",
+    ]);
   });
 });

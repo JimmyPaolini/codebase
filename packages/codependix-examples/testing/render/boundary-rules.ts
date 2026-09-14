@@ -21,7 +21,7 @@ const ATLAS_PROJECTS: BoundaryGraph = {
     { implicit: false, source: "atlas-service", target: "atlas-core" },
     { implicit: true, source: "atlas-service", target: "atlas-tooling" },
   ],
-  level: "nx",
+  level: "nxProjects",
   nodes: [
     { id: "atlas-application", tags: ["type:application"] },
     { id: "atlas-core", tags: ["type:package"] },
@@ -46,7 +46,7 @@ const ATLAS_FILES: BoundaryGraph = {
     { source: "src/catalog.service.ts", target: "src/catalog.types.ts" },
     { source: "src/catalog.types.ts", target: "src/settings.service.ts" },
   ],
-  level: "imports",
+  level: "typescript",
   nodes: [
     "src/catalog.service.ts",
     "src/catalog.types.ts",

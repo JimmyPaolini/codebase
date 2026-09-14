@@ -21,7 +21,7 @@ describe("codependix examples", () => {
 
       const loaded = await configuration.loadConfiguration("precedence");
 
-      expect(loaded.defaults.nx?.markdown?.anchor).toBe("example-nx");
+      expect(loaded.defaults.nxProjects?.markdown?.anchor).toBe("example-nx");
     });
 
     it("resolves every graph to none when no configuration file exists", async () => {
@@ -38,7 +38,7 @@ describe("codependix examples", () => {
       const loaded = await configuration.loadConfiguration("unknown-fields");
 
       expect(loaded).not.toHaveProperty("graphqlSchemas");
-      expect(loaded.defaults.nx?.target).toBe("markdown");
+      expect(loaded.defaults.nxProjects?.target).toBe("markdown");
     });
 
     it("refuses an explicitly named configuration file that does not exist", async () => {
@@ -85,7 +85,7 @@ describe("codependix examples", () => {
       expect(
         configuration.describeIssues(
           codependixConfigurationSchema.safeParse({
-            defaults: { nx: { target: "both" } },
+            defaults: { nxProjects: { target: "both" } },
           }).error,
         ),
       ).toContain("needs a json destination");

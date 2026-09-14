@@ -6,8 +6,8 @@ import { Injectable } from "@nestjs/common";
 
 import { DeliveryService } from "../delivery/delivery.service";
 import {
+  FILE_IMPORTS_GRAPH_TYPE,
   MARKDOWN_SECTION_INTRO_LINE,
-  PYTHON_IMPORTS_GRAPH_TYPE,
   PYTHON_IMPORTS_MARKDOWN_SUBHEADING,
 } from "../map/map.constants";
 
@@ -84,7 +84,7 @@ export class PythonImportsService {
 
     return this.configurationService.resolveForProject({
       configuration: context.configuration,
-      graphType: PYTHON_IMPORTS_GRAPH_TYPE,
+      graphType: FILE_IMPORTS_GRAPH_TYPE,
       projectName: project.name,
       projectRoot: path.relative(
         context.workingDirectory,

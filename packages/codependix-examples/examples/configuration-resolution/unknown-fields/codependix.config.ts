@@ -5,7 +5,7 @@
  */
 export default {
   defaults: {
-    nx: { markdown: { anchor: "example-nx" }, target: "markdown" },
+    nxProjects: { markdown: { anchor: "example-nx" }, target: "markdown" },
   },
   graphqlSchemas: { target: "markdown" },
 };

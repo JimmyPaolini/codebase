@@ -1,6 +1,6 @@
 // ♟️ Constants
 
-import type { CodependixGraphType } from "@codependix/configuration";
+import type { CodependixBoundaryLevel } from "../boundaries/boundaries.types";
 
 /**
  * The scope a violation found in the whole-workspace Nx graph is reported
@@ -22,11 +22,13 @@ export const WORKSPACE_SCOPE = "workspace";
  *
  * Written as a list rather than left implicit in the order of four `if`
  * blocks, so the order a report comes out in is stated once, in the place a
- * reader looks for it.
+ * reader looks for it. `typescript` and `python` are `boundaries.fileImports`'s
+ * two nested languages, judged as separate levels here even though
+ * `codependix-file-imports` builds and exports them as one merged graph type.
  */
 export const BOUNDARY_LEVEL_ORDER = [
-  "nx",
-  "nestjs",
-  "imports",
-  "pythonImports",
-] as const satisfies readonly CodependixGraphType[];
+  "nxProjects",
+  "nestjsModules",
+  "typescript",
+  "python",
+] as const satisfies readonly CodependixBoundaryLevel[];

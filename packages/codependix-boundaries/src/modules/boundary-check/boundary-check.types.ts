@@ -1,9 +1,11 @@
 // 🏷️ Types
 
-import type { BoundaryViolation } from "../boundaries/boundaries.types";
+import type {
+  BoundaryViolation,
+  CodependixBoundaryLevel,
+} from "../boundaries/boundaries.types";
 import type {
   CodependixBoundaryRule,
-  CodependixGraphType,
   ResolvedCodependixConfiguration,
 } from "@codependix/configuration";
 import type { NxProject, NxProjectGraph } from "@codependix/nx-projects";
@@ -56,6 +58,6 @@ export interface BoundaryCheckOutcome {
 /** Arguments accepted when judging one graph level against its rules. */
 export interface LevelCheckArguments {
   readonly context: BoundaryCheckContext;
-  readonly level: CodependixGraphType;
+  readonly level: CodependixBoundaryLevel;
   readonly rules: readonly CodependixBoundaryRule[];
 }
