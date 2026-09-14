@@ -1,4 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+
+import { MeanderConnectivityService } from "./meander-connectivity.service";
 
 import type {
   MeanderPointDirections,
@@ -40,12 +42,27 @@ import type {
  * no-crossing invariants in its ink — two sub-families of `mosaic` "cross"
  * only in the negative space, and nowhere else — so a Characteristic meant
  * to flag that structure has to look at both.
+ *
+ * **Components, cycles, and free ends** are delegated whole to
+ * `MeanderConnectivityService`, which reads the same grid as a graph rather
+ * than point by point. They are Characteristics for the same reason the
+ * junction counts are: no charter invariant fixes them, and they are what
+ * tells one family's structure from another's where the junction counts
+ * agree. Measured over the committed corpus, a `snake` repeat is one piece
+ * closing one loop with nothing terminating, a `boxes` repeat one piece
+ * closing none with two ends, and a `parallel` repeat one piece per strand
+ * plus one, each with two ends — three readings the junction counts call
+ * identically and this one separates. `MeanderClassificationService` is
+ * where that separation is written down.
  */
 @Injectable()
 export class MeanderCharacteristicsService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(MeanderConnectivityService)
+    private readonly meanderConnectivityService: MeanderConnectivityService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -181,6 +198,7 @@ export class MeanderCharacteristicsService {
     const negative = this.tallyNegative(grid);
 
     return {
+      ...this.meanderConnectivityService.connectivity(grid),
       hasBranching: ink.tJunctions > 0 || negative.tJunctions > 0,
       hasCrossing: ink.xJunctions > 0 || negative.xJunctions > 0,
       inkTJunctions: ink.tJunctions,

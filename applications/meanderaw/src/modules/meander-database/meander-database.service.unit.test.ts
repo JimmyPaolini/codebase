@@ -18,6 +18,10 @@ describe(MeanderDatabaseService, () => {
   const record: MeanderRecord = {
     code: "3c9a",
     columns: 2,
+    components: 1,
+    cycles: 0,
+    family: null,
+    freeEnds: 0,
     hasBranching: false,
     hasCrossing: false,
     inkTJunctions: 0,
@@ -27,6 +31,7 @@ describe(MeanderDatabaseService, () => {
     pitch: 2,
     provenance: "hardcoded",
     rows: 3,
+    subFamily: null,
     svg: "<svg>fixture</svg>\n",
   };
   const savedMeander = createMock<Meander>({ id: 1, ...record });

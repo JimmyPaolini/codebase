@@ -2,37 +2,30 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
 import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderDecodingService } from "../meander-decoding/meander-decoding.service";
-import { MeanderRenderingService } from "../meander-rendering/meander-rendering.service";
 
 import { DrawCodeService } from "./draw-code.service";
+import { DrawRecordService } from "./draw-record.service";
 
-import type { MeanderCharacteristics } from "../meander-characteristics/meander-characteristics.types";
 import type { Meander } from "../meander-database/entities/Meander.entity";
-import type { MeanderPointGrid } from "../meander-decoding/meander-decoding.types";
+import type { MeanderRecord } from "../meander-database/meander-database.types";
 
 // 🧪 Tests
 
+/**
+ * What is left of this service once `DrawRecordService` owns building a row:
+ * that a `--code` drawing is recorded as authored by a person rather than
+ * found by a search, and that what the builder produced is what reaches the
+ * database. What a row actually holds is asserted in
+ * `draw-record.service.unit.test.ts`, against the real pipeline rather than
+ * against mocks of it.
+ */
 describe(DrawCodeService, () => {
-  let service: DrawCodeService;
-  let meanderCharacteristicsService: MeanderCharacteristicsService;
+  let drawRecordService: DrawRecordService;
   let meanderDatabaseService: MeanderDatabaseService;
-  let meanderDecodingService: MeanderDecodingService;
-  let meanderRenderingService: MeanderRenderingService;
+  let service: DrawCodeService;
 
-  const grid: MeanderPointGrid = [
-    [{ east: true, north: false, south: false, west: false }],
-  ];
-  const characteristics: MeanderCharacteristics = {
-    hasBranching: true,
-    hasCrossing: false,
-    inkTJunctions: 1,
-    inkXJunctions: 0,
-    negativeTJunctions: 0,
-    negativeXJunctions: 0,
-  };
+  const record = createMock<MeanderRecord>({ code: "2" });
   const savedMeander = createMock<Meander>({ id: 1 });
 
   beforeAll(async () => {
@@ -40,39 +33,21 @@ describe(DrawCodeService, () => {
       providers: [
         DrawCodeService,
         {
-          provide: MeanderCharacteristicsService,
-          useValue: createMock<MeanderCharacteristicsService>(),
+          provide: DrawRecordService,
+          useValue: createMock<DrawRecordService>(),
         },
         {
           provide: MeanderDatabaseService,
           useValue: createMock<MeanderDatabaseService>(),
         },
-        {
-          provide: MeanderDecodingService,
-          useValue: createMock<MeanderDecodingService>(),
-        },
-        {
-          provide: MeanderRenderingService,
-          useValue: createMock<MeanderRenderingService>(),
-        },
       ],
     }).compile();
 
     service = await module.resolve(DrawCodeService);
-    meanderCharacteristicsService = await module.resolve(
-      MeanderCharacteristicsService,
-    );
+    drawRecordService = await module.resolve(DrawRecordService);
     meanderDatabaseService = await module.resolve(MeanderDatabaseService);
-    meanderDecodingService = await module.resolve(MeanderDecodingService);
-    meanderRenderingService = await module.resolve(MeanderRenderingService);
 
-    vi.mocked(meanderDecodingService.decode).mockReturnValue(grid);
-    vi.mocked(meanderRenderingService.render).mockReturnValue(
-      "<svg>fixture</svg>\n",
-    );
-    vi.mocked(meanderCharacteristicsService.compute).mockReturnValue(
-      characteristics,
-    );
+    vi.mocked(drawRecordService.record).mockReturnValue(record);
     vi.mocked(meanderDatabaseService.save).mockResolvedValue(savedMeander);
   });
 
@@ -81,41 +56,20 @@ describe(DrawCodeService, () => {
   });
 
   describe("draw", () => {
-    it("decodes the code at the given rows and columns", async () => {
-      await service.draw({ code: "2", columns: 1, rows: 2 });
-
-      expect(meanderDecodingService.decode).toHaveBeenCalledWith("2", 2, 1);
-    });
-
-    it("renders the decoded grid at the given rows and columns", async () => {
-      await service.draw({ code: "2", columns: 1, rows: 2 });
-
-      expect(meanderRenderingService.render).toHaveBeenCalledWith(grid, 2, 1);
-    });
-
-    it("computes the decoded grid's Characteristics", async () => {
-      await service.draw({ code: "2", columns: 1, rows: 2 });
-
-      expect(meanderCharacteristicsService.compute).toHaveBeenCalledWith(grid);
-    });
-
-    it("persists the rendered svg, the computed Characteristics, with pitch equal to columns and hardcoded provenance", async () => {
+    it("records a code named at the command line as hardcoded, since a person authored it rather than a search finding it", async () => {
       await service.draw({ code: "2", columns: 3, rows: 4 });
 
-      expect(meanderDatabaseService.save).toHaveBeenCalledWith({
-        code: "2",
-        columns: 3,
-        hasBranching: true,
-        hasCrossing: false,
-        inkTJunctions: 1,
-        inkXJunctions: 0,
-        negativeTJunctions: 0,
-        negativeXJunctions: 0,
-        pitch: 3,
-        provenance: "hardcoded",
-        rows: 4,
-        svg: "<svg>fixture</svg>\n",
-      });
+      expect(drawRecordService.record).toHaveBeenCalledWith(
+        "2",
+        { columns: 3, rows: 4 },
+        "hardcoded",
+      );
+    });
+
+    it("persists exactly the row the builder produced", async () => {
+      await service.draw({ code: "2", columns: 1, rows: 2 });
+
+      expect(meanderDatabaseService.save).toHaveBeenCalledWith(record);
     });
 
     it("resolves with the saved meander row", async () => {
