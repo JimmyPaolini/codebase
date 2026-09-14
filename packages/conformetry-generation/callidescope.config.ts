@@ -6,18 +6,13 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
  * Seven frames to render a template into an instance.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
- * **at** what it measured rather than above it: a stack at the limit passes, so
- * this gate is green the day it arrives and the number is a starting point to
- * ratchet down from rather than a target to grow into.
+ * **at** what it measured rather than above it: a stack or a callable at either
+ * limit passes, so this gate is green the day it arrives and each number is a
+ * starting point to ratchet down from rather than a target to grow into.
  *
- * No `maximumBreadth`. The widest callable here is ordinary fan-out rather
- * than a budget: gating it would fire on the next helper anybody extracts and
- * say nothing about the shape of the code. The measurement is deliberately not
- * quoted here, because nothing would check it — a sentence naming a number no
- * gate enforces goes false the first time somebody splits a callable, which is
- * the decay this whole arrangement exists to end. Run `breadth` against this
- * project to read it. Breadth is left out of this gate until there is a number
- * worth holding.
+ * Four direct callees at the widest — ordinary fan-out rather than a closed
+ * enumeration, so the next helper anybody extracts here is what moves the
+ * number.
  *
  * @see configuration/callidescope.config.ts — `projectDefaults`, spread below
  * for everything this file does not override
@@ -25,7 +20,7 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
 export default {
   ...projectDefaults,
   limits: {
-    maximumBreadth: undefined,
+    maximumBreadth: 4,
     maximumDepth: 7,
   },
 };
