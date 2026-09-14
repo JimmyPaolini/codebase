@@ -31,6 +31,18 @@ export class MeanderDatabaseService {
   // 🌎 Public Methods
 
   /**
+   * Reads every meander row committed so far, for `DrawIndexService` to build
+   * the static index page from.
+   *
+   * Whole-table rather than paged: the page it feeds is itself unpaged, per
+   * spec #813's own "Out of Scope" section, so reading it in one pass is no
+   * more than the page already has to hold in memory to render.
+   */
+  async findAll(): Promise<Meander[]> {
+    return this.meanderRepository.find();
+  }
+
+  /**
    * Writes one meander row, letting the database assign its `id`.
    *
    * Refuses — by rejecting, through the unique index over `code`, `rows`

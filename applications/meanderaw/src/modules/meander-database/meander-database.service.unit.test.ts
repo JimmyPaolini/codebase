@@ -57,6 +57,15 @@ describe(MeanderDatabaseService, () => {
     expect(service).toBeDefined();
   });
 
+  describe("findAll", () => {
+    it("delegates to the repository's own find", async () => {
+      vi.mocked(meanderRepository.find).mockResolvedValue([savedMeander]);
+
+      await expect(service.findAll()).resolves.toStrictEqual([savedMeander]);
+      expect(meanderRepository.find).toHaveBeenCalledWith();
+    });
+  });
+
   describe("save", () => {
     it("delegates to the repository's own save", async () => {
       await service.save(record);
