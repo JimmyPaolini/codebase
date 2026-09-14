@@ -514,7 +514,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | Measure | Value |
 | --- | --- |
 | Callables | 80 |
-| Files | 39 |
+| Files | 40 |
 | Calls traced | 53 |
 | Call stacks | 19 |
 | Deepest stack | 8 |
@@ -873,6 +873,7 @@ _This project defines no NestJS modules to graph._
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
   file_callidescope_workspace_config_ts["callidescope.workspace.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_examples_base_class_base_class_ts["examples/base-class/base-class.ts"]

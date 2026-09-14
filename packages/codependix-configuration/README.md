@@ -30,8 +30,12 @@ graph LR
 <!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
+  ConfigurationLoaderModule
   ConfigurationModule
   InputModule
+  OverrideResolutionModule
+  ConfigurationModule --> ConfigurationLoaderModule
+  ConfigurationModule --> OverrideResolutionModule
 ```
 <!-- codependix:end name="codependix-nestjs" -->
 
@@ -41,10 +45,16 @@ flowchart LR
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
+  file_src_modules_configuration_loader_configuration_loader_constants_ts["src/modules/configuration-loader/configuration-loader.constants.ts"]
+  file_src_modules_configuration_loader_configuration_loader_module_ts["src/modules/configuration-loader/configuration-loader.module.ts"]
+  file_src_modules_configuration_loader_configuration_loader_service_ts["src/modules/configuration-loader/configuration-loader.service.ts"]
+  file_src_modules_configuration_loader_configuration_loader_service_unit_test_ts["src/modules/configuration-loader/configuration-loader.service.unit.test.ts"]
+  file_src_modules_configuration_loader_configuration_loader_types_ts["src/modules/configuration-loader/configuration-loader.types.ts"]
   file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
   file_src_modules_configuration_configuration_module_ts["src/modules/configuration/configuration.module.ts"]
   file_src_modules_configuration_configuration_module_unit_test_ts["src/modules/configuration/configuration.module.unit.test.ts"]
@@ -57,19 +67,34 @@ graph LR
   file_src_modules_input_input_service_ts["src/modules/input/input.service.ts"]
   file_src_modules_input_input_service_unit_test_ts["src/modules/input/input.service.unit.test.ts"]
   file_src_modules_input_input_types_ts["src/modules/input/input.types.ts"]
+  file_src_modules_override_resolution_override_resolution_constants_ts["src/modules/override-resolution/override-resolution.constants.ts"]
+  file_src_modules_override_resolution_override_resolution_module_ts["src/modules/override-resolution/override-resolution.module.ts"]
+  file_src_modules_override_resolution_override_resolution_service_ts["src/modules/override-resolution/override-resolution.service.ts"]
+  file_src_modules_override_resolution_override_resolution_service_unit_test_ts["src/modules/override-resolution/override-resolution.service.unit.test.ts"]
+  file_src_modules_override_resolution_override_resolution_types_ts["src/modules/override-resolution/override-resolution.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
+  file_src_modules_configuration_loader_configuration_loader_module_ts --> file_src_modules_configuration_loader_configuration_loader_service_ts
+  file_src_modules_configuration_loader_configuration_loader_service_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_loader_configuration_loader_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_loader_configuration_loader_service_unit_test_ts --> file_src_modules_configuration_loader_configuration_loader_service_ts
   file_src_modules_configuration_configuration_constants_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_loader_configuration_loader_module_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_service_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_override_resolution_override_resolution_module_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_module_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_loader_configuration_loader_service_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_override_resolution_override_resolution_service_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_loader_configuration_loader_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_override_resolution_override_resolution_service_ts
   file_src_modules_input_input_module_ts --> file_src_modules_input_input_service_ts
   file_src_modules_input_input_module_unit_test_ts --> file_src_modules_input_input_module_ts
   file_src_modules_input_input_module_unit_test_ts --> file_src_modules_input_input_service_ts
@@ -77,6 +102,14 @@ graph LR
   file_src_modules_input_input_service_ts --> file_src_modules_input_input_types_ts
   file_src_modules_input_input_service_unit_test_ts --> file_src_modules_input_input_constants_ts
   file_src_modules_input_input_service_unit_test_ts --> file_src_modules_input_input_service_ts
+  file_src_modules_override_resolution_override_resolution_module_ts --> file_src_modules_override_resolution_override_resolution_service_ts
+  file_src_modules_override_resolution_override_resolution_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_override_resolution_override_resolution_service_ts --> file_src_modules_input_input_constants_ts
+  file_src_modules_override_resolution_override_resolution_service_ts --> file_src_modules_override_resolution_override_resolution_constants_ts
+  file_src_modules_override_resolution_override_resolution_service_ts --> file_src_modules_override_resolution_override_resolution_types_ts
+  file_src_modules_override_resolution_override_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_override_resolution_override_resolution_service_unit_test_ts --> file_src_modules_override_resolution_override_resolution_service_ts
+  file_src_modules_override_resolution_override_resolution_types_ts --> file_src_modules_configuration_configuration_types_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 

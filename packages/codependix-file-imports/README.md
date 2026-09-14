@@ -30,6 +30,7 @@ graph LR
 <!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
+  FileImportsWorkspaceGraphModule
   PythonModule
   TypescriptModule
 ```
@@ -41,9 +42,16 @@ flowchart LR
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_constants_ts["src/modules/file-imports-workspace-graph/file-imports-workspace-graph.constants.ts"]
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_ts["src/modules/file-imports-workspace-graph/file-imports-workspace-graph.module.ts"]
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_unit_test_ts["src/modules/file-imports-workspace-graph/file-imports-workspace-graph.module.unit.test.ts"]
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts["src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts"]
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_unit_test_ts["src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.unit.test.ts"]
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_types_ts["src/modules/file-imports-workspace-graph/file-imports-workspace-graph.types.ts"]
   file_src_modules_python_python_import_graph_service_ts["src/modules/python/python-import-graph.service.ts"]
   file_src_modules_python_python_import_graph_service_unit_test_ts["src/modules/python/python-import-graph.service.unit.test.ts"]
   file_src_modules_python_python_import_parser_constants_ts["src/modules/python/python-import-parser.constants.ts"]
@@ -72,6 +80,16 @@ graph LR
   file_testing_programs_ts["testing/programs.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_ts --> file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_unit_test_ts --> file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_ts
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_unit_test_ts --> file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts --> file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_constants_ts
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts --> file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_types_ts
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts --> file_src_modules_python_python_types_ts
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts --> file_src_modules_typescript_typescript_types_ts
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_unit_test_ts --> file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_unit_test_ts --> file_src_modules_python_python_types_ts
+  file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_unit_test_ts --> file_src_modules_typescript_typescript_types_ts
   file_src_modules_python_python_import_graph_service_ts --> file_src_modules_python_python_import_parser_service_ts
   file_src_modules_python_python_import_graph_service_ts --> file_src_modules_python_python_import_parser_types_ts
   file_src_modules_python_python_import_graph_service_ts --> file_src_modules_python_python_project_service_ts
