@@ -228,19 +228,19 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3644-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-125.35_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3761-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-129.97_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-35-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.50_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.70_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
 ![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-35-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-15-0ea5e9?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-13-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-2-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-8-db2777?style=flat-square)
@@ -253,15 +253,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-10-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-9-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-178-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-185-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-46-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-212-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-219-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-12-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-198-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-101-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-58-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-129-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-282-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-205-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-102-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-57-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-139-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-289-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-1-ca8a04?style=flat-square)
 
 ### Python
@@ -382,6 +382,14 @@ graph LR
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-10-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 

@@ -15,6 +15,15 @@ name: 🧑‍⚖️ Validate Conventions
 # The README badge must be filtered `?event=pull_request`. Nothing here runs
 # on the default branch, so `?branch=main` pins it to a stale run forever.
 
+# Dependabot pull requests are no longer exempted from title, label, or
+# release-significance checks: `.github/dependabot.yml` sets a
+# `commit-message.prefix` on every entry so the generated title and commit
+# both read as this repository's own `<type>(<scope>): <gitmoji> <subject>`,
+# and carries the `type:`, `scope:`, and `source:agent` labels statically,
+# so nothing here has to derive them. Only the body check below still skips
+# dependabot — there is no dependabot.yml field for pull request body
+# content, so that one check can never pass for it.
+
 on:
   pull_request:
     types:
@@ -71,8 +80,6 @@ jobs:
     timeout-minutes: 10
     if: >-
       github.event_name == 'pull_request' &&
-      github.actor != 'dependabot[bot]' &&
-      !startsWith(github.head_ref, 'dependabot/') &&
       !startsWith(github.head_ref, 'renovate/')
 
     steps:
@@ -131,7 +138,14 @@ jobs:
       # environment size past the OS limit, and `bash` itself fails to start
       # with "Argument list too long" before this step gets to run anything.
       # A file has no such ceiling.
+      #
+      # Skipped for dependabot: there is no dependabot.yml field for pull
+      # request body content (an open upstream feature request as of this
+      # writing — dependabot/dependabot-core#13905), so a dependabot pull
+      # request can never carry the four required headings. Everything else
+      # in this job still runs against it.
       - name: 🪢 Validate Pull Request Body
+        if: github.actor != 'dependabot[bot]'
         env:
           GH_TOKEN: ${{ github.token }}
           PULL_REQUEST: ${{ github.event.pull_request.number }}

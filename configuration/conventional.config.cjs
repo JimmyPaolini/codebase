@@ -120,11 +120,6 @@ const scopes = [
     name: "dependencies",
   },
   {
-    description:
-      "Dependency version changes (upgrades, additions, removals via pnpm)",
-    name: "deps",
-  },
-  {
     description: "GitHub Actions workflows and CI/CD pipeline configuration",
     name: "deployments",
   },

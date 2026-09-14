@@ -86,7 +86,7 @@ _This project has no internal file imports._
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-191-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-31.48_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-41.37_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-5-3178c6?style=flat-square)
 
@@ -235,6 +235,14 @@ _This project has no internal file imports._
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-1-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 
@@ -262,23 +270,23 @@ _This project has no internal file imports._
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-4-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-528-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-692-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-4-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-21-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-0-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-4-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-66-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-7-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-15-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-84-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-8-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-20-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-4-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-22-0ea5e9?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-6-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-36-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-2-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-10-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-157-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-11-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-272-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

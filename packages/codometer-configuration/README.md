@@ -578,6 +578,7 @@ graph LR
   file_src_modules_configuration_configuration_loader_service_ts["src/modules/configuration/configuration-loader.service.ts"]
   file_src_modules_configuration_configuration_loader_service_unit_test_ts["src/modules/configuration/configuration-loader.service.unit.test.ts"]
   file_src_modules_configuration_configuration_loader_types_ts["src/modules/configuration/configuration-loader.types.ts"]
+  file_src_modules_configuration_configuration_schema_constants_ts["src/modules/configuration/configuration-schema.constants.ts"]
   file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
   file_src_modules_configuration_configuration_module_ts["src/modules/configuration/configuration.module.ts"]
   file_src_modules_configuration_configuration_module_unit_test_ts["src/modules/configuration/configuration.module.unit.test.ts"]
@@ -601,8 +602,9 @@ graph LR
   file_src_modules_configuration_configuration_loader_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_configuration_loader_service_unit_test_ts --> file_src_modules_configuration_configuration_loader_service_ts
   file_src_modules_configuration_configuration_loader_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_configuration_schema_constants_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_configuration_schema_constants_ts --> file_src_modules_configuration_output_types_ts
   file_src_modules_configuration_configuration_constants_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_configuration_constants_ts --> file_src_modules_configuration_output_types_ts
   file_src_modules_configuration_configuration_constants_ts --> file_src_modules_configuration_statistics_types_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_loader_service_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_service_ts
@@ -610,14 +612,15 @@ graph LR
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_module_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_loader_service_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_schema_constants_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_output_types_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_resolved_types_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_statistics_types_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_loader_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_configuration_types_ts --> file_src_modules_configuration_output_types_ts
   file_src_modules_configuration_configuration_types_ts --> file_src_modules_configuration_statistics_types_ts
   file_src_modules_configuration_output_types_ts --> file_src_modules_configuration_statistics_types_ts
@@ -635,23 +638,23 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3991-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-140.81_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4059-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-140.70_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-25-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-26-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-15.12_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-16.16_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-25-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-47-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-26-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-38-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-5-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-135-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-128-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -659,16 +662,16 @@ graph LR
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-5-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-8-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-134-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-35-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-102-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-67-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-188-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-67-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-94-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-193-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-703-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-9-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-138-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-32-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-97-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-73-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-214-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-70-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-90-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-258-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-730-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -782,13 +785,21 @@ graph LR
 ![Module Files](https://img.shields.io/badge/Module_Files-2-7c3aed?style=flat-square)
 ![Service Files](https://img.shields.io/badge/Service_Files-3-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-2-ea580c?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-3-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-6-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-5-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 

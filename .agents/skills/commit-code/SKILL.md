@@ -79,7 +79,6 @@ Keeping a branch scoped to one project or module (see the root [AGENTS.md](../..
 | `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
 | `conformetry` | Code generator templates and validation tests for generated instances |
 | `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
-| `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
 | `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
 | `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
 | `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |

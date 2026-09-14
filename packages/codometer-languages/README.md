@@ -499,8 +499,8 @@ graph LR
   file_src_modules_toml_toml_service_ts["src/modules/toml/toml.service.ts"]
   file_src_modules_toml_toml_service_unit_test_ts["src/modules/toml/toml.service.unit.test.ts"]
   file_src_modules_toml_toml_types_ts["src/modules/toml/toml.types.ts"]
-  file_src_modules_typescript_documentation_measurement_service_ts["src/modules/typescript/documentation-measurement.service.ts"]
-  file_src_modules_typescript_documentation_measurement_service_unit_test_ts["src/modules/typescript/documentation-measurement.service.unit.test.ts"]
+  file_src_modules_typescript_declaration_comments_service_ts["src/modules/typescript/declaration-comments.service.ts"]
+  file_src_modules_typescript_declaration_comments_service_unit_test_ts["src/modules/typescript/declaration-comments.service.unit.test.ts"]
   file_src_modules_typescript_typescript_constants_ts["src/modules/typescript/typescript.constants.ts"]
   file_src_modules_typescript_typescript_module_ts["src/modules/typescript/typescript.module.ts"]
   file_src_modules_typescript_typescript_module_unit_test_ts["src/modules/typescript/typescript.module.unit.test.ts"]
@@ -536,6 +536,7 @@ graph LR
   file_src_modules_comments_comments_service_ts --> file_src_modules_comments_comments_constants_ts
   file_src_modules_comments_comments_service_ts --> file_src_modules_comments_comments_types_ts
   file_src_modules_comments_comments_service_unit_test_ts --> file_src_modules_comments_comments_service_ts
+  file_src_modules_comments_comments_service_unit_test_ts --> file_src_modules_comments_comments_types_ts
   file_src_modules_comments_comments_service_unit_test_ts --> file_src_modules_comments_hash_comments_service_ts
   file_src_modules_comments_css_comments_service_ts --> file_src_modules_comments_comments_types_ts
   file_src_modules_comments_css_comments_service_unit_test_ts --> file_src_modules_comments_css_comments_service_ts
@@ -639,6 +640,7 @@ graph LR
   file_src_modules_languages_languages_service_ts --> file_src_modules_typescript_typescript_service_ts
   file_src_modules_languages_languages_service_ts --> file_src_modules_yaml_yaml_service_ts
   file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_comments_service_ts
+  file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_comments_types_ts
   file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_css_comments_service_ts
   file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_hash_comments_service_ts
   file_src_modules_languages_languages_service_unit_test_ts --> file_src_modules_comments_hcl_comments_service_ts
@@ -708,25 +710,28 @@ graph LR
   file_src_modules_toml_toml_service_ts --> file_src_modules_toml_toml_constants_ts
   file_src_modules_toml_toml_service_ts --> file_src_modules_toml_toml_types_ts
   file_src_modules_toml_toml_service_unit_test_ts --> file_src_modules_toml_toml_service_ts
-  file_src_modules_typescript_documentation_measurement_service_ts --> file_src_modules_comments_comments_service_ts
-  file_src_modules_typescript_documentation_measurement_service_ts --> file_src_modules_comments_comments_types_ts
-  file_src_modules_typescript_documentation_measurement_service_ts --> file_src_modules_typescript_typescript_constants_ts
-  file_src_modules_typescript_documentation_measurement_service_ts --> file_src_modules_typescript_typescript_types_ts
-  file_src_modules_typescript_documentation_measurement_service_unit_test_ts --> file_src_modules_comments_comments_service_ts
-  file_src_modules_typescript_documentation_measurement_service_unit_test_ts --> file_src_modules_typescript_documentation_measurement_service_ts
-  file_src_modules_typescript_documentation_measurement_service_unit_test_ts --> file_src_modules_typescript_typescript_types_ts
+  file_src_modules_typescript_declaration_comments_service_ts --> file_src_modules_comments_comments_service_ts
+  file_src_modules_typescript_declaration_comments_service_ts --> file_src_modules_comments_comments_types_ts
+  file_src_modules_typescript_declaration_comments_service_ts --> file_src_modules_typescript_typescript_constants_ts
+  file_src_modules_typescript_declaration_comments_service_ts --> file_src_modules_typescript_typescript_types_ts
+  file_src_modules_typescript_declaration_comments_service_unit_test_ts --> file_src_modules_comments_comments_service_ts
+  file_src_modules_typescript_declaration_comments_service_unit_test_ts --> file_src_modules_comments_comments_types_ts
+  file_src_modules_typescript_declaration_comments_service_unit_test_ts --> file_src_modules_typescript_declaration_comments_service_ts
+  file_src_modules_typescript_declaration_comments_service_unit_test_ts --> file_src_modules_typescript_typescript_types_ts
   file_src_modules_typescript_typescript_constants_ts --> file_src_modules_typescript_typescript_types_ts
   file_src_modules_typescript_typescript_module_ts --> file_src_modules_comments_comments_module_ts
-  file_src_modules_typescript_typescript_module_ts --> file_src_modules_typescript_documentation_measurement_service_ts
+  file_src_modules_typescript_typescript_module_ts --> file_src_modules_typescript_declaration_comments_service_ts
   file_src_modules_typescript_typescript_module_ts --> file_src_modules_typescript_typescript_service_ts
-  file_src_modules_typescript_typescript_module_unit_test_ts --> file_src_modules_typescript_documentation_measurement_service_ts
+  file_src_modules_typescript_typescript_module_unit_test_ts --> file_src_modules_typescript_declaration_comments_service_ts
   file_src_modules_typescript_typescript_module_unit_test_ts --> file_src_modules_typescript_typescript_module_ts
   file_src_modules_typescript_typescript_module_unit_test_ts --> file_src_modules_typescript_typescript_service_ts
-  file_src_modules_typescript_typescript_service_ts --> file_src_modules_typescript_documentation_measurement_service_ts
+  file_src_modules_typescript_typescript_service_ts --> file_src_modules_comments_comments_types_ts
+  file_src_modules_typescript_typescript_service_ts --> file_src_modules_typescript_declaration_comments_service_ts
   file_src_modules_typescript_typescript_service_ts --> file_src_modules_typescript_typescript_constants_ts
   file_src_modules_typescript_typescript_service_ts --> file_src_modules_typescript_typescript_types_ts
   file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_comments_comments_service_ts
-  file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_documentation_measurement_service_ts
+  file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_comments_comments_types_ts
+  file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_declaration_comments_service_ts
   file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_typescript_service_ts
   file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_typescript_types_ts
   file_src_modules_typescript_typescript_types_ts --> file_src_modules_comments_comments_types_ts
@@ -746,23 +751,23 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-9945-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-301.24_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10290-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-311.65_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-16-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-103-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-47.61_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-49.05_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
 ![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-102-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-41-0ea5e9?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-45-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-34-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-259-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-266-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -771,15 +776,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-34-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-20-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-34-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-369-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-190-15803d?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-370-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-189-15803d?style=flat-square)
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-527-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-32-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-518-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-490-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-124-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-536-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-900-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-544-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-494-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-126-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-558-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-989-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
@@ -900,6 +905,14 @@ graph LR
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-34-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 

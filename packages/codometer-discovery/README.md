@@ -96,10 +96,10 @@ graph LR
 ```mermaid
 flowchart LR
   DiscoveryModule
+  InputsModule
   LoggerModule
-  TargetsModule
   DiscoveryModule --> LoggerModule
-  TargetsModule --> LoggerModule
+  InputsModule --> LoggerModule
 ```
 <!-- codependix:end name="codependix-nestjs" -->
 
@@ -121,16 +121,16 @@ graph LR
   file_src_modules_discovery_ignore_rules_service_ts["src/modules/discovery/ignore-rules.service.ts"]
   file_src_modules_discovery_ignore_rules_service_unit_test_ts["src/modules/discovery/ignore-rules.service.unit.test.ts"]
   file_src_modules_discovery_ignore_rules_types_ts["src/modules/discovery/ignore-rules.types.ts"]
-  file_src_modules_targets_targets_constants_ts["src/modules/targets/targets.constants.ts"]
-  file_src_modules_targets_targets_module_ts["src/modules/targets/targets.module.ts"]
-  file_src_modules_targets_targets_service_integration_test_ts["src/modules/targets/targets.service.integration.test.ts"]
-  file_src_modules_targets_targets_service_ts["src/modules/targets/targets.service.ts"]
-  file_src_modules_targets_targets_service_unit_test_ts["src/modules/targets/targets.service.unit.test.ts"]
-  file_src_modules_targets_targets_types_ts["src/modules/targets/targets.types.ts"]
+  file_src_modules_inputs_inputs_constants_ts["src/modules/inputs/inputs.constants.ts"]
+  file_src_modules_inputs_inputs_module_ts["src/modules/inputs/inputs.module.ts"]
+  file_src_modules_inputs_inputs_service_integration_test_ts["src/modules/inputs/inputs.service.integration.test.ts"]
+  file_src_modules_inputs_inputs_service_ts["src/modules/inputs/inputs.service.ts"]
+  file_src_modules_inputs_inputs_service_unit_test_ts["src/modules/inputs/inputs.service.unit.test.ts"]
+  file_src_modules_inputs_inputs_types_ts["src/modules/inputs/inputs.types.ts"]
   file_testing_fixture_tree_ts["testing/fixture-tree.ts"]
+  file_testing_input_tree_ts["testing/input-tree.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
-  file_testing_target_tree_ts["testing/target-tree.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_discovery_discovery_module_ts --> file_src_modules_discovery_discovery_service_ts
   file_src_modules_discovery_discovery_module_ts --> file_src_modules_discovery_ignore_rules_service_ts
@@ -149,13 +149,13 @@ graph LR
   file_src_modules_discovery_ignore_rules_service_ts --> file_src_modules_discovery_ignore_rules_types_ts
   file_src_modules_discovery_ignore_rules_service_unit_test_ts --> file_src_modules_discovery_ignore_rules_service_ts
   file_src_modules_discovery_ignore_rules_service_unit_test_ts --> file_src_modules_discovery_ignore_rules_types_ts
-  file_src_modules_targets_targets_module_ts --> file_src_modules_targets_targets_service_ts
-  file_src_modules_targets_targets_service_integration_test_ts --> file_src_modules_targets_targets_service_ts
-  file_src_modules_targets_targets_service_integration_test_ts --> file_testing_target_tree_ts
-  file_src_modules_targets_targets_service_ts --> file_src_modules_targets_targets_constants_ts
-  file_src_modules_targets_targets_service_ts --> file_src_modules_targets_targets_types_ts
-  file_src_modules_targets_targets_service_unit_test_ts --> file_src_modules_targets_targets_constants_ts
-  file_src_modules_targets_targets_service_unit_test_ts --> file_src_modules_targets_targets_service_ts
+  file_src_modules_inputs_inputs_module_ts --> file_src_modules_inputs_inputs_service_ts
+  file_src_modules_inputs_inputs_service_integration_test_ts --> file_src_modules_inputs_inputs_service_ts
+  file_src_modules_inputs_inputs_service_integration_test_ts --> file_testing_input_tree_ts
+  file_src_modules_inputs_inputs_service_ts --> file_src_modules_inputs_inputs_constants_ts
+  file_src_modules_inputs_inputs_service_ts --> file_src_modules_inputs_inputs_types_ts
+  file_src_modules_inputs_inputs_service_unit_test_ts --> file_src_modules_inputs_inputs_constants_ts
+  file_src_modules_inputs_inputs_service_unit_test_ts --> file_src_modules_inputs_inputs_service_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 
@@ -165,8 +165,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2302-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-83.34_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2305-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-83.35_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-24-3178c6?style=flat-square)
 
@@ -190,15 +190,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-5-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-6-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-104-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-105-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-45-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-142-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-143-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-7-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-86-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-82-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-83-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-40-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-127-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-293-475569?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-292-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -319,6 +319,14 @@ graph LR
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-3-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-2-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 
