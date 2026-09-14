@@ -1,10 +1,10 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
-import { SUPPORTED_TYPES } from "../../meander-generation/meander-generation.constants";
+import { SUPPORTED_TYPES } from "../../meander-classification/meander-classification.constants";
 import { SUPPORTED_SUB_FAMILIES } from "../../mosaic-tile/mosaic-tile.constants";
 import { MEANDER_PROVENANCES } from "../meander-database.constants";
 
-import type { MeanderType } from "../../meander-generation/meander-generation.types";
+import type { MeanderType } from "../../meander-classification/meander-classification.types";
 import type { MosaicSubFamily } from "../../mosaic-tile/mosaic-tile.types";
 import type { MeanderProvenance } from "../meander-database.types";
 

@@ -3,14 +3,12 @@
 import type { HardcodedMeanderEntry } from "./hardcoded-meanders.types";
 
 /**
- * Part of `swirl`'s committed corpus, extracted once by
- * `scripts/generate-hardcoded-corpus.ts` from `output/swirl/**\/*.svg`
- * through `LatticeIdentificationService.identifyDocument` — see that
- * script's own doc comment for the extraction this file's contents were
- * generated from, and `HardcodedMeandersService` for how it is ingested.
- * Split across several files the same way, at
- * `MAXIMUM_ENTRIES_PER_CHUNK`, to stay under the 512-line-per-file cap
- * once oxfmt has broken every long Code onto its own lines.
+ * Part of `swirl`'s committed corpus: the meanders of that family that lie
+ * beyond the reach of `MeanderEnumerationService`, preserved as Codes
+ * extracted once from the drawings this repository used to commit as files.
+ * See `HARDCODED_MEANDERS_BY_FAMILY` for how the boundary against the
+ * enumerated half is drawn, and `HardcodedMeandersService` for how these are
+ * ingested.
  */
 // 🎯 Hexadecimal lattice Codes rather than words, so the dictionaries are
 // turned off across them — a run of hexadecimal digits occasionally spells one.

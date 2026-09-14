@@ -22,14 +22,8 @@ import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { DrawCodeService } from "./draw-code.service";
-import { DrawCombinationsService } from "./draw-combinations.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
-import { DrawIndexService } from "./draw-index.service";
-import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
-import { DrawParametersService } from "./draw-parameters.service";
-import { DrawPermutationsService } from "./draw-permutations.service";
 import { DrawRecordService } from "./draw-record.service";
-import { DrawRenderingService } from "./draw-rendering.service";
 import { DrawCommand } from "./draw.command";
 
 /**
@@ -85,30 +79,6 @@ describe("drawCommand --code mode", () => {
           useValue: createMock<LoggerService>(),
         },
         {
-          provide: DrawCombinationsService,
-          useValue: createMock<DrawCombinationsService>(),
-        },
-        {
-          provide: DrawIndexService,
-          useValue: createMock<DrawIndexService>(),
-        },
-        {
-          provide: DrawParametersService,
-          useValue: createMock<DrawParametersService>(),
-        },
-        {
-          provide: DrawNegativePermutationsService,
-          useValue: createMock<DrawNegativePermutationsService>(),
-        },
-        {
-          provide: DrawPermutationsService,
-          useValue: createMock<DrawPermutationsService>(),
-        },
-        {
-          provide: DrawRenderingService,
-          useValue: createMock<DrawRenderingService>(),
-        },
-        {
           provide: HardcodedMeandersService,
           useValue: createMock<HardcodedMeandersService>({
             ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
@@ -130,8 +100,6 @@ describe("drawCommand --code mode", () => {
     await command.run([], {
       code: "3c9a",
       columns: 2,
-      outputDirectory: "output",
-      repeatCount: 6,
       rows: 3,
     });
 
@@ -158,8 +126,6 @@ describe("drawCommand --code mode", () => {
     await command.run([], {
       code: "e",
       columns: 1,
-      outputDirectory: "output",
-      repeatCount: 6,
       rows: 2,
     });
 
@@ -181,8 +147,6 @@ describe("drawCommand --code mode", () => {
     await expect(
       command.run([], {
         code: "0",
-        outputDirectory: "output",
-        repeatCount: 6,
         rows: 2,
       }),
     ).rejects.toThrow(/needs both --rows and --columns/);
@@ -195,8 +159,6 @@ describe("drawCommand --code mode", () => {
       command.run([], {
         code: "0",
         columns: 1,
-        outputDirectory: "output",
-        repeatCount: 6,
       }),
     ).rejects.toThrow(/needs both --rows and --columns/);
 

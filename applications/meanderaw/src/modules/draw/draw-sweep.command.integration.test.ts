@@ -1,0 +1,197 @@
+import { createMock } from "@golevelup/ts-vitest";
+import { Test } from "@nestjs/testing";
+import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
+import { DataSource, type Repository } from "typeorm";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
+
+import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
+import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
+import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
+import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
+import { Meander } from "../meander-database/entities/Meander.entity";
+import { MeanderDatabaseService } from "../meander-database/meander-database.service";
+import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
+import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumeration.module";
+import { MeanderEnumerationService } from "../meander-enumeration/meander-enumeration.service";
+import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
+
+import { DrawCodeService } from "./draw-code.service";
+import { DrawEnumerationService } from "./draw-enumeration.service";
+import { DrawRecordService } from "./draw-record.service";
+import { DrawCommand } from "./draw.command";
+
+/**
+ * Drives the whole of `DrawCommand`'s sweep — the generalized enumeration
+ * and the historical corpus's hardcoded ingestion together — against a real
+ * TypeORM connection to an in-memory `better-sqlite3` database, and asserts
+ * on the rows it persists. It is spec #813's highest seam for this command,
+ * and the direct successor to the file-tree assertions
+ * `draw.command.unit.test.ts` made by mocking `node:fs/promises` while the
+ * per-family procedural pipeline still wrote one.
+ *
+ * **This is what proves the two provenances do not collide.** Both halves
+ * write through the same unique index over a meander's lattice address, and
+ * the enumerated half runs first, so an entry the hardcoded corpus still
+ * claims inside the enumerated space fails the second insert rather than
+ * quietly overwriting the first. Nothing short of running both halves for
+ * real catches that: each half passes its own suite alone.
+ *
+ * `HARDCODED_MEANDERS_BY_FAMILY` is the real, committed corpus rather than a
+ * fixture — `DrawCommand.run` reads it directly rather than through an
+ * overridable dependency — and the enumeration is the real budgeted walk, so
+ * this drives tens of thousands of rows through the decoder, renderer, and
+ * Characteristic computation. That is real work rather than a hang, and the
+ * timeout is declared rather than left to the default five seconds.
+ */
+describe("drawCommand sweep mode", () => {
+  const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
+
+  let command: DrawCommand;
+  let dataSource: DataSource;
+  let enumeration: MeanderEnumerationService;
+  let repository: Repository<Meander>;
+
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forRoot({
+          database: ":memory:",
+          entities: [Meander],
+          logging: false,
+          synchronize: true,
+          type: "better-sqlite3",
+        }),
+        TypeOrmModule.forFeature([Meander]),
+        MeanderCharacteristicsModule,
+        MeanderClassificationModule,
+        MeanderDecodingModule,
+        MeanderEnumerationModule,
+        MeanderRenderingModule,
+      ],
+      providers: [
+        DrawCommand,
+        DrawEnumerationService,
+        DrawRecordService,
+        HardcodedMeandersService,
+        MeanderDatabaseService,
+        {
+          provide: DrawCodeService,
+          useValue: createMock<DrawCodeService>(),
+        },
+        {
+          provide: LoggerService,
+          useValue: createMock<LoggerService>(),
+        },
+      ],
+    }).compile();
+
+    command = await module.resolve(DrawCommand);
+    dataSource = module.get(DataSource);
+    enumeration = module.get(MeanderEnumerationService);
+    repository = module.get(getRepositoryToken(Meander));
+  });
+
+  afterEach(async () => {
+    await dataSource.destroy();
+  });
+
+  it(
+    "persists both halves of the corpus, with neither provenance colliding with the other",
+    async () => {
+      const expectedEnumerated = enumeration
+        .shapes()
+        .reduce(
+          (total, shape) => total + enumeration.enumerate(shape).length,
+          0,
+        );
+      const expectedHardcoded = Object.values(
+        HARDCODED_MEANDERS_BY_FAMILY,
+      ).reduce((total, entries) => total + entries.length, 0);
+
+      await command.run([], {});
+
+      await expect(
+        repository.countBy({ provenance: "enumerated" }),
+      ).resolves.toBe(expectedEnumerated);
+      await expect(
+        repository.countBy({ provenance: "hardcoded" }),
+      ).resolves.toBe(expectedHardcoded);
+    },
+    SWEEP_TIMEOUT_MILLISECONDS,
+  );
+
+  it(
+    "keeps every hardcoded entry outside the shapes the enumeration already covers",
+    () => {
+      const swept = new Set(
+        enumeration.shapes().map((shape) => `${shape.rows}x${shape.columns}`),
+      );
+      const covered = Object.entries(HARDCODED_MEANDERS_BY_FAMILY).flatMap(
+        ([family, entries]) =>
+          entries
+            .map((entry) => `${family} ${entry.rows}x${entry.columns}`)
+            .filter((label) => swept.has(label.split(" ")[1] ?? "")),
+      );
+
+      expect(covered).toStrictEqual([]);
+    },
+    SWEEP_TIMEOUT_MILLISECONDS,
+  );
+
+  it(
+    "carries a trusted family and a hardcoded provenance on every ingested corpus entry",
+    async () => {
+      await command.run([], {});
+
+      const rows = await repository.findBy({ provenance: "hardcoded" });
+
+      expect(rows.length).toBeGreaterThan(0);
+      expect(
+        rows.every((row) =>
+          Object.keys(HARDCODED_MEANDERS_BY_FAMILY).includes(row.family ?? ""),
+        ),
+      ).toBe(true);
+    },
+    SWEEP_TIMEOUT_MILLISECONDS,
+  );
+
+  it(
+    "fails the sweep loudly when a hardcoded entry's lattice address is already committed",
+    async () => {
+      const [duplicated] = Object.values(HARDCODED_MEANDERS_BY_FAMILY).find(
+        (entries) => entries.length > 0,
+      ) ?? [undefined];
+
+      if (duplicated === undefined) {
+        throw new Error(
+          "no hardcoded entry is committed to collide a duplicate against",
+        );
+      }
+
+      await repository.save({
+        code: duplicated.code,
+        columns: duplicated.columns,
+        components: 1,
+        cycles: 0,
+        freeEnds: 2,
+        hasBranching: false,
+        hasCrossing: false,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        negativeTJunctions: 0,
+        negativeXJunctions: 0,
+        pitch: duplicated.columns,
+        provenance: "enumerated",
+        rows: duplicated.rows,
+        svg: "<svg>fixture</svg>\n",
+      });
+
+      await expect(command.run([], {})).rejects.toThrow(
+        /collided with a Code already committed/,
+      );
+    },
+    SWEEP_TIMEOUT_MILLISECONDS,
+  );
+});

@@ -11,7 +11,7 @@ import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 
 import { MeanderClassificationService } from "./meander-classification.service";
 
-import type { MeanderType } from "../meander-generation/meander-generation.types";
+import type { MeanderType } from "../meander-classification/meander-classification.types";
 import type { MeanderStructure } from "./meander-classification.types";
 
 // 🔧 Configuration
