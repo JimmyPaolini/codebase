@@ -149,4 +149,25 @@ describe(MeanderDatabaseService, () => {
       ]);
     });
   });
+
+  describe("family and subFamily columns", () => {
+    it("persists a trusted family and subFamily alongside a row", async () => {
+      const saved = await service.save(
+        record({ code: "trusted-row", family: "boxes", subFamily: "dots" }),
+      );
+
+      const row = await repository.findOneByOrFail({ id: saved.id });
+
+      expect(row).toMatchObject({ family: "boxes", subFamily: "dots" });
+    });
+
+    it("leaves family and subFamily null when a row names neither", async () => {
+      const saved = await service.save(record({ code: "untrusted-row" }));
+
+      const row = await repository.findOneByOrFail({ id: saved.id });
+
+      expect(row.family).toBeNull();
+      expect(row.subFamily).toBeNull();
+    });
+  });
 });

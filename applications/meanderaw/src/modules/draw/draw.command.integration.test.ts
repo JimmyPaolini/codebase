@@ -2,11 +2,12 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
 import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
 import { MeanderConnectivityService } from "../meander-characteristics/meander-connectivity.service";
 import { MeanderClassificationService } from "../meander-classification/meander-classification.service";
@@ -106,6 +107,12 @@ describe("drawCommand --code mode", () => {
         {
           provide: DrawRenderingService,
           useValue: createMock<DrawRenderingService>(),
+        },
+        {
+          provide: HardcodedMeandersService,
+          useValue: createMock<HardcodedMeandersService>({
+            ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
+          }),
         },
       ],
     }).compile();

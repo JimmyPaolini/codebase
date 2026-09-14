@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { HardcodedMeandersModule } from "../hardcoded-meanders/hardcoded-meanders.module";
 import { LatticeIdentificationModule } from "../lattice-identification/lattice-identification.module";
 import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
 import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
@@ -50,21 +51,27 @@ import { DrawCommand } from "./draw.command";
  *
  * It also imports `MeanderCharacteristicsModule`, `MeanderClassificationModule`,
  * `MeanderDatabaseModule`, `MeanderDecodingModule`, `MeanderEnumerationModule`,
- * and `MeanderRenderingModule` for the two lattice-first paths `DrawRecordService`
- * builds a row for: the generic decoder and renderer every family's Code is
- * now drawn through, the Characteristic computation that measures the same
- * decoded grid, the family classifier that reads a family off those
- * Characteristics, the enumeration of the whole unit space the sweep now
- * walks, and the committed sqlite database both paths persist to, in place of
- * the file `--type`/`--rows` still writes. `MeanderDatabaseModule` always
- * opens the one committed database file — a test exercising `DrawCodeService`
- * or `DrawEnumerationService` builds its own `TestingModule` against a
+ * `MeanderRenderingModule`, and `HardcodedMeandersModule` for the three
+ * lattice-first paths `DrawRecordService` and its siblings build rows for:
+ * the generic decoder and renderer every family's Code is now drawn through,
+ * the Characteristic computation that measures the same decoded grid, the
+ * family classifier that reads a family off those Characteristics, the
+ * enumeration of the whole unit space the sweep now walks, and the committed
+ * sqlite database every one of these paths persists to, in place of the file
+ * `--type`/`--rows` still writes. `HardcodedMeandersModule` wraps the same
+ * generic decoder, renderer, and Characteristic computation beneath one
+ * service `DrawCommand` calls once per sweep with the whole historical
+ * corpus, trusting its family/subFamily rather than classifying them.
+ * `MeanderDatabaseModule` always opens the one committed database file — a
+ * test exercising `DrawCodeService`, `DrawEnumerationService`, or
+ * `HardcodedMeandersService` builds its own `TestingModule` against a
  * temporary or in-memory connection instead of importing this module.
  */
 @Module({
   controllers: [],
   exports: [DrawCombinationsService, DrawCommand],
   imports: [
+    HardcodedMeandersModule,
     LatticeIdentificationModule,
     MeanderCharacteristicsModule,
     MeanderClassificationModule,
